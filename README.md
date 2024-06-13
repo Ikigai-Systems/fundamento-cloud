@@ -1,30 +1,21 @@
-# React + TypeScript + Vite
+Running
+===
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```
+foreman start
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+This should run three processes:
+* rails on port 3000
+* y-websocket-server on port 1234 (for document collaboration)
+* vite devserver on port 5173
+
+Access application via `http://localhost:5173`
+
+Production mode
+===
+
+1. (re)build first frontend: `npm run build` -> this will populate `public` folder
+2. `RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production rails s`  
+   _at the moment I'm writing ^this doesn't work due to missing SSL certificates and etc_
+3. Rails server will listen on port `<fill in later>`

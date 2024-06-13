@@ -1,13 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
+import 'virtual:uno.css'
 import axios from 'axios'
+import App from './App.tsx'
+import baseUrl from "./base-url.tsx";
 
-axios.defaults.baseURL = import.meta.env.VITE_APP_API_URL || 'http://127.0.0.1:3000';
+axios.defaults.baseURL = baseUrl;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <App/>
   </React.StrictMode>,
 )
