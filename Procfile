@@ -1,3 +1,3 @@
-rails: bundle exec rails s -p 3000
+rails: bundle exec bin/rails s -p 3000
 web: npm run dev
 y-websocket-server: HOST=localhost PORT=1234 npx y-websocket

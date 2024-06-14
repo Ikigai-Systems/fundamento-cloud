@@ -13,6 +13,8 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
+# Ikigai-specific production environment
+ENV RAILS_SERVE_STATIC_FILES="true"
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
@@ -20,6 +22,9 @@ FROM base as build
 # Install packages needed to build gems
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libvips pkg-config
+
+# Ikigai-specific: install foreman gem
+RUN gem install foreman
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -33,6 +38,16 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Ikigai-specific: build frontend
+## Install node
+RUN apt-get install -yq curl
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -yq nodejs
+RUN npm install -g npm@latest
+
+## Build frontend
+RUN npm install
+RUN npm run build
 
 # Final stage for app image
 FROM base
@@ -41,6 +56,12 @@ FROM base
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libsqlite3-0 libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Ikigai-specific:
+# npx for running y-websocket-server:
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -yq nodejs
+RUN npm install -g npm@latest
+
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
@@ -55,5 +76,10 @@ USER rails:rails
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]
+
+# rails:
+EXPOSE 5000
+# y-websocket-server:
+EXPOSE 1234
+#CMD ["./bin/rails", "server"]
+CMD foreman start -f Procfile.prod
