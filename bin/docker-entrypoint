@@ -1,8 +1,9 @@
 #!/bin/bash -e
 
 # If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+# Ikigai-specific: commented out while we use foreman to start all the services
+#if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
-fi
+#fi
 
 exec "${@}"
