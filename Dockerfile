@@ -80,6 +80,7 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # rails:
 EXPOSE 5000
 # y-websocket-server:
+ENV HOST="0.0.0.0"
 EXPOSE 1234
 #CMD ["./bin/rails", "server"]
 CMD foreman start -f Procfile.prod
