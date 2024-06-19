@@ -14,8 +14,12 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  resources :posts # to be removed, example from initial commit only
+  namespace :api do
+    namespace :v1 do
+      resources :posts # to be removed, example from initial commit only
 
-  resources :documents
+      resources :documents
+    end
+  end
 
 end

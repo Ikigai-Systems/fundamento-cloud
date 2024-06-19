@@ -6,7 +6,7 @@ import axios from 'axios'
 import App from './App.tsx'
 import baseUrl from "./base-url.tsx";
 
-axios.defaults.baseURL = baseUrl;
+axios.defaults.baseURL = baseUrl + "/api/v1";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

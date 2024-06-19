@@ -3,3 +3,9 @@ export type Post = {
   title: string,
   content: string,
 }
+
+export type User = {
+  displayName: string,
+  color: string,
+}
+

@@ -1,4 +1,4 @@
-class DocumentsController < ApplicationController
+class Api::V1::DocumentsController < ApplicationController
   before_action :set_document, only: %i[ show update destroy ]
 
   def index
@@ -15,7 +15,7 @@ class DocumentsController < ApplicationController
     @document = Document.new(post_params)
 
     if @document.save
-      render json: @document, status: :created, location: @document
+      render json: @document, status: :created, location: api_v1_document_url(@document)
     else
       render json: @document.errors, status: :unprocessable_entity
     end
@@ -39,6 +39,6 @@ class DocumentsController < ApplicationController
     end
 
     def post_params
-      params.require(:document).permit(:content)
+      params.fetch(:document, {}).permit(:content)
     end
 end
