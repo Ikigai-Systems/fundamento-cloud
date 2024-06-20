@@ -1,11 +1,12 @@
 import '@blocknote/mantine/style.css';
-import {useMemo} from "react";
+import {useContext, useMemo} from "react";
 import {BlockNoteEditor} from "@blocknote/core";
-import axios from "axios";
 import {BlockNoteView} from "@blocknote/mantine";
 import * as Y from "yjs";
 import {WebsocketProvider} from "y-websocket";
 import {User} from "../types.ts";
+import {CurrentDocumentContext} from "../Contextes/CurrentDocumentContext.tsx";
+import axios from "axios";
 
 let doc: Y.Doc | undefined = undefined;
 let wsProvider: WebsocketProvider | undefined = undefined;
@@ -14,22 +15,27 @@ type Event = {
 }
 
 type EditorProps = {
-  documentId: string,
-  initialContent: string,
+  initialContent: string, // probably not needed
   user: User,
 }
 
-const Editor = ({documentId, initialContent, user}: EditorProps) => {
+const Editor = ({user}: EditorProps) => {
+  const {documentId} = useContext(CurrentDocumentContext);
+
   const editor = useMemo(() => {
-    if (doc === undefined) {
-      doc = new Y.Doc();
+    console.log(documentId);
+    if (doc) {
+      doc.destroy();
     }
-    if (wsProvider === undefined) {
-      wsProvider = new WebsocketProvider('ws://localhost:1234', `/documents/${documentId}`, doc)
-      wsProvider.on('status', (event: Event) => {
-        console.log(event.status) // logs "connected" or "disconnected"
-      })
+    doc = new Y.Doc();
+
+    if (wsProvider) {
+      wsProvider.destroy();
     }
+    wsProvider = new WebsocketProvider(`ws://${window.location.hostname}:1234`, `/documents/${documentId}`, doc)
+    wsProvider.on('status', (event: Event) => {
+      console.log(event.status) // logs "connected" or "disconnected"
+    });
 
     return BlockNoteEditor.create({
       // initialContent: JSON.parse(initialContent),
@@ -42,7 +48,7 @@ const Editor = ({documentId, initialContent, user}: EditorProps) => {
         }
       }
     });
-  }, [initialContent]);
+  }, [documentId]);
 
   if (editor === undefined) {
     return "Loading content...";

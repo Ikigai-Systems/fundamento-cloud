@@ -1,5 +1,4 @@
-import type {DependencyList, EffectCallback} from "react"
-import {useEffect, useRef} from "react"
+import {DependencyList, EffectCallback, useEffect, useRef} from "react"
 import useAsyncEffect from "use-async-effect";
 
 export function useOnMountUnsafe(effect: EffectCallback, deps: DependencyList) {
@@ -21,5 +20,5 @@ export function useAsyncOnMountUnsafe(effect: () => Promise<void>, deps: React.D
       initialized.current = true;
       await effect();
     }
-  }, [effect, ...deps])
+  }, [deps])
 }

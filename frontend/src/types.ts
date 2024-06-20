@@ -4,6 +4,11 @@ export type Post = {
   content: string,
 }
 
+export type Document = {
+  id: number,
+  content: string,
+}
+
 export type User = {
   displayName: string,
   color: string,

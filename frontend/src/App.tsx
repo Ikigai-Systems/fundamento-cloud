@@ -1,14 +1,15 @@
-import {useState} from 'react'
+import {useContext, useState} from 'react'
 import axios, {HttpStatusCode, isAxiosError} from 'axios'
 import './App.css'
 import '@blocknote/mantine/style.css';
 import {User} from "./types.ts";
 import Editor from "./Editor/Editor.tsx";
 import {useAsyncOnMountUnsafe} from "./utils/hooks.ts";
+import DocumentLayout from "./Layouts/DocumentLayout.tsx";
+import {CurrentDocumentContext, CurrentDocumentContextType} from "./Contextes/CurrentDocumentContext.tsx";
 
 function App() {
-
-  const [documentId, setDocumentId] = useState<string | undefined>(location.pathname.match(/\/documents\/(.*)/)?.[1]);
+  const {documentId, setDocumentId}: CurrentDocumentContextType = useContext<CurrentDocumentContextType>(CurrentDocumentContext);
   const [documentContent, setDocumentContent] = useState<string | undefined>(undefined);
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -26,22 +27,22 @@ function App() {
         const {content, id} = (await axios.post('/documents')).data;
         setDocumentContent(content);
         setDocumentId(id);
-        window.history.replaceState(null, "", `/documents/${id}?${urlParams}`);
       } else {
         throw err;
       }
     }
   }, []);
 
-  if (documentContent === undefined) {
-    return <div>Loading...</div>;
-  }
-
-  return <Editor
-    documentId={documentId || ""}
-    initialContent={documentContent}
-    user={user}
-  />;
+  console.log("documentId::::", documentId);
+  return <DocumentLayout>
+    {documentContent === undefined
+      ? <div>Loading...</div>
+      : <Editor
+        initialContent={documentContent}
+        user={user}
+      />
+    }
+  </DocumentLayout>
 }
 
 export default App
