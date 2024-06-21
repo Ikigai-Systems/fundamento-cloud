@@ -235,6 +235,7 @@ DEPENDENCIES
   rails-static-router
   sqlite3 (~> 1.4)
   tzinfo-data
+  y-rb
   y-rb_actioncable
 
 RUBY VERSION

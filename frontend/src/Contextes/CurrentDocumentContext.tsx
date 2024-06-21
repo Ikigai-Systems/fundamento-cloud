@@ -14,7 +14,6 @@ export const withCurrentDocumentContext = (BaseComponent: ElementType) => (props
   const [documentId, setDocumentIdInternal] = useState<number | undefined>(parseInt(location.pathname.match(/\/documents\/(.*)/)?.[1] || "0"));
 
   const setDocumentId = (value: number | undefined) => {
-    console.log("setDocumentId", value);
     setDocumentIdInternal(value);
     window.history.replaceState(null, "", `/documents/${value}${window.location.search}`);
   }

@@ -15,7 +15,7 @@ function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const [user] = useState<User>({
     displayName: urlParams.get("displayName") || "unknown user",
-    color: (urlParams.get("color")) ? "#" + urlParams.get("color") : `hsla(${~~(360 * Math.random())}, 72%,  78%)`,
+    color: (urlParams.get("color")) ? "#" + urlParams.get("color") : `hsl(${~~(360 * Math.random())}, 72%,  78%)`,
   });
 
   useAsyncOnMountUnsafe(async () => {
@@ -33,7 +33,6 @@ function App() {
     }
   }, []);
 
-  console.log("documentId::::", documentId);
   return <DocumentLayout>
     {documentContent === undefined
       ? <div>Loading...</div>

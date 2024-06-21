@@ -56,12 +56,6 @@ FROM base
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libsqlite3-0 libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
-# Ikigai-specific:
-# npx for running y-websocket-server:
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -yq nodejs
-RUN npm install -g npm@latest
-
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
@@ -79,9 +73,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # rails:
 EXPOSE 5000
-# y-websocket-server:
-ENV HOST="0.0.0.0"
-EXPOSE 1234
 
 #CMD ["./bin/rails", "server"]
 CMD foreman start -f Procfile.prod

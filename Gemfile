@@ -49,4 +49,5 @@ gem "rack-cors", "~> 2.0"
 
 gem "rails-static-router"
 
+gem "y-rb"
 gem "y-rb_actioncable"
