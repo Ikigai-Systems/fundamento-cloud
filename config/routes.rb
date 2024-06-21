@@ -6,11 +6,6 @@ Rails.application.routes.draw do
   # Add in our Websocket route
   mount ActionCable.server => '/cable'
 
-  if ENV["RAILS_SERVE_STATIC_FILES"].present?
-    get "*path", to: static("index.html")
-    post "*path", to: static("index.html")
-  end
-
   # Defines the root path route ("/")
   # root "posts#index"
 
@@ -22,4 +17,7 @@ Rails.application.routes.draw do
     end
   end
 
+  if ENV["RAILS_SERVE_STATIC_FILES"].present?
+    get "*path", to: "static#index", constraints: ->(req) { !req.xhr? && req.format.html? }
+  end
 end

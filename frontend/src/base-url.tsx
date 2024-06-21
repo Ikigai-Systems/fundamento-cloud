@@ -1,2 +1,2 @@
 // export default (import.meta.env.PROD ? window.location.origin : 'http://127.0.0.1:3000');
-export default (window.location.protocol + "//" + window.location.hostname + ":3000");
+export default (window.location.protocol + "//" + window.location.hostname + ":" + (import.meta.env.PROD ? "5000" : "3000"));

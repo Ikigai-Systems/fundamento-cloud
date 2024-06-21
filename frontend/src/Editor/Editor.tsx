@@ -32,7 +32,7 @@ const Editor = ({user}: EditorProps) => {
     if (wsProvider) {
       wsProvider.destroy();
     }
-    wsProvider = new WebsocketProvider(`ws://${window.location.hostname}:1234`, `/documents/${documentId}`, doc)
+    wsProvider = new WebsocketProvider(`ws://${window.location.hostname}:1234`, `documents/${documentId}`, doc)
     wsProvider.on('status', (event: Event) => {
       console.log(event.status) // logs "connected" or "disconnected"
     });

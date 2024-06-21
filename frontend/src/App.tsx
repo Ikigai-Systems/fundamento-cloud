@@ -15,7 +15,7 @@ function App() {
   const urlParams = new URLSearchParams(window.location.search);
   const [user] = useState<User>({
     displayName: urlParams.get("displayName") || "unknown user",
-    color: '#' + (urlParams.get("color") || (Math.random()*0xFFFFFF<<0).toString(16)),
+    color: (urlParams.get("color")) ? "#" + urlParams.get("color") : `hsla(${~~(360 * Math.random())}, 72%,  78%)`,
   });
 
   useAsyncOnMountUnsafe(async () => {
