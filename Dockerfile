@@ -21,10 +21,8 @@ FROM base as build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config
-
-# Ikigai-specific: install foreman gem
-RUN gem install foreman
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config \
+    libpq-dev
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -54,7 +52,8 @@ FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips && \
+    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips \
+    libpq-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application
@@ -72,7 +71,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # Start the server by default, this can be overwritten at runtime
 
 # rails:
-EXPOSE 5000
+EXPOSE 3000
 
-#CMD ["./bin/rails", "server"]
-CMD foreman start -f Procfile.prod
+CMD ["./bin/rails", "server"]
