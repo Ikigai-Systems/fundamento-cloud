@@ -22,4 +22,7 @@ test:
 
 production:
   <<: *default
-  database: storage/production.sqlite3
+  adapter: postgresql
+  encoding: unicode
+  url: <%= ENV.fetch("DATABASE_URL", "postgres://postgres:password@db/postgres") %>
+  database: postgres

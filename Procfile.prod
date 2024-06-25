@@ -1,2 +1,1 @@
-web: RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production bin/rails server
-y-websocket-server: HOST=0.0.0.0 PORT=1234 npx y-websocket
+web: RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production bin/rails server --port 3000

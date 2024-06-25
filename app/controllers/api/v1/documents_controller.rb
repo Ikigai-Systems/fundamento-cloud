@@ -4,11 +4,11 @@ class Api::V1::DocumentsController < ApplicationController
   def index
     @documents = Document.all
 
-    render json: @documents
+    render json: @documents, :except => [:sync]
   end
 
   def show
-    render json: @document
+    render json: @document, :except => [:sync]
   end
 
   def create

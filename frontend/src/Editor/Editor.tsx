@@ -1,18 +1,18 @@
-import '@blocknote/mantine/style.css';
 import {useContext, useMemo} from "react";
-import {BlockNoteEditor} from "@blocknote/core";
-import {BlockNoteView} from "@blocknote/mantine";
-import * as Y from "yjs";
-import {WebsocketProvider} from "y-websocket";
+import axios from "axios";
 import {User} from "../types.ts";
 import {CurrentDocumentContext} from "../Contextes/CurrentDocumentContext.tsx";
-import axios from "axios";
+import {BlockNoteEditor} from "@blocknote/core";
+import {BlockNoteView} from "@blocknote/mantine";
+import '@blocknote/mantine/style.css';
+import * as Y from "yjs";
+import {WebsocketProvider} from "@y-rb/actioncable";
+import * as ActionCable from "@rails/actioncable";
+import {hostname} from "../base-url.tsx";
 
-let doc: Y.Doc | undefined = undefined;
-let wsProvider: WebsocketProvider | undefined = undefined;
-type Event = {
-  status: string
-}
+let ydoc: Y.Doc | undefined = undefined;
+let acConsumer: ActionCable.Consumer | undefined = undefined;
+let acProvider: WebsocketProvider | undefined = undefined;
 
 type EditorProps = {
   initialContent: string, // probably not needed
@@ -23,25 +23,37 @@ const Editor = ({user}: EditorProps) => {
   const {documentId} = useContext(CurrentDocumentContext);
 
   const editor = useMemo(() => {
-    console.log(documentId);
-    if (doc) {
-      doc.destroy();
+    if (ydoc) {
+      ydoc.destroy();
+      ydoc = undefined;
     }
-    doc = new Y.Doc();
+    if (acConsumer) {
+      acConsumer.disconnect();
+      acConsumer = undefined;
+    }
+    if (acProvider) {
+      acProvider.destroy();
+      acProvider = undefined;
+    }
 
-    if (wsProvider) {
-      wsProvider.destroy();
+    if (!documentId) {
+      return undefined;
     }
-    wsProvider = new WebsocketProvider(`ws://${window.location.hostname}:1234`, `documents/${documentId}`, doc)
-    wsProvider.on('status', (event: Event) => {
-      console.log(event.status) // logs "connected" or "disconnected"
-    });
+
+    ydoc = new Y.Doc();
+    acConsumer = ActionCable.createConsumer(`ws://${hostname}/cable`);
+    acProvider = new WebsocketProvider(
+      ydoc,
+      acConsumer,
+      "DocumentChannel",
+      {documentId: documentId.toString()},
+    );
 
     return BlockNoteEditor.create({
       // initialContent: JSON.parse(initialContent),
       collaboration: {
-        provider: wsProvider,
-        fragment: doc.getXmlFragment("document-store"),
+        provider: acProvider,
+        fragment: ydoc.getXmlFragment("document-store"),
         user: {
           name: user.displayName,
           color: user.color,
