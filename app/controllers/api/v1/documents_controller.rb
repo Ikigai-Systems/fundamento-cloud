@@ -2,7 +2,7 @@ class Api::V1::DocumentsController < ApplicationController
   before_action :set_document, only: %i[ show update destroy ]
 
   def index
-    @documents = Document.all
+    @documents = params[:id] ? Document.find(params[:id]) : Document.all
 
     render json: @documents, :except => [:sync]
   end

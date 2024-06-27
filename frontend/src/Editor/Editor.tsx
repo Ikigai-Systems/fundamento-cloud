@@ -1,7 +1,6 @@
-import {useContext, useMemo} from "react";
+import {useMemo} from "react";
 import axios from "axios";
 import {User} from "../types.ts";
-import {CurrentDocumentContext} from "../Contextes/CurrentDocumentContext.tsx";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
@@ -17,11 +16,10 @@ let acProvider: WebsocketProvider | undefined = undefined;
 type EditorProps = {
   initialContent: string, // probably not needed
   user: User,
+  documentId: number,
 }
 
-const Editor = ({user}: EditorProps) => {
-  const {documentId} = useContext(CurrentDocumentContext);
-
+const Editor = ({user, documentId}: EditorProps) => {
   const editor = useMemo(() => {
     if (ydoc) {
       ydoc.destroy();
