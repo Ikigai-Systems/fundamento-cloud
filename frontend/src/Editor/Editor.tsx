@@ -40,7 +40,7 @@ const Editor = ({user, documentId}: EditorProps) => {
 
     ydoc = new Y.Doc();
     const websocketBaseUrl = new URL(baseUrl);
-    websocketBaseUrl.protocol = websocketBaseUrl.protocol === "https" ? "wss" : "ws";
+    websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
     acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
     acProvider = new WebsocketProvider(
       ydoc,

@@ -46,6 +46,6 @@ class Api::V1::SpacesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def space_params
-      params.fetch(:space, {})
+      params.fetch(:space, {}).permit(hierarchy: [])
     end
 end
