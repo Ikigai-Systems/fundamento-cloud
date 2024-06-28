@@ -1,7 +1,7 @@
 import HeaderAndLeftSideBarLayout from "../../Layouts/HeaderAndLeftSideBarLayout.tsx";
 import axios from "axios";
 import {Document, Space} from "../../types.ts";
-import {Link, Outlet, Params, useLoaderData} from "react-router-dom";
+import {Link, Outlet, Params, useLoaderData, useParams} from "react-router-dom";
 import CenteredSpinnerCover from "../../Components/Spinners/CenteredSpinnerCover.tsx";
 
 export const spaceLoader = async ({params}: {params: Params<"spaceId">}) => {
@@ -18,6 +18,7 @@ export const spaceLoader = async ({params}: {params: Params<"spaceId">}) => {
 
 const SpaceRoute = (/*SpaceProps*/) => {
   const {space, documents} = useLoaderData() as {space: Space, documents: Document[]};
+  const {documentId: selectedDocumentId} = useParams();
 
   const leftSideBarContent = function() {
     if (documents === undefined) {
@@ -29,8 +30,7 @@ const SpaceRoute = (/*SpaceProps*/) => {
       {space.hierarchy.map((documentId: number) => {
         return <div
           key={documentId}
-          // className={`${document.id === documentId ? " bg-blue-1 hover:bg-blue-2 active:bg-blue-3" : "hover:bg-gray-1 active:bg-gray-2"} p-1 cursor-pointer`}
-          className={"flex-auto hover:bg-gray-1 active:bg-gray-2"}
+          className={`flex-auto ${documentId.toString() === selectedDocumentId ? " bg-blue-1 hover:bg-blue-2 active:bg-blue-3" : "hover:bg-gray-1 active:bg-gray-2"}`}
         >
           <Link to={{pathname: `documents/${documentId}`, search: window.location.search}}>
             <div className="text-left m-x-2 p-2">
