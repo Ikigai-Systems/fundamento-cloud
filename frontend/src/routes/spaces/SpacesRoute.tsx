@@ -2,6 +2,7 @@ import HeaderAndLeftSideBarLayout from "../../Layouts/HeaderAndLeftSideBarLayout
 import axios from "axios";
 import {Link, useLoaderData} from "react-router-dom";
 import {Space} from "../../types.ts";
+import {useState} from "react";
 
 // todo: extract to separate file:
 export const spacesLoader = async () => {
@@ -13,11 +14,13 @@ export const spacesLoader = async () => {
 // }
 
 const Spaces = (/*SpacesProps*/) => {
-  const {spaces} = useLoaderData() as {spaces: Space[]};
+  const loaderSpaces = (useLoaderData() as {spaces: Space[]}).spaces;
+  const [spaces, setSpaces] = useState(loaderSpaces);
+  const [isNewSpaceButtonLoading, setNewSpaceButtonLoading] = useState(false);
 
   return <HeaderAndLeftSideBarLayout
     leftSideBarContent={
-      <div className="p-4">
+      <div className="p-4 flex flex-col">
         {spaces.map((space: Space) => {
           return <div key={space.id}
             className="flex-auto hover:bg-gray-1 active:bg-gray-2"
@@ -29,6 +32,23 @@ const Spaces = (/*SpacesProps*/) => {
             </Link>
           </div>
         })}
+        <div className="m-t m-b border-solid border-b-1 border-0 border-b-gray-3"/>
+        <button title="Create new space" className="self-end hover:bg-gray-1 active:bg-gray-2" onClick={async () => {
+          try {
+            setNewSpaceButtonLoading(true);
+            const response = await axios.post("api/v1/spaces", {});
+            setSpaces((prevState: Space[]) => {
+              const newState = [...prevState, response.data];
+              return newState;
+            });
+          } finally {
+            setNewSpaceButtonLoading(false);
+          }
+        }}>
+          <span className={isNewSpaceButtonLoading ? "i-line-md-loading-loop" : "i-ic-baseline-plus"}>
+            Add
+          </span>
+        </button>
       </div>
     }
     topHeaderContent={<div>Spaces</div>}

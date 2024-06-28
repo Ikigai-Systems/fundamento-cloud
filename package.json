@@ -13,6 +13,7 @@
     "@blocknote/core": "^0.14.0",
     "@blocknote/mantine": "^0.14.0",
     "@blocknote/react": "^0.14.0",
+    "@iconify-json/ic": "^1.1.17",
     "@rails/actioncable": "^7.1.3-4",
     "@y-rb/actioncable": "^0.2.1",
     "axios": "^1.7.2",

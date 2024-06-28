@@ -27,7 +27,7 @@ const SpaceRoute = (/*SpaceProps*/) => {
 
     return <div className="p-4">
       <div className="m-x-4 p-b-4 font-bold">Documents</div>
-      {space.hierarchy.map((documentId: number) => {
+      {(space.hierarchy || []).map((documentId: number) => {
         return <div
           key={documentId}
           className={`flex-auto ${documentId.toString() === selectedDocumentId ? " bg-blue-1 hover:bg-blue-2 active:bg-blue-3" : "hover:bg-gray-1 active:bg-gray-2"}`}
