@@ -1,3 +1,5 @@
-export default (window.location.protocol + "//" + window.location.hostname + ":3000");
+import {getProjectEnvVariables} from "./utils/getProjectEnvVariables.ts";
 
-export const hostname = window.location.hostname + ":3000";
+const {envVariables} = getProjectEnvVariables();
+
+export default envVariables.APP_API_BASE_URL || (import.meta.env.PROD ? window.location.origin : window.location.protocol + "//" + window.location.hostname + ":3000");

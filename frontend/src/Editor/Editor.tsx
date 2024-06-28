@@ -7,7 +7,7 @@ import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import {hostname} from "../base-url.tsx";
+import baseUrl from "../base-url.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -39,7 +39,9 @@ const Editor = ({user, documentId}: EditorProps) => {
     }
 
     ydoc = new Y.Doc();
-    acConsumer = ActionCable.createConsumer(`ws://${hostname}/cable`);
+    const websocketBaseUrl = new URL(baseUrl);
+    websocketBaseUrl.protocol = websocketBaseUrl.protocol === "https" ? "wss" : "ws";
+    acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
     acProvider = new WebsocketProvider(
       ydoc,
       acConsumer,

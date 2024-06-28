@@ -15,7 +15,6 @@ export const documentLoader = async ({params}: {params: Params<"documentId">}) =
 
 const DocumentRoute = (/*DocumentProps*/) => {
   const {document} = useLoaderData() as {document: Document};
-  console.log("DOCUMENT", document);
 
   const urlParams = new URLSearchParams(window.location.search);
   const [user] = useState<User>({
