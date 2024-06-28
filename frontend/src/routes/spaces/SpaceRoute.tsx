@@ -26,18 +26,15 @@ const SpaceRoute = (/*SpaceProps*/) => {
 
     return <div className="p-4">
       <div className="m-x-4 p-b-4 font-bold">Documents</div>
-      {documents.map((document: Document) => {
+      {space.hierarchy.map((documentId: number) => {
         return <div
-          key={document.id}
+          key={documentId}
           // className={`${document.id === documentId ? " bg-blue-1 hover:bg-blue-2 active:bg-blue-3" : "hover:bg-gray-1 active:bg-gray-2"} p-1 cursor-pointer`}
           className={"flex-auto hover:bg-gray-1 active:bg-gray-2"}
-          onClick={() => {
-            // setDocumentId(document.id);
-          }}
         >
-          <Link to={{pathname: `documents/${document.id}`, search: window.location.search}}>
+          <Link to={{pathname: `documents/${documentId}`, search: window.location.search}}>
             <div className="text-left m-x-2 p-2">
-              {document.id}
+              {documentId}
             </div>
           </Link>
         </div>
