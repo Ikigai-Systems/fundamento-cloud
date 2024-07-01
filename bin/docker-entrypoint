@@ -1,9 +1,13 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-# Ikigai-specific: commented out while we use foreman to start all the services
-#if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
-#fi
+fi
+
+# substitute environment variables in the frontend files
+projectEnvVariables=$(ls -t ./public/assets/projectEnvVariables*.js | head -n1)
+envsubst < "$projectEnvVariables" > ./tmp/projectEnvVariables_temp
+cp ./tmp/projectEnvVariables_temp "$projectEnvVariables"
+rm ./tmp/projectEnvVariables_temp
 
 exec "${@}"

@@ -1,18 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import {RouterProvider} from "react-router-dom";
 import './index.css'
 import 'virtual:uno.css'
-import axios from 'axios'
-import App from './App.tsx'
-import baseUrl from "./base-url.tsx";
-import {withCurrentDocumentContext} from "./Contextes/CurrentDocumentContext.tsx";
-
-axios.defaults.baseURL = baseUrl + "/api/v1";
-
-const WrappedApp = withCurrentDocumentContext(App);
+import router from "./router.tsx";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <WrappedApp/>
+    <RouterProvider router={router}/>
   </React.StrictMode>
 )

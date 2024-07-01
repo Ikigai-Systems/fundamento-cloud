@@ -1,14 +1,13 @@
-import {useContext, useMemo} from "react";
+import {useMemo} from "react";
 import axios from "axios";
 import {User} from "../types.ts";
-import {CurrentDocumentContext} from "../Contextes/CurrentDocumentContext.tsx";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import {hostname} from "../base-url.tsx";
+import baseUrl from "../base-url.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -17,11 +16,10 @@ let acProvider: WebsocketProvider | undefined = undefined;
 type EditorProps = {
   initialContent: string, // probably not needed
   user: User,
+  documentId: number,
 }
 
-const Editor = ({user}: EditorProps) => {
-  const {documentId} = useContext(CurrentDocumentContext);
-
+const Editor = ({user, documentId}: EditorProps) => {
   const editor = useMemo(() => {
     if (ydoc) {
       ydoc.destroy();
@@ -41,7 +39,9 @@ const Editor = ({user}: EditorProps) => {
     }
 
     ydoc = new Y.Doc();
-    acConsumer = ActionCable.createConsumer(`ws://${hostname}/cable`);
+    const websocketBaseUrl = new URL(baseUrl);
+    websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
+    acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
     acProvider = new WebsocketProvider(
       ydoc,
       acConsumer,

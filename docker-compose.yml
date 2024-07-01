@@ -6,15 +6,19 @@ services:
       - POSTGRES_PASSWORD=password
 #    volumes:
 #      - postgres:/var/lib/postgresql/data
+  redis:
+    image: redis
 
   rails:
     build: ./
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - APP_API_BASE_URL=${APP_API_BASE_URL}
     ports:
       - '3000:3000'
     depends_on:
       - db
+      - redis
 
 volumes:
   postgres:
