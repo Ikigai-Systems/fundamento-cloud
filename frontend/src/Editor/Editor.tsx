@@ -72,6 +72,7 @@ const Editor = ({user, documentId}: EditorProps) => {
         <i>debug only: Document id: {documentId}</i>
       </label>
       <button
+        style={{display: "none"}}
         className="bg-blue-5 hover:bg-blue-6 active:bg-blue-7 c-white"
         onClick={async () => {
           await axios.put(`/documents/${documentId}`, {
