@@ -58,7 +58,19 @@ const Editor = ({user, documentId}: EditorProps) => {
           name: user.displayName,
           color: user.color,
         }
-      }
+      },
+      uploadFile: async (file) => {
+        const body = new FormData();
+        body.append("file", file);
+
+        const response = await axios.post("/api/v1/attachments", body, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+
+        return response.data.location;
+      },
     });
   }, [documentId]);
 

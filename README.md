@@ -2,12 +2,13 @@ Running
 ===
 
 ```
-foreman start
+bin/dev
 ```
+This is equivalent to `foreman start -f Procfile.dev` run manually.
 
-This should run two processes:
-* rails on port `3000`
-* vite devserver on port `5173`
+It should spawn two processes:
+* rails app listening on port `3000`
+* vite devserver listening on port `5173`
 
 Access application via `http://localhost:5173`
 
