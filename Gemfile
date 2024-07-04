@@ -56,3 +56,5 @@ gem "rails-static-router"
 
 gem "y-rb"
 gem "y-rb_actioncable"
+
+gem "devise", "~> 4.9"
