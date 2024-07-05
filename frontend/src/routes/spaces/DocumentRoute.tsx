@@ -23,15 +23,36 @@ const DocumentRoute = (/*DocumentProps*/) => {
   });
 
   if (document === undefined) {
-    console.log("document === undefined")
     return <div>Loading...</div>
   }
 
-  return <Editor
-    initialContent={document.content}
-    user={user}
-    documentId={document.id}
-  />
+  return <>
+    <input key={document.id + "_title"} type="text"
+      placeholder="Untitled"
+      defaultValue={document.title}
+      className="p-0 h-13 b-none active:b-none w-full resize-none text-5xl"
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          if (e.target instanceof HTMLElement) {
+            e.target.blur();
+          }
+        }
+      }}
+      onBlur={async (e) => {
+        const response = await axios.patch(`api/v1/documents/${document.id}`, {document: {
+          title: e.target.value
+        }});
+
+        console.log(e.target.value);
+      }}
+    >
+    </input>
+    <Editor
+      initialContent={document.content}
+      user={user}
+      documentId={document.id}
+    />
+  </>
 }
 
 export default DocumentRoute;

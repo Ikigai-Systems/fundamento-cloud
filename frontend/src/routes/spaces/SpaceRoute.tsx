@@ -2,7 +2,6 @@ import HeaderAndLeftSideBarLayout from "../../Layouts/HeaderAndLeftSideBarLayout
 import axios from "axios";
 import {Document, Space} from "../../types.ts";
 import {Link, Outlet, Params, useLoaderData, useParams} from "react-router-dom";
-import CenteredSpinnerCover from "../../Components/Spinners/CenteredSpinnerCover.tsx";
 import {useState} from "react";
 
 export const spaceLoader = async ({params}: {params: Params<"spaceId">}) => {
@@ -20,15 +19,16 @@ export const spaceLoader = async ({params}: {params: Params<"spaceId">}) => {
 const SpaceRoute = (/*SpaceProps*/) => {
   const loaderData = useLoaderData() as {space: Space, documents: Document[]};
   const [documents, setDocuments] = useState(loaderData.documents);
+  const documentsById = documents.reduce((acc, item) => {
+    acc.set(item.id, item);
+    return acc;
+  }, new Map<number, Document>());
+
   const [space, setSpace] = useState(loaderData.space);
   const {documentId: selectedDocumentId} = useParams();
   const [isNewDocumentButtonLoading, setNewDocumentButtonLoading] = useState(false);
 
   const leftSideBarContent = function() {
-    if (documents === undefined) {
-      return <CenteredSpinnerCover/>
-    }
-
     const hierarchy = space.hierarchy || [];
 
     return <div className="p-4 flex flex-col">
@@ -40,7 +40,7 @@ const SpaceRoute = (/*SpaceProps*/) => {
         >
           <Link replace to={{pathname: `documents/${documentId}`, search: window.location.search}}>
             <div className="text-left m-x-2 p-2">
-              {documentId}
+              {documentsById.get(documentId)?.title || "Untitled"}
             </div>
           </Link>
         </div>

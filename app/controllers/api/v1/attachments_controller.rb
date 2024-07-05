@@ -1,4 +1,4 @@
-class Api::V1::AttachmentsController < ApplicationController
+class Api::V1::AttachmentsController < Api::ApplicationApiController
   def show
     @attachment = Attachment.find(params[:id])
 

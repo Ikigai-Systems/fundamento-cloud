@@ -1,4 +1,4 @@
-class Api::V1::SpacesController < ApplicationController
+class Api::V1::SpacesController < Api::ApplicationApiController
   before_action :set_space, only: %i[ show update destroy ]
 
   # GET /spaces

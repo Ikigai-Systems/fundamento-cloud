@@ -1,4 +1,4 @@
-class Api::V1::DocumentsController < ApplicationController
+class Api::V1::DocumentsController < Api::ApplicationApiController
   before_action :set_document, only: %i[ show update destroy ]
 
   def index
@@ -23,7 +23,7 @@ class Api::V1::DocumentsController < ApplicationController
 
   def update
     if @document.update(post_params)
-      render json: @document
+      render json: @document, :except => [:sync]
     else
       render json: @document.errors, status: :unprocessable_entity
     end
@@ -39,6 +39,6 @@ class Api::V1::DocumentsController < ApplicationController
     end
 
     def post_params
-      params.fetch(:document, {}).permit(:content)
+      params.fetch(:document, {}).permit(:content, :title)
     end
 end
