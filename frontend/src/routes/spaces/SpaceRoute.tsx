@@ -3,28 +3,31 @@ import axios from "axios";
 import {Document, Space} from "../../types.ts";
 import {Link, Outlet, Params, useLoaderData, useParams} from "react-router-dom";
 import {useState} from "react";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 
 export const spaceLoader = async ({params}: {params: Params<"spaceId">}) => {
   //todo: reuse already fetched space (i.e. from '/spaces' route) if possible
   const space = (await axios.get(`/api/v1/spaces/${params.spaceId}`)).data as Space;
-  const documents = (await axios.get('/api/v1/documents', {params: {
-    id: space.hierarchy,
-  }})).data as Document[];
-  return {space, documents};
+  return {space};
 };
-
-// type SpaceProps = {
-// }
 
 const SpaceRoute = (/*SpaceProps*/) => {
   const loaderData = useLoaderData() as {space: Space, documents: Document[]};
-  const [documents, setDocuments] = useState(loaderData.documents);
-  const documentsById = documents.reduce((acc, item) => {
+  const [space, setSpace] = useState(loaderData.space);
+  const queryClient = useQueryClient();
+  const documentsQuery = useQuery({queryKey: ["documents"], queryFn: async () => {
+    return (await axios.get('/api/v1/documents', {
+      params: {
+        id: space.hierarchy
+      }
+    })).data as Document[];
+  }});
+
+  const documentsById = documentsQuery.data?.reduce((acc, item) => {
     acc.set(item.id, item);
     return acc;
   }, new Map<number, Document>());
 
-  const [space, setSpace] = useState(loaderData.space);
   const {documentId: selectedDocumentId} = useParams();
   const [isNewDocumentButtonLoading, setNewDocumentButtonLoading] = useState(false);
 
@@ -40,7 +43,7 @@ const SpaceRoute = (/*SpaceProps*/) => {
         >
           <Link replace to={{pathname: `documents/${documentId}`, search: window.location.search}}>
             <div className="text-left m-x-2 p-2">
-              {documentsById.get(documentId)?.title || "Untitled"}
+              {documentsById?.get(documentId)?.title || "Untitled"}
             </div>
           </Link>
         </div>
@@ -51,9 +54,8 @@ const SpaceRoute = (/*SpaceProps*/) => {
           setNewDocumentButtonLoading(true);
           const documentResponse= await axios.post("api/v1/documents", {});
           const newDocument = documentResponse.data;
-          setDocuments(prevState => {
-            return [...prevState, newDocument];
-          });
+          await queryClient.invalidateQueries({queryKey: ['documents'], exact: true});
+
           await axios.patch(`api/v1/spaces/${space.id}`, {space: {hierarchy: [...hierarchy, newDocument.id]}});
           setSpace(prevState => {
             return {

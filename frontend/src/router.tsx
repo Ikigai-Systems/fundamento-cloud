@@ -4,7 +4,7 @@ import SpaceRoute, {spaceLoader} from "./routes/spaces/SpaceRoute.tsx";
 import SpacesRoute, {spacesLoader} from "./routes/spaces/SpacesRoute.tsx";
 import axios from "axios";
 import baseUrl from "./base-url.tsx";
-import DocumentRoute, {documentLoader} from "./routes/spaces/DocumentRoute.tsx";
+import DocumentRoute from "./routes/spaces/DocumentRoute.tsx";
 
 axios.defaults.baseURL = baseUrl;
 
@@ -23,7 +23,6 @@ const router = createBrowserRouter([{
   children: [{
     path: "documents/:documentId",
     element: <DocumentRoute/>,
-    loader: documentLoader,
   }]
 }]);
 
