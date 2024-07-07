@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_04_131626) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_07_181452) do
   create_table "documents", force: :cascade do |t|
     t.json "content"
     t.datetime "created_at", null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_04_131626) do
     t.integer "organization_role", limit: 2, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "first_name", null: false
+    t.text "last_name", null: false
     t.index ["email"], name: "index_organization_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_organization_users_on_reset_password_token", unique: true
   end
