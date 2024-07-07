@@ -18,6 +18,10 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace :admin do
+    resources :users
+  end
+
   if ENV["RAILS_SERVE_STATIC_FILES"].present?
     get "*path", to: "static#index", constraints: ->(req) { !req.xhr? && req.format.html? }
   end
