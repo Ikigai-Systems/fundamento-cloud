@@ -69,15 +69,26 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get install --no-install-recommends -y libvips gettext
 
+# Run and own only the runtime files as a non-root user for security
+RUN useradd rails --create-home --shell /bin/bash
+
 # Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+COPY --from=build /rails/config.ru /rails/Rakefile ./
+COPY --from=build /rails/public ./public
+COPY --from=build /rails/lib ./lib
+COPY --from=build /rails/bin ./bin
+COPY --from=build /rails/db ./db
+COPY --from=build /rails/config ./config
+COPY --from=build /rails/Gemfile* ./
+COPY --from=build /rails/app ./app
+COPY --from=build /rails/vendor ./vendor
+
+COPY --from=build --chown=rails:rails /rails/log /rails/log
+COPY --from=build --chown=rails:rails /rails/storage /rails/storage
+COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
 
 # Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp && \
-# ikigai-specific modification:
-    chown -R rails:rails public/assets/projectEnvVariables*.js
+RUN chown -R rails:rails public/assets/projectEnvVariables*.js
 
 USER rails:rails
 
