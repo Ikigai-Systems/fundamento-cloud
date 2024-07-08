@@ -1,0 +1,26 @@
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+.clearfix {
+    clear: both;
+}
+
+body {
+    background: white;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+
+::placeholder,
+::-ms-input-placeholder {
+    color: #8e8e8e;
+}
+
+input:focus {
+    outline: none;
+}

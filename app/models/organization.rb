@@ -1,3 +1,3 @@
 class Organization < ApplicationRecord
-  has_many :OrganizationUser, as: :users
+  has_many :User, as: :users
 end
