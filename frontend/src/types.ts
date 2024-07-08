@@ -1,6 +1,7 @@
 export type Document = {
   id: number,
   content: string,
+  title: string,
 }
 
 export type Space = {
