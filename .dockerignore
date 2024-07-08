@@ -19,6 +19,10 @@
 # Ignore npm modules as they will be installed (cleanly)
 /node_modules/
 
+# Ignore any assets
+/public/*
+!/public/.keep
+
 # Ignore any tests files (as we're not running tests in docker)
 /test/
 /spec/
