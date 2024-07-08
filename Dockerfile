@@ -22,13 +22,22 @@ FROM base as build
 # Install packages needed to build gems
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libvips pkg-config \
-    libpq-dev
+    libpq-dev curl
+
+# Ikigai-specific: build frontend
+## Install node
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -yq nodejs
+RUN npm install -g npm@latest
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
+
+COPY package.json package-lock.json ./
+RUN npm ci && npm cache clean --force
 
 # Copy application code
 COPY . .
@@ -39,15 +48,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile
 
-# Ikigai-specific: build frontend
-## Install node
-RUN apt-get install -yq curl
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -yq nodejs
-RUN npm install -g npm@latest
-
 ## Build frontend
-RUN npm install
 RUN npm run build
 
 # Final stage for app image
@@ -68,6 +69,7 @@ RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp && \
 # ikigai-specific modification:
     chown -R rails:rails public/assets/projectEnvVariables*.js
+
 USER rails:rails
 
 # Entrypoint prepares the database.
