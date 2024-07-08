@@ -37,7 +37,7 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Ikigai-specific: precompile assets
-RUN SECRET_KEY_BASE=`bin/rake secret` bin/rake assets:precompile
+RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile
 
 # Ikigai-specific: build frontend
 ## Install node
