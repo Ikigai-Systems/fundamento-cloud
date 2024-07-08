@@ -16,7 +16,7 @@ WORKDIR /rails
 # Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_PATH="/rails/vendor/bundle" \
     BUNDLE_WITHOUT="development"
 
 # Ikigai-specific production environment
@@ -34,7 +34,13 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+
+# Improving bundle install performance based on the followin article -
+# https://release.com/blog/cache-bundle-install-with-buildkit
+RUN --mount=type=cache,sharing=locked,target=/var/cache/bundle \
+    BUNDLE_PATH=/var/cache/bundle bundle install && \
+    mkdir -p "${BUNDLE_PATH}" && \
+    cp -ar /var/cache/bundle/* "${BUNDLE_PATH}" && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
