@@ -36,6 +36,10 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Ikigai-specific: build tailwindcss-backed frontend
+ARG SECRET_KEY_BASE
+RUN bin/rails tailwindcss:build
+
 # Ikigai-specific: build frontend
 ## Install node
 RUN apt-get install -yq curl

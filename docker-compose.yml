@@ -10,7 +10,10 @@ services:
     image: redis
 
   rails:
-    build: ./
+    build:
+      context: ./
+      args:
+        - SECRET_KEY_BASE=${SECRET_KEY_BASE}
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
       - APP_API_BASE_URL=${APP_API_BASE_URL}
