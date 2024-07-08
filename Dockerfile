@@ -4,6 +4,12 @@
 ARG RUBY_VERSION=3.3.2
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y libpq-dev curl
+
 # Rails app lives here
 WORKDIR /rails
 
@@ -20,15 +26,11 @@ ENV RAILS_SERVE_STATIC_FILES="true"
 FROM base AS build
 
 # Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config \
-    libpq-dev curl
-
-# Ikigai-specific: build frontend
-## Install node
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install -yq nodejs
-RUN npm install -g npm@latest
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config nodejs && \
+    npm install -g npm@latest
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -57,10 +59,9 @@ RUN npm run build
 FROM base
 
 # Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libsqlite3-0 libvips \
-    libpq-dev gettext && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    apt-get install --no-install-recommends -y libvips gettext
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
