@@ -37,7 +37,8 @@ RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 COPY package.json package-lock.json ./
-RUN npm ci && npm cache clean --force
+RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
+    npm ci --cache /var/cache/npm
 
 # Copy application code
 COPY . .
