@@ -2,6 +2,8 @@
 
 # Ignore git directory.
 /.git/
+/.github/
+/.gitignore
 
 # Ignore bundler config.
 /.bundle
@@ -13,6 +15,13 @@
 # Ignore all default key files.
 /config/master.key
 /config/credentials/*.key
+
+# Ignore npm modules as they will be installed (cleanly)
+/node_modules/
+
+# Ignore any tests files (as we're not running tests in docker)
+/test/
+/spec/
 
 # Ignore all logfiles and tempfiles.
 /log/*
