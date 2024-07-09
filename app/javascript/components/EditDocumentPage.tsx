@@ -1,6 +1,5 @@
 import React, {useState} from "react"
-import {User, Document} from "../../../frontend/src/types";
-import Editor from "./Editor";
+import {Document, User} from "../../../frontend/src/types";
 
 type EditDocumentPageProps = {
   document: Document
@@ -14,11 +13,7 @@ const EditDocumentPage = ({document}: EditDocumentPageProps) => {
   });
 
   return <>
-    <Editor
-      initialContent={document.content}
-      user={user}
-      documentId={document.id}
-    />
+    <div>Document.id: {document.id}, user: {user.displayName}</div>
   </>
 }
 
