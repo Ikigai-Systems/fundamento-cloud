@@ -57,6 +57,8 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
+# Ikigai-specific: build rails-vite assets:
+RUN bin/vite build
 
 ## Build frontend
 RUN npm run build
