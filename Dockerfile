@@ -20,7 +20,7 @@ ENV RAILS_ENV="production" \
     BUNDLE_WITHOUT="development"
 
 # Ikigai-specific production environment
-#ENV RAILS_SERVE_STATIC_FILES="true"
+ENV RAILS_SERVE_STATIC_FILES="true"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
