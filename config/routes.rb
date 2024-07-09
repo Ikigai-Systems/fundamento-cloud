@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "root#index"
 
+  resources :documents, only: [:edit, :update]
+
   namespace :api do
     namespace :v1 do
       resources :documents
