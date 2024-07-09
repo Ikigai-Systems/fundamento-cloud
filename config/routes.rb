@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     resources :users
   end
 
-  if ENV["RAILS_SERVE_STATIC_FILES"].present?
+  if ENV["RAILS_SERVE_STATIC_FILES"] == "true"
     get "*path", to: "static#index", constraints: ->(req) { !req.xhr? && req.format.html? }
   end
 end
