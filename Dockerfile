@@ -54,14 +54,12 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+## Build frontend
+RUN npm run build
+
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
-# Ikigai-specific: build rails-vite assets:
-RUN bin/vite build
-
-## Build frontend
-RUN npm run build
 
 # Final stage for app image
 FROM base
