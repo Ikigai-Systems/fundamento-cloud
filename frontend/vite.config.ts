@@ -40,7 +40,7 @@ export default defineConfig(({command, mode}) => {
     server: {
       proxy: {
         '/admin/users': 'http://localhost:3000',
-        '/users': 'http://localhost:3000',
+        '/users.*': 'http://localhost:3000',
         '^/assets/.*': 'http://localhost:3000',
       },
     },
