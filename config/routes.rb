@@ -24,6 +24,6 @@ Rails.application.routes.draw do
   end
 
   if ENV["RAILS_SERVE_STATIC_FILES"] == "true"
-    get "*path", to: "static#index", constraints: ->(req) { !req.xhr? && req.format.html? }
+    get "/spaces/*path", to: "static#index", constraints: ->(req) { !req.xhr? && req.format.html? }
   end
 end
