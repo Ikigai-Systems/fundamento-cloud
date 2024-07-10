@@ -83,6 +83,8 @@ COPY --from=build /rails/Gemfile* ./
 COPY --from=build /rails/app ./app
 COPY --from=build /rails/vendor ./vendor
 
+# Use COPY --chown instead of chown as the latter is very slow (took 100s on my machine)
+# see https://github.com/docker/for-linux/issues/388
 COPY --from=build --chown=rails:rails /rails/log /rails/log
 COPY --from=build --chown=rails:rails /rails/storage /rails/storage
 COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
