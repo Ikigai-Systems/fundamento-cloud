@@ -1,5 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "pawel@ikigai.systems"
+  default from: "no-reply@outgoing.ikigai.systems",
+          reply_to: "pawel@ikigai.systems"
 
   layout "mailer"
 end
