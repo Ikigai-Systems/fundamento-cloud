@@ -1,0 +1,9 @@
+<%= vite_typescript_tag 'document.tsx' %>
+
+<%= content_tag :div,
+    id: "document",
+    data: @document.to_json(:except => ['sync'])  do %>
+<% end %>
+
+<div id="root">
+</div>
