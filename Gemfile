@@ -72,6 +72,7 @@ gem "y-rb"
 gem "y-rb_actioncable"
 
 gem "devise", "~> 4.9"
+gem "devise_invitable"
 
 gem "tailwindcss-rails", "~> 2.6"
 
