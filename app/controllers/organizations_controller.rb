@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class OrganizationsController < ApplicationController
+  skip_before_action :ensure_organization_exists, only: [:new, :create]
 
   def new
     @organization = Organization.new
@@ -11,7 +12,7 @@ class OrganizationsController < ApplicationController
   end
 
   def create
-    @organization = Organization.new(organization_params)
+    @organization = current_user.organizations.new(organization_params)
 
     if @organization.save
       redirect_to @organization, notice: 'Organization was successfully created.'
