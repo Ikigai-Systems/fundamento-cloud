@@ -35,4 +35,8 @@ class User < ApplicationRecord
     broadcast_replace_to("online_users")
     broadcast_replace_to("admin_users_list", partial: "admin/users/user")
   end
+
+  def organizations
+    Organization.all
+  end
 end
