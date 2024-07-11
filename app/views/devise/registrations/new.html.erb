@@ -5,6 +5,11 @@
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <div class="my-5">
+      <%= f.label :email %>
+      <%= f.email_field :email, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full"  %>
+    </div>
+
+    <div class="my-5">
       <%= f.label :first_name %>
       <%= f.text_field :first_name, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full"  %>
     </div>
@@ -12,11 +17,6 @@
     <div class="my-5">
       <%= f.label :last_name %>
       <%= f.text_field :last_name, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full"  %>
-    </div>
-
-    <div class="my-5">
-      <%= f.label :email %>
-      <%= f.email_field :email, class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full"  %>
     </div>
 
     <div class="my-5">
@@ -30,7 +30,7 @@
     </div>
 
     <div class="flex justify-end mt-6">
-      <%= f.submit "Sign up", class: "px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"  %>
+      <%= f.submit "Sign up", class: "px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600" %>
     </div>
   <% end %>
 
