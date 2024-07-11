@@ -28,6 +28,9 @@ tmp
 /app/assets/builds/*
 !/app/assets/builds/.keep
 
+/storage/*.sqlite*
+!/storage/.keep
+
 # Vite Ruby
 /public/vite*
 node_modules
