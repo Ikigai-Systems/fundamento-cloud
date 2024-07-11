@@ -5,6 +5,9 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable
 
+  has_many :organizations_users, class_name: :OrganizationUser
+  has_many :organizations, through: :organizations_users
+
   validates_presence_of :first_name
   validates_presence_of :last_name
 
@@ -33,9 +36,5 @@ class User < ApplicationRecord
 
     broadcast_replace_to("online_users")
     broadcast_replace_to("admin_users_list", partial: "admin/users/user")
-  end
-
-  def organizations
-    Organization.all
   end
 end

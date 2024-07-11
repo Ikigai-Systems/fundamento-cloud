@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_11_182444) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_11_182842) do
   create_table "attachments", force: :cascade do |t|
     t.string "filename"
     t.string "mime_type"
@@ -31,6 +31,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_11_182444) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "organizations_users", id: false, force: :cascade do |t|
+    t.integer "organization_id", null: false
+    t.integer "user_id", null: false
+    t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id"
+    t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id"
   end
 
   create_table "spaces", force: :cascade do |t|
