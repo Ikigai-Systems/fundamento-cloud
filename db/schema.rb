@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_11_182842) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_12_140426) do
   create_table "attachments", force: :cascade do |t|
     t.string "filename"
     t.string "mime_type"
@@ -60,8 +60,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_11_182842) do
     t.integer "organization_role", limit: 2, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "first_name", null: false
-    t.text "last_name", null: false
+    t.text "first_name"
+    t.text "last_name"
     t.string "invitation_token"
     t.datetime "invitation_created_at"
     t.datetime "invitation_sent_at"
