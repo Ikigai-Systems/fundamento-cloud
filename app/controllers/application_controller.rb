@@ -26,6 +26,8 @@ class ApplicationController < ActionController::Base
   def load_current_organization_from_cookie
     return if cookies.encrypted[:organization_id].nil?
 
+    return if current_user.nil?
+
     CurrentOrganization.current_organization =
       current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
   end
