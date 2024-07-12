@@ -17,7 +17,11 @@ Rails.application.routes.draw do
 
   resources :documents, only: [:edit, :update]
 
-  resources :organizations
+  resources :organizations do
+    member do
+      post :select
+    end
+  end
 
   namespace :api do
     namespace :v1 do

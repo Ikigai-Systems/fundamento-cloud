@@ -35,6 +35,14 @@ class OrganizationsController < ApplicationController
     render :new
   end
 
+  def select
+    @organization = current_user.organizations.find_by_id(params[:id])
+
+    cookies.encrypted[:organization_id] = @organization.id
+
+    redirect_to root_path, notice: "You've been switched to #{@organization.name}."
+  end
+
   private
 
   def organization_params

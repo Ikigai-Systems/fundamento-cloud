@@ -11,6 +11,8 @@
     </div>
   </th>
   <td class="px-6 py-4">
-    <a href="<%= organization_path(organization) %>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Show</a>
+    <%= button_to "Switch to", select_organization_path(organization), method: :post, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+
+    <%= button_to "Show", organization_path(organization), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
   </td>
 </tr>
