@@ -8,7 +8,7 @@ class OrganizationsController < ApplicationController
   end
 
   def index
-    @organizations = current_user.organizations
+    @organizations = current_user.organizations.order(:name)
   end
 
   def create
