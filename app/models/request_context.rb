@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class CurrentOrganization < ActiveSupport::CurrentAttributes
+class RequestContext < ActiveSupport::CurrentAttributes
   attribute :current_organization
 end

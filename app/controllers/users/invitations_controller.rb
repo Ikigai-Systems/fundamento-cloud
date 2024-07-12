@@ -8,7 +8,7 @@ class Users::InvitationsController < Devise::InvitationsController
   def invite_resource
     # skip sending emails on invite
     super do |user|
-      user.organizations = [CurrentOrganization.current_organization]
+      user.organizations = [RequestContext.current_organization]
     end
   end
 

@@ -33,7 +33,7 @@
   <div class="container flex flex-wrap justify-between items-center mx-auto">
     <%= link_to root_path, class: "flex items-center" do %>
       <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-        <%= CurrentOrganization.current_organization&.name || "Wiki" %>
+        <%= RequestContext.current_organization&.name || "Wiki" %>
       </span>
     <% end %>
 

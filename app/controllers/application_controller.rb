@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
 
     return if current_user.nil?
 
-    CurrentOrganization.current_organization =
+    RequestContext.current_organization =
       current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
   end
 end
