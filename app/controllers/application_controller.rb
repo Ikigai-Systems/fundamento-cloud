@@ -3,6 +3,9 @@ class ApplicationController < ActionController::Base
   before_action :select_current_organization
   before_action :load_current_organization_from_cookie
 
+  # Suggested in https://github.com/rails/importmap-rails?tab=readme-ov-file#include-a-digest-of-the-import-map-in-your-etag
+  etag { Rails.application.importmap.digest(resolver: helpers) if request.format&.html? }
+
   protected
 
   def ensure_organization_exists
