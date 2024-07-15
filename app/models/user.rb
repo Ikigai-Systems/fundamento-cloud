@@ -19,6 +19,10 @@ class User < ApplicationRecord
     Rails.cache.fetch("#{cache_key}/online", false)
   end
 
+  def initials
+    first_name.first(1) + last_name.first(1)
+  end
+
   def last_online_at
     Rails.cache.fetch("#{cache_key}/last_online_at", nil)
   end
