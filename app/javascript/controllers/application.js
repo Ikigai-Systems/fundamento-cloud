@@ -15,7 +15,7 @@ application.register('tabs', Tabs)
 application.register('toggle', Toggle)
 
 // Configure Stimulus development experience
-application.debug = false
+application.debug = true
 window.Stimulus   = application
 
 export { application }
