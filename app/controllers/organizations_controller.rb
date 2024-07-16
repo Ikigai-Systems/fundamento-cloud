@@ -27,11 +27,11 @@ class OrganizationsController < ApplicationController
   end
 
   def show
-    @organization = current_user.organizations.find_by_id(params[:id])
+    @organization = current_user.organizations.find_by_id!(params[:id])
   end
 
   def edit
-    @organization = current_user.organizations.find_by_id(params[:id])
+    @organization = current_user.organizations.find_by_id!(params[:id])
 
     render :new
   end
