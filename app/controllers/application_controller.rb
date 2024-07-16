@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  before_action :authenticate_user!
+
   before_action :ensure_organization_exists
   before_action :select_current_organization
   before_action :load_current_organization_from_cookie
