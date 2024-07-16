@@ -1,0 +1,21 @@
+<div
+  data-controller="dropdown"
+  data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.up->dropdown#previousItem keydown.down->dropdown#nextItem keydown.esc->dropdown#hide"
+  class="inline-block relative">
+
+  <button data-action="dropdown#toggle:stop" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+      <%= current_user.initials %>
+  </button>
+
+  <div data-dropdown-target="menu" class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max">
+    <div class="text-sm bg-white shadow-lg rounded border overflow-hidden w-32">
+      <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+
+      <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+
+      <hr class="border-t" />
+
+      <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}, class: "no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100 w-full text-left"  %>
+    </div>
+  </div>
+</div>
