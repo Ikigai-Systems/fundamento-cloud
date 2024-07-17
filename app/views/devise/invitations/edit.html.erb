@@ -7,12 +7,12 @@
     <%= f.hidden_field :invitation_token, readonly: true %>
 
     <% if f.object.class.require_password_on_accepting %>
-      <div class="my-5">
+      <div class="form-field">
         <%= f.label :password %><br />
         <%= f.password_field :password, class: "form-input" %>
       </div>
 
-      <div class="my-5">
+      <div class="form-field">
         <%= f.label :password_confirmation %><br />
         <%= f.password_field :password_confirmation, class: "form-input" %>
       </div>

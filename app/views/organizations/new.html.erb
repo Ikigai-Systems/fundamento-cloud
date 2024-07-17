@@ -4,7 +4,7 @@
   <%= form_for(@organization, url: organizations_path, html: { method: :post }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @organization %>
 
-    <div class="my-5">
+    <div class="form-field">
       <%= f.label :name %><br />
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
