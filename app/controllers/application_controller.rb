@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
 
   def ensure_space_exists
     if current_user.present? && current_organization.present? && current_organization.spaces.empty?
-      current_organization.spaces.create!
+      current_organization.spaces.create!(name: "Default")
     end
   end
 
