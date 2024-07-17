@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import {User, Document} from "../../../frontend/src/types";
+import {Document, User} from "../../../frontend/src/types";
 import Editor from "./Editor";
 
 type EditDocumentPageProps = {
@@ -14,6 +14,20 @@ const EditDocumentPage = ({document}: EditDocumentPageProps) => {
   });
 
   return <>
+    <input key={document.id + "_title"} type="text"
+      placeholder="Untitled"
+      defaultValue={document.title}
+      className="p-0 pl-12 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl"
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          if (e.target instanceof HTMLElement) {
+            e.target.blur();
+          }
+        }
+      }}
+    >
+    </input>
+
     <Editor
       initialContent={document.content}
       user={user}

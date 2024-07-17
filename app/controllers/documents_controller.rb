@@ -1,6 +1,11 @@
 class DocumentsController < ApplicationController
+  layout "full_width_application"
+
   def edit
     @document = Document.find(params[:id])
+
+    @space = Space.find(params[:space_id])
+    @documents = Document.find(@space.hierarchy || [])
   end
 
   #todo:

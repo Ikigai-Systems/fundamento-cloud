@@ -5,7 +5,7 @@
       <% @space.hierarchy&.map do |documentId| %>
         <% document = @documents.find { |document| document.id == documentId } %>
         <% if document.present? %>
-          <%= link_to edit_document_path(document) do %>
+          <%= link_to edit_space_document_path(@space, document) do %>
             <div class="text-left m-x-2 p-2 hover:bg-gray-100 active:bg-gray-200">
               <%= document.title.presence || "Untitled" %>
             </div>
