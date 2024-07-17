@@ -4,16 +4,22 @@ import ReactDOM from "react-dom/client"
 
 // Connects to data-controller="react-loader"
 export default class extends Controller {
-  static values = {component: String}
+  static values = {
+    component: String,
+    props: Object,
+  }
 
   async connect() {
     const Component = await this.importComponent();
     this.root = ReactDOM.createRoot(this.element)
-    this.root.render(React.createElement(Component));
+    this.root.render(React.createElement(Component, this.propsValue));
   }
 
   disconnect() {
-    this.root.unmount();
+    if (this.root) {
+      this.root.unmount();
+      this.root = undefined;
+    }
   }
 
   async importComponent() {

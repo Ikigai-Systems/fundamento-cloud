@@ -19,9 +19,6 @@
     </div>
   </aside>
   <article>
-    <div
-      data-controller="react-loader"
-      data-react-loader-component-value="SampleComponent.tsx"
-    ></div>
+    <%= react_component "EditDocumentPage", {document: @document.attributes.except("sync")} %>
   </article>
 </div>
