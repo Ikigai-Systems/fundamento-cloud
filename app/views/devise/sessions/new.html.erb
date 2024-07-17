@@ -1,5 +1,6 @@
 <section class="form-section">
   <h2 class="text-lg font-semibold text-gray-700 capitalize dark:text-white">Sign in</h2>
+
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="my-5">
       <%= f.label :email %><br />
@@ -12,7 +13,7 @@
     </div>
 
     <div class="flex justify-end mt-6">
-      <%= f.submit "Sign in", class: "button"  %>
+      <%= f.submit "Sign in", class: "form-submit"  %>
     </div>
   <% end %>
 
