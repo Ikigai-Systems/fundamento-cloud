@@ -1,10 +1,23 @@
 <nav class="border-y-2 bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
   <div class="container flex flex-wrap justify-between items-center mx-auto">
-    <%= link_to root_path, class: "flex items-center" do %>
-      <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-        Wiki
-      </span>
-    <% end %>
+    <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+
+      <%= link_to root_path, class: "flex items-center" do %>
+        <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+          Wiki
+        </span>
+      <% end %>
+
+      <div class="hidden sm:ml-6 sm:block">
+        <div class="flex space-x-4">
+          <%if user_signed_in? %>
+            <%= render "spaces_menu" %>
+          <% end %>
+
+        </div>
+      </div>
+      
+    </div>
 
     <div class="w-auto">
       <ul class="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
