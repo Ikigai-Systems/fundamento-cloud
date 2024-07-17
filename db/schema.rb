@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_16_154503) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_17_141335) do
   create_table "attachments", force: :cascade do |t|
     t.string "filename"
     t.string "mime_type"
@@ -47,6 +47,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_16_154503) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "organization_id"
+    t.string "name"
+    t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
