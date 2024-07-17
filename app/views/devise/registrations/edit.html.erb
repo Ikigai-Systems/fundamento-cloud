@@ -6,7 +6,7 @@
 
     <div class="my-5">
       <%= f.label :email %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input" %>
     </div>
 
     <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
@@ -15,7 +15,7 @@
 
     <div class="my-5">
       <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-      <%= f.password_field :password, autocomplete: "new-password", class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+      <%= f.password_field :password, autocomplete: "new-password", class: "form-input" %>
       <% if @minimum_password_length %>
         <br />
         <em><%= @minimum_password_length %> characters minimum</em>
@@ -24,12 +24,12 @@
 
     <div class="my-5">
       <%= f.label :password_confirmation %><br />
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
     </div>
 
     <div class="my-5">
       <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-      <%= f.password_field :current_password, autocomplete: "current-password", class: "block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full" %>
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "form-input" %>
     </div>
 
     <div class="flex justify-end mt-6">
