@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :ensure_organization_exists
   before_action :select_current_organization
   before_action :load_current_organization_from_cookie
+  before_action :ensure_space_exists
 
   helper_method :current_organization
 
@@ -37,6 +38,12 @@ class ApplicationController < ActionController::Base
 
     RequestContext.current_organization =
       current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
+  end
+
+  def ensure_space_exists
+    if current_user.present? && current_organization.present? && current_organization.spaces.empty?
+      current_organization.spaces.create!
+    end
   end
 
   def current_organization
