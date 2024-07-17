@@ -17,6 +17,8 @@ Rails.application.routes.draw do
 
   resources :documents, only: [:edit, :update]
 
+  resources :spaces, only: [:show]
+
   resources :organizations do
     member do
       post :select
