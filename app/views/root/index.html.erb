@@ -1,1 +1,27 @@
-Root view.
+<div data-controller="tabs" class="w-full">
+  <div data-tabs-target="list" class="flex border-b">
+    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
+      Recently updated
+    </button>
+
+    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
+      Tab 2
+    </button>
+
+    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
+      Tab 3
+    </button>
+  </div>
+
+  <div data-tabs-target="panel" class="py-4">
+    <%= render partial: "recently_updated_documents_tab" %>
+  </div>
+
+  <div data-tabs-target="panel" class="py-4">
+    Content for Tab 2
+  </div>
+
+  <div data-tabs-target="panel" class="py-4">
+    Content for Tab 3
+  </div>
+</div>
