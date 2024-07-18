@@ -3,7 +3,9 @@
     <div class="flex justify-between items-center text-center">
       <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
       <div class="hover:bg-gray-100 active:bg-gray-200 size-6 mr-2" title="Add document">
-        <span class="size-5 mt-0.5 text-slate-800 icon-[heroicons--plus]"></span>
+        <%= link_to new_space_document_path(@space) do %>
+          <span class="size-5 mt-0.5 text-slate-800 icon-[heroicons--plus]"></span>
+        <% end %>
       </div>
     </div>
     <div>

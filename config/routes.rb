@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   root "root#index"
 
   resources :spaces, only: [:show] do
-    resources :documents, only: [:edit, :update]
+    resources :documents, only: [:create, :new, :edit, :update]
   end
 
   resources :organizations do

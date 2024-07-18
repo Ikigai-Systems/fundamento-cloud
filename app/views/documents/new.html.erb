@@ -1,0 +1,21 @@
+<div class="h-[calc(100vh-56px)] grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
+  <%= render 'application/left_side_bar' %>
+  <article>
+
+    <h2 class="text-lg font-semibold text-gray-700 capitalize dark:text-white">Create document</h2>
+
+    <%= form_for(@document, url: space_documents_path(@space), html: { method: :post }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: @document %>
+
+      <div class="form-field">
+        <%= f.label :title %><br />
+        <%= f.text_field :title, autofocus: true, class: "form-input" %>
+      </div>
+
+      <div class="flex justify-end mt-6">
+        <%= f.submit "Create", class: "form-submit" %>
+      </div>
+    <% end %>
+
+  </article>
+</div>
