@@ -1,19 +1,27 @@
 <aside class="bg-white border-r overflow-auto">
   <div class="p-4 flex flex-col">
-    <div class="mx-4 pb-4 font-bold">Documents</div>
-    <% @space.hierarchy&.map do |documentId| %>
-      <% document = @documents.find { |document| document.id == documentId } %>
-      <% if document.present? %>
-        <%= link_to edit_space_document_path(@space, document) do %>
-          <% if @document == document %>
-            <div class="text-left m-x-2 p-2 bg-blue-100 hover:bg-blue-200 active:bg-blue-300">
-          <% else %>
-            <div class="text-left m-x-2 p-2 hover:bg-gray-100 active:bg-gray-200">
-          <% end %>
+    <div class="flex justify-between items-center text-center">
+      <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
+      <div class="hover:bg-gray-100 active:bg-gray-200 size-6 mr-2" title="Add document">
+        <span class="size-5 mt-0.5 text-slate-800 icon-[heroicons--plus]"></span>
+      </div>
+    </div>
+    <div>
+      <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
+      <% @space.hierarchy&.map do |documentId| %>
+        <% document = @documents.find { |document| document.id == documentId } %>
+        <% if document.present? %>
+          <%= link_to edit_space_document_path(@space, document) do %>
+            <% if @document == document %>
+              <div class="text-left text-slate-800 mx-2 p-2 bg-blue-100 hover:bg-blue-200 active:bg-blue-300">
+            <% else %>
+              <div class="text-left text-slate-800 mx-2 p-2 hover:bg-gray-100 active:bg-gray-200">
+            <% end %>
             <%= document.title.presence || "Untitled" %>
-          </div>
+            </div>
+          <% end %>
         <% end %>
       <% end %>
-    <% end %>
+    </div>
   </div>
 </aside>
