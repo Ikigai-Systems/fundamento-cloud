@@ -1,14 +1,14 @@
-<nav class="border-y-2 bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
-  <div class="container flex flex-wrap justify-between items-center mx-auto">
-    <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+<nav class="border-y-2 bg-white border-gray-200 px-2 py-2.5 rounded dark:bg-gray-800">
+  <div class="w-full flex flex-wrap justify-between items-center">
+    <div class="flex flex-1 items-center justify-start">
 
-      <%= link_to root_path, class: "flex items-center" do %>
+      <%= link_to root_path, class: "flex items-center pl-4" do %>
         <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
           Wiki
         </span>
       <% end %>
 
-      <div class="hidden sm:ml-6 sm:block">
+      <div class="ml-6">
         <div class="flex space-x-4">
           <%if user_signed_in? %>
             <%= render "spaces_menu" %>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="w-auto">
-      <ul class="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
+      <ul class="flex flex-col md:flex-row md:space-x-8 pr-2 md:text-sm md:font-medium">
         <li>
           <% if user_signed_in? %>
             <%= render partial: "user_menu" %>
