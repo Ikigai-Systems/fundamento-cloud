@@ -1,6 +1,13 @@
 class DocumentsController < ApplicationController
   layout "full_width_application"
 
+  def index
+    respond_to do |format|
+      format.json { render json: Document.from_current_organization, :except => [:sync] }
+      format.all { head :unprocessable_entity }
+    end
+  end
+
   def new
     @document = Document.new
 

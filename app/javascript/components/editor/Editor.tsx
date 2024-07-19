@@ -1,30 +1,19 @@
 import {useMemo} from "react";
 import axios from "axios";
 import {User} from "../../types";
-import {BlockNoteEditor, BlockNoteSchema, defaultInlineContentSpecs, filterSuggestionItems} from "@blocknote/core";
+import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import {getMentionMenuItems, Mention} from "./inline-content/Mention";
 import {SuggestionMenuController} from "@blocknote/react";
+import schema from "./schema";
+import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
-
-
-// Our schema with inline content specs, which contain the configs and
-// implementations for inline content  that we want our editor to use.
-const schema = BlockNoteSchema.create({
-  inlineContentSpecs: {
-    // Adds all default inline content.
-    ...defaultInlineContentSpecs,
-    // Adds the mention tag.
-    mention: Mention,
-  },
-});
 
 type EditorProps = {
   initialContent: string, // probably not needed
@@ -119,7 +108,7 @@ const Editor = ({user, documentId}: EditorProps) => {
           // Gets the mentions menu items
           triggerCharacter={"@"}
           getItems={async (query) =>
-            filterSuggestionItems(getMentionMenuItems(editor), query)
+            filterSuggestionItems(await getMentionMenuItems(editor), query)
           }
         />
       </BlockNoteView>
