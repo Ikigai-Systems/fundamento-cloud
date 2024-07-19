@@ -4,10 +4,4 @@ if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
-# substitute environment variables in the frontend files
-projectEnvVariables=$(ls -t ./public/assets/projectEnvVariables*.js | head -n1)
-envsubst < "$projectEnvVariables" > ./tmp/projectEnvVariables_temp
-cp ./tmp/projectEnvVariables_temp "$projectEnvVariables"
-rm ./tmp/projectEnvVariables_temp
-
 exec "${@}"

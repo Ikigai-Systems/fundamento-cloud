@@ -83,9 +83,6 @@ COPY --from=build --chown=rails:rails /rails/log /rails/log
 COPY --from=build --chown=rails:rails /rails/storage /rails/storage
 COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
 
-# Run and own only the runtime files as a non-root user for security
-RUN chown -R rails:rails public/assets/projectEnvVariables*.js
-
 USER rails:rails
 
 # Entrypoint prepares the database.
