@@ -41,7 +41,7 @@ class OrganizationsController < ApplicationController
 
     cookies.encrypted[:organization_id] = @organization.id
 
-    redirect_to root_path, notice: "You've been switched to #{@organization.name}."
+    redirect_to space_path(@organization.spaces.first), notice: "You've been switched to #{@organization.name}."
   end
 
   private
