@@ -23,7 +23,7 @@ export default class extends Controller {
   }
 
   async importComponent() {
-    const module = await import(`../components/${this.componentValue}`);
+    const module = await import(`../components/${this.componentValue}.tsx`);
     return module.default;
   }
 }
