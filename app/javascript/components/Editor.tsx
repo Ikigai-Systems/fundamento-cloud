@@ -1,13 +1,12 @@
 import {useMemo} from "react";
 import axios from "axios";
-import {User} from "../../../frontend/src/types";
+import {User} from "../types";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import baseUrl from "../../../frontend/src/base-url";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -39,7 +38,7 @@ const Editor = ({user, documentId}: EditorProps) => {
     }
 
     ydoc = new Y.Doc();
-    const websocketBaseUrl = new URL(baseUrl);
+    const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
     acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
     acProvider = new WebsocketProvider(

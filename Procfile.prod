@@ -1,1 +1,1 @@
-web: RAILS_SERVE_STATIC_FILES=true RAILS_ENV=production bin/rails server --port 3000
+web: RAILS_ENV=production bin/rails server --port 3000

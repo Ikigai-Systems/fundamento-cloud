@@ -19,9 +19,6 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/rails/vendor/bundle" \
     BUNDLE_WITHOUT="development"
 
-# Ikigai-specific production environment
-ENV RAILS_SERVE_STATIC_FILES="true"
-
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
@@ -53,9 +50,6 @@ COPY . .
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
-
-## Build frontend
-RUN npm run build
 
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile && \

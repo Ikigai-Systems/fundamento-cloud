@@ -13,4 +13,3 @@ export type User = {
   displayName: string,
   color: string,
 }
-
