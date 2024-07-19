@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::InvitationsController < Devise::InvitationsController
+  layout "users"
+
   before_action :configure_permitted_parameters
 
   protected

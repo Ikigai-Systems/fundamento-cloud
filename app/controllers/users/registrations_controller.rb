@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
+  layout "users"
+
   before_action :configure_permitted_parameters
 
   protected
