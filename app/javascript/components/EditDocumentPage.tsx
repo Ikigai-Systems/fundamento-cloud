@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 import {Document, User} from "../../../frontend/src/types";
-import Editor from "./Editor";
+import Editor from "./editor/Editor";
 
 type EditDocumentPageProps = {
   document: Document

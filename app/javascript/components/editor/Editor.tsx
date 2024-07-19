@@ -1,16 +1,30 @@
 import {useMemo} from "react";
 import axios from "axios";
-import {User} from "../types";
-import {BlockNoteEditor} from "@blocknote/core";
+import {User} from "../../types";
+import {BlockNoteEditor, BlockNoteSchema, defaultInlineContentSpecs, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
+import {getMentionMenuItems, Mention} from "./inline-content/Mention";
+import {SuggestionMenuController} from "@blocknote/react";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
+
+
+// Our schema with inline content specs, which contain the configs and
+// implementations for inline content  that we want our editor to use.
+const schema = BlockNoteSchema.create({
+  inlineContentSpecs: {
+    // Adds all default inline content.
+    ...defaultInlineContentSpecs,
+    // Adds the mention tag.
+    mention: Mention,
+  },
+});
 
 type EditorProps = {
   initialContent: string, // probably not needed
@@ -49,6 +63,7 @@ const Editor = ({user, documentId}: EditorProps) => {
     );
 
     return BlockNoteEditor.create({
+      schema,
       // initialContent: JSON.parse(initialContent),
       collaboration: {
         provider: acProvider,
@@ -99,7 +114,15 @@ const Editor = ({user, documentId}: EditorProps) => {
     <div
       className="min-w-2xl min-h-xl border-dashed"
     >
-      <BlockNoteView editor={editor}/>
+      <BlockNoteView editor={editor}>
+        <SuggestionMenuController
+          // Gets the mentions menu items
+          triggerCharacter={"@"}
+          getItems={async (query) =>
+            filterSuggestionItems(getMentionMenuItems(editor), query)
+          }
+        />
+      </BlockNoteView>
     </div>
 
   </>
