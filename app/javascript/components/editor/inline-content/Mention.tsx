@@ -1,4 +1,9 @@
 import {createReactInlineContentSpec} from "@blocknote/react";
+import {useContext} from "react";
+import {useQuery} from "@tanstack/react-query";
+import axios from "axios";
+import DocumentsApi from "~/api/DocumentsApi"
+import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
 
 // The Mention inline content.
 export const Mention = createReactInlineContentSpec(
@@ -15,10 +20,26 @@ export const Mention = createReactInlineContentSpec(
     content: "none",
   },
   {
-    render: (props) => (
-      <span style={{ backgroundColor: "#8400ff33" }}>
-        @{JSON.stringify(props.inlineContent.props)}
-      </span>
-    ),
+    /* eslint-disable react-hooks/rules-of-hooks */
+    render: (props) => {
+      const documentId = props.inlineContent.props.id;
+      const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
+        return (await axios.get(`/api/v1/documents/${documentId}`)).data as Document; //todo: refactor to documents_controller.rb + js_from_routes
+      }});
+      const isLoading = documentQuery.isLoading;
+      const displayName = documentQuery.data?.title || documentId;
+      const {space} = useContext(CurrentSpaceContext);
+      return (
+        <a
+          href={DocumentsApi.edit.path({id: documentId, space_id: space?.id})}
+          className="border p-0.5 text-sky-500"
+        >
+          @{displayName}
+          {isLoading && <span className="relative top-1">
+            <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+          </span>}
+        </a>
+      )
+    },
   }
 );

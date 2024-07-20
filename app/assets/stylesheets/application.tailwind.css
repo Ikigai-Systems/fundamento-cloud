@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    .editor-container a {
+        text-decoration: underline;
+        cursor: pointer;
+
+        @apply text-sky-500
+    }
+}
+
 @layer components {
     .form-section {
         @apply max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-8;

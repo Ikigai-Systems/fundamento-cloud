@@ -52,6 +52,8 @@ group :development, :test do
   gem "sqlite3", "~> 1.4"
 
   gem "dotenv-rails", "~> 3.1"
+
+  gem "js_from_routes"
 end
 
 group :production do
