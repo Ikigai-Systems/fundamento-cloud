@@ -6,12 +6,13 @@ import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import {SuggestionMenuController} from "@blocknote/react";
+import {getDefaultReactSlashMenuItems, SuggestionMenuController} from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
 import AttachmentsApi from "~/api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
+import AlertMenuItem from "./blocks/AlertMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -91,7 +92,18 @@ const Editor = ({user, documentId}: EditorProps) => {
     <div
       className="min-w-2xl min-h-xl border-dashed"
     >
-      <BlockNoteView editor={editor}>
+      <BlockNoteView editor={editor} slashMenu={false}>
+        {/* Replaces the default Slash Menu. */}
+        <SuggestionMenuController
+          triggerCharacter={"/"}
+          getItems={async (query) =>
+            // Gets all default slash menu items and `insertAlert` item.
+            filterSuggestionItems(
+              [...getDefaultReactSlashMenuItems(editor), AlertMenuItem(editor)],
+              query
+            )
+          }
+        />
         <SuggestionMenuController
           // Gets the mentions menu items
           triggerCharacter={"@"}
