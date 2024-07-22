@@ -3,9 +3,10 @@ import { createReactBlockSpec } from "@blocknote/react";
 import { Menu } from "@mantine/core";
 import { MdCancel, MdCheckCircle, MdError, MdInfo } from "react-icons/md";
 import "./styles.css";
+import Table, { EVALUATION_LICENSE } from "rowstack";
 
 // The types of alerts that users can choose from.
-export const alertTypes = [
+const alertTypes = [
   {
     title: "Warning",
     value: "warning",
@@ -48,8 +49,47 @@ export const alertTypes = [
   },
 ] as const;
 
+const data = [
+  {
+    id: 0,
+    "name": "Uriel Russo",
+    "email": "dolor.vitae@icloud.ca"
+  },
+  {
+    id: 1,
+    "name": "Priscilla Whitehead",
+    "email": "egestas.aliquam@icloud.ca"
+  },
+  {
+    id: 2,
+    "name": "Mariam Christensen",
+    "email": "lectus@google.com"
+  },
+  {
+    id: 3,
+    "name": "Elizabeth Hoffman",
+    "email": "tellus.nunc@google.ca"
+  },
+  {
+    id: 4,
+    "name": "Zelda Hess",
+    "email": "phasellus.libero.mauris@icloud.ca"
+  }
+];
+
+const columns = [
+  {
+    "id": "name",
+    "name": "Name",
+  },
+  {
+    "id": "email",
+    "name": "Email",
+  },
+];
+
 // The Alert block.
-export const Alert = createReactBlockSpec(
+const Alert = createReactBlockSpec(
   {
     type: "alert",
     propSchema: {
@@ -109,6 +149,7 @@ export const Alert = createReactBlockSpec(
               })}
             </Menu.Dropdown>
           </Menu>
+          <Table data={data} columns={columns} licenseKey={EVALUATION_LICENSE} />
           {/*Rich text field for user to type in*/}
           <div className={"inline-content"} ref={props.contentRef} />
         </div>
@@ -116,3 +157,5 @@ export const Alert = createReactBlockSpec(
     },
   }
 );
+
+export default Alert;

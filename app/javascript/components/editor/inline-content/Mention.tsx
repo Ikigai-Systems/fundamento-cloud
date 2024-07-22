@@ -6,7 +6,7 @@ import DocumentsApi from "~/api/DocumentsApi"
 import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
 
 // The Mention inline content.
-export const Mention = createReactInlineContentSpec(
+const Mention = createReactInlineContentSpec(
   {
     type: "mention",
     propSchema: {
@@ -43,3 +43,5 @@ export const Mention = createReactInlineContentSpec(
     },
   }
 );
+
+export default Mention;
