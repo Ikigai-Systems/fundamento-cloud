@@ -1,5 +1,4 @@
 import {useMemo} from "react";
-import axios from "axios";
 import {User} from "../../types";
 import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
@@ -10,6 +9,9 @@ import * as ActionCable from "@rails/actioncable";
 import {SuggestionMenuController} from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
+// @ts-expect-error "typescript does not understand ~ syntax from rails"
+import AttachmentsApi from "~/api/AttachmentsApi.js";
+import {request} from '@js-from-routes/axios';
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -66,13 +68,11 @@ const Editor = ({user, documentId}: EditorProps) => {
         const body = new FormData();
         body.append("file", file);
 
-        const response = await axios.post("/api/v1/attachments", body, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+        const attachment = await request("post", AttachmentsApi.create.path(), {data: body, responseAs: "json", headers: {
+          'Content-Type': 'multipart/form-data'
+        }});
 
-        return response.data.location;
+        return attachment.location;
       },
     });
   }, [documentId]);
@@ -86,18 +86,6 @@ const Editor = ({user, documentId}: EditorProps) => {
       <label className="flex flex-col justify-center mr-1">
         <i>debug only: Document id: {documentId}</i>
       </label>
-      <button
-        style={{display: "none"}}
-        className="bg-blue-5 hover:bg-blue-6 active:bg-blue-7 c-white"
-        onClick={async () => {
-          await axios.put(`/documents/${documentId}`, {
-            document: {
-              content: JSON.stringify(editor.document),
-            }
-          });
-        }}>
-        Save
-      </button>
     </div>
 
     <div

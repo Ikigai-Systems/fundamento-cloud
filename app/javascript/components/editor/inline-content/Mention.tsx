@@ -1,7 +1,7 @@
 import {createReactInlineContentSpec} from "@blocknote/react";
 import {useContext} from "react";
 import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
+// @ts-expect-error "typescript does not understand ~ syntax from rails"
 import DocumentsApi from "~/api/DocumentsApi"
 import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
 
@@ -24,7 +24,7 @@ export const Mention = createReactInlineContentSpec(
     render: (props) => {
       const documentId = props.inlineContent.props.id;
       const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
-        return (await axios.get(`/api/v1/documents/${documentId}`)).data as Document; //todo: refactor to documents_controller.rb + js_from_routes
+        return (await DocumentsApi.show({id: documentId}));
       }});
       const isLoading = documentQuery.isLoading;
       const displayName = documentQuery.data?.title || documentId;

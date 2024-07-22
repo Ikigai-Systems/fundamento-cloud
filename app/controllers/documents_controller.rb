@@ -34,6 +34,13 @@ class DocumentsController < ApplicationController
 
   end
 
+  def show
+    respond_to do |format|
+      format.json { render json: Document.from_current_organization.find(params[:id]), :except => [:sync] }
+      format.all { head :unprocessable_entity }
+    end
+  end
+
   def edit
     @document = Document.find(params[:id])
 

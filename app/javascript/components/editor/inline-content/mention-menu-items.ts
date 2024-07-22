@@ -1,14 +1,15 @@
 import schema from "../schema";
 import {DefaultReactSuggestionItem} from "@blocknote/react";
-import axios from "axios";
 import {Document} from "../../../types.ts";
+// @ts-expect-error "typescript does not understand ~ syntax from rails"
+import DocumentsApi from "~/api/DocumentsApi"
 
 export const getMentionMenuItems = async (
   editor: typeof schema.BlockNoteEditor
 ): Promise<DefaultReactSuggestionItem[]> => {
-  const response = await axios.get("/documents.json");
+  const documents = await DocumentsApi.index();
 
-  return response.data.map((document: Document) => ({
+  return documents.map((document: Document) => ({
     title: document.title,
     onItemClick: () => {
       editor.insertInlineContent([

@@ -16,25 +16,19 @@ Rails.application.routes.draw do
   root "root#index"
 
   defaults export: true do
-    resources :documents, only: [:index]
+    resources :documents, only: [:index, :show]
 
     resources :spaces, only: [:show] do
       resources :documents, only: [:create, :new, :edit, :update]
     end
+
+    resources :attachments, only: [:create, :destroy, :show]
   end
 
 
   resources :organizations do
     member do
       post :select
-    end
-  end
-
-  namespace :api do
-    namespace :v1 do
-      resources :documents
-      resources :spaces
-      resources :attachments, only: [:create, :destroy, :show]
     end
   end
 

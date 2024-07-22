@@ -1,4 +1,4 @@
-class Api::V1::AttachmentsController < Api::ApplicationApiController
+class AttachmentsController < ApplicationController
   def show
     @attachment = Attachment.find(params[:id])
 
@@ -17,7 +17,7 @@ class Api::V1::AttachmentsController < Api::ApplicationApiController
     end
 
     if @attachment.save
-      render json: @attachment.as_json(:except => [:data]).merge({location: api_v1_attachment_url(@attachment)}), status: :created
+      render json: @attachment.as_json(:except => [:data]).merge({location: attachment_url(@attachment)}), status: :created
     else
       render json: @attachment.errors, status: :unprocessable_entity
     end
