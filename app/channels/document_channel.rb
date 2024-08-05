@@ -28,13 +28,13 @@ class DocumentChannel < ApplicationCable::Channel
   private
 
   def load_doc(document_id)
-    data = Document.find(document_id)&.sync
+    data = current_organization.documents.find(document_id)&.sync
     data = data.unpack("C*") unless data.nil?
     data
   end
 
   def save_doc(document_id, update)
-    Document.find(document_id).update(sync: update.pack("C*"))
+    current_organization.documents.find(document_id).update(sync: update.pack("C*"))
   rescue
     logger.error "Document sync #{document_id} could not be saved. Update: #{update.pack("C*")}"
   end
