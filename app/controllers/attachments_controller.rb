@@ -1,6 +1,6 @@
 class AttachmentsController < ApplicationController
   def show
-    @attachment = Attachment.find(params[:id])
+    @attachment = current_organization.attachments.find(params[:id])
 
     send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
   end
@@ -8,7 +8,7 @@ class AttachmentsController < ApplicationController
   def create
 
     # build a photo and pass it into a block to set other attributes
-    @attachment = Attachment.new(params[:attachment]) do |t|
+    @attachment = current_organization.attachments.new(params[:attachment]) do |t|
       if params[:file]
         t.data      = params[:file].read
         t.filename  = params[:file].original_filename
@@ -24,7 +24,7 @@ class AttachmentsController < ApplicationController
   end
 
   def destroy
-    @attachment = Attachment.find(params[:id])
+    @attachment = current_organization.attachments.find(params[:id])
     @attachment.destroy
   end
 end
