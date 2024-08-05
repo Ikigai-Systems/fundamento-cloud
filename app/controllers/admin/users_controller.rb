@@ -1,5 +1,5 @@
 class Admin::UsersController < ApplicationController
   def index
-    @users = User.all
+    @users = current_organization.users.all
   end
 end
