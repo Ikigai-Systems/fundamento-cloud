@@ -27,4 +27,8 @@
     .form-field {
         @apply my-5;
     }
+
+    .focused-section {
+        @apply relative overflow-x-auto shadow-md sm:rounded-lg mt-8;
+    }
 }
