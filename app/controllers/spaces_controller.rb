@@ -1,8 +1,8 @@
 class SpacesController < ApplicationController
   layout 'full_width_application'
   def show
-    @space = Space.find(params[:id])
+    @space = current_organization.spaces.find(params[:id])
 
-    @documents = Document.find(@space.hierarchy || [])
+    @documents = current_organization.documents.find(@space.hierarchy || [])
   end
 end
