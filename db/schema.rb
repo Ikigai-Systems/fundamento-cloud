@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_17_141335) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
   create_table "attachments", force: :cascade do |t|
     t.string "filename"
     t.string "mime_type"
     t.binary "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "organization_id"
+    t.index ["organization_id"], name: "index_attachments_on_organization_id"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -83,6 +85,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_141335) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "attachments", "organizations"
   add_foreign_key "documents", "organizations"
   add_foreign_key "spaces", "organizations"
 end
