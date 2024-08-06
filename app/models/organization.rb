@@ -7,4 +7,12 @@ class Organization < ApplicationRecord
   has_many :attachments
 
   validates_presence_of :name
+
+  after_create :create_default_space
+
+  private
+
+  def create_default_space
+    self.spaces.create!(name: self.name + " Space")
+  end
 end
