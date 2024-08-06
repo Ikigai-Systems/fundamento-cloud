@@ -5,29 +5,29 @@ import {useState} from "react";
 
 const sampleData = [
   {
-    id: 0,
-    "name": "Uriel Russo",
-    "email": "dolor.vitae@icloud.ca"
+    id: "0",
+    name: "Uriel Russo",
+    email: "dolor.vitae@icloud.ca"
   },
   {
-    id: 1,
-    "name": "Priscilla Whitehead",
-    "email": "egestas.aliquam@icloud.ca"
+    id: "1",
+    name: "Priscilla Whitehead",
+    email: "egestas.aliquam@icloud.ca"
   },
   {
-    id: 2,
-    "name": "Mariam Christensen",
-    "email": "lectus@google.com"
+    id: "2",
+    name: "Mariam Christensen",
+    email: "lectus@google.com"
   },
   {
-    id: 3,
-    "name": "Elizabeth Hoffman",
-    "email": "tellus.nunc@google.ca"
+    id: "3",
+    name: "Elizabeth Hoffman",
+    email: "tellus.nunc@google.ca"
   },
   {
-    id: 4,
-    "name": "Zelda Hess",
-    "email": "phasellus.libero.mauris@icloud.ca"
+    id: "4",
+    name: "Zelda Hess",
+    email: "phasellus.libero.mauris@icloud.ca"
   }
 ];
 
@@ -55,7 +55,7 @@ const Database = createReactBlockSpec(
         default: JSON.stringify(sampleColumns),
       }
     },
-    content: "inline",
+    content: "none",
   },
   {
     render: (props) => {
@@ -67,7 +67,7 @@ const Database = createReactBlockSpec(
           onChange={async (event) => {
             if (event.type === "update_row") {
               const rowId = event.rowId;
-              setRows((prevRows: [{id: number, name: string}]) => {
+              setRows((prevRows: [{id: string}]) => {
                 const newRows = prevRows.map(row => {
                   if (row.id.toString() === rowId) {
                     return {...row, ...event.update}
@@ -83,6 +83,19 @@ const Database = createReactBlockSpec(
                 })
                 return newRows;
               })
+            } else if (event.type === "add_row") {
+              setRows((prevRows: [{id: string}]) => {
+                const newRows = [...prevRows, {id: event.rowId}];
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    data: JSON.stringify(newRows),
+                  },
+                })
+                return newRows;
+              })
+            } else {
+              console.log(event);
             }
           }}
         />
