@@ -61,15 +61,26 @@ const Database = createReactBlockSpec(
     render: (props) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [rows, setRows] = useState(JSON.parse(props.block.props.data));
+      const [columns, setColumns] = useState(JSON.parse(props.block.props.columns));
 
       return (
-        <Table data={rows} columns={JSON.parse(props.block.props.columns)} licenseKey={EVALUATION_LICENSE} config={{}}
+        <Table data={rows} columns={columns} licenseKey={EVALUATION_LICENSE} config={{}}
           onChange={async (event) => {
-            if (event.type === "update_row") {
-              const rowId = event.rowId;
+            if (event.type === "add_row") {
               setRows((prevRows: [{id: string}]) => {
-                const newRows = prevRows.map(row => {
-                  if (row.id.toString() === rowId) {
+                const nextRows = [...prevRows, {id: event.rowId}];
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    data: JSON.stringify(nextRows),
+                  },
+                })
+                return nextRows;
+              })
+            } else if (event.type === "update_row") {
+              setRows((prevRows: [{id: string}]) => {
+                const nextRows = prevRows.map(row => {
+                  if (row.id.toString() === event.rowId) {
                     return {...row, ...event.update}
                   } else {
                     return row;
@@ -78,33 +89,63 @@ const Database = createReactBlockSpec(
 
                 props.editor.updateBlock(props.block, {
                   props: {
-                    data: JSON.stringify(newRows),
+                    data: JSON.stringify(nextRows),
                   },
                 })
-                return newRows;
-              })
-            } else if (event.type === "add_row") {
-              setRows((prevRows: [{ id: string }]) => {
-                const newRows = [...prevRows, {id: event.rowId}];
-
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    data: JSON.stringify(newRows),
-                  },
-                })
-                return newRows;
+                return nextRows;
               })
             } else if (event.type === "delete_rows") {
-              setRows((prevRows: [{ id: string }]) => {
-                const newRows = prevRows.filter(row => !event.rows[0].includes(row.id));
+              setRows((prevRows: [{id: string}]) => {
+                const nextRows = prevRows.filter(row => !event.rows[0].includes(row.id));
 
                 props.editor.updateBlock(props.block, {
                   props: {
-                    data: JSON.stringify(newRows),
+                    data: JSON.stringify(nextRows),
                   },
                 })
-                return newRows;
+                return nextRows;
               })
+            } else if (event.type === "add_column") {
+              setColumns((prevColumns: [{ id: string }]) => {
+                const nextColumns = [...prevColumns, event.update];
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    columns: JSON.stringify(nextColumns),
+                  },
+                })
+
+                return nextColumns;
+              });
+            } else if (event.type === "update_column") {
+              setColumns((prevColumns: [{ id: string }]) => {
+                const nextColumns = prevColumns.map(column => {
+                  if (column.id.toString() === event.colId) {
+                    return {...column, ...event.update}
+                  } else {
+                    return column;
+                  }
+                });
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    columns: JSON.stringify(nextColumns),
+                  },
+                })
+                return nextColumns;
+              })
+            } else if (event.type === "delete_column") {
+              setColumns((prevColumns: [{ id: string }]) => {
+                const nextColumns = prevColumns.filter(column => column.id != event.colId);
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    columns: JSON.stringify(nextColumns),
+                  },
+                })
+
+                return nextColumns;
+              });
             } else {
               console.log(event);
             }
