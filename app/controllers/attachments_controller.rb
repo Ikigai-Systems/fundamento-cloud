@@ -19,7 +19,7 @@ class AttachmentsController < ApplicationController
     if @attachment.save
       render json: @attachment.as_json(:except => [:data]).merge({location: attachment_url(@attachment)}), status: :created
     else
-      render json: @attachment.errors, status: :unprocessable_entity
+      render json: @attachment.errors, status: :unprocessable_content
     end
   end
 

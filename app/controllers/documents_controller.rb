@@ -4,7 +4,7 @@ class DocumentsController < ApplicationController
   def index
     respond_to do |format|
       format.json { render json: current_organization.documents, :except => [:sync] }
-      format.all { head :unprocessable_entity }
+      format.all { head :unprocessable_content }
     end
   end
 
@@ -37,7 +37,7 @@ class DocumentsController < ApplicationController
   def show
     respond_to do |format|
       format.json { render json: current_organization.documents.find(params[:id]), :except => [:sync] }
-      format.all { head :unprocessable_entity }
+      format.all { head :unprocessable_content }
     end
   end
 
