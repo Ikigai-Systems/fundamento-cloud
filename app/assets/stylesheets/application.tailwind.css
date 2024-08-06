@@ -28,6 +28,10 @@
         @apply my-5;
     }
 
+    .form-header {
+        @apply text-lg font-semibold text-gray-700 capitalize dark:text-white;
+    }
+
     .focused-section {
         @apply relative bg-white overflow-x-auto shadow-md sm:rounded-lg mt-8;
     }

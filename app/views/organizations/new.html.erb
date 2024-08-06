@@ -1,5 +1,5 @@
 <section class="form-section">
-  <h2 class="text-lg font-semibold text-gray-700 capitalize dark:text-white">Create organization</h2>
+  <h2 class="form-header">Create organization</h2>
 
   <%= form_for(@organization, url: organizations_path, html: { method: :post }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @organization %>
