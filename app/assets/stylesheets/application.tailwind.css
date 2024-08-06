@@ -29,6 +29,6 @@
     }
 
     .focused-section {
-        @apply relative overflow-x-auto shadow-md sm:rounded-lg mt-8;
+        @apply relative bg-white overflow-x-auto shadow-md sm:rounded-lg mt-8;
     }
 }
