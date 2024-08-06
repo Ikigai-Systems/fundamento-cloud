@@ -26,14 +26,22 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  def update
+    @organization = current_user.organizations.find_by_id!(params[:id])
+
+    if @organization.update(organization_params)
+      redirect_to @organization, notice: 'Organization was successfully updated.'
+    else
+      render :edit
+    end
+  end
+
   def show
     @organization = current_user.organizations.find_by_id!(params[:id])
   end
 
   def edit
     @organization = current_user.organizations.find_by_id!(params[:id])
-
-    render :new
   end
 
   def select

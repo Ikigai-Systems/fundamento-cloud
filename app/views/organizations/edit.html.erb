@@ -1,0 +1,16 @@
+<section class="form-section">
+  <h2 class="text-lg font-semibold text-gray-700 capitalize dark:text-white">Edit organization</h2>
+
+  <%= form_for(@organization) do |f| %>
+    <%= render "devise/shared/error_messages", resource: @organization %>
+
+    <div class="form-field">
+      <%= f.label :name %><br />
+      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Save", class: "form-submit" %>
+    </div>
+  <% end %>
+</section>
