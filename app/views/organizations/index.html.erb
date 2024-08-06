@@ -1,6 +1,22 @@
 <%= turbo_stream_from "organizations_list" %>
 
-<section class="focused-section">
+<% content_for :focused_header do %>
+  Organizations
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <div class="mt-4 flex md:ml-4 md:mt-0">
+    <%= link_to 'Create', new_organization_path, class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" %>
+  </div>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="sm:flex sm:items-center p-5">
+    <div class="sm:flex-auto">
+      <p class="mt-2 text-sm text-gray-700">A list of all organizations you belong to.</p>
+    </div>
+  </div>
+
   <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
     <tr>
@@ -24,4 +40,6 @@
     <% end %>
     </tbody>
   </table>
-</section>
+<% end %>
+
+<%= render "focused_section" %>
