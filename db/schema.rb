@@ -11,13 +11,16 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "attachments", force: :cascade do |t|
     t.string "filename"
     t.string "mime_type"
     t.binary "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "organization_id"
+    t.bigint "organization_id"
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
   end
 
@@ -27,7 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
     t.datetime "updated_at", null: false
     t.binary "sync"
     t.string "title"
-    t.integer "organization_id"
+    t.bigint "organization_id"
     t.index ["organization_id"], name: "index_documents_on_organization_id"
   end
 
@@ -38,8 +41,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
   end
 
   create_table "organizations_users", id: false, force: :cascade do |t|
-    t.integer "organization_id", null: false
-    t.integer "user_id", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "user_id", null: false
     t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id"
     t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id"
   end
@@ -48,7 +51,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
     t.json "hierarchy"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "organization_id"
+    t.bigint "organization_id"
     t.string "name"
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
@@ -76,7 +79,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_125328) do
     t.datetime "invitation_accepted_at"
     t.integer "invitation_limit"
     t.string "invited_by_type"
-    t.integer "invited_by_id"
+    t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
