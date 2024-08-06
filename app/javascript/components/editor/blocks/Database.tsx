@@ -5,40 +5,33 @@ import {useState} from "react";
 
 const sampleData = [
   {
-    id: "0",
-    name: "Uriel Russo",
-    email: "dolor.vitae@icloud.ca"
+    id: "sample_row_1",
   },
   {
-    id: "1",
-    name: "Priscilla Whitehead",
-    email: "egestas.aliquam@icloud.ca"
+    id: "sample_row_2",
   },
   {
-    id: "2",
-    name: "Mariam Christensen",
-    email: "lectus@google.com"
+    id: "sample_row_3",
   },
-  {
-    id: "3",
-    name: "Elizabeth Hoffman",
-    email: "tellus.nunc@google.ca"
-  },
-  {
-    id: "4",
-    name: "Zelda Hess",
-    email: "phasellus.libero.mauris@icloud.ca"
-  }
 ];
 
 const sampleColumns = [
   {
-    "id": "name",
-    "name": "Name",
+    id: "sample_column_name",
+    name: "Name",
   },
   {
-    "id": "email",
-    "name": "Email",
+    id: "sample_column_2",
+    name: "Column 2",
+  },
+  {
+    id: "sample_column_3",
+    name: "Column 3",
+  },
+  {
+    id: "sample_column_4",
+    name: "Notes",
+    type: "longText",
   },
 ];
 
@@ -82,6 +75,24 @@ const Database = createReactBlockSpec(
                 const nextRows = prevRows.map(row => {
                   if (row.id.toString() === event.rowId) {
                     return {...row, ...event.update}
+                  } else {
+                    return row;
+                  }
+                });
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    data: JSON.stringify(nextRows),
+                  },
+                })
+                return nextRows;
+              })
+            } else if (event.type === "update_rows") {
+              setRows((prevRows: [{id: string}]) => {
+                const nextRows = prevRows.map(row => {
+                  const updatedRow = event.rows.find((updatedRow: {rowId: string}) => updatedRow.rowId === row.id);
+                  if (updatedRow) {
+                    return {...row, ...updatedRow.update}
                   } else {
                     return row;
                   }
