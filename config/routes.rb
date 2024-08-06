@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   defaults export: true do
     resources :documents, only: [:index, :show]
 
-    resources :spaces, only: [:show] do
+    resources :spaces, only: [:show, :new, :create, :edit, :update] do
       resources :documents, only: [:create, :new, :edit, :update]
     end
 
