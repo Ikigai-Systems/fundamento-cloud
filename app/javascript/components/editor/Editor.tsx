@@ -12,7 +12,7 @@ import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
 import AttachmentsApi from "~/api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
-import AlertMenuItem from "./blocks/AlertMenuItem.tsx";
+import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -96,13 +96,25 @@ const Editor = ({user, documentId}: EditorProps) => {
         {/* Replaces the default Slash Menu. */}
         <SuggestionMenuController
           triggerCharacter={"/"}
-          getItems={async (query) =>
+          getItems={async (query) => {
             // Gets all default slash menu items and `insertAlert` item.
-            filterSuggestionItems(
-              [...getDefaultReactSlashMenuItems(editor), AlertMenuItem(editor)],
+            let defaultTableMenuItem = undefined;
+            const itemsWithoutTable = getDefaultReactSlashMenuItems(editor).filter(defaultMenuItem => {
+              if (defaultMenuItem.key === 'table') {
+                defaultTableMenuItem = defaultMenuItem;
+                return false;
+              } else {
+                return true;
+              }
+            });
+            defaultTableMenuItem.title = "Simple table";
+            defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
+
+            return filterSuggestionItems(
+              [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor)],
               query
             )
-          }
+          }}
         />
         <SuggestionMenuController
           // Gets the mentions menu items
