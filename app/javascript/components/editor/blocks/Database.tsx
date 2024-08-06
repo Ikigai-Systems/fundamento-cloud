@@ -84,8 +84,19 @@ const Database = createReactBlockSpec(
                 return newRows;
               })
             } else if (event.type === "add_row") {
-              setRows((prevRows: [{id: string}]) => {
+              setRows((prevRows: [{ id: string }]) => {
                 const newRows = [...prevRows, {id: event.rowId}];
+
+                props.editor.updateBlock(props.block, {
+                  props: {
+                    data: JSON.stringify(newRows),
+                  },
+                })
+                return newRows;
+              })
+            } else if (event.type === "delete_rows") {
+              setRows((prevRows: [{ id: string }]) => {
+                const newRows = prevRows.filter(row => !event.rows[0].includes(row.id));
 
                 props.editor.updateBlock(props.block, {
                   props: {
