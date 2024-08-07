@@ -21,7 +21,7 @@ Turbo.start()
 import * as ActiveStorage from '@rails/activestorage'
 ActiveStorage.start()
 
-import "~/controllers/application.js"
+import "~/stimulus"
 
 // // Import all channels.
 // const channels = import.meta.globEager('./**/*_channel.js')
