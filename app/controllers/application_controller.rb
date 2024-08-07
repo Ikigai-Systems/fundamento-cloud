@@ -38,6 +38,13 @@ class ApplicationController < ActionController::Base
 
     RequestContext.current_organization =
       current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
+
+    if RequestContext.current_organization.nil?
+      # Cookie has invalid value, so let's retry selecting it
+      cookies.encrypted[:organization_id] = nil
+
+      select_current_organization
+    end
   end
 
   def ensure_space_exists

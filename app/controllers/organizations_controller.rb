@@ -2,7 +2,7 @@
 
 class OrganizationsController < ApplicationController
   skip_before_action :ensure_organization_exists, only: [:new, :create]
-  skip_before_action :select_current_organization
+  skip_before_action :select_current_organization, only: [:new, :create]
 
   def new
     @organization = Organization.new
