@@ -22,7 +22,8 @@ class DocumentsController < ApplicationController
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [@document.id]
-      @documents = current_organization.documents.find(@space.hierarchy)
+      @documents = @space.documents.find(@space.hierarchy)
+
       if @space.save
         redirect_to edit_space_document_path(@space, @document), notice: 'Document was successfully created.'
       else
