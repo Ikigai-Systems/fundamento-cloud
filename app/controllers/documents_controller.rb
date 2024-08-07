@@ -49,6 +49,18 @@ class DocumentsController < ApplicationController
     @documents = current_organization.documents.find(@space.hierarchy || [])
   end
 
+  def destroy
+    document_id = params[:id].to_i
+    @document = current_organization.documents.find(document_id)
+    @document.destroy
+
+    @space = current_organization.spaces.find(params[:space_id])
+    @space.hierarchy.delete(document_id)
+    @space.save
+
+    redirect_to space_path(@space), notice: 'Document was successfully deleted.'
+  end
+
   private
 
   def document_params

@@ -1,6 +1,16 @@
 <div class="h-[calc(100vh-56px)] grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
   <%= render 'application/left_side_bar' %>
   <article>
-    <%= react_component "EditDocumentPage", {document: @document.attributes.except("sync"), space: @space} %>
+    <div class="bg-white h-12 flex justify-end items-center p-2">
+
+      <span>Toolbar dropdown: &nbsp;</span>
+      <%= button_to "Delete", space_document_path(@space, @document), method: :delete,
+                    form: {data: {turbo_confirm: 'Are you sure? Deleted document cannot be restored.'}},
+                    class: "text-blue-600 dark:text-blue-500 hover:underline" %>
+
+    </div>
+    <div class="bg-white">
+      <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space} %>
+    </div>
   </article>
 </div>

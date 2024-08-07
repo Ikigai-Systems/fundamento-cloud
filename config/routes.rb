@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     resources :documents, only: [:index, :show]
 
     resources :spaces, only: [:show, :new, :create, :edit, :update] do
-      resources :documents, only: [:create, :new, :edit, :update]
+      resources :documents, only: [:create, :new, :edit, :update, :destroy]
     end
 
     resources :attachments, only: [:create, :destroy, :show]

@@ -6,12 +6,12 @@ import CurrentSpaceContext from "../Contextes/CurrentSpaceContext";
 
 const queryClient = new QueryClient();
 
-type EditDocumentPageProps = {
+type EditDocumentPanelProps = {
   document: Document
   space: Space
 }
 
-const EditDocumentPage = ({document, space}: EditDocumentPageProps) => {
+const EditDocumentPanel = ({document, space}: EditDocumentPanelProps) => {
   const urlParams = new URLSearchParams(window.location.search);
   const [user] = useState<User>({
     displayName: urlParams.get("displayName") || "unknown user",
@@ -23,7 +23,7 @@ const EditDocumentPage = ({document, space}: EditDocumentPageProps) => {
       <input key={document.id + "_title"} type="text"
         placeholder="Untitled"
         defaultValue={document.title}
-        className="p-0 pl-12 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl"
+        className="pl-12 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             if (e.target instanceof HTMLElement) {
@@ -45,4 +45,4 @@ const EditDocumentPage = ({document, space}: EditDocumentPageProps) => {
   </QueryClientProvider>
 }
 
-export default EditDocumentPage;
+export default EditDocumentPanel;

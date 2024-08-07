@@ -83,11 +83,11 @@ const Editor = ({user, documentId}: EditorProps) => {
   }
 
   return <>
-    <div className="flex justify-end">
-      <label className="flex flex-col justify-center mr-1">
-        <i>debug only: Document id: {documentId}</i>
-      </label>
-    </div>
+    {/*<div className="flex justify-end">*/}
+    {/*  <label className="flex flex-col justify-center mr-1">*/}
+    {/*    <i>debug only: Document id: {documentId}</i>*/}
+    {/*  </label>*/}
+    {/*</div>*/}
 
     <div
       className="min-w-2xl min-h-xl border-dashed"
