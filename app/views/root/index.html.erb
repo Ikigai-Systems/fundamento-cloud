@@ -1,3 +1,9 @@
+<% content_for :focused_header do %>
+  Welcome <%= current_user.first_name %>!
+<% end %>
+
+<% content_for :focused_content do %>
+
 <div data-controller="tabs" class="w-full">
   <div data-tabs-target="list" class="flex border-b">
     <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
@@ -25,3 +31,7 @@
     Content for Tab 3
   </div>
 </div>
+
+<% end %>
+
+<%= render partial: "focused_section" %>
