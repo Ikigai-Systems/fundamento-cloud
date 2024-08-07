@@ -42,30 +42,9 @@ gem "bootsnap", require: false
 # gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
-# gem "rack-cors"
-
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ]
-
-  # Use sqlite3 as the database for Active Record
-  gem "sqlite3", "~> 1.4"
-
-  gem "dotenv-rails", "~> 3.1"
-
-  gem "js_from_routes"
-end
-
-group :production do
-  gem "pg"
-end
-
-group :development do
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
-end
-
 gem "rack-cors", "~> 2.0"
+
+gem "pg"
 
 gem "rails-static-router"
 
@@ -78,3 +57,18 @@ gem "devise_invitable"
 gem "tailwindcss-rails", "~> 2.6"
 
 gem "vite_rails"
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ]
+
+  gem "dotenv-rails", "~> 3.1"
+
+  gem "js_from_routes"
+end
+
+group :development do
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem "spring"
+end
+
