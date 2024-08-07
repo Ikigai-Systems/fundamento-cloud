@@ -23,7 +23,7 @@ const EditDocumentPanel = ({document, space}: EditDocumentPanelProps) => {
       <input key={document.id + "_title"} type="text"
         placeholder="Untitled"
         defaultValue={document.title}
-        className="pl-12 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl"
+        className="pl-12 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             if (e.target instanceof HTMLElement) {

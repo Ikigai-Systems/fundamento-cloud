@@ -13,6 +13,7 @@ import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AttachmentsApi from "~/api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
+import "./editor-styles.css";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;

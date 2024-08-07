@@ -1,0 +1,12 @@
+/* Adds border and shadow to editor */
+.bn-container .bn-editor {
+    color: rgb(30 41 59);
+}
+
+.bn-container .bn-editor code {
+    background-color: rgb(241 245 249);
+    border: 1px solid rgb(203 213 225);
+    border-radius: 4px;
+    color: rgb(51 65 85);
+    padding: 0 3px;
+}
