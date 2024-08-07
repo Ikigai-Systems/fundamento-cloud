@@ -1,5 +1,7 @@
 require "active_support/core_ext/integer/time"
 
+require_relative "redis_cache_store"
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
