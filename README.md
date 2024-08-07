@@ -1,5 +1,4 @@
-Running
-===
+# Running
 
 ```
 bin/dev
@@ -12,18 +11,24 @@ It should spawn two processes:
 
 Access application via `http://localhost:5173`
 
-Production mode
-===
+# Production mode
 
 1. `rails db:prepare RAILS_ENV=production` -> once, to setup database schema
 2. (re)build frontend: `npm run build` -> this will (re)populate `public` folder
 3. `foreman start -f Procfile.prod`  
    This will run rails server on port `3000`
 
-Docker
-===
+# Docker
+
 1. To run app, provide secret_base_key as env variable:
 ```
 SECRET_KEY_BASE=abcdef docker-compose up
 ```
 Access application on port `3000`
+
+## Running only selected services
+
+```
+docker-compose up redis postgresql
+```
+
