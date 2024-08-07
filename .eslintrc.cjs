@@ -19,4 +19,7 @@ module.exports = {
     ],
     '@stylistic/js/indent': ['error', 2],
   },
+  globals: {
+    'Turbo': 'readonly'
+  },
 }
