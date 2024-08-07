@@ -36,11 +36,8 @@
       <%= f.submit "Update", class: "form-submit" %>
     </div>
   <% end %>
-
-  <h3>Cancel my account</h3>
-
-  <p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
-
-  <%= link_to "Back", :back %>
-
 </section>
+
+<div class="mt-10 text-center text-sm text-gray-500">
+  Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), form: { data: { turbo_confirm: "Are you sure? Your user account will be immediately removed and you will be signed out!" }, class: "inline-block" }, method: :delete %>
+</div>
