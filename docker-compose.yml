@@ -16,9 +16,9 @@ services:
     build:
       context: ./
       args:
-        - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+        - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
     environment:
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
     ports:
       - '3000:3000'
     depends_on:
