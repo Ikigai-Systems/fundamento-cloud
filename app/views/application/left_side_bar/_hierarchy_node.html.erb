@@ -1,8 +1,18 @@
-<% node.each do |item| %>
-  <% if item.is_a? Numeric %>
-    <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item } %>
-  <% else %>
-    <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"] } %>
-    <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"] } %>
+<ul>
+  <% node.each do |item| %>
+    <% if item.is_a? Numeric %>
+      <li>
+        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level } %>
+      </li>
+    <% else %>
+      <details open class="mt-2 ml-4">
+        <summary>
+          <div class="-mt-7">
+            <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level } %>
+          </div>
+        </summary>
+        <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+      </details>
+    <% end %>
   <% end %>
-<% end %>
+</ul>

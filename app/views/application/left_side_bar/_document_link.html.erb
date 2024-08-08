@@ -6,7 +6,9 @@
     <% else %>
       <div class="text-left text-slate-800 mx-2 p-2 hover:bg-gray-100 active:bg-gray-200">
     <% end %>
-    <%= document.title.presence || "Untitled" %>
+<!--      <div style="padding-left: <%#=level * 16%>px">-->
+        <%= document.title.presence || "Untitled" %>
+<!--      </div>-->
     </div>
   <% end %>
 <% end %>
