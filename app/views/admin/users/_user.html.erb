@@ -13,10 +13,10 @@
   </th>
   <td class="px-6 py-4">
     <div class="flex items-center">
-      <% if user.online? %>
+      <% if user.online?(current_organization) %>
         <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-      <% elsif user.last_online_at.present? %>
-        <div class="h-2.5 w-2.5 rounded-full bg-gray-500 me-2"></div> Last seen <%= time_ago_in_words user.last_online_at %> ago
+      <% elsif user.last_online_at(current_organization).present? %>
+        <div class="h-2.5 w-2.5 rounded-full bg-gray-500 me-2"></div> Last seen <%= time_ago_in_words user.last_online_at(current_organization) %> ago
       <% else %>
         <div class="h-2.5 w-2.5 rounded-full bg-red-300 me-2"></div> Never signed in
       <% end %>

@@ -5,10 +5,10 @@
     <dl class="mt-1 flex flex-grow flex-col justify-between">
       <dt class="sr-only">Active?</dt>
       <dd class="mt-3">
-        <% if user.online? %>
+        <% if user.online?(current_organization) %>
           <span class="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">Online now</span>
-        <% elsif user.last_online_at.present? %>
-          <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">Last seen <%= time_ago_in_words user.last_online_at %> ago</span>
+        <% elsif user.last_online_at(current_organization).present? %>
+          <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">Last seen <%= time_ago_in_words user.last_online_at(current_organization) %> ago</span>
         <% else %>
           <span class="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">Never signed in</span>
         <% end %>
