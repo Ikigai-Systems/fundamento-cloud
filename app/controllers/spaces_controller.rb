@@ -5,9 +5,9 @@ class SpacesController < ApplicationController
 
     if @space.home_document.present?
       redirect_to edit_space_document_url(@space, @space.home_document)
+    else
+      @documents = @space.documents_from_hierarchy
     end
-
-    @documents = current_organization.documents.find(@space.hierarchy || [])
   end
 
   def new
@@ -29,11 +29,11 @@ class SpacesController < ApplicationController
   end
 
   def edit
-    @space = current_organization.spaces.find_by_id!(params[:id])
+    @space = current_organization.spaces.find(params[:id])
   end
 
   def update
-    @space = current_organization.spaces.find_by_id!(params[:id])
+    @space = current_organization.spaces.find(params[:id])
 
     if @space.update(space_params)
       redirect_to @space, notice: 'Space was successfully updated.'
