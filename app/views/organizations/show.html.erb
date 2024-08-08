@@ -63,7 +63,7 @@
         </thead>
         <tbody id="users">
         <% @organization.users.each do |user| %>
-          <%= render partial: "admin/users/user", locals: { user: user } %>
+          <%= render partial: "admin/users/user", locals: { user: user, current_organization: @organization } %>
         <% end %>
         </tbody>
       </table>
