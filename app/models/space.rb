@@ -3,6 +3,8 @@ class Space < ApplicationRecord
 
   has_many :documents
 
+  belongs_to :home_document, class_name: "Document", optional: true
+
   validates_presence_of :name
 
   def documents_from_hierarchy
