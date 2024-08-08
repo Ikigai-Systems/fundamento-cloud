@@ -1,4 +1,4 @@
-<%= turbo_stream_from "organizations_list" %>
+<%= turbo_stream_from ["organizations_list", current_user] %>
 
 <% content_for :focused_header do %>
   Organizations
@@ -34,7 +34,7 @@
       </th>
     </tr>
     </thead>
-    <tbody id="users">
+    <tbody id="organizations">
     <% @organizations.each do |organization| %>
       <%= render partial: organization %>
     <% end %>

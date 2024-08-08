@@ -6,7 +6,7 @@ class OrganizationUser < ApplicationRecord
   belongs_to :user
 
   after_create_commit do
-    broadcast_prepend_to(
+    broadcast_append_to(
       ["admin_users_list", self.organization],
       target: "users",
       partial: "admin/users/user",
@@ -15,12 +15,26 @@ class OrganizationUser < ApplicationRecord
         user: self.user
       }
     )
+
+    broadcast_append_to(
+      ["organizations_list", self.user],
+      target: "organizations",
+      partial: "organizations/organization",
+      locals: {
+        organization: self.organization
+      }
+    )
   end
 
   after_destroy_commit do
     broadcast_remove_to(
       ["admin_users_list", self.organization],
       target: self.user
+    )
+
+    broadcast_remove_to(
+      ["organizations_list", self.user],
+      target: self.organization
     )
   end
 end
