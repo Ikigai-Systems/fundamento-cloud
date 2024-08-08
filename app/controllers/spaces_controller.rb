@@ -3,6 +3,10 @@ class SpacesController < ApplicationController
   def show
     @space = current_organization.spaces.find(params[:id])
 
+    if @space.home_document.present?
+      redirect_to edit_space_document_url(@space, @space.home_document)
+    end
+
     @documents = current_organization.documents.find(@space.hierarchy || [])
   end
 
