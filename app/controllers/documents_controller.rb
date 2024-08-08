@@ -12,7 +12,7 @@ class DocumentsController < ApplicationController
     @document = current_organization.documents.new
 
     @space = current_organization.spaces.find(params[:space_id])
-    @documents = current_organization.documents.find(@space.hierarchy || [])
+    @documents = @space.documents_from_hierarchy
   end
 
   def create
@@ -22,7 +22,7 @@ class DocumentsController < ApplicationController
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [@document.id]
-      @documents = @space.documents.find(@space.hierarchy)
+      @documents = @space.documents_from_hierarchy
 
       if @space.save
         redirect_to edit_space_document_path(@space, @document), notice: 'Document was successfully created.'
@@ -42,11 +42,12 @@ class DocumentsController < ApplicationController
     end
   end
 
+
   def edit
     @document = current_organization.documents.find(params[:id])
 
     @space = current_organization.spaces.find(params[:space_id])
-    @documents = current_organization.documents.find(@space.hierarchy || [])
+    @documents = @space.documents_from_hierarchy
   end
 
   def destroy

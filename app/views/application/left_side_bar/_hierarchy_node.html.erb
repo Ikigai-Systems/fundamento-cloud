@@ -1,0 +1,8 @@
+<% node.each do |item| %>
+  <% if item.is_a? Numeric %>
+    <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item } %>
+  <% else %>
+    <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"] } %>
+    <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"] } %>
+  <% end %>
+<% end %>

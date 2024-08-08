@@ -10,20 +10,7 @@
     </div>
     <div>
       <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
-      <% @space.hierarchy&.map do |documentId| %>
-        <% document = @space.documents.find { |document| document.id == documentId } %>
-        <% if document.present? %>
-          <%= link_to edit_space_document_path(@space, document) do %>
-            <% if @document == document %>
-              <div class="text-left text-slate-800 mx-2 p-2 bg-blue-100 hover:bg-blue-200 active:bg-blue-300">
-            <% else %>
-              <div class="text-left text-slate-800 mx-2 p-2 hover:bg-gray-100 active:bg-gray-200">
-            <% end %>
-            <%= document.title.presence || "Untitled" %>
-            </div>
-          <% end %>
-        <% end %>
-      <% end %>
+      <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: @space.hierarchy } %>
     </div>
   </div>
 </aside>
