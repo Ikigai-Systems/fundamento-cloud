@@ -50,6 +50,19 @@ class DocumentsController < ApplicationController
     @documents = @space.documents_from_hierarchy
   end
 
+  def update
+    @document = current_organization.documents.find(params[:id])
+    update_params = document_params
+    @document.update(update_params)
+    if update_params[:archived].present?
+      if update_params[:archived] == "true"
+        redirect_to space_path(params[:space_id]), notice: 'Document has been archived.'
+      else
+        redirect_to edit_space_document_path(params[:space_id], @document), notice: 'Document has been restored.'
+      end
+    end
+  end
+
   def destroy
     document_id = params[:id].to_i
     @document = current_organization.documents.find(document_id)
@@ -65,6 +78,6 @@ class DocumentsController < ApplicationController
   private
 
   def document_params
-    params.require(:document).permit(:title, :space_id)
+    params.require(:document).permit(:title, :space_id, :archived)
   end
 end

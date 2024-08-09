@@ -3,10 +3,21 @@
   <article>
     <div class="bg-white h-12 flex justify-end items-center p-2">
 
-      <span>Toolbar dropdown: &nbsp;</span>
+      <span>Toolbar dropdown:</span>
+      <% if @document.archived %>
+        <%= button_to "Restore", space_document_path(@space, @document), method: :put,
+                      params: {document: {archived: false}},
+                      form: {data: {turbo_confirm: 'Restore this document? This will make it visible in the default view.'}},
+                      class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+      <% else %>
+        <%= button_to "Archive", space_document_path(@space, @document), method: :put,
+                      params: {document: {archived: true}},
+                      form: {data: {turbo_confirm: 'Mark this document as archived? This will hide if from default view.'}},
+                      class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+      <% end %>
       <%= button_to "Delete", space_document_path(@space, @document), method: :delete,
                     form: {data: {turbo_confirm: 'Are you sure? Deleted document cannot be restored.'}},
-                    class: "text-blue-600 dark:text-blue-500 hover:underline" %>
+                    class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
 
     </div>
     <div class="bg-white">
