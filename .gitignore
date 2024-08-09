@@ -40,4 +40,6 @@ node_modules
 
 repo.key
 
-.env
+.env*
+
+spec/examples.txt
