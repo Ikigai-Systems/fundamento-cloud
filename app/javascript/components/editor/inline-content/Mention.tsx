@@ -2,9 +2,9 @@ import {createReactInlineContentSpec} from "@blocknote/react";
 import {useContext} from "react";
 import {useQuery} from "@tanstack/react-query";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
-import DocumentsApi from "~/api/DocumentsApi"
+import DocumentsApi from "~/api/DocumentsApi";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
-import UsersApi from "~/api/UsersApi"
+import UsersApi from "~/api/UsersApi";
 import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
 
 // The Mention inline content.

@@ -2,6 +2,8 @@ import {Document, Space, User} from "../types";
 import Editor from "./editor/Editor";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from "../Contextes/CurrentSpaceContext";
+// @ts-expect-error "typescript does not understand ~ syntax from rails"
+import DocumentsApi from "~/api/DocumentsApi";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,22 @@ const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProp
             if (e.target instanceof HTMLElement) {
               e.target.blur();
             }
+          } else if (e.key === "Escape") {
+            if (e.target instanceof HTMLInputElement) {
+              e.target.value = document.title;
+              e.target.blur();
+            }
+          }
+        }}
+        onBlur={async (e) => {
+          const newTitle = e.target.value;
+          if (newTitle !== document.title) {
+            const updatedDocument = await DocumentsApi.update({params: document, data: {title: e.target.value}});
+            const sideBarElement = window.document.querySelector(`[data-document-id="${updatedDocument.id}"]`);
+            if (sideBarElement) {
+              sideBarElement.innerHTML = updatedDocument.title;
+            }
+            document = updatedDocument; //todo: ensure this work in React world
           }
         }}
       >

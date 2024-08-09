@@ -60,6 +60,10 @@ class DocumentsController < ApplicationController
         redirect_to edit_space_document_path(params[:space_id], @document), notice: 'Document has been restored.'
       end
     end
+
+    respond_to do |format|
+      format.json { render json: @document, :except => [:sync] }
+    end
   end
 
   def destroy
