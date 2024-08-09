@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+is_default:
+  organization: :is
+  name: "Default IS"
+  hierarchy: 
+
+hc_default:
+  organization: hc
+  name: "Default HC"
+  hierarchy: 
