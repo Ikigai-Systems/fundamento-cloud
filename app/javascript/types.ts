@@ -10,6 +10,11 @@ export type Space = {
 }
 
 export type User = {
-  displayName: string,
-  color: string,
+  createdAt: string //date,
+  email: string,
+  firstName: string,
+  id: number,
+  lastName: string,
+  organizationRole: number
+  updatedAt: string //date,
 }

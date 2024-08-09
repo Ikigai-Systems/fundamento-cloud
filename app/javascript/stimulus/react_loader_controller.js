@@ -1,6 +1,7 @@
 import {Controller} from "@hotwired/stimulus"
 import React from "react"
 import ReactDOM from "react-dom/client"
+import {camelCase, deepConvertKeys} from "@js-from-routes/core";
 
 // Connects to data-controller="react-loader"
 export default class extends Controller {
@@ -12,7 +13,7 @@ export default class extends Controller {
   async connect() {
     const Component = await this.importComponent();
     this.root = ReactDOM.createRoot(this.element)
-    this.root.render(React.createElement(Component, this.propsValue));
+    this.root.render(React.createElement(Component, deepConvertKeys(this.propsValue, camelCase)));
   }
 
   disconnect() {

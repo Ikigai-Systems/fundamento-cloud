@@ -21,7 +21,7 @@
 
     </div>
     <div class="bg-white">
-      <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space} %>
+      <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
     </div>
   </article>
 </div>

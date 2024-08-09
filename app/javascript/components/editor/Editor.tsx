@@ -19,13 +19,21 @@ let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
 
+const tinySimpleHash = (s: string) => {
+  let h = 9;
+  for (let i = 0; i < s.length;) {
+    h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
+  }
+  return h ^ h >>> 9
+}
+
 type EditorProps = {
   initialContent: string, // probably not needed
-  user: User,
+  currentUser: User,
   documentId: number,
 }
 
-const Editor = ({user, documentId}: EditorProps) => {
+const Editor = ({currentUser, documentId}: EditorProps) => {
   const editor = useMemo(() => {
     if (ydoc) {
       ydoc.destroy();
@@ -55,6 +63,8 @@ const Editor = ({user, documentId}: EditorProps) => {
       {documentId: documentId.toString()},
     );
 
+    const pseudoRandomFromUserId = (tinySimpleHash(currentUser.id.toString()) + 0x7FFFFFFF) / 0xFFFFFFFF;
+
     return BlockNoteEditor.create({
       schema,
       // initialContent: JSON.parse(initialContent),
@@ -62,8 +72,8 @@ const Editor = ({user, documentId}: EditorProps) => {
         provider: acProvider,
         fragment: ydoc.getXmlFragment("document-store"),
         user: {
-          name: user.displayName,
-          color: user.color,
+          name: `${currentUser.firstName} ${currentUser.lastName}`,
+          color: `hsl(${~~(360 * pseudoRandomFromUserId)}, 72%,  78%)`,
         }
       },
       uploadFile: async (file) => {

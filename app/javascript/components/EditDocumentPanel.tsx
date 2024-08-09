@@ -1,4 +1,3 @@
-import {useState} from "react"
 import {Document, Space, User} from "../types";
 import Editor from "./editor/Editor";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
@@ -9,15 +8,10 @@ const queryClient = new QueryClient();
 type EditDocumentPanelProps = {
   document: Document
   space: Space
+  currentUser: User
 }
 
-const EditDocumentPanel = ({document, space}: EditDocumentPanelProps) => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const [user] = useState<User>({
-    displayName: urlParams.get("displayName") || "unknown user",
-    color: (urlParams.get("color")) ? "#" + urlParams.get("color") : `hsl(${~~(360 * Math.random())}, 72%,  78%)`,
-  });
-
+const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProps) => {
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <input key={document.id + "_title"} type="text"
@@ -37,7 +31,7 @@ const EditDocumentPanel = ({document, space}: EditDocumentPanelProps) => {
       <div className="editor-container">
         <Editor
           initialContent={document.content}
-          user={user}
+          currentUser={currentUser}
           documentId={document.id}
         />
       </div>
