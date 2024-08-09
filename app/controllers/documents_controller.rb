@@ -42,7 +42,6 @@ class DocumentsController < ApplicationController
     end
   end
 
-
   def edit
     @document = current_organization.documents.find(params[:id])
 

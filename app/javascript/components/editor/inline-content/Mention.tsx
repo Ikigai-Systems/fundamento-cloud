@@ -3,6 +3,8 @@ import {useContext} from "react";
 import {useQuery} from "@tanstack/react-query";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
 import DocumentsApi from "~/api/DocumentsApi"
+// @ts-expect-error "typescript does not understand ~ syntax from rails"
+import UsersApi from "~/api/UsersApi"
 import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
 
 // The Mention inline content.
@@ -15,6 +17,9 @@ const Mention = createReactInlineContentSpec(
       },
       id: {
         default: -1,
+      },
+      entity: {
+        default: "document"
       }
     },
     content: "none",
@@ -22,24 +27,45 @@ const Mention = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const documentId = props.inlineContent.props.id;
-      const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
-        return (await DocumentsApi.show({id: documentId}));
-      }});
-      const isLoading = documentQuery.isLoading;
-      const displayName = documentQuery.data?.title || documentId;
-      const {space} = useContext(CurrentSpaceContext);
-      return (
-        <a
-          href={DocumentsApi.edit.path({id: documentId, space_id: space?.id})}
-          className="border p-0.5 text-sky-500"
-        >
-          @{displayName}
-          {isLoading && <span className="relative top-1">
-            <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
-          </span>}
-        </a>
-      )
+      if (props.inlineContent.props.entity === "document") {
+        const documentId = props.inlineContent.props.id;
+        const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
+          return (await DocumentsApi.show({id: documentId}));
+        }});
+        const isLoading = documentQuery.isLoading;
+        const displayName = documentQuery.data?.title || documentId;
+        const {space} = useContext(CurrentSpaceContext);
+        return (
+          <a
+            href={DocumentsApi.edit.path({id: documentId, space_id: space?.id})}
+            className="border p-0.5 text-sky-500"
+          >
+            @{displayName}
+            {isLoading && <span className="relative top-1">
+              <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+            </span>}
+          </a>
+        )
+      } else if (props.inlineContent.props.entity === "user") {
+        const userId = props.inlineContent.props.id;
+        const userQuery = useQuery({queryKey: ["users", userId], queryFn: async () => {
+          return (await UsersApi.show({id: userId}));
+        }});
+        const isLoading = userQuery.isLoading;
+        const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : userId;
+        return (
+          <span
+            className="border p-0.5 text-sky-500"
+          >
+            @{displayName}
+            {isLoading && <span className="relative top-1">
+              <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+            </span>}
+          </span>
+        )
+
+      }
+
     },
   }
 );

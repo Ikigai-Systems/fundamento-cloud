@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     end
 
     resources :attachments, only: [:create, :destroy, :show]
+
+    resources :users, only: [:index, :show]
   end
 
 
