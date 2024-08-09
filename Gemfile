@@ -67,6 +67,7 @@ group :development, :test do
   gem "js_from_routes"
 
   gem "rspec", "~> 3.13"
+  gem "rspec-rails"
 end
 
 group :development do
