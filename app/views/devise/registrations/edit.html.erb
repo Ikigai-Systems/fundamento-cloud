@@ -14,6 +14,21 @@
     <% end %>
 
     <div class="form-field">
+      <%= f.label :first_name %>
+      <%= f.text_field :first_name, class: "form-input"  %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :last_name %>
+      <%= f.text_field :last_name, class: "form-input"  %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
+      <%= f.password_field :current_password, autocomplete: "current-password", class: "form-input" %>
+    </div>
+
+    <div class="form-field">
       <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
       <%= f.password_field :password, autocomplete: "new-password", class: "form-input" %>
       <% if @minimum_password_length %>
@@ -25,11 +40,6 @@
     <div class="form-field">
       <%= f.label :password_confirmation %><br />
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
-    </div>
-
-    <div class="form-field">
-      <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-      <%= f.password_field :current_password, autocomplete: "current-password", class: "form-input" %>
     </div>
 
     <div class="flex justify-end mt-6">
