@@ -1,11 +1,11 @@
-import {useMemo} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {User} from "../../types";
 import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
-import * as ActionCable from "@rails/actioncable";
+import {cable} from "@hotwired/turbo-rails";
 import {getDefaultReactSlashMenuItems, SuggestionMenuController} from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
@@ -16,7 +16,6 @@ import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
 import "./editor-styles.css";
 
 let ydoc: Y.Doc | undefined = undefined;
-let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
 
 type EditorProps = {
@@ -26,31 +25,41 @@ type EditorProps = {
 }
 
 const Editor = ({user, documentId}: EditorProps) => {
+  const [actionCableConsumer, setActionCableConsumer] = useState(null);
+
+  useEffect(() => {
+    cable.getConsumer().then(setActionCableConsumer);
+  }, []);
+
   const editor = useMemo(() => {
+    console.log("useMemo", documentId, actionCableConsumer); // FIXME
+
     if (ydoc) {
       ydoc.destroy();
       ydoc = undefined;
     }
-    if (acConsumer) {
-      acConsumer.disconnect();
-      acConsumer = undefined;
+    if (actionCableConsumer) {
+      actionCableConsumer.disconnect();
+      // setActionCableConsumer(null);
     }
     if (acProvider) {
       acProvider.destroy();
       acProvider = undefined;
     }
 
-    if (!documentId) {
+    if (!documentId || !actionCableConsumer) {
       return undefined;
     }
 
     ydoc = new Y.Doc();
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
-    acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
+
+    console.log("Moving forward", actionCableConsumer); // FIXME
+
     acProvider = new WebsocketProvider(
       ydoc,
-      acConsumer,
+      actionCableConsumer,
       "DocumentChannel",
       {documentId: documentId.toString()},
     );
@@ -77,7 +86,7 @@ const Editor = ({user, documentId}: EditorProps) => {
         return attachment.location;
       },
     });
-  }, [documentId]);
+  }, [documentId, actionCableConsumer]);
 
   if (editor === undefined) {
     return "Loading content...";
