@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "root#index"
 
+  # We use `defaults export: true` here to export routes to app/javascript/api,
+  # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
   defaults export: true do
     resources :documents, only: [:index, :show]
 
