@@ -59,10 +59,12 @@ class DocumentsController < ApplicationController
       else
         redirect_to edit_space_document_path(params[:space_id], @document), notice: 'Document has been restored.'
       end
+      return
     end
 
     respond_to do |format|
       format.json { render json: @document, :except => [:sync] }
+      format.html { render action: 'edit' }
     end
   end
 
