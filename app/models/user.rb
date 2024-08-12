@@ -40,4 +40,10 @@ class User < ApplicationRecord
       locals: { current_organization: for_organization }
     )
   end
+
+  # Do not allow user to reset its password until it accepts the invitation
+  # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
+  def send_reset_password_instructions
+    super if invitation_token.nil?
+  end
 end
