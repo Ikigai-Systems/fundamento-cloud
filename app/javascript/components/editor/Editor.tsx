@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {useMemo, useState} from "react";
 import {User} from "../../types";
 import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
@@ -34,6 +34,8 @@ type EditorProps = {
 }
 
 const Editor = ({currentUser, documentId}: EditorProps) => {
+  const [initialStateReceived, setInitialStateReceived] = useState(false);
+
   const editor = useMemo(() => {
     if (ydoc) {
       ydoc.destroy();
@@ -63,6 +65,18 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
       {documentId: documentId.toString()},
     );
 
+    // hackery to determine if editor has been initialized with initial content from the action cable or not yet
+    const subscription = acConsumer.subscriptions.subscriptions[0];
+    const originalReceived = subscription.received;
+    subscription._messagesReceived = 0;
+    subscription.received = (message) => {
+      subscription._messagesReceived++;
+      if (subscription._messagesReceived == 2) {
+        setInitialStateReceived(true);
+      }
+      return originalReceived(message);
+    }
+
     const pseudoRandomFromUserId = (tinySimpleHash(currentUser.id.toString()) + 0x7FFFFFFF) / 0xFFFFFFFF;
 
     return BlockNoteEditor.create({
@@ -89,17 +103,21 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
     });
   }, [documentId]);
 
-  if (editor === undefined) {
-    return "Loading content...";
+  if (editor === undefined || !initialStateReceived) {
+    return <div style={{
+      marginTop: "0.5px",
+      marginLeft: "-0.25px",
+      fontSize: "16px",
+      fontStyle: "italic",
+      color: "rgb(207,207,207)",
+      fontFamily: "Inter,SF Pro Display,-apple-system,BlinkMacSystemFont,Open Sans,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif",
+    }} className="pl-[3.4rem] pb-1">
+      Loading content...
+      <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+    </div>
   }
 
   return <>
-    {/*<div className="flex justify-end">*/}
-    {/*  <label className="flex flex-col justify-center mr-1">*/}
-    {/*    <i>debug only: Document id: {documentId}</i>*/}
-    {/*  </label>*/}
-    {/*</div>*/}
-
     <div
       className="min-w-2xl min-h-xl border-dashed"
     >
