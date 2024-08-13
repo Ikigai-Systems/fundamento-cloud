@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_09_084015) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_13_085921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -46,8 +46,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_084015) do
   create_table "organizations_users", id: false, force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "user_id", null: false
-    t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id"
-    t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id"
+    t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id", unique: true
+    t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id", unique: true
   end
 
   create_table "spaces", force: :cascade do |t|
