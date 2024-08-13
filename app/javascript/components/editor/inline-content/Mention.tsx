@@ -6,6 +6,7 @@ import DocumentsApi from "~/api/DocumentsApi";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
 import UsersApi from "~/api/UsersApi";
 import CurrentSpaceContext from "../../../Contextes/CurrentSpaceContext.tsx";
+import queryClient from "../../../Contextes/ReactQueryClient.tsx";
 
 // The Mention inline content.
 const Mention = createReactInlineContentSpec(
@@ -31,7 +32,7 @@ const Mention = createReactInlineContentSpec(
         const documentId = props.inlineContent.props.id;
         const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
           return (await DocumentsApi.show({id: documentId}));
-        }});
+        }}, queryClient);
         const isLoading = documentQuery.isLoading;
         const displayName = documentQuery.data?.title || documentId;
         const {space} = useContext(CurrentSpaceContext);
@@ -50,7 +51,7 @@ const Mention = createReactInlineContentSpec(
         const userId = props.inlineContent.props.id;
         const userQuery = useQuery({queryKey: ["users", userId], queryFn: async () => {
           return (await UsersApi.show({id: userId}));
-        }});
+        }}, queryClient);
         const isLoading = userQuery.isLoading;
         const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : userId;
         return (

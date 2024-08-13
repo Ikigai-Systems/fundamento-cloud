@@ -1,11 +1,10 @@
 import {Document, Space, User} from "../types";
 import Editor from "./editor/Editor";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from "../Contextes/CurrentSpaceContext";
 // @ts-expect-error "typescript does not understand ~ syntax from rails"
 import DocumentsApi from "~/api/DocumentsApi";
-
-const queryClient = new QueryClient();
+import queryClient from "../Contextes/ReactQueryClient.tsx";
 
 type EditDocumentPanelProps = {
   document: Document
