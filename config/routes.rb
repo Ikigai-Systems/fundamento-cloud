@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :invited_users
+
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     sessions: "users/sessions",
