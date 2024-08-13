@@ -24,6 +24,8 @@
     </div>
   </td>
   <td class="px-6 py-4">
-    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
+    <% if current_user != user %>
+      <%= button_to "Remove user", organizations_user_path([current_organization.id, user.id].join(",")), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :delete %>
+    <% end %>
   </td>
 </tr>

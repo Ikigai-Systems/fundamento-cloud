@@ -36,6 +36,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :organizations_users, only: [:destroy]
+
   namespace :admin do
     resources :users
   end
