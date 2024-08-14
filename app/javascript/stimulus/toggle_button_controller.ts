@@ -1,4 +1,7 @@
 import {Controller} from "@hotwired/stimulus"
+import Cookies from "js-cookie"
+
+const COOKIE_NAME = "ikigai_userPreferences_showArchived";
 
 // Connects to data-controller="toggle-button"
 export default class extends Controller<HTMLElement> {
@@ -9,12 +12,17 @@ export default class extends Controller<HTMLElement> {
 
   declare checkedValue: boolean;
 
+  initialize() {
+    this.checkedValue = (Cookies.get(COOKIE_NAME) === "true");
+  }
+
   toggle() {
     this.checkedValue = !this.checkedValue;
   }
 
   checkedValueChanged() {
     this.dispatch("change", {detail: {value: this.checkedValue}});
+    Cookies.set(COOKIE_NAME, this.checkedValue.toString());
   }
 
   /* leaving commented out, might become useful in future iterations

@@ -2,7 +2,7 @@
 <% if document.present? %>
   <%= link_to edit_space_document_path(@space, document) do %>
     <% if document.archived %>
-      <div data-visibility-target="hideable" hidden class="text-slate-400">
+      <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
     <% else %>
       <div class="text-slate-800">
     <% end %>

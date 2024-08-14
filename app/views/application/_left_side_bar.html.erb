@@ -15,7 +15,7 @@
     <div class="mt-auto self-end">
       <div class="flex items-center">
         <span class="mr-2">Show archived:</span>
-        <%= render partial: "application/components/toggle_button" %>
+        <%= render partial: "application/components/toggle_button", locals: { checked: cookies["ikigai_userPreferences_showArchived"] == "true" } %>
       </div>
     </div>
   </div>
