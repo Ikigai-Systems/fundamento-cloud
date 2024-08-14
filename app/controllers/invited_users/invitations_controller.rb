@@ -38,6 +38,9 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
         end
 
         resource.organization.organizations_users.find_or_create_by!(user_id: user.id)
+
+        # We finally destroy the invited user as we no longer need it
+        resource.destroy!
       end
     end
   end
@@ -47,8 +50,8 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
       # There's already such user, so let's add it to the organization and accept the invitation
       OrganizationUser.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id)
 
-      resource.accept_invitation
-      resource.save!(validate: false)
+      # We finally destroy the invited user as we no longer need it
+      resource.destroy!
 
       redirect_to new_session_path(resource_name), notice: "You accepted the invitation to join #{resource.organization.name}, you can sign in now."
     else
