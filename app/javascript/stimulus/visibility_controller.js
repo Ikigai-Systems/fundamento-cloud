@@ -4,15 +4,9 @@ import {Controller} from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["hideable"];
 
-  show() {
+  onChange(event) {
     this.hideableTargets.forEach(element => {
-      element.hidden = false;
-    })
-  }
-
-  hide() {
-    this.hideableTargets.forEach(element => {
-      element.hidden = true;
+      element.hidden = !event.detail.value;
     })
   }
 }

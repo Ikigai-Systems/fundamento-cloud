@@ -14,6 +14,10 @@ module.exports = {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
     },
+    // leaving commented out, might become useful in future iterations
+    // data: {
+    //   checked: 'ui~=checked'
+    // },
   },
   plugins: [
     require('@tailwindcss/forms'),

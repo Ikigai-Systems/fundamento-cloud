@@ -20,6 +20,9 @@ application.register("react-loader", ReactLoader)
 import VisibilityController from "./visibility_controller.js";
 application.register("visibility", VisibilityController);
 
+import ToggleButtonController from "./toggle_button_controller.ts";
+application.register("toggle-button", ToggleButtonController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application

@@ -1,5 +1,5 @@
 <aside class="bg-white border-r overflow-auto">
-  <div class="p-4 flex flex-col h-full" data-controller="visibility">
+  <div class="p-4 flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
     <div class="flex justify-between items-center text-center">
       <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
       <div class="hover:bg-gray-100 active:bg-gray-200 size-6 mr-2" title="Add document">
@@ -13,9 +13,10 @@
       <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
     </div>
     <div class="mt-auto self-end">
-      Archived:
-      <button class="btn" data-action="visibility#show">Show</button>
-      <button class="btn" data-action="visibility#hide">Hide</button>
+      <div class="flex items-center">
+        <span class="mr-2">Show archived:</span>
+        <%= render partial: "application/components/toggle_button" %>
+      </div>
     </div>
   </div>
 </aside>
