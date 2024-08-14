@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_13_085921) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_14_111249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_13_085921) do
     t.boolean "archived", default: false
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"
+  end
+
+  create_table "invited_users", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.integer "invitation_limit"
+    t.string "invited_by_type"
+    t.bigint "invited_by_id"
+    t.integer "invitations_count", default: 0
+    t.text "first_name", default: "", null: false
+    t.text "last_name", default: "", null: false
+    t.index ["email", "organization_id"], name: "index_invited_users_on_email_and_organization_id", unique: true
+    t.index ["invitation_token"], name: "index_invited_users_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_invited_users_on_invited_by"
+    t.index ["organization_id"], name: "index_invited_users_on_organization_id"
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -95,6 +118,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_13_085921) do
   add_foreign_key "attachments", "organizations"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
+  add_foreign_key "invited_users", "organizations"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
 end
