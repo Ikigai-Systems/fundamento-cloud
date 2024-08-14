@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class OrganizationsUsersController < ApplicationController
+  skip_before_action :select_current_organization
+
   def destroy
     organization_id, user_id = params[:id].split(",")
 

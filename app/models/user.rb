@@ -5,7 +5,7 @@ class User < ApplicationRecord
   devise :invitable, :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :trackable
 
-  has_many :organizations_users, class_name: :OrganizationUser
+  has_many :organizations_users, class_name: :OrganizationUser, dependent: :destroy
   has_many :organizations, through: :organizations_users
 
   validates_presence_of :first_name

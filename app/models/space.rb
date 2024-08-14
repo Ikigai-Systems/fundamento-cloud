@@ -1,7 +1,7 @@
 class Space < ApplicationRecord
   belongs_to :organization
 
-  has_many :documents
+  has_many :documents, dependent: :destroy
 
   belongs_to :home_document, class_name: "Document", optional: true
 
