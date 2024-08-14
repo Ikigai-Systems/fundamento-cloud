@@ -1,10 +1,11 @@
 Rails.application.routes.draw do
-  devise_for :invited_users
-
   devise_for :users, controllers: {
     registrations: 'users/registrations',
-    sessions: "users/sessions",
-    invitations: "users/invitations"
+    sessions: "users/sessions"
+  }
+
+  devise_for :invited_users, controllers: {
+    invitations: "invited_users/invitations"
   }
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
