@@ -2,17 +2,15 @@
   <% node.each do |item| %>
     <% if item.is_a? Numeric %>
       <li>
-        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level } %>
+        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level, has_children: false } %>
       </li>
     <% else %>
-      <details open class="mt-2 ml-4">
-        <summary>
-          <div class="-mt-7">
-            <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level } %>
-          </div>
-        </summary>
-        <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
-      </details>
+      <div data-controller="collapsible">
+        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level, has_children: true } %>
+        <div data-collapsible-target="collapsible" class="overflow-hidden max-h-0">
+          <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+        </div>
+      </div>
     <% end %>
   <% end %>
 </ul>

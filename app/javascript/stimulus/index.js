@@ -23,6 +23,9 @@ application.register("visibility", VisibilityController);
 import ToggleButtonController from "./toggle_button_controller.ts";
 application.register("toggle-button", ToggleButtonController);
 
+import CollapsibleController from "./collapsible_controller.js";
+application.register("collapsible", CollapsibleController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application

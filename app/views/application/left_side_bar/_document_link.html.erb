@@ -1,22 +1,22 @@
 <% document = @documents.find { |document| document.id == document_id } %>
 <% if document.present? %>
-  <%= link_to edit_space_document_path(@space, document) do %>
-    <% if document.archived %>
-      <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
-    <% else %>
-      <div class="text-slate-800">
-    <% end %>
-
-    <% if @document == document %>
-      <div data-document-id="<%= document.id %>" class="text-left mx-2 p-2 bg-blue-100 hover:bg-blue-200 active:bg-blue-300">
-    <% else %>
-      <div data-document-id="<%= document.id %>" class="text-left mx-2 p-2 hover:bg-gray-100 active:bg-gray-200">
-    <% end %>
-<!--      <div style="padding-left: <%#=level * 16%>px">-->
-        <%= document.title.presence || "Untitled" %>
-<!--      </div>-->
-    </div>
-
-    </div>
+  <% if document.archived %>
+    <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
+  <% else %>
+    <div class="text-slate-800">
   <% end %>
+      <%= link_to edit_space_document_path(@space, document), class: "flex items-center" do %>
+        <div style="padding-left: <%=level * 16%>px" class="flex-grow flex items-center <%= @document == document ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+          <% if has_children %>
+            <div data-action="click->collapsible#toggle:prevent" class="size-6">
+              <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
+            </div>
+          <% else %>
+            <div class="size-8 pt-1 ml-2.5 -mr-[1.125rem]">•</div>
+          <% end %>
+          <div data-document-id="<%= document.id %>" class="text-left mx-0 p-2">
+            <%= document.title.presence || "Untitled" %>
+          </div>
+        </div>
+      <% end %>
 <% end %>
