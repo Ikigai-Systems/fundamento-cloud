@@ -15,7 +15,7 @@ type EditDocumentPanelProps = {
 const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProps) => {
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
-      <input key={document.id + "_title"} type="text"
+      <input key={document.id + "_title"} type="text" autoFocus={!document.title}
         placeholder="Untitled"
         defaultValue={document.title}
         className="pl-[3.4rem] h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800"
