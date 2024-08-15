@@ -14,9 +14,8 @@ if sentry_dsn.present?
 
     # this example uses Rails' parameter filter to sanitize the event payload
     # for Rails 6+
-    filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
-
     config.before_send = lambda do |event, _hint|
+      filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
       filter.filter(event.to_hash)
     end
 
