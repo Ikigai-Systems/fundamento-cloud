@@ -1,20 +1,34 @@
 <aside class="bg-white border-r overflow-auto">
-  <div class="p-4 flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
+  <div class="px-4 pb-4 flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
+
+    <div class="py-2">
+      <%= link_to space_path(@space), class: "group flex gap-x-3 rounded-md bg-indigo-700 p-2 font-semibold leading-6 text-white" do %>
+        <svg class="h-6 w-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+
+        <%= @space.name %>
+    <% end %>
+    </div>
+
     <div class="flex justify-between items-center text-center">
       <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
     </div>
+
     <div>
       <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
       <ul class="st-tree">
         <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
       </ul>
     </div>
+
     <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">
       <%= button_to space_documents_path(@space), method: :post, params: {"document": {"space_id": @space.id}}, form_class: "flex flex-grow items-center", class: "flex flex-grow items-center" do %>
         <span class="ml-1 size-5 icon-[heroicons--plus-16-solid]"></span>
         <span class="text-left mx-0 p-2">New document</span>
       <% end %>
     </div>
+
     <div class="mt-auto self-end">
       <div class="flex items-center">
         <span class="mr-2">Show archived:</span>
