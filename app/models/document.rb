@@ -18,4 +18,8 @@ class Document < ApplicationRecord
         current_organization: self.organization
       }
   end
+
+  def title
+    super.presence || "Untitled"
+  end
 end
