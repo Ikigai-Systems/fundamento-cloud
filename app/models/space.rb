@@ -15,7 +15,7 @@ class Space < ApplicationRecord
   private
     def traverse_hierarchy(node)
       ids = []
-      node.each do |item|
+      (node || []).each do |item|
         if item.is_a? Numeric
           ids << item
         else
