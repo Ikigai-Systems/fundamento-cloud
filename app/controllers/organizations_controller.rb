@@ -52,6 +52,13 @@ class OrganizationsController < ApplicationController
     redirect_to space_path(@organization.spaces.first), notice: "You've been switched to #{@organization.name}."
   end
 
+  def destroy
+    @organization = current_user.organizations.find_by_id(params[:id])
+    @organization.destroy!
+
+    redirect_to organizations_path, notice: "Organization was removed."
+  end
+
   private
 
   def organization_params
