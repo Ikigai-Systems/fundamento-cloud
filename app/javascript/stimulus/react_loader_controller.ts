@@ -1,14 +1,18 @@
 import {Controller} from "@hotwired/stimulus"
 import React from "react"
-import ReactDOM from "react-dom/client"
+import ReactDOM, {Root} from "react-dom/client"
 import {camelCase, deepConvertKeys} from "@js-from-routes/core";
 
 // Connects to data-controller="react-loader"
-export default class extends Controller {
+export default class extends Controller<HTMLElement> {
   static values = {
     component: String,
     props: Object,
   }
+
+  declare root: Root | undefined;
+  declare propsValue: object;
+  declare componentValue: string;
 
   async connect() {
     const Component = await this.importComponent();

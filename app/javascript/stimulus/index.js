@@ -17,14 +17,17 @@ application.register('toggle', Toggle)
 import ReactLoader from "./react_loader_controller"
 application.register("react-loader", ReactLoader)
 
-import VisibilityController from "./visibility_controller.js";
+import VisibilityController from "./visibility_controller";
 application.register("visibility", VisibilityController);
 
-import ToggleButtonController from "./toggle_button_controller.ts";
+import ToggleButtonController from "./toggle_button_controller";
 application.register("toggle-button", ToggleButtonController);
 
-import CollapsibleController from "./collapsible_controller.js";
+import CollapsibleController from "./collapsible_controller";
 application.register("collapsible", CollapsibleController);
+
+import DraggableController from "./draggable_controller";
+application.register("draggable", DraggableController);
 
 // Configure Stimulus development experience
 application.debug = true

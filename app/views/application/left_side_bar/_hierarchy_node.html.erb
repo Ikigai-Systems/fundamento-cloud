@@ -1,16 +1,14 @@
-<ul>
-  <% (node || []).each do |item| %>
-    <% if item.is_a? Numeric %>
-      <li>
-        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level, has_children: false } %>
-      </li>
-    <% else %>
-      <div data-controller="collapsible">
-        <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level, has_children: true } %>
-        <div data-collapsible-target="collapsible" class="overflow-hidden max-h-0">
-          <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
-        </div>
-      </div>
-    <% end %>
+<% (node || []).each do |item| %>
+  <% if item.is_a? Numeric %>
+    <li>
+      <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level, has_children: false } %>
+    </li>
+  <% else %>
+    <li data-controller="collapsible">
+      <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level, has_children: true } %>
+      <ul data-collapsible-target="collapsible" class="overflow-hidden max-h-0">
+        <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+      </ul>
+    </li>
   <% end %>
-</ul>
+<% end %>

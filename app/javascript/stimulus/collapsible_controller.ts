@@ -1,8 +1,11 @@
 import {Controller} from "@hotwired/stimulus"
 
 // Connects to data-controller="collapsible"
-export default class extends Controller {
+export default class extends Controller<HTMLElement> {
   static targets = ["collapsible", "icon"];
+
+  declare iconTarget: HTMLElement;
+  declare collapsibleTargets: HTMLElement[];
 
   toggle() {
     this.iconTarget.classList.toggle("rotate-90")

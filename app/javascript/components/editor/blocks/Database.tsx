@@ -1,6 +1,6 @@
 import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import Table, {EVALUATION_LICENSE} from "rowstack";
+import Table from "rowstack";
 import {useState} from "react";
 
 const sampleData = [
@@ -57,7 +57,7 @@ const Database = createReactBlockSpec(
       const [columns, setColumns] = useState(JSON.parse(props.block.props.columns));
 
       return (
-        <Table data={rows} columns={columns} licenseKey={EVALUATION_LICENSE} config={{}}
+        <Table data={rows} columns={columns} config={{}}
           onChange={async (event) => {
             if (event.type === "add_row") {
               setRows((prevRows: [{id: string}]) => {
