@@ -1,27 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Wiki</title>
-
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-
-  <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-
-  <%#= javascript_importmap_tags %>
-
-  <%= vite_client_tag %>
-  <%= vite_react_refresh_tag %>
-  <%= vite_javascript_tag 'application' %>
-</head>
-<body class="bg-gray-100">
-  <%= render "nav_bar" %>
-
-  <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
-
+<%= render "layouts/body_with_nav_bar" do %>
   <div class="w-1/2 mx-auto">
     <%= render partial: "flash_messages" %>
 
@@ -29,5 +6,4 @@
 
     <%= yield %>
   </div>
-</body>
-</html>
+<% end %>
