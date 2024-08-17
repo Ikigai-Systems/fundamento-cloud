@@ -20,7 +20,7 @@
 <body class="bg-gray-100">
   <%= render "nav_bar" %>
 
-  <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel %>
+  <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
 
   <div class="w-1/2 mx-auto">
     <%= render partial: "flash_messages" %>
