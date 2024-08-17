@@ -13,7 +13,7 @@
 
 @layer components {
     .form-section {
-        @apply max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800 mt-8;
+        @apply dark:bg-gray-800 bg-white max-w-4xl mt-8 p-6 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
     }
 
     .form-submit {
@@ -33,7 +33,8 @@
     }
 
     .focused-section {
-        @apply relative bg-white overflow-x-auto shadow-md sm:rounded-lg mt-8;
+        @apply form-section;
+        @apply relative overflow-x-auto;
     }
 
     .secondary-button {
