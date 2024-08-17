@@ -22,12 +22,10 @@
 
   <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel %>
 
-  <div class="bg-gray-100">
-    <div class="w-1/2 mx-auto">
-      <%= render partial: "flash_messages_as_alerts" %>
+  <div class="w-1/2 mx-auto">
+    <%= render partial: "flash_messages_as_alerts" %>
 
-      <%= turbo_frame_tag "modal" %>
-    </div>
+    <%= turbo_frame_tag "modal" %>
   </div>
 
   <div class="h-[calc(100vh-60px)]">
