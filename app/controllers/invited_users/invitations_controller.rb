@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class InvitedUsers::InvitationsController < Devise::InvitationsController
-  layout "users"
-
   skip_before_action :select_current_organization
 
   before_action :configure_permitted_parameters

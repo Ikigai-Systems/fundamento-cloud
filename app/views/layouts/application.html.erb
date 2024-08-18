@@ -1,9 +1,7 @@
 <%= render "layouts/body_with_nav_bar" do %>
-  <div class="w-1/2 mx-auto">
-    <%= render partial: "flash_messages" %>
+  <%= render partial: "flash_messages" %>
 
-    <%= turbo_frame_tag "modal" %>
+  <%= turbo_frame_tag "modal" %>
 
-    <%= yield %>
-  </div>
+  <%= yield %>
 <% end %>
