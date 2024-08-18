@@ -6,6 +6,7 @@ class Organization < ApplicationRecord
   has_many :spaces, dependent: :destroy
   has_many :documents, dependent: :destroy
   has_many :attachments, dependent: :destroy
+  has_many :tables, class_name: "Tables::Table", dependent: :destroy
 
   validates_presence_of :name
 

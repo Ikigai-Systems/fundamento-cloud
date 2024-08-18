@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_14_111249) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_18_174020) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -82,6 +82,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_14_111249) do
     t.bigint "home_document_id"
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
+  end
+
+  create_table "tables", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "space_id", null: false
+    t.string "parent_type", null: false
+    t.bigint "parent_id", null: false
+    t.string "name", null: false
+    t.boolean "archived", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "space_id", "organization_id"], name: "index_tables_on_name_and_space_id_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_tables_on_organization_id"
+    t.index ["parent_type", "parent_id"], name: "index_tables_on_parent"
+    t.index ["space_id"], name: "index_tables_on_space_id"
   end
 
   create_table "users", force: :cascade do |t|

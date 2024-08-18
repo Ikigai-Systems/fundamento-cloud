@@ -2,6 +2,7 @@ class Space < ApplicationRecord
   belongs_to :organization
 
   has_many :documents, dependent: :destroy
+  has_many :tables, class_name: "Tables::Table", dependent: :destroy
 
   belongs_to :home_document, class_name: "Document", optional: true
 
