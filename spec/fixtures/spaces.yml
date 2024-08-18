@@ -6,6 +6,6 @@ is_default:
   hierarchy: 
 
 hc_default:
-  organization: hc
+  organization: :hc
   name: "Default HC"
   hierarchy: 
