@@ -22,4 +22,34 @@ RSpec.describe Tables::Table, type: :model do
     table.organization = nil
     expect(table.save).to be_falsey
   end
+
+  context "table data" do
+    fixtures "tables/columns"
+    fixtures "tables/rows"
+    fixtures "tables/cells"
+
+    describe "#data_to_json" do
+      it "returns data" do
+        table_data = tables_tables(:projects).data_to_json
+
+        expect(table_data).to eq([
+          {
+            "Key" => "JIRA",
+            "Name" => "Jira",
+            "Description" => "Some project tracking tool"
+          },
+          {
+            "Key" => "CONFLUENCE",
+            "Name" => "Confluence",
+            "Description" => "Some knowledge sharing tool"
+          },
+          {
+            "Key" => "MON",
+            "Name" => "Monday",
+            "Description" => "Hardest day of the week"
+          }
+        ])
+      end
+    end
+  end
 end

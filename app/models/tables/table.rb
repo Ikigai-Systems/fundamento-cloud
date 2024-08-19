@@ -5,6 +5,41 @@ class Tables::Table < ApplicationRecord
   belongs_to :parent, polymorphic: true
 
   has_many :columns, class_name: "Tables::Column", dependent: :delete_all
+  has_many :rows, class_name: "Tables::Row", dependent: :delete_all
+  has_many :cells, class_name: "Tables::Cell", dependent: :delete_all
 
   validates_presence_of :name
+
+  def order_linked_list(rows, method)
+    # Create a hash where the keys are the id of the previous row and the values are the row objects
+    rows_by_previous_id = rows.index_by(&method)
+
+    # Find the first row (the one that has previous_row_id as nil)
+    first_row = rows.find { |row| row.send(method).nil? }
+
+    # Initialize the ordered list of rows with the first row
+    ordered_rows = [first_row]
+
+    # Take the last one from the ordered list and get a row that references it, then loop again
+    while (next_row = rows_by_previous_id[ordered_rows.last.id])
+      ordered_rows << next_row
+    end
+
+    # Final check for consistency
+    raise IndexError.new("Incomplete linked list") if ordered_rows.size != rows_by_previous_id.size
+
+    ordered_rows
+  end
+
+  def data_to_json
+    columns_in_order = self.order_linked_list(self.columns, :previous_column_id)
+    rows_in_order = self.order_linked_list(self.rows, :previous_row_id)
+    cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
+
+    rows_in_order.map do |row|
+      columns_in_order.each_with_object({}) do |column, hash|
+        hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+      end
+    end
+  end
 end

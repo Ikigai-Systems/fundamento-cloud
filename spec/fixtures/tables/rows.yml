@@ -1,0 +1,13 @@
+projects_row_1:
+  organization: :is
+  table: :projects
+
+projects_row_2:
+  organization: :is
+  table: :projects
+  previous_row: :projects_row_1
+
+projects_row_3:
+  organization: :is
+  table: :projects
+  previous_row: :projects_row_2
