@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_18_174020) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_18_181204) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -84,6 +84,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_174020) do
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
+  create_table "table_columns", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "table_id", null: false
+    t.string "name", null: false
+    t.integer "kind", limit: 2, null: false
+    t.bigint "previous_column_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
+    t.index ["organization_id"], name: "index_table_columns_on_organization_id"
+    t.index ["previous_column_id"], name: "index_table_columns_on_previous_column_id"
+    t.index ["table_id"], name: "index_table_columns_on_table_id"
+  end
+
   create_table "tables", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "space_id", null: false
@@ -136,4 +150,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_174020) do
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
+  add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
 end

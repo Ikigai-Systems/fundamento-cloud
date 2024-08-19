@@ -1,0 +1,19 @@
+project_key:
+  name: "Key"
+  organization: :is
+  table: :projects
+  kind: 0
+
+project_name:
+  name: "Name"
+  organization: :is
+  table: :projects
+  kind: 0
+  previous_column: :project_key
+
+project_description:
+  name: "Description"
+  organization: :is
+  table: :projects
+  kind: 0
+  previous_column: :project_name
