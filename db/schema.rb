@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_18_181204) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_19_153844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_181204) do
     t.index ["table_id"], name: "index_table_columns_on_table_id"
   end
 
+  create_table "table_rows", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "table_id", null: false
+    t.bigint "column_id", null: false
+    t.bigint "previous_row_id"
+    t.index ["column_id"], name: "index_table_rows_on_column_id"
+    t.index ["organization_id"], name: "index_table_rows_on_organization_id"
+    t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
+    t.index ["table_id"], name: "index_table_rows_on_table_id"
+  end
+
   create_table "tables", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "space_id", null: false
@@ -151,4 +162,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_18_181204) do
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
+  add_foreign_key "table_rows", "table_columns", column: "column_id"
+  add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
 end
