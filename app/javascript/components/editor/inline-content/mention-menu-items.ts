@@ -1,10 +1,8 @@
 import schema from "../schema";
 import {DefaultReactSuggestionItem} from "@blocknote/react";
 import {Document, User} from "../../../types.ts";
-// @ts-expect-error "typescript does not understand ~ syntax from rails"
-import DocumentsApi from "~/api/DocumentsApi";
-// @ts-expect-error "typescript does not understand ~ syntax from rails"
-import UsersApi from "~/api/UsersApi";
+import DocumentsApi from "../../../api/DocumentsApi.js";
+import UsersApi from "../../../api/UsersApi.js";
 
 export const getMentionMenuItems = async (
   editor: typeof schema.BlockNoteEditor

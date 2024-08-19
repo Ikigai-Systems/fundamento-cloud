@@ -42,6 +42,19 @@ class SpacesController < ApplicationController
     end
   end
 
+  def reorder_hierarchy
+    @space = current_organization.spaces.find(params[:id])
+    from = params["from"]
+    to = params["to"]
+
+    hierarchy = @space.hierarchy
+    hierarchy.insert(to, hierarchy.delete_at(from))
+
+    unless @space.save
+      render json: @space.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def space_params

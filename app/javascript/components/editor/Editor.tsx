@@ -9,8 +9,7 @@ import * as ActionCable from "@rails/actioncable";
 import {getDefaultReactSlashMenuItems, SuggestionMenuController} from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
-// @ts-expect-error "typescript does not understand ~ syntax from rails"
-import AttachmentsApi from "~/api/AttachmentsApi.js";
+import AttachmentsApi from "../../api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
 import "./editor-styles.css";
