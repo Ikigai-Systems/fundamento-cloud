@@ -32,6 +32,14 @@ Rails.application.routes.draw do
     resources :attachments, only: [:create, :destroy, :show]
 
     resources :users, only: [:index, :show]
+
+    resources :tables, module: :tables do
+      resources :columns
+
+      resources :rows do
+        resources :cells
+      end
+    end
   end
 
 
