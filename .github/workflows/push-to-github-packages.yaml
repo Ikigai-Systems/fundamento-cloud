@@ -2,8 +2,12 @@
 name: Create and publish a Docker image
 
 on:
-  push:
-    branches: ['master']
+  workflow_run:
+    workflows: [ "Run Tests" ]
+    types:
+      - completed
+    branches:
+      - master
     tags:
       - 'v*'
 
