@@ -7,7 +7,7 @@ class Tables::CellsController < ApplicationController
   end
 
   def update
-    @cell = @row.find(params[:id])
+    @cell = @row.cells.find(params[:id])
 
     if @cell.update(update_params)
       render json: @cell.as_json(:except => [:organization_id, :table_id, :row_id, :column_id]), status: :ok
