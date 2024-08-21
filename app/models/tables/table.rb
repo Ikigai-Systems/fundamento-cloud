@@ -33,9 +33,17 @@ class Tables::Table < ApplicationRecord
     ordered_rows
   end
 
+  def columns_in_order
+    self.order_linked_list(self.columns, :previous_column_id)
+  end
+
+  def rows_in_order
+    self.order_linked_list(self.rows, :previous_row_id)
+  end
+
   def data_to_json
-    columns_in_order = self.order_linked_list(self.columns, :previous_column_id)
-    rows_in_order = self.order_linked_list(self.rows, :previous_row_id)
+    columns_in_order = self.columns_in_order
+    rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
 
     rows_in_order.map do |row|
