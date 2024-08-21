@@ -20,6 +20,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - uses: actions/setup-node@v4
       - uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           services: |
