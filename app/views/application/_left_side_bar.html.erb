@@ -17,7 +17,7 @@
 
     <div>
       <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
-      <ul data-controller="draggable" data-space-id="<%= @space.id %>" class="sortable">
+      <ul data-controller="draggable" data-draggable-target="item" data-space-id="<%= @space.id %>">
         <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
       </ul>
     </div>
