@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite frontend",
-    "build": "tsc -p frontend && vite build frontend && touch public/.keep",
-    "lint": "eslint frontend --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint app/javascript --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview frontend"
   },
   "dependencies": {
