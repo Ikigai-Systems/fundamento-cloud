@@ -1,3 +1,5 @@
+require "csv"
+
 class Tables::Table < ApplicationRecord
   belongs_to :organization
   belongs_to :space
@@ -39,6 +41,48 @@ class Tables::Table < ApplicationRecord
     rows_in_order.map do |row|
       columns_in_order.each_with_object({}) do |column, hash|
         hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+      end
+    end
+  end
+
+  def import_from_csv(csv_file)
+    # First ensure table is empty as this code assumes that
+    assert self.cells.count.zero?
+    assert self.rows.count.zero?
+    assert self.columns.count.zero?
+
+    table_columns = {}
+
+    previous_row = nil
+    previous_column = nil
+
+    CSV.read(csv_file, headers: true, return_headers: true).each do |row|
+      if row.header_row?
+        row.each do |header, value|
+          table_columns[header] = self.columns.
+            find_or_create_by!(
+              name: header,
+              organization_id: self.organization_id,
+              kind: 0,
+              previous_column: previous_column,
+            )
+
+          previous_column = table_columns[header]
+        end
+      else
+        previous_row = self.rows.create!(
+          previous_row: previous_row,
+          organization_id: self.organization_id,
+        )
+
+        row.each_with_index do |(header, value), index|
+          self.cells.create!(
+            column: table_columns[header],
+            row: previous_row,
+            value: value,
+            organization_id: self.organization_id,
+          )
+        end
       end
     end
   end

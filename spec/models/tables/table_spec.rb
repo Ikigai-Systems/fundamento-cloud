@@ -23,6 +23,45 @@ RSpec.describe Tables::Table, type: :model do
     expect(table.save).to be_falsey
   end
 
+  describe "#import_from_csv" do
+    before do
+      # TODO: By default fixtures and database changes are kept between test cases, hence we clear the database to the expected state
+      # later so database_clearner will be needed
+      table = tables_tables(:projects)
+      table.cells.delete_all
+      table.rows.delete_all
+      table.columns.delete_all
+    end
+
+    it "imports data" do
+      table = tables_tables(:projects)
+
+      csv_file_path = file_fixture("tables/projects.csv")
+
+      table.import_from_csv(csv_file_path)
+
+      table_data = table.data_to_json
+
+      expect(table_data).to eq([
+        {
+          "Project Key" => "JIRA",
+          "Project Name" => "Jira",
+          "Owner" => "Pawel"
+        },
+        {
+          "Project Key" => "CON",
+          "Project Name" => "Confluence",
+          "Owner" => "Stefan"
+        },
+        {
+          "Project Key" => "MON",
+          "Project Name" => "Monday",
+          "Owner" => "Evgenii"
+        }
+      ])
+    end
+  end
+
   context "table data" do
     fixtures "tables/columns"
     fixtures "tables/rows"
