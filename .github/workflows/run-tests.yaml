@@ -21,5 +21,9 @@ jobs:
         with:
           bundler-cache: true
       - uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          services: |
+            postgresql
+            redis
       - name: Run tests
         run: rails test
