@@ -13,6 +13,8 @@ class Tables::Table < ApplicationRecord
   validates_presence_of :name
 
   def order_linked_list(rows, method)
+    return [] if rows.nil? || rows.empty?
+
     # Create a hash where the keys are the id of the previous row and the values are the row objects
     rows_by_previous_id = rows.index_by(&method)
 
