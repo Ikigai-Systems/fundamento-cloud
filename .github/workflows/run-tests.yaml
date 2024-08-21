@@ -17,9 +17,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: ruby/setup-ruby@v1.33.2
+      - uses: ruby/setup-ruby@v1
         with:
-          bunder-cache: true
+          bundler-cache: true
       - uses: hoverkraft-tech/compose-action@v2.0.1
       - name: Run tests
         run: rails test
