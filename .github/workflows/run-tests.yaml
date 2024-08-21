@@ -28,5 +28,7 @@ jobs:
           services: |
             postgresql
             redis
+      - name: Setup the database
+        run: bin/rails db:setup
       - name: Run tests
         run: bin/rails test
