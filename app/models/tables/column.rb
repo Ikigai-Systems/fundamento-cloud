@@ -10,4 +10,6 @@ class Tables::Column < ApplicationRecord
   has_many :cells, class_name: "Tables::Cell"
 
   validates_presence_of :name
+
+  enum :kind, [:string, :integer, :decimal, :datetime, :date], scopes: false, validate: true
 end
