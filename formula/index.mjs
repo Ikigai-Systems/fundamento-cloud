@@ -1,15 +1,7 @@
 import {CharStreams, CommonTokenStream} from 'antlr4';
-import MyGrammarLexer from './antlr4/formulaLexer.js';
-import MyGrammarParser from './antlr4/formulaParser.js';
+import FormulaLexer from './antlr4/formulaLexer.js';
+import FormulaParser from './antlr4/formulaParser.js';
 import FormulaVisitor from './antlr4/formulaVisitor.js';
-
-const input = 'Find("world", "hello world")';
-const inputStream = CharStreams.fromString(input);
-const lexer = new MyGrammarLexer(inputStream);
-const tokenStream = new CommonTokenStream(lexer);
-const parser = new MyGrammarParser(tokenStream);
-
-const tree = parser.program(); // Assuming 'program' is your start rule
 
 // Define the Find function
 function Find(arg1, arg2) {
@@ -29,8 +21,19 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 }
 
-console.log(tree.toStringTree(parser.ruleNames));
+export function evaluateFormula(inputString) {
+  const inputStream = CharStreams.fromString(inputString);
+  const lexer = new FormulaLexer(inputStream);
+  const tokenStream = new CommonTokenStream(lexer);
+  const parser = new FormulaParser(tokenStream);
 
-const visitor = new FormulaVisitorImplementation();
+  const tree = parser.program(); // Assuming 'program' is your start rule
 
-console.log(visitor.visit(tree));
+  // console.log(tree.toStringTree(parser.ruleNames));
+
+  const visitor = new FormulaVisitorImplementation();
+
+  return visitor.visit(tree);
+}
+
+
