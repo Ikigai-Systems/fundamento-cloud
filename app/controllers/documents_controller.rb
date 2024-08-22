@@ -21,7 +21,7 @@ class DocumentsController < ApplicationController
     # @document.space = @space #todo: migrate database to have space_id column in documents table
 
     if @document.save
-      @space.hierarchy = (@space.hierarchy || []) + [@document.id]
+      @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
       @documents = @space.documents_from_hierarchy
 
       if @space.save
@@ -74,7 +74,21 @@ class DocumentsController < ApplicationController
     @document.destroy
 
     @space = current_organization.spaces.find(params[:space_id])
-    @space.hierarchy.delete(document_id)
+
+    def safely_remove_from_hierarchy(node, document_id)
+      node.each_with_index do |item, index|
+        if item["id"] == document_id
+          node.delete_at(index)
+          item["children"].each do |child|
+            node.insert(index, child)
+          end
+        end
+        safely_remove_from_hierarchy(item["children"], document_id)
+      end
+    end
+
+    safely_remove_from_hierarchy(@space.hierarchy, document_id)
+
     @space.save
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'
