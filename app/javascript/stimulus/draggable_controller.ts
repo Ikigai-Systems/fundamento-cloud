@@ -53,7 +53,9 @@ export default class extends Controller<HTMLElement> {
       placeholderClass: 'sortable-placeholder float-left bg-indigo-600 h-0.5 w-[268px] data-[surround=true]:before:hidden absolute before:absolute before:h-2 before:w-2 before:-top-[3px] before:border-2 before:border-solid before:rounded-full before:bg-white before:border-indigo-600'
     }).forEach((item: HTMLElement) => {
       item.addEventListener('sortupdate', async (e: CustomEvent) => {
-        e.detail.item.querySelector(".document-padding-left").style.paddingLeft = `${16 * (calculateDepth(e.detail.destination.container) - 1)}px`;
+        e.detail.item.querySelectorAll(".document-padding-left").forEach(element => {
+          element.style.paddingLeft = `${16 * (calculateDepth(element.closest("ul")) - 1)}px`;
+        });
 
         const container = e.detail.destination.container;
         container.classList.remove("h-[37px]", "mb-[-37px]", "top-[-37px]");

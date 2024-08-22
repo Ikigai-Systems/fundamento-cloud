@@ -6,12 +6,12 @@
     <div class="text-slate-800">
   <% end %>
       <%= link_to edit_space_document_path(@space, document), class: "flex items-center" do %>
-        <div style="padding-left: <%=level * 16%>px" class="document-padding-left flex-grow flex items-center <%= @document == document ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+        <div style="padding-left: <%=level * 16%>px" class="document-padding-left flex-grow flex items-center w-full <%= @document == document ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
           <div data-action="click->collapsible#toggle:prevent" class="multi-items-expander size-6<%= !has_children ? " hidden" : "" %>">
             <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
           </div>
-          <div class="single-item-dot size-8 pt-1 ml-2.5 -mr-[1.125rem]<%= has_children ? " hidden" : "" %>">•</div>
-          <div data-document-id="<%= document.id %>" class="text-left mx-0 p-2">
+          <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
+          <div data-document-id="<%= document.id %>" class="text-left mx-0 p-2 truncate">
             <%= document.title %>
           </div>
         </div>
