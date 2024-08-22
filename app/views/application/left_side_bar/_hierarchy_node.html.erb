@@ -1,14 +1,17 @@
 <% (node || []).each do |item| %>
-  <% if item.is_a? Numeric %>
-    <li>
-      <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level, has_children: false } %>
-    </li>
-  <% else %>
-    <li data-controller="collapsible" data-space-id="<%= @space.id %>">
-      <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level, has_children: true } %>
-      <ul data-collapsible-target="collapsible" data-draggable-target="item" data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0">
-        <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
-      </ul>
-    </li>
-  <% end %>
+  <%# if item.is_a? Numeric %>
+<!--    <li>-->
+      <%#= render partial: "application/left_side_bar/document_link", locals: { document_id: item, level: level, has_children: false } %>
+<!--      <ul data-draggable-target="item" data-document-id="<%#= item %>" class="relative h-[37px] mb-[-37px] top-[-37px] bg-red-800 opacity-60 overflow-hidden pointer-events-none">-->
+        <%#= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+<!--      </ul>-->
+<!--    </li>-->
+  <%# else %>
+  <li data-controller="collapsible" data-space-id="<%= @space.id %>">
+    <%= render partial: "application/left_side_bar/document_link", locals: { document_id: item["id"], level: level, has_children: true } %>
+    <ul data-collapsible-target="collapsible" data-draggable-target="item" data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0">
+      <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+    </ul>
+  </li>
+  <%# end %>
 <% end %>
