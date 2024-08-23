@@ -60,7 +60,7 @@ export default class extends Controller<HTMLElement> {
         const container = e.detail.destination.container;
         container.classList.remove("h-[37px]", "mb-[-37px]", "top-[-37px]");
 
-        const closestCollapsible = container.closest("li[data-controller='collapsible']");
+        const closestCollapsible = container.closest("li[data-controller~='collapsible']");
         if (closestCollapsible) {
           closestCollapsible.dataset.collapsibleCollapsedValue = "false";
         }

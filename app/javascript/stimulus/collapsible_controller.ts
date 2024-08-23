@@ -4,12 +4,24 @@ import {Controller} from "@hotwired/stimulus"
 export default class extends Controller<HTMLElement> {
   static targets = ["collapsible", "icon"];
   static values = {
-    collapsed: Boolean,
-  }
+    collapsed: {type: Boolean, default: true},
+  };
 
   declare iconTarget: HTMLElement;
   declare collapsibleTargets: HTMLElement[];
   declare collapsedValue: boolean;
+  declare element: HTMLElement;
+
+  initialize() {
+    //todo: ideally initial auto-expand should be server-side rendered, not here in frontend
+    if (this.element.dataset.collapsibleExpandToThis) {
+      let collapsible = this.element;
+      while (collapsible) {
+        collapsible.dataset.collapsibleCollapsedValue = "false";
+        collapsible = collapsible.parentElement?.closest("li[data-controller~='collapsible']");
+      }
+    }
+  }
 
   toggle() {
     this.collapsedValue = !this.collapsedValue;
