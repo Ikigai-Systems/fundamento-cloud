@@ -17,8 +17,8 @@ defineFunction("Find", (arg1, arg2) => {
   return arg2.indexOf(arg1) !== -1;
 });
 
-defineFunction("CountUnique", () => {
-  return _.uniq(arguments).length;
+defineFunction("CountUnique", (...args) => {
+  return _.uniq(args).length;
 });
 
 defineFunction("And", (...[arg1, arg2]) => {

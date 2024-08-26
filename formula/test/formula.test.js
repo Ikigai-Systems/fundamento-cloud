@@ -16,9 +16,17 @@ describe('Find Function', () => {
 
 describe('CountUnique Function', () => {
   it('should count only unique arguments', () => {
-    const result = evaluateFormula(`CountUnique(1, 2, 3, 3, 3, 4)`);
+    const someAreUnique = evaluateFormula(`CountUnique(1, 2, 3, 3, 3, 4)`);
 
-    expect(result).to.deep.equal([[4]]);
+    expect(someAreUnique).to.deep.equal([[4]]);
+
+    const allAreUnique = evaluateFormula(`CountUnique(1, 2, 3, 4)`);
+
+    expect(allAreUnique).to.deep.equal([[4]]);
+
+    const noneAreUnique = evaluateFormula(`CountUnique(1, 1, 2, 2)`);
+
+    expect(noneAreUnique).to.deep.equal([[2]]);
   });
 
   it('should handle different arguments', () => {
