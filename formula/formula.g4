@@ -1,6 +1,6 @@
 grammar formula;
 
-program: statement+ ;
+program: statement ;
 
 statement
     : functionCall
@@ -8,12 +8,7 @@ statement
     ;
 
 functionCall
-    : IDENTIFIER '(' (parameter (',' parameter)*)? ')'
-    ;
-
-parameter
-    : expression
-    | IDENTIFIER '=' expression
+    : IDENTIFIER LBRACKET (expression (COMMA expression)*)? RBRACKET
     ;
 
 expression
@@ -23,15 +18,11 @@ expression
 term
     : literal
     | functionCall
-    | '(' expression ')'
-    ;
-
-binaryOperation
-    : term operator term
+    | LBRACKET expression RBRACKET
     ;
 
 operator
-    : '+' | '-' | '*' | '/' | '='
+    : '+' | '-' | '*' | '/'
     ;
 
 literal
@@ -40,7 +31,7 @@ literal
     ;
 
 IDENTIFIER
-    : [a-zA-Z_][a-zA-Z_0-9]*
+    : [A-Z][a-zA-Z_0-9]*
     ;
 
 NUMBER
@@ -49,6 +40,18 @@ NUMBER
 
 STRING
     : '"' .*? '"'
+    ;
+
+LBRACKET
+    : '('
+    ;
+
+RBRACKET
+    : ')'
+    ;
+
+COMMA
+    : ','
     ;
 
 WS

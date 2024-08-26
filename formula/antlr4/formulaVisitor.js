@@ -24,12 +24,6 @@ export default class formulaVisitor extends antlr4.tree.ParseTreeVisitor {
 	}
 
 
-	// Visit a parse tree produced by formulaParser#parameter.
-	visitParameter(ctx) {
-	  return this.visitChildren(ctx);
-	}
-
-
 	// Visit a parse tree produced by formulaParser#expression.
 	visitExpression(ctx) {
 	  return this.visitChildren(ctx);
@@ -38,12 +32,6 @@ export default class formulaVisitor extends antlr4.tree.ParseTreeVisitor {
 
 	// Visit a parse tree produced by formulaParser#term.
 	visitTerm(ctx) {
-	  return this.visitChildren(ctx);
-	}
-
-
-	// Visit a parse tree produced by formulaParser#binaryOperation.
-	visitBinaryOperation(ctx) {
 	  return this.visitChildren(ctx);
 	}
 

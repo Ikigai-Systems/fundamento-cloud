@@ -32,15 +32,6 @@ export default class formulaListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
-	// Enter a parse tree produced by formulaParser#parameter.
-	enterParameter(ctx) {
-	}
-
-	// Exit a parse tree produced by formulaParser#parameter.
-	exitParameter(ctx) {
-	}
-
-
 	// Enter a parse tree produced by formulaParser#expression.
 	enterExpression(ctx) {
 	}
@@ -56,15 +47,6 @@ export default class formulaListener extends antlr4.tree.ParseTreeListener {
 
 	// Exit a parse tree produced by formulaParser#term.
 	exitTerm(ctx) {
-	}
-
-
-	// Enter a parse tree produced by formulaParser#binaryOperation.
-	enterBinaryOperation(ctx) {
-	}
-
-	// Exit a parse tree produced by formulaParser#binaryOperation.
-	exitBinaryOperation(ctx) {
 	}
 
 
