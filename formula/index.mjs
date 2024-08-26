@@ -7,74 +7,79 @@ import _ from "lodash";
 const definedFunctions = {};
 
 function defineFunction(functionName, formulaFunction) {
-  definedFunctions[functionName] = formulaFunction;
+    definedFunctions[functionName] = formulaFunction;
 }
 
 // Define the Find function
 defineFunction("Find", (arg1, arg2) => {
-  console.log(`Find function called with arguments: ${arg1}, ${arg2}`);
+    console.log(`Find function called with arguments: ${arg1}, ${arg2}`);
 
-  return arg2.indexOf(arg1) !== -1;
+    return arg2.indexOf(arg1) !== -1;
 });
 
 defineFunction("CountUnique", () => {
-  return _.uniq(arguments).length;
+    return _.uniq(arguments).length;
 });
 
 defineFunction("And", (...[arg1, arg2]) => {
-  return !!arg1 && !!arg2;
+    return !!arg1 && !!arg2;
 });
 
 defineFunction("True", () => {
-  return true;
+    return true;
 });
 
 defineFunction("False", () => {
-  return false;
+    return false;
 });
 
 class FormulaVisitorImplementation extends FormulaVisitor {
-  visitFunctionCall(ctx) {
-    const functionName = ctx.IDENTIFIER().getText();
-    // const args = ctx.expression().map(param => param.getText().replace(/"/g, ''));
+    visitFunctionCall(ctx) {
+        const functionName = ctx.IDENTIFIER().getText();
+        // const args = ctx.expression().map(param => param.getText().replace(/"/g, ''));
 
-    const formulaFunction = definedFunctions[functionName];
+        const formulaFunction = definedFunctions[functionName];
 
-    if (formulaFunction) {
-      const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
+        if (formulaFunction) {
+            const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
 
-      return formulaFunction(...visitedExpressions);
-    } else {
-      throw new Error(`Unrecognized function: ${functionName}`)
+            return formulaFunction(...visitedExpressions);
+        } else {
+            throw new Error(`Unrecognized function: ${functionName}`)
+        }
     }
-  }
 
-  visitLiteral(ctx) {
-    return super.visitLiteral(ctx);
-  }
+    visitLiteral(ctx) {
+        if (ctx.NUMBER()) {
+            return parseFloat(ctx.NUMBER().getText());
+        } else if (ctx.STRING()) {
+            return ctx.STRING().getText().replace(/"/g, '');
+        }
+        throw new Error(`Unrecognized literal found ${ctx.getText()}`)
+    }
 
-  visitExpression(ctx) {
-    return this.visit(ctx.term(0));
-  }
+    visitExpression(ctx) {
+        return this.visit(ctx.term(0));
+    }
 
-  visitTerm(ctx) {
-    return _.first(super.visitTerm(ctx));
-  }
+    visitTerm(ctx) {
+        return _.first(super.visitTerm(ctx));
+    }
 }
 
 export function evaluateFormula(inputString) {
-  const inputStream = CharStreams.fromString(inputString);
-  const lexer = new FormulaLexer(inputStream);
-  const tokenStream = new CommonTokenStream(lexer);
-  const parser = new FormulaParser(tokenStream);
+    const inputStream = CharStreams.fromString(inputString);
+    const lexer = new FormulaLexer(inputStream);
+    const tokenStream = new CommonTokenStream(lexer);
+    const parser = new FormulaParser(tokenStream);
 
-  const tree = parser.program(); // Assuming 'program' is your start rule
+    const tree = parser.program(); // Assuming 'program' is your start rule
 
-  console.log(tree.toStringTree(parser.ruleNames));
+    console.log(tree.toStringTree(parser.ruleNames));
 
-  const visitor = new FormulaVisitorImplementation();
+    const visitor = new FormulaVisitorImplementation();
 
-  return visitor.visit(tree);
+    return visitor.visit(tree);
 }
 
 
