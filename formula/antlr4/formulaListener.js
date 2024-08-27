@@ -5,15 +5,6 @@ import antlr4 from 'antlr4';
 // This class defines a complete listener for a parse tree produced by formulaParser.
 export default class formulaListener extends antlr4.tree.ParseTreeListener {
 
-	// Enter a parse tree produced by formulaParser#program.
-	enterProgram(ctx) {
-	}
-
-	// Exit a parse tree produced by formulaParser#program.
-	exitProgram(ctx) {
-	}
-
-
 	// Enter a parse tree produced by formulaParser#statement.
 	enterStatement(ctx) {
 	}

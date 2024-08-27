@@ -1,7 +1,5 @@
 grammar formula;
 
-program: statement ;
-
 statement
     : functionCall
     | expression

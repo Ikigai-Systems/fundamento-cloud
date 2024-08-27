@@ -6,12 +6,6 @@ import antlr4 from 'antlr4';
 
 export default class formulaVisitor extends antlr4.tree.ParseTreeVisitor {
 
-	// Visit a parse tree produced by formulaParser#program.
-	visitProgram(ctx) {
-	  return this.visitChildren(ctx);
-	}
-
-
 	// Visit a parse tree produced by formulaParser#statement.
 	visitStatement(ctx) {
 	  return this.visitChildren(ctx);

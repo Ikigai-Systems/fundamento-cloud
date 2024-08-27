@@ -3,6 +3,7 @@ import FormulaLexer from './antlr4/formulaLexer.js';
 import FormulaParser from './antlr4/formulaParser.js';
 import FormulaVisitor from './antlr4/formulaVisitor.js';
 import {definedFormulas} from "./formulas/index.js";
+import _ from "lodash";
 
 class CurrentValueManager {
   constructor() {
@@ -41,6 +42,10 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   constructor(props) {
     super(props);
     this.currentValueManager = new CurrentValueManager();
+  }
+
+  visitStatement(ctx) {
+    return _.first(super.visitStatement(ctx));
   }
 
   visitFunctionCall(ctx) {
@@ -146,7 +151,7 @@ export function evaluateFormula(inputString) {
   const tokenStream = new CommonTokenStream(lexer);
   const parser = new FormulaParser(tokenStream);
 
-  const tree = parser.program(); // Assuming 'program' is your start rule
+  const tree = parser.statement(); // Assuming 'program' is your start rule
 
   console.log(tree.toStringTree(parser.ruleNames));
 
