@@ -26,4 +26,23 @@ describe('String related formulas', () => {
         to.deep.equal([[true]]);
     });
   });
+
+  describe('EndsWith', () => {
+    it('works', () => {
+      expect(evaluateFormula(`EndsWith("Hello world", "Find me")`)).
+        to.deep.equal([[false]]);
+
+      expect(evaluateFormula(`EndsWith("Hello world", "world")
+`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`EndsWith("Hello World", "world", True())
+`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`EndsWith("Hej världen", "varlden", False(), True())
+`)).
+        to.deep.equal([[true]]);
+    });
+  });
 });
