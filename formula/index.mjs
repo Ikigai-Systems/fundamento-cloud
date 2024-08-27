@@ -44,11 +44,11 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 
   visitFunctionCall(ctx) {
-    const functionName = ctx.IDENTIFIER().getText();
-    const formulaFunction = definedFormulas[functionName];
+    const formulaName = ctx.IDENTIFIER().getText();
+    const formulaFunction = definedFormulas[formulaName];
 
     if (formulaFunction) {
-      if (functionName === "Filter") {
+      if (formulaName === "Filter") {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
@@ -61,7 +61,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         } finally {
           this.currentValueManager.exitScope();
         }
-      } else if (functionName === "ForEach") {
+      } else if (formulaName === "ForEach") {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
@@ -84,7 +84,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         return formulaFunction.call(functionContext, ...visitedExpressions);
       }
     } else {
-      throw new Error(`Unrecognized function: ${functionName}`)
+      throw new Error(`Unrecognized function: ${formulaName}`)
     }
   }
 
