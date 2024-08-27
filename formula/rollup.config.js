@@ -10,9 +10,11 @@ export default {
   },
   plugins: [
     resolve({
-      exportConditions: ["node"]
+      exportConditions: ["browser"],
+      preferBuiltins: false
     }), // Resolve node_modules
     commonjs(), // Convert CommonJS modules to ES6
     // json() // Handle JSON files
-  ]
+  ],
+  external: [] // Ensure no dependencies are treated as external
 };

@@ -120,6 +120,11 @@ GEM
       reline (>= 0.4.2)
     js_from_routes (3.0.1)
       railties (>= 5.1, < 8)
+    libv8-node (18.19.0.0)
+    libv8-node (18.19.0.0-aarch64-linux)
+    libv8-node (18.19.0.0-arm64-darwin)
+    libv8-node (18.19.0.0-x86_64-darwin)
+    libv8-node (18.19.0.0-x86_64-linux)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -130,6 +135,8 @@ GEM
       net-smtp
     marcel (1.0.4)
     mini_mime (1.1.5)
+    mini_racer (0.14.1)
+      libv8-node (~> 18.19.0.0)
     minitest (5.23.1)
     msgpack (1.7.2)
     mutex_m (0.2.0)
@@ -330,6 +337,7 @@ DEPENDENCIES
   hash_diff
   importmap-rails
   js_from_routes
+  mini_racer
   pg
   puma (>= 5.0)
   rack-cors (~> 2.0)
