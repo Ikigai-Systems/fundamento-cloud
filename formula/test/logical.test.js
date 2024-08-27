@@ -2,28 +2,35 @@
 import { describe } from "mocha";
 import { testFormula } from "./formulaHelpers.js";
 
-describe('And', () => {
-  testFormula(`And(True(), True())`, [[true]]);
-  testFormula(`And(True(), False())`, [[false]]);
+describe("Logical formulas", () => {
+  describe('And', () => {
+    testFormula(`And(True(), True())`, [[true]]);
+    testFormula(`And(True(), False())`, [[false]]);
+  });
+
+  describe('Or', () => {
+    testFormula(`Or(True(), True())`, [[true]]);
+    testFormula(`Or(True(), False())`, [[true]]);
+    testFormula(`Or(False(), False())`, [[false]]);
+  });
+
+  describe('True', () => {
+    testFormula(`True()`, [[true]]);
+  });
+
+  describe('False', () => {
+    testFormula(`False()`, [[false]]);
+  });
+
+  describe('If', () => {
+    testFormula(`If(True(), "That's true", "That's not true")`, [["That's true"]]);
+    testFormula(`If(False(), "That's true", "That's not true")`, [["That's not true"]]);
+
+    testFormula(`If(6 > 5, "6 is more than 5", "That's not correct")`, [["6 is more than 5"]]);
+  });
+
+  describe('IfBlank', () => {
+    testFormula(`IfBlank("", "Default if blank")`, [["Default if blank"]]);
+    testFormula(`IfBlank("Hello world", "Default if blank")`, [["Hello world"]]);
+  });
 });
-
-describe('Or', () => {
-  testFormula(`Or(True(), True())`, [[true]]);
-  testFormula(`Or(True(), False())`, [[true]]);
-  testFormula(`Or(False(), False())`, [[false]]);
-});
-
-
-// describe('Nesting Functions', () => {
-//   it('should count only unique arguments', () => {
-//     const result = evaluateFormula(`CountUnique(1, 2, 3, 3, 3, 4)`);
-//
-//     expect(result).to.deep.equal([[4]]);
-//   });
-//
-//   it('should handle different arguments', () => {
-//     const result = evaluateFormula(`CountUnique("world", "world", "hello")`);
-//
-//     expect(result).to.deep.equal([[2]]);
-//   });
-// });

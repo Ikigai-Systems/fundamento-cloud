@@ -35,6 +35,22 @@ defineFunction("False", () => {
   return false;
 });
 
+defineFunction("If", (condition, ifTrue, ifFalse) => {
+  if (!!condition) {
+    return ifTrue;
+  } else {
+    return ifFalse;
+  }
+});
+
+defineFunction("IfBlank", (text, ifBlank) => {
+  if (text === "") {
+    return ifBlank;
+  } else {
+    return text;
+  }
+});
+
 defineFunction("Join", (delimiter, ...args) => {
   return _.join(args, delimiter);
 });
