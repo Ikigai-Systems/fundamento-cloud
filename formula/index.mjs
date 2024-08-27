@@ -138,6 +138,14 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         return left / right;
       case "-":
         return left - right;
+      case "<":
+        return left < right;
+      case "<=":
+        return left <= right;
+      case ">":
+        return left > right;
+      case ">=":
+        return left >= right;
       default:
         throw new Error(`Unexpected operator in: ${ctx.getText()}`);
       }
