@@ -14,3 +14,22 @@ defineFunction("CountUnique", (...args) => {
 defineFunction("List", (...args) => {
   return Array.from(args);
 });
+
+defineFunction("ForEach", (...args) => {
+  this.currentValueManager.enterScope();
+  try {
+    return Array.from(args);
+  } finally {
+    this.currentValueManager.exitScope();
+  }
+});
+
+defineFunction("Filter", (...args) => {
+  this.currentValueManager.enterScope();
+  try {
+    this.currentValueManager.declareVariable("currentValue", 5);
+    return Array.from(args);
+  } finally {
+    this.currentValueManager.exitScope();
+  }
+});

@@ -4,15 +4,85 @@ import FormulaParser from './antlr4/formulaParser.js';
 import FormulaVisitor from './antlr4/formulaVisitor.js';
 import {definedFunctions} from "./functions/index.js";
 
+class CurrentValueManager {
+  constructor() {
+    this.scopes = [{}];  // Start with a global scope
+  }
+
+  enterScope() {
+    this.scopes.push({});
+  }
+
+  exitScope() {
+    this.scopes.pop();
+  }
+
+  declareVariable(name, value) {
+    const currentScope = this.scopes[this.scopes.length - 1];
+
+    // if (Object.prototype.hasOwnProperty.call(currentScope, name)) {
+    //   throw new Error(`Variable ${name} is already declared in this scope.`);
+    // }
+
+    currentScope[name] = value;
+  }
+
+  lookupVariable(name) {
+    for (let i = this.scopes.length - 1; i >= 0; i--) {
+      if (Object.prototype.hasOwnProperty.call(this.scopes[i], name)) {
+        return this.scopes[i][name];
+      }
+    }
+    throw new Error(`Variable ${name} is not declared.`);
+  }
+}
+
 class FormulaVisitorImplementation extends FormulaVisitor {
+  constructor(props) {
+    super(props);
+    this.currentValueManager = new CurrentValueManager();
+  }
+
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();
     const formulaFunction = definedFunctions[functionName];
 
     if (formulaFunction) {
-      const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
+      if (functionName === "Filter") {
+        this.currentValueManager.enterScope();
+        try {
+          const formula = ctx.expression(1);
+          const list = this.visit(ctx.expression(0));
 
-      return formulaFunction(...visitedExpressions);
+          return list.filter((currentValue) => {
+            this.currentValueManager.declareVariable("currentValue", currentValue);
+            return this.visit(formula);
+          });
+        } finally {
+          this.currentValueManager.exitScope();
+        }
+      } else if (functionName === "ForEach") {
+        this.currentValueManager.enterScope();
+        try {
+          const formula = ctx.expression(1);
+          const list = this.visit(ctx.expression(0));
+
+          return list.map((currentValue) => {
+            this.currentValueManager.declareVariable("currentValue", currentValue);
+            return this.visit(formula);
+          });
+        } finally {
+          this.currentValueManager.exitScope();
+        }
+      } else {
+        const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
+
+        const functionContext = {
+          currentValueManager: this.currentValueManager
+        };
+
+        return formulaFunction.call(functionContext, ...visitedExpressions);
+      }
     } else {
       throw new Error(`Unrecognized function: ${functionName}`)
     }
@@ -71,9 +141,15 @@ class FormulaVisitorImplementation extends FormulaVisitor {
       return this.visit(ctx.literal(0));
     } else if (ctx.functionCall(0)) {
       return this.visit(ctx.functionCall(0));
+    } else if (ctx.currentValue(0)) {
+      return this.visit(ctx.currentValue(0));
     } else {
       throw new Error(`Unexpected term found: ${ctx.getText()}`)
     }
+  }
+
+  visitCurrentValue(ctx) {
+    return this.currentValueManager.lookupVariable("currentValue");
   }
 }
 
