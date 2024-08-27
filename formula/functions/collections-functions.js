@@ -10,3 +10,7 @@ defineFunction("Find", (arg1, arg2) => {
 defineFunction("CountUnique", (...args) => {
   return _.uniq(args).length;
 });
+
+defineFunction("List", (...args) => {
+  return Array.from(args);
+});
