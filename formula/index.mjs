@@ -71,7 +71,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         return formulaFunction.call(functionContext, ...visitedExpressions);
       }
     } else {
-      throw new Error(`Unrecognized function: ${formulaName}`)
+      throw new Error(`Unrecognized formula: ${formulaName}`)
     }
   }
 
