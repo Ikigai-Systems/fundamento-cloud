@@ -63,6 +63,10 @@ defineFunction("StartsWith", (text, prefix, ignoreCase = false, ignoreAccents = 
   return normalizedText.startsWith(normalizedSearchText);
 });
 
+defineFunction("Substitute", (text, searchFor, replacementText) => {
+  return text.replace(searchFor, replacementText);
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();

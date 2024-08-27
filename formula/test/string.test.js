@@ -27,4 +27,9 @@ describe('String related formulas', () => {
     testFormula(`StartsWith("Hello World", "hello", True())`, [[true]]);
     testFormula(`StartsWith("Hej världen", "Hej var", False(), True())`, [[true]]);
   });
+
+  describe('Substitute', () => {
+    testFormula(`Substitute("Hello world", "Hello", "Good morning")`, [["Good morning world"]]);
+    testFormula(`Substitute("ho ho ho", "ho", "yo")`, [["yo ho ho"]]);
+  });
 });
