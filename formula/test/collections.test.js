@@ -27,6 +27,16 @@ describe("Collection formulas", () => {
     testFormula(`ForEach(List("Dog", "Cat"), Upper(CurrentValue))`, [[["DOG", "CAT"]]])
   });
 
+  describe("All", () => {
+    testFormula(`All(List(1, 2, 3, 3, 3, 4), CurrentValue >= 3)`, [[false]]);
+    testFormula(`All(List(1, 2, 3, 3, 3, 4), CurrentValue >= 0)`, [[true]]);
+  });
+
+  describe("Any", () => {
+    testFormula(`Any(List(1, 2, 3, 3, 3, 4), CurrentValue < 0)`, [[false]]);
+    testFormula(`Any(List(1, 2, 3, 3, 3, 4), CurrentValue >= 3)`, [[true]]);
+  });
+
   describe('First', () => {
     testFormula(`First(1, 2, 3, 3, 3, 4)`, [[1]]);
     testFormula(`First(1)`, [[1]]);

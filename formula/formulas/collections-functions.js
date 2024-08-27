@@ -26,3 +26,7 @@ defineFormula("Last", (...args) => {
 defineFormula("ForEach", _.map, true);
 
 defineFormula("Filter", _.filter, true);
+
+defineFormula("All", _.every, true);
+
+defineFormula("Any", _.some, true);
