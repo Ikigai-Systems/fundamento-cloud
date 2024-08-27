@@ -4,6 +4,10 @@
     <div class="bg-white h-12 flex justify-end items-center p-2">
 
       <span>Toolbar dropdown:</span>
+      <%= button_to "Save this as version", space_document_versions_path(@space, @document), method: :create,
+                    params: {blocks: ""},
+                    :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
+                    class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
       <% if @document.archived %>
         <%= button_to "Restore", space_document_path(@space, @document), method: :put,
                       params: {document: {archived: false}},

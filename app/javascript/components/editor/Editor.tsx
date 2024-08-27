@@ -78,7 +78,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
 
     const pseudoRandomFromUserId = (tinySimpleHash(currentUser.id.toString()) + 0x7FFFFFFF) / 0xFFFFFFFF;
 
-    return BlockNoteEditor.create({
+    const blockNoteEditor = BlockNoteEditor.create({
       schema,
       // initialContent: JSON.parse(initialContent),
       collaboration: {
@@ -100,6 +100,8 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         return attachment.location;
       },
     });
+    window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
+    return blockNoteEditor;
   }, [documentId]);
 
   if (editor === undefined || !initialStateReceived) {
@@ -139,7 +141,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
             defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
 
             return filterSuggestionItems(
-              [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor)],
+              [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor as schema.BlockNoteEditor)],
               query
             )
           }}
