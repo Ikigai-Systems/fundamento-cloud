@@ -31,6 +31,10 @@ defineFunction("False", () => {
   return false;
 });
 
+defineFunction("Join", (delimiter, ...args) => {
+  return _.join(args, delimiter);
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();
