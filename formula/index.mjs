@@ -57,6 +57,12 @@ defineFunction("EndsWith", (text, suffix, ignoreCase = false, ignoreAccents = fa
   return normalizedText.endsWith(normalizedSearchText);
 });
 
+defineFunction("StartsWith", (text, prefix, ignoreCase = false, ignoreAccents = false) => {
+  const normalizedText = normalizeText(text, ignoreCase, ignoreAccents);
+  const normalizedSearchText = normalizeText(prefix, ignoreCase, ignoreAccents);
+  return normalizedText.startsWith(normalizedSearchText);
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();

@@ -45,4 +45,23 @@ describe('String related formulas', () => {
         to.deep.equal([[true]]);
     });
   });
+
+  describe('StartsWith', () => {
+    it('works', () => {
+      expect(evaluateFormula(`StartsWith("Hello world", "Find me")`)).
+        to.deep.equal([[false]]);
+
+      expect(evaluateFormula(`StartsWith("Hello world", "Hello")
+`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`StartsWith("Hello World", "hello", True())
+`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`StartsWith("Hej världen", "Hej var", False(), True())
+`)).
+        to.deep.equal([[true]]);
+    });
+  });
 });
