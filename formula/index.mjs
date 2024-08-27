@@ -151,7 +151,7 @@ export function evaluateFormula(inputString) {
   const tokenStream = new CommonTokenStream(lexer);
   const parser = new FormulaParser(tokenStream);
 
-  const tree = parser.statement(); // Assuming 'program' is your start rule
+  const tree = parser.statement();
 
   console.log(tree.toStringTree(parser.ruleNames));
 
