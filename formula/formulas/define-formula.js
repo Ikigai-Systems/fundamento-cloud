@@ -1,5 +1,8 @@
 export const definedFormulas = {};
 
-export function defineFormula(formulaName, formulaFunction) {
-  definedFormulas[formulaName] = formulaFunction;
+export function defineFormula(formulaName, formulaFunction, iterative = false) {
+  definedFormulas[formulaName] = {
+    formulaFunction,
+    iterative,
+  };
 }

@@ -23,6 +23,6 @@ defineFormula("Last", (...args) => {
   return _.last(args);
 });
 
-defineFormula("ForEach", _.map);
+defineFormula("ForEach", _.map, true);
 
-defineFormula("Filter", _.filter);
+defineFormula("Filter", _.filter, true);

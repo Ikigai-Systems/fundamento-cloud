@@ -45,10 +45,10 @@ class FormulaVisitorImplementation extends FormulaVisitor {
 
   visitFunctionCall(ctx) {
     const formulaName = ctx.IDENTIFIER().getText();
-    const formulaFunction = definedFormulas[formulaName];
+    const {formulaFunction, iterative} = definedFormulas[formulaName];
 
     if (formulaFunction) {
-      if (formulaName === "Filter" || formulaName === "ForEach") {
+      if (iterative) {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
