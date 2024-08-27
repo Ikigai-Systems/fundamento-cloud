@@ -12,8 +12,6 @@ function defineFunction(functionName, formulaFunction) {
 
 // Define the Find function
 defineFunction("Find", (arg1, arg2) => {
-  console.log(`Find function called with arguments: ${arg1}, ${arg2}`);
-
   return arg2.indexOf(arg1) !== -1;
 });
 
@@ -36,8 +34,6 @@ defineFunction("False", () => {
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();
-    // const args = ctx.expression().map(param => param.getText().replace(/"/g, ''));
-
     const formulaFunction = definedFunctions[functionName];
 
     if (formulaFunction) {
@@ -59,7 +55,28 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 
   visitExpression(ctx) {
-    return this.visit(ctx.term(0));
+    const left = this.visit(ctx.term(0));
+
+    if (ctx.operator(0)) {
+      const right = this.visit(ctx.term(1))
+      const operator = ctx.operator(0).getText();
+
+      switch (operator) {
+      case "+":
+        return left + right;
+      case "*":
+        return left * right;
+      case "/":
+        return left / right;
+      case "-":
+        return left - right;
+      default:
+        throw new Error(`Unexpected operator in: ${ctx.getText()}`);
+      }
+
+    } else {
+      return left;
+    }
   }
 
   visitTerm(ctx) {
