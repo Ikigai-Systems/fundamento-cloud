@@ -18,6 +18,7 @@ expression
 term
     : literal
     | functionCall
+    | currentValue
     | LBRACKET expression RBRACKET
     ;
 
@@ -31,6 +32,8 @@ literal
     : NUMBER
     | STRING
     ;
+
+currentValue: 'CurrentValue';
 
 IDENTIFIER
     : [A-Z][a-zA-Z_0-9]*

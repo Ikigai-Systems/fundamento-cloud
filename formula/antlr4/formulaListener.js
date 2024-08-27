@@ -68,5 +68,14 @@ export default class formulaListener extends antlr4.tree.ParseTreeListener {
 	}
 
 
+	// Enter a parse tree produced by formulaParser#currentValue.
+	enterCurrentValue(ctx) {
+	}
+
+	// Exit a parse tree produced by formulaParser#currentValue.
+	exitCurrentValue(ctx) {
+	}
+
+
 
 }

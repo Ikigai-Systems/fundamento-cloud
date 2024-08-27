@@ -48,5 +48,11 @@ export default class formulaVisitor extends antlr4.tree.ParseTreeVisitor {
 	}
 
 
+	// Visit a parse tree produced by formulaParser#currentValue.
+	visitCurrentValue(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
 
 }

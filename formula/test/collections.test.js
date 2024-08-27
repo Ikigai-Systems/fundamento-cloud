@@ -18,4 +18,12 @@ describe("Collection formulas", () => {
   describe('List', () => {
     testFormula(`List(1, 2, 3, 3, 3, 4)`, [[[1, 2, 3, 3, 3, 4]]]);
   });
+
+  describe('Filter', () => {
+    testFormula(`Filter(List(1, 2, 3, 3, 3, 4), CurrentValue >= 3)`, [[[3, 3, 3, 4]]]);
+  });
+
+  describe("ForEach", () => {
+    testFormula(`ForEach(List("Dog", "Cat"), Upper(CurrentValue))`, [[["DOG", "CAT"]]])
+  });
 });
