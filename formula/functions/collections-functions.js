@@ -15,6 +15,14 @@ defineFunction("List", (...args) => {
   return Array.from(args);
 });
 
+defineFunction("First", (...args) => {
+  return _.first(args);
+});
+
+defineFunction("Last", (...args) => {
+  return _.last(args);
+});
+
 defineFunction("ForEach", (...args) => {
   this.currentValueManager.enterScope();
   try {

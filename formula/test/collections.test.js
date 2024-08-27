@@ -26,4 +26,14 @@ describe("Collection formulas", () => {
   describe("ForEach", () => {
     testFormula(`ForEach(List("Dog", "Cat"), Upper(CurrentValue))`, [[["DOG", "CAT"]]])
   });
+
+  describe('First', () => {
+    testFormula(`First(1, 2, 3, 3, 3, 4)`, [[1]]);
+    testFormula(`First(1)`, [[1]]);
+  });
+
+  describe('Last', () => {
+    testFormula(`Last(1, 2, 3, 3, 3, 4)`, [[4]]);
+    testFormula(`Last(1)`, [[1]]);
+  });
 });
