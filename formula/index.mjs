@@ -35,6 +35,22 @@ defineFunction("Join", (delimiter, ...args) => {
   return _.join(args, delimiter);
 });
 
+defineFunction("ContainsText", (text, searchText, ignoreCase = false, ignoreAccents = false) => {
+  function normalizeText(text, ignoreCase, ignoreAccents) {
+    if (ignoreAccents) {
+      text = _.deburr(text);
+    }
+    if (ignoreCase) {
+      text = text.toLowerCase();
+    }
+    return text;
+  }
+
+  const normalizedText = normalizeText(text, ignoreCase, ignoreAccents);
+  const normalizedSearchText = normalizeText(searchText, ignoreCase, ignoreAccents);
+  return normalizedText.includes(normalizedSearchText);
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();

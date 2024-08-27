@@ -10,4 +10,20 @@ describe('String related formulas', () => {
       expect(result).to.deep.equal([["This-is-Awesome"]]);
     });
   });
+
+  describe('ContainsText', () => {
+    it('works', () => {
+      expect(evaluateFormula(`ContainsText("a needle in the haystack", "needle")`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`ContainsText("Trippers and askers surround me", "trip")`)).
+        to.deep.equal([[false]]);
+
+      expect(evaluateFormula(`ContainsText("But they are not the Me myself", "me", True())`)).
+        to.deep.equal([[true]]);
+
+      expect(evaluateFormula(`ContainsText("crème fraîche", "creme", False(), True())`)).
+        to.deep.equal([[true]]);
+    });
+  });
 });
