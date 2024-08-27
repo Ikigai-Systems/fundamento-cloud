@@ -2,7 +2,7 @@ import {CharStreams, CommonTokenStream} from 'antlr4';
 import FormulaLexer from './antlr4/formulaLexer.js';
 import FormulaParser from './antlr4/formulaParser.js';
 import FormulaVisitor from './antlr4/formulaVisitor.js';
-import {definedFunctions} from "./all-functions.js";
+import {definedFunctions} from "./functions/index.js";
 
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
