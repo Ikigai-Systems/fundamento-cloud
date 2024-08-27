@@ -67,6 +67,10 @@ defineFunction("Substitute", (text, searchFor, replacementText) => {
   return text.replace(searchFor, replacementText);
 });
 
+defineFunction("SubstituteAll", (text, searchFor, replacementText) => {
+  return text.replaceAll(searchFor, replacementText);
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();

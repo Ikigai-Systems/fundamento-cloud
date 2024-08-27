@@ -32,4 +32,9 @@ describe('String related formulas', () => {
     testFormula(`Substitute("Hello world", "Hello", "Good morning")`, [["Good morning world"]]);
     testFormula(`Substitute("ho ho ho", "ho", "yo")`, [["yo ho ho"]]);
   });
+
+  describe('SubstituteAll', () => {
+    testFormula(`SubstituteAll("The Cat in the Hat", "at", "orn")`, [["The Corn in the Horn"]]);
+    testFormula(`SubstituteAll("ho ho ho", "ho", "yo")`, [["yo yo yo"]]);
+  });
 });
