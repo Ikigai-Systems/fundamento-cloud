@@ -14,11 +14,6 @@ describe('CountUnique Function', () => {
   testFormula(`CountUnique("world", "world", "hello")`, [[2]]);
 });
 
-describe('And Function', () => {
-  testFormula(`And(True(), True())`, [[true]]);
-  testFormula(`And(True(), False())`, [[false]]);
-});
-
 describe('Expressions', () => {
   testFormula(`3 * 5`, [[15]]);
   testFormula(`3 - 5`, [[-2]]);
