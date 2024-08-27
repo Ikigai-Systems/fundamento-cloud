@@ -7,6 +7,12 @@ describe('And', () => {
   testFormula(`And(True(), False())`, [[false]]);
 });
 
+describe('Or', () => {
+  testFormula(`Or(True(), True())`, [[true]]);
+  testFormula(`Or(True(), False())`, [[true]]);
+  testFormula(`Or(False(), False())`, [[false]]);
+});
+
 
 // describe('Nesting Functions', () => {
 //   it('should count only unique arguments', () => {

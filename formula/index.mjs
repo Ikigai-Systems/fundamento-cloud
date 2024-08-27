@@ -23,6 +23,10 @@ defineFunction("And", (...[arg1, arg2]) => {
   return !!arg1 && !!arg2;
 });
 
+defineFunction("Or", (...[arg1, arg2]) => {
+  return !!arg1 || !!arg2;
+});
+
 defineFunction("True", () => {
   return true;
 });
