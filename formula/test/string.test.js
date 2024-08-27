@@ -37,4 +37,12 @@ describe('String related formulas', () => {
     testFormula(`SubstituteAll("The Cat in the Hat", "at", "orn")`, [["The Corn in the Horn"]]);
     testFormula(`SubstituteAll("ho ho ho", "ho", "yo")`, [["yo yo yo"]]);
   });
+
+  describe('Upper', () => {
+    testFormula(`Upper("hello WORLD")`, [["HELLO WORLD"]]);
+  });
+
+  describe('Lower', () => {
+    testFormula(`Lower("hello WORLD")`, [["hello world"]]);
+  });
 });

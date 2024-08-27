@@ -71,6 +71,14 @@ defineFunction("SubstituteAll", (text, searchFor, replacementText) => {
   return text.replaceAll(searchFor, replacementText);
 });
 
+defineFunction("Upper", (text) => {
+  return text.toUpperCase();
+});
+
+defineFunction("Lower", (text) => {
+  return text.toLowerCase();
+});
+
 class FormulaVisitorImplementation extends FormulaVisitor {
   visitFunctionCall(ctx) {
     const functionName = ctx.IDENTIFIER().getText();
