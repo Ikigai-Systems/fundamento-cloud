@@ -1,29 +1,29 @@
-import {defineFunction} from "./define-function.js";
+import {defineFormula} from "./define-formula.js";
 
 import _ from "lodash";
 
 // Define the Find function
-defineFunction("Find", (arg1, arg2) => {
+defineFormula("Find", (arg1, arg2) => {
   return arg2.indexOf(arg1) !== -1;
 });
 
-defineFunction("CountUnique", (...args) => {
+defineFormula("CountUnique", (...args) => {
   return _.uniq(args).length;
 });
 
-defineFunction("List", (...args) => {
+defineFormula("List", (...args) => {
   return Array.from(args);
 });
 
-defineFunction("First", (...args) => {
+defineFormula("First", (...args) => {
   return _.first(args);
 });
 
-defineFunction("Last", (...args) => {
+defineFormula("Last", (...args) => {
   return _.last(args);
 });
 
-defineFunction("ForEach", (...args) => {
+defineFormula("ForEach", (...args) => {
   this.currentValueManager.enterScope();
   try {
     return Array.from(args);
@@ -32,7 +32,7 @@ defineFunction("ForEach", (...args) => {
   }
 });
 
-defineFunction("Filter", (...args) => {
+defineFormula("Filter", (...args) => {
   this.currentValueManager.enterScope();
   try {
     this.currentValueManager.declareVariable("currentValue", 5);
