@@ -23,21 +23,6 @@ defineFormula("Last", (...args) => {
   return _.last(args);
 });
 
-defineFormula("ForEach", (...args) => {
-  this.currentValueManager.enterScope();
-  try {
-    return Array.from(args);
-  } finally {
-    this.currentValueManager.exitScope();
-  }
-});
+defineFormula("ForEach", _.map);
 
-defineFormula("Filter", (...args) => {
-  this.currentValueManager.enterScope();
-  try {
-    this.currentValueManager.declareVariable("currentValue", 5);
-    return Array.from(args);
-  } finally {
-    this.currentValueManager.exitScope();
-  }
-});
+defineFormula("Filter", _.filter);

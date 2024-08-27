@@ -48,26 +48,13 @@ class FormulaVisitorImplementation extends FormulaVisitor {
     const formulaFunction = definedFormulas[formulaName];
 
     if (formulaFunction) {
-      if (formulaName === "Filter") {
+      if (formulaName === "Filter" || formulaName === "ForEach") {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
           const list = this.visit(ctx.expression(0));
 
-          return list.filter((currentValue) => {
-            this.currentValueManager.declareVariable("currentValue", currentValue);
-            return this.visit(formula);
-          });
-        } finally {
-          this.currentValueManager.exitScope();
-        }
-      } else if (formulaName === "ForEach") {
-        this.currentValueManager.enterScope();
-        try {
-          const formula = ctx.expression(1);
-          const list = this.visit(ctx.expression(0));
-
-          return list.map((currentValue) => {
+          return formulaFunction(list, (currentValue) => {
             this.currentValueManager.declareVariable("currentValue", currentValue);
             return this.visit(formula);
           });
