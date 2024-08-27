@@ -4,21 +4,21 @@ import antlr4 from 'antlr4';
 import formulaListener from './formulaListener.js';
 import formulaVisitor from './formulaVisitor.js';
 
-const serializedATN = [4,1,15,56,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,
+const serializedATN = [4,1,17,56,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,
 2,5,7,5,2,6,7,6,1,0,1,0,1,1,1,1,3,1,19,8,1,1,2,1,2,1,2,1,2,1,2,5,2,26,8,
 2,10,2,12,2,29,9,2,3,2,31,8,2,1,2,1,2,1,3,1,3,1,3,1,3,5,3,39,8,3,10,3,12,
 3,42,9,3,1,4,1,4,1,4,1,4,1,4,1,4,3,4,50,8,4,1,5,1,5,1,6,1,6,1,6,0,0,7,0,
-2,4,6,8,10,12,0,2,1,0,1,8,1,0,10,11,54,0,14,1,0,0,0,2,18,1,0,0,0,4,20,1,
+2,4,6,8,10,12,0,2,1,0,1,10,1,0,12,13,54,0,14,1,0,0,0,2,18,1,0,0,0,4,20,1,
 0,0,0,6,34,1,0,0,0,8,49,1,0,0,0,10,51,1,0,0,0,12,53,1,0,0,0,14,15,3,2,1,
 0,15,1,1,0,0,0,16,19,3,4,2,0,17,19,3,6,3,0,18,16,1,0,0,0,18,17,1,0,0,0,19,
-3,1,0,0,0,20,21,5,9,0,0,21,30,5,12,0,0,22,27,3,6,3,0,23,24,5,14,0,0,24,26,
-3,6,3,0,25,23,1,0,0,0,26,29,1,0,0,0,27,25,1,0,0,0,27,28,1,0,0,0,28,31,1,
-0,0,0,29,27,1,0,0,0,30,22,1,0,0,0,30,31,1,0,0,0,31,32,1,0,0,0,32,33,5,13,
-0,0,33,5,1,0,0,0,34,40,3,8,4,0,35,36,3,10,5,0,36,37,3,8,4,0,37,39,1,0,0,
-0,38,35,1,0,0,0,39,42,1,0,0,0,40,38,1,0,0,0,40,41,1,0,0,0,41,7,1,0,0,0,42,
-40,1,0,0,0,43,50,3,12,6,0,44,50,3,4,2,0,45,46,5,12,0,0,46,47,3,6,3,0,47,
-48,5,13,0,0,48,50,1,0,0,0,49,43,1,0,0,0,49,44,1,0,0,0,49,45,1,0,0,0,50,9,
-1,0,0,0,51,52,7,0,0,0,52,11,1,0,0,0,53,54,7,1,0,0,54,13,1,0,0,0,5,18,27,
+3,1,0,0,0,20,21,5,11,0,0,21,30,5,14,0,0,22,27,3,6,3,0,23,24,5,16,0,0,24,
+26,3,6,3,0,25,23,1,0,0,0,26,29,1,0,0,0,27,25,1,0,0,0,27,28,1,0,0,0,28,31,
+1,0,0,0,29,27,1,0,0,0,30,22,1,0,0,0,30,31,1,0,0,0,31,32,1,0,0,0,32,33,5,
+15,0,0,33,5,1,0,0,0,34,40,3,8,4,0,35,36,3,10,5,0,36,37,3,8,4,0,37,39,1,0,
+0,0,38,35,1,0,0,0,39,42,1,0,0,0,40,38,1,0,0,0,40,41,1,0,0,0,41,7,1,0,0,0,
+42,40,1,0,0,0,43,50,3,12,6,0,44,50,3,4,2,0,45,46,5,14,0,0,46,47,3,6,3,0,
+47,48,5,15,0,0,48,50,1,0,0,0,49,43,1,0,0,0,49,44,1,0,0,0,49,45,1,0,0,0,50,
+9,1,0,0,0,51,52,7,0,0,0,52,11,1,0,0,0,53,54,7,1,0,0,54,13,1,0,0,0,5,18,27,
 30,40,49];
 
 
@@ -32,11 +32,11 @@ export default class formulaParser extends antlr4.Parser {
 
     static grammarFileName = "formula.g4";
     static literalNames = [ null, "'+'", "'-'", "'*'", "'/'", "'>'", "'>='", 
-                            "'<'", "'<='", null, null, null, "'('", "')'", 
-                            "','" ];
+                            "'<'", "'<='", "'=='", "'!='", null, null, null, 
+                            "'('", "')'", "','" ];
     static symbolicNames = [ null, null, null, null, null, null, null, null, 
-                             null, "IDENTIFIER", "NUMBER", "STRING", "LBRACKET", 
-                             "RBRACKET", "COMMA", "WS" ];
+                             null, null, null, "IDENTIFIER", "NUMBER", "STRING", 
+                             "LBRACKET", "RBRACKET", "COMMA", "WS" ];
     static ruleNames = [ "program", "statement", "functionCall", "expression", 
                          "term", "operator", "literal" ];
 
@@ -123,13 +123,13 @@ export default class formulaParser extends antlr4.Parser {
 	        this.state = 30;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        if((((_la) & ~0x1f) === 0 && ((1 << _la) & 7680) !== 0)) {
+	        if((((_la) & ~0x1f) === 0 && ((1 << _la) & 30720) !== 0)) {
 	            this.state = 22;
 	            this.expression();
 	            this.state = 27;
 	            this._errHandler.sync(this);
 	            _la = this._input.LA(1);
-	            while(_la===14) {
+	            while(_la===16) {
 	                this.state = 23;
 	                this.match(formulaParser.COMMA);
 	                this.state = 24;
@@ -169,7 +169,7 @@ export default class formulaParser extends antlr4.Parser {
 	        this.state = 40;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
-	        while((((_la) & ~0x1f) === 0 && ((1 << _la) & 510) !== 0)) {
+	        while((((_la) & ~0x1f) === 0 && ((1 << _la) & 2046) !== 0)) {
 	            this.state = 35;
 	            this.operator();
 	            this.state = 36;
@@ -201,18 +201,18 @@ export default class formulaParser extends antlr4.Parser {
 	        this.state = 49;
 	        this._errHandler.sync(this);
 	        switch(this._input.LA(1)) {
-	        case 10:
-	        case 11:
+	        case 12:
+	        case 13:
 	            this.enterOuterAlt(localctx, 1);
 	            this.state = 43;
 	            this.literal();
 	            break;
-	        case 9:
+	        case 11:
 	            this.enterOuterAlt(localctx, 2);
 	            this.state = 44;
 	            this.functionCall();
 	            break;
-	        case 12:
+	        case 14:
 	            this.enterOuterAlt(localctx, 3);
 	            this.state = 45;
 	            this.match(formulaParser.LBRACKET);
@@ -248,7 +248,7 @@ export default class formulaParser extends antlr4.Parser {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 51;
 	        _la = this._input.LA(1);
-	        if(!((((_la) & ~0x1f) === 0 && ((1 << _la) & 510) !== 0))) {
+	        if(!((((_la) & ~0x1f) === 0 && ((1 << _la) & 2046) !== 0))) {
 	        this._errHandler.recoverInline(this);
 	        }
 	        else {
@@ -279,7 +279,7 @@ export default class formulaParser extends antlr4.Parser {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 53;
 	        _la = this._input.LA(1);
-	        if(!(_la===10 || _la===11)) {
+	        if(!(_la===12 || _la===13)) {
 	        this._errHandler.recoverInline(this);
 	        }
 	        else {
@@ -312,13 +312,15 @@ formulaParser.T__4 = 5;
 formulaParser.T__5 = 6;
 formulaParser.T__6 = 7;
 formulaParser.T__7 = 8;
-formulaParser.IDENTIFIER = 9;
-formulaParser.NUMBER = 10;
-formulaParser.STRING = 11;
-formulaParser.LBRACKET = 12;
-formulaParser.RBRACKET = 13;
-formulaParser.COMMA = 14;
-formulaParser.WS = 15;
+formulaParser.T__8 = 9;
+formulaParser.T__9 = 10;
+formulaParser.IDENTIFIER = 11;
+formulaParser.NUMBER = 12;
+formulaParser.STRING = 13;
+formulaParser.LBRACKET = 14;
+formulaParser.RBRACKET = 15;
+formulaParser.COMMA = 16;
+formulaParser.WS = 17;
 
 formulaParser.RULE_program = 0;
 formulaParser.RULE_statement = 1;
