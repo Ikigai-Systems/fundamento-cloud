@@ -80,7 +80,15 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 
   visitTerm(ctx) {
-    return _.first(super.visitTerm(ctx));
+    if (ctx.expression(0)) {
+      return this.visit(ctx.expression(0));
+    } else if (ctx.literal(0)) {
+      return this.visit(ctx.literal(0));
+    } else if (ctx.functionCall(0)) {
+      return this.visit(ctx.functionCall(0));
+    } else {
+      throw new Error(`Unexpected term found: ${ctx.getText()}`)
+    }
   }
 }
 

@@ -64,6 +64,10 @@ describe('Expressions', () => {
   });
 
   it("handles parentheses", () => {
+    const singleBrackets = evaluateFormula(`(2*3)`);
+
+    expect(singleBrackets).to.deep.equal([[6]])
+
     const result = evaluateFormula(`(2*2)/(4+4)`);
 
     expect(result).to.deep.equal([[0.5]])
