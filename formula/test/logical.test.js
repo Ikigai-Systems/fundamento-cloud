@@ -33,4 +33,9 @@ describe("Logical formulas", () => {
     testFormula(`IfBlank("", "Default if blank")`, [["Default if blank"]]);
     testFormula(`IfBlank("Hello world", "Default if blank")`, [["Hello world"]]);
   });
+
+  describe('Not', () => {
+    testFormula(`Not(True())`, [[false]]);
+    testFormula(`Not(False())`, [[true]]);
+  });
 });
