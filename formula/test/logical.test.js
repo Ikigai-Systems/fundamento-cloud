@@ -27,6 +27,7 @@ describe("Logical formulas", () => {
     testFormula(`If(False(), "That's true", "That's not true")`, [["That's not true"]]);
 
     testFormula(`If(6 > 5, "6 is more than 5", "That's not correct")`, [["6 is more than 5"]]);
+    testFormula(`If(6 < 5, "6 is more than 5", "That's not correct")`, [["That's not correct"]]);
   });
 
   describe('IfBlank', () => {
