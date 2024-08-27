@@ -63,6 +63,8 @@ gem "sentry-ruby"
 gem "sentry-rails"
 gem "solid_assert"
 
+gem "hash_diff"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
@@ -74,8 +76,6 @@ group :development, :test do
   gem "rspec", "~> 3.13"
   gem "rspec-rails"
   gem "rails-controller-testing"
-
-  gem "hash_diff"
 end
 
 group :development do
