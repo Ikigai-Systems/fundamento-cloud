@@ -5,8 +5,10 @@ import { testFormula } from "./formulaHelpers.js";
 describe('Expressions', () => {
   testFormula(`3 * 5`, 15);
   testFormula(`3 - 5`, -2);
+  testFormula(`3-5`, -2);
   testFormula(`(2*3)`, 6);
   testFormula(`(2*2)/(4+4)`, 0.5);
+  testFormula(`0-5`, -5);
 });
 
 // describe('Nesting Functions', () => {
