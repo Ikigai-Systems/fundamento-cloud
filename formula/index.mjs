@@ -39,8 +39,10 @@ class CurrentValueManager {
 }
 
 class FormulaVisitorImplementation extends FormulaVisitor {
-  constructor(props) {
-    super(props);
+  constructor(context) {
+    super();
+
+    this.context = context;
     this.currentValueManager = new CurrentValueManager();
   }
 
@@ -55,13 +57,17 @@ class FormulaVisitorImplementation extends FormulaVisitor {
     if (formulaDefinition) {
       const {formulaFunction, iterative} = formulaDefinition;
 
+      const functionContext = {
+        ...this.context,
+      };
+
       if (iterative) {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
           const list = this.visit(ctx.expression(0));
 
-          return formulaFunction(list, (currentValue) => {
+          return formulaFunction.call(functionContext, list, (currentValue) => {
             this.currentValueManager.declareVariable("currentValue", currentValue);
             return this.visit(formula);
           });
@@ -70,10 +76,6 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         }
       } else {
         const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
-
-        const functionContext = {
-          currentValueManager: this.currentValueManager
-        };
 
         return formulaFunction.call(functionContext, ...visitedExpressions);
       }
@@ -147,7 +149,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 }
 
-export function evaluateFormula(inputString) {
+export function evaluateFormula(inputString, context = {}) {
   const inputStream = CharStreams.fromString(inputString);
   const lexer = new FormulaLexer(inputStream);
   const tokenStream = new CommonTokenStream(lexer);
@@ -157,7 +159,7 @@ export function evaluateFormula(inputString) {
 
   console.log(tree.toStringTree(parser.ruleNames));
 
-  const visitor = new FormulaVisitorImplementation();
+  const visitor = new FormulaVisitorImplementation(context);
 
   return visitor.visit(tree);
 }
