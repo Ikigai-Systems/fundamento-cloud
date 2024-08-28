@@ -64,7 +64,7 @@ gem "sentry-rails"
 gem "solid_assert"
 
 gem "hash_diff"
-gem "mini_racer", require: false
+gem "mini_racer"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

@@ -88,7 +88,34 @@ RSpec.describe Tables::Table, type: :model do
             "Key" => "MON",
             "Name" => "Monday",
             "Description" => "Hardest day of the week",
-            "Value" => "-1",
+            "Value" => "0-1",
+          }
+        ])
+      end
+    end
+
+    context "with evaluate formulas enabled" do
+      it "returns data" do
+        table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+
+        expect(table_data).to eq([
+          {
+            "Key" => "JIRA",
+            "Name" => "Jira",
+            "Description" => "Some project tracking tool",
+            "Value" => 15,
+          },
+          {
+            "Key" => "CONFLUENCE",
+            "Name" => "Confluence",
+            "Description" => "Some knowledge sharing tool",
+            "Value" => 3,
+          },
+          {
+            "Key" => "MON",
+            "Name" => "Monday",
+            "Description" => "Hardest day of the week",
+            "Value" => -1,
           }
         ])
       end
