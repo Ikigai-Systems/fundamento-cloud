@@ -7,6 +7,10 @@ defineFormula("Join", (delimiter, ...args) => {
   return _.join(args, delimiter);
 });
 
+defineFormula("Concatenate", (...args) => {
+  return _.join(args, "");
+});
+
 function normalizeText(text, ignoreCase, ignoreAccents) {
   if (ignoreAccents) {
     text = _.deburr(text);

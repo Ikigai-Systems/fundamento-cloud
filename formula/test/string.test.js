@@ -7,6 +7,10 @@ describe('String related formulas', () => {
     testFormula(`Join("-", "This", "is", "Awesome")`, "This-is-Awesome");
   });
 
+  describe('Concatenate', () => {
+    testFormula(`Concatenate("This", "Is", "Awesome")`, "ThisIsAwesome");
+  });
+
   describe('ContainsText', () => {
     testFormula(`ContainsText("a needle in the haystack", "needle")`, true);
     testFormula(`ContainsText("Trippers and askers surround me", "trip")`, false);
