@@ -45,6 +45,10 @@ COPY package.json package-lock.json ./
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
     npm ci --cache /var/cache/npm
 
+COPY formula/package.json formula/package-lock.json ./formula/
+RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
+    cd formula && npm ci --cache /var/cache/npm
+
 # Copy application code
 COPY . .
 
@@ -54,6 +58,9 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
+
+# Compile formula evaluation engine
+RUN cd formula && npm run build
 
 # Final stage for app image
 FROM base
@@ -76,6 +83,7 @@ COPY --from=build /rails/config ./config
 COPY --from=build /rails/Gemfile* ./
 COPY --from=build /rails/app ./app
 COPY --from=build /rails/vendor ./vendor
+COPY --from=build /rails/formula/build ./formula/build
 
 # Use COPY --chown instead of chown as the latter is very slow (took 100s on my machine)
 # see https://github.com/docker/for-linux/issues/388
