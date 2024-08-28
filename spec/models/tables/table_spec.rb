@@ -75,17 +75,20 @@ RSpec.describe Tables::Table, type: :model do
           {
             "Key" => "JIRA",
             "Name" => "Jira",
-            "Description" => "Some project tracking tool"
+            "Description" => "Some project tracking tool",
+            "Value" => "3*5",
           },
           {
             "Key" => "CONFLUENCE",
             "Name" => "Confluence",
-            "Description" => "Some knowledge sharing tool"
+            "Description" => "Some knowledge sharing tool",
+            "Value" => "5 - 2",
           },
           {
             "Key" => "MON",
             "Name" => "Monday",
-            "Description" => "Hardest day of the week"
+            "Description" => "Hardest day of the week",
+            "Value" => "-1",
           }
         ])
       end

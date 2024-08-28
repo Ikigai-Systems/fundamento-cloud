@@ -17,3 +17,10 @@ project_description:
   table: :projects
   kind: 0
   previous_column: :project_name
+
+project_value:
+  name: Value
+  organization: :is
+  table: :projects
+  kind: :formula
+  previous_column: :project_description

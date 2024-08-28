@@ -43,7 +43,7 @@ class Tables::Table < ApplicationRecord
     self.order_linked_list(self.rows, :previous_row_id)
   end
 
-  def data_to_json
+  def data_to_json(evaluate_formulas: false)
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }

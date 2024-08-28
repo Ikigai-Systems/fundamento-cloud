@@ -19,6 +19,13 @@ projects_jira_description:
   row: :projects_row_1
   value: Some project tracking tool
 
+projects_jira_value:
+  organization: :is
+  table: :projects
+  column: :project_value
+  row: :projects_row_1
+  value: 3*5
+
 projects_confluence_key:
   organization: :is
   table: :projects
@@ -40,6 +47,13 @@ projects_confluence_description:
   row: :projects_row_2
   value: Some knowledge sharing tool
 
+projects_confluence_value:
+  organization: :is
+  table: :projects
+  column: :project_value
+  row: :projects_row_2
+  value: 5 - 2
+
 projects_monday_key:
   organization: :is
   table: :projects
@@ -60,3 +74,10 @@ projects_monday_description:
   column: :project_description
   row: :projects_row_3
   value: Hardest day of the week
+
+projects_monday_value:
+  organization: :is
+  table: :projects
+  column: :project_value
+  row: :projects_row_3
+  value: -1
