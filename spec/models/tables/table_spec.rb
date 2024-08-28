@@ -95,6 +95,39 @@ RSpec.describe Tables::Table, type: :model do
     end
 
     context "with evaluate formulas enabled" do
+    context "column with a simple math formula" do
+      before do
+        tables_columns(:project_value).update!(
+          kind: :formula,
+          value_formula: "3 * 5"
+        )
+      end
+
+      it "returns the same calculated value for all rows" do
+        table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+
+        expect(table_data).to eq([
+          {
+            "Key" => "JIRA",
+            "Name" => "Jira",
+            "Description" => "Some project tracking tool",
+            "Value" => 15,
+          },
+          {
+            "Key" => "CONFLUENCE",
+            "Name" => "Confluence",
+            "Description" => "Some knowledge sharing tool",
+            "Value" => 15,
+          },
+          {
+            "Key" => "MON",
+            "Name" => "Monday",
+            "Description" => "Hardest day of the week",
+            "Value" => 15,
+          }
+        ])
+      end
+    end
       it "returns data" do
         table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
 

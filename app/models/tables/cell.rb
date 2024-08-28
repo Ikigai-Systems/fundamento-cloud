@@ -15,7 +15,7 @@ class Tables::Cell < ApplicationRecord
 
     context.eval("var exports = {};")
     context.eval(bundled_js)
-    context.eval("var formula = #{value.to_json};")
+    context.eval("var formula = #{column.value_formula.to_json};")
     context.eval("exports.evaluateFormula(formula)")
   end
 end
