@@ -2,25 +2,25 @@ project_key:
   name: "Key"
   organization: :is
   table: :projects
-  kind: 0
+  kind: :string
 
 project_name:
   name: "Name"
   organization: :is
   table: :projects
-  kind: 0
+  kind: :string
   previous_column: :project_key
 
 project_description:
   name: "Description"
   organization: :is
   table: :projects
-  kind: 0
+  kind: :string
   previous_column: :project_name
 
 project_value:
   name: Value
   organization: :is
   table: :projects
-  kind: :formula
+  kind: :string
   previous_column: :project_description
