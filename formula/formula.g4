@@ -42,7 +42,7 @@ NUMBER
     ;
 
 STRING
-    : '"' .*? '"'
+    : '"' ( '\\' [bfnrt\\/"'] | ~[\\"] )* '"'
     ;
 
 LBRACKET

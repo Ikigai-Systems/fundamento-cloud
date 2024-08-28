@@ -88,7 +88,8 @@ class FormulaVisitorImplementation extends FormulaVisitor {
     if (ctx.NUMBER()) {
       return parseFloat(ctx.NUMBER().getText());
     } else if (ctx.STRING()) {
-      return ctx.STRING().getText().replace(/"/g, '');
+      // Use JSON.parse to handle escape characters
+      return JSON.parse(ctx.STRING().getText());
     }
     throw new Error(`Unrecognized literal found ${ctx.getText()}`)
   }
