@@ -94,7 +94,6 @@ RSpec.describe Tables::Table, type: :model do
       end
     end
 
-    context "with evaluate formulas enabled" do
     context "column with a simple math formula" do
       before do
         tables_columns(:project_value).update!(
@@ -128,30 +127,36 @@ RSpec.describe Tables::Table, type: :model do
         ])
       end
     end
-      it "returns data" do
-        table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+  end
 
-        expect(table_data).to eq([
-          {
-            "Key" => "JIRA",
-            "Name" => "Jira",
-            "Description" => "Some project tracking tool",
-            "Value" => 15,
-          },
-          {
-            "Key" => "CONFLUENCE",
-            "Name" => "Confluence",
-            "Description" => "Some knowledge sharing tool",
-            "Value" => 3,
-          },
-          {
-            "Key" => "MON",
-            "Name" => "Monday",
-            "Description" => "Hardest day of the week",
-            "Value" => -1,
-          }
-        ])
-      end
+  context "formulas that reference objects" do
+    fixtures "tables/advanced_formulas/columns"
+    fixtures "tables/rows"
+    fixtures "tables/advanced_formulas/cells"
+
+    it "returns data" do
+      table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+
+      expect(table_data).to eq([
+        {
+          "Key" => "JIRA",
+          "Name" => "Jira",
+          "Description" => "Some project tracking tool",
+          "Title" => "JIRA Jira",
+        },
+        {
+          "Key" => "CONFLUENCE",
+          "Name" => "Confluence",
+          "Description" => "Some knowledge sharing tool",
+          "Title" => "CONFLUENCE Confluence",
+        },
+        {
+          "Key" => "MON",
+          "Name" => "Monday",
+          "Description" => "Hardest day of the week",
+          "Title" => "MON Monday",
+        }
+      ])
     end
   end
 end

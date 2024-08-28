@@ -1,0 +1,30 @@
+_fixture:
+  model_class: Tables::Column
+
+project_key:
+  name: "Key"
+  organization: :is
+  table: :projects
+  kind: 0
+
+project_name:
+  name: "Name"
+  organization: :is
+  table: :projects
+  kind: 0
+  previous_column: :project_key
+
+project_description:
+  name: "Description"
+  organization: :is
+  table: :projects
+  kind: 0
+  previous_column: :project_name
+
+project_title:
+  name: Title
+  organization: :is
+  table: :projects
+  kind: :formula
+  value_formula: Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))
+  previous_column: :project_description

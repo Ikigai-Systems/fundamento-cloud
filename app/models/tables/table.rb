@@ -48,11 +48,23 @@ class Tables::Table < ApplicationRecord
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
 
-    value_reader = evaluate_formulas ? :evaluate_value : :value
-
     rows_in_order.map do |row|
-      columns_in_order.each_with_object({}) do |column, hash|
-        hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.send(value_reader)
+      if evaluate_formulas
+        current_row_values = columns_in_order.each_with_object({}) do |column, hash|
+          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+        end
+
+        additional_context = {
+          "currentRow" => current_row_values
+        }
+
+        columns_in_order.each_with_object({}) do |column, hash|
+          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
+        end
+      else
+        columns_in_order.each_with_object({}) do |column, hash|
+          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+        end
       end
     end
   end
