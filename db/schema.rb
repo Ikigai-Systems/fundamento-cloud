@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_22_093730) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_28_082614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -106,6 +106,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_22_093730) do
     t.bigint "previous_column_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "value_formula"
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_columns_on_organization_id"
     t.index ["previous_column_id"], name: "index_table_columns_on_previous_column_id"
