@@ -25,6 +25,10 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build --if-present
+      - run: npm ci
+        working-directory: formula
+      - run: npm run build --if-present
+        working-directory: formula
       - uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           services: |
