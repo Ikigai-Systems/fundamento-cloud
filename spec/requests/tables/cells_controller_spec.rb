@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Tables::CellsController, type: :request do
-  fixtures :users, :organization_users, "tables/tables", "tables/cells"
+  fixtures :organizations, :spaces, :users, :organization_users, "tables/tables", "tables/columns", "tables/rows", "tables/cells"
 
   let(:user) { users(:pawel) }
   let(:table) { tables_tables(:projects) }
