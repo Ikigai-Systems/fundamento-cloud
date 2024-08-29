@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_28_082614) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_29_151206) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_28_082614) do
     t.bigint "user_id", null: false
     t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id", unique: true
     t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id", unique: true
+  end
+
+  create_table "public_links", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "object_type", null: false
+    t.bigint "object_id", null: false
+    t.string "npi", null: false
+    t.bigint "updated_by_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["npi"], name: "index_public_links_on_npi", unique: true
+    t.index ["object_id", "object_type", "organization_id"], name: "idx_on_object_id_object_type_organization_id_771a32f229", unique: true
+    t.index ["object_type", "object_id"], name: "index_public_links_on_object"
+    t.index ["organization_id"], name: "index_public_links_on_organization_id"
+    t.index ["updated_by_id"], name: "index_public_links_on_updated_by_id"
   end
 
   create_table "spaces", force: :cascade do |t|
