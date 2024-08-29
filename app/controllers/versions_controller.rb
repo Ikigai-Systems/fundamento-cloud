@@ -22,7 +22,8 @@ class VersionsController < ApplicationController
           subblock = traverse_xml_fragment(node.first_child)
           block = block.deep_merge(subblock)
           whitelisted_props = {
-            "database" => ["textColor", "textAlignment", "data", "columns"]
+            "database" => ["textColor", "textAlignment", "data", "columns"],
+            "image" => ["backgroundColor", "caption", "name", "previewWidth", "showPreview", "textAlignment", "url"],
           }[block["type"]]
           if whitelisted_props.present?
             block["props"] = block["props"].slice(*whitelisted_props)
@@ -34,7 +35,7 @@ class VersionsController < ApplicationController
             traverse_xml_fragment(node[i])
           end
         else
-          content_less_blocks = ["database", "mention"] # blocks and inlineContent with content: "none"
+          content_less_blocks = ["database", "mention", "image"] # blocks and inlineContent with content: "none"
           content = node.size <= 0 && content_less_blocks.include?(node.tag) ? nil : (0..node.size - 1).flat_map do |i|
             traverse_xml_fragment(node[i])
           end
@@ -44,7 +45,9 @@ class VersionsController < ApplicationController
           }.merge(content.nil? ? {} : {"content" => content})
 
           convert_to_number_props = {
-            "mention" => ["id"]
+            "mention" => ["id"],
+            "heading" => ["level"],
+            "image" => ["previewWidth"],
           }[block["type"]]
           if convert_to_number_props
             convert_to_number_props.each do |prop|
@@ -52,18 +55,50 @@ class VersionsController < ApplicationController
             end
           end
 
+          convert_to_boolean_props = {
+            "image" => ["showPreview"],
+          }[block["type"]]
+          if convert_to_boolean_props
+            convert_to_boolean_props.each do |prop|
+              block["props"][prop] = block["props"][prop]&.downcase == "true"
+            end
+          end
+
           return block
         end
       elsif node.is_a? Y::XMLText
-        node.diff.map do |diff|
+        blocks = []
+        node.diff.each do |diff|
           styles = {}
-          diff.attrs&.keys&.each { |attr| styles[attr] = true}
-          {
-            "type" => "text",
-            "text" => diff.insert,
-            "styles" => styles
-          }
+          diff.attrs&.keys&.excluding("link")&.each { |attr| styles[attr] = true }
+          if (diff.attrs&.[]("link")).nil?
+            blocks << {
+              "type" => "text",
+              "text" => diff.insert,
+              "styles" => styles
+            }
+          else
+            href = diff.attrs["link"]["href"]
+            if (blocks.empty? || blocks.last["href"] != href)
+              blocks << {
+                "type" => "link",
+                "href" => href,
+                "content" => [{
+                                "type" => "text",
+                                "text" => diff.insert,
+                                "styles" => styles
+                              }]
+              }
+            else
+              blocks.last["content"] << {
+                "type" => "text",
+                "text" => diff.insert,
+                "styles" => styles
+              }
+            end
+          end
         end
+        blocks
       elsif node.is_a? Y::XMLFragment
         traverse_xml_fragment(node.first_child)
       else
