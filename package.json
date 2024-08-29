@@ -9,9 +9,9 @@
     "preview": "vite preview frontend"
   },
   "dependencies": {
-    "@blocknote/core": "^0.15.0",
-    "@blocknote/mantine": "^0.15.0",
-    "@blocknote/react": "^0.15.0",
+    "@blocknote/core": "^0.15.6",
+    "@blocknote/mantine": "^0.15.6",
+    "@blocknote/react": "^0.15.6",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.5",
     "@js-from-routes/axios": "^1.0.4",
