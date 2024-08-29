@@ -35,7 +35,7 @@ class VersionsController < ApplicationController
           end
         else
           content_less_blocks = ["database", "mention"] # blocks and inlineContent with content: "none"
-          content = node.size <= 0 && content_less_blocks.include?(node.tag) ? nil : (0..node.size - 1).map do |i|
+          content = node.size <= 0 && content_less_blocks.include?(node.tag) ? nil : (0..node.size - 1).flat_map do |i|
             traverse_xml_fragment(node[i])
           end
           block = {
@@ -55,11 +55,15 @@ class VersionsController < ApplicationController
           return block
         end
       elsif node.is_a? Y::XMLText
-        return {
-          "type" => "text",
-          "text" => node.to_s,
-          "styles" => {}
-        }
+        node.diff.map do |diff|
+          styles = {}
+          diff.attrs&.keys&.each { |attr| styles[attr] = true}
+          {
+            "type" => "text",
+            "text" => diff.insert,
+            "styles" => styles
+          }
+        end
       elsif node.is_a? Y::XMLFragment
         traverse_xml_fragment(node.first_child)
       else

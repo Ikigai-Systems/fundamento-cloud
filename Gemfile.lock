@@ -1,3 +1,24 @@
+GIT
+  remote: https://github.com/stefan-iki/yrb
+  revision: b55af4cde92228752924e4b26010c76412c5dafa
+  branch: add-support-for-xmltext-diff
+  specs:
+    y-rb (0.5.6)
+      rake (~> 13.0)
+      rb_sys (~> 0.9.86)
+    y-rb (0.5.6-aarch64-linux)
+      rake (~> 13.0)
+      rb_sys (~> 0.9.86)
+    y-rb (0.5.6-arm64-darwin)
+      rake (~> 13.0)
+      rb_sys (~> 0.9.86)
+    y-rb (0.5.6-x86_64-darwin)
+      rake (~> 13.0)
+      rb_sys (~> 0.9.86)
+    y-rb (0.5.6-x86_64-linux)
+      rake (~> 13.0)
+      rb_sys (~> 0.9.86)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -304,21 +325,6 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    y-rb (0.5.6)
-      rake (~> 13.0)
-      rb_sys (~> 0.9.86)
-    y-rb (0.5.6-aarch64-linux)
-      rake (~> 13.0)
-      rb_sys (~> 0.9.86)
-    y-rb (0.5.6-arm64-darwin)
-      rake (~> 13.0)
-      rb_sys (~> 0.9.86)
-    y-rb (0.5.6-x86_64-darwin)
-      rake (~> 13.0)
-      rb_sys (~> 0.9.86)
-    y-rb (0.5.6-x86_64-linux)
-      rake (~> 13.0)
-      rb_sys (~> 0.9.86)
     y-rb_actioncable (0.1.7)
       rails (>= 7.0.4)
       y-rb (>= 0.4.5)
@@ -362,7 +368,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   vite_rails
-  y-rb
+  y-rb!
   y-rb_actioncable
 
 RUBY VERSION
