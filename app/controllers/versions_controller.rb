@@ -49,7 +49,11 @@ class VersionsController < ApplicationController
               subnode = subnodes[index]
 
               if subnode["type"] == "hardBreak"
-                content.last["text"] += "\n"
+                if content.last["text"]
+                  content.last["text"] += "\n"
+                else
+                  content.last["content"].last["text"] += "\n"
+                end
                 if (subnodes[index+1]["styles"] == subnodes[index-1]["styles"]) && (subnodes[index+1]["type"] == subnodes[index-1]["type"])
                   content.last["text"] += subnodes[index+1]["text"]
                   index = index + 1
