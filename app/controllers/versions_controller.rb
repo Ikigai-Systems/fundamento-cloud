@@ -24,6 +24,7 @@ class VersionsController < ApplicationController
           whitelisted_props = {
             "database" => ["textColor", "textAlignment", "data", "columns"],
             "image" => ["backgroundColor", "caption", "name", "previewWidth", "showPreview", "textAlignment", "url"],
+            "numberedListItem" => ["backgroundColor", "textAlignment", "textColor"],
           }[block["type"]]
           if whitelisted_props.present?
             block["props"] = block["props"].slice(*whitelisted_props)
@@ -36,9 +37,30 @@ class VersionsController < ApplicationController
           end
         else
           content_less_blocks = ["database", "mention", "image"] # blocks and inlineContent with content: "none"
-          content = node.size <= 0 && content_less_blocks.include?(node.tag) ? nil : (0..node.size - 1).flat_map do |i|
-            traverse_xml_fragment(node[i])
+          content = nil
+          unless content_less_blocks.include?(node.tag)
+            subnodes = (0..node.size - 1).flat_map do |i|
+              traverse_xml_fragment(node[i])
+            end
+
+            content = []
+            index = 0
+            while index < subnodes.length
+              subnode = subnodes[index]
+
+              if subnode["type"] == "hardBreak"
+                content.last["text"] += "\n"
+                if (subnodes[index+1]["styles"] == subnodes[index-1]["styles"]) && (subnodes[index+1]["type"] == subnodes[index-1]["type"])
+                  content.last["text"] += subnodes[index+1]["text"]
+                  index = index + 1
+                end
+              else
+                content << subnode
+              end
+              index = index + 1
+            end
           end
+
           block = {
             "type" => node.tag,
             "props" => node.attrs,
