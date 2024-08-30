@@ -42,6 +42,8 @@ Rails.application.routes.draw do
         resources :cells
       end
     end
+
+    resources :public_links
   end
 
 
@@ -56,4 +58,6 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :users
   end
+
+  get "/public/:npi" => "public_links#show"
 end
