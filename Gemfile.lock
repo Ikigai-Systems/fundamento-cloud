@@ -144,6 +144,7 @@ GEM
     minitest (5.23.1)
     msgpack (1.7.2)
     mutex_m (0.2.0)
+    nanoid (2.0.0)
     net-imap (0.4.12)
       date
       net-protocol
@@ -343,6 +344,7 @@ DEPENDENCIES
   importmap-rails
   js_from_routes
   mini_racer
+  nanoid
   pg
   puma (>= 5.0)
   rack-cors (~> 2.0)

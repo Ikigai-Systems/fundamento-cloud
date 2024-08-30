@@ -66,6 +66,7 @@ gem "solid_assert"
 
 gem "hash_diff"
 gem "mini_racer"
+gem "nanoid"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
