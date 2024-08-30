@@ -2,6 +2,8 @@ class Document < ApplicationRecord
   belongs_to :organization
   belongs_to :space
 
+  has_one :public_link, as: :object, dependent: :destroy
+
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
 
