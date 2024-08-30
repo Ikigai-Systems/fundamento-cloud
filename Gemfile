@@ -48,7 +48,8 @@ gem "pg"
 
 gem "rails-static-router"
 
-gem "y-rb", git: "https://github.com/stefan-iki/yrb", branch: "add-support-for-xmltext-diff"
+#gem "y-rb", git: "https://github.com/stefan-iki/yrb", branch: "add-support-for-xmltext-diff"
+gem "y-rb"
 gem "y-rb_actioncable"
 
 gem "devise", "~> 4.9"

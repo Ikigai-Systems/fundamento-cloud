@@ -49,14 +49,18 @@ class VersionsController < ApplicationController
               subnode = subnodes[index]
 
               if subnode["type"] == "hardBreak"
-                if content.last["text"]
-                  content.last["text"] += "\n"
-                else
-                  content.last["content"].last["text"] += "\n"
+                if content.last # remove after upgrading to y-rb 0.5.7
+                  if content.last["text"]
+                    content.last["text"] += "\n"
+                  else
+                    content.last["content"].last["text"] += "\n"
+                  end
                 end
-                if (subnodes[index+1]["styles"] == subnodes[index-1]["styles"]) && (subnodes[index+1]["type"] == subnodes[index-1]["type"])
-                  content.last["text"] += subnodes[index+1]["text"]
-                  index = index + 1
+                if content.last # remove after upgrading to y-rb 0.5.7
+                  if (subnodes[index+1]["styles"] == subnodes[index-1]["styles"]) && (subnodes[index+1]["type"] == subnodes[index-1]["type"])
+                    content.last["text"] += subnodes[index+1]["text"]
+                    index = index + 1
+                  end
                 end
               else
                 content << subnode
@@ -95,33 +99,35 @@ class VersionsController < ApplicationController
         end
       elsif node.is_a? Y::XMLText
         blocks = []
-        node.diff.each do |diff|
-          styles = {}
-          diff.attrs&.keys&.excluding("link")&.each { |attr| styles[attr] = diff.attrs[attr]["stringValue"] ? diff.attrs[attr]["stringValue"] : true }
-          if (diff.attrs&.[]("link")).nil?
-            blocks << {
-              "type" => "text",
-              "text" => diff.insert,
-              "styles" => styles
-            }
-          else
-            href = diff.attrs["link"]["href"]
-            if (blocks.empty? || blocks.last["href"] != href)
+        if node.respond_to? :diff # remove when upstream y-rb releases 0.5.7
+          node.diff.each do |diff|
+            styles = {}
+            diff.attrs&.keys&.excluding("link")&.each { |attr| styles[attr] = diff.attrs[attr]["stringValue"] ? diff.attrs[attr]["stringValue"] : true }
+            if (diff.attrs&.[]("link")).nil?
               blocks << {
-                "type" => "link",
-                "href" => href,
-                "content" => [{
-                                "type" => "text",
-                                "text" => diff.insert,
-                                "styles" => styles
-                              }]
-              }
-            else
-              blocks.last["content"] << {
                 "type" => "text",
                 "text" => diff.insert,
                 "styles" => styles
               }
+            else
+              href = diff.attrs["link"]["href"]
+              if (blocks.empty? || blocks.last["href"] != href)
+                blocks << {
+                  "type" => "link",
+                  "href" => href,
+                  "content" => [{
+                                  "type" => "text",
+                                  "text" => diff.insert,
+                                  "styles" => styles
+                                }]
+                }
+              else
+                blocks.last["content"] << {
+                  "type" => "text",
+                  "text" => diff.insert,
+                  "styles" => styles
+                }
+              end
             end
           end
         end
