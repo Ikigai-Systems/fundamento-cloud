@@ -17,7 +17,7 @@ class VersionsController < ApplicationController
           block = {
             "id" => node.attrs["id"],
             "props" => node.attrs.except("id"),
-            "children" => [],
+            "children" => node.size > 1 ? traverse_xml_fragment(node[1]) : [],
           }
           subblock = traverse_xml_fragment(node.first_child)
           block = block.deep_merge(subblock)
@@ -57,6 +57,7 @@ class VersionsController < ApplicationController
 
           convert_to_boolean_props = {
             "image" => ["showPreview"],
+            "checkListItem" => ["checked"]
           }[block["type"]]
           if convert_to_boolean_props
             convert_to_boolean_props.each do |prop|
@@ -70,7 +71,7 @@ class VersionsController < ApplicationController
         blocks = []
         node.diff.each do |diff|
           styles = {}
-          diff.attrs&.keys&.excluding("link")&.each { |attr| styles[attr] = true }
+          diff.attrs&.keys&.excluding("link")&.each { |attr| styles[attr] = diff.attrs[attr]["stringValue"] ? diff.attrs[attr]["stringValue"] : true }
           if (diff.attrs&.[]("link")).nil?
             blocks << {
               "type" => "text",
