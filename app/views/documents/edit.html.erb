@@ -2,36 +2,37 @@
   <%= render 'application/left_side_bar' %>
   <article class="flex-col overflow-auto">
     <div class="bg-white h-12 flex justify-end items-center p-2">
-
-      <span>Toolbar dropdown:</span>
       <%= button_to "Save this as version", space_document_versions_path(@space, @document), method: :create,
                     params: {blocks: ""},
                     :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
-                    class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+                    class: "document-toolbar-button" %>
+
       <% if @document.archived %>
         <%= button_to "Restore", space_document_path(@space, @document), method: :put,
                       params: {document: {archived: false}},
                       form: {data: {turbo_confirm: 'Restore this document? This will make it visible in the default view.'}},
-                      class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+                      class: "document-toolbar-button" %>
       <% else %>
         <%= button_to "Archive", space_document_path(@space, @document), method: :put,
                       params: {document: {archived: true}},
                       form: {data: {turbo_confirm: 'Mark this document as archived? This will hide if from default view.'}},
-                      class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+                      class: "document-toolbar-button" %>
       <% end %>
+
       <%= button_to "Delete", space_document_path(@space, @document), method: :delete,
                     form: {data: {turbo_confirm: 'Are you sure? Deleted document cannot be restored.'}},
-                    class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
+                    class: "document-toolbar-button" %>
 
       <div
         data-controller="dropdown"
         data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.esc->dropdown#hide"
         class="inline-block relative">
-        <button data-action="dropdown#toggle:stop" class="px-2.5 py-1 bg-blue-500 text-white text-sm rounded">
+
+        <button data-action="dropdown#toggle:stop" class="document-toolbar-button">
           Share
         </button>
 
-        <div data-dropdown-target="menu" class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max">
+        <div data-dropdown-target="menu" class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max">
           <div class="text-sm bg-white shadow-lg rounded border overflow-hidden w-90">
             <%= turbo_frame_tag "show_public_link", src: @document.public_link.present? ? public_link_path(@document.public_link, format: "turbo_stream") : new_public_link_path(public_link: { object_type: @document.class, object_id: @document.id }, format: "turbo_stream"), loading: "lazy" %>
           </div>
