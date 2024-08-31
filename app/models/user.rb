@@ -16,6 +16,10 @@ class User < ApplicationRecord
     first_name.first(1) + last_name.first(1)
   end
 
+  def display_name
+    "#{first_name} #{last_name}"
+  end
+
   def online?(for_organization)
     Rails.cache.fetch("#{for_organization.cache_key}/#{cache_key}/online", false)
   end
