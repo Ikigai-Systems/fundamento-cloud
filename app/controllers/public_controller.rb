@@ -5,6 +5,8 @@ class PublicController < ApplicationController
   skip_before_action :load_current_organization_from_cookie
   skip_before_action :ensure_space_exists
 
+  before_action :set_cache_headers
+
   def show
     @public_link = PublicLink.find_by_npi!(params[:npi])
     @object = @public_link.object
@@ -14,5 +16,13 @@ class PublicController < ApplicationController
     else
       render status: :unprocessable_content
     end
+  end
+
+  private
+
+  def set_cache_headers
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
   end
 end
