@@ -6,6 +6,7 @@ class PublicController < ApplicationController
   skip_before_action :ensure_space_exists
 
   before_action :set_cache_headers
+  before_action :set_security_headers
 
   def show
     @public_link = PublicLink.find_by_npi!(params[:npi])
@@ -24,5 +25,11 @@ class PublicController < ApplicationController
     response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
+
+  def set_security_headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
   end
 end
