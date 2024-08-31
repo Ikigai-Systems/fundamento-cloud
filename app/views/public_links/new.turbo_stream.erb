@@ -1,1 +1,3 @@
 <%= turbo_stream.update "document_share_dropdown", partial: "public_links/new", locals: { public_link: @public_link } %>
+
+<%= turbo_stream.replace "document_share_button", partial: "public_links/document_share_button", locals: { public_link_exists: false } %>
