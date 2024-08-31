@@ -23,6 +23,21 @@
                     form: {data: {turbo_confirm: 'Are you sure? Deleted document cannot be restored.'}},
                     class: "ml-2 text-blue-600 dark:text-blue-500 hover:underline" %>
 
+      <div
+        data-controller="dropdown"
+        data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.esc->dropdown#hide"
+        class="inline-block relative">
+        <button data-action="dropdown#toggle:stop" class="px-2.5 py-1 bg-blue-500 text-white text-sm rounded">
+          Share
+        </button>
+
+        <div data-dropdown-target="menu" class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max">
+          <div class="text-sm bg-white shadow-lg rounded border overflow-hidden w-90">
+            <%= turbo_frame_tag "show_public_link", src: @document.public_link.present? ? public_link_path(@document.public_link, format: "turbo_stream") : new_public_link_path(public_link: { object_type: @document.class, object_id: @document.id }, format: "turbo_stream"), loading: "lazy" %>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="bg-white overflow-auto">
       <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>

@@ -47,7 +47,7 @@ RSpec.describe PublicLinksController, type: :request do
 
     it "refreshes the non predictable id" do
       expect do
-        patch public_link_path(public_link, params: { public_link: {} })
+        patch public_link_path(public_link, params: { public_link: {} }, format: :json)
 
         expect(response).to have_http_status(:ok)
       end.to change { public_link.reload.npi }.from(public_link.npi).to(be_present)
@@ -59,7 +59,7 @@ RSpec.describe PublicLinksController, type: :request do
 
     it "deletes the public link" do
       expect do
-        delete public_link_path(public_link)
+        delete public_link_path(public_link, format: :json)
 
         expect(response).to have_http_status(:ok)
       end.to change { PublicLink.count }.by(-1)

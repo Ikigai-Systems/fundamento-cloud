@@ -1,0 +1,36 @@
+<%= turbo_stream_from ["public_links_list", current_user] %>
+
+<% content_for :focused_header do %>
+  Public Links
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="sm:flex sm:items-center p-5">
+    <div class="sm:flex-auto">
+      <p class="mt-2 text-sm text-gray-700">A list of all public links created in your organization. Everyone having a link can access it.</p>
+    </div>
+  </div>
+
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <tr>
+      <th scope="col" class="px-6 py-3">
+        Document
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Public Link
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Actions
+      </th>
+    </tr>
+    </thead>
+    <tbody id="organizations">
+    <% @public_links.each do |public_link| %>
+      <%= render partial: public_link %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render "focused_section" %>

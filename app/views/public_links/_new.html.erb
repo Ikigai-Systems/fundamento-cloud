@@ -1,0 +1,18 @@
+<div class="bg-white shadow sm:rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <h3 class="text-base font-semibold leading-6 text-gray-900">Share this document</h3>
+    <div class="mt-2 max-w-xl text-sm text-gray-500">
+      <p>
+        You can create a public link to share this document with others.
+        Anyone with the link will be able to view the document.
+      </p>
+      <p class="mt-2">
+        You can see all documents shared publicly
+        <%= link_to "here", public_links_path %>.
+      </p>
+    </div>
+    <div class="mt-5 inline-flex">
+      <%= button_to "Share", public_links_path, method: :post, params: { public_link: public_link.slice(:object_id, :object_type) }, class: "secondary-button mr-2" %>
+    </div>
+  </div>
+</div>

@@ -1,16 +1,25 @@
 class PublicLinksController < ApplicationController
-  skip_before_action :authenticate_user!, only: [:show]
-  skip_before_action :ensure_organization_exists, only: [:show]
-  skip_before_action :select_current_organization, only: [:show]
-  skip_before_action :load_current_organization_from_cookie, only: [:show]
-  skip_before_action :ensure_space_exists, only: [:show]
+
+  def new
+    @public_link = current_organization.public_links.new(public_link_params)
+
+    respond_to do |format|
+      format.html { redirect_to public_links_path }
+      format.json { render json: @public_link }
+      format.turbo_stream
+    end
+  end
 
   def create
     @public_link = current_organization.public_links.new(public_link_params)
     @public_link.updated_by = current_user
 
     if @public_link.save
-      render json: @public_link, status: :created
+      respond_to do |format|
+        format.html { redirect_to @public_link }
+        format.json { render json: @public_link, status: :created }
+        format.turbo_stream
+      end
     else
       render json: @public_link.errors, status: :unprocessable_content
     end
@@ -23,7 +32,11 @@ class PublicLinksController < ApplicationController
     @public_link.updated_by = current_user
 
     if @public_link.save
-      render json: @public_link, status: :ok
+      respond_to do |format|
+        format.html { redirect_to @public_link }
+        format.json { render json: @public_link }
+        format.turbo_stream
+      end
     else
       render json: @public_link.errors, status: :unprocessable_content
     end
@@ -33,22 +46,31 @@ class PublicLinksController < ApplicationController
     @public_link = current_organization.public_links.find(params[:id])
     @public_link.destroy!
 
-    index
+    respond_to do |format|
+      format.html { redirect_to public_links_path }
+      format.json { render json: @public_link }
+      format.turbo_stream
+    end
   end
 
   def show
-    @public_link = current_organization.public_links.find_by_npi!(params[:npi])
+    @public_link = current_organization.public_links.find(params[:id])
     # @public_link.increment!(:clicks)
 
-    if @public_link.object_type == "Document"
-      redirect_to @public_link.object
-    else
-      redirect_to @public_link.object, status: :see_other
+    respond_to do |format|
+      format.html { redirect_to public_links_path }
+      format.json { render json: @public_link }
+      format.turbo_stream
     end
   end
 
   def index
-    render json: current_organization.public_links
+    @public_links = current_organization.public_links
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @public_links }
+    end
   end
 
   protected
