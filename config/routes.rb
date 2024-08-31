@@ -59,5 +59,5 @@ Rails.application.routes.draw do
     resources :users
   end
 
-  get "/public/:npi" => "public_links#show"
+  get "/public/:npi" => "public#show"
 end
