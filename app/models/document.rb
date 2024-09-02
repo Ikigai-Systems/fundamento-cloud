@@ -24,4 +24,8 @@ class Document < ApplicationRecord
   def title
     super.presence || "Untitled"
   end
+
+  def as_json(options = {})
+    super(options).merge(sync: Base64.encode64(sync))
+  end
 end
