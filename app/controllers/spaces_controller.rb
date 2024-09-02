@@ -101,7 +101,7 @@ class SpacesController < ApplicationController
     parent_item = add_to_hierarchy(hierarchy, removed_item, parent_id, position, nil)
 
     unless @space.save
-      render json: @space.errors, status: :unprocessable_entity
+      render json: @space.errors, status: :unprocessable_content
     end
   end
 
