@@ -93,12 +93,25 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         const body = new FormData();
         body.append("file", file);
 
-        const attachment = await request("post", AttachmentsApi.create.path(), {data: body, responseAs: "json", headers: {
-          'Content-Type': 'multipart/form-data'
-        }});
+        const attachment = await request("post", AttachmentsApi.create.path(), {
+          data: body,
+          responseAs: "json",
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
 
-        return attachment.location;
+        return `attachment:${attachment.id}`;
       },
+      resolveFileUrl: async (fileUrl) => {
+        const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
+
+        if (attachmentId) {
+          return AttachmentsApi.show.path({id: attachmentId});
+        } else {
+          return fileUrl;
+        }
+      }
     });
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
     return blockNoteEditor;
