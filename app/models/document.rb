@@ -28,4 +28,8 @@ class Document < ApplicationRecord
   def as_json(options = {})
     super(options).merge(sync: Base64.encode64(sync))
   end
+
+  def to_blocks
+    BlockNoteConverter.to_blocks(sync)
+  end
 end

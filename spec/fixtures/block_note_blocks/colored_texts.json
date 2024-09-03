@@ -1,0 +1,46 @@
+[
+  {
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "czerwony",
+        "styles": {
+          "textColor": "red"
+        }
+      },
+      {
+        "type": "text",
+        "text": "zielony",
+        "styles": {
+          "textColor": "green"
+        }
+      },
+      {
+        "type": "text",
+        "text": "niebieski",
+        "styles": {
+          "backgroundColor": "blue"
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8b067284-1897-4039-878a-23e4a3429809",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  }
+]
