@@ -38,7 +38,7 @@ jobs:
             redis
       - name: Setup the database
         run: bin/rails db:setup
-      - name: Precompile assets (i.e. tailwind.css)
-        run: bin/rails assets:precompile
+      - name: Rebuild tailwind.css
+        run: bin/rails test:prepare
       - name: Run specs
         run: bin/rspec
