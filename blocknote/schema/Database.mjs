@@ -47,6 +47,10 @@ const Database = createReactBlockSpec(
       }
     },
     content: "none",
+  }, {
+    parse: (htmlElement) => {
+      throw new Error("To be implemented some day");
+    }
   }
 );
 
