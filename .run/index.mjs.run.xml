@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="blocknote/index.mjs" type="NodeJSConfigurationType" nameIsGenerated="true" node-parameters="index.mjs" path-to-js-file="base64.diff" working-dir="$PROJECT_DIR$/blocknote">
+    <method v="2" />
+  </configuration>
+</component>
