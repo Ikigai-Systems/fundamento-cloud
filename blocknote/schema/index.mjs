@@ -11,7 +11,7 @@ const schema = BlockNoteSchema.create({
   },
   blockSpecs: {
     ...defaultBlockSpecs,
-    database: Database,
+    // database: Database,
   }
 });
 
