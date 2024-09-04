@@ -32,6 +32,31 @@ type EditorProps = {
   documentId: number,
 }
 
+export async function uploadFile(file : string | Blob) {
+  const body = new FormData();
+  body.append("file", file);
+
+  const attachment = await request("post", AttachmentsApi.create.path(), {
+    data: body,
+    responseAs: "json",
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+
+  return `attachment:${attachment.id}`;
+}
+
+export async function resolveFileUrl(fileUrl : string) {
+  const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
+
+  if (attachmentId) {
+    return AttachmentsApi.show.path({id: attachmentId});
+  } else {
+    return fileUrl;
+  }
+}
+
 const Editor = ({currentUser, documentId}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
 
@@ -89,29 +114,8 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           color: `hsl(${~~(360 * pseudoRandomFromUserId)}, 72%,  78%)`,
         }
       },
-      uploadFile: async (file) => {
-        const body = new FormData();
-        body.append("file", file);
-
-        const attachment = await request("post", AttachmentsApi.create.path(), {
-          data: body,
-          responseAs: "json",
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-
-        return `attachment:${attachment.id}`;
-      },
-      resolveFileUrl: async (fileUrl) => {
-        const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
-
-        if (attachmentId) {
-          return AttachmentsApi.show.path({id: attachmentId});
-        } else {
-          return fileUrl;
-        }
-      }
+      uploadFile: uploadFile,
+      resolveFileUrl: resolveFileUrl
     });
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
     return blockNoteEditor;
