@@ -48,6 +48,29 @@ const Database = createReactBlockSpec(
     },
     content: "none",
   }, {
+    toExternalHTML: ({block, editor}) => {
+      const {props} = block;
+      const data = JSON.parse(props.data);
+      const columns = JSON.parse(props.columns);
+
+      const tableRows = data.map(row => {
+        const cells = columns.map(column => `<td>${row[column.id] || ""}</td>`).join("");
+        return `<tr>${cells}</tr>`;
+      }).join("");
+
+      const tableHeaders = columns.map(column => `<th>${column.name}</th>`).join("");
+
+      return (
+        `<table>
+        <thead>
+          <tr>${tableHeaders}</tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>`
+      );
+    },
     parse: (htmlElement) => {
       throw new Error("To be implemented some day");
     }
