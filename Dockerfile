@@ -56,7 +56,7 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Ikigai-specific: precompile assets
-RUN SECRET_KEY_BASE=`bin/rails secret` bin/rails assets:precompile && \
+RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
 
 # Compile formula evaluation engine
