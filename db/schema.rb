@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_02_144417) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_05_121440) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,8 +21,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_02_144417) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "organization_id"
-    t.string "parent_type"
-    t.bigint "parent_id"
+    t.string "parent_type", null: false
+    t.bigint "parent_id", null: false
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_attachments_on_parent"
   end
