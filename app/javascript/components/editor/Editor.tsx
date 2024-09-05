@@ -32,19 +32,25 @@ type EditorProps = {
   documentId: number,
 }
 
-export async function uploadFile(file : string | Blob) {
-  const body = new FormData();
-  body.append("file", file);
+export function uploadFile(documentId: number) {
+  return async (file: string | Blob)=> {
+    const body = new FormData();
 
-  const attachment = await request("post", AttachmentsApi.create.path(), {
-    data: body,
-    responseAs: "json",
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
+    body.set("attachment[parent_id]", documentId);
+    body.set("attachment[parent_type]", "Document");
 
-  return `attachment:${attachment.id}`;
+    body.append("file", file);
+
+    const attachment = await request("post", AttachmentsApi.create.path(), {
+      data: body,
+      responseAs: "json",
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    return `attachment:${attachment.id}`;
+  };
 }
 
 export async function resolveFileUrl(fileUrl : string) {
@@ -114,7 +120,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           color: `hsl(${~~(360 * pseudoRandomFromUserId)}, 72%,  78%)`,
         }
       },
-      uploadFile: uploadFile,
+      uploadFile: uploadFile(documentId),
       resolveFileUrl: resolveFileUrl
     });
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)

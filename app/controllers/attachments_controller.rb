@@ -20,7 +20,7 @@ class AttachmentsController < ApplicationController
   def create
 
     # build a photo and pass it into a block to set other attributes
-    @attachment = current_organization.attachments.new(params[:attachment]) do |t|
+    @attachment = current_organization.attachments.new(attachment_params) do |t|
       if params[:file]
         t.data      = params[:file].read
         t.filename  = params[:file].original_filename
@@ -38,5 +38,14 @@ class AttachmentsController < ApplicationController
   def destroy
     @attachment = current_organization.attachments.find(params[:id])
     @attachment.destroy
+  end
+
+  protected
+
+  def attachment_params
+    params.require(:attachment).permit(
+      :parent_id,
+      :parent_type,
+    )
   end
 end
