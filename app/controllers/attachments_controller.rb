@@ -1,6 +1,14 @@
 class AttachmentsController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:show]
+
   def show
-    @attachment = current_organization.attachments.find(params[:id])
+    @attachment = Attachment.find(params[:id])
+
+    if @attachment.parent.present? && @attachment.parent.respond_to?(:public_link) && @attachment.parent.public_link.present?
+      # If the attachment is associated with a document that has a public link, we allow anonymous access
+    else
+      authenticate_user!
+    end
 
     send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
   end
