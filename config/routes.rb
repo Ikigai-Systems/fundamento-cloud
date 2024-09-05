@@ -60,4 +60,7 @@ Rails.application.routes.draw do
   end
 
   get "/public/:npi" => "public#show"
+
+  # Redirect /api/v1/attachments/:id to AttachmentsController#show
+  get '/api/v1/attachments/:id', to: 'attachments#show'
 end
