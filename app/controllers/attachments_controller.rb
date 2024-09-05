@@ -1,11 +1,15 @@
 class AttachmentsController < ApplicationController
+  include HeadersForPublicDocuments
+
   skip_before_action :authenticate_user!, only: [:show]
 
   def show
     @attachment = Attachment.find(params[:id])
 
     if @attachment.parent.present? && @attachment.parent.respond_to?(:public_link) && @attachment.parent.public_link.present?
-      # If the attachment is associated with a document that has a public link, we allow anonymous access
+      # If the attachment is associated with a document that has a public link, we allow anonymous access and ask politely not to cache it
+      set_cache_headers
+      set_security_headers
     else
       authenticate_user!
     end
