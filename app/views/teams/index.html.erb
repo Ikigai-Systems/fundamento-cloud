@@ -1,0 +1,45 @@
+<%= turbo_stream_from ["teams_list", current_organization] %>
+
+<% content_for :focused_header do %>
+  Teams
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <div class="mt-4 flex md:ml-4 md:mt-0">
+    <%= link_to 'Create', new_team_path, class: "secondary-button" %>
+  </div>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="sm:flex sm:items-center p-5">
+    <div class="sm:flex-auto">
+      <p class="mt-2 text-sm text-gray-700">A list of all teams in your organization.</p>
+    </div>
+  </div>
+
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <tr>
+      <th scope="col" class="p-4">
+        <div class="flex items-center">
+          <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+          <label for="checkbox-all-search" class="sr-only">checkbox</label>
+        </div>
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Name
+      </th>
+      <th scope="col" class="px-6 py-3">
+        Action
+      </th>
+    </tr>
+    </thead>
+    <tbody id="teams">
+    <% @teams.each do |team| %>
+      <%= render partial: team %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render "focused_section" %>

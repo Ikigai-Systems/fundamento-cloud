@@ -1,0 +1,79 @@
+<%= turbo_stream_from ["admin_users_list", @team] %>
+
+<section class="focused-section">
+  <div class="lg:flex lg:items-center lg:justify-between">
+    <div class="min-w-0 flex-1">
+      <section class="focused-header p-5">
+        <nav class="flex" aria-label="Breadcrumb">
+          <ol role="list" class="flex items-center space-x-4">
+            <li>
+              <div class="flex">
+                <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+                  <%= link_to "Teams", teams_path %>
+                </a>
+              </div>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="min-w-0 flex-1">
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+              <%= @team.name %>
+            </h1>
+          </div>
+
+          <div class="mt-4 flex md:ml-4 md:mt-0">
+            <% content_for :button_group_primary_buttons do %>
+              <%= link_to 'Edit', edit_team_path(@team), class: "first-button-group" %>
+            <% end %>
+
+            <% content_for :button_group_dropdown_menu do %>
+              <%= button_to "Delete", team_path(@team), form: { data: { turbo_confirm: "Are you sure? Your team will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
+            <% end %>
+
+            <%= render template: "application/components/button_group"%>
+          </div>
+        </div>
+      </section>
+
+      <div class="sm:flex sm:items-center p-5">
+        <div class="sm:flex-auto">
+          <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
+          <p class="mt-2 text-sm text-gray-700">A list of all the users in your team.</p>
+        </div>
+
+        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+          <%= link_to 'Add user', new_invited_user_invitation_path(team_id: @team.id), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+        </div>
+      </div>
+
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+          <th scope="col" class="p-4">
+            <div class="flex items-center">
+              <input id="checkbox-all-search" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="checkbox-all-search" class="sr-only">checkbox</label>
+            </div>
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Name
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Status
+          </th>
+          <th scope="col" class="px-6 py-3">
+            Action
+          </th>
+        </tr>
+        </thead>
+        <tbody id="users">
+        <% @team.users.each do |user| %>
+          <%= render partial: "admin/users/user", locals: { user: user, current_team: @team } %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
