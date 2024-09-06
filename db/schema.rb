@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_05_121440) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_06_104317) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -155,6 +155,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_05_121440) do
     t.index ["space_id"], name: "index_tables_on_space_id"
   end
 
+  create_table "teams", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "name", null: false
+    t.string "shortcut", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "organization_id"], name: "index_teams_on_name_and_organization_id", unique: true
+    t.index ["organization_id"], name: "index_teams_on_organization_id"
+    t.index ["shortcut", "organization_id"], name: "index_teams_on_shortcut_and_organization_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -196,4 +207,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_05_121440) do
   add_foreign_key "table_cells", "table_rows", column: "row_id"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
+  add_foreign_key "teams", "organizations"
 end
