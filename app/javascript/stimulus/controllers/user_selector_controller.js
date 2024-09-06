@@ -1,5 +1,4 @@
 import {Controller} from "@hotwired/stimulus"
-import { get } from "@rails/request.js";
 import UsersApi from "../../api/UsersApi.js";
 
 export default class extends Controller {
