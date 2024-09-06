@@ -29,6 +29,9 @@ application.register("collapsible", CollapsibleController);
 import DraggableController from "./draggable_controller";
 application.register("draggable", DraggableController);
 
+import UserSelectorController from "./controllers/user_selector_controller.js";
+application.register("user-selector", UserSelectorController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application

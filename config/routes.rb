@@ -33,7 +33,9 @@ Rails.application.routes.draw do
 
     resources :attachments, only: [:create, :destroy, :show]
 
-    resources :users, only: [:index, :show]
+    resources :users, only: [:index, :show] do
+      get :suggestions, on: :collection
+    end
 
     resources :tables, module: :tables do
       resources :columns
@@ -56,6 +58,7 @@ Rails.application.routes.draw do
   resources :organizations_users, only: [:destroy]
 
   resources :teams
+  resources :team_memberships, only: [:new, :create, :destroy]
 
   namespace :admin do
     resources :users

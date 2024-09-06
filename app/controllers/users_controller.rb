@@ -13,4 +13,11 @@ class UsersController < ApplicationController
       format.all { head :unprocessable_content }
     end
   end
+
+  def suggestions
+    query = params[:query]
+    users = current_organization.users.where("(first_name || ' ' || last_name) LIKE ?", "%#{query}%").limit(10)
+
+    render json: users.map { |user| { id: user.id, name: user.display_name } }
+  end
 end
