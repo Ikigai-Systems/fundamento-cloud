@@ -8,7 +8,7 @@ export default class extends Controller {
   async search() {
     const query = this.inputTarget.value;
 
-    if (query.length > 2) {
+    if (query.length >= 2) {
       const users = await UsersApi.suggestions({params: query});
 
       this.suggestionsTarget.innerHTML = '';
@@ -16,11 +16,11 @@ export default class extends Controller {
       users.forEach((user) => {
         const option = document.createElement("option");
         option.value = user.id;
-        option.textContent = user.name;
+        option.textContent = user.displayName;
 
         // Create an interactive suggestion list to choose from
         const suggestion = document.createElement("div");
-        suggestion.textContent = user.name;
+        suggestion.textContent = user.displayName;
         suggestion.dataset.action = "click->user-selector#addUser";
         suggestion.dataset.userId = user.id;
 
