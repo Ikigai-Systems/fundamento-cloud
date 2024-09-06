@@ -9,6 +9,7 @@ class Organization < ApplicationRecord
   has_many :tables, class_name: "Tables::Table", dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :teams, dependent: :destroy
+  has_many :team_memberships, dependent: :destroy
 
   validates_presence_of :name
 
