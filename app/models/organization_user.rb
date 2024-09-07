@@ -5,6 +5,8 @@ class OrganizationUser < ApplicationRecord
   belongs_to :organization
   belongs_to :user
 
+  enum :role, [:manager, :member], scope: false
+
   after_create_commit do
     broadcast_append_to(
       ["admin_users_list", self.organization],
