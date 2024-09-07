@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_07_162039) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_07_162619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -89,6 +89,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_07_162039) do
     t.index ["object_type", "object_id"], name: "index_public_links_on_object"
     t.index ["organization_id"], name: "index_public_links_on_organization_id"
     t.index ["updated_by_id"], name: "index_public_links_on_updated_by_id"
+  end
+
+  create_table "space_managers", force: :cascade do |t|
+    t.bigint "space_id"
+    t.string "manager_type"
+    t.bigint "manager_id"
+    t.index ["manager_id", "manager_type", "space_id"], name: "idx_on_manager_id_manager_type_space_id_4e8bf5044e", unique: true
+    t.index ["manager_type", "manager_id"], name: "index_space_managers_on_manager"
+    t.index ["space_id"], name: "index_space_managers_on_space_id"
   end
 
   create_table "spaces", force: :cascade do |t|
