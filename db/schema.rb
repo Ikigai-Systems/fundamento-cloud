@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_06_105045) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_07_162039) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_06_105045) do
     t.bigint "organization_id"
     t.string "name"
     t.bigint "home_document_id"
+    t.integer "access_mode", limit: 2, default: 0, null: false
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end

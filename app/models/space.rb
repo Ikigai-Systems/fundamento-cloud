@@ -8,6 +8,8 @@ class Space < ApplicationRecord
 
   validates_presence_of :name
 
+  enum :access_mode, [:public, :restricted, :private], scopes: false, validate: true
+
   def documents_from_hierarchy
     ids = traverse_hierarchy(hierarchy)
     organization.documents.where(id: ids)
