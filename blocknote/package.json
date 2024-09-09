@@ -1,21 +1,14 @@
 {
   "name": "blocknote",
   "version": "1.0.0",
-  "main": "index.mjs",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "node index.mjs",
-    "build": "rollup -c"
-  },
-  "dependencies": {
-    "@blocknote/core": "^0.15.6",
-    "@blocknote/server-util": "^0.15.6",
-    "y-prosemirror": "^1.2.12",
-    "yjs": "^13.6.18"
+    "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknote_bundle.js --format=cjs"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3"
+    "esbuild": "^0.23.1"
   },
-  "type": "module"
+  "dependencies": {
+    "@blocknote/server-util": "^0.15.7"
+  }
 }

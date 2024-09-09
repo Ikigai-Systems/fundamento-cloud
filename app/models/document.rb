@@ -32,19 +32,7 @@ class Document < ApplicationRecord
   end
 
   def to_blocks
-    BlockNoteConverter.to_blocks(sync)
-  end
-
-  def to_html
-    data = Base64.encode64(sync)
-
-    # Call the Node.js script and pass the JSON data as an argument
-    stdout, stderr, status = Open3.capture3('node ./blocknote/index.mjs', stdin_data: data)
-
-    if status.success?
-      stdout
-    else
-      puts stderr  # Handle any errors from Node.js
-    end
+    # BlockNoteConverterRuby.to_blocks(sync)
+    BlockNoteConverterNode.to_blocks(sync)
   end
 end

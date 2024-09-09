@@ -3,7 +3,7 @@ import Mention from "./inline-content/Mention";
 import Database from "./blocks/Database.tsx";
 
 // Our schema with inline content specs, which contain the configs and
-// implementations for inline content  that we want our editor to use.
+// implementations for inline content that we want our editor to use.
 const schema = BlockNoteSchema.create({
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,

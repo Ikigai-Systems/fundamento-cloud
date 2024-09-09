@@ -1,4 +1,4 @@
-module BlockNoteConverter
+module BlockNoteConverterRuby
   def self.to_blocks(binary_sync)
     ydoc = Y::Doc.new
     ydoc.sync(binary_sync.unpack("C*")) unless binary_sync.nil?

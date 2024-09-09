@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe BlockNoteConverter do
+RSpec.describe BlockNoteConverterRuby do
   xit "converts colored texts" do
     binary_sync = File.read("spec/fixtures/block_note_blocks/colored_texts.sync")
     expected_blocks = JSON.parse(File.read("spec/fixtures/block_note_blocks/colored_texts.json"))

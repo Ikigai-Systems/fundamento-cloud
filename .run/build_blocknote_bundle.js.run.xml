@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="build/blocknote_bundle.js" type="NodeJSConfigurationType" node-parameters="build/blocknote_bundle.js" path-to-js-file="sample_document.base64" working-dir="$PROJECT_DIR$/blocknote">
+    <method v="2" />
+  </configuration>
+</component>
