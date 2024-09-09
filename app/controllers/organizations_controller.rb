@@ -14,12 +14,13 @@ class OrganizationsController < ApplicationController
 
   def create
     @organization = current_user.organizations.new(organization_params)
-    @organization_user = OrganizationUser.create(
-      organization: @organization,
-      user: current_user
-    )
 
-    if @organization.save && @organization_user.save
+    if @organization.save
+      OrganizationUser.create!(
+        organization: @organization,
+        user: current_user
+      )
+
       redirect_to @organization, notice: 'Organization was successfully created.'
     else
       render :new
