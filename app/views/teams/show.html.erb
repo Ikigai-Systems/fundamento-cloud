@@ -70,7 +70,7 @@
         </thead>
         <tbody id="users">
         <% @team.users.each do |user| %>
-          <%= render partial: "admin/users/user", locals: { user: user, current_team: @team } %>
+          <%= render partial: "teams/user", locals: { user: user, current_team: @team } %>
         <% end %>
         </tbody>
       </table>
