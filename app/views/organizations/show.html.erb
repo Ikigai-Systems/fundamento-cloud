@@ -74,8 +74,8 @@
         </tr>
         </thead>
         <tbody id="users">
-        <% @organization.users.each do |user| %>
-          <%= render partial: "organizations/user", locals: { user: user, current_organization: @organization } %>
+        <% @organization.organization_users.preload(:user).filter(&:user).each do |organization_user| %>
+          <%= render partial: "organizations/organization_user", locals: { organization_user: organization_user, current_organization: @organization } %>
         <% end %>
         </tbody>
       </table>
