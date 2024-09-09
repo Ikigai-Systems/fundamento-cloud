@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_07_163843) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_09_112920) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,13 +92,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_07_163843) do
     t.index ["updated_by_id"], name: "index_public_links_on_updated_by_id"
   end
 
-  create_table "space_managers", force: :cascade do |t|
+  create_table "space_memberships", force: :cascade do |t|
     t.bigint "space_id"
-    t.string "manager_type"
-    t.bigint "manager_id"
-    t.index ["manager_id", "manager_type", "space_id"], name: "idx_on_manager_id_manager_type_space_id_4e8bf5044e", unique: true
-    t.index ["manager_type", "manager_id"], name: "index_space_managers_on_manager"
-    t.index ["space_id"], name: "index_space_managers_on_space_id"
+    t.string "member_type"
+    t.bigint "member_id"
+    t.integer "role", limit: 2, default: 0, null: false
+    t.index ["member_id", "member_type", "space_id"], name: "idx_on_member_id_member_type_space_id_e2ffbf3808", unique: true
+    t.index ["member_type", "member_id"], name: "index_space_managers_on_manager"
+    t.index ["space_id"], name: "index_space_memberships_on_space_id"
   end
 
   create_table "spaces", force: :cascade do |t|
