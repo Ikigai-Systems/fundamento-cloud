@@ -36,7 +36,8 @@ class User < ApplicationRecord
     Rails.cache.write("#{for_organization.cache_key}/#{cache_key}/online", true)
 
     broadcast_replace_to(["admin_users_list", for_organization],
-      partial: "admin/users/user",
+      target: [self, "online_status"],
+      partial: "users/online_status",
       locals: { current_organization: for_organization })
   end
 
@@ -44,7 +45,8 @@ class User < ApplicationRecord
     Rails.cache.write("#{for_organization.cache_key}/#{cache_key}/online", false)
 
     broadcast_replace_to(["admin_users_list", for_organization],
-      partial: "admin/users/user",
+      target: [self, "online_status"],
+      partial: "users/online_status",
       locals: { current_organization: for_organization }
     )
   end
