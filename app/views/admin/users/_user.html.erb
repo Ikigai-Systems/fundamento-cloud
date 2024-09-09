@@ -12,6 +12,9 @@
     </div>
   </th>
   <td class="px-6 py-4">
+    <%= current_organization.organizations_users.find_by(user: user).role %>
+  </td>
+  <td class="px-6 py-4">
     <div class="flex items-center">
       <% if user.online?(current_organization) %>
         <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
