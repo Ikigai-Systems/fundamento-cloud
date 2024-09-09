@@ -1,18 +1,16 @@
 <section class="form-section">
   <h2 class="form-header">Create organization</h2>
 
-  <%= turbo_frame_tag("new_organization_form") do %>
-    <%= form_for(@organization, url: organizations_path, html: { method: :post }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: @organization %>
+  <%= form_for(@organization, url: organizations_path, data: { turbo: false }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: @organization %>
 
-      <div class="form-field">
-        <%= f.label :name %><br/>
-        <%= f.text_field :name, autofocus: true, class: "form-input" %>
-      </div>
+    <div class="form-field">
+      <%= f.label :name %><br/>
+      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+    </div>
 
-      <div class="flex justify-end mt-6">
-        <%= f.submit "Create", class: "form-submit" %>
-      </div>
-    <% end %>
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Create", class: "form-submit" %>
+    </div>
   <% end %>
 </section>

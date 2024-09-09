@@ -1,46 +1,44 @@
 <section class="form-section">
   <h2 class="form-header">Add team members</h2>
 
-  <%= turbo_frame_tag("new_team_membership_form") do %>
-    <%= form_for(@team_membership, url: team_memberships_path, html: { method: :post }) do |f| %>
-      <%= f.hidden_field :team_id, value: @team.id %>
+  <%= form_for(@team_membership, url: team_memberships_path, data: { turbo: false }) do |f| %>
+    <%= f.hidden_field :team_id, value: @team.id %>
 
-      <%= render "devise/shared/error_messages", resource: @team_membership %>
+    <%= render "devise/shared/error_messages", resource: @team_membership %>
 
-      <!--    <div class="form-field">-->
-      <!--      <%#= f.label :shortcut %><br />-->
-      <%#= f.text_field :shortcut, autofocus: true, class: "form-input" %>
-      <!--    </div>-->
+    <!--    <div class="form-field">-->
+    <!--      <%#= f.label :shortcut %><br />-->
+    <%#= f.text_field :shortcut, autofocus: true, class: "form-input" %>
+    <!--    </div>-->
 
-      <div data-controller="user-selector">
-        <%= f.label :user %><br/>
+    <div data-controller="user-selector">
+      <%= f.label :user %><br/>
 
-        <select
-          name="team_membership[user_ids][]"
-          id="user-selector"
-          multiple
-          data-user-selector-target="select"
-          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <% @team_membership.team.users.each do |user| %>
-            <option value="<%= user.id %>"><%= user.display_name %></option>
-          <% end %>
-        </select>
+      <select
+        name="team_membership[user_ids][]"
+        id="user-selector"
+        multiple
+        data-user-selector-target="select"
+        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      >
+        <% @team_membership.team.users.each do |user| %>
+          <option value="<%= user.id %>"><%= user.display_name %></option>
+        <% end %>
+      </select>
 
-        <input
-          type="text"
-          placeholder="Search users..."
-          data-action="input->user-selector#search"
-          data-user-selector-target="input"
-          class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
+      <input
+        type="text"
+        placeholder="Search users..."
+        data-action="input->user-selector#search"
+        data-user-selector-target="input"
+        class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      >
 
-        <div id="suggestions" class="space-y-2" data-user-selector-target="suggestions"></div>
-      </div>
+      <div id="suggestions" class="space-y-2" data-user-selector-target="suggestions"></div>
+    </div>
 
-      <div class="flex justify-end mt-6">
-        <%= f.submit "Add", class: "form-submit" %>
-      </div>
-    <% end %>
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Add", class: "form-submit" %>
+    </div>
   <% end %>
 </section>

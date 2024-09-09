@@ -1,23 +1,21 @@
 <section class="form-section">
   <h2 class="form-header">Create team</h2>
 
-  <%= turbo_frame_tag("new_team_form") do %>
-    <%= form_for(@team, url: teams_path, html: { method: :post }) do |f| %>
-      <%= render "devise/shared/error_messages", resource: @team %>
+  <%= form_for(@team, url: teams_path, data: { turbo: false }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: @team %>
 
-      <div class="form-field">
-        <%= f.label :name %><br/>
-        <%= f.text_field :name, autofocus: true, class: "form-input" %>
-      </div>
+    <div class="form-field">
+      <%= f.label :name %><br/>
+      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+    </div>
 
-      <div class="form-field">
-        <%= f.label :shortcut %><br/>
-        <%= f.text_field :shortcut, autofocus: true, class: "form-input" %>
-      </div>
+    <div class="form-field">
+      <%= f.label :shortcut %><br/>
+      <%= f.text_field :shortcut, autofocus: true, class: "form-input" %>
+    </div>
 
-      <div class="flex justify-end mt-6">
-        <%= f.submit "Create", class: "form-submit" %>
-      </div>
-    <% end %>
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Create", class: "form-submit" %>
+    </div>
   <% end %>
 </section>
