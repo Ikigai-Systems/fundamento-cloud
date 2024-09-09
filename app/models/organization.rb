@@ -1,5 +1,5 @@
 class Organization < ApplicationRecord
-  has_many :organizations_users, class_name: :OrganizationUser, dependent: :destroy
+  has_many :organization_users, class_name: :OrganizationUser, dependent: :destroy
   has_many :users, through: :organizations_users
   has_many :invited_users, dependent: :destroy
 
