@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   defaults export: true do
     resources :documents, only: [:index, :show]
 
-    resources :spaces, only: [:show, :new, :create, :edit, :update] do
+    resources :spaces do
       put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
       resources :documents, only: [:create, :new, :edit, :update, :destroy] do
         resources :versions, only: [:create]

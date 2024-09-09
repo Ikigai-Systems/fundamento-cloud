@@ -1,5 +1,9 @@
 class SpacesController < ApplicationController
-  layout 'full_width_application'
+
+  def index
+    @spaces = current_organization.spaces
+  end
+
   def show
     @space = current_organization.spaces.find(params[:id])
 
