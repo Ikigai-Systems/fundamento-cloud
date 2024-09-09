@@ -26,7 +26,7 @@ class SpacesController < ApplicationController
     # )
 
     if @space.save # && @organization_user.save
-      redirect_to @space, notice: 'Space was successfully created.'
+      redirect_to @space, notice: 'Space was successfully created.', status: :see_other
     else
       render :new
     end
@@ -40,7 +40,7 @@ class SpacesController < ApplicationController
     @space = current_organization.spaces.find(params[:id])
 
     if @space.update(space_params)
-      redirect_to @space, notice: 'Space was successfully updated.'
+      redirect_to spaces_path, notice: 'Space was successfully updated.', status: :see_other
     else
       render :edit
     end
