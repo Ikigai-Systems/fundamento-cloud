@@ -11,7 +11,7 @@ class SpacesController < ApplicationController
   end
 
   def new
-    @space = Space.new
+    @space = current_organization.spaces.new
   end
 
   def create
@@ -108,7 +108,7 @@ class SpacesController < ApplicationController
   private
 
   def space_params
-    params.require(:space).permit(:name)
+    params.require(:space).permit(:name, :access_mode)
   end
 
 end
