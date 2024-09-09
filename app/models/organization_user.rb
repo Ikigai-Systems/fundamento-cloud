@@ -11,7 +11,7 @@ class OrganizationUser < ApplicationRecord
     broadcast_append_to(
       ["admin_users_list", self.organization],
       target: "users",
-      partial: "admin/users/user",
+      partial: "organizations/user",
       locals: {
         current_organization: self.organization,
         user: self.user
