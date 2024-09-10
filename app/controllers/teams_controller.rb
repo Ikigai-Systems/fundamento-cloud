@@ -20,7 +20,7 @@ class TeamsController < ApplicationController
   end
 
   def update
-    @team = current_organization.teams.find_by_id!(params[:id])
+    @team = current_organization.teams.find_by_npi!(params[:npi])
 
     if @team.update(team_params)
       redirect_to @team, notice: 'Team was successfully updated.'
@@ -30,15 +30,15 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @team = current_organization.teams.find_by_id!(params[:id])
+    @team = current_organization.teams.find_by_npi!(params[:npi])
   end
 
   def edit
-    @team = current_organization.teams.find_by_id!(params[:id])
+    @team = current_organization.teams.find_by_npi!(params[:npi])
   end
 
   def destroy
-    @team = current_organization.teams.find_by_id(params[:id])
+    @team = current_organization.teams.find_by_npi(params[:npi])
     @team.destroy!
 
     redirect_to teams_path, notice: "Team was removed."

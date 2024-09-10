@@ -57,7 +57,7 @@ Rails.application.routes.draw do
 
   resources :organizations_users, only: [:destroy]
 
-  resources :teams
+  resources :teams, param: :npi
   resources :team_memberships, only: [:new, :create, :destroy]
 
   namespace :admin do

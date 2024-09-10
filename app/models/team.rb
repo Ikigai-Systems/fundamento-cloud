@@ -1,6 +1,8 @@
 class Team < ApplicationRecord
   belongs_to :organization
 
+  include ModelWithNpiAsParam
+
   has_many :team_memberships, dependent: :destroy
   has_many :users, through: :team_memberships, dependent: :destroy
 
