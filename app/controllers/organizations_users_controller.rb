@@ -8,17 +8,14 @@ class OrganizationsUsersController < ApplicationController
   def destroy
     authorize @organization_user, :destroy?
 
-    organization = current_user.
-      organizations.find(organization_id)
-
     if current_user.id.to_s == @organization_user.user_id.to_s
-      redirect_to organization, notice: "You can't remove yourself from the organization."
+      redirect_to @organization_user.organization, notice: "You can't remove yourself from the organization."
       return
     end
 
     @organization_user.destroy!
 
-    redirect_to organization, notice: 'User was removed from the organization.'
+    redirect_to @organization_user.organization, notice: 'User was removed from the organization.'
   end
 
   def promote
@@ -33,7 +30,7 @@ class OrganizationsUsersController < ApplicationController
     authorize @organization_user, :demote?
 
     if current_user.id.to_s == @organization_user.user_id.to_s
-      redirect_to organization, notice: "You can't demote yourself."
+      redirect_to @organization_user.organization, notice: "You can't demote yourself."
       return
     end
 
