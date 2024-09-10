@@ -1,6 +1,14 @@
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
   <%= render 'application/left_side_bar' %>
-  <article>
-    Placeholder - here will be listed versions
+  <article class="bg-white">
+    <div class="bg-white h-12 flex justify-end items-center p-2">
+      <%= link_to "View document ", edit_space_document_path(@space, @document), method: :get,
+                    class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+    </div>
+    <div class="overflow-auto">
+      Placeholder - here will be listed versions
+      <%#= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
+    </div>
+
   </article>
 </div>
