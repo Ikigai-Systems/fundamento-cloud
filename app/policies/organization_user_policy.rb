@@ -5,10 +5,10 @@ class OrganizationUserPolicy < ApplicationPolicy
   end
 
   def demote?
-    destroy?
+    destroy? && record.manager?
   end
 
   def promote?
-    demote?
+    destroy? && record.member?
   end
 end
