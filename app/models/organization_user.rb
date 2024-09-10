@@ -39,4 +39,8 @@ class OrganizationUser < ApplicationRecord
       target: self.organization
     )
   end
+
+  def to_param
+    "#{organization_id},#{user_id}"
+  end
 end
