@@ -185,7 +185,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_10_065458) do
     t.string "shortcut", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "npi", default: "id", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.index ["name", "organization_id"], name: "index_teams_on_name_and_organization_id", unique: true
     t.index ["npi"], name: "index_teams_on_npi", unique: true
     t.index ["organization_id"], name: "index_teams_on_organization_id"
