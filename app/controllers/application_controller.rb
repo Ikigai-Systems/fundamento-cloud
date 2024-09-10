@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  include Pundit::Authorization
+
   before_action :authenticate_user!
 
   before_action :ensure_organization_exists
@@ -55,5 +57,9 @@ class ApplicationController < ActionController::Base
 
   def current_organization
     RequestContext.current_organization
+  end
+
+  def pundit_user
+    PolicyUserContext.new(current_user, current_organization)
   end
 end
