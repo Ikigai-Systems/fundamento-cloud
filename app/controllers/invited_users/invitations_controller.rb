@@ -8,11 +8,15 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   def new
     @organization = current_user.organizations.find_by_npi!(params[:organization_npi])
 
+    authorize @organization, :invite_user?
+
     super
   end
 
   def create
     @organization = current_user.organizations.find(invite_params[:organization_id])
+
+    authorize @organization, :invite_user?
 
     if @organization.users.where(email: invite_params[:email]).exists?
       redirect_to organization_path(@organization), notice: "User is already a member of this organization."

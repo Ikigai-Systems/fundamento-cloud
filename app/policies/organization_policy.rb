@@ -23,4 +23,8 @@ class OrganizationPolicy < ApplicationPolicy
   def select?
     show?
   end
+
+  def invite_user?
+    update?
+  end
 end
