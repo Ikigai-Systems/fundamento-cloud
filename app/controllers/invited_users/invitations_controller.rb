@@ -39,7 +39,9 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
           end
         end
 
-        resource.organization.organizations_users.find_or_create_by!(user_id: user.id)
+        resource.organization.organizations_users.find_or_create_by!(user_id: user.id) do |organization_user|
+          organization_user.role = :member
+        end
 
         # We finally destroy the invited user as we no longer need it
         resource.destroy!
