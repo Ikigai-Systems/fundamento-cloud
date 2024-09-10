@@ -6,7 +6,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   before_action :configure_permitted_parameters
 
   def new
-    @organization = current_user.organizations.find(params[:organization_id])
+    @organization = current_user.organizations.find_by_npi!(params[:organization_npi])
 
     super
   end
