@@ -28,7 +28,7 @@ class OrganizationsController < ApplicationController
   end
 
   def update
-    @organization = current_user.organizations.find_by_id!(params[:id])
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
 
     if @organization.update(organization_params)
       redirect_to @organization, notice: 'Organization was successfully updated.'
@@ -38,15 +38,15 @@ class OrganizationsController < ApplicationController
   end
 
   def show
-    @organization = current_user.organizations.find_by_id!(params[:id])
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
   end
 
   def edit
-    @organization = current_user.organizations.find_by_id!(params[:id])
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
   end
 
   def select
-    @organization = current_user.organizations.find_by_id(params[:id])
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
 
     cookies.encrypted[:organization_id] = @organization.id
 
@@ -54,7 +54,7 @@ class OrganizationsController < ApplicationController
   end
 
   def destroy
-    @organization = current_user.organizations.find_by_id(params[:id])
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
     @organization.destroy!
 
     redirect_to organizations_path, notice: "Organization was removed."
@@ -65,5 +65,4 @@ class OrganizationsController < ApplicationController
   def organization_params
     params.require(:organization).permit(:name)
   end
-
 end

@@ -1,4 +1,6 @@
 class Organization < ApplicationRecord
+  include ModelWithNpiAsParam
+
   has_many :organization_users, class_name: :OrganizationUser, dependent: :destroy
   has_many :users, through: :organization_users
   has_many :invited_users, dependent: :destroy

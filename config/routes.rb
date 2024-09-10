@@ -49,7 +49,7 @@ Rails.application.routes.draw do
   end
 
 
-  resources :organizations do
+  resources :organizations, param: :npi do
     member do
       post :select
     end
