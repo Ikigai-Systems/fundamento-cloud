@@ -23,4 +23,11 @@ class VersionsController < ApplicationController
     # end
   end
 
+  def index
+    @document = current_organization.documents.find(params[:document_id])
+
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @documents = @space.documents_from_hierarchy
+  end
+
 end
