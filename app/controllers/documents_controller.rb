@@ -18,7 +18,6 @@ class DocumentsController < ApplicationController
   def create
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document = current_organization.documents.new(document_params)
-    # @document.space = @space #todo: migrate database to have space_id column in documents table
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
@@ -55,9 +54,9 @@ class DocumentsController < ApplicationController
     @document.update(update_params)
     if update_params[:archived].present?
       if update_params[:archived] == "true"
-        redirect_to space_path(params[:space_id]), notice: 'Document has been archived.'
+        redirect_to space_path(@document.space), notice: 'Document has been archived.'
       else
-        redirect_to edit_space_document_path(params[:space_id], @document), notice: 'Document has been restored.'
+        redirect_to edit_space_document_path(@document.space, @document), notice: 'Document has been restored.'
       end
       return
     end
@@ -97,6 +96,6 @@ class DocumentsController < ApplicationController
   private
 
   def document_params
-    params.require(:document).permit(:title, :space_id, :archived)
+    params.require(:document).permit(:title, :space_id, :space_npi, :archived)
   end
 end
