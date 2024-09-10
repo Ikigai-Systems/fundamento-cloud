@@ -62,4 +62,12 @@ class ApplicationController < ActionController::Base
   def pundit_user
     PolicyUserContext.new(current_user, current_organization)
   end
+
+  def verify_pundit_authorization
+    if action_name == "index"
+      verify_policy_scoped
+    else
+      verify_authorized
+    end
+  end
 end
