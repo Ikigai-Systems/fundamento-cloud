@@ -52,7 +52,9 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   def edit
     if (user = User.find_by(email: resource.email)).present?
       # There's already such user, so let's add it to the organization and accept the invitation
-      OrganizationUser.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id)
+      OrganizationUser.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_user|
+        organization_user.role = :member
+      end
 
       # We finally destroy the invited user as we no longer need it
       resource.destroy!
