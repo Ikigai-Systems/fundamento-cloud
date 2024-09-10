@@ -3,21 +3,51 @@
 class OrganizationsUsersController < ApplicationController
   skip_before_action :select_current_organization
 
+  before_action :load_organization_user, only: [:promote, :demote, :destroy]
+
   def destroy
-    organization_id, user_id = params[:id].split(",")
+    authorize @organization_user, :destroy?
 
     organization = current_user.
       organizations.find(organization_id)
 
-    if current_user.id.to_s == user_id
+    if current_user.id.to_s == @organization_user.user_id.to_s
       redirect_to organization, notice: "You can't remove yourself from the organization."
       return
     end
 
-    organization.organizations_users.
-      find_by(organization_id: organization_id, user_id: user_id).
-      destroy!
+    @organization_user.destroy!
 
     redirect_to organization, notice: 'User was removed from the organization.'
+  end
+
+  def promote
+    authorize @organization_user, :promote?
+
+    @organization_user.update!(role: :manager)
+
+    redirect_to @organization_user.organization, notice: 'User was promoted to manager.'
+  end
+
+  def demote
+    authorize @organization_user, :demote?
+
+    if current_user.id.to_s == @organization_user.user_id.to_s
+      redirect_to organization, notice: "You can't demote yourself."
+      return
+    end
+
+    @organization_user.update!(role: :member)
+
+    redirect_to @organization_user.organization, notice: 'Manager was demoted to member.'
+  end
+
+  private
+
+  def load_organization_user
+    organization_id, user_id = params[:id].split(",")
+
+    @organization_user = OrganizationUser.
+      find_by!(organization_id: organization_id, user_id: user_id)
   end
 end

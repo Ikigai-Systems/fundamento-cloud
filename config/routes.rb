@@ -55,7 +55,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :organizations_users, only: [:destroy]
+  resources :organizations_users, only: [:destroy] do
+    member do
+      patch :promote
+      patch :demote
+    end
+  end
 
   resources :teams, param: :npi
   resources :team_memberships, only: [:new, :create, :destroy]

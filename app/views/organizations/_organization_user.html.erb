@@ -20,7 +20,12 @@
     <%= render partial: "users/online_status", locals: { current_organization: current_organization, user: user } %>
   </td>
   <td class="px-6 py-4">
-    <%= button_to "Remove user", organizations_user_path([current_organization.id, user.id].join(",")), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :delete %>
+    <% if organization_user.member? %>
+      <%= button_to "Promote to manager", promote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :patch %>
+    <% else %>
+      <%= button_to "Demote to member", demote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :patch %>
+    <% end %>
+
     <%= button_to "Remove user", organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :delete %>
   </td>
 </tr>
