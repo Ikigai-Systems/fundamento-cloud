@@ -11,12 +11,12 @@ class DocumentsController < ApplicationController
   def new
     @document = current_organization.documents.new
 
-    @space = current_organization.spaces.find(params[:space_id])
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
   end
 
   def create
-    @space = current_organization.spaces.find(params[:space_id])
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document = current_organization.documents.new(document_params)
     # @document.space = @space #todo: migrate database to have space_id column in documents table
 
@@ -45,7 +45,7 @@ class DocumentsController < ApplicationController
   def edit
     @document = current_organization.documents.find(params[:id])
 
-    @space = current_organization.spaces.find(params[:space_id])
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
   end
 
@@ -73,7 +73,7 @@ class DocumentsController < ApplicationController
     @document = current_organization.documents.find(document_id)
     @document.destroy
 
-    @space = current_organization.spaces.find(params[:space_id])
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
 
     def safely_remove_from_hierarchy(node, document_id)
       node.each_with_index do |item, index|

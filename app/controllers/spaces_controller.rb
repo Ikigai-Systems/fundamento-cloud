@@ -5,7 +5,7 @@ class SpacesController < ApplicationController
   end
 
   def show
-    @space = current_organization.spaces.find(params[:id])
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
 
     if @space.home_document.present?
       redirect_to edit_space_document_url(@space, @space.home_document)
@@ -33,11 +33,11 @@ class SpacesController < ApplicationController
   end
 
   def edit
-    @space = current_organization.spaces.find(params[:id])
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
   end
 
   def update
-    @space = current_organization.spaces.find(params[:id])
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
 
     if @space.update(space_params)
       redirect_to spaces_path, notice: 'Space was successfully updated.', status: :see_other
@@ -47,7 +47,7 @@ class SpacesController < ApplicationController
   end
 
   def reorder_hierarchy
-    @space = current_organization.spaces.find(params[:id])
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
     document_id = params["document_id"].to_i
     parent_id = params["parent_id"]&.to_i
     position = params["position"].to_i

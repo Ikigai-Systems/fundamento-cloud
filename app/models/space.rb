@@ -1,6 +1,8 @@
 class Space < ApplicationRecord
   belongs_to :organization
 
+  include ModelWithNpiAsParam
+
   has_many :documents, dependent: :destroy
   has_many :tables, class_name: "Tables::Table", dependent: :destroy
 
