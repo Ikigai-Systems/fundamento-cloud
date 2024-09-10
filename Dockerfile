@@ -49,6 +49,10 @@ COPY formula/package.json formula/package-lock.json ./formula/
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
     cd formula && npm ci --cache /var/cache/npm
 
+COPY blocknote/package.json blocknote/package-lock.json ./blocknote/
+RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
+    cd blocknote && npm ci --cache /var/cache/npm
+
 # Copy application code
 COPY . .
 
@@ -62,13 +66,17 @@ RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:passwor
 # Compile formula evaluation engine
 RUN cd formula && npm run build
 
+# Transpile blocknote server side utils for document-to-blocks conversion
+RUN cd blocknote && npm run build
+
 # Final stage for app image
 FROM base
 
 # Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    apt-get install --no-install-recommends -y libvips gettext
+    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install --no-install-recommends -y libvips gettext nodejs
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash
@@ -84,6 +92,8 @@ COPY --from=build /rails/Gemfile* ./
 COPY --from=build /rails/app ./app
 COPY --from=build /rails/vendor ./vendor
 COPY --from=build /rails/formula/build ./formula/build
+COPY --from=build /rails/blocknote/build ./blocknote/build
+COPY --from=build /rails/blocknote/node_modules ./blocknote/node_modules
 
 # Use COPY --chown instead of chown as the latter is very slow (took 100s on my machine)
 # see https://github.com/docker/for-linux/issues/388
