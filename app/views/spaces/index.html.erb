@@ -5,9 +5,11 @@
 <% end %>
 
 <% content_for :focused_header_buttons do %>
-  <div class="mt-4 flex md:ml-4 md:mt-0">
-    <%= link_to 'Create', new_space_path, class: "secondary-button" %>
-  </div>
+  <% if policy(Space).create? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to 'Create', new_space_path, class: "secondary-button" %>
+    </div>
+  <% end %>
 <% end %>
 
 <% content_for :focused_content do %>

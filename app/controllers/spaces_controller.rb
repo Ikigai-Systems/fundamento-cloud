@@ -1,11 +1,16 @@
 class SpacesController < ApplicationController
+  after_action :verify_authorized
 
   def index
     @spaces = current_organization.spaces
+
+    authorize @spaces, :index?
   end
 
   def show
     @space = current_organization.spaces.find_by_npi!(params[:npi])
+
+    authorize @space, :show?
 
     if @space.home_document.present?
       redirect_to edit_space_document_url(@space, @space.home_document)
@@ -16,14 +21,14 @@ class SpacesController < ApplicationController
 
   def new
     @space = current_organization.spaces.new
+
+    authorize @space, :new?
   end
 
   def create
     @space = current_organization.spaces.new(space_params)
-    # @organization_user = SpaceUser.create(
-    #   space: @space,
-    #   user: current_user
-    # )
+
+    authorize @space, :create?
 
     if @space.save # && @organization_user.save
       redirect_to @space, notice: 'Space was successfully created.', status: :see_other
@@ -34,10 +39,14 @@ class SpacesController < ApplicationController
 
   def edit
     @space = current_organization.spaces.find_by_npi!(params[:npi])
+
+    authorize @space, :edit?
   end
 
   def update
     @space = current_organization.spaces.find_by_npi!(params[:npi])
+
+    authorize @space, :update?
 
     if @space.update(space_params)
       redirect_to spaces_path, notice: 'Space was successfully updated.', status: :see_other
@@ -48,6 +57,9 @@ class SpacesController < ApplicationController
 
   def reorder_hierarchy
     @space = current_organization.spaces.find_by_npi!(params[:npi])
+
+    authorize @space, :update?
+
     document_id = params["document_id"].to_i
     parent_id = params["parent_id"]&.to_i
     position = params["position"].to_i

@@ -9,7 +9,9 @@
     <div class="text-base font-semibold"><%= space.name %></div>
   </th>
   <td class="px-6 py-4">
-    <%= link_to "Edit", edit_space_path(space), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+    <% if policy(space).edit? %>
+      <%= link_to "Edit", edit_space_path(space), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+    <% end %>
 
     <%= link_to "Open", space_path(space), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
   </td>
