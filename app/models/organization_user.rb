@@ -8,14 +8,8 @@ class OrganizationUser < ApplicationRecord
   enum :role, [:manager, :member], scope: false
 
   after_create_commit do
-    broadcast_append_to(
-      ["admin_users_list", self.organization],
-      target: "users",
-      partial: "organizations/organization_user",
-      locals: {
-        current_organization: self.organization,
-        organization_user: self
-      }
+    broadcast_refresh_to(
+      ["organization_users_list", self.organization]
     )
 
     broadcast_append_to(
@@ -28,9 +22,15 @@ class OrganizationUser < ApplicationRecord
     )
   end
 
+  after_update_commit do
+    broadcast_refresh_to(
+      ["organization_users_list", self.organization]
+    )
+  end
+
   after_destroy_commit do
     broadcast_remove_to(
-      ["admin_users_list", self.organization],
+      ["organization_users_list", self.organization],
       target: self.user
     )
 
