@@ -6,6 +6,8 @@ class Document < ApplicationRecord
 
   has_one :public_link, as: :object, dependent: :destroy
 
+  has_many :versions, dependent: :destroy
+
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
 

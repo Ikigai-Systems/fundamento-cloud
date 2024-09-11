@@ -7,15 +7,24 @@ class VersionsController < ApplicationController
     @document = current_organization.documents.find(params[:document_id])
 
     blocks2 = @document.to_blocks
+    # pp JSON.pretty_generate(blocks2)
 
     diff = HashDiff.diff(blocks, blocks2)
     if diff.present?
       Sentry.capture_message("XmlfragmentToBlock mismatch for #{params[:space_id]} / #{params[:document_id]} (call stefan) : #{diff}")
     end
 
-    # pp JSON.pretty_generate(blocks2)
 
-    redirect_to edit_space_document_path(params[:space_npi], params[:document_id])
+    @version = @document.versions.new
+    @version.content = blocks2
+
+    if @version.save
+      redirect_to edit_space_document_path(params[:space_npi], @document), notice: "Document version has been saved."
+    else
+        render :new, status: 422
+    end
+
+
 
     # respond_to do |format|
     #   format.json { render json: current_organization.documents, :except => [:sync] }

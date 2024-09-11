@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_10_093356) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_11_190552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -227,6 +227,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_10_093356) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "versions", force: :cascade do |t|
+    t.json "content"
+    t.bigint "document_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_id"], name: "index_versions_on_document_id"
+  end
+
   add_foreign_key "attachments", "organizations"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
@@ -241,4 +249,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_10_093356) do
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "team_memberships", "users"
   add_foreign_key "teams", "organizations"
+  add_foreign_key "versions", "documents"
 end
