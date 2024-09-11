@@ -65,9 +65,9 @@ export default class extends Controller<HTMLElement> {
           closestCollapsible.dataset.collapsibleCollapsedValue = "false";
         }
 
-        const spaceId = this.element.dataset.spaceId;
-        await SpacesApi.reorderHierarchy({params: {space_id: spaceId}, data: {
-          id: spaceId,
+        const spaceNpi = this.element.dataset.spaceNpi;
+        await SpacesApi.reorderHierarchy({params: {space_npi: spaceNpi}, data: {
+          npi: spaceNpi,
           documentId: e.detail.item.querySelector("div[data-document-id]").dataset.documentId,
           parentId: item.dataset.documentId,
           position: e.detail.destination.index}});

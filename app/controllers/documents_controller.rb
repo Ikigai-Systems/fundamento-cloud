@@ -18,6 +18,7 @@ class DocumentsController < ApplicationController
   def create
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document = current_organization.documents.new(document_params)
+    @document.space = @space
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
@@ -96,6 +97,6 @@ class DocumentsController < ApplicationController
   private
 
   def document_params
-    params.require(:document).permit(:title, :space_id, :space_npi, :archived)
+    params.require(:document).permit(:title, :archived)
   end
 end
