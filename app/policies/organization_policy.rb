@@ -1,4 +1,8 @@
 class OrganizationPolicy < ApplicationPolicy
+  def create?
+    true
+  end
+
   def show?
     # Everyone can show an organization it belongs to
     true
