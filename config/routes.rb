@@ -65,10 +65,6 @@ Rails.application.routes.draw do
   resources :teams, param: :npi
   resources :team_memberships, only: [:new, :create, :destroy]
 
-  namespace :admin do
-    resources :users
-  end
-
   get "/public/:npi" => "public#show"
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
