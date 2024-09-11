@@ -11,12 +11,12 @@
 
     <div class="form-field">
       <%= f.label :home_document %><br/>
-      <%= f.collection_select :home_document_id, @space.documents.without_archived.order(:title), :id, :title, class: "form-input" %>
+      <%= f.collection_select :home_document_id, @space.documents.without_archived.order(:title), :id, :title, {}, class: "form-input" %>
     </div>
 
     <div class="form-field">
       <%= f.label :access_mode %><br/>
-      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, class: "form-input" %>
+      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input" %>
     </div>
 
     <div class="flex justify-end mt-6">
