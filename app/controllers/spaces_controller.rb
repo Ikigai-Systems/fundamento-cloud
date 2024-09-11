@@ -2,7 +2,7 @@ class SpacesController < ApplicationController
   after_action :verify_authorized
 
   def index
-    @spaces = current_organization.spaces
+    @spaces = current_organization.spaces.order(:name)
 
     authorize @spaces, :index?
   end
