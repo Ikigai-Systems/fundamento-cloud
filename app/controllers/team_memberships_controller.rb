@@ -1,13 +1,20 @@
 # frozen_string_literal: true
 
 class TeamMembershipsController < ApplicationController
+  after_action :verify_authorized
+
   def new
     @team = current_organization.teams.find(params[:team_id])
+
+    authorize @team, :update?
+
     @team_membership = current_organization.team_memberships.new(team: @team)
   end
 
   def create
     @team = current_organization.teams.find(create_params[:team_id])
+
+    authorize @team, :update?
 
     create_params[:user_ids].each do |user_id|
       @team_membership = current_organization.team_memberships.find_or_initialize_by(team: @team, user_id: user_id)
@@ -18,21 +25,16 @@ class TeamMembershipsController < ApplicationController
   end
 
   def destroy
-    organization_id, user_id = params[:id].split(",")
+    team_npi, user_id = params[:id].split(",")
 
-    organization = current_user.
-      organizations.find(organization_id)
+    @team = current_organization.teams.find_by_npi!(team_npi)
+    @team_membership = @team.team_memberships.find_by(user_id: user_id)
 
-    if current_user.id.to_s == user_id
-      redirect_to organization, notice: "You can't remove yourself from the organization."
-      return
-    end
+    authorize @team, :update?
 
-    organization.organizations_users.
-      find_by(organization_id: organization_id, user_id: user_id).
-      destroy!
+    @team_membership.destroy!
 
-    redirect_to organization, notice: 'User was removed from the organization.'
+    redirect_to @team, notice: 'User was removed from the team.'
   end
 
   protected
