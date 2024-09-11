@@ -14,6 +14,9 @@ application.register('slideover', Slideover)
 application.register('tabs', Tabs)
 application.register('toggle', Toggle)
 
+import { Multiselect } from '@wizardhealth/stimulus-multiselect'
+application.register('multiselect', Multiselect);
+
 import ReactLoader from "./react_loader_controller"
 application.register("react-loader", ReactLoader)
 
