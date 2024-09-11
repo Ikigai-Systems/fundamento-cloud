@@ -14,6 +14,8 @@ class Space < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :home_document, if: -> { home_document_id.present? }
 
+  after_create :create_home_document
+
   enum :access_mode, [:public, :restricted, :private], scopes: false, validate: true
 
   def documents_from_hierarchy
@@ -63,16 +65,24 @@ class Space < ApplicationRecord
   end
 
   private
-    def traverse_hierarchy(node)
-      ids = []
-      (node || []).each do |item|
-        if item.is_a? Numeric
-          ids << item
-        else
-          ids << item["id"]
-          ids += traverse_hierarchy(item["children"])
-        end
+  def traverse_hierarchy(node)
+    ids = []
+    (node || []).each do |item|
+      if item.is_a? Numeric
+        ids << item
+      else
+        ids << item["id"]
+        ids += traverse_hierarchy(item["children"])
       end
-      ids
     end
+    ids
+  end
+
+  def create_home_document
+    return if home_document_id.present?
+
+    home_document = documents.create!(title: "Home for #{name}", organization: organization)
+
+    update!(home_document: home_document)
+  end
 end
