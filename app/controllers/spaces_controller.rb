@@ -1,5 +1,5 @@
 class SpacesController < ApplicationController
-  layout "full_width_application"
+  # layout "full_width_application" - todo: https://chat.google.com/room/AAAAOKLZy5A/T_J-1xRfGJs/Nmvzm296N-E?cls=10
 
   after_action :verify_authorized
 
