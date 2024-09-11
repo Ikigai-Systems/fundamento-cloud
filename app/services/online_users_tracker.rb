@@ -43,8 +43,8 @@ class OnlineUsersTracker
     end
   end
 
-  def self.for_each_user_online(for_organization, &block)
-    User.where(id: all_online_user_ids(for_organization)).each(&block)
+  def self.all_online_users(for_organization)
+    User.where(id: all_online_user_ids(for_organization))
   end
 
   protected
