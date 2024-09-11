@@ -12,6 +12,7 @@ class Space < ApplicationRecord
   belongs_to :home_document, class_name: "Document", optional: true
 
   validates_presence_of :name
+  validates_presence_of :home_document, if: -> { home_document_id.present? }
 
   enum :access_mode, [:public, :restricted, :private], scopes: false, validate: true
 

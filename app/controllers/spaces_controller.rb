@@ -124,7 +124,7 @@ class SpacesController < ApplicationController
   private
 
   def space_params
-    params.require(:space).permit(:name, :access_mode)
+    params.require(:space).permit(:name, :access_mode, :home_document_id, :home_document_type)
   end
 
 end
