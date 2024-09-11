@@ -57,6 +57,32 @@ class SpacesController < ApplicationController
     end
   end
 
+  def suggest_owners
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
+
+    authorize @space, :update?
+
+    query = params[:q]
+    preselects = params[:preselects].split(",")
+
+    # .where.not(id: @space.owner_ids)
+    @users = current_organization.users.query(query).map do |user|
+      {
+        value: "#{user.class}|#{user.id}",
+        text: user.display_name
+      }
+    end
+
+    @teams = current_organization.teams.query(query).map do |team|
+      {
+        value: "#{team.class}|#{team.id}",
+        text: team.name
+      }
+    end
+
+    render json: (@users + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
+  end
+
   def reorder_hierarchy
     @space = current_organization.spaces.find_by_npi!(params[:npi])
 
@@ -98,7 +124,7 @@ class SpacesController < ApplicationController
         (node || []).each_with_index do |item, index|
           if item.is_a? Numeric
             if item == parent_id
-              new_item = {id: item, children: [item_to_add]}
+              new_item = { id: item, children: [item_to_add] }
               node[index] = new_item
               return new_item
             end

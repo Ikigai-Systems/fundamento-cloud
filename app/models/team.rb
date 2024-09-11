@@ -3,6 +3,8 @@ class Team < ApplicationRecord
 
   include ModelWithNpiAsParam
 
+  scope :query, ->(query) { where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%") }
+
   has_many :team_memberships, dependent: :destroy
   has_many :users, through: :team_memberships, dependent: :destroy
 

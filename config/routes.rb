@@ -26,6 +26,11 @@ Rails.application.routes.draw do
 
     resources :spaces, param: :npi do
       put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
+
+      member do
+        get :suggest_owners
+      end
+
       resources :documents, only: [:create, :new, :edit, :update, :destroy] do
         resources :versions, module: :documents, only: [:create, :index, :show]
       end

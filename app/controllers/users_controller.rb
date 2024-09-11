@@ -16,7 +16,7 @@ class UsersController < ApplicationController
 
   def suggestions
     query = params[:query]
-    users = current_organization.users.where("(first_name || ' ' || last_name) LIKE ?", "%#{query}%").limit(10)
+    users = current_organization.users.query(query).limit(10)
 
     render json: users.map { |user| { id: user.id, display_name: user.display_name } }
   end
