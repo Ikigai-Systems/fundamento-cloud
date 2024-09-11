@@ -25,7 +25,8 @@
       <div
         data-controller="multiselect"
         data-multiselect-search-url-value="<%= suggest_owners_space_path(@space) %>"
-        data-placeholder="Search for owners...">
+        data-placeholder="Search for owners..."
+        data-no-results-message="Nothing matches">
 
         <select multiple="multiple" class="multiselect__hidden" data-multiselect-target="hidden" name="form[test_ids][]" id="form_test_ids"></select>
       </div>
