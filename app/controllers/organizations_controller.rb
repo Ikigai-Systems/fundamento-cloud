@@ -9,7 +9,7 @@ class OrganizationsController < ApplicationController
   def new
     @organization = Organization.new
 
-    authorize @organization, :new?
+    authorize @organization, :create?
   end
 
   def index
@@ -56,7 +56,7 @@ class OrganizationsController < ApplicationController
   def edit
     @organization = current_user.organizations.find_by_npi!(params[:npi])
 
-    authorize @organization, :edit?
+    authorize @organization, :update?
   end
 
   def select

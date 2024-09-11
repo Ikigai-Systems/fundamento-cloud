@@ -6,7 +6,7 @@ class TeamsController < ApplicationController
   def new
     @team = current_organization.teams.new
 
-    authorize @team, :new?
+    authorize @team, :create?
   end
 
   def index
@@ -48,7 +48,7 @@ class TeamsController < ApplicationController
   def edit
     @team = current_organization.teams.find_by_npi!(params[:npi])
 
-    authorize @team, :edit?
+    authorize @team, :update?
   end
 
   def destroy

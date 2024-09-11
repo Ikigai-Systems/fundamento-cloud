@@ -22,7 +22,7 @@ class SpacesController < ApplicationController
   def new
     @space = current_organization.spaces.new
 
-    authorize @space, :new?
+    authorize @space, :create?
   end
 
   def create
@@ -40,7 +40,7 @@ class SpacesController < ApplicationController
   def edit
     @space = current_organization.spaces.find_by_npi!(params[:npi])
 
-    authorize @space, :edit?
+    authorize @space, :update?
   end
 
   def update

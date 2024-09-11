@@ -16,10 +16,6 @@ class OrganizationPolicy < ApplicationPolicy
     organization_user.manager?
   end
 
-  def edit?
-    update?
-  end
-
   def destroy?
     update?
   end
