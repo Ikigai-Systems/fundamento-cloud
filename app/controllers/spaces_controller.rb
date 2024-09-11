@@ -1,4 +1,6 @@
 class SpacesController < ApplicationController
+  layout "full_width_application"
+
   after_action :verify_authorized
 
   def index
