@@ -23,17 +23,19 @@
             </h1>
           </div>
 
-          <div class="mt-4 flex md:ml-4 md:mt-0">
-            <% content_for :button_group_primary_buttons do %>
-              <%= link_to 'Edit', edit_team_path(@team), class: "first-button-group" %>
-            <% end %>
+          <% if policy(@team).update? && policy(@team).destroy? %>
+            <div class="mt-4 flex md:ml-4 md:mt-0">
+              <% content_for :button_group_primary_buttons do %>
+                <%= link_to 'Edit', edit_team_path(@team), class: "first-button-group" %>
+              <% end %>
 
-            <% content_for :button_group_dropdown_menu do %>
-              <%= button_to "Delete", team_path(@team), form: { data: { turbo_confirm: "Are you sure? Your team will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
-            <% end %>
+              <% content_for :button_group_dropdown_menu do %>
+                <%= button_to "Delete", team_path(@team), form: { data: { turbo_confirm: "Are you sure? Your team will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
+              <% end %>
 
-            <%= render template: "application/components/button_group"%>
-          </div>
+              <%= render template: "application/components/button_group"%>
+            </div>
+          <% end %>
         </div>
       </section>
 
@@ -43,9 +45,11 @@
           <p class="mt-2 text-sm text-gray-700">A list of all the users in your team.</p>
         </div>
 
-        <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <%= link_to 'Add users', new_team_membership_path(team_id: @team.id), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-        </div>
+        <% if policy(@team).update? %>
+          <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <%= link_to 'Add users', new_team_membership_path(team_id: @team.id), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+          </div>
+        <% end %>
       </div>
 
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -70,7 +74,7 @@
         </thead>
         <tbody id="users">
         <% @team.users.each do |user| %>
-          <%= render partial: "teams/user", locals: { user: user, current_team: @team } %>
+          <%= render partial: "teams/user", locals: { user: user, team: @team } %>
         <% end %>
         </tbody>
       </table>

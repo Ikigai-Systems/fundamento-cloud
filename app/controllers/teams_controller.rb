@@ -1,16 +1,24 @@
 # frozen_string_literal: true
 
 class TeamsController < ApplicationController
+  after_action :verify_authorized
+
   def new
     @team = current_organization.teams.new
+
+    authorize @team, :new?
   end
 
   def index
     @teams = current_organization.teams.order(:name)
+
+    authorize @teams, :index?
   end
 
   def create
     @team = current_organization.teams.new(team_params)
+
+    authorize @team, :create?
 
     if @team.save
       redirect_to @team, notice: 'Team was successfully created.'
@@ -22,6 +30,8 @@ class TeamsController < ApplicationController
   def update
     @team = current_organization.teams.find_by_npi!(params[:npi])
 
+    authorize @team, :update?
+
     if @team.update(team_params)
       redirect_to @team, notice: 'Team was successfully updated.'
     else
@@ -31,14 +41,21 @@ class TeamsController < ApplicationController
 
   def show
     @team = current_organization.teams.find_by_npi!(params[:npi])
+
+    authorize @team, :show?
   end
 
   def edit
     @team = current_organization.teams.find_by_npi!(params[:npi])
+
+    authorize @team, :edit?
   end
 
   def destroy
     @team = current_organization.teams.find_by_npi(params[:npi])
+
+    authorize @team, :destroy?
+
     @team.destroy!
 
     redirect_to teams_path, notice: "Team was removed."
