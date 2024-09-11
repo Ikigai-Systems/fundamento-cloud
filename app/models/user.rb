@@ -24,31 +24,19 @@ class User < ApplicationRecord
   end
 
   def online?(for_organization)
-    Rails.cache.fetch("#{for_organization.cache_key}/#{cache_key}/online", false)
+    OnlineUsersTracker.online?(for_organization, self)
   end
 
   def last_online_at(for_organization)
-    Rails.cache.fetch("#{for_organization.cache_key}/#{cache_key}/last_online_at", nil)
+    OnlineUsersTracker.last_online_at(for_organization, self)
   end
 
   def change_to_online(for_organization)
-    Rails.cache.write("#{for_organization.cache_key}/#{cache_key}/last_online_at", Time.now)
-    Rails.cache.write("#{for_organization.cache_key}/#{cache_key}/online", true)
-
-    broadcast_replace_to(["admin_users_list", for_organization],
-      target: [self, "online_status"],
-      partial: "users/online_status",
-      locals: { current_organization: for_organization })
+    OnlineUsersTracker.change_to_online(for_organization, self)
   end
 
   def change_to_offline(for_organization)
-    Rails.cache.write("#{for_organization.cache_key}/#{cache_key}/online", false)
-
-    broadcast_replace_to(["admin_users_list", for_organization],
-      target: [self, "online_status"],
-      partial: "users/online_status",
-      locals: { current_organization: for_organization }
-    )
+    OnlineUsersTracker.change_to_offline(for_organization, self)
   end
 
   # Do not allow user to reset its password until it accepts the invitation
