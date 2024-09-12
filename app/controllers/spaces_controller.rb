@@ -1,5 +1,4 @@
 class SpacesController < ApplicationController
-  # layout "full_width_application" - todo: https://chat.google.com/room/AAAAOKLZy5A/T_J-1xRfGJs/Nmvzm296N-E?cls=10
 
   after_action :verify_authorized
 
@@ -18,6 +17,7 @@ class SpacesController < ApplicationController
       redirect_to edit_space_document_url(@space, @space.home_document)
     else
       @documents = @space.documents_from_hierarchy
+      render layout: "full_width_application"
     end
   end
 
