@@ -66,9 +66,9 @@
           </th>
         </tr>
         </thead>
-        <tbody id="users">
-        <% @team.users.each do |user| %>
-          <%= render partial: "teams/user", locals: { user: user, team: @team } %>
+        <tbody id="team_members">
+        <% @team.team_memberships.each do |membership| %>
+          <%= render partial: "teams/user", locals: { user: membership.member.user, team: @team } %>
         <% end %>
         </tbody>
       </table>

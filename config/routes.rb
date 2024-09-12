@@ -66,9 +66,7 @@ Rails.application.routes.draw do
   end
 
   resources :teams, param: :npi do
-    member do
-      get :suggest_members
-    end
+    get :suggest_members, on: :collection
   end
 
   resources :team_memberships, only: [:new, :create, :destroy]
