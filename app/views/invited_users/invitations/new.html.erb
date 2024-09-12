@@ -15,6 +15,7 @@
 
     <div class="flex justify-end mt-6">
       <%= f.submit t("devise.invitations.new.submit_button"), class: "form-submit" %>
+      <%= link_to "Cancel", organization_path(@organization), class: "secondary-button ml-2" %>
     </div>
   <% end %>
 
