@@ -26,6 +26,8 @@
 
         <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
+      <br/>
+      <em>You can pick among users and <%= link_to "teams", teams_path %>.</em>
     </div>
 
     <div class="flex justify-end mt-6">
