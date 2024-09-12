@@ -21,6 +21,7 @@ export type User = {
 }
 
 export type Version = {
+  sequentialId: number,
   content: unknown,
   documentId: number,
   createdAt: string, //date

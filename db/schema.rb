@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_11_190552) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -232,7 +232,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_11_190552) do
     t.bigint "document_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sequential_id", null: false
     t.index ["document_id"], name: "index_versions_on_document_id"
+    t.index ["sequential_id", "document_id"], name: "index_versions_on_sequential_id_and_document_id", unique: true
   end
 
   add_foreign_key "attachments", "organizations"

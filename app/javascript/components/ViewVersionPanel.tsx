@@ -28,7 +28,7 @@ const EditDocumentPanel = ({version, document, space, currentUser}: EditDocument
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <div className="pl-[3.4rem] min-h-12 mt-1 -mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800">
-        Version {version.id} - {document.title}
+        Version {version.sequentialId} - {document.title}
       </div>
 
       <div className="editor-container">

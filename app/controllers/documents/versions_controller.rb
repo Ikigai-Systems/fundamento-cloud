@@ -48,6 +48,6 @@ class Documents::VersionsController < ApplicationController
     @documents = @space.documents_from_hierarchy
 
     # todo: refactor to sequential_id
-    @version = @document.versions.find(params[:id])
+    @version = @document.versions.find_by(sequential_id: params[:id])
   end
 end

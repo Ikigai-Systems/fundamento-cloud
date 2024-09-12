@@ -7,7 +7,6 @@
     </div>
     <div class="overflow-auto">
       <div class="px-[3.4rem]">
-
         <h1 class="mt-1 text-4xl text-slate-800">
           Document history - <%= @document.title %>
         </h1>
@@ -15,7 +14,7 @@
         <div class="mt-4">
           <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-              <h1 class="text-base font-semibold text-xl leading-6 text-gray-900">Versions</h1>
+              <h1 class="text-base font-semibold text-xl leading-6 text-slate-900">Versions</h1>
             </div>
           </div>
           <div class="mt-4 flow-root">
@@ -24,23 +23,23 @@
                 <table class="min-w-full divide-y divide-gray-300">
                   <thead>
                   <tr>
-                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Version</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Created by</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Actions</th>
+                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Version</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Date</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Created by</th>
+                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Actions</th>
                   </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-200">
                     <% @versions.each do |version| %>
                       <tr>
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0"><%= version.id %></td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500"><%= version.created_at.strftime("%F") %></td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0"><%= version.sequential_id %></td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500"><%= version.created_at.strftime("%F") %></td>
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                           <div title="<%= current_user.display_name %>" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                             <%= current_user.initials %>
                           </div>
                         </td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
                           <%= link_to "Show", space_document_version_path(@space, @document, version), class: "link-button" %>
                         </td>
                       </tr>
