@@ -8,6 +8,8 @@ class OrganizationUser < ApplicationRecord
 
   enum :role, [:manager, :member], scope: false
 
+  delegate :display_name, to: :user
+
   after_create_commit do
     broadcast_refresh_to(
       ["organization_users_list", self.organization]

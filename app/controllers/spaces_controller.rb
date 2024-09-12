@@ -2,6 +2,8 @@ class SpacesController < ApplicationController
 
   after_action :verify_authorized
 
+  helper_method :space_memberships_to_multiselect_value
+
   def index
     @spaces = current_organization.spaces.order(:name)
 
@@ -28,11 +30,13 @@ class SpacesController < ApplicationController
   end
 
   def create
-    @space = current_organization.spaces.new(space_params)
+    @space = current_organization.spaces.new(space_params.without(:space_memberships))
 
     authorize @space, :create?
 
     if @space.save # && @organization_user.save
+      update_space_memberships!(@space, space_params[:space_memberships])
+
       redirect_to @space, notice: 'Space was successfully created.', status: :see_other
     else
       render :new
@@ -50,37 +54,13 @@ class SpacesController < ApplicationController
 
     authorize @space, :update?
 
-    if @space.update(space_params)
+    if @space.update(space_params.without(:space_memberships))
+      update_space_memberships!(@space, space_params[:space_memberships])
+
       redirect_to spaces_path, notice: 'Space was successfully updated.', status: :see_other
     else
       render :edit
     end
-  end
-
-  def suggest_owners
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
-
-    authorize @space, :update?
-
-    query = params[:q]
-    preselects = params[:preselects].split(",")
-
-    # .where.not(id: @space.owner_ids)
-    @users = current_organization.users.query(query).map do |user|
-      {
-        value: "#{user.class}|#{user.id}",
-        text: user.display_name
-      }
-    end
-
-    @teams = current_organization.teams.query(query).map do |team|
-      {
-        value: "#{team.class}|#{team.id}",
-        text: team.name
-      }
-    end
-
-    render json: (@users + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
 
   def reorder_hierarchy
@@ -149,10 +129,65 @@ class SpacesController < ApplicationController
     end
   end
 
+  def suggest_owners
+    @space = current_organization.spaces.find_by_param!(params[:npi])
+
+    authorize @space, :update?
+
+    query = params[:q]
+    preselects = params[:preselects].split(",")
+
+    @organization_users = current_organization.organization_users.query(query).map do |organization_user|
+      {
+        value: "#{organization_user.class}|#{organization_user.id}",
+        text: organization_user.user.display_name
+      }
+    end
+
+    @teams = current_organization.teams.query(query).map do |team|
+      {
+        value: "#{team.class}|#{team.id}",
+        text: team.name
+      }
+    end
+
+    render json: (@organization_users + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
+  end
+
   private
 
+  def space_memberships_to_multiselect_value(space)
+    space.space_memberships.map do |membership|
+      { value: "#{membership.member_type}|#{membership.member_id}", text: membership.display_name }
+    end.to_json
+  end
+
+  def update_space_memberships!(space, space_memberships_param)
+    memberships_to_destroy = space.space_memberships.index_by { [_1.member_type, _1.member_id.to_s] }
+
+    space_memberships_param.select(&:present?).each do |membership|
+      member_type, member_id = membership.split("|")
+
+      if memberships_to_destroy.key?([member_type, member_id])
+        # If the membership already exists, remove it from the list of memberships to destroy and keep it in the database
+        memberships_to_destroy.delete([member_type, member_id])
+      else
+        # Membership does not exist but should so create it
+        space.space_memberships.create!(
+          organization: current_organization,
+          role: :manager,
+          member_type: member_type,
+          member_id: member_id,
+        )
+      end
+    end
+
+    # Destroy any memberships that were not in the list of memberships to keep
+    memberships_to_destroy.each_value(&:destroy!)
+  end
+
   def space_params
-    params.require(:space).permit(:name, :access_mode, :home_document_id, :home_document_type)
+    params.require(:space).permit(:name, :access_mode, :home_document_id, :home_document_type, space_memberships: [])
   end
 
 end

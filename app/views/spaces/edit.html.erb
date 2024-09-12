@@ -20,15 +20,16 @@
     </div>
 
     <div class="form-field">
-      <%= f.label :space_owners %><br/>
+      <%= f.label :space_managers %><br/>
 
       <div
         data-controller="multiselect"
+        data-multiselect-selected-value="<%= space_memberships_to_multiselect_value(@space) %>"
         data-multiselect-search-url-value="<%= suggest_owners_space_path(@space) %>"
-        data-placeholder="Search for owners..."
+        data-placeholder="Search for space managers..."
         data-no-results-message="Nothing matches">
 
-        <select multiple="multiple" class="multiselect__hidden" data-multiselect-target="hidden" name="form[test_ids][]" id="form_test_ids"></select>
+        <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
     </div>
 
