@@ -13,6 +13,8 @@
 
       <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
 
+      <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+
       <hr class="border-t" />
 
       <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}, class: "no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100 w-full text-left"  %>
