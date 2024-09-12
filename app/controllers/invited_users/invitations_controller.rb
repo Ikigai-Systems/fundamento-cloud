@@ -39,7 +39,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
           end
         end
 
-        resource.organization.organizations_users.find_or_create_by!(user_id: user.id) do |organization_user|
+        resource.organization.organization_users.find_or_create_by!(user_id: user.id) do |organization_user|
           organization_user.role = :member
         end
 
