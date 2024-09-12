@@ -9,8 +9,28 @@
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
+    <div class="form-field">
+      <%= f.label :access_mode %><br/>
+      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input" %>
+    </div>
+
+    <div class="form-field">
+      <%= f.label :space_managers %><br/>
+
+      <div
+          data-controller="multiselect"
+          data-multiselect-selected-value="<%= space_memberships_to_multiselect_value(@space) %>"
+          data-multiselect-search-url-value="<%= suggest_owners_spaces_path %>"
+          data-placeholder="Search for space managers..."
+          data-no-results-message="Nothing matches">
+
+        <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
+      </div>
+    </div>
+
     <div class="flex justify-end mt-6">
       <%= f.submit "Create", class: "form-submit" %>
+      <%= link_to "Cancel", spaces_path, class: "secondary-button ml-2" %>
     </div>
   <% end %>
 </section>

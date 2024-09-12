@@ -25,7 +25,7 @@
       <div
         data-controller="multiselect"
         data-multiselect-selected-value="<%= space_memberships_to_multiselect_value(@space) %>"
-        data-multiselect-search-url-value="<%= suggest_owners_space_path(@space) %>"
+        data-multiselect-search-url-value="<%= suggest_owners_spaces_path %>"
         data-placeholder="Search for space managers..."
         data-no-results-message="Nothing matches">
 
@@ -35,6 +35,7 @@
 
     <div class="flex justify-end mt-6">
       <%= f.submit "Save", class: "form-submit" %>
+      <%= link_to "Cancel", spaces_path, class: "secondary-button ml-2" %>
     </div>
   <% end %>
 </section>

@@ -1,6 +1,6 @@
 class SpacesController < ApplicationController
 
-  after_action :verify_authorized
+  after_action :verify_authorized, except: [:suggest_owners]
 
   helper_method :space_memberships_to_multiselect_value
 
@@ -130,10 +130,6 @@ class SpacesController < ApplicationController
   end
 
   def suggest_owners
-    @space = current_organization.spaces.find_by_param!(params[:npi])
-
-    authorize @space, :update?
-
     query = params[:q]
     preselects = params[:preselects].split(",")
 
