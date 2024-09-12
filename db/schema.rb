@@ -174,7 +174,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
   create_table "team_memberships", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "team_id", null: false
-    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "member_type", null: false
@@ -182,9 +181,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
     t.index ["member_id", "member_type", "team_id"], name: "idx_on_member_id_member_type_team_id_fa57caa5d8", unique: true
     t.index ["member_type", "member_id"], name: "index_team_memberships_on_member"
     t.index ["organization_id"], name: "index_team_memberships_on_organization_id"
-    t.index ["team_id", "user_id"], name: "index_team_memberships_on_team_id_and_user_id", unique: true
     t.index ["team_id"], name: "index_team_memberships_on_team_id"
-    t.index ["user_id"], name: "index_team_memberships_on_user_id"
   end
 
   create_table "teams", force: :cascade do |t|
@@ -253,7 +250,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
   add_foreign_key "team_memberships", "organizations"
   add_foreign_key "team_memberships", "teams"
-  add_foreign_key "team_memberships", "users"
   add_foreign_key "teams", "organizations"
   add_foreign_key "versions", "documents"
 end
