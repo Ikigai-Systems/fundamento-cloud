@@ -2,6 +2,8 @@ class OrganizationUser < ApplicationRecord
   self.table_name = :organizations_users
   self.primary_key = [:organization_id, :user_id]
 
+  scope :query, ->(query) { joins(:user).where("(users.first_name || ' ' || users.last_name) ILIKE ?", "%#{query}%") }
+
   belongs_to :organization
   belongs_to :user
 
