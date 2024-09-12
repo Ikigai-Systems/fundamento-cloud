@@ -67,7 +67,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :teams, param: :npi
+  resources :teams, param: :npi do
+    member do
+      get :suggest_members
+    end
+  end
+
   resources :team_memberships, only: [:new, :create, :destroy]
 
   get "/public/:npi" => "public#show"

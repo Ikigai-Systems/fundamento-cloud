@@ -61,6 +61,24 @@ class TeamsController < ApplicationController
     redirect_to teams_path, notice: "Team was removed."
   end
 
+  def suggest_members
+    @team = current_organization.teams.find_by_npi!(params[:npi])
+
+    authorize @team, :update?
+
+    query = params[:q]
+    preselects = params[:preselects].split(",")
+
+    @organization_users = current_organization.organization_users.query(query).map do |organization_user|
+      {
+        value: organization_user.id,
+        text: organization_user.user.display_name
+      }
+    end
+
+    render json: @organization_users.reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
+  end
+
   private
 
   def team_params
