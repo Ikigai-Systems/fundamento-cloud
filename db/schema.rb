@@ -99,8 +99,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
     t.string "member_type"
     t.bigint "member_id"
     t.integer "role", limit: 2, default: 0, null: false
+    t.bigint "organization_id", null: false
     t.index ["member_id", "member_type", "space_id"], name: "idx_on_member_id_member_type_space_id_e2ffbf3808", unique: true
     t.index ["member_type", "member_id"], name: "index_space_managers_on_manager"
+    t.index ["organization_id"], name: "index_space_memberships_on_organization_id"
     t.index ["space_id"], name: "index_space_memberships_on_space_id"
   end
 
