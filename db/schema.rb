@@ -63,6 +63,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
     t.index ["organization_id"], name: "index_invited_users_on_organization_id"
   end
 
+  create_table "organization_users", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.bigint "user_id"
+    t.integer "role", limit: 2, default: 0, null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["npi"], name: "index_organization_users_on_npi", unique: true
+    t.index ["organization_id"], name: "index_organization_users_on_organization_id"
+    t.index ["user_id"], name: "index_organization_users_on_user_id"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false

@@ -1,8 +1,7 @@
 class OrganizationUser < ApplicationRecord
-  self.table_name = :organizations_users
-  self.primary_key = [:organization_id, :user_id]
-
   scope :query, ->(query) { joins(:user).where("(users.first_name || ' ' || users.last_name) ILIKE ?", "%#{query}%") }
+
+  include ModelWithNpiAsParam
 
   belongs_to :organization
   belongs_to :user
@@ -40,9 +39,5 @@ class OrganizationUser < ApplicationRecord
       ["organizations_list", self.user],
       target: self.organization
     )
-  end
-
-  def to_param
-    "#{organization_id},#{user_id}"
   end
 end
