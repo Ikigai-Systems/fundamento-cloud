@@ -5,16 +5,24 @@ export type Document = {
 }
 
 export type Space = {
-  id: number,
+  npi: string,
   hierarchy: number[],
+  homeDocumentId?: number,
 }
 
 export type User = {
-  createdAt: string //date,
+  createdAt: string, //date
   email: string,
   firstName: string,
   id: number,
   lastName: string,
   organizationRole: number
-  updatedAt: string //date,
+  updatedAt: string, //date
+}
+
+export type Version = {
+  content: unknown,
+  documentId: number,
+  createdAt: string, //date
+  updatedAt: string, //date
 }

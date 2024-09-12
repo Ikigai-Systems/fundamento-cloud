@@ -27,7 +27,6 @@ const tinySimpleHash = (s: string) => {
 }
 
 type EditorProps = {
-  initialContent: string, // probably not needed
   currentUser: User,
   documentId: number,
 }
@@ -36,7 +35,7 @@ export function uploadFile(documentId: number) {
   return async (file: string | Blob)=> {
     const body = new FormData();
 
-    body.set("attachment[parent_id]", documentId);
+    body.set("attachment[parent_id]", documentId.toString());
     body.set("attachment[parent_type]", "Document");
 
     body.append("file", file);
@@ -142,43 +141,38 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }
 
   return <>
-    <div
-      className="min-w-2xl min-h-xl border-dashed"
-    >
-      <BlockNoteView editor={editor} slashMenu={false}>
-        {/* Replaces the default Slash Menu. */}
-        <SuggestionMenuController
-          triggerCharacter={"/"}
-          getItems={async (query) => {
-            // Gets all default slash menu items and `insertAlert` item.
-            let defaultTableMenuItem = undefined;
-            const itemsWithoutTable = getDefaultReactSlashMenuItems(editor).filter(defaultMenuItem => {
-              if (defaultMenuItem.key === 'table') {
-                defaultTableMenuItem = defaultMenuItem;
-                return false;
-              } else {
-                return true;
-              }
-            });
-            defaultTableMenuItem.title = "Simple table";
-            defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
+    <BlockNoteView editor={editor} slashMenu={false}>
+      {/* Replaces the default Slash Menu. */}
+      <SuggestionMenuController
+        triggerCharacter={"/"}
+        getItems={async (query) => {
+          // Gets all default slash menu items and `insertAlert` item.
+          let defaultTableMenuItem = undefined;
+          const itemsWithoutTable = getDefaultReactSlashMenuItems(editor).filter(defaultMenuItem => {
+            if (defaultMenuItem.key === 'table') {
+              defaultTableMenuItem = defaultMenuItem;
+              return false;
+            } else {
+              return true;
+            }
+          });
+          defaultTableMenuItem.title = "Simple table";
+          defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
 
-            return filterSuggestionItems(
-              [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor as schema.BlockNoteEditor)],
-              query
-            )
-          }}
-        />
-        <SuggestionMenuController
-          // Gets the mentions menu items
-          triggerCharacter={"@"}
-          getItems={async (query) =>
-            filterSuggestionItems(await getMentionMenuItems(editor), query)
-          }
-        />
-      </BlockNoteView>
-    </div>
-
+          return filterSuggestionItems(
+            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor as schema.BlockNoteEditor)],
+            query
+          )
+        }}
+      />
+      <SuggestionMenuController
+        // Gets the mentions menu items
+        triggerCharacter={"@"}
+        getItems={async (query) =>
+          filterSuggestionItems(await getMentionMenuItems(editor), query)
+        }
+      />
+    </BlockNoteView>
   </>
 }
 

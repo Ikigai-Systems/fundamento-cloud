@@ -1,4 +1,4 @@
-class VersionsController < ApplicationController
+class Documents::VersionsController < ApplicationController
   layout "full_width_application"
 
   def create
@@ -21,7 +21,7 @@ class VersionsController < ApplicationController
     if @version.save
       redirect_to edit_space_document_path(params[:space_npi], @document), notice: "Document version has been saved."
     else
-        render :new, status: 422
+      render :new, status: 422
     end
 
 
@@ -37,6 +37,17 @@ class VersionsController < ApplicationController
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
+
+    @versions = @document.versions.order('created_at DESC')
   end
 
+  def show
+    @document = current_organization.documents.find(params[:document_id])
+
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @documents = @space.documents_from_hierarchy
+
+    # todo: refactor to sequential_id
+    @version = @document.versions.find(params[:id])
+  end
 end

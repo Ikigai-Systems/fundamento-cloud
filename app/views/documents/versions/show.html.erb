@@ -1,0 +1,13 @@
+<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
+  <%= render 'application/left_side_bar' %>
+  <article class="bg-white flex-col overflow-auto">
+    <div class="bg-white h-12 flex justify-end items-center p-2">
+      <%= link_to "Document history", space_document_versions_path(@space, @document),
+                  class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+    </div>
+
+    <div class="bg-white overflow-auto">
+      <%= react_component "ViewVersionPanel", {version: @version, document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
+    </div>
+  </article>
+</div>

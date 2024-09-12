@@ -6,9 +6,9 @@ import DocumentsApi from "../api/DocumentsApi.js";
 import queryClient from "../Contextes/ReactQueryClient.tsx";
 
 type EditDocumentPanelProps = {
-  document: Document
-  space: Space
-  currentUser: User
+  document: Document,
+  space: Space,
+  currentUser: User,
 }
 
 const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProps) => {
@@ -46,7 +46,6 @@ const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProp
 
       <div className="editor-container">
         <Editor
-          initialContent={document.content}
           currentUser={currentUser}
           documentId={document.id}
         />
