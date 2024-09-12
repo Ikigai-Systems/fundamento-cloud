@@ -6,8 +6,7 @@ class Space < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :tables, class_name: "Tables::Table", dependent: :destroy
 
-  has_many :space_managers
-  has_many :managers, through: :space_managers
+  has_many :space_memberships, dependent: :destroy
 
   belongs_to :home_document, class_name: "Document", optional: true
 
