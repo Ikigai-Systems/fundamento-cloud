@@ -177,6 +177,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "member_type", null: false
+    t.bigint "member_id", null: false
+    t.index ["member_id", "member_type", "team_id"], name: "idx_on_member_id_member_type_team_id_fa57caa5d8", unique: true
+    t.index ["member_type", "member_id"], name: "index_team_memberships_on_member"
     t.index ["organization_id"], name: "index_team_memberships_on_organization_id"
     t.index ["team_id", "user_id"], name: "index_team_memberships_on_team_id_and_user_id", unique: true
     t.index ["team_id"], name: "index_team_memberships_on_team_id"
