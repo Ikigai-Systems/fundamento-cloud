@@ -1,5 +1,5 @@
 <section class="form-section">
-  <h2 class="form-header">Edit space</h2>
+  <h2 class="form-header">Edit space <%= @space.name %></h2>
 
   <%= form_for(@space, data: { turbo: false }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @space %>
