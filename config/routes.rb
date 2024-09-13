@@ -69,8 +69,6 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
-  resources :team_memberships, only: [:new, :create, :destroy]
-
   get "/public/:npi" => "public#show"
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
