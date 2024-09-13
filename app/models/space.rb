@@ -15,7 +15,7 @@ class Space < ApplicationRecord
 
   after_create :create_home_document
 
-  enum :access_mode, [:public, :restricted, :private], scopes: false, validate: true
+  enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
 
   def documents_from_hierarchy
     ids = traverse_hierarchy(hierarchy)
