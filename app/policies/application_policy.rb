@@ -33,6 +33,12 @@ class ApplicationPolicy
   end
 
   class Scope
+    attr_reader :user_context, :scope
+
+    delegate :user, to: :user_context
+    delegate :current_organization, to: :user_context
+    delegate :organization_user, to: :user_context
+
     def initialize(user_context, scope)
       @user_context = user_context
       @scope = scope
@@ -41,9 +47,5 @@ class ApplicationPolicy
     def resolve
       raise NoMethodError, "You must define #resolve in #{self.class}"
     end
-
-    private
-
-    attr_reader :user_context, :scope
   end
 end
