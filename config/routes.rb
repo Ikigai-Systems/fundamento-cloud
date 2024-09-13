@@ -58,7 +58,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :organizations_users, only: [:destroy] do
+  resources :organizations_users, param: :npi, only: [:destroy] do
     member do
       patch :promote
       patch :demote

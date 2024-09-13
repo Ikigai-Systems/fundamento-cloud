@@ -42,9 +42,6 @@ class OrganizationsUsersController < ApplicationController
   private
 
   def load_organization_user
-    organization_id, user_id = params[:id].split(",")
-
-    @organization_user = OrganizationUser.
-      find_by!(organization_id: organization_id, user_id: user_id)
+    @organization_user = OrganizationUser.find_by_param!(params[:npi])
   end
 end
