@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_13_170318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -248,6 +248,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "sequential_id", null: false
+    t.bigint "created_by_id"
+    t.index ["created_by_id"], name: "index_versions_on_created_by_id"
     t.index ["document_id"], name: "index_versions_on_document_id"
     t.index ["sequential_id", "document_id"], name: "index_versions_on_sequential_id_and_document_id", unique: true
   end
@@ -266,4 +268,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_12_141556) do
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "teams", "organizations"
   add_foreign_key "versions", "documents"
+  add_foreign_key "versions", "users", column: "created_by_id"
 end

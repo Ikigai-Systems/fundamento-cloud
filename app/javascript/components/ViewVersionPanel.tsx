@@ -7,7 +7,7 @@ import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import "./editor/editor-styles.css";
 import schema from "./editor/schema.ts";
-import {resolveFileUrl, uploadFile} from "./editor/Editor.tsx";
+import {resolveFileUrl} from "./editor/Editor.tsx";
 
 type EditDocumentPanelProps = {
   version: Version,
