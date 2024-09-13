@@ -5,7 +5,7 @@ class SpacesController < ApplicationController
   helper_method :space_memberships_to_multiselect_value
 
   def index
-    @spaces = current_organization.spaces.order(:name)
+    @spaces = policy_scope(current_organization.spaces).order(:name)
 
     authorize @spaces, :index?
   end
