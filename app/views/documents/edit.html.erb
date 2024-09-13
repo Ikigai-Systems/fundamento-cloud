@@ -6,7 +6,9 @@
                     params: {blocks: ""},
                     :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
                     class: "document-toolbar-button" %>
-      <%= button_to "Document history", space_document_versions_path(@space, @document), method: :get,
+      <%= button_to "Document history", space_document_version_path(@space, @document, @document.versions.latest), method: :get,
+                    disabled: @document.versions.latest.blank?,
+                    title: @document.versions.latest.blank? ? "No document history yet, save a version first" : nil,
                     class: "document-toolbar-button" %>
 
       <% if @document.archived %>

@@ -1,8 +1,8 @@
-<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
+<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)_minmax(10px,400px)]">
   <%= render 'application/left_side_bar' %>
   <article class="bg-white flex-col overflow-auto">
     <div class="bg-white h-12 flex justify-end items-center p-2">
-      <%= link_to "Document history", space_document_versions_path(@space, @document),
+      <%= link_to "View current version", edit_space_document_path(@space, @document), method: :get,
                   class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
     </div>
 
@@ -10,4 +10,27 @@
       <%= react_component "ViewVersionPanel", {version: @version.attributes.except("id"), document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
     </div>
   </article>
+  <aside class="bg-white overflow-auto border-l">
+    <h1 class="p-2 my-2 text-2xl text-slate-800">
+      Historical versions
+    </h1>
+    <% @versions.each do |version| %>
+      <%= link_to space_document_version_path(@space, @document, version) do %>
+        <div class="flex flex-row ml-2 <%= @version == version ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+          <div class="<%= @version == version ? "bg-blue-500" : "" %> w-1"></div>
+          <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
+            <div title="<%= current_user.display_name %>" class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+              <%= current_user.initials %>
+            </div>
+          </div>
+          <div class="p-2">
+            <div class="font-bold">Version <%= version.sequential_id %></div>
+            <div><%= current_user.display_name %></div>
+            <div><%= version.created_at.strftime("%F") %></div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+  </aside>
 </div>

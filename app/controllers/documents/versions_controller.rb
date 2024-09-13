@@ -44,10 +44,12 @@ class Documents::VersionsController < ApplicationController
   def show
     @document = current_organization.documents.find(params[:document_id])
 
+    @version = @document.versions.find_by(sequential_id: params[:id])
+    raise ActionController::RoutingError, 'Not Found' if @version.blank?
+
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
 
-    # todo: refactor to sequential_id
-    @version = @document.versions.find_by(sequential_id: params[:id])
+    @versions = @document.versions.order('created_at DESC')
   end
 end

@@ -75,6 +75,10 @@
         @apply secondary-button ml-2 text-sm;
     }
 
+    button.document-toolbar-button[disabled] {
+        @apply ring-0 bg-gray-100 hover:bg-gray-100 text-slate-400 cursor-not-allowed;
+    }
+
     .link-button {
         @apply font-medium text-blue-600 dark:text-blue-500 hover:underline
     }

@@ -6,7 +6,6 @@ import {useCreateBlockNote} from "@blocknote/react";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import "./editor/editor-styles.css";
-import {BlockNoteEditor} from "@blocknote/core";
 import schema from "./editor/schema.ts";
 import {resolveFileUrl, uploadFile} from "./editor/Editor.tsx";
 
@@ -17,18 +16,17 @@ type EditDocumentPanelProps = {
   currentUser: User,
 }
 
-const EditDocumentPanel = ({version, document, space, currentUser}: EditDocumentPanelProps) => {
+const EditDocumentPanel = ({version, document, space}: EditDocumentPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.content,
-    uploadFile: uploadFile(document.id),
     resolveFileUrl: resolveFileUrl,
   });
 
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <div className="pl-[3.4rem] min-h-12 mt-1 -mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800">
-        Version {version.sequentialId} - {document.title}
+        {document.title || "Untitled"}
       </div>
 
       <div className="editor-container">
