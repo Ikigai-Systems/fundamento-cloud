@@ -8,3 +8,6 @@ stefan:
   email: stefan@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
 
+maria:
+  email: maria@ikigai.systems
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>

@@ -1,0 +1,4 @@
+hc_administrators:
+  organization: :hc
+  name: "Administrators"
+  shortcut: "@admins"

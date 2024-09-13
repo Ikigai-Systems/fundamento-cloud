@@ -1,0 +1,9 @@
+hc_administrators_membership_1:
+  organization: :hc
+  team: :hc_administrators
+  member: ou_hc_stefan (OrganizationUser)
+
+hc_administrators_membership_2:
+  organization: :hc
+  team: :hc_administrators
+  member: ou_hc_pawel (OrganizationUser)

@@ -1,7 +1,24 @@
 ou_is_pawel:
   organization: :is
   user: :pawel
+  role: :manager
 
 ou_is_stefan:
   organization: :is
   user: :stefan
+  role: :member
+
+ou_hc_pawel:
+  organization: :hc
+  user: :pawel
+  role: :manager
+
+ou_hc_stefan:
+  organization: :hc
+  user: :stefan
+  role: :member
+
+ou_hc_maria:
+  organization: :hc
+  user: :maria
+  role: :member

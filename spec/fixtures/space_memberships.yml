@@ -1,0 +1,23 @@
+is_stefans_membership_1:
+  organization: :is
+  space: :is_stefans
+  member: ou_is_stefan (OrganizationUser)
+  role: :manager
+
+hc_pawels_membership_1:
+  organization: :hs
+  space: :hc_pawels
+  member: ou_is_pawel (OrganizationUser)
+  role: :manager
+
+hc_secret_membership_1:
+  organization: :hs
+  space: :hc_secret
+  member: ou_hc_stefan (OrganizationUser)
+  role: :manager
+
+hc_administrators_membership_1:
+  organization: :hs
+  space: :hc_administrators
+  member: hc_administrators (Team)
+  role: :manager
