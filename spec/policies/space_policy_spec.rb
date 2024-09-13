@@ -41,7 +41,7 @@ RSpec.describe SpacePolicy, type: :model do
       let(:organization_user) { organization_users(:ou_hc_pawel) }
 
       it "sees all spaces" do
-        expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Pawel's Private Space"])
+        expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Pawel's Private Space", "Restricted HC"])
       end
     end
 
@@ -49,8 +49,8 @@ RSpec.describe SpacePolicy, type: :model do
       context "maria" do
         let(:organization_user) { organization_users(:ou_hc_maria) }
 
-        it "maria can see only public spaces" do
-          expect(policy.resolve.order(:name).map(&:name)).to eq(["Default HC"])
+        it "maria can see only public and restricted spaces" do
+          expect(policy.resolve.order(:name).map(&:name)).to eq(["Default HC", "Restricted HC"])
         end
       end
 
@@ -58,9 +58,45 @@ RSpec.describe SpacePolicy, type: :model do
         let(:organization_user) { organization_users(:ou_hc_stefan) }
 
         it "sees only spaces that his member of" do
-          expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC"])
+          expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Restricted HC"])
         end
       end
+    end
+  end
+
+  permissions :show? do
+    it "grants access if space access mode is public" do
+      expect(subject).to permit(PolicyUserContext.new(organization_users(:ou_is_stefan)), spaces(:is_default))
+    end
+
+    it "denies access if user is not a member of the space" do
+      expect(subject).not_to permit(PolicyUserContext.new(organization_users(:ou_hc_maria)), spaces(:hc_administrators))
+    end
+
+    it "grants access if user is a member of the space" do
+      expect(subject).to permit(PolicyUserContext.new(organization_users(:ou_hc_stefan)), spaces(:hc_administrators))
+    end
+  end
+
+  permissions :update? do
+    it "grants access if space access mode is public" do
+      expect(subject).to permit(PolicyUserContext.new(organization_users(:ou_is_stefan)), spaces(:is_default))
+    end
+
+    it "grants access if user is a manager in the organization" do
+      expect(subject).to permit(PolicyUserContext.new(organization_users(:ou_is_pawel)), spaces(:is_stefans))
+    end
+
+    it "denies access if space access mode is restricted" do
+      expect(subject).not_to permit(PolicyUserContext.new(organization_users(:ou_hc_maria)), spaces(:hc_restricted))
+    end
+
+    it "denies access if user is not a member of the space" do
+      expect(subject).not_to permit(PolicyUserContext.new(organization_users(:ou_hc_maria)), spaces(:hc_administrators))
+    end
+
+    it "grants access if user is a member of the space" do
+      expect(subject).to permit(PolicyUserContext.new(organization_users(:ou_hc_stefan)), spaces(:hc_administrators))
     end
   end
 end

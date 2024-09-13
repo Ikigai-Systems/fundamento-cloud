@@ -1,4 +1,4 @@
-class SpacePolicy < OrganizationPolicy
+class SpacePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
       if organization_user.manager?
@@ -38,8 +38,33 @@ class SpacePolicy < OrganizationPolicy
     end
   end
 
-  def create?
-    # Everyone can create new spaces
+  def index?
     true
+  end
+
+  def create?
+    organization_user.manager?
+  end
+
+  def show?
+    # Everyone can show an organization it belongs to
+    record.public_access_mode? || record.restricted_access_mode? || update?
+  end
+
+  def update?
+    record.public_access_mode? ||
+    organization_user.manager? ||
+      record.space_memberships.where(member: organization_user).exists? ||
+      record.space_memberships.where(space_memberships: {
+        member_type: Team.to_s,
+      }).joins("INNER JOIN team_memberships ON team_memberships.team_id = space_memberships.member_id").
+        where(team_memberships: {
+          member_type: organization_user.class.to_s,
+          member_id: organization_user.id,
+        }).exists?
+  end
+
+  def destroy?
+    update?
   end
 end

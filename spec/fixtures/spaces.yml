@@ -18,6 +18,12 @@ hc_default:
   access_mode: :public
   hierarchy: 
 
+hc_restricted:
+  organization: :hc
+  name: "Restricted HC"
+  access_mode: :restricted
+  hierarchy:
+
 hc_pawels:
   organization: :hc
   name: "Pawel's Private Space"
