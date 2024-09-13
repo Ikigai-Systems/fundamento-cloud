@@ -1,7 +1,10 @@
 class PublicLinksController < ApplicationController
+  after_action :verify_authorized
 
   def new
     @public_link = current_organization.public_links.new(public_link_params)
+
+    authorize @public_link.object.space, :show?
 
     respond_to do |format|
       format.html { redirect_to public_links_path }
@@ -13,6 +16,8 @@ class PublicLinksController < ApplicationController
   def create
     @public_link = current_organization.public_links.new(public_link_params)
     @public_link.updated_by = current_user
+
+    authorize @public_link.object.space, :update?
 
     if @public_link.save
       respond_to do |format|
@@ -31,6 +36,8 @@ class PublicLinksController < ApplicationController
     @public_link.generate_npi
     @public_link.updated_by = current_user
 
+    authorize @public_link.object.space, :update?
+
     if @public_link.save
       respond_to do |format|
         format.html { redirect_to @public_link }
@@ -44,6 +51,9 @@ class PublicLinksController < ApplicationController
 
   def destroy
     @public_link = current_organization.public_links.find(params[:id])
+
+    authorize @public_link.object.space, :update?
+
     @public_link.destroy!
 
     respond_to do |format|
@@ -57,6 +67,8 @@ class PublicLinksController < ApplicationController
     @public_link = current_organization.public_links.find(params[:id])
     # @public_link.increment!(:clicks)
 
+    authorize @public_link.object.space, :show?
+
     respond_to do |format|
       format.html { redirect_to public_links_path }
       format.json { render json: @public_link }
@@ -66,6 +78,8 @@ class PublicLinksController < ApplicationController
 
   def index
     @public_links = current_organization.public_links
+
+    authorize current_organization, :show?
 
     respond_to do |format|
       format.html
