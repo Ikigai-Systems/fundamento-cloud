@@ -27,10 +27,6 @@ class SpacePolicy < ApplicationPolicy
             member_id: organization_user.id,
           }).select(:id)
 
-        puts scope.where(id: spaces_available_to_anyone).
-          or(scope.where(id: spaces_available_to_user)).
-          or(scope.where(id: spaces_available_to_team)).distinct.to_sql
-
         scope.where(id: scope.where(id: spaces_available_to_anyone).
           or(scope.where(id: spaces_available_to_user)).
           or(scope.where(id: spaces_available_to_team)).select(:id).distinct)
