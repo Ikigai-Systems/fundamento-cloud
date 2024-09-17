@@ -31,6 +31,15 @@ class Documents::VersionsController < ApplicationController
     else
       render :new, status: 422
     end
+  rescue Exception => e
+    respond_to do |format|
+      format.html { raise e }
+      format.turbo_stream do
+        flash[:error] = e.to_s
+        render turbo_stream: [turbo_stream.append("flashes", partial: "flash_messages_as_alerts", locals: { flash: flash})]
+        flash.clear
+      end
+    end
   end
 
   def index
