@@ -20,7 +20,14 @@ class Documents::VersionsController < ApplicationController
     @version.created_by = current_user
 
     if @version.save
-      redirect_to edit_space_document_path(params[:space_npi], @document), notice: "Document version has been saved."
+      respond_to do |format|
+        flash[:notice] = "Document version has been saved."
+        format.html { redirect_to edit_space_document_path(params[:space_npi], @document) }
+        format.turbo_stream do
+          render turbo_stream: [turbo_stream.append("flashes", partial: "flash_messages_as_alerts", locals: { flash: flash})]
+          flash.clear
+        end
+      end
     else
       render :new, status: 422
     end
