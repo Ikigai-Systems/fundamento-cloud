@@ -12,11 +12,11 @@ class Documents::VersionsController < ApplicationController
     diff = HashDiff.diff(blocks, blocks2)
     if diff.present?
       Sentry.capture_message("XmlfragmentToBlock mismatch for #{params[:space_id]} / #{params[:document_id]} (call stefan) : #{diff}")
+      flash[:warning] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
     end
 
-
     @version = @document.versions.new
-    @version.content = blocks2
+    @version.content = blocks
     @version.created_by = current_user
 
     if @version.save

@@ -1,9 +1,11 @@
 <%= render "layouts/body_with_nav_bar" do %>
-  <%= render partial: "flash_messages_as_alerts" %>
-
   <%= turbo_frame_tag "modal" %>
 
   <div class="h-[calc(100vh-60px)]">
     <%= yield %>
+  </div>
+
+  <div id="flashes" class="fixed top-0 w-full flex flex-col items-end pointer-events-none">
+    <%= render partial: "flash_messages_as_alerts" %>
   </div>
 <% end %>
