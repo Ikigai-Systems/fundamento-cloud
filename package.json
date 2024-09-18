@@ -30,6 +30,7 @@
     "tailwindcss-stimulus-components": "^6.0.2",
     "use-async-effect": "^2.2.7",
     "vite-plugin-stimulus-hmr": "^3.0.0",
+    "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.16"
   },
   "devDependencies": {

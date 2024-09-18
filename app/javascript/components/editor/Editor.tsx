@@ -13,6 +13,7 @@ import AttachmentsApi from "../../api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
 import {insertCode} from "@defensestation/blocknote-code";
+import {IndexeddbPersistence} from "y-indexeddb";
 import "./editor-styles.css";
 
 let ydoc: Y.Doc | undefined = undefined;
@@ -85,6 +86,8 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
     }
 
     ydoc = new Y.Doc();
+    new IndexeddbPersistence("document:" + documentId.toString(), ydoc);
+
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
     acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
