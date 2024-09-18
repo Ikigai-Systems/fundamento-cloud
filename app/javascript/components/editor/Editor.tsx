@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import {User} from "../../types";
-import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
+import {BlockNoteEditor, filterSuggestionItems, PartialBlock} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -12,6 +12,7 @@ import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AttachmentsApi from "../../api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
+import {insertCode} from "@defensestation/blocknote-code";
 import "./editor-styles.css";
 
 let ydoc: Y.Doc | undefined = undefined;
@@ -120,8 +121,19 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         }
       },
       uploadFile: uploadFile(documentId),
-      resolveFileUrl: resolveFileUrl
+      resolveFileUrl: resolveFileUrl,
     });
+    blockNoteEditor.onChange((editor) => {
+      const block = editor.getTextCursorPosition().block;
+      if (block.type !== 'paragraph') {
+        return;
+      }
+      const currentBlockText = block?.content[0]?.["text"];
+      if (currentBlockText === '```') {
+        editor.updateBlock(block, {type: "procode"} as PartialBlock);
+      }
+    });
+
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
     return blockNoteEditor;
   }, [documentId]);
@@ -159,8 +171,11 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           defaultTableMenuItem.title = "Simple table";
           defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
 
+          const codeBlockMenuItem = insertCode();
+          codeBlockMenuItem.group = "Advanced";
+
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(editor as schema.BlockNoteEditor)],
+            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(), codeBlockMenuItem],
             query
           )
         }}
@@ -169,7 +184,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         // Gets the mentions menu items
         triggerCharacter={"@"}
         getItems={async (query) =>
-          filterSuggestionItems(await getMentionMenuItems(editor), query)
+          filterSuggestionItems(await getMentionMenuItems(), query)
         }
       />
     </BlockNoteView>

@@ -1,11 +1,10 @@
 // Slash menu item to insert an Alert block
 import {insertOrUpdateBlock} from "@blocknote/core";
-import schema from "../schema.ts";
 
-const DatabaseMenuItem = (editor: typeof schema.BlockNoteEditor) => ({
+const DatabaseMenuItem = () => ({
   title: "Database",
   subtext: "Used for storing and referencing data in a structured way",
-  onItemClick: () => {
+  onItemClick: (editor) => {
     insertOrUpdateBlock(editor, {
       type: "database",
     });

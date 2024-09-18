@@ -1,17 +1,14 @@
-import schema from "../schema";
 import {DefaultReactSuggestionItem} from "@blocknote/react";
 import {Document, User} from "../../../types.ts";
 import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
 
-export const getMentionMenuItems = async (
-  editor: typeof schema.BlockNoteEditor
-): Promise<DefaultReactSuggestionItem[]> => {
+export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[]> => {
   const [documents, users] = await Promise.all([DocumentsApi.index(), UsersApi.index()]);
 
   return documents.map((document: Document) => ({
     title: document.title,
-    onItemClick: () => {
+    onItemClick: (editor) => {
       editor.insertInlineContent([
         {
           type: "mention",
@@ -26,7 +23,7 @@ export const getMentionMenuItems = async (
     },
   })).concat(users.map((user: User) => ({
     title: `${user.firstName} ${user.lastName}`,
-    onItemClick: () => {
+    onItemClick: (editor) => {
       editor.insertInlineContent([
         {
           type: "mention",
