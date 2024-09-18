@@ -14,9 +14,4 @@
   <td class="px-6 py-4">
     <%= render partial: "users/online_status", locals: { current_organization: current_organization, user: user } %>
   </td>
-  <td class="px-6 py-4">
-    <% if policy(team).update? %>
-      <%= button_to "Remove user", team_membership_path([team.npi, user.id].join(",")), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the team!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :delete %>
-    <% end %>
-  </td>
 </tr>
