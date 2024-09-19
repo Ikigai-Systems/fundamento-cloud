@@ -10,6 +10,7 @@ import {
   BlockColorsItem,
   BlockTypeSelect,
   DragHandleMenu,
+  FormattingToolbar,
   getDefaultReactSlashMenuItems,
   RemoveBlockItem,
   SideMenu,
@@ -193,7 +194,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false}>
+    <BlockNoteView editor={editor} slashMenu={false} /*formattingToolbar={false}*/>
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
@@ -242,6 +243,9 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           />
         )}
       />
+      <div className="ikigai-static-toolbar-overrides document-toolbar-button">
+        <FormattingToolbar />
+      </div>
     </BlockNoteView>
   </>
 }
