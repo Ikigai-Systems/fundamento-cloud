@@ -143,7 +143,6 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
 
     const blockNoteEditor = BlockNoteEditor.create({
       schema,
-      // initialContent: JSON.parse(initialContent),
       collaboration: {
         provider: acProvider,
         fragment: ydoc.getXmlFragment("document-store"),
