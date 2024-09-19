@@ -25,7 +25,6 @@
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.24.0",
     "rowstack": "^0.0.24",
     "tailwindcss-stimulus-components": "^6.0.2",
     "use-async-effect": "^2.2.7",
