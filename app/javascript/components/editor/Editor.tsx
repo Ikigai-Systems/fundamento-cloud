@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {User} from "../../types";
 import {BlockNoteEditor, filterSuggestionItems, PartialBlock} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
@@ -14,6 +14,7 @@ import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
 import {insertCode} from "@defensestation/blocknote-code";
 import {IndexeddbPersistence} from "y-indexeddb";
+import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
 
 let ydoc: Y.Doc | undefined = undefined;
@@ -66,6 +67,34 @@ export async function resolveFileUrl(fileUrl : string) {
 
 const Editor = ({currentUser, documentId}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
+  const [connectionStale, setConnestionStale] = useState(false);
+
+  useEffect(() => {
+    const connectionMonitorIntervalId = setInterval(() => {
+      //no-ts-inspect
+      const isStale = acConsumer?.connection.monitor.connectionIsStale();
+      setConnestionStale((prevState) => {
+        if (isStale !== prevState) {
+          createFlash({
+            message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
+            type: isStale ? "error" : "success"
+          });
+        }
+        return isStale;
+      })
+    }, 1000);
+
+    return () => clearInterval(connectionMonitorIntervalId);
+  });
+
+  useEffect(() => {
+    const editorConnectionIndicatorDiv = document.querySelector("#editor-connection-indicator");
+    if (connectionStale) {
+      editorConnectionIndicatorDiv.innerHTML = '<div class="font-semibold text-slate-400">Offline</div>\n';
+    } else {
+      editorConnectionIndicatorDiv.innerHTML = '';
+    }
+  }, [connectionStale]);
 
   const editor = useMemo(() => {
     if (ydoc) {

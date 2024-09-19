@@ -2,6 +2,7 @@
   <%= render 'application/left_side_bar' %>
   <article class="flex-col overflow-auto">
     <div class="bg-white h-12 flex justify-end items-center p-2">
+      <div id="editor-connection-indicator"></div>
       <%= button_to "Save this as version", space_document_versions_path(@space, @document), method: :create,
                     params: {blocks: ""},
                     :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
