@@ -10,3 +10,17 @@
     color: rgb(51 65 85);
     padding: 0 3px;
 }
+
+.ikigai-side-menu-overrides .mantine-Button-inner,
+.ikigai-side-menu-overrides .mantine-UnstyledButton-root:not(.mantine-Menu-item) svg
+{
+    color: var(--bn-colors-menu-text);
+    font-weight: 400;
+}
+
+.ikigai-side-menu-overrides .mantine-Button-inner:before
+{
+    content: "Block type:";
+    margin-left: 2px;
+    margin-right: 8px;
+}

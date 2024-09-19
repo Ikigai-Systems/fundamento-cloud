@@ -6,7 +6,16 @@ import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
-import {getDefaultReactSlashMenuItems, SuggestionMenuController} from "@blocknote/react";
+import {
+  BlockColorsItem,
+  BlockTypeSelect,
+  DragHandleMenu,
+  getDefaultReactSlashMenuItems,
+  RemoveBlockItem,
+  SideMenu,
+  SideMenuController,
+  SuggestionMenuController
+} from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AttachmentsApi from "../../api/AttachmentsApi.js";
@@ -184,7 +193,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false}>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false}>
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
@@ -217,6 +226,21 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         getItems={async (query) =>
           filterSuggestionItems(await getMentionMenuItems(), query)
         }
+      />
+      <SideMenuController
+        sideMenu={(props) => (
+          <SideMenu {...props}
+            dragHandleMenu={(props) => (
+              <DragHandleMenu {...props}>
+                <div className="ikigai-side-menu-overrides">
+                  <BlockTypeSelect/>
+                </div>
+                <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
+                <BlockColorsItem {...props}>Colors</BlockColorsItem>
+              </DragHandleMenu>
+            )}
+          />
+        )}
       />
     </BlockNoteView>
   </>
