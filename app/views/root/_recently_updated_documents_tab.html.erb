@@ -2,6 +2,6 @@
 
 <%=
   render partial: "documents/recently_updated_documents", locals: {
-    recently_updated_documents: current_organization.documents.recently_updated
+    recently_updated_documents: policy_scope(current_organization.documents).recently_updated
   }
 %>

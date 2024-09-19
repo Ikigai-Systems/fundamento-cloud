@@ -16,13 +16,7 @@ class Document < ApplicationRecord
   after_commit :broadcast_recently_updated_documents, on: [:create, :update, :destroy]
 
   def broadcast_recently_updated_documents
-    broadcast_replace_to ["recent_documents_list", self.organization],
-      target: "recently_updated_documents_container",
-      partial: "documents/recently_updated_documents",
-      locals: {
-        recently_updated_documents: self.organization.documents.recently_updated,
-        current_organization: self.organization
-      }
+    broadcast_refresh_to ["recent_documents_list", self.organization]
   end
 
   def title
