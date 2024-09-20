@@ -194,7 +194,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} /*formattingToolbar={false}*/>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} /*formattingToolbar={false}*/>
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
