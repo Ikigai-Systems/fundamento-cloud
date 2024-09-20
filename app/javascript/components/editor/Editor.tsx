@@ -243,7 +243,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           />
         )}
       />
-      <div className="ikigai-static-toolbar-overrides document-toolbar-button">
+      <div className="ikigai-static-toolbar-overrides">
         <FormattingToolbar />
       </div>
     </BlockNoteView>

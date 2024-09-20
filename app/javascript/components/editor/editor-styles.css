@@ -33,8 +33,8 @@
     --tw-ring-inset: inset;
     --tw-ring-opacity: 1;
     --tw-ring-color: rgb(209 213 219/var(--tw-ring-opacity));
-    min-height: 37px;
-    margin-left: 2.125rem;
+    min-height: 37.5px;
+    margin-left: 3.4rem;
     position: fixed;
     top: 65px;
     box-shadow: var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow, 0 0 #0000);
