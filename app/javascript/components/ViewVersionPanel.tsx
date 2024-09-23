@@ -1,7 +1,7 @@
 import {Document, Version, Space, User} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
-import CurrentSpaceContext from "../Contextes/CurrentSpaceContext";
-import queryClient from "../Contextes/ReactQueryClient.tsx";
+import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
+import queryClient from ".././contextes/ReactQueryClient.tsx";
 import {useCreateBlockNote} from "@blocknote/react";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';

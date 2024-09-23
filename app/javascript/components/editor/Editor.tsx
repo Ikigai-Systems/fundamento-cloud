@@ -6,6 +6,7 @@ import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
 import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
+import useInterval from "../../hooks/useInterval"
 import {
   BlockColorsItem,
   BlockTypeSelect,
@@ -79,23 +80,19 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
-  useEffect(() => {
-    const connectionMonitorIntervalId = setInterval(() => {
-      //no-ts-inspect
-      const isStale = acConsumer?.connection.monitor.connectionIsStale();
-      setConnestionStale((prevState) => {
-        if (isStale !== prevState) {
-          createFlash({
-            message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
-            type: isStale ? "error" : "success"
-          });
-        }
-        return isStale;
-      })
-    }, 1000);
-
-    return () => clearInterval(connectionMonitorIntervalId);
-  });
+  useInterval(() => {
+    //no-ts-inspect
+    const isStale = acConsumer?.connection.monitor.connectionIsStale();
+    setConnestionStale((prevState) => {
+      if (isStale !== prevState) {
+        createFlash({
+          message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
+          type: isStale ? "error" : "success"
+        });
+      }
+      return isStale;
+    })
+  }, 1000);
 
   useEffect(() => {
     const editorConnectionIndicatorDiv = document.querySelector("#editor-connection-indicator");

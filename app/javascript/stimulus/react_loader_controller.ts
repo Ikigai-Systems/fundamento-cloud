@@ -15,9 +15,12 @@ export default class extends Controller<HTMLElement> {
   declare componentValue: string;
 
   async connect() {
-    const Component = await this.importComponent();
-    this.root = ReactDOM.createRoot(this.element)
-    this.root.render(React.createElement(Component, deepConvertKeys(this.propsValue, camelCase)));
+    this._disconnectedAlready = false;
+    const Component = await this.importComponent(); //while inside this await, 'disconnect' might occur in the meanwhile
+    if (!this._disconnectedAlready) {
+      this.root = ReactDOM.createRoot(this.element)
+      this.root.render(React.createElement(Component, deepConvertKeys(this.propsValue, camelCase)));
+    }
   }
 
   disconnect() {
@@ -25,6 +28,7 @@ export default class extends Controller<HTMLElement> {
       this.root.unmount();
       this.root = undefined;
     }
+    this._disconnectedAlready = true;
   }
 
   async importComponent() {

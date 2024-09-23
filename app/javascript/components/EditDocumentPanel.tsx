@@ -1,9 +1,9 @@
 import {Document, Space, User} from "../types";
 import Editor from "./editor/Editor";
 import {QueryClientProvider} from "@tanstack/react-query";
-import CurrentSpaceContext from "../Contextes/CurrentSpaceContext";
+import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import DocumentsApi from "../api/DocumentsApi.js";
-import queryClient from "../Contextes/ReactQueryClient.tsx";
+import queryClient from ".././contextes/ReactQueryClient.tsx";
 
 type EditDocumentPanelProps = {
   document: Document,
