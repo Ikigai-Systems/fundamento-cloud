@@ -16,6 +16,10 @@
   <%= vite_client_tag %>
   <%= vite_react_refresh_tag %>
   <%= vite_javascript_tag 'application' %>
+
+  <% if content_for?(:head) %>
+    <%= yield(:head) %>
+  <% end %>
 </head>
 <body class="bg-white md:bg-gray-100">
   <%= render "nav_bar" %>
