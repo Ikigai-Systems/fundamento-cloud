@@ -1,6 +1,6 @@
 import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import Table from "rowstack";
+import Rowstack from "rowstack";
 import {useState} from "react";
 
 const sampleData = [
@@ -35,9 +35,9 @@ const sampleColumns = [
   },
 ];
 
-const Database = createReactBlockSpec(
+const AdvancedTable = createReactBlockSpec(
   {
-    type: "database",
+    type: "advancedTable",
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
@@ -57,7 +57,7 @@ const Database = createReactBlockSpec(
       const [columns, setColumns] = useState(JSON.parse(props.block.props.columns));
 
       return (
-        <Table data={rows} columns={columns} config={{}}
+        <Rowstack data={rows} columns={columns} config={{}}
           onChange={async (event) => {
             if (event.type === "add_row") {
               setRows((prevRows: [{id: string}]) => {
@@ -167,4 +167,4 @@ const Database = createReactBlockSpec(
   }
 );
 
-export default Database;
+export default AdvancedTable;

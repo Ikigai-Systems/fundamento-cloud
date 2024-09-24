@@ -22,7 +22,7 @@ import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AttachmentsApi from "../../api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
-import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
+import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
@@ -206,11 +206,11 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
               return true;
             }
           });
-          defaultTableMenuItem.title = "Simple table";
-          defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
+          defaultTableMenuItem.title = "Grid table";
+          defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(), CodeBlockMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), CodeBlockMenuItem()],
             query
           )
         }}

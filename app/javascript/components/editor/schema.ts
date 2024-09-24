@@ -1,6 +1,6 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
 import Mention from "./inline-content/Mention";
-import Database from "./blocks/Database";
+import AdvancedTable from "./blocks/AdvancedTable.tsx";
 import CodeBlock from "./blocks/CodeBlock";
 
 // Our schema with inline content specs, which contain the configs and
@@ -12,7 +12,7 @@ const schema = BlockNoteSchema.create({
   },
   blockSpecs: {
     ...defaultBlockSpecs,
-    database: Database,
+    advancedTable: AdvancedTable,
     procode: CodeBlock,
   }
 });

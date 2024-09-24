@@ -2,7 +2,7 @@ import {insertOrUpdateBlock} from "@blocknote/core";
 
 const CodeBlockMenuItem = () => ({
   title: "Code",
-  subtext: "Insert a code block",
+  subtext: "Section containing multi-line code",
   onItemClick: (editor) => {
     insertOrUpdateBlock(editor, {
       type: "procode",
