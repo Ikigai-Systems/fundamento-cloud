@@ -23,10 +23,10 @@ import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AttachmentsApi from "../../api/AttachmentsApi.js";
 import {request} from '@js-from-routes/axios';
 import DatabaseMenuItem from "./blocks/DatabaseMenuItem.tsx";
-import {insertCode} from "@defensestation/blocknote-code";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
+import CodeBlockMenuItem from "./blocks/CodeBlockMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -209,11 +209,8 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           defaultTableMenuItem.title = "Simple table";
           defaultTableMenuItem.subtext = "Used for formatting content into rows/columns";
 
-          const codeBlockMenuItem = insertCode();
-          codeBlockMenuItem.group = "Advanced";
-
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(), codeBlockMenuItem],
+            [...itemsWithoutTable, defaultTableMenuItem, DatabaseMenuItem(), CodeBlockMenuItem()],
             query
           )
         }}

@@ -14,7 +14,7 @@ const DatabaseMenuItem = () => ({
     "table",
   ],
   group: "Advanced",
-  icon: <span className="relative top-0.5"><span className="size-4 icon-[heroicons--table-cells]"></span></span>,
+  icon: <span className="relative top-[3px] m-[-4px_-1px]"><span className="size-5 icon-[heroicons--table-cells]"></span></span>,
 });
 
 export default DatabaseMenuItem;
