@@ -102,4 +102,8 @@
     .table-list tbody tr td {
         @apply px-6 py-4;
     }
+
+    .table-list tbody tr th {
+        @apply flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white;
+    }
 }
