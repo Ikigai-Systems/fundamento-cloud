@@ -3,6 +3,8 @@ class AttachmentsController < ApplicationController
 
   skip_before_action :authenticate_user!, only: [:show]
 
+  after_action :verify_authorized
+
   def show
     @attachment = Attachment.find(params[:id])
 
@@ -13,6 +15,8 @@ class AttachmentsController < ApplicationController
     else
       authenticate_user!
     end
+
+    authorize @attachment, :show?
 
     send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
   end
@@ -28,6 +32,8 @@ class AttachmentsController < ApplicationController
       end
     end
 
+    authorize @attachment, :create?
+
     if @attachment.save
       render json: @attachment.as_json(:except => [:data]).merge({location: attachment_url(@attachment)}), status: :created
     else
@@ -37,6 +43,9 @@ class AttachmentsController < ApplicationController
 
   def destroy
     @attachment = current_organization.attachments.find(params[:id])
+
+    authorize @attachment, :update?
+
     @attachment.destroy
   end
 
