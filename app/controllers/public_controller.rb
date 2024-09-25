@@ -20,16 +20,16 @@ class PublicController < ApplicationController
       render status: :unprocessable_content
     end
   end
+
   def attachment
     @attachment = Attachment.find(params[:id])
 
     if @attachment.parent.present? && @attachment.parent.respond_to?(:public_link) && @attachment.parent.public_link.present?
       # If the attachment is associated with a document that has a public link, we allow anonymous access and ask politely not to cache it
-      set_cache_headers
-      set_security_headers
-      authenticate_user!
+      send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
+    else
+      # Otherwise, we don't allow access to the attachment
+      head :unauthorized
     end
-
-    send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
   end
 end
