@@ -36,7 +36,7 @@ Rails.application.routes.draw do
       resource :database, module: :spaces, only: [:show]
 
       # todo: talk over the :tables route placement
-      resources :tables, module: :tables, only: [:new, :create]
+      resources :tables, module: :tables, only: [:new, :create, :show]
     end
 
     resources :attachments, only: [:create, :destroy, :show]
