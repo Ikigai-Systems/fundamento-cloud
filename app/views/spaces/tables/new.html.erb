@@ -1,0 +1,17 @@
+<section class="form-section">
+  <h2 class="form-header">Create table</h2>
+
+  <%= form_for("table", url: space_tables_path(@space.npi), data: { turbo: false }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: @table %>
+
+    <div class="form-field">
+      <%= f.label :name %>
+      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+    </div>
+
+    <div class="flex justify-end mt-6">
+      <%= f.submit "Create", class: "form-submit" %>
+      <%= link_to "Cancel", space_database_path, class: "secondary-button ml-2" %>
+    </div>
+  <% end %>
+</section>

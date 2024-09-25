@@ -32,6 +32,11 @@ Rails.application.routes.draw do
       resources :documents, only: [:create, :new, :edit, :update, :destroy] do
         resources :versions, module: :documents, only: [:create, :index, :show]
       end
+
+      resource :database, module: :spaces, only: [:show]
+
+      # todo: talk over the :tables route placement
+      resources :tables, module: :tables, only: [:new, :create]
     end
 
     resources :attachments, only: [:create, :destroy, :show]
@@ -40,7 +45,7 @@ Rails.application.routes.draw do
       get :suggestions, on: :collection
     end
 
-    resources :tables, module: :tables do
+    resources :tables, module: :tables, only: [:show] do
       resources :columns
 
       resources :rows do

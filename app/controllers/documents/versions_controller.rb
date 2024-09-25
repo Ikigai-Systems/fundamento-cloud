@@ -60,7 +60,6 @@ class Documents::VersionsController < ApplicationController
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
 
-    # todo: zapytać kiedyś Pawła jakie jest zaklęcie, żeby nie przekazywać do frontendu kilku atrybutów np. "id" "secret"
     @versions = @document.versions.order('created_at DESC')
   end
 end
