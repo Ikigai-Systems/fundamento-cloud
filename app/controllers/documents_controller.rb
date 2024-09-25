@@ -2,14 +2,18 @@ class DocumentsController < ApplicationController
   layout "full_width_application"
 
   def index
+    authorize Document, index?
+
     respond_to do |format|
-      format.json { render json: current_organization.documents, :except => [:sync] }
+      format.json { render json: policy_scope(current_organization.documents), :except => [:sync] }
       format.all { head :unprocessable_content }
     end
   end
 
   def new
     @document = current_organization.documents.new
+
+    authorize @document, :create?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
@@ -19,6 +23,8 @@ class DocumentsController < ApplicationController
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document = current_organization.documents.new(document_params)
     @document.space = @space
+
+    authorize @document, :create?
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
@@ -36,8 +42,12 @@ class DocumentsController < ApplicationController
   end
 
   def show
+    @document = current_organization.documents.find(params[:id])
+
+    authorize @document, :show?
+
     respond_to do |format|
-      format.json { render json: current_organization.documents.find(params[:id]), :except => [:sync] }
+      format.json { render json: @document, :except => [:sync] }
       format.all { head :unprocessable_content }
     end
   end
@@ -45,12 +55,17 @@ class DocumentsController < ApplicationController
   def edit
     @document = current_organization.documents.find(params[:id])
 
+    authorize @document, :update?
+
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
   end
 
   def update
     @document = current_organization.documents.find(params[:id])
+
+    authorize @document, :update?
+
     update_params = document_params
     @document.update(update_params)
     if update_params[:archived].present?
@@ -71,6 +86,9 @@ class DocumentsController < ApplicationController
   def destroy
     document_id = params[:id].to_i
     @document = current_organization.documents.find(document_id)
+
+    authorize @document, :destroy?
+
     @document.destroy
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
