@@ -13,10 +13,10 @@
       </div>
     </div>
   </th>
-  <td class="px-6 py-4">
+  <td>
     <%= link_to "Public Link", "/public/#{public_link.npi}" %>
   </td>
-  <td class="px-6 py-4">
+  <td>
     <% if policy(public_link.object.space).update? %>
       <%= button_to "Refresh", public_link_path(public_link), method: :patch, form: { data: { turbo_confirm: "Are you sure? Previous public link will stop working immediately!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
 

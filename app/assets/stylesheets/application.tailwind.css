@@ -98,4 +98,8 @@
     .table-list thead tr th {
         @apply px-6 py-3;
     }
+
+    .table-list tbody tr td {
+        @apply px-6 py-4;
+    }
 }

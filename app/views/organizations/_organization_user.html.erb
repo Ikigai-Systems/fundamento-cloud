@@ -7,13 +7,13 @@
       <div class="font-normal text-gray-500"><%= user.email %></div>
     </div>
   </th>
-  <td class="px-6 py-4">
+  <td>
     <%= organization_user.role %>
   </td>
-  <td class="px-6 py-4">
+  <td>
     <%= render partial: "users/online_status", locals: { current_organization: current_organization, user: user } %>
   </td>
-  <td class="px-6 py-4">
+  <td>
     <% if policy(organization_user).promote? %>
       <%= button_to "Promote to manager", promote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline", method: :patch %>
     <% end %>
