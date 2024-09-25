@@ -1,10 +1,14 @@
 class Documents::VersionsController < ApplicationController
   layout "full_width_application"
 
+  after_action :verify_authorized
+
   def create
     blocks = JSON.parse(params["blocks"].to_s)
 
     @document = current_organization.documents.find(params[:document_id])
+
+    authorize @document, :update?
 
     blocks2 = @document.to_blocks
     # pp JSON.pretty_generate(blocks2)
@@ -45,6 +49,8 @@ class Documents::VersionsController < ApplicationController
   def index
     @document = current_organization.documents.find(params[:document_id])
 
+    authorize @document, :show?
+
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
 
@@ -53,6 +59,8 @@ class Documents::VersionsController < ApplicationController
 
   def show
     @document = current_organization.documents.find(params[:document_id])
+
+    authorize @document, :show?
 
     @version = @document.versions.find_by(sequential_id: params[:id])
     raise ActionController::RoutingError, 'Not Found' if @version.blank?
