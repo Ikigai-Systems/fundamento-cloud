@@ -14,7 +14,7 @@ function decodeBase64ToBinary(update: string) {
   return Uint8Array.from(atob(update), c => c.charCodeAt(0));
 }
 
-const ReadOnlyEditor = ({document}: ReadOnlyEditorProps) => {
+const PublicDocumentViewer = ({document}: ReadOnlyEditorProps) => {
   const editor = useMemo(() => {
     const yDoc = new Y.Doc();
     Y.applyUpdate(yDoc, decodeBase64ToBinary(document.sync));
@@ -34,4 +34,4 @@ const ReadOnlyEditor = ({document}: ReadOnlyEditorProps) => {
   );
 }
 
-export default ReadOnlyEditor;
+export default PublicDocumentViewer;

@@ -4,7 +4,7 @@
 
 <% content_for :focused_content do %>
   <div class="bg-white overflow-auto">
-    <%= react_component "ReadOnlyEditor", {document: document, space: document.space} %>
+    <%= react_component "PublicDocumentViewer", {document: document, space: document.space} %>
   </div>
 <% end %>
 
