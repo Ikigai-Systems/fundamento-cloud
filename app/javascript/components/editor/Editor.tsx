@@ -66,13 +66,15 @@ export function uploadFile(documentId: number) {
   };
 }
 
-export async function resolveFileUrl(fileUrl : string) {
-  const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
+export function createFileUrlResolver(showAttachmentPath = AttachmentsApi.show.path) {
+  return async (fileUrl: string)=> {
+    const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
 
-  if (attachmentId) {
-    return AttachmentsApi.show.path({id: attachmentId});
-  } else {
-    return fileUrl;
+    if (attachmentId) {
+      return showAttachmentPath({id: attachmentId});
+    } else {
+      return fileUrl;
+    }
   }
 }
 
@@ -159,7 +161,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         }
       },
       uploadFile: uploadFile(documentId),
-      resolveFileUrl: resolveFileUrl,
+      resolveFileUrl: createFileUrlResolver(),
     });
     blockNoteEditor.onChange((editor) => {
       const block = editor.getTextCursorPosition().block;

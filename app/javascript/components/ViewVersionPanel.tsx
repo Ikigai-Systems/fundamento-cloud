@@ -7,7 +7,7 @@ import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import "./editor/editor-styles.css";
 import schema from "./editor/schema.ts";
-import {resolveFileUrl} from "./editor/Editor.tsx";
+import {createFileUrlResolver} from "./editor/Editor.tsx";
 
 type EditDocumentPanelProps = {
   version: Version,
@@ -20,7 +20,7 @@ const EditDocumentPanel = ({version, document, space}: EditDocumentPanelProps) =
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.content,
-    resolveFileUrl: resolveFileUrl,
+    resolveFileUrl: createFileUrlResolver(),
   });
 
   return <QueryClientProvider client={queryClient}>

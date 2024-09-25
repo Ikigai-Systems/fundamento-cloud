@@ -4,7 +4,8 @@ import {BlockNoteView} from "@blocknote/mantine";
 import * as Y from "yjs";
 import '@blocknote/mantine/style.css';
 import schema from "./editor/schema";
-import {resolveFileUrl} from "./editor/Editor.tsx";
+import {createFileUrlResolver} from "./editor/Editor.tsx";
+import PublicApi from "../api/PublicApi";
 
 type ReadOnlyEditorProps = {
     documentContent: string,
@@ -24,7 +25,7 @@ const PublicDocumentViewer = ({document}: ReadOnlyEditorProps) => {
       collaboration: {
         fragment: yDoc.getXmlFragment("document-store"),
       },
-      resolveFileUrl: resolveFileUrl
+      resolveFileUrl: createFileUrlResolver(PublicApi.attachment.path)
     });
     return blockNoteEditor;
   }, [document]);
