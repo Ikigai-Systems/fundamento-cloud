@@ -1,9 +1,9 @@
 class DocumentsController < ApplicationController
   layout "full_width_application"
 
-  def index
-    authorize Document, index?
+  after_action :verify_authorized_or_index_scoped
 
+  def index
     respond_to do |format|
       format.json { render json: policy_scope(current_organization.documents), :except => [:sync] }
       format.all { head :unprocessable_content }
