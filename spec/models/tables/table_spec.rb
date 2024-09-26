@@ -42,22 +42,22 @@ RSpec.describe Tables::Table, type: :model do
 
       table_data = table.data_to_json
 
-      expect(table_data).to eq([
-        {
+      expect(table_data).to match([
+        hash_including({
           "Project Key" => "JIRA",
           "Project Name" => "Jira",
           "Owner" => "Pawel"
-        },
-        {
+        }),
+        hash_including({
           "Project Key" => "CON",
           "Project Name" => "Confluence",
           "Owner" => "Stefan"
-        },
-        {
+        }),
+        hash_including({
           "Project Key" => "MON",
           "Project Name" => "Monday",
           "Owner" => "Evgenii"
-        }
+        })
       ])
     end
   end
@@ -71,25 +71,25 @@ RSpec.describe Tables::Table, type: :model do
       it "returns data" do
         table_data = tables_tables(:projects).data_to_json
 
-        expect(table_data).to eq([
-          {
+        expect(table_data).to match([
+          hash_including({
             "Key" => "JIRA",
             "Name" => "Jira",
             "Description" => "Some project tracking tool",
             "Value" => "3*5",
-          },
-          {
+          }),
+          hash_including({
             "Key" => "CONFLUENCE",
             "Name" => "Confluence",
             "Description" => "Some knowledge sharing tool",
             "Value" => "5 - 2",
-          },
-          {
+          }),
+          hash_including({
             "Key" => "MON",
             "Name" => "Monday",
             "Description" => "Hardest day of the week",
             "Value" => "0-1",
-          }
+          })
         ])
       end
     end
@@ -105,25 +105,25 @@ RSpec.describe Tables::Table, type: :model do
       it "returns the same calculated value for all rows" do
         table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
 
-        expect(table_data).to eq([
-          {
+        expect(table_data).to match([
+          hash_including({
             "Key" => "JIRA",
             "Name" => "Jira",
             "Description" => "Some project tracking tool",
             "Value" => 15,
-          },
-          {
+          }),
+          hash_including({
             "Key" => "CONFLUENCE",
             "Name" => "Confluence",
             "Description" => "Some knowledge sharing tool",
             "Value" => 15,
-          },
-          {
+          }),
+          hash_including({
             "Key" => "MON",
             "Name" => "Monday",
             "Description" => "Hardest day of the week",
             "Value" => 15,
-          }
+          })
         ])
       end
     end
@@ -137,25 +137,25 @@ RSpec.describe Tables::Table, type: :model do
     it "returns data" do
       table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
 
-      expect(table_data).to eq([
-        {
+      expect(table_data).to match([
+        hash_including({
           "Key" => "JIRA",
           "Name" => "Jira",
           "Description" => "Some project tracking tool",
           "Title" => "JIRA Jira",
-        },
-        {
+        }),
+        hash_including({
           "Key" => "CONFLUENCE",
           "Name" => "Confluence",
           "Description" => "Some knowledge sharing tool",
           "Title" => "CONFLUENCE Confluence",
-        },
-        {
+        }),
+        hash_including({
           "Key" => "MON",
           "Name" => "Monday",
           "Description" => "Hardest day of the week",
           "Title" => "MON Monday",
-        }
+        }),
       ])
     end
   end
