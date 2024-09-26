@@ -12,21 +12,28 @@
           <% @space.tables.each do |table| %>
             <li class="text-slate-800 flex items-center w-full">
 
-              <%= link_to space_table_path(@space, table), class: "flex items-center w-full" do %>
-                <div class="flex-grow flex items-center w-full <%= @table == table ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
-                  <div class="pt-1 mx-2.5 -mt-[0.3rem]">•</div>
-                  <div class="text-left mx-0 p-2 truncate">
-                    <%= table.name %>
+              <div class="flex items-center w-full group/table">
+                <%= link_to space_table_path(@space, table), class: "flex items-center w-full group" do %>
+                  <div class="flex-grow flex items-center w-full <%= @table == table ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+                    <div class="pt-1 mx-2.5 -mt-[0.3rem]">•</div>
+                    <div class="text-left mx-0 p-2 truncate">
+                      <%= table.name %>
+                    </div>
+                    <div class="ml-auto">
+                    </div>
                   </div>
-                </div>
-              <% end %>
+                <% end %>
+                <%= link_to space_table_path(@space, table), data: { turbo_method: :delete }, class: "absolute left-64 group/trash-link" do %>
+                  <div class="relative top-0.5 group-hover/table:visible invisible bg-gray-500 group-hover/trash-link:bg-gray-800 -left-1 m-1 p-3 size-5 icon-[heroicons--trash]"></div>
+                <% end %>
+              </div>
             </li>
           <% end %>
         </ul>
       </div>
 
       <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">
-        <%= link_to new_space_table_path(@space), form_class: "flex flex-grow items-center", class: "flex flex-grow items-center" do %>
+        <%= link_to new_space_table_path(@space), class: "flex flex-grow items-center" do %>
           <span class="ml-1 size-5 icon-[heroicons--plus-16-solid]"></span>
           <span class="text-left mx-0 p-2">New table</span>
         <% end %>

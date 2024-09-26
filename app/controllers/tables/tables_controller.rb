@@ -1,26 +1,25 @@
 class Tables::TablesController < ApplicationController
+  after_action :verify_authorized
+
   def index
     render json: current_organization.tables
   end
 
   def new
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
     @table = @space.tables.new
 
-    render "spaces/tables/new"
+    authorize @table, :create?, policy_class: DocumentPolicy
 
-    # todo: ask if we need to protect tables and on which level, per space? per table?
-    # authorize @table, :create?
+    render "spaces/tables/new"
   end
 
   def create
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
-    # todo: ask if we need to protect tables and on which level, per space? per table?
-    # authorize @table, :create?
-
     @table = @space.tables.new(table_params)
+
+    authorize @table, :create?, policy_class: DocumentPolicy
+
     @table.organization = @space.organization
     @table.parent = @space.home_document || @space.documents.first || nil
     @table.parent_id = 0 if @table.parent.nil?
@@ -42,10 +41,22 @@ class Tables::TablesController < ApplicationController
 
   def show
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
     @table = @space.tables.find(params[:id])
 
+    authorize @table, :show?, policy_class: DocumentPolicy
+
     render "spaces/databases/show", layout: "full_width_application"
+  end
+
+  def destroy
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @table = @space.tables.find(params[:id])
+
+    authorize @table, :destroy?, policy_class: DocumentPolicy
+
+    @table.destroy
+
+    redirect_to space_database_path(@space), notice: 'Table has been deleted.'
   end
 
   private
