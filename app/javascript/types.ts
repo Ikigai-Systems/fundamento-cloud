@@ -20,9 +20,14 @@ export type User = {
   updatedAt: string, //date
 }
 
+type Row = {
+  id: string,
+  [key: string]:string,
+}
+
 export type Table = {
   name: string,
-  data: object[],
+  data: Array<Row>,
 }
 
 export type Version = {

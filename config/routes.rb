@@ -36,7 +36,9 @@ Rails.application.routes.draw do
       resource :database, module: :spaces, only: [:show]
 
       # todo: talk over the :tables route placement
-      resources :tables, module: :tables, only: [:new, :create, :show, :edit, :destroy]
+      resources :tables, module: :tables, only: [:new, :create, :show, :edit, :destroy] do
+        put :update_by_rowstack, on: :member
+      end
     end
 
     resources :attachments, only: [:create, :destroy, :show]

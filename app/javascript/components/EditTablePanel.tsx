@@ -1,8 +1,10 @@
-import {Table, Space, User} from "../types";
+import {Table, Space} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
+import TablesApi from "../api/Tables/TablesApi.js";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
 import Rowstack from "rowstack";
+import createFlash from "./createFlash.ts";
 
 type EditTablePanelProps = {
   table: Table,
@@ -46,6 +48,17 @@ const EditTablePanel = ({table, space}: EditTablePanelProps) => {
         <Rowstack
           columns={Object.keys(table.data[0]).map((key) => ({id: key, name: key}))} config={{}}
           data={table.data}
+          onChange={async (event) => {
+            try {
+              await TablesApi.updateByRowstack({
+                params: {space_npi: space.npi, id: table.id},
+                data: {event}
+              });
+            } catch (e) {
+              //todo: Sentry.capture(e)
+              createFlash({key: "table_update_failed", type: "error", message: "Failed to update the table, please reload page and try again."})
+            }
+          }}
         />
       </div>
     </CurrentSpaceContext.Provider>

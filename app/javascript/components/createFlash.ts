@@ -1,9 +1,8 @@
 const createFlash = (options = {
+  key: string,
   type: string,
   message: string
 }) => {
-  console.log("Creating flash ", options);
-
   let color = "teal";
   if (options.type === "error") {
     color = "red"
@@ -11,9 +10,15 @@ const createFlash = (options = {
     color = "yellow";
   }
 
+  if (options.key && document.querySelector(`#flashes div[data-flash-key="${options.key}"]`) !== null) {
+    //skipping rendering flash for already displayed message
+    return
+  }
+
   const flashesDiv = document.querySelector("#flashes");
   flashesDiv.insertAdjacentHTML('beforeend', `
-  <div data-controller="alert"
+  <div data-flash-key="${options.key}"
+      data-controller="alert"
       data-transition-enter="transition-position ease-in-out duration-500"
       data-transition-enter-from="left-96"
       data-transition-enter-to="-left-8"

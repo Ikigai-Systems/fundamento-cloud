@@ -68,6 +68,31 @@ class Tables::TablesController < ApplicationController
     redirect_to space_database_path(@space), notice: 'Table has been deleted.'
   end
 
+  def update_by_rowstack
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @table = @space.tables.find(params[:id])
+
+    authorize @table, :update?, policy_class: DocumentPolicy
+
+    event = params[:event]
+    event_type = event["type"]
+
+    case event_type
+    when "update_row"
+      row_id = event["row_id"]
+      event["update"].each do |column_name, new_cell_value|
+        @table.columns.find_by(name: column_name).cells.find_by(row_id: row_id).update(value: new_cell_value)
+      end
+    else
+      raise "Unrecognized rowstack update event type: #{event_type}"
+    end
+
+    respond_to do |format|
+      format.json { render json: {} }
+      format.all { head :unprocessable_content }
+    end
+  end
+
   private
 
   def table_params
