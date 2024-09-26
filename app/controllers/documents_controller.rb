@@ -33,10 +33,10 @@ class DocumentsController < ApplicationController
       if @space.save
         redirect_to edit_space_document_path(@space, @document), notice: 'Document was successfully created.'
       else
-        render :new, status: 422
+        render :new, status: :unprocessable_content
       end
     else
-      render :new, status: 422
+      render :new, status: :unprocessable_content
     end
 
   end

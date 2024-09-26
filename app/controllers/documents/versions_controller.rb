@@ -33,7 +33,7 @@ class Documents::VersionsController < ApplicationController
         end
       end
     else
-      render :new, status: 422
+      render :new, status: :unprocessable_content
     end
   rescue Exception => e
     respond_to do |format|
