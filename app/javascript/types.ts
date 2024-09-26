@@ -20,6 +20,11 @@ export type User = {
   updatedAt: string, //date
 }
 
+export type Table = {
+  name: string,
+  data: object[],
+}
+
 export type Version = {
   sequentialId: number,
   content: unknown,

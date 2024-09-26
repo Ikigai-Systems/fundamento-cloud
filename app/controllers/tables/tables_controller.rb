@@ -48,6 +48,15 @@ class Tables::TablesController < ApplicationController
     render "spaces/databases/show", layout: "full_width_application"
   end
 
+  def edit
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @table = @space.tables.find(params[:id])
+
+    authorize @table, :update?, policy_class: DocumentPolicy
+
+    render "spaces/databases/edit", layout: "full_width_application"
+  end
+
   def destroy
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
