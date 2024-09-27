@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_13_170318) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_27_082808) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -165,6 +165,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_13_170318) do
     t.bigint "organization_id", null: false
     t.bigint "table_id", null: false
     t.bigint "previous_row_id"
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.index ["npi"], name: "index_table_rows_on_npi", unique: true
     t.index ["organization_id"], name: "index_table_rows_on_organization_id"
     t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
     t.index ["table_id"], name: "index_table_rows_on_table_id"

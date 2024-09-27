@@ -76,12 +76,28 @@ class Tables::TablesController < ApplicationController
 
     event = params[:event]
     event_type = event["type"]
+    row_npi = event["row_id"] # in frontend Rowstack uses rowId property as row identifier
 
     case event_type
     when "update_row"
-      row_id = event["row_id"]
+      row = @table.rows.find_by(npi: row_npi)
       event["update"].each do |column_name, new_cell_value|
-        @table.columns.find_by(name: column_name).cells.find_by(row_id: row_id).update(value: new_cell_value)
+        @table.columns.find_by(name: column_name).cells.find_by(row_id: row).update(value: new_cell_value)
+      end
+    when "add_row"
+      last_row = @table.rows_in_order.last
+      new_row = @table.rows.create!(
+        previous_row: last_row,
+        organization_id: @table.organization_id,
+        npi: row_npi
+      )
+      @table.columns.each do |column|
+        new_row.cells.create!(
+          table: @table,
+          column: column,
+          # value: value, #todo: maybe in event["update"]["data"] there is prefilled value, handle that
+          organization_id: @table.organization_id,
+        )
       end
     else
       raise "Unrecognized rowstack update event type: #{event_type}"

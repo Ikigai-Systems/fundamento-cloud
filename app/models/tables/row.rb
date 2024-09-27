@@ -1,6 +1,8 @@
 class Tables::Row < ApplicationRecord
   self.table_name = :table_rows
 
+  include ModelWithNpi # todo: determine if ModelWithNpiAsParam is needed here or not
+
   belongs_to :organization
   belongs_to :table, class_name: "Tables::Table"
 

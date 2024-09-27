@@ -65,7 +65,7 @@ class Tables::Table < ApplicationRecord
         columns_in_order.each_with_object({}) do |column, hash|
           hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
         end
-      end.merge({"id" => row.id})
+      end.merge({"id" => row.npi}) # this is for Rowstack convenience
     end
   end
 
