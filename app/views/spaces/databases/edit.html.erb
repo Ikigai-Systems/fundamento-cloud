@@ -6,6 +6,6 @@
   <%= render 'application/left_side_bar_for_database' %>
 
   <article class="bg-white flex-col overflow-auto">
-    <%= react_component "EditTablePanel", {table: @table.attributes.merge(data: @table.data_to_json), space: @space} %>
+    <%= react_component "EditTablePanel", {table: @table, space: @space}, {data: @table.data_to_json} %>
   </article>
 </div>

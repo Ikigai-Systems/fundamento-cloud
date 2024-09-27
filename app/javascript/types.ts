@@ -20,14 +20,16 @@ export type User = {
   updatedAt: string, //date
 }
 
-type Row = {
-  id: string,
-  [key: string]:string,
-}
-
 export type Table = {
+  archived: boolean,
+  createdAt: string, //date
+  id: string,
   name: string,
-  data: Array<Row>,
+  organizationId: number,
+  parentId: number,
+  parentType: string,
+  spaceId: number,
+  updatedAt: string, //date
 }
 
 export type Version = {

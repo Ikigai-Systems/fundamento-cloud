@@ -48,10 +48,10 @@ class Tables::Table < ApplicationRecord
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
 
-    rows_in_order.map do |row|
+    jsonized_rows = rows_in_order.map do |row|
       if evaluate_formulas
         current_row_values = columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
         end
 
         additional_context = {
@@ -59,14 +59,19 @@ class Tables::Table < ApplicationRecord
         }
 
         columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
+          hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
         end
       else
         columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
         end
-      end.merge({"id" => row.npi}) # this is for Rowstack convenience
+      end.merge({"npi" => row.npi}) # this is for Rowstack convenience
     end
+
+    {
+      columns: columns_in_order,
+      rows: jsonized_rows,
+    }
   end
 
   def import_from_csv(csv_file)

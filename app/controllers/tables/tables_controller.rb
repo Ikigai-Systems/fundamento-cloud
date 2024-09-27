@@ -30,7 +30,7 @@ class Tables::TablesController < ApplicationController
         @table.import_from_csv(uploaded_file)
       end
 
-      redirect_to space_database_path, notice: "Table created"
+      redirect_to edit_space_table_path(@space, @table), notice: "Table created"
     else
       render "spaces/tables/new"
     end
@@ -69,6 +69,7 @@ class Tables::TablesController < ApplicationController
   end
 
   def update_by_rowstack
+    # note: as an exception, frontend doesn't use camelCase -> snake_case serialization of request payload before sending it to this endpoint
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
 
@@ -76,16 +77,15 @@ class Tables::TablesController < ApplicationController
 
     event = params[:event]
     event_type = event["type"]
-    row_npi = event["row_id"] # in frontend Rowstack uses rowId property as row identifier
 
     case event_type
     when "update_row"
-      row = @table.rows.find_by(npi: row_npi)
-      event["update"].each do |column_name, new_cell_value|
-        next if column_name == "is_selected" # Rowstack property, could be filtered out in the frontend before sending to backend
-        @table.columns.find_by(name: column_name).cells.find_by(row_id: row).update(value: new_cell_value)
+      row = @table.rows.find_by(npi: event["rowId"]) # in frontend Rowstack uses rowId property as row identifier
+      event["update"].each do |column_npi, new_cell_value|
+        @table.columns.find_by(npi: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
       end
     when "add_row"
+      row_npi = event["rowId"] # in frontend Rowstack uses rowId property as row identifier
       last_row = @table.rows_in_order.last
       new_row = @table.rows.create!(
         previous_row: last_row,
@@ -96,7 +96,7 @@ class Tables::TablesController < ApplicationController
         new_row.cells.create!(
           table: @table,
           column: column,
-          # value: value, #todo: maybe in event["update"]["data"] there is prefilled value, handle that
+          # value: value, # todo: maybe in event["update"]["data"] there is prefilled value, handle that
           organization_id: @table.organization_id,
         )
       end
@@ -105,9 +105,40 @@ class Tables::TablesController < ApplicationController
         row = @table.rows.find_by(npi: row_npi)
         next_row = row.next_row
         next_row.update(previous_row: row.previous_row) unless next_row.nil?
-
         row.destroy
       end
+    when "add_column"
+      update = event["update"]
+      last_column = @table.columns_in_order.last # todo: handle "position" in event payload
+      new_column = @table.columns.create!(
+        previous_column: last_column,
+        organization_id: @table.organization_id,
+        npi: event["colId"], # in frontend Rowstack uses colId property as row identifier
+        name: update["name"],
+        kind: 0 # todo: map Rowstack "text" "number" "select" etc into backend's "kind" enum
+      )
+      @table.rows.each do |row|
+        new_column.cells.create!(
+          table: @table,
+          row: row,
+          # value: value, # todo: maybe in event["update"]["data"] there is prefilled value, handle that
+          organization_id: @table.organization_id,
+        )
+      end
+    when "update_column"
+      column = @table.columns.find_by(npi: event["colId"]) # in frontend Rowstack uses colId property as row identifier
+      update = event["update"]
+      if update["name"]
+        column.update(
+          name: event["update"]["name"],
+          # todo: handle column "kind" updates
+        )
+      end
+    when "delete_column"
+      column = @table.columns.find_by(npi: event["colId"]) # in frontend Rowstack uses colId property as row identifier
+      next_column = column.next_column
+      next_column.update(previous_column: column.previous_column) unless next_column.nil?
+      column.destroy
     else
       raise "Unrecognized rowstack update event type: #{event_type}"
     end

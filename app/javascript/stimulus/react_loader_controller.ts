@@ -7,11 +7,13 @@ import {camelCase, deepConvertKeys} from "@js-from-routes/core";
 export default class extends Controller<HTMLElement> {
   static values = {
     component: String,
-    props: Object,
+    propsAutoConvertedToCamelCase: Object,
+    propsNoConversion: Object,
   }
 
   declare root: Root | undefined;
-  declare propsValue: object;
+  declare propsAutoConvertedToCamelCaseValue: object;
+  declare propsNoConversionValue: object;
   declare componentValue: string;
 
   async connect() {
@@ -19,7 +21,7 @@ export default class extends Controller<HTMLElement> {
     const Component = await this.importComponent(); //while inside this await, 'disconnect' might occur in the meanwhile
     if (!this._disconnectedAlready) {
       this.root = ReactDOM.createRoot(this.element)
-      this.root.render(React.createElement(Component, deepConvertKeys(this.propsValue, camelCase)));
+      this.root.render(React.createElement(Component, {...deepConvertKeys(this.propsAutoConvertedToCamelCaseValue, camelCase), ...this.propsNoConversionValue}));
     }
   }
 

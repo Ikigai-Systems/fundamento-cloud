@@ -1,17 +1,13 @@
-import {Table, Space} from "../types";
+import {Space, Table} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import TablesApi from "../api/Tables/TablesApi.js";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
 import Rowstack from "rowstack";
 import createFlash from "./createFlash.ts";
+import {Config} from '@js-from-routes/client'
 
-type EditTablePanelProps = {
-  table: Table,
-  space: Space,
-}
-
-const EditTablePanel = ({table, space}: EditTablePanelProps) => {
+const EditTablePanel = ({table, space, data}: EditTablePanelProps) => {
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <input key={table.id + "_name"} type="text"
@@ -46,11 +42,18 @@ const EditTablePanel = ({table, space}: EditTablePanelProps) => {
 
       <div className="editor-container">
         <Rowstack
-          columns={Object.keys(table.data[0]).map((key) => ({id: key, name: key}))} config={{}}
-          data={table.data}
+          columns={data.columns.map(({npi, name}) => ({id: npi, name}))}
+          data={data.rows.map(({npi, ...row}) => ({...row, id: npi}))}
+          config={{}}
           onChange={async (event) => {
-            //todo: filter out events that are solely "selected"/"unselected" updates - no need to register them on backend
+            if ((event.type === "update_column" && Object.keys(event.update).length === 1 && event.update.width !== undefined)
+              || (event.type === "update_row" && Object.keys(event.update).length === 1 && event.update.isSelected !== undefined)
+            ) {
+              return; // skip frontend-session related changes from being passed to the backend
+            }
+            const currentDataSerializer = Config.serializeData;
             try {
+              Config.serializeData = (val => val);
               await TablesApi.updateByRowstack({
                 params: {space_npi: space.npi, id: table.id},
                 data: {event}
@@ -58,12 +61,35 @@ const EditTablePanel = ({table, space}: EditTablePanelProps) => {
             } catch (e) {
               //todo: Sentry.capture(e)
               createFlash({key: "table_update_failed", type: "error", message: "Failed to update the table, please reload page and try again."})
+            } finally {
+              Config.serializeData = currentDataSerializer;
             }
           }}
         />
       </div>
     </CurrentSpaceContext.Provider>
   </QueryClientProvider>
+}
+
+type Row = {
+  id: string,
+  [key: string]:string,
+}
+
+type Column = {
+  id: string,
+  name: string,
+}
+
+type Data = {
+  rows: Array<Row>,
+  columns: Array<Column>,
+}
+
+type EditTablePanelProps = {
+  table: Table,
+  space: Space,
+  data: Data
 }
 
 export default EditTablePanel;

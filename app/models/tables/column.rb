@@ -7,7 +7,7 @@ class Tables::Column < ApplicationRecord
   belongs_to :previous_column, class_name: "Tables::Column", optional: true
   has_one :next_column, class_name: "Tables::Column", foreign_key: "previous_column_id"
 
-  has_many :cells, class_name: "Tables::Cell"
+  has_many :cells, class_name: "Tables::Cell", dependent: :delete_all
 
   validates_presence_of :name
 
