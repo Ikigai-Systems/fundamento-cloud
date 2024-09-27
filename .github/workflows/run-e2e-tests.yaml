@@ -1,0 +1,47 @@
+name: Run E2E Tests
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+env:
+  RAILS_ENV: test
+  DATABASE_URL: postgres://postgres:password@localhost/postgres
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+      - run: npm ci
+      - uses: hoverkraft-tech/compose-action@v2.0.1
+      - name: Setup the database
+        run: bin/rails db:setup
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          project: ./spec/e2e
+        env:
+          CYPRESS_port: 3000
+      - uses: actions/upload-artifact@v4
+          # add the line below to store screenshots only on failures
+          # if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
