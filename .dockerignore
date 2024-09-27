@@ -33,6 +33,7 @@
 /log/*
 /tmp/*
 !/log/.keep
+!/log/cypress/.keep
 !/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.

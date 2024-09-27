@@ -2,9 +2,9 @@
 filename = command_options.fetch('runnable_full_title', 'no title').gsub(/[^[:print:]]/, '')
 
 # grab last lines until "APPCLEANED" (Make sure in clean.rb to log the text "APPCLEANED")
-system "tail -n 10000 -r log/#{Rails.env}.log | sed \"/APPCLEANED/ q\" | sed 'x;1!H;$!d;x' > 'log/#{filename}.log'"
+system "tail -n 10000 -r log/#{Rails.env}.log | sed \"/APPCLEANED/ q\" | sed 'x;1!H;$!d;x' > 'log/cypress/#{filename}.log'"
 # Alternative command if the above does not work
-# system "tail -n 10000 log/#{Rails.env}.log | tac | sed \"/APPCLEANED/ q\" | sed 'x;1!H;$!d;x' > 'log/#{filename}.log'"
+# system "tail -n 10000 log/#{Rails.env}.log | tac | sed \"/APPCLEANED/ q\" | sed 'x;1!H;$!d;x' > 'log/cypress/#{filename}.log'"
 
 # create a json debug file for server debugging
 json_result = {}
@@ -21,6 +21,6 @@ if defined?(ActiveRecord::Base)
 end
 
 filename = command_options.fetch('runnable_full_title', 'no title').gsub(/[^[:print:]]/, '')
-File.open("#{Rails.root}/log/#{filename}.json", "w+") do |file|
+File.open("#{Rails.root}/log/cypress/#{filename}.json", "w+") do |file|
   file << JSON.pretty_generate(json_result)
 end
