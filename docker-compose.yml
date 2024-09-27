@@ -16,7 +16,7 @@ services:
     build:
       context: ./
       args:
-        - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
+        - RAILS_ENV=${RAILS_ENV:-production}
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
