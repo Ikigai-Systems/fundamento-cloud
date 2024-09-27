@@ -60,7 +60,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
       # We finally destroy the invited user as we no longer need it
       resource.destroy!
 
-      redirect_to new_session_path(resource_name), notice: "You accepted the invitation to join #{resource.organization.name}, you can sign in now."
+      redirect_to new_session_path(user), notice: "You accepted the invitation to join #{resource.organization.name}, you can sign in now."
     else
       super
     end
