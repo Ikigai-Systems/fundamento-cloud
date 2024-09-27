@@ -54,5 +54,5 @@
     "vite-plugin-full-reload": "^1.2.0",
     "vite-plugin-ruby": "^5.0.0"
   },
-  "packageManager": "yarn@4.3.0"
+  "packageManager": "npm@10.8.3"
 }
