@@ -7,7 +7,11 @@ module ModelWithNpi
     validates_presence_of :npi
   end
 
+  def generate_npi
+    self.npi = Nanoid.generate(size: 10)
+  end
+
   def ensure_has_npi
-    self.npi = Nanoid.generate(size: 10) unless self.npi.present?
+    generate_npi unless self.npi.present?
   end
 end
