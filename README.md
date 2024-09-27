@@ -29,6 +29,10 @@ Access application on port `3000`
 ## Running only selected services
 
 ```
-docker-compose up redis postgresql
+docker compose up redis postgresql
 ```
 
+Running the same docker compose again with different name: 
+```
+docker compose -p e2e-tests up
+```
