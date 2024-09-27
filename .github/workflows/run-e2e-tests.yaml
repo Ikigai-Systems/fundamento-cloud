@@ -11,7 +11,7 @@ env:
   DATABASE_URL: postgres://postgres:password@localhost/postgres
 
 jobs:
-  run-tests:
+  run-e2e-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,10 +39,10 @@ jobs:
           # if: failure()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: log/cypress/screenshots
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
       - uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
-          path: cypress/videos
+          path: log/cypress/videos
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
