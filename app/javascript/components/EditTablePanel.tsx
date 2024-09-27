@@ -49,6 +49,7 @@ const EditTablePanel = ({table, space}: EditTablePanelProps) => {
           columns={Object.keys(table.data[0]).map((key) => ({id: key, name: key}))} config={{}}
           data={table.data}
           onChange={async (event) => {
+            //todo: filter out events that are solely "selected"/"unselected" updates - no need to register them on backend
             try {
               await TablesApi.updateByRowstack({
                 params: {space_npi: space.npi, id: table.id},

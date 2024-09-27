@@ -82,6 +82,7 @@ class Tables::TablesController < ApplicationController
     when "update_row"
       row = @table.rows.find_by(npi: row_npi)
       event["update"].each do |column_name, new_cell_value|
+        next if column_name == "is_selected" # Rowstack property, could be filtered out in the frontend before sending to backend
         @table.columns.find_by(name: column_name).cells.find_by(row_id: row).update(value: new_cell_value)
       end
     when "add_row"
@@ -98,6 +99,14 @@ class Tables::TablesController < ApplicationController
           # value: value, #todo: maybe in event["update"]["data"] there is prefilled value, handle that
           organization_id: @table.organization_id,
         )
+      end
+    when "delete_rows"
+      event["rows"][0].each do |row_npi|
+        row = @table.rows.find_by(npi: row_npi)
+        next_row = row.next_row
+        next_row.update(previous_row: row.previous_row) unless next_row.nil?
+
+        row.destroy
       end
     else
       raise "Unrecognized rowstack update event type: #{event_type}"
