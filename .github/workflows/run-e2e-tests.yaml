@@ -30,10 +30,10 @@ jobs:
         with:
           project: ./spec/e2e
           install: false # already installed by `npm ci`
-          wait-on: 'http://localhost:3000'
+          wait-on: http://localhost:3000
           config: baseUrl=http://localhost:3000
         env:
-          DEBUG: @cypress/github-action
+          DEBUG: "@cypress/github-action"
       - uses: actions/upload-artifact@v4
           # add the line below to store screenshots only on failures
           # if: failure()
