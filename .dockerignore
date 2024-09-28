@@ -28,6 +28,7 @@
 # Ignore any tests files (as we're not running tests in docker)
 /test/
 /spec/
+!/spec/e2e
 
 # Ignore all logfiles and tempfiles.
 /log/*
