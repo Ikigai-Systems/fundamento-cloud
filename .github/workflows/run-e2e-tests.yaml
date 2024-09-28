@@ -35,14 +35,14 @@ jobs:
         env:
           DEBUG: "@cypress/github-action"
       - uses: actions/upload-artifact@v4
-          # add the line below to store screenshots only on failures
-          # if: failure()
+        if: failure()
         with:
           name: cypress-screenshots
-          path: log/cypress/screenshots/**/*
+          path: log/cypress/screenshots
           if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
       - uses: actions/upload-artifact@v4
+        if: failure()
         with:
           name: cypress-videos
           path: log/cypress/videos
-          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
+          if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
