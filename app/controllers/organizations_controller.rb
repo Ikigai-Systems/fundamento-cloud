@@ -82,7 +82,7 @@ class OrganizationsController < ApplicationController
   end
 
   def pundit_user
-    if instance_variable_defined?(:@organization)
+    if instance_variable_defined?(:@organization) && @organization.persisted?
       PolicyUserContext.new(current_user, @organization)
     else
       super
