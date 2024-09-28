@@ -5,6 +5,7 @@ module.exports = defineConfig({
     baseUrl: "http://localhost:3000",
     defaultCommandTimeout: 10000,
     supportFile: "cypress/support/index.js",
+    excludeSpecPattern: "**/rails_examples/**/*",
   },
   trashAssetsBeforeRuns: true,
   downloadsFolder: "../../log/cypress/downloads",
