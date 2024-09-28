@@ -29,6 +29,31 @@ Access application on port `3000`
 ## Running only selected services
 
 ```
-docker-compose up redis postgresql
+docker compose up redis postgresql
 ```
 
+Running the same docker compose again with different name: 
+```
+docker compose -p e2e-tests up
+```
+
+# Running tests
+
+## E2E
+
+Tests run against an app running locally with `RAILS_ENV=test`, they are built with docker and have the same environment as production. 
+
+Prepare docker containers:
+
+`RAILS_ENV=test docker compose -p e2e-tests up`
+
+`-p e2e-tests` will name containers starting with `e2e-tests` so there's no collision with regular `docker-compose.yml`, but they still use the same ports so it's not possible to run the app from docker or locally at the same time (to be fixed in the future)
+
+Run tests:
+
+- headless: `npx cypress run --project spec/e2e`
+- with a desktop app: `npx cypress open --project spec/e2e`
+
+Clean containers and images afterwards:
+
+`docker compose -p e2e-tests down --remove-orphans --rmi local`

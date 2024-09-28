@@ -2,7 +2,10 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.2
+
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
+
+ARG RAILS_ENV="production"
 
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
@@ -14,7 +17,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 WORKDIR /rails
 
 # Set production environment
-ENV RAILS_ENV="production" \
+ENV RAILS_ENV=${RAILS_ENV} \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/rails/vendor/bundle" \
     BUNDLE_WITHOUT="development"
@@ -70,7 +73,7 @@ RUN cd formula && npm run build
 RUN cd blocknote && npm run build
 
 # Final stage for app image
-FROM base
+FROM base as packaged
 
 # Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
@@ -113,3 +116,16 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 EXPOSE 3000
 
 CMD ["./bin/rails", "server"]
+
+FROM packaged AS test
+
+ENV DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+ENV VITE_RUBY_AUTO_BUILD=false
+
+COPY --from=build /rails/spec/e2e ./spec/e2e
+
+RUN echo "RAILS_ENV is $RAILS_ENV"
+
+# Publish production as the default layer
+FROM packaged AS production
+

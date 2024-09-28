@@ -82,6 +82,7 @@ group :development, :test do
   gem "rspec-rails"
   gem "rails-controller-testing"
   gem "database_cleaner-active_record"
+  gem 'cypress-on-rails'
 end
 
 group :development do

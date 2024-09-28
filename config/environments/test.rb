@@ -61,4 +61,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Do not dump schema after migrations in the test environment
+  config.active_record.dump_schema_after_migration = false
 end
