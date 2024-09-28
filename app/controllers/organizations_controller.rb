@@ -6,6 +6,8 @@ class OrganizationsController < ApplicationController
 
   after_action :verify_authorized
 
+  before_action :load_organization, except: [:new, :index, :create]
+
   def new
     @organization = Organization.new
 
@@ -36,8 +38,6 @@ class OrganizationsController < ApplicationController
   end
 
   def update
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
-
     authorize @organization, :update?
 
     if @organization.update(organization_params)
@@ -48,20 +48,14 @@ class OrganizationsController < ApplicationController
   end
 
   def show
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
-
     authorize @organization, :show?
   end
 
   def edit
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
-
     authorize @organization, :update?
   end
 
   def select
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
-
     authorize @organization, :select?
 
     cookies.encrypted[:organization_id] = @organization.id
@@ -70,8 +64,6 @@ class OrganizationsController < ApplicationController
   end
 
   def destroy
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
-
     authorize @organization, :destroy?
 
     @organization.destroy!
@@ -83,5 +75,17 @@ class OrganizationsController < ApplicationController
 
   def organization_params
     params.require(:organization).permit(:name)
+  end
+
+  def load_organization
+    @organization = current_user.organizations.find_by_npi!(params[:npi])
+  end
+
+  def pundit_user
+    if instance_variable_defined?(:@organization)
+      PolicyUserContext.new(current_user, @organization)
+    else
+      super
+    end
   end
 end
