@@ -73,7 +73,7 @@ RUN cd formula && npm run build
 RUN cd blocknote && npm run build
 
 # Final stage for app image
-FROM base
+FROM base as packaged
 
 # Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
@@ -116,3 +116,16 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 EXPOSE 3000
 
 CMD ["./bin/rails", "server"]
+
+FROM packaged AS test
+
+ENV DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
+ENV VITE_RUBY_AUTO_BUILD=false
+
+COPY --from=build /rails/spec/e2e ./spec/e2e
+
+RUN echo "RAILS_ENV is $RAILS_ENV"
+
+# Publish production as the default layer
+FROM packaged AS production
+

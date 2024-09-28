@@ -15,6 +15,7 @@ services:
   rails:
     build:
       context: ./
+      target: ${RAILS_ENV:-production}
       args:
         - RAILS_ENV=${RAILS_ENV:-production}
     environment:
