@@ -45,14 +45,31 @@ describe('Basic features work', function() {
     cy.contains("Second organization Space");
   })
 
-  it("you can create teams", function() {
-    cy.visit("/");
+  it("you can create a team", function() {
+    cy.visit("/organizations");
+
+    cy.contains('tr', 'E2E Tests').contains('button', 'Switch to').click();
+
+    cy.contains("E2E Tests Space");
+
+    cy.get("#flashes button").click();
 
     cy.get("body nav").contains("PN").click();
 
     cy.contains("Teams").click();
 
     cy.get(".focused-header").contains("Create").click();
+
+    cy.get('input[name="team[name]"]').type("Everyone");
+    cy.get('input[name="team[shortcut]"]').type("@everyone");
+    cy.get("input.multiselect__search").type("now");
+
+    cy.get(".multiselect__list").contains("Pawel Nowak").click();
+    cy.get(".multiselect__preview").click();
+
+    cy.get('input[type=submit]').click();
+
+    cy.location('pathname').should('match', /^\/teams\/.+/)
   });
 })
 
