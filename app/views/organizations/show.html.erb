@@ -1,82 +1,74 @@
 <%= turbo_stream_from ["organization_users_list", @organization] %>
 
-<section class="focused-section">
-  <div class="lg:flex lg:items-center lg:justify-between">
-    <div class="min-w-0 flex-1">
-      <section class="focused-header p-5">
-        <nav class="flex" aria-label="Breadcrumb">
-          <ol role="list" class="flex items-center space-x-4">
-            <li>
-              <div class="flex">
-                <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                  <%= link_to "Organizations", organizations_path %>
-                </a>
-              </div>
-            </li>
-          </ol>
-        </nav>
-
-        <div class="md:flex md:items-center md:justify-between">
-          <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-              <%= @organization.name %>
-            </h1>
-          </div>
-
-          <div class="mt-4 flex md:ml-4 md:mt-0">
-            <%= button_to "Switch to", select_organization_path(@organization), method: :post, class: "secondary-button" %>
-
-            <% if policy(@organization).update? && policy(@organization).destroy? %>
-              <% content_for :button_group_primary_buttons do %>
-                <%= link_to 'Edit', edit_organization_path(@organization), class: "first-button-group ml-2" %>
-              <% end %>
-
-              <% content_for :button_group_dropdown_menu do %>
-                <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
-              <% end %>
-
-              <%= render template: "application/components/button_group" %>
-            <% end %>
-          </div>
-        </div>
-      </section>
-
-      <div class="sm:flex sm:items-center p-5">
-        <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
-          <p class="mt-2 text-sm text-gray-700">A list of all the users in your organization.</p>
-        </div>
-
-        <% if policy(@organization).invite_user? %>
-          <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-            <%= link_to 'Add user', new_invited_user_invitation_path(organization_npi: @organization.npi), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
-          </div>
-        <% end %>
-      </div>
-
-      <table class="table-list">
-        <thead>
-          <tr>
-            <th scope="col">
-              Name
-            </th>
-            <th scope="col">
-              Role
-            </th>
-            <th scope="col">
-              Status
-            </th>
-            <th scope="col">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody id="users">
-          <% @organization.organization_users.preload(:user).filter(&:user).each do |organization_user| %>
-            <%= render partial: "organizations/organization_user", locals: { organization_user: organization_user, current_organization: @organization } %>
-          <% end %>
-        </tbody>
-      </table>
+<% content_for :focused_breadcrumbs do %>
+  <li>
+    <div class="flex">
+      <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+        <%= link_to "Organizations", organizations_path %>
+      </a>
     </div>
+  </li>
+<% end %>
+
+<% content_for :focused_header do %>
+  <%= @organization.name %>
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <div class="mt-4 flex md:ml-4 md:mt-0">
+    <%= button_to "Switch to", select_organization_path(@organization), method: :post, class: "secondary-button" %>
+
+    <% if policy(@organization).update? && policy(@organization).destroy? %>
+      <% content_for :button_group_primary_buttons do %>
+        <%= link_to 'Edit', edit_organization_path(@organization), class: "first-button-group ml-2" %>
+      <% end %>
+
+      <% content_for :button_group_dropdown_menu do %>
+        <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
+      <% end %>
+
+      <%= render template: "application/components/button_group" %>
+    <% end %>
   </div>
-</section>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="sm:flex sm:items-center p-5">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
+      <p class="mt-2 text-sm text-gray-700">A list of all the users in your organization.</p>
+    </div>
+
+    <% if policy(@organization).invite_user? %>
+      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+        <%= link_to 'Add user', new_invited_user_invitation_path(organization_npi: @organization.npi), class: "block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
+      </div>
+    <% end %>
+  </div>
+
+  <table class="table-list">
+    <thead>
+    <tr>
+      <th scope="col">
+        Name
+      </th>
+      <th scope="col">
+        Role
+      </th>
+      <th scope="col">
+        Status
+      </th>
+      <th scope="col">
+        Action
+      </th>
+    </tr>
+    </thead>
+    <tbody id="users">
+    <% @organization.organization_users.preload(:user).filter(&:user).each do |organization_user| %>
+      <%= render partial: "organizations/organization_user", locals: { organization_user: organization_user, current_organization: @organization } %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render partial: "focused_section" %>

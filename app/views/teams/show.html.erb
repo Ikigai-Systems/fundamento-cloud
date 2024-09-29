@@ -1,68 +1,60 @@
 <%= turbo_stream_from ["team_users_list", @team] %>
 
-<section class="focused-section">
-  <div class="lg:flex lg:items-center lg:justify-between">
-    <div class="min-w-0 flex-1">
-      <section class="focused-header p-5">
-        <nav class="flex" aria-label="Breadcrumb">
-          <ol role="list" class="flex items-center space-x-4">
-            <li>
-              <div class="flex">
-                <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-                  <%= link_to "Teams", teams_path %>
-                </a>
-              </div>
-            </li>
-          </ol>
-        </nav>
+<% content_for :focused_breadcrumbs do %>
+  <li>
+    <div class="flex">
+      <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+        <%= link_to "Teams", teams_path %>
+      </a>
+    </div>
+  </li>
+<% end %>
 
-        <div class="md:flex md:items-center md:justify-between">
-          <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-              <%= @team.name %>
-            </h1>
-          </div>
+<% content_for :focused_header do %>
+  <%= @team.name %>
+<% end %>
 
-          <% if policy(@team).update? && policy(@team).destroy? %>
-            <div class="mt-4 flex md:ml-4 md:mt-0">
-              <% content_for :button_group_primary_buttons do %>
-                <%= link_to 'Edit', edit_team_path(@team), class: "first-button-group" %>
-              <% end %>
+<% content_for :focused_header_buttons do %>
+  <% if policy(@team).update? && policy(@team).destroy? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <% content_for :button_group_primary_buttons do %>
+        <%= link_to 'Edit', edit_team_path(@team), class: "first-button-group" %>
+      <% end %>
 
-              <% content_for :button_group_dropdown_menu do %>
-                <%= button_to "Delete", team_path(@team), form: { data: { turbo_confirm: "Are you sure? Your team will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
-              <% end %>
+      <% content_for :button_group_dropdown_menu do %>
+        <%= button_to "Delete", team_path(@team), form: { data: { turbo_confirm: "Are you sure? Your team will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
+      <% end %>
 
-              <%= render template: "application/components/button_group"%>
-            </div>
-          <% end %>
-        </div>
-      </section>
+      <%= render template: "application/components/button_group"%>
+    </div>
+  <% end %>
+<% end %>
 
-      <div class="sm:flex sm:items-center p-5">
-        <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
-          <p class="mt-2 text-sm text-gray-700">A list of all the users in your team.</p>
-        </div>
-      </div>
-
-      <table class="table-list">
-        <thead>
-          <tr>
-            <th scope="col">
-              Name
-            </th>
-            <th scope="col">
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody id="team_members">
-          <% @team.team_memberships.each do |membership| %>
-            <%= render partial: "teams/user", locals: { user: membership.member.user, team: @team } %>
-          <% end %>
-        </tbody>
-      </table>
+<% content_for :focused_content do %>
+  <div class="sm:flex sm:items-center p-5">
+    <div class="sm:flex-auto">
+      <h1 class="text-base font-semibold leading-6 text-gray-900">Users</h1>
+      <p class="mt-2 text-sm text-gray-700">A list of all the users in your team.</p>
     </div>
   </div>
-</section>
+
+  <table class="table-list">
+    <thead>
+    <tr>
+      <th scope="col">
+        Name
+      </th>
+      <th scope="col">
+        Status
+      </th>
+    </tr>
+    </thead>
+    <tbody id="team_members">
+    <% @team.team_memberships.each do |membership| %>
+      <%= render partial: "teams/user", locals: { user: membership.member.user, team: @team } %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render partial: "focused_section" %>
