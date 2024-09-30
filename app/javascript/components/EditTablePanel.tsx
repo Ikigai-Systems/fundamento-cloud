@@ -42,7 +42,7 @@ const EditTablePanel = ({table, space, data}: EditTablePanelProps) => {
 
       <div className="editor-container">
         <Rowstack
-          columns={data.columns.map(({npi, name}) => ({id: npi, name}))}
+          columns={data.columns.map(({npi, name, kind}) => ({id: npi, name, type: kind === "integer" ? "number" : "text"}))}
           data={data.rows.map(({npi, ...row}) => ({...row, id: npi}))}
           config={{}}
           onChange={async (event) => {

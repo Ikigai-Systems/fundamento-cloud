@@ -12,4 +12,13 @@ class Tables::Column < ApplicationRecord
   validates_presence_of :name
 
   enum :kind, [:string, :integer, :decimal, :datetime, :date, :formula], scopes: false, validate: true
+
+  def self.to_kind(type)
+    case (type)
+    when "number"
+      :integer
+    else
+      :string
+    end
+  end
 end

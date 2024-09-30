@@ -135,12 +135,10 @@ class Tables::TablesController < ApplicationController
     when "update_column"
       column = @table.columns.find_by(npi: event["colId"])
       update = event["update"]
-      if update["name"]
-        column.update(
-          name: event["update"]["name"],
-          # todo: handle column "kind" updates
-        )
-      end
+
+      column.name = update["name"] if update.has_key?("name")
+      column.kind = Tables::Column::to_kind(update["type"]) if update.has_key?("type")
+      column.save! if column.changed?
     when "delete_column"
       column = @table.columns.find_by(npi: event["colId"])
       next_column = column.next_column
