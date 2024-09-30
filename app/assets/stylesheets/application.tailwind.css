@@ -12,8 +12,14 @@
 }
 
 @layer components {
+    body {
+        @apply bg-white md:bg-gray-100;
+        @apply dark:text-white dark:bg-gray-900;
+        @apply antialiased;
+    }
+
     .form-section {
-        @apply dark:bg-gray-800 bg-white max-w-4xl mt-8 p-6 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
+        @apply dark:bg-gray-800 bg-white max-w-4xl p-6 md:mt-8 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
     }
 
     .form-footer {
