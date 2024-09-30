@@ -80,4 +80,12 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   def after_invite_path_for(inviter, resource)
     organization_path(resource.organization)
   end
+
+  def pundit_user
+    if instance_variable_defined?(:@organization) && @organization.persisted?
+      PolicyUserContext.new(current_user, @organization)
+    else
+      super
+    end
+  end
 end

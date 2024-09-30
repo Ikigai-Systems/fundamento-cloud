@@ -21,7 +21,7 @@
     <%= yield(:head) %>
   <% end %>
 </head>
-<body class="bg-white md:bg-gray-100">
+<body>
   <%= render "nav_bar" %>
 
   <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
