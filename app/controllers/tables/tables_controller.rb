@@ -80,12 +80,19 @@ class Tables::TablesController < ApplicationController
 
     case event_type
     when "update_row"
-      row = @table.rows.find_by(npi: event["rowId"]) # in frontend Rowstack uses rowId property as row identifier
+      row = @table.rows.find_by(npi: event["rowId"])
       event["update"].each do |column_npi, new_cell_value|
         @table.columns.find_by(npi: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
       end
+    when "update_rows"
+      event["rows"].each do |event_row|
+        row = @table.rows.find_by(npi: event_row["rowId"])
+        event_row["update"].each do |column_npi, new_cell_value|
+          @table.columns.find_by(npi: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
+        end
+      end
     when "add_row"
-      row_npi = event["rowId"] # in frontend Rowstack uses rowId property as row identifier
+      row_npi = event["rowId"]
       last_row = @table.rows_in_order.last
       new_row = @table.rows.create!(
         previous_row: last_row,
@@ -113,7 +120,7 @@ class Tables::TablesController < ApplicationController
       new_column = @table.columns.create!(
         previous_column: last_column,
         organization_id: @table.organization_id,
-        npi: event["colId"], # in frontend Rowstack uses colId property as row identifier
+        npi: event["colId"],
         name: update["name"],
         kind: 0 # todo: map Rowstack "text" "number" "select" etc into backend's "kind" enum
       )
@@ -126,7 +133,7 @@ class Tables::TablesController < ApplicationController
         )
       end
     when "update_column"
-      column = @table.columns.find_by(npi: event["colId"]) # in frontend Rowstack uses colId property as row identifier
+      column = @table.columns.find_by(npi: event["colId"])
       update = event["update"]
       if update["name"]
         column.update(
@@ -135,7 +142,7 @@ class Tables::TablesController < ApplicationController
         )
       end
     when "delete_column"
-      column = @table.columns.find_by(npi: event["colId"]) # in frontend Rowstack uses colId property as row identifier
+      column = @table.columns.find_by(npi: event["colId"])
       next_column = column.next_column
       next_column.update(previous_column: column.previous_column) unless next_column.nil?
       column.destroy
