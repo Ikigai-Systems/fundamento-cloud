@@ -122,4 +122,16 @@
     .table-list form.button_to {
         @apply inline-block;
     }
+
+    .dropdown-container {
+        @apply text-sm shadow-lg rounded border overflow-hidden w-32;
+        @apply bg-white;
+        @apply dark:bg-gray-700;
+    }
+
+    .dropdown-container [data-dropdown-target="menuItem"] {
+        @apply no-underline block pl-4 py-2 whitespace-nowrap w-full text-left;
+        @apply text-gray-900 hover:bg-gray-100 focus:bg-gray-100;
+        @apply dark:text-white dark:hover:bg-gray-500 dark:focus:bg-gray-500;
+    }
 }
