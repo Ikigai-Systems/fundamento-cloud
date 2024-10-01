@@ -18,6 +18,10 @@
         @apply antialiased;
     }
 
+    label {
+        @apply dark:text-white;
+    }
+
     .top-nav-bar {
         @apply bg-white border-gray-200;
         @apply dark:border-gray-500 dark:bg-gray-700;
