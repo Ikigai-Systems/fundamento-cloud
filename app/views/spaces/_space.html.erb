@@ -4,9 +4,9 @@
   </th>
   <td>
     <% if policy(space).update? %>
-      <%= link_to "Edit", edit_space_path(space), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+      <%= link_to "Edit", edit_space_path(space), class: "link-button" %>
     <% end %>
 
-    <%= link_to "Open", space_path(space), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+    <%= link_to "Open", space_path(space), class: "link-button" %>
   </td>
 </tr>
