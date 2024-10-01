@@ -18,6 +18,16 @@
         @apply antialiased;
     }
 
+    label {
+        @apply dark:text-white;
+    }
+
+    .top-nav-bar {
+        @apply bg-white border-gray-200;
+        @apply dark:border-gray-500 dark:bg-gray-700;
+        @apply border-y-2 px-2 py-2.5;
+    }
+
     .form-section {
         @apply dark:bg-gray-800 bg-white max-w-4xl p-6 md:mt-8 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
     }
@@ -39,6 +49,7 @@
 
     .form-input {
         @apply block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full;
+        @apply dark:bg-gray-700;
     }
 
     .form-field {
@@ -70,26 +81,6 @@
         @apply block px-4 py-2 text-sm text-gray-700;
     }
 
-    .btn {
-        display: inline-block;
-        outline: 0;
-        cursor: pointer;
-        border: 1px solid #1d1c1d4d;
-        font-weight: 700;
-        background: #fff;
-        padding: 0 8px 1px;
-        /*font-size: 13px;*/
-        border-radius: 4px;
-        color: rgb(29, 28, 29);
-        height: 28px;
-        min-width: 56px;
-        transition: all 80ms linear;
-        :hover {
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 8%);
-            background: rgba(248, 248, 248, 1);
-        }
-    }
-
     .document-toolbar-button {
         /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
         /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
@@ -101,7 +92,7 @@
     }
 
     .link-button {
-        @apply font-medium text-blue-600 dark:text-blue-500 hover:underline
+        @apply font-medium text-blue-600 dark:text-blue-500 hover:underline;
     }
 
     .table-list {
@@ -130,5 +121,17 @@
 
     .table-list form.button_to {
         @apply inline-block;
+    }
+
+    .dropdown-container {
+        @apply text-sm shadow-lg rounded border overflow-hidden w-32;
+        @apply bg-white;
+        @apply dark:bg-gray-700;
+    }
+
+    .dropdown-container [data-dropdown-target="menuItem"] {
+        @apply no-underline block pl-4 py-2 whitespace-nowrap w-full text-left;
+        @apply text-gray-900 hover:bg-gray-100 focus:bg-gray-100;
+        @apply dark:text-white dark:hover:bg-gray-500 dark:focus:bg-gray-500;
     }
 }

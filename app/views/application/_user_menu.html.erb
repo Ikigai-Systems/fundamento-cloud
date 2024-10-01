@@ -8,16 +8,16 @@
   </button>
 
   <div data-dropdown-target="menu" class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max">
-    <div class="text-sm bg-white shadow-lg rounded border overflow-hidden w-32">
-      <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+    <div class="dropdown-container">
+      <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem"} %>
 
-      <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+      <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem"} %>
 
-      <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem"}, class: "'no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100" %>
+      <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem"} %>
 
       <hr class="border-t" />
 
-      <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}, class: "no-underline block pl-4 py-2 text-gray-900 bg-white hover:bg-gray-100 whitespace-nowrap focus:bg-gray-100 w-full text-left"  %>
+      <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}  %>
     </div>
   </div>
 </div>

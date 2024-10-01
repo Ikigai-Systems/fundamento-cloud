@@ -3,8 +3,8 @@
     <div class="text-base font-semibold"><%= organization.name %></div>
   </th>
   <td>
-    <%= button_to "Switch to", select_organization_path(organization), method: :post, class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+    <%= button_to "Switch to", select_organization_path(organization), method: :post, class: "link-button" %>
 
-    <%= link_to "Show", organization_path(organization), class: "font-medium text-blue-600 dark:text-blue-500 hover:underline" %>
+    <%= link_to "Show", organization_path(organization), class: "link-button" %>
   </td>
 </tr>
