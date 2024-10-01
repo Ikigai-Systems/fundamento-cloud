@@ -3,11 +3,22 @@
   data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.up->dropdown#previousItem keydown.down->dropdown#nextItem keydown.esc->dropdown#hide"
   class="inline-block relative">
 
-  <button data-action="dropdown#toggle:stop" class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+  <button
+    id="user-dropdown"
+    data-action="dropdown#toggle:stop"
+    class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold"
+    aria-expanded="true"
+    aria-haspopup="true">
       <%= current_user.initials %>
   </button>
 
-  <div data-dropdown-target="menu" class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max">
+  <div
+    data-dropdown-target="menu"
+    class="hidden absolute top-4 right-0 z-10 mt-5 flex w-screen max-w-max"
+    role="menu"
+    aria-orientation="vertical"
+    aria-labelledby="user-dropdown"
+  >
     <div class="dropdown-container">
       <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem"} %>
 
