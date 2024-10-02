@@ -33,8 +33,8 @@
     </div>
 
     <div class="form-footer">
+      <%= link_to "Cancel", team_path(@team), class: "secondary-button" %>
       <%= f.submit "Add", class: "form-submit" %>
-      <%= link_to "Cancel", team_path(@team), class: "secondary-button ml-2" %>
     </div>
   <% end %>
 </section>

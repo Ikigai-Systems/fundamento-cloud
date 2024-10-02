@@ -33,7 +33,7 @@
     }
 
     .form-footer {
-        @apply flex justify-end mt-6;
+        @apply flex justify-end mt-6 gap-2;
     }
 
     .button {
