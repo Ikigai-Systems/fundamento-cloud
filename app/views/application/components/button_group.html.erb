@@ -25,16 +25,13 @@
 
     <div
       data-dropdown-target="menu"
-      class="hidden absolute right-0 z-10 -mr-1 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+      class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max"
       role="menu"
       aria-orientation="vertical"
       aria-labelledby="<%= random_id %>"
       tabindex="-1">
-
-      <div class="py-1" role="none">
-
+      <div class="dropdown-container w-32" role="menu">
         <%= content_for :button_group_dropdown_menu %>
-
       </div>
     </div>
   </div>

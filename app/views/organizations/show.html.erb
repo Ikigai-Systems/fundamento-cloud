@@ -24,7 +24,7 @@
       <% end %>
 
       <% content_for :button_group_dropdown_menu do %>
-        <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" }, class: "inline-block" }, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1", method: :delete %>
+        <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
       <% end %>
 
       <%= render template: "application/components/button_group" %>

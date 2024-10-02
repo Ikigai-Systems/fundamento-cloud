@@ -18,23 +18,22 @@
 
   <div
     data-dropdown-target="menu"
-    class="hidden absolute left-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+    class="hidden absolute top-5 left-0 z-10 mt-5 flex w-screen max-w-max"
     role="menu"
     aria-orientation="vertical"
     aria-labelledby="spaces-dropdown"
     tabindex="-1"
   >
-
-    <% if current_organization.present? %>
-      <div class="py-1" role="none">
+    <div class="dropdown-container w-56">
+      <% if current_organization.present? %>
         <% policy_scope(current_organization.spaces).filter(&:persisted?).each do |space| %>
-          <%= link_to  space.name, space_path(space), class: "dropdown-menu-item", role: "menuitem",  tabindex: "-1" %>
+          <%= link_to  space.name, space_path(space), data: {"dropdown-target" => "menuItem"}, role: "menuitem",  tabindex: "-1" %>
         <% end %>
-      </div>
-    <% end %>
+      <% end %>
 
-    <div class="py-1" role="none">
-      <%= link_to "Create space", new_space_path, class: "dropdown-menu-item", role: "menuitem", tabindex: "-1" %>
+      <hr class="border-t" />
+
+      <%= link_to "Create space", new_space_path, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1" %>
     </div>
   </div>
 </div>

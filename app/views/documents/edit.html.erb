@@ -39,14 +39,20 @@
 
         <%= render partial: "public_links/document_share_button", locals: { public_link_exists: @document.public_link.present? } %>
 
-        <div data-dropdown-target="menu" class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max">
-          <div class="text-sm bg-white shadow-lg rounded border overflow-hidden w-90">
+        <div
+          data-dropdown-target="menu"
+          class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max"
+          role="dialog"
+          aria-orientation="vertical"
+          aria-labelledby="document_share_button">
+          <div class="dropdown-container w-90">
             <%= turbo_frame_tag "document_share_dropdown", src: @document.public_link.present? ? public_link_path(@document.public_link, format: "turbo_stream") : new_public_link_path(public_link: { object_type: @document.class, object_id: @document.id }, format: "turbo_stream"), loading: "lazy" %>
           </div>
         </div>
       </div>
 
     </div>
+
     <div class="bg-white overflow-auto">
       <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
     </div>
