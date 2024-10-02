@@ -31,9 +31,11 @@
         <% end %>
       <% end %>
 
-      <hr class="border-t" />
+      <% if policy(Space).create? %>
+        <hr class="border-t" />
 
-      <%= link_to "Create space", new_space_path, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1" %>
+        <%= link_to "Create space", new_space_path, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1" %>
+      <% end %>
     </div>
   </div>
 </div>
