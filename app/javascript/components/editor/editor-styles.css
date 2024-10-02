@@ -1,8 +1,9 @@
-/* Adds border and shadow to editor */
-.bn-container .bn-editor {
-    color: rgb(30 41 59);
+/* Read more about styling BlockNote at https://www.blocknotejs.org/docs/styling-theming/themes */
+.bn-container[data-color-scheme] {
+    --bn-border-radius: 0;
 }
 
+/* Simple `code` block */
 .bn-container .bn-editor code {
     background-color: rgb(241 245 249);
     border: 1px solid rgb(203 213 225);
