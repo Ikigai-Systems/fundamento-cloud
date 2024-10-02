@@ -33,7 +33,7 @@
     }
 
     .form-footer {
-        @apply flex justify-end mt-6;
+        @apply flex justify-end mt-6 gap-2;
     }
 
     .button {
@@ -75,10 +75,6 @@
 
     .first-button-group {
         @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
-    }
-
-    .dropdown-menu-item {
-        @apply block px-4 py-2 text-sm text-gray-700;
     }
 
     .document-toolbar-button {
@@ -124,14 +120,18 @@
     }
 
     .dropdown-container {
-        @apply text-sm shadow-lg rounded border overflow-hidden w-32;
+        @apply text-sm shadow-lg rounded border overflow-hidden;
         @apply bg-white;
-        @apply dark:bg-gray-700;
+        @apply dark:bg-gray-900;
     }
 
     .dropdown-container [data-dropdown-target="menuItem"] {
         @apply no-underline block pl-4 py-2 whitespace-nowrap w-full text-left;
         @apply text-gray-900 hover:bg-gray-100 focus:bg-gray-100;
         @apply dark:text-white dark:hover:bg-gray-500 dark:focus:bg-gray-500;
+    }
+
+    .dropdown-container button, .dropdown-container a {
+        @apply focus-visible:outline-none;
     }
 }

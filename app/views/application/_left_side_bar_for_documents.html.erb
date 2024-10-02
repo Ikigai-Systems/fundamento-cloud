@@ -1,6 +1,7 @@
-<aside class="bg-white border-r overflow-auto">
+<aside class="bg-white dark:bg-gray-900 border-r overflow-auto">
   <div class="px-4 pb-4 flex flex-col h-full">
     <%= render partial: "application/left_side_bar/space_bar" %>
+
     <div class="flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
       <div class="flex justify-between items-center text-center">
         <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>

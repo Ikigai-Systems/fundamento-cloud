@@ -1,29 +1,27 @@
-<div class="bg-white shadow sm:rounded-lg">
-  <div class="px-4 py-5 sm:p-6">
-    <h3 class="text-base font-semibold leading-6 text-gray-900">Share this document</h3>
-    <div class="mt-2 max-w-xl text-sm text-gray-500">
-      <% if policy(public_link.object.space).update? %>
-        <p>
-          You can create a public link to share this document with others.
-          Anyone with the link will be able to view the document.
-        </p>
-      <% else %>
-        <p>
-          Only users with permission to update this document can create a public link.
-          Anyone with the link will be able to view the document.
-        </p>
-      <% end %>
-
-      <p class="mt-2">
-        You can see all documents shared publicly
-        <%= link_to "here", public_links_path, data: { turbo: false } %>.
-      </p>
-    </div>
-
+<div class="px-4 py-5 sm:p-6">
+  <h3 class="text-base font-semibold leading-6">Share this document</h3>
+  <div class="mt-2 max-w-xl text-sm">
     <% if policy(public_link.object.space).update? %>
-      <div class="mt-5 inline-flex">
-        <%= button_to "Share", public_links_path, method: :post, params: { public_link: public_link.slice(:object_id, :object_type) }, class: "secondary-button mr-2" %>
-      </div>
+      <p>
+        You can create a public link to share this document with others.
+        Anyone with the link will be able to view the document.
+      </p>
+    <% else %>
+      <p>
+        Only users with permission to update this document can create a public link.
+        Anyone with the link will be able to view the document.
+      </p>
     <% end %>
+
+    <p class="mt-2">
+      You can see all documents shared publicly
+      <%= link_to "here", public_links_path, data: { turbo: false } %>.
+    </p>
   </div>
+
+  <% if policy(public_link.object.space).update? %>
+    <div class="mt-5 inline-flex">
+      <%= button_to "Share", public_links_path, method: :post, params: { public_link: public_link.slice(:object_id, :object_type) }, class: "secondary-button mr-2" %>
+    </div>
+  <% end %>
 </div>
