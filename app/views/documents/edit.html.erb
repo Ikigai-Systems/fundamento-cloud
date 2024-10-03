@@ -4,7 +4,8 @@
 
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
   <%= render 'application/left_side_bar_for_documents' %>
-  <article class="flex-col overflow-auto">
+
+  <article class="document">
     <div class="bg-white h-12 flex justify-end items-center p-2">
       <div id="editor-connection-indicator"></div>
       <%= button_to "Save this as version", space_document_versions_path(@space, @document), method: :create,
@@ -53,7 +54,7 @@
 
     </div>
 
-    <div class="bg-white overflow-auto">
+    <div class="overflow-auto">
       <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
     </div>
   </article>

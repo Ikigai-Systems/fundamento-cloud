@@ -45,6 +45,13 @@ type EditorProps = {
   documentId: number,
 }
 
+const LoadingContent = () => {
+  return <div className="pl-[3.4rem] pb-1 mt-5 flex gap-2">
+    <span className="animate-spin size-5 icon-[heroicons--arrow-path]"></span>
+    Loading content...
+  </div>;
+}
+
 const Editor = ({currentUser, documentId}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
@@ -146,17 +153,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }, [documentId]);
 
   if (editor === undefined || !initialStateReceived) {
-    return <div style={{
-      marginTop: "0.5px",
-      marginLeft: "-0.25px",
-      fontSize: "16px",
-      fontStyle: "italic",
-      color: "rgb(207,207,207)",
-      fontFamily: "Inter,SF Pro Display,-apple-system,BlinkMacSystemFont,Open Sans,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif",
-    }} className="pl-[3.4rem] pb-1">
-      Loading content...
-      <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
-    </div>
+    return <LoadingContent/>
   }
 
   return <>
