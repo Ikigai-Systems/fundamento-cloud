@@ -3,11 +3,14 @@
   <% # bg-red-100 border-red-500 text-red-900 text-red-500 %>
   <% # bg-yellow-100 border-yellow-500 text-yellow-900 text-yellow-500 %>
   <% # bg-teal-100 border-teal-500 text-teal-900 text-teal-500 %>
+  <% # bg-sky-100 border-sky-500 text-sky-900 text-sky-500 %>
 
-  <% if type == 'warning'  %>
-    <% color = 'yellow' %>
-  <% elsif type == 'error'  %>
+  <% if type == 'error'  %>
     <% color = 'red' %>
+  <% elsif type == 'warning'  %>
+    <% color = 'yellow' %>
+  <% elsif type == 'info'  %>
+    <% color = 'sky' %>
   <% else %>
     <% color = 'teal' %>
   <% end %>

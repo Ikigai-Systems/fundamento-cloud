@@ -59,6 +59,8 @@ GEM
       activemodel (= 7.1.3.4)
       activesupport (= 7.1.3.4)
       timeout (>= 0.4.0)
+    activerecord-like (7.0.0)
+      activerecord (~> 7.0, >= 7.0.0)
     activestorage (7.1.3.4)
       actionpack (= 7.1.3.4)
       activejob (= 7.1.3.4)
@@ -340,6 +342,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activerecord-like
   bootsnap
   cypress-on-rails
   database_cleaner-active_record

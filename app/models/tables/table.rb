@@ -10,6 +10,8 @@ class Tables::Table < ApplicationRecord
   has_many :rows, class_name: "Tables::Row", dependent: :delete_all
   has_many :cells, class_name: "Tables::Cell", dependent: :delete_all
 
+  scope :lexicographically, -> { order(name: :asc) }
+
   validates_presence_of :name
 
   def order_linked_list(rows, method)

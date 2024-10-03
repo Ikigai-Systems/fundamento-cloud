@@ -1,7 +1,14 @@
 import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import Rowstack from "rowstack";
-import {useState} from "react";
+import {useContext} from "react";
+import createFlash from "../../createFlash.ts"
+import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
+import TablesApi from "../../../api/Tables/TablesApi.js";
+import AsyncSelect from 'react-select/async';
+import {useQuery} from "@tanstack/react-query";
+import queryClient from "../../../contextes/ReactQueryClient.tsx";
+import {Config} from "@js-from-routes/client";
+import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
 
 const sampleData = [
   {
@@ -46,123 +53,116 @@ const AdvancedTable = createReactBlockSpec(
       },
       columns: {
         default: JSON.stringify(sampleColumns),
+      },
+      tableId: {
+        default: -1
       }
     },
     content: "none",
   },
   {
+    /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [rows, setRows] = useState(JSON.parse(props.block.props.data));
-      const [columns, setColumns] = useState(JSON.parse(props.block.props.columns));
+      const blockProps = props.block.props;
+      const editor = props.editor;
+      const {space} = useContext(CurrentSpaceContext);
+      const tableId = blockProps.tableId;
+      const tableQuery = useQuery({queryKey: ["tables", space.npi, tableId], queryFn: async () => {
+        const currentDataDeserializer = Config.deserializeData;
+        try {
+          Config.deserializeData = (val => val);
+          return (await TablesApi.show({space_npi: space.npi, id: tableId}));
+        } finally {
+          Config.deserializeData = currentDataDeserializer;
+        }
+      }}, queryClient);
+      const isLoading = tableQuery.isLoading;
 
-      return (
-        <Rowstack data={rows} columns={columns} config={{}}
-          onChange={async (event) => {
-            if (event.type === "add_row") {
-              setRows((prevRows: [{id: string}]) => {
-                const nextRows = [...prevRows, {id: event.rowId}];
+      if (tableId === -1) {
+        return (
+          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+            <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
+              <div className="font-bold">New table</div>
+              <button
+                className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                onClick={() => {
+                  editor.removeBlocks([props.block]);
+                }}
+              >
+                <div className="size-5 icon-[heroicons--x-mark]"></div>
+              </button>
+            </div>
+            <div className="px-4 py-3 sm:p-6">
+              <div className="flex flex-row gap-6 justify-center">
+                <button
+                  className="secondary-button"
+                  onClick={async () => {
+                    const table = await TablesApi.create({space_npi: space.npi}, {
+                      table: {}
+                    });
+                  }}
+                >
+                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
+                  Start blank
+                </button>
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    createFlash({
+                      type: "info",
+                      message: `Not implemented<br/><br/>
+This will open modal dialog allowing user to select csv file from local computer.
+User either finishes journey by successfully uploading a file or cancels the table creation process.`,
+                    });
+                    editor.removeBlocks([props.block]);
+                  }}
+                >
+                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
+                  Import data
+                </button>
+              </div>
+              <div className="font-bold text-sm py-3">Or use existing table</div>
 
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    data: JSON.stringify(nextRows),
-                  },
-                })
-                return nextRows;
-              })
-            } else if (event.type === "update_row") {
-              setRows((prevRows: [{id: string}]) => {
-                const nextRows = prevRows.map(row => {
-                  if (row.id.toString() === event.rowId) {
-                    return {...row, ...event.update}
-                  } else {
-                    return row;
-                  }
-                });
+              <div className="mb-48">
+                <AsyncSelect
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={async (query) => {
+                    const tables = await TablesApi.index({
+                      params: {
+                        space_npi: space.npi,
+                        query: {query}
+                      }
+                    });
+                    return tables.map(table => ({value: table.id, label: table.name}));
+                  }}
+                  onChange={(newOption) => {
+                    editor.updateBlock(props.block, {
+                      props: {
+                        tableId: newOption.value,
+                      },
+                    })
+                  }}
+                />
+              </div>
+            </div>
+            {/*<div className="px-4 py-3 sm:px-6">*/}
+            {/*  FOOTER*/}
+            {/*</div>*/}
+          </div>
+        )
+      }
 
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    data: JSON.stringify(nextRows),
-                  },
-                })
-                return nextRows;
-              })
-            } else if (event.type === "update_rows") {
-              setRows((prevRows: [{id: string}]) => {
-                const nextRows = prevRows.map(row => {
-                  const updatedRow = event.rows.find((updatedRow: {rowId: string}) => updatedRow.rowId === row.id);
-                  if (updatedRow) {
-                    return {...row, ...updatedRow.update}
-                  } else {
-                    return row;
-                  }
-                });
 
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    data: JSON.stringify(nextRows),
-                  },
-                })
-                return nextRows;
-              })
-            } else if (event.type === "delete_rows") {
-              setRows((prevRows: [{id: string}]) => {
-                const nextRows = prevRows.filter(row => !event.rows[0].includes(row.id));
+      if (isLoading) {
+        return (
+          <div className="min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">Loading...</div>
+        )
+      }
 
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    data: JSON.stringify(nextRows),
-                  },
-                })
-                return nextRows;
-              })
-            } else if (event.type === "add_column") {
-              setColumns((prevColumns: [{ id: string }]) => {
-                const nextColumns = [...prevColumns, event.update];
-
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    columns: JSON.stringify(nextColumns),
-                  },
-                })
-
-                return nextColumns;
-              });
-            } else if (event.type === "update_column") {
-              setColumns((prevColumns: [{ id: string }]) => {
-                const nextColumns = prevColumns.map(column => {
-                  if (column.id.toString() === event.colId) {
-                    return {...column, ...event.update}
-                  } else {
-                    return column;
-                  }
-                });
-
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    columns: JSON.stringify(nextColumns),
-                  },
-                })
-                return nextColumns;
-              })
-            } else if (event.type === "delete_column") {
-              setColumns((prevColumns: [{ id: string }]) => {
-                const nextColumns = prevColumns.filter(column => column.id != event.colId);
-
-                props.editor.updateBlock(props.block, {
-                  props: {
-                    columns: JSON.stringify(nextColumns),
-                  },
-                })
-
-                return nextColumns;
-              });
-            } else {
-              console.log(event);
-            }
-          }}
-        />
-      );
+      return (<div className="flex flex-col w-full">
+        <EditableTableWithRowstack table={tableQuery.data.table} data={tableQuery.data.data}/>
+      </div>);
     },
   }
 );

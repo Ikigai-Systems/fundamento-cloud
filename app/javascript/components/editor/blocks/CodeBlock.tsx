@@ -22,7 +22,6 @@ const CodeBlock = createReactBlockSpec({
             data: value
           },
         })
-        console.log(value);
       }}
       value={props.block.props.data}
     />
