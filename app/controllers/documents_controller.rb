@@ -67,7 +67,7 @@ class DocumentsController < ApplicationController
     authorize @document, :update?
 
     update_params = document_params
-    @document.update(update_params)
+    @document.update!(update_params)
     if update_params[:archived].present?
       if update_params[:archived] == "true"
         redirect_to space_path(@document.space), notice: 'Document has been archived.'

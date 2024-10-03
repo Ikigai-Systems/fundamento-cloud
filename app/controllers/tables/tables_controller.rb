@@ -1,8 +1,18 @@
 class Tables::TablesController < ApplicationController
-  after_action :verify_authorized
+  after_action :verify_authorized_or_index_scoped
 
   def index
-    render json: current_organization.tables
+    @tables = policy_scope(current_organization.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+    query = params[:query]
+    @tables = @tables.where.like(name: "%#{query}%") if query.present?
+
+    respond_to do |format|
+      format.json { render json: @tables }
+      format.html do
+        @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+        render "spaces/tables/index"
+      end
+    end
   end
 
   def new
@@ -45,16 +55,39 @@ class Tables::TablesController < ApplicationController
 
     authorize @table, :show?, policy_class: DocumentPolicy
 
-    render "spaces/databases/show", layout: "full_width_application"
+    respond_to do |format|
+      # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
+      format.json { render json: { table: @table, data: @table.data_to_json } }
+      format.html do
+        @tables = @space.tables.lexicographically
+        render "spaces/tables/show", layout: "full_width_application"
+      end
+    end
   end
 
   def edit
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
+    @tables = @space.tables.lexicographically
 
     authorize @table, :update?, policy_class: DocumentPolicy
 
-    render "spaces/databases/edit", layout: "full_width_application"
+    render "spaces/tables/edit", layout: "full_width_application"
+  end
+
+  def update
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @table = @space.tables.find(params[:id])
+
+    authorize @table, :update?, policy_class: DocumentPolicy
+
+    update_params = table_params
+    @table.update!(update_params)
+
+    respond_to do |format|
+      format.json { render json: @table }
+      format.html { render action: 'edit' }
+    end
   end
 
   def destroy
@@ -65,7 +98,7 @@ class Tables::TablesController < ApplicationController
 
     @table.destroy
 
-    redirect_to space_database_path(@space), notice: 'Table has been deleted.'
+    redirect_to space_tables_path(@space), notice: 'Table has been deleted.'
   end
 
   def update_by_rowstack

@@ -1,0 +1,48 @@
+<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
+  <%= render 'application/left_side_bar_for_database' %>
+
+  <article class="bg-white flex-col overflow-auto">
+<!--    <div class="bg-white h-12 flex justify-end items-center p-2">-->
+<!--      link-->
+<!--    </div>-->
+
+    <div class="bg-white overflow-auto">
+      <% if @table.present? %>
+        <%#= @table.data_to_json %>
+<!--        <br/>-->
+        <table>
+          <thead>
+            <tr>
+              <% if @table.columns.present? %>
+                <% @table.columns_in_order.each do |column| %>
+                  <th class="border-x"><%= column.name %></th>
+                <% end %>
+              <% else %>
+                No columns<br/>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @table.rows.present? %>
+              <% @table.data_to_json[:rows].each do |row| %>
+                <tr class="h-6">
+                  <% row.each do |key, value| %>
+                    <% next if key == "npi" %>
+                    <td class="border"><%= value %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% else %>
+              No rows<br/>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </article>
+<!--  <aside class="bg-white overflow-auto border-l">-->
+<!--    <h1 class="p-2 my-2 text-2xl text-slate-800">-->
+<!--      right side bar content-->
+<!--    </h1>-->
+<!--  </aside>-->
+</div>

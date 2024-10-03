@@ -1,13 +1,17 @@
-const createFlash = (options = {
-  key: string,
-  type: string,
+type FlashOptions = {
+  key?: string,
+  type?: "success" | "error" | "warning" | "info",
   message: string
-}) => {
+}
+
+const createFlash = (options: FlashOptions) => {
   let color = "teal";
   if (options.type === "error") {
     color = "red"
   } else if (options.type === "warning") {
     color = "yellow";
+  } else if (options.type === "info") {
+    color = "sky";
   }
 
   if (options.key && document.querySelector(`#flashes div[data-flash-key="${options.key}"]`) !== null) {
