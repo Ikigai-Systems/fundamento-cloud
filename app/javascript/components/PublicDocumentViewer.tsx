@@ -4,8 +4,8 @@ import {BlockNoteView} from "@blocknote/mantine";
 import * as Y from "yjs";
 import '@blocknote/mantine/style.css';
 import schema from "./editor/schema";
-import {createFileUrlResolver} from "./editor/Editor.tsx";
 import PublicApi from "../api/PublicApi";
+import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
 
 type ReadOnlyEditorProps = {
     documentContent: string,

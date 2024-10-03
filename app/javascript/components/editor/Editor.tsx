@@ -20,13 +20,13 @@ import {
 } from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
-import AttachmentsApi from "../../api/AttachmentsApi.js";
-import {request} from '@js-from-routes/axios';
 import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
 import CodeBlockMenuItem from "./blocks/CodeBlockMenuItem.tsx";
+import {uploadFile} from "./utils/uploadFile.tsx";
+import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -43,39 +43,6 @@ const tinySimpleHash = (s: string) => {
 type EditorProps = {
   currentUser: User,
   documentId: number,
-}
-
-export function uploadFile(documentId: number) {
-  return async (file: string | Blob)=> {
-    const body = new FormData();
-
-    body.set("attachment[parent_id]", documentId.toString());
-    body.set("attachment[parent_type]", "Document");
-
-    body.append("file", file);
-
-    const attachment = await request("post", AttachmentsApi.create.path(), {
-      data: body,
-      responseAs: "json",
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-
-    return `attachment:${attachment.id}`;
-  };
-}
-
-export function createFileUrlResolver(showAttachmentPath = AttachmentsApi.show.path) {
-  return async (fileUrl: string)=> {
-    const attachmentId = fileUrl.match(/^attachment:(\d+)$/)?.[1];
-
-    if (attachmentId) {
-      return showAttachmentPath({id: attachmentId});
-    } else {
-      return fileUrl;
-    }
-  }
 }
 
 const Editor = ({currentUser, documentId}: EditorProps) => {
