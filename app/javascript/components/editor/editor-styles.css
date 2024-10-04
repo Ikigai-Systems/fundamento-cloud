@@ -1,6 +1,7 @@
 /* Read more about styling BlockNote at https://www.blocknotejs.org/docs/styling-theming/themes */
 .bn-container[data-color-scheme] {
     --bn-border-radius: 0;
+    --bn-colors-editor-background: transparent;
 }
 
 /* Simple `code` block */
