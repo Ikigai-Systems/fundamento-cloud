@@ -1,7 +1,7 @@
 import EditableTableWithRowstack from "./tables/EditableTableWithRowstack.tsx";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext.tsx";
 import {TableData} from "tables/EditableTableWithRowstack.tsx"
-import {Table, Space} from "../types.ts"
+import {Space, Table} from "../types.ts"
 
 const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>

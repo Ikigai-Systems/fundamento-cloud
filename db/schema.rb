@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_27_152016) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_04_154518) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -157,9 +157,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_27_152016) do
     t.text "value_formula"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
-    t.index ["npi"], name: "index_table_columns_on_npi", unique: true
     t.index ["organization_id"], name: "index_table_columns_on_organization_id"
     t.index ["previous_column_id"], name: "index_table_columns_on_previous_column_id"
+    t.index ["table_id", "npi"], name: "index_table_columns_on_table_id_and_npi", unique: true
     t.index ["table_id"], name: "index_table_columns_on_table_id"
   end
 
@@ -168,9 +168,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_27_152016) do
     t.bigint "table_id", null: false
     t.bigint "previous_row_id"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
-    t.index ["npi"], name: "index_table_rows_on_npi", unique: true
     t.index ["organization_id"], name: "index_table_rows_on_organization_id"
     t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
+    t.index ["table_id", "npi"], name: "index_table_rows_on_table_id_and_npi", unique: true
     t.index ["table_id"], name: "index_table_rows_on_table_id"
   end
 

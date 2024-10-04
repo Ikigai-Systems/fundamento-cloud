@@ -10,7 +10,7 @@ class Tables::TablesController < ApplicationController
       format.json { render json: @tables }
       format.html do
         @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-        render "spaces/tables/index"
+        render "spaces/tables/index", layout: "full_width_application"
       end
     end
   end
@@ -26,7 +26,11 @@ class Tables::TablesController < ApplicationController
 
   def create
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.new(table_params)
+    create_params = table_params
+    if create_params[:name].nil?
+      create_params[:name] = "Table " + Nanoid.generate(size: 4)
+    end
+    @table = @space.tables.new(create_params)
 
     authorize @table, :create?, policy_class: DocumentPolicy
 
@@ -38,15 +42,50 @@ class Tables::TablesController < ApplicationController
       uploaded_file = params[:table].fetch(:csv_file, nil)
       if uploaded_file.present?
         @table.import_from_csv(uploaded_file)
+      else
+        last_column = nil
+        params[:table][:columns].each do |column|
+          last_column = @table.columns.create!(
+            previous_column: last_column,
+            organization_id: @table.organization_id,
+            npi: column["id"],
+            name: column["name"],
+            kind: Tables::Column::to_kind(column["type"])
+          )
+        end
+        last_row = nil
+        params[:table][:rows].each do |row|
+          last_row = @table.rows.create!(
+            previous_row: last_row,
+            organization_id: @table.organization_id,
+            npi: row["id"]
+          )
+          @table.columns.each do |column|
+            last_row.cells.create!(
+              table: @table,
+              column: column,
+              organization_id: @table.organization_id,
+              )
+          end
+        end
       end
 
-      redirect_to edit_space_table_path(@space, @table), notice: "Table created"
+      respond_to do |format|
+        format.json { render json: @table }
+        format.html { redirect_to edit_space_table_path(@space, @table), notice: "Table created" }
+      end
     else
-      render "spaces/tables/new"
+      respond_to do |format|
+        format.json { render json: @table, status: :unprocessable_content}
+        format.html { render "spaces/tables/new" }
+      end
     end
   rescue ActiveRecord::RecordNotUnique => e
     @table.errors.add(:name, "must be unique within Space")
-    render "spaces/tables/new"
+    respond_to do |format|
+      format.json { render json: @table, status: :unprocessable_content }
+      format.html { render "spaces/tables/new" }
+    end
   end
 
   def show

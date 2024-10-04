@@ -87,6 +87,10 @@
         @apply dark:ring-0;
     }
 
+    button:disabled {
+        @apply bg-slate-950/5 text-slate-950/40 cursor-not-allowed;
+    }
+
     .first-button-group {
         @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
     }
@@ -95,10 +99,6 @@
         /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
         /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
         @apply secondary-button ml-2 text-sm;
-    }
-
-    button.document-toolbar-button[disabled] {
-        @apply ring-0 bg-gray-100 hover:bg-gray-100 text-slate-400 cursor-not-allowed;
     }
 
     .link-button {
