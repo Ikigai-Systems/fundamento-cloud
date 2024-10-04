@@ -13,15 +13,12 @@
     }
 
     .document {
-        @apply bg-white;
-        @apply dark:bg-gray-900;
         @apply flex-col overflow-auto;
     }
 
     .document-title {
         @apply pl-[3.4rem] h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
-        @apply bg-white;
-        @apply dark:bg-gray-900;
+        @apply bg-transparent;
     }
 }
 
