@@ -1,6 +1,6 @@
 import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import createFlash from "../../createFlash.ts"
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
@@ -10,7 +10,7 @@ import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
 
-const sampleData = [
+const sampleRows = [
   {
     id: "sample_row_1",
   },
@@ -48,12 +48,6 @@ const AdvancedTable = createReactBlockSpec(
     propSchema: {
       textAlignment: defaultProps.textAlignment,
       textColor: defaultProps.textColor,
-      data: {
-        default: JSON.stringify(sampleData),
-      },
-      columns: {
-        default: JSON.stringify(sampleColumns),
-      },
       tableId: {
         default: -1
       }
@@ -67,7 +61,11 @@ const AdvancedTable = createReactBlockSpec(
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableId = blockProps.tableId;
+      const [isCreateBlankLoading, setCreateBlankLoading] = useState(false);
       const tableQuery = useQuery({queryKey: ["tables", space.npi, tableId], queryFn: async () => {
+        if (tableId === -1) {
+          return null;
+        }
         const currentDataDeserializer = Config.deserializeData;
         try {
           Config.deserializeData = (val => val);
@@ -76,7 +74,16 @@ const AdvancedTable = createReactBlockSpec(
           Config.deserializeData = currentDataDeserializer;
         }
       }}, queryClient);
-      const isLoading = tableQuery.isLoading;
+      const {isLoading, isError} = tableQuery;
+
+      if (isLoading) {
+        return (
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
+            Loading table...
+            <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+          </div>
+        )
+      }
 
       if (tableId === -1) {
         return (
@@ -96,10 +103,29 @@ const AdvancedTable = createReactBlockSpec(
               <div className="flex flex-row gap-6 justify-center">
                 <button
                   className="secondary-button"
+                  disabled={isCreateBlankLoading}
                   onClick={async () => {
-                    const table = await TablesApi.create({space_npi: space.npi}, {
-                      table: {}
-                    });
+                    setCreateBlankLoading(true);
+                    try {
+                      const table = await TablesApi.create({
+                        params: {
+                          space_npi: space.npi
+                        },
+                        data: {
+                          table: {
+                            rows: sampleRows,
+                            columns: sampleColumns,
+                          }
+                        }
+                      });
+                      editor.updateBlock(props.block, {
+                        props: {
+                          tableId: table.id,
+                        },
+                      });
+                    } finally {
+                      setCreateBlankLoading(false);
+                    }
                   }}
                 >
                   <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
@@ -141,7 +167,7 @@ User either finishes journey by successfully uploading a file or cancels the tab
                       props: {
                         tableId: newOption.value,
                       },
-                    })
+                    });
                   }}
                 />
               </div>
@@ -153,10 +179,9 @@ User either finishes journey by successfully uploading a file or cancels the tab
         )
       }
 
-
-      if (isLoading) {
+      if (isError) {
         return (
-          <div className="min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">Loading...</div>
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable to load table with id {tableId}</div>
         )
       }
 

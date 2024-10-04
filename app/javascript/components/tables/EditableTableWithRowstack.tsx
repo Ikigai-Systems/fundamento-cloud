@@ -6,10 +6,21 @@ import TablesApi from "../../api/Tables/TablesApi.js";
 import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
 
+const toType = (kind: "string" | "integer" | "long_text") => {
+  switch (kind) {
+  case "integer":
+    return "number";
+  case "long_text":
+    return "longText";
+  default:
+    return "text";
+  }
+}
+
 const EditableTableWithRowstack = ({table, data}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind}) => ({id: npi, name, type: kind === "integer" ? "number" : "text"}));
+  const columns = data.columns.map(({npi, name, kind}) => ({id: npi, name, type: toType(kind)}));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
 
   return (<div className="flex flex-col">
