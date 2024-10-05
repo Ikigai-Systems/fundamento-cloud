@@ -54,7 +54,7 @@
 
     </div>
 
-    <div class="overflow-auto">
+    <div class="overflow-auto h-[calc(100%-48px)]">
       <%= react_component "EditDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
     </div>
   </article>
