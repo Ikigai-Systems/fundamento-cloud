@@ -2,14 +2,9 @@
   <%= render 'application/left_side_bar_for_database' %>
 
   <article class="bg-white flex-col overflow-auto">
-<!--    <div class="bg-white h-12 flex justify-end items-center p-2">-->
-<!--      link-->
-<!--    </div>-->
-
-    <div class="bg-white overflow-auto">
+    <div class="bg-white overflow-auto text-slate-800">
       <% if @table.present? %>
-        <%#= @table.data_to_json %>
-<!--        <br/>-->
+        <h1 class="text-3xl font-bold"><%= @table.name %></h1>
         <table>
           <thead>
             <tr>
