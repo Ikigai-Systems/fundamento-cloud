@@ -1,7 +1,6 @@
 import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import {useContext, useState} from "react";
-import createFlash from "../../createFlash.ts"
+import {useContext, useRef, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -9,6 +8,7 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
+import {request} from "@js-from-routes/axios";
 
 const sampleRows = [
   {
@@ -61,7 +61,8 @@ const AdvancedTable = createReactBlockSpec(
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableId = blockProps.tableId;
-      const [isCreateBlankLoading, setCreateBlankLoading] = useState(false);
+      const inputFile = useRef<HTMLInputElement | undefined>(undefined);
+      const [isCreating, setIsCreating] = useState(false);
       const tableQuery = useQuery({queryKey: ["tables", space.npi, tableId], queryFn: async () => {
         if (tableId === -1) {
           return null;
@@ -76,7 +77,7 @@ const AdvancedTable = createReactBlockSpec(
       }}, queryClient);
       const {isLoading, isError} = tableQuery;
 
-      if (isLoading) {
+      if (isLoading || isCreating) {
         return (
           <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
             Loading table...
@@ -103,9 +104,9 @@ const AdvancedTable = createReactBlockSpec(
               <div className="flex flex-row gap-6 justify-center">
                 <button
                   className="secondary-button"
-                  disabled={isCreateBlankLoading}
+                  disabled={isCreating}
                   onClick={async () => {
-                    setCreateBlankLoading(true);
+                    setIsCreating(true);
                     try {
                       const table = await TablesApi.create({
                         params: {
@@ -124,23 +125,42 @@ const AdvancedTable = createReactBlockSpec(
                         },
                       });
                     } finally {
-                      setCreateBlankLoading(false);
+                      setIsCreating(false);
                     }
                   }}
                 >
                   <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
                   Start blank
                 </button>
+                <input type="file" accept="text/csv" className="hidden" ref={inputFile} onChange={async (e) => {
+                  setIsCreating(true);
+                  try {
+                    const file = e.target?.files[0];
+                    const body = new FormData();
+                    body.append('table[csv_file]', file);
+
+                    const table = await request("post", TablesApi.create.path({space_npi: space.npi}), {
+                      data: body,
+                      responseAs: "json",
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      }
+                    })
+                    editor.updateBlock(props.block, {
+                      props: {
+                        tableId: table.id,
+                      },
+                    });
+                  } finally {
+                    setIsCreating(false);
+                  }
+                }}/>
                 <button
                   className="secondary-button"
-                  onClick={() => {
-                    createFlash({
-                      type: "info",
-                      message: `Not implemented<br/><br/>
-This will open modal dialog allowing user to select csv file from local computer.
-User either finishes journey by successfully uploading a file or cancels the table creation process.`,
-                    });
-                    editor.removeBlocks([props.block]);
+                  disabled={isCreating}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    inputFile.current.click();
                   }}
                 >
                   <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
@@ -151,6 +171,7 @@ User either finishes journey by successfully uploading a file or cancels the tab
 
               <div className="mb-48">
                 <AsyncSelect
+                  isDisabled={isCreating}
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
