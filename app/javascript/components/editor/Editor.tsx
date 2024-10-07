@@ -57,6 +57,9 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   const [connectionStale, setConnestionStale] = useState(false);
 
   useInterval(() => {
+    if (document.hidden) {
+      return; //user is on another tab/window
+    }
     //no-ts-inspect
     const isStale = acConsumer?.connection.monitor.connectionIsStale();
     setConnestionStale((prevState) => {
