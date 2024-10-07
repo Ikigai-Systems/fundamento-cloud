@@ -27,10 +27,10 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
   }
 }
 
-const EditableTableWithRowstack = ({table, data, initialViewProps, onViewPropsChange}: EditableTableWithRowstackProps) => {
+const EditableTableWithRowstack = ({table, data, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind, options}) => ({id: npi, name, type: toType(kind), options, ...initialViewProps.columns[npi]}));
+  const columns = data.columns.map(({npi, name, kind, options}) => ({id: npi, name, type: toType(kind), options, ...initialViewProps?.columns[npi]}));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
 
   return (<div className="flex flex-col">
