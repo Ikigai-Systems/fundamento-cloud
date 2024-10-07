@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_04_154518) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_07_090043) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -183,9 +183,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_04_154518) do
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["name", "space_id", "organization_id"], name: "index_tables_on_name_and_space_id_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_tables_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_tables_on_parent"
+    t.index ["space_id", "name"], name: "index_tables_on_space_id_and_name", unique: true
     t.index ["space_id"], name: "index_tables_on_space_id"
   end
 
