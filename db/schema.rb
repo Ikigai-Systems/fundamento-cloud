@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_07_090043) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_07_145207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,7 +28,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_07_090043) do
   end
 
   create_table "documents", force: :cascade do |t|
-    t.json "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.binary "sync"
@@ -156,6 +155,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_07_090043) do
     t.datetime "updated_at", null: false
     t.text "value_formula"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.json "options"
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_columns_on_organization_id"
     t.index ["previous_column_id"], name: "index_table_columns_on_previous_column_id"

@@ -194,7 +194,7 @@ class Tables::TablesController < ApplicationController
         organization_id: @table.organization_id,
         npi: event["colId"],
         name: update["name"],
-        kind: 0 # todo: map Rowstack "text" "number" "select" etc into backend's "kind" enum
+        kind: Tables::Column::to_kind(update["type"])
       )
       @table.rows.each do |row|
         new_column.cells.create!(
@@ -210,6 +210,7 @@ class Tables::TablesController < ApplicationController
 
       column.name = update["name"] if update.has_key?("name")
       column.kind = Tables::Column::to_kind(update["type"]) if update.has_key?("type")
+      column.options = update["options"] if update.has_key?("options")
       column.save! if column.changed?
     when "delete_column"
       column = @table.columns.find_by(npi: event["colId"])
