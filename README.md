@@ -7,9 +7,9 @@ This is equivalent to `foreman start -f Procfile.dev` run manually.
 
 It should spawn two processes:
 * rails app listening on port `3000`
-* vite devserver listening on port `5173`
+* vite devserver listening on port `3036`
 
-Access application via `http://localhost:5173`
+Access application via `http://localhost:3000`
 
 # Production mode
 

@@ -17,10 +17,10 @@ const toType = (kind: "string" | "integer" | "long_text") => {
   }
 }
 
-const EditableTableWithRowstack = ({table, data}: EditableTableWithRowstackProps) => {
+const EditableTableWithRowstack = ({table, data, initialViewProps, onViewPropsChange}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind}) => ({id: npi, name, type: toType(kind)}));
+  const columns = data.columns.map(({npi, name, kind}) => ({id: npi, name, type: toType(kind), ...initialViewProps.columns[npi]}));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
 
   return (<div className="flex flex-col">
@@ -62,6 +62,10 @@ const EditableTableWithRowstack = ({table, data}: EditableTableWithRowstackProps
       data={rows}
       config={{}}
       onChange={async (event) => {
+        if (event.type === "update_column" && event?.update?.width !== undefined) {
+          onViewPropsChange({columns: {[event.colId]: {width: event.update.width}}});
+        }
+
         if ((event.type === "update_column" && Object.keys(event.update).length === 1 && event.update.width !== undefined)
           || (event.type === "update_row" && Object.keys(event.update).length === 1 && event.update.isSelected !== undefined)
         ) {
@@ -106,7 +110,9 @@ export type TableData = {
 
 type EditableTableWithRowstackProps = {
   table: Table,
-  data: TableData
+  data: TableData,
+  initialViewProps: object,
+  onViewPropsChange: (any) => void,
 }
 
 export default EditableTableWithRowstack;

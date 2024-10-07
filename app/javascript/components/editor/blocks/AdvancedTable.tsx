@@ -1,6 +1,5 @@
-import {defaultProps} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
-import {useContext, useRef, useState} from "react";
+import {useContext, useRef, useState, useEffect} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -9,6 +8,7 @@ import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
 import {request} from "@js-from-routes/axios";
+import deepmerge from "deepmerge";
 
 const sampleRows = [
   {
@@ -46,10 +46,13 @@ const AdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
     propSchema: {
-      textAlignment: defaultProps.textAlignment,
-      textColor: defaultProps.textColor,
+      // textAlignment: defaultProps.textAlignment,
+      // textColor: defaultProps.textColor,
       tableId: {
         default: -1
+      },
+      viewProps: {
+        default: JSON.stringify({columns: {}}),
       }
     },
     content: "none",
@@ -58,6 +61,14 @@ const AdvancedTable = createReactBlockSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       const blockProps = props.block.props;
+      const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
+      useEffect(() => {
+        editor.updateBlock(props.block, {
+          props: {
+            viewProps: JSON.stringify(viewProps),
+          },
+        });
+      }, [viewProps])
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableId = blockProps.tableId;
@@ -207,7 +218,16 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
-        <EditableTableWithRowstack table={tableQuery.data.table} data={tableQuery.data.data}/>
+        <EditableTableWithRowstack
+          table={tableQuery.data.table}
+          data={tableQuery.data.data}
+          initialViewProps={JSON.parse(blockProps.viewProps)}
+          onViewPropsChange={(event) => {
+            setViewProps((prevViewProps) => {
+              return deepmerge(prevViewProps, event);
+            })
+          }}
+        />
       </div>);
     },
   }
