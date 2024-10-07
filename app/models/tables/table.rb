@@ -65,7 +65,11 @@ class Tables::Table < ApplicationRecord
         end
       else
         columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          if column.kind == "checkbox"
+            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
+          else
+            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          end
         end
       end.merge({"npi" => row.npi}) # this is for Rowstack convenience
     end

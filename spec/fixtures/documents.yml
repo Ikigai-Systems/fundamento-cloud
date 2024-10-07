@@ -3,9 +3,7 @@
 one:
   organization: :is
   space: :is_default
-  content: 
 
 two:
   organization: :is
   space: :is_default
-  content: 

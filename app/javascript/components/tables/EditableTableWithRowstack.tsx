@@ -6,7 +6,7 @@ import TablesApi from "../../api/Tables/TablesApi.js";
 import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
 
-const toType = (kind: "string" | "integer" | "long_text" | "select" | "multi_select") => {
+const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
   switch (kind) {
   case "integer":
     return "number";
@@ -14,8 +14,14 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "multi_sel
     return "longText";
   case "select":
     return "select";
+  case "date":
+    return "date";
   case "multi_select":
     return "multiSelect";
+  case "url":
+    return "url";
+  case "checkbox":
+    return "checkbox";
   default:
     return "text";
   }
