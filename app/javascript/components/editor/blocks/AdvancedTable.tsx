@@ -219,6 +219,7 @@ const AdvancedTable = createReactBlockSpec(
 
       return (<div className="flex flex-col w-full">
         <EditableTableWithRowstack
+          isEditable={editor.isEditable}
           table={tableQuery.data.table}
           data={tableQuery.data.data}
           initialViewProps={JSON.parse(blockProps.viewProps)}
