@@ -198,6 +198,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
               <DragHandleMenu {...props}>
                 <div className="ikigai-side-menu-overrides">
                   <BlockTypeSelect/>
+                  {/*here is better version of "turn into" button, attached to 'drag handle menu': https://discord.com/channels/928190961455087667/1286404596951941225/1291449084837888064*/}
                 </div>
                 <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
                 <BlockColorsItem {...props}>Colors</BlockColorsItem>

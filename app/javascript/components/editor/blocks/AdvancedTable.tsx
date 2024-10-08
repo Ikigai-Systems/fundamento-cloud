@@ -62,12 +62,17 @@ const AdvancedTable = createReactBlockSpec(
     render: (props) => {
       const blockProps = props.block.props;
       const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
+      const initialRender = useRef(true);
       useEffect(() => {
-        editor.updateBlock(props.block, {
-          props: {
-            viewProps: JSON.stringify(viewProps),
-          },
-        });
+        if (initialRender.current === true) {
+          initialRender.current = false;
+        } else {
+          editor.updateBlock(props.block, {
+            props: {
+              viewProps: JSON.stringify(viewProps),
+            },
+          });
+        }
       }, [viewProps])
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);

@@ -87,6 +87,12 @@ const EditableTableWithRowstack = ({isEditable, table, data, initialViewProps, o
         ) {
           return; // skip frontend-session related changes from being passed to the backend
         }
+
+        if (!isEditable) {
+          //sanity guard: in read-only mode Rowstack shouldn't emit legitimate row/column update events other than column width
+          return;
+        }
+
         const currentDataSerializer = Config.serializeData;
         try {
           Config.serializeData = (val => val);
