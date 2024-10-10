@@ -1,5 +1,5 @@
 import {createReactBlockSpec} from "@blocknote/react";
-import {useContext, useRef, useState, useEffect} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -9,6 +9,7 @@ import {Config} from "@js-from-routes/client";
 import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
 import {request} from "@js-from-routes/axios";
 import deepmerge from "deepmerge";
+import EditableTableWithGlideDataGrid from "../../tables/EditableTableWithGlideDataGrid.tsx";
 
 const sampleRows = [
   {
@@ -223,6 +224,12 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
+        <div className="mb-4">
+          <EditableTableWithGlideDataGrid
+            table={tableQuery.data.table}
+            data={tableQuery.data.data}
+          />
+        </div>
         <EditableTableWithRowstack
           isEditable={editor.isEditable}
           table={tableQuery.data.table}
