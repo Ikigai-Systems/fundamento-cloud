@@ -246,6 +246,25 @@ class Tables::TablesController < ApplicationController
     end
   end
 
+  def update_by_react_data_grid
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @table = @space.tables.find(params[:id])
+
+    authorize @table, :update?, policy_class: DocumentPolicy
+
+    col_id = params[:col_id]
+    row_id = params[:row_id]
+    new_cell_value = params[:value]
+
+    row = @table.rows.find_by(npi: row_id)
+    @table.columns.find_by(npi: col_id).cells.find_by(row_id: row).update(value: new_cell_value)
+
+    respond_to do |format|
+      format.json { render json: {} }
+      format.all { head :unprocessable_content }
+    end
+  end
+
   private
 
   def table_params

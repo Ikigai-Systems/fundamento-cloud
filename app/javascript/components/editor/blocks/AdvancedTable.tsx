@@ -10,6 +10,7 @@ import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.ts
 import {request} from "@js-from-routes/axios";
 import deepmerge from "deepmerge";
 import EditableTableWithGlideDataGrid from "../../tables/EditableTableWithGlideDataGrid.tsx";
+import EditableTableWithReactDataGrid from "../../tables/EditableTableWithReactDataGrid.tsx";
 
 const sampleRows = [
   {
@@ -224,6 +225,12 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
+        <div className="mb-4">
+          <EditableTableWithReactDataGrid
+            table={tableQuery.data.table}
+            data={tableQuery.data.data}
+          />
+        </div>
         <div className="mb-4">
           <EditableTableWithGlideDataGrid
             table={tableQuery.data.table}
