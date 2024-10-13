@@ -11,6 +11,7 @@ import {request} from "@js-from-routes/axios";
 import deepmerge from "deepmerge";
 import EditableTableWithGlideDataGrid from "../../tables/EditableTableWithGlideDataGrid.tsx";
 import EditableTableWithReactDataGrid from "../../tables/EditableTableWithReactDataGrid.tsx";
+import EditableTableWithAgGridReact from "../../tables/EditableTableWithAgGridReact.tsx";
 
 const sampleRows = [
   {
@@ -226,17 +227,27 @@ const AdvancedTable = createReactBlockSpec(
 
       return (<div className="flex flex-col w-full">
         <div className="mb-4">
+          <div className="min-h-8">ag-grid-react: <a target="_blank" href="https://www.ag-grid.com/example/">(demo)</a> <a target="_blank" href="https://www.ag-grid.com/ecommerce/#/ecommerce/?licenseType=single&productType=aggrid">(pricing)</a></div>
+          <EditableTableWithAgGridReact
+            table={tableQuery.data.table}
+            data={tableQuery.data.data}
+          />
+        </div>
+        <div className="mb-4">
+          <hr/><div className="min-h-8">react-data-grid: <a target="blank" href="https://adazzle.github.io/react-data-grid/">(demo)</a></div>
           <EditableTableWithReactDataGrid
             table={tableQuery.data.table}
             data={tableQuery.data.data}
           />
         </div>
         <div className="mb-4">
+          <hr/><div className="min-h-8">glide-data-grid: <a target="blank" href="https://grid.glideapps.com">(demo)</a></div>
           <EditableTableWithGlideDataGrid
             table={tableQuery.data.table}
             data={tableQuery.data.data}
           />
         </div>
+        <hr/><div className="min-h-8">rowstack:</div>
         <EditableTableWithRowstack
           isEditable={editor.isEditable}
           table={tableQuery.data.table}
