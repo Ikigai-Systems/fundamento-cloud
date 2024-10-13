@@ -59,8 +59,8 @@
 
     .form-submit {
         @apply button;
-        @apply text-white bg-gray-700 hover:bg-gray-600 focus:bg-gray-600;
-        @apply dark:bg-gray-500 dark:hover:bg-gray-400 dark:focus:bg-gray-400;
+        @apply text-white bg-gray-700 hover:enabled:bg-gray-600 focus:bg-gray-600;
+        @apply dark:bg-gray-500 dark:hover:enabled:bg-gray-400 dark:focus:bg-gray-400;
         @apply transition-colors duration-200 transform focus:outline-none;
     }
 
@@ -90,7 +90,8 @@
         @apply dark:ring-0;
     }
 
-    button:disabled {
+    button:disabled,
+    input:disabled {
         @apply bg-slate-950/5 text-slate-950/40 cursor-not-allowed;
     }
 

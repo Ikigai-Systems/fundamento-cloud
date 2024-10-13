@@ -1,7 +1,7 @@
 <section class="form-section">
   <h2 class="form-header">Create team</h2>
 
-  <%= form_for(@team, url: teams_path, data: { turbo: false }) do |f| %>
+  <%= form_for(@team, url: teams_path, data: { turbo: false, controller: "prevent-double-submit"  }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @team %>
 
     <div class="form-field">

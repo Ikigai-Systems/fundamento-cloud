@@ -1,7 +1,7 @@
 <section class="form-section">
   <h2 class="form-header">Create table</h2>
 
-  <%= form_for("table", url: space_tables_path(@space.npi), data: { turbo: false }) do |f| %>
+  <%= form_for("table", url: space_tables_path(@space.npi), data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @table %>
 
     <div class="form-field">

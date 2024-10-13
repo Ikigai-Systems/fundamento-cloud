@@ -1,7 +1,7 @@
 <section class="form-section">
   <h2 class="form-header">Create space</h2>
 
-  <%= form_for(@space, url: spaces_path, data: { turbo: false }) do |f| %>
+  <%= form_for(@space, url: spaces_path, data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @space %>
 
     <div class="form-field">

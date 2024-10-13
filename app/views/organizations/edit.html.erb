@@ -1,7 +1,7 @@
 <section class="form-section">
   <h2 class="form-header">Edit organization</h2>
 
-  <%= form_for(@organization, data: { turbo: false }) do |f| %>
+  <%= form_for(@organization, data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
     <%= render "devise/shared/error_messages", resource: @organization %>
 
     <div class="form-field">

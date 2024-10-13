@@ -35,6 +35,9 @@ application.register("draggable", DraggableController);
 import UserSelectorController from "./controllers/user_selector_controller.js";
 application.register("user-selector", UserSelectorController);
 
+import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts"
+application.register("prevent-double-submit", PreventDoubleSubmitController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application
