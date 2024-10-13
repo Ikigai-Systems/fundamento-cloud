@@ -16,7 +16,7 @@ import {
   RemoveBlockItem,
   SideMenu,
   SideMenuController,
-  SuggestionMenuController
+  SuggestionMenuController,
 } from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
@@ -27,6 +27,7 @@ import "./editor-styles.css";
 import CodeBlockMenuItem from "./blocks/CodeBlockMenuItem.tsx";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
+import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -196,10 +197,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
           <SideMenu {...props}
             dragHandleMenu={(props) => (
               <DragHandleMenu {...props}>
-                <div className="ikigai-side-menu-overrides">
-                  <BlockTypeSelect/>
-                  {/*here is better version of "turn into" button, attached to 'drag handle menu': https://discord.com/channels/928190961455087667/1286404596951941225/1291449084837888064*/}
-                </div>
+                <TurnIntoItem {...props}>Turn into</TurnIntoItem>
                 <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
                 <BlockColorsItem {...props}>Colors</BlockColorsItem>
               </DragHandleMenu>

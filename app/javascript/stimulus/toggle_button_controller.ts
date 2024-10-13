@@ -5,7 +5,6 @@ const COOKIE_NAME = "ikigai_userPreferences_showArchived";
 
 // Connects to data-controller="toggle-button"
 export default class extends Controller<HTMLElement> {
-  static targets = ["hideable"];
   static values = {
     checked: Boolean,
   }
