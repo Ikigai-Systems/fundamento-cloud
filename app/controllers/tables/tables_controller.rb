@@ -127,6 +127,12 @@ class Tables::TablesController < ApplicationController
       format.json { render json: @table }
       format.html { render action: 'edit' }
     end
+  rescue ActiveRecord::RecordNotUnique => e
+    @table.errors.add(:name, "must be unique within Space")
+    respond_to do |format|
+      format.json { render json: {errors: @table.errors}, status: :unprocessable_content }
+      format.html { render action: 'edit' }
+    end
   end
 
   def destroy

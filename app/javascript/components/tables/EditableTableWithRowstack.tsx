@@ -27,7 +27,7 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
   }
 }
 
-const EditableTableWithRowstack = ({isEditable, table, data, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
+const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
   const columns = data.columns.map(({npi, name, kind, options}) => ({isViewOnly: !isEditable, id: npi, name, type: toType(kind), options, ...initialViewProps?.columns[npi]}));
@@ -56,10 +56,12 @@ const EditableTableWithRowstack = ({isEditable, table, data, initialViewProps, o
           try {
             await TablesApi.update({params: {space_npi: space.npi, id: table.id}, data: {name: e.target.value}});
           } catch (e) {
+            const errorMessage = (e.response?.data?.errors)
+              ? Object.entries(e.response.data.errors).map(([key, value]) => `${key[0].toUpperCase()}${key.slice(1)} ${value}`).join("<br/>")
+              : "Failed to update the table, please reload page and try again.";
             createFlash({
-              key: "table_update_failed",
               type: "error",
-              message: "Failed to update the table, please reload page and try again."
+              message: errorMessage,
             })
           }
         }
