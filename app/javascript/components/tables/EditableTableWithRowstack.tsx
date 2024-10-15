@@ -22,6 +22,8 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
     return "url";
   case "checkbox":
     return "checkbox";
+  case "formula":
+    return "formula";
   default:
     return "text";
   }
@@ -32,6 +34,9 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewP
 
   const columns = data.columns.map(({npi, name, kind, options}) => ({isViewOnly: !isEditable, id: npi, name, type: toType(kind), options, ...initialViewProps?.columns[npi]}));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
+  columns.filter(({type}) => type === "formula").forEach(column => {
+    column.formula = (row) => row[column.id];
+  });
 
   return (<div className="flex flex-col">
     <input key={table.id + "_name"} type="text"

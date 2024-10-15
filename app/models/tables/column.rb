@@ -29,6 +29,8 @@ class Tables::Column < ApplicationRecord
       :url
     when "checkbox"
       :checkbox
+    when "formula"
+      :formula
     else
       :string
     end
