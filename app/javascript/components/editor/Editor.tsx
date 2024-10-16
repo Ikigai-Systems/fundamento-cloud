@@ -9,7 +9,6 @@ import * as ActionCable from "@rails/actioncable";
 import useInterval from "../../hooks/useInterval"
 import {
   BlockColorsItem,
-  BlockTypeSelect,
   DragHandleMenu,
   FormattingToolbar,
   getDefaultReactSlashMenuItems,
@@ -17,6 +16,7 @@ import {
   SideMenu,
   SideMenuController,
   SuggestionMenuController,
+  useSelectedBlocks,
 } from "@blocknote/react";
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
@@ -156,6 +156,8 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
     return blockNoteEditor;
   }, [documentId]);
 
+  const selectedBlocks = useSelectedBlocks(editor);
+
   if (editor === undefined || !initialStateReceived) {
     return <LoadingContent/>
   }
@@ -206,7 +208,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
         )}
       />
       <div className="ikigai-static-toolbar-overrides">
-        <FormattingToolbar />
+        {selectedBlocks.length > 0 && <FormattingToolbar />}
       </div>
     </BlockNoteView>
   </>

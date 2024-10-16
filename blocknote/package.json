@@ -9,7 +9,7 @@
     "esbuild": "^0.23.1"
   },
   "dependencies": {
-    "@blocknote/server-util": "^0.15.11"
+    "@blocknote/server-util": "^0.16.0"
   },
   "packageManager": "npm@10.8.3"
 }
