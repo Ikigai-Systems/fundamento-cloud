@@ -26,6 +26,15 @@ module InteractiveDocumentsSelfHostedPrototype1
 
     config.action_mailer.default_url_options = { :host => ENV["HTTP_HOST"] }
 
+    # Enable lograge, but make it the default only on production
+    config.lograge.enabled = true
+    config.lograge.formatter = Lograge::Formatters::Logstash.new
+
+    unless Rails.env.production?
+      config.lograge.keep_original_rails_log = true
+      config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/#{Rails.env}-lograge.log"
+    end
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
