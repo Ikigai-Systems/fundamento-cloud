@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_22_091442) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_22_112836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -177,6 +177,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_22_091442) do
     t.integer "role", limit: 2, default: 0, null: false
     t.index ["organization_id", "user_id"], name: "index_organizations_users_on_organization_id_and_user_id", unique: true
     t.index ["user_id", "organization_id"], name: "index_organizations_users_on_user_id_and_organization_id", unique: true
+  end
+
+  create_table "packs", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.string "name", null: false
+    t.string "description", default: "", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["npi"], name: "index_packs_on_npi", unique: true
+    t.index ["organization_id"], name: "index_packs_on_organization_id"
   end
 
   create_table "public_links", force: :cascade do |t|
@@ -351,6 +362,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_22_091442) do
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "invited_users", "organizations"
+  add_foreign_key "packs", "organizations"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
   add_foreign_key "table_cells", "table_columns", column: "column_id"
