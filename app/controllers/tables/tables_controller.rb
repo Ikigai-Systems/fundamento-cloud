@@ -96,7 +96,7 @@ class Tables::TablesController < ApplicationController
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
-      format.json { render json: { table: @table, data: @table.data_to_json } }
+      format.json { render json: { table: @table, data: @table.data_to_json(evaluate_formulas: true) } }
       format.html do
         @tables = @space.tables.lexicographically
         render "spaces/tables/show", layout: "full_width_application"
@@ -217,6 +217,7 @@ class Tables::TablesController < ApplicationController
       column.name = update["name"] if update.has_key?("name")
       column.kind = Tables::Column::to_kind(update["type"]) if update.has_key?("type")
       column.options = update["options"] if update.has_key?("options")
+      column.formula = update["fundamentoFormula"] if update.has_key?("fundamentoFormula")
       column.save! if column.changed?
     when "delete_column"
       column = @table.columns.find_by(npi: event["colId"])
