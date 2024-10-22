@@ -47,3 +47,4 @@ repo.key
 spec/examples.txt
 
 config/database.yml
+config/storage.yml
