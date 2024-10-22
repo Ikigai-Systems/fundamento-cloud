@@ -30,7 +30,6 @@
     "react-data-grid": "^7.0.0-beta.47",
     "react-dom": "^18.2.0",
     "react-select": "^5.8.1",
-    "rowstack": "^0.0.25",
     "tailwindcss-stimulus-components": "^6.0.2",
     "use-async-effect": "^2.2.7",
     "vite-plugin-stimulus-hmr": "^3.0.0",
