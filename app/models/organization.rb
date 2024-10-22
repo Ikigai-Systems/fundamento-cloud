@@ -12,6 +12,7 @@ class Organization < ApplicationRecord
   has_many :public_links, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :team_memberships, dependent: :destroy
+  has_many :packs, dependent: :destroy
 
   validates_presence_of :name
 
