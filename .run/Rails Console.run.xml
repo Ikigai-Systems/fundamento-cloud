@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Rails Console" type="IrbRunConfigurationType" factoryName="IRB console">
-    <module name="interactive-documents-self-hosted-prototype1" />
+    <module name="fundamento" />
     <IRB_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
     <IRB_RUN_CONFIG NAME="WORK DIR" VALUE="$MODULE_DIR$" />
     <IRB_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
