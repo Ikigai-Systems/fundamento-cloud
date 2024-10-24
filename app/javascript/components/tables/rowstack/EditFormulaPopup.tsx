@@ -45,7 +45,7 @@ function EditFormulaPopup({
   }, [formula, previewRow, rows]);
 
   return (
-    <div className="shadow-md border rounded rounded-2 text-sm bg-header">
+    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
       <div className="p-2 font-bold">
         Column formula
       </div>
@@ -69,7 +69,7 @@ function EditFormulaPopup({
           }}
         />
       </div>
-      <div className="flex flex-row items-center pl-2 py-1">
+      <div className="flex flex-row items-center pl-2 py-1 border-b">
         <div className="flex-grow">
           <div>
             {previewValue !== undefined && !previewError && '= ' + previewValue}
@@ -95,11 +95,20 @@ function EditFormulaPopup({
           >
             <div className="size-4 icon-[heroicons--chevron-up]"></div>
           </div>
-          <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 active:bg-neutral-300" title="mockup, work in progress">
+          <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 active:bg-neutral-300"
+            title="mockup, work in progress"
+          >
             <div className="size-4 icon-[heroicons--arrows-pointing-out]"></div>
           </div>
         </div>
       </div>
+      {formula.match(/CurrentRow.*".*"/) && <div className="flex flex-row items-center p-2 gap-2">
+        <div className="min-w-6 min-h-6 icon-[heroicons--exclamation-triangle]"></div>
+        <div>
+          Formulas depending on other cells require full page refresh after editing those cells to see up-to-date table
+          values.
+        </div>
+      </div>}
     </div>
   );
 }
