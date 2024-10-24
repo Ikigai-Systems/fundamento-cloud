@@ -84,4 +84,16 @@ Rails.application.routes.draw do
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get '/api/v1/attachments/:id', to: 'attachments#show'
+
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :packs, param: :npi do
+        member do
+          post :next_version
+        end
+
+        resources :versions, controller: "pack_versions"
+      end
+    end
+  end
 end
