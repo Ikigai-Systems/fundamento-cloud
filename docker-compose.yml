@@ -11,7 +11,21 @@ services:
     image: redis
     ports:
       - '6379:6379'
-
+  minio:
+    image: quay.io/minio/minio:latest
+    command:
+      - server
+      - --console-address
+      - :9001
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_VOLUMES=/var/lib/minio/data
+    volumes:
+      - minio:/var/lib/minio/data
+    ports:
+      - '9000:9000'
+      - '9001:9001'
   rails:
     build:
       context: ./
@@ -26,6 +40,22 @@ services:
     depends_on:
       - postgresql
       - redis
+      - minio
+  jobs:
+    build:
+      context: ./
+      target: ${RAILS_ENV:-production}
+      args:
+        - RAILS_ENV=${RAILS_ENV:-production}
+    command: bundle exec good_job start
+    environment:
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
+      - DATABASE_URL=postgres://postgres:password@postgresql/postgres
+    depends_on:
+      - postgresql
+      - redis
+      - minio
 
 volumes:
   postgres:
+  minio:

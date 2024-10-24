@@ -84,7 +84,7 @@ RSpec.describe Tables::Table, type: :model do
       before do
         tables_columns(:project_value).update!(
           kind: :formula,
-          value_formula: "3 * 5"
+          formula: "3 * 5"
         )
       end
 

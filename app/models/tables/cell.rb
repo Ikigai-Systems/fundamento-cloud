@@ -15,7 +15,7 @@ class Tables::Cell < ApplicationRecord
 
     mini_racer_context.eval("var exports = {};")
     mini_racer_context.eval(bundled_js)
-    mini_racer_context.eval("var formula = #{column.value_formula.to_json};")
+    mini_racer_context.eval("var formula = #{(column.formula || {}).to_json};")
     mini_racer_context.eval("var context = #{additional_context.to_json}")
     mini_racer_context.eval("exports.evaluateFormula(formula, context)")
   end

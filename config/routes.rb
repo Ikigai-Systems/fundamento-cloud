@@ -36,6 +36,7 @@ Rails.application.routes.draw do
       # todo: talk over the :tables route placement
       resources :tables, module: :tables, only: [:new, :create, :show, :edit, :update, :destroy, :index] do
         put :update_by_rowstack, on: :member
+        post :preview_formula, on: :member
         put :update_by_glide_data_grid, on: :member
         put :update_by_react_data_grid, on: :member
       end
@@ -78,6 +79,22 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
+  resources :packs, param: :npi do
+    # get :suggest_members, on: :collection
+  end
+
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get '/api/v1/attachments/:id', to: 'attachments#show'
+
+  namespace :api, defaults: { format: :json } do
+    namespace :v1 do
+      resources :packs, param: :npi do
+        member do
+          post :next_version
+        end
+
+        resources :versions, controller: "pack_versions"
+      end
+    end
+  end
 end

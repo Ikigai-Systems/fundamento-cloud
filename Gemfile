@@ -74,6 +74,8 @@ gem "activerecord-like"
 gem "lograge", "~> 0.14.0"
 gem "logstash-event", "~> 1.2"
 
+gem "aws-sdk-s3", require: false
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
@@ -93,3 +95,5 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
 end
+
+gem "good_job", "~> 4.4"

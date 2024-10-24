@@ -61,7 +61,11 @@ class Tables::Table < ApplicationRecord
         }
 
         columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
+          begin
+            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
+          rescue => e
+            hash[column.npi] = e
+          end
         end
       else
         columns_in_order.each_with_object({}) do |column, hash|

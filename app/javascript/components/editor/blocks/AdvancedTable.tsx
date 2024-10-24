@@ -86,7 +86,8 @@ const AdvancedTable = createReactBlockSpec(
         const currentDataDeserializer = Config.deserializeData;
         try {
           Config.deserializeData = (val => val);
-          return (await TablesApi.show({space_npi: space.npi, id: tableId}));
+          const data = await TablesApi.show({space_npi: space.npi, id: tableId});
+          return {...data, forceRerenderUuid: crypto.randomUUID()}
         } finally {
           Config.deserializeData = currentDataDeserializer;
         }
@@ -227,6 +228,7 @@ const AdvancedTable = createReactBlockSpec(
           isEditable={editor.isEditable}
           table={tableQuery.data.table}
           data={tableQuery.data.data}
+          forceRerenderUuid={tableQuery.data.forceRerenderUuid}
           initialViewProps={JSON.parse(blockProps.viewProps)}
           onViewPropsChange={(event) => {
             setViewProps((prevViewProps) => {

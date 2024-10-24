@@ -26,5 +26,5 @@ project_title:
   organization: :is
   table: :projects
   kind: :formula
-  value_formula: Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))
+  formula: Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))
   previous_column: :project_description

@@ -1,0 +1,31 @@
+<section class="form-section">
+  <h2 class="form-header">Edit pack <%= @pack.name %></h2>
+
+  <%= form_for(@pack, data: { turbo: false, controller: "prevent-double-submit"  }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: @pack %>
+
+    <div class="form-field">
+      <%= f.label :name %><br/>
+      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+    </div>
+
+<!--    <div class="form-field">-->
+<!--      <%#= f.label :pack_members %><br/>-->
+
+<!--      <div-->
+<!--          data-controller="multiselect"-->
+<!--          data-multiselect-selected-value="<%#= pack_memberships_to_multiselect_value(@pack) %>"-->
+<!--          data-multiselect-search-url-value="<%#= suggest_members_packs_path %>"-->
+<!--          data-placeholder="Search for members..."-->
+<!--          data-no-results-message="Nothing matches">-->
+
+        <%#= f.select :pack_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
+<!--      </div>-->
+<!--    </div>-->
+
+    <div class="form-footer">
+      <%= link_to "Cancel", pack_path(@pack), class: "secondary-button" %>
+      <%= f.submit "Save", class: "form-submit" %>
+    </div>
+  <% end %>
+</section>
