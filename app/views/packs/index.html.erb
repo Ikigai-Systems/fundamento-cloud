@@ -1,0 +1,41 @@
+<%= turbo_stream_from ["packs_list", current_organization] %>
+
+<% content_for :focused_header do %>
+  Packs
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <% if policy(Pack).create? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to 'Create', new_pack_path, class: "secondary-button" %>
+    </div>
+  <% end %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <p>A list of all packs in your organization.</p>
+    </div>
+  </div>
+
+  <table class="table-list">
+    <thead>
+      <tr>
+        <th scope="col">
+          Name
+        </th>
+        <th scope="col">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody id="packs">
+      <% @packs.each do |pack| %>
+        <%= render partial: pack %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render "focused_section" %>

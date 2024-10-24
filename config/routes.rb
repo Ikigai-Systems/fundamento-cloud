@@ -78,6 +78,10 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
+  resources :packs, param: :npi do
+    # get :suggest_members, on: :collection
+  end
+
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get '/api/v1/attachments/:id', to: 'attachments#show'
 end

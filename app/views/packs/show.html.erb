@@ -1,0 +1,60 @@
+<%= turbo_stream_from ["pack_users_list", @pack] %>
+
+<% content_for :focused_breadcrumbs do %>
+  <li>
+    <div class="flex">
+      <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+        <%= link_to "Packs", packs_path %>
+      </a>
+    </div>
+  </li>
+<% end %>
+
+<% content_for :focused_header do %>
+  <%= @pack.name %>
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <% if policy(@pack).update? && policy(@pack).destroy? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <% content_for :button_group_primary_buttons do %>
+        <%= link_to 'Edit', edit_pack_path(@pack), class: "first-button-group" %>
+      <% end %>
+
+      <% content_for :button_group_dropdown_menu do %>
+        <%= button_to "Delete", pack_path(@pack), form: { data: { turbo_confirm: "Are you sure? Your pack will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
+      <% end %>
+
+      <%= render template: "application/components/button_group"%>
+    </div>
+  <% end %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <h1>Versions</h1>
+      <p>A list of all the versions in your pack.</p>
+    </div>
+  </div>
+
+  <table class="table-list">
+    <thead>
+    <tr>
+      <th scope="col">
+        Name
+      </th>
+      <th scope="col">
+        Status
+      </th>
+    </tr>
+    </thead>
+    <tbody id="pack_members">
+    <% @pack.versions.each do |version| %>
+      <%= render partial: "packs/version", locals: { version: version, pack: @pack } %>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render partial: "focused_section" %>
