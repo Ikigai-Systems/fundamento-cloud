@@ -1,10 +1,13 @@
-import Rowstack from "rowstack";
+import Rowstack from "../../libs/rowstack/main.js";
 import {useContext} from "react";
 import createFlash from "../createFlash.ts"
 import CurrentSpaceContext from "../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../api/Tables/TablesApi.js";
 import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
+import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
+import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
+import queryClient from "../../contextes/ReactQueryClient.tsx";
 
 const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
   switch (kind) {
@@ -24,22 +27,34 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
     return "checkbox";
   case "formula":
     return "formula";
+  case "people":
+    return "people";
   default:
     return "text";
   }
 }
 
-const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
+const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerenderUuid, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind, options}) => ({isViewOnly: !isEditable, id: npi, name, type: toType(kind), options, ...initialViewProps?.columns[npi]}));
+  const columns = data.columns.map(({npi, name, kind, options, formula}) => ({
+    isViewOnly: !isEditable,
+    id: npi,
+    name,
+    type: toType(kind),
+    options,
+    fundamentoFormula: formula,
+    ...initialViewProps?.columns[npi]
+  }));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
   columns.filter(({type}) => type === "formula").forEach(column => {
     column.formula = (row) => row[column.id];
   });
 
   return (<div className="flex flex-col">
-    <input key={table.id + "_name"} type="text"
+    <input
+      key={table.id + "_name"}
+      type="text"
       placeholder="Untitled"
       defaultValue={table.name}
       className="-my-2 p-0 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-2xl font-bold text-slate-800"
@@ -75,6 +90,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewP
     </input>
 
     <Rowstack
+      key={forceRerenderUuid}
       columns={columns}
       data={rows}
       config={{
@@ -83,9 +99,30 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewP
         addColumn: {enabled: isEditable},
         editColumns: {enabled: isEditable},
         selectRow: {enabled: isEditable},
+        extraColumnTypes: [{
+          type: "people",
+          cell: PeopleSelectCell,
+          icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
+          name: "People",
+        }],
+        extraColumnHeaderPopupActions: [{
+          section: "main",
+          menuItem: ({column, showPopup}) => {
+            if (column.type !== "formula") {
+              return null;
+            }
+            return (
+              <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default" onClick={showPopup}>
+                <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+                Edit formula
+              </div>
+            );
+          },
+          popup: (popupProps) => <EditFormulaPopup {...popupProps}/>
+        }],
       }}
       onChange={async (event) => {
-        if (event.type === "update_column" && event?.update?.width !== undefined) {
+        if (event.type === "update_column" && event.update?.width !== undefined) {
           onViewPropsChange({columns: {[event.colId]: {width: event.update.width}}});
         }
 
@@ -107,6 +144,9 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, initialViewP
             params: {space_npi: space.npi, id: table.id},
             data: {event}
           });
+          if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
+            queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
+          }
         } catch (e) {
           //todo: Sentry.capture(e)
           createFlash({
@@ -141,6 +181,7 @@ type EditableTableWithRowstackProps = {
   isEditable: boolean,
   table: Table,
   data: TableData,
+  forceRerenderUuid: string,
   initialViewProps: object,
   onViewPropsChange: (any) => void,
 }

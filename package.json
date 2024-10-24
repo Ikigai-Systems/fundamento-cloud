@@ -1,5 +1,5 @@
 {
-  "name": "interactive-documents-self-hosted-prototype1",
+  "name": "fundamento",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,9 +9,9 @@
     "preview": "vite preview frontend"
   },
   "dependencies": {
-    "@blocknote/core": "^0.16.0",
-    "@blocknote/mantine": "^0.16.0",
-    "@blocknote/react": "^0.16.0",
+    "@blocknote/core": "^0.17.1",
+    "@blocknote/mantine": "^0.17.1",
+    "@blocknote/react": "^0.17.1",
     "@glideapps/glide-data-grid": "^6.0.3",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.10",
@@ -30,7 +30,6 @@
     "react-data-grid": "^7.0.0-beta.47",
     "react-dom": "^18.2.0",
     "react-select": "^5.8.1",
-    "rowstack": "^0.0.25",
     "tailwindcss-stimulus-components": "^6.0.2",
     "use-async-effect": "^2.2.7",
     "vite-plugin-stimulus-hmr": "^3.0.0",
