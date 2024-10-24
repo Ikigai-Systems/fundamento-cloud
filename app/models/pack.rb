@@ -1,6 +1,8 @@
 class Pack < ApplicationRecord
   belongs_to :organization
 
+  belongs_to :active_version, class_name: "PackVersion", optional: true
+
   has_many :versions, class_name: "PackVersion", dependent: :destroy
 
   include ModelWithNpiAsParam

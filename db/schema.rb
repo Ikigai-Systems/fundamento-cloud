@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_22_140114) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_24_114632) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -225,6 +225,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_22_140114) do
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "active_version_id"
     t.index ["npi"], name: "index_packs_on_npi", unique: true
     t.index ["organization_id"], name: "index_packs_on_organization_id"
   end
@@ -406,6 +407,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_22_140114) do
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"
+  add_foreign_key "packs", "pack_versions", column: "active_version_id"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
   add_foreign_key "table_cells", "table_columns", column: "column_id"
