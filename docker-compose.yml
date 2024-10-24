@@ -1,3 +1,9 @@
+x-minio-credentials: &minio-credentials
+  MINIO_ROOT_USER: minio
+  MINIO_ROOT_PASSWORD: password
+  MINIO_VOLUMES: /var/lib/minio/data
+  MINIO_HOST: minio
+
 services:
   postgresql:
     image: postgres:16
@@ -18,14 +24,23 @@ services:
       - --console-address
       - :9001
     environment:
-      - MINIO_ROOT_USER=minio
-      - MINIO_ROOT_PASSWORD=password
-      - MINIO_VOLUMES=/var/lib/minio/data
+      <<: *minio-credentials
     volumes:
       - minio:/var/lib/minio/data
     ports:
       - '9000:9000'
       - '9001:9001'
+  minio-initialization:
+    image: quay.io/minio/mc:latest
+    entrypoint: /bin/sh
+    command: /minio-init.sh
+    volumes:
+      - ./bin/minio-init.sh:/minio-init.sh
+    environment:
+      <<: *minio-credentials
+    depends_on:
+      minio:
+        condition: service_started
   rails:
     build:
       context: ./
@@ -38,9 +53,14 @@ services:
     ports:
       - '3000:3000'
     depends_on:
-      - postgresql
-      - redis
-      - minio
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-initialization:
+        condition: service_completed_successfully
   jobs:
     build:
       context: ./
@@ -52,9 +72,14 @@ services:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
     depends_on:
-      - postgresql
-      - redis
-      - minio
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-initialization:
+        condition: service_completed_successfully
 
 volumes:
   postgres:
