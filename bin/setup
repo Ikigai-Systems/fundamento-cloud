@@ -26,10 +26,6 @@ FileUtils.chdir APP_ROOT do
     FileUtils.cp "config/database.yml.sample", "config/database.yml"
   end
 
-  unless File.exist?("config/storage.yml")
-    FileUtils.cp "config/storage.yml.sample", "config/storage.yml"
-  end
-
   puts "\n== Preparing database =="
   system! "bin/rails db:prepare"
 
