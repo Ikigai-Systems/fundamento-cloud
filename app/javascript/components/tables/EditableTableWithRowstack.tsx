@@ -94,7 +94,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
       columns={columns}
       data={rows}
       config={{
-        readOnly: {enabled: !isEditable},
         addRow: {enabled: isEditable},
         addColumn: {enabled: isEditable},
         editColumns: {enabled: isEditable},
@@ -118,7 +117,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               </div>
             );
           },
-          popup: (popupProps) => <EditFormulaPopup {...popupProps}/>
+          popup: (popupProps) => <EditFormulaPopup rows={rows} table={table} {...popupProps}/>
         }],
       }}
       onChange={async (event) => {

@@ -96,7 +96,7 @@ class Tables::TablesController < ApplicationController
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
-      format.json { render json: { table: @table, data: @table.data_to_json(evaluate_formulas: true) } }
+      format.json { render json: { table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}), data: @table.data_to_json(evaluate_formulas: true) } }
       format.html do
         @tables = @space.tables.lexicographically
         render "spaces/tables/show", layout: "full_width_application"
@@ -268,6 +268,43 @@ class Tables::TablesController < ApplicationController
 
     respond_to do |format|
       format.json { render json: {} }
+      format.all { head :unprocessable_content }
+    end
+  end
+
+  def preview_formula
+    space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    table = space.tables.find(params[:id])
+
+    authorize table, :show?, policy_class: DocumentPolicy
+
+    row = table.rows.find_by(npi: params["row_id"])
+    formula = params["formula"]
+
+    cells = row.cells.index_by(&:column_id);
+    current_row_values = table.columns_in_order.each_with_object({}) do |column, hash|
+      hash[column.name] = cells[column.id]&.value
+    end
+
+    additional_context = {
+      "currentRow" => current_row_values
+    }
+
+    mini_racer_context = MiniRacer::Context.new
+    bundled_js = File.read(Rails.root.join("formula/build/formula.js"))
+
+    mini_racer_context.eval("var exports = {};")
+    mini_racer_context.eval(bundled_js)
+    mini_racer_context.eval("var formula = #{formula.to_json};")
+    mini_racer_context.eval("var context = #{additional_context.to_json}")
+    begin
+      formula_value = mini_racer_context.eval("exports.evaluateFormula(formula, context)")
+    rescue => e
+      formula_error = e
+    end
+
+    respond_to do |format|
+      format.json { render json: {value: formula_value, error: formula_error} }
       format.all { head :unprocessable_content }
     end
   end
