@@ -1,0 +1,11 @@
+<tr id="<%= dom_id(version) %>">
+  <th scope="row">
+    <div>
+      <div class="text-base font-semibold"><%= version.first_name %> <%= version.last_name %></div>
+      <div class="font-normal text-gray-500"><%= version.email %></div>
+    </div>
+  </th>
+  <td>
+    <%= render partial: "users/online_status", locals: { current_organization: current_organization, version: version } %>
+  </td>
+</tr>
