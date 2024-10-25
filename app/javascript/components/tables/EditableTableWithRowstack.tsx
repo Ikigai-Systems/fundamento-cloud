@@ -7,6 +7,7 @@ import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
+import EditDateFormatPopup from "./rowstack/EditDateFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 
 const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
@@ -37,13 +38,14 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
 const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerenderUuid, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind, options, formula}) => ({
+  const columns = data.columns.map(({npi, name, kind, options, formula, configuration}) => ({
     isViewOnly: !isEditable,
     id: npi,
     name,
     type: toType(kind),
     options,
     fundamentoFormula: formula,
+    configuration,
     ...initialViewProps?.columns[npi]
   }));
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
@@ -118,6 +120,20 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             );
           },
           popup: (popupProps) => <EditFormulaPopup rows={rows} table={table} {...popupProps}/>
+        },{
+          section: "main",
+          menuItem: ({column, showPopup}) => {
+            if (column.type !== "date") {
+              return null;
+            }
+            return (
+              <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default" onClick={showPopup}>
+                <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+                Edit format
+              </div>
+            );
+          },
+          popup: (popupProps) => <EditDateFormatPopup {...popupProps}/>
         }],
       }}
       onChange={async (event) => {
