@@ -93,7 +93,11 @@ Rails.application.routes.draw do
           post :next_version
         end
 
-        resources :versions, controller: "pack_versions"
+        resources :versions, controller: "pack_versions", param: :version do
+          member do
+            post :register
+          end
+        end
       end
     end
   end
