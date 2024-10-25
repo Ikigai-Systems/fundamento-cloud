@@ -38,6 +38,9 @@ application.register("user-selector", UserSelectorController);
 import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts"
 application.register("prevent-double-submit", PreventDoubleSubmitController);
 
+import ScrollIntoViewController from "./scroll_into_view_controller.ts"
+application.register("scroll-into-view", ScrollIntoViewController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application

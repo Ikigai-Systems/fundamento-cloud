@@ -18,6 +18,8 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 import '@hotwired/turbo-rails'
 Turbo.start()
 
+import "~/turbo/turbo_keep_scroll.js"
+
 import * as ActiveStorage from '@rails/activestorage'
 ActiveStorage.start()
 
