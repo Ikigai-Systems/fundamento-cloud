@@ -5,27 +5,21 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 
 function PeopleSelectCell({
-  rowId,
-  colId,
   data,
   setData,
-  options,
-  updateColumn,
   focusState,
   setFocus,
-  showOptionSearch,
-  isViewOnly,
 }) {
   const usersQuery = useQuery({queryKey: ["users"], queryFn: async () => {
-      return (await UsersApi.index());
-    }}, queryClient);
+    return (await UsersApi.index());
+  }}, queryClient);
   const userId = data;
   const userQuery = useQuery({queryKey: ["users", userId], queryFn: async () => {
-      if (userId === null) {
-        return null;
-      }
-      return (await UsersApi.show({id: userId}));
-    }}, queryClient);
+    if (userId === null) {
+      return null;
+    }
+    return (await UsersApi.show({id: userId}));
+  }}, queryClient);
   const selectedUser = userQuery.data;
 
   if (focusState !== "editing") {

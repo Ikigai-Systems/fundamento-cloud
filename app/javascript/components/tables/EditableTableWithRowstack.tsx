@@ -9,6 +9,10 @@ import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
 import EditDateFormatPopup from "./rowstack/EditDateFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
+import dayjs from "dayjs";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+dayjs.extend(localizedFormat);
 
 const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
   switch (kind) {
@@ -135,6 +139,49 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
           },
           popup: (popupProps) => <EditDateFormatPopup {...popupProps}/>
         }],
+        formatDate: ({parsedData, configuration}) => {
+          const dayDate = dayjs(parsedData);
+          switch (configuration?.dateFormat) {
+          case 0:
+            return dayDate.format("M/D/YYYY");
+          case 1:
+            return dayDate.format("M/D/YY");
+          case 2:
+            return dayDate.format("M/D");
+          case 3:
+            return dayDate.format("MMMM D, YYYY");
+          case 4:
+            return dayDate.format("MMM D, YYYY");
+          case 5:
+            return dayDate.format("MMM D");
+          case 6:
+            return dayDate.format("ddd, MMM D");
+          case 7:
+            return dayDate.format("ddd, MMM D, YYYY");
+          case 8:
+            return dayDate.format("DD/MM/YYYY");
+          case 9:
+            return dayDate.format("DD.MM.YYYY");
+          case 10:
+            return dayDate.format("DD.MM");
+          case 11:
+            return dayDate.format("YYYY-MM-DD");
+          case 12:
+            return dayDate.format("MMMM YYYY");
+          case 13:
+            return dayDate.format("dddd");
+          case 14:
+            return dayDate.format("D");
+          case 15:
+            return dayDate.format("MMMM");
+          case 16:
+            return dayDate.format("YYYY");
+          case 17:
+            return dayDate.format("MMM YYYY");
+          default:
+            return dayDate.format("L");
+          }
+        }
       }}
       onChange={async (event) => {
         if (event.type === "update_column" && event.update?.width !== undefined) {
