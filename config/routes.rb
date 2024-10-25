@@ -37,8 +37,6 @@ Rails.application.routes.draw do
       resources :tables, module: :tables, only: [:new, :create, :show, :edit, :update, :destroy, :index] do
         put :update_by_rowstack, on: :member
         post :preview_formula, on: :member
-        put :update_by_glide_data_grid, on: :member
-        put :update_by_react_data_grid, on: :member
       end
     end
 

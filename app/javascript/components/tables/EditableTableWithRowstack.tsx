@@ -39,6 +39,8 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
   }
 }
 
+// we had played with three other libraries for rendering tables (aside Rowstack), you can find working PoC by following fulll git-blame on this comment line
+
 const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerenderUuid, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
