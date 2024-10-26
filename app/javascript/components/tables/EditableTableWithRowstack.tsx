@@ -11,6 +11,7 @@ import EditDateFormatPopup from "./rowstack/EditDateFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import "./rowstack-styles.css";
 
 dayjs.extend(localizedFormat);
 
@@ -97,138 +98,184 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
     >
     </input>
 
-    <Rowstack
-      key={forceRerenderUuid}
-      columns={columns}
-      data={rows}
-      config={{
-        addRow: {enabled: isEditable},
-        addColumn: {enabled: isEditable},
-        editColumns: {enabled: isEditable},
-        selectRow: {enabled: isEditable},
-        extraColumnTypes: [{
-          type: "people",
-          cell: PeopleSelectCell,
-          icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
-          name: "People",
-        }],
-        extraColumnHeaderPopupActions: [{
-          section: "main",
-          menuItem: ({column, showPopup}) => {
-            if (column.type !== "formula") {
-              return null;
+    <div className="ikigai-rowstack-overrides">
+      <Rowstack
+        key={forceRerenderUuid}
+        columns={columns}
+        data={rows}
+        config={{
+          addRow: {enabled: isEditable},
+          addColumn: {enabled: isEditable},
+          editColumns: {enabled: isEditable},
+          selectRow: {enabled: isEditable},
+          extraColumnTypes: [{
+            type: "people",
+            cell: PeopleSelectCell,
+            icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
+            name: "People",
+          }],
+          extraColumnHeaderPopupActions: [{
+            section: "main",
+            menuItem: ({column, showPopup}) => {
+              if (column.type !== "formula") {
+                return null;
+              }
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={showPopup}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+                  Edit formula
+                </div>
+              );
+            },
+            popup: (popupProps) => <EditFormulaPopup rows={rows} table={table} {...popupProps}/>
+          }, {
+            section: "main",
+            menuItem: ({column, showPopup}) => {
+              if (column.type !== "date") {
+                return null;
+              }
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={showPopup}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+                  Edit format
+                </div>
+              );
+            },
+            popup: (popupProps) => <EditDateFormatPopup {...popupProps}/>
+          }, {
+            section: "actions2",
+            menuItem: ({column, showPopup}) => {
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={async () => {
+                    const spaceNpi = table.space_npi;
+                    const tableId = table.id;
+                    await TablesApi.moveColumnLeft({
+                      params: {space_npi: spaceNpi, id: tableId},
+                      data: {colId: column.id}
+                    });
+                    queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId]});
+                  }}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
+                  Move column left
+                </div>
+              );
+            },
+          }, {
+            section: "actions2",
+            menuItem: ({column, showPopup}) => {
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={async () => {
+                    const spaceNpi = table.space_npi;
+                    const tableId = table.id;
+                    await TablesApi.moveColumnRight({
+                      params: {space_npi: spaceNpi, id: tableId},
+                      data: {colId: column.id}
+                    });
+                    queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId]});
+                  }}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
+                  Move column right
+                </div>
+              );
+            },
+          }],
+          formatDate: ({parsedData, configuration}) => {
+            const dayDate = dayjs(parsedData);
+            switch (configuration?.dateFormat) {
+            case 0:
+              return dayDate.format("M/D/YYYY");
+            case 1:
+              return dayDate.format("M/D/YY");
+            case 2:
+              return dayDate.format("M/D");
+            case 3:
+              return dayDate.format("MMMM D, YYYY");
+            case 4:
+              return dayDate.format("MMM D, YYYY");
+            case 5:
+              return dayDate.format("MMM D");
+            case 6:
+              return dayDate.format("ddd, MMM D");
+            case 7:
+              return dayDate.format("ddd, MMM D, YYYY");
+            case 8:
+              return dayDate.format("DD/MM/YYYY");
+            case 9:
+              return dayDate.format("DD.MM.YYYY");
+            case 10:
+              return dayDate.format("DD.MM");
+            case 11:
+              return dayDate.format("YYYY-MM-DD");
+            case 12:
+              return dayDate.format("MMMM YYYY");
+            case 13:
+              return dayDate.format("dddd");
+            case 14:
+              return dayDate.format("D");
+            case 15:
+              return dayDate.format("MMMM");
+            case 16:
+              return dayDate.format("YYYY");
+            case 17:
+              return dayDate.format("MMM YYYY");
+            default:
+              return dayDate.format("L");
             }
-            return (
-              <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default" onClick={showPopup}>
-                <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
-                Edit formula
-              </div>
-            );
-          },
-          popup: (popupProps) => <EditFormulaPopup rows={rows} table={table} {...popupProps}/>
-        },{
-          section: "main",
-          menuItem: ({column, showPopup}) => {
-            if (column.type !== "date") {
-              return null;
+          }
+        }}
+        onChange={async (event) => {
+          if (event.type === "update_column" && event.update?.width !== undefined) {
+            onViewPropsChange({columns: {[event.colId]: {width: event.update.width}}});
+          }
+
+          if ((event.type === "update_column" && Object.keys(event.update).length === 1 && event.update.width !== undefined)
+            || (event.type === "update_row" && Object.keys(event.update).length === 1 && event.update.isSelected !== undefined)
+          ) {
+            return; // skip frontend-session related changes from being passed to the backend
+          }
+
+          if (!isEditable) {
+            //sanity guard: in read-only mode Rowstack shouldn't emit legitimate row/column update events other than column width
+            return;
+          }
+
+          try {
+            const currentDataSerializer = Config.serializeData;
+            Config.serializeData = (val => val);
+            const promise = TablesApi.updateByRowstack({
+              params: {space_npi: space.npi, id: table.id},
+              data: {event}
+            });
+            Config.serializeData = currentDataSerializer;
+            await promise;
+            if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
+              queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
             }
-            return (
-              <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default" onClick={showPopup}>
-                <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
-                Edit format
-              </div>
-            );
-          },
-          popup: (popupProps) => <EditDateFormatPopup {...popupProps}/>
-        }],
-        formatDate: ({parsedData, configuration}) => {
-          const dayDate = dayjs(parsedData);
-          switch (configuration?.dateFormat) {
-          case 0:
-            return dayDate.format("M/D/YYYY");
-          case 1:
-            return dayDate.format("M/D/YY");
-          case 2:
-            return dayDate.format("M/D");
-          case 3:
-            return dayDate.format("MMMM D, YYYY");
-          case 4:
-            return dayDate.format("MMM D, YYYY");
-          case 5:
-            return dayDate.format("MMM D");
-          case 6:
-            return dayDate.format("ddd, MMM D");
-          case 7:
-            return dayDate.format("ddd, MMM D, YYYY");
-          case 8:
-            return dayDate.format("DD/MM/YYYY");
-          case 9:
-            return dayDate.format("DD.MM.YYYY");
-          case 10:
-            return dayDate.format("DD.MM");
-          case 11:
-            return dayDate.format("YYYY-MM-DD");
-          case 12:
-            return dayDate.format("MMMM YYYY");
-          case 13:
-            return dayDate.format("dddd");
-          case 14:
-            return dayDate.format("D");
-          case 15:
-            return dayDate.format("MMMM");
-          case 16:
-            return dayDate.format("YYYY");
-          case 17:
-            return dayDate.format("MMM YYYY");
-          default:
-            return dayDate.format("L");
+          } catch (e) {
+            //todo: Sentry.capture(e)
+            createFlash({
+              key: "table_update_failed",
+              type: "error",
+              message: "Failed to update the table, please reload page and try again."
+            })
           }
-        }
-      }}
-      onChange={async (event) => {
-        if (event.type === "update_column" && event.update?.width !== undefined) {
-          onViewPropsChange({columns: {[event.colId]: {width: event.update.width}}});
-        }
-
-        if ((event.type === "update_column" && Object.keys(event.update).length === 1 && event.update.width !== undefined)
-          || (event.type === "update_row" && Object.keys(event.update).length === 1 && event.update.isSelected !== undefined)
-        ) {
-          return; // skip frontend-session related changes from being passed to the backend
-        }
-
-        if (!isEditable) {
-          //sanity guard: in read-only mode Rowstack shouldn't emit legitimate row/column update events other than column width
-          return;
-        }
-
-        try {
-          const currentDataSerializer = Config.serializeData;
-          Config.serializeData = (val => val);
-          const promise = TablesApi.updateByRowstack({
-            params: {space_npi: space.npi, id: table.id},
-            data: {event}
-          });
-          Config.serializeData = currentDataSerializer;
-          await promise;
-          if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-            queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
-          }
-        } catch (e) {
-          //todo: Sentry.capture(e)
-          createFlash({
-            key: "table_update_failed",
-            type: "error",
-            message: "Failed to update the table, please reload page and try again."
-          })
-        }
-      }}
-    />
+        }}
+      />
+    </div>
   </div>);
 };
 
 type Row = {
   id: string,
-  [key: string]:string,
+  [key: string]: string,
 }
 
 type Column = {

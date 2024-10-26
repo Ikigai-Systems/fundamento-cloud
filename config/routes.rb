@@ -33,10 +33,11 @@ Rails.application.routes.draw do
         resources :versions, module: :documents, only: [:create, :index, :show]
       end
 
-      # todo: talk over the :tables route placement
       resources :tables, module: :tables, only: [:new, :create, :show, :edit, :update, :destroy, :index] do
         put :update_by_rowstack, on: :member
         post :preview_formula, on: :member
+        post :move_column_left, on: :member
+        post :move_column_right, on: :member
       end
     end
 

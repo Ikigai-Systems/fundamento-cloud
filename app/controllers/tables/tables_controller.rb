@@ -272,6 +272,28 @@ class Tables::TablesController < ApplicationController
     end
   end
 
+  def move_column_left
+    space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    table = space.tables.find(params[:id])
+
+    authorize table, :update?, policy_class: DocumentPolicy
+
+    column = table.columns.find_by(npi: params["col_id"])
+
+    column.move_left
+  end
+
+  def move_column_right
+    space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    table = space.tables.find(params[:id])
+
+    authorize table, :update?, policy_class: DocumentPolicy
+
+    column = table.columns.find_by(npi: params["col_id"])
+
+    column.move_right
+  end
+
   private
 
   def table_params

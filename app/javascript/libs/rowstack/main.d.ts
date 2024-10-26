@@ -80,7 +80,7 @@ declare interface Option_2 {
 export { Option_2 as Option }
 
 export declare interface PopupAction {
-    section: "main" | "filtering" | "actions";
+    section: "main" | "actions1" | "actions2";
     menuItem: React_2.ReactNode;
     popup?: React_2.ReactNode;
 }
