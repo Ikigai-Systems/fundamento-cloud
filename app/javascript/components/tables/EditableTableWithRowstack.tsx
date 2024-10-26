@@ -201,13 +201,15 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
           return;
         }
 
-        const currentDataSerializer = Config.serializeData;
         try {
+          const currentDataSerializer = Config.serializeData;
           Config.serializeData = (val => val);
-          await TablesApi.updateByRowstack({
+          const promise = TablesApi.updateByRowstack({
             params: {space_npi: space.npi, id: table.id},
             data: {event}
           });
+          Config.serializeData = currentDataSerializer;
+          await promise;
           if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
             queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
           }
@@ -218,8 +220,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             type: "error",
             message: "Failed to update the table, please reload page and try again."
           })
-        } finally {
-          Config.serializeData = currentDataSerializer;
         }
       }}
     />

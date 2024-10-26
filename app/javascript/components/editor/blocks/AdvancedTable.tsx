@@ -84,13 +84,11 @@ const AdvancedTable = createReactBlockSpec(
           return null;
         }
         const currentDataDeserializer = Config.deserializeData;
-        try {
-          Config.deserializeData = (val => val);
-          const data = await TablesApi.show({space_npi: space.npi, id: tableId});
-          return {...data, forceRerenderUuid: crypto.randomUUID()}
-        } finally {
-          Config.deserializeData = currentDataDeserializer;
-        }
+        Config.deserializeData = (val => val);
+        const promiseData = TablesApi.show({space_npi: space.npi, id: tableId});
+        Config.deserializeData = currentDataDeserializer;
+        const data = await promiseData
+        return {...data, forceRerenderUuid: crypto.randomUUID()}
       }}, queryClient);
       const {isLoading, isError} = tableQuery;
 
