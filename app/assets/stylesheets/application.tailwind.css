@@ -92,7 +92,12 @@
 
     button:disabled,
     input:disabled {
-        @apply bg-slate-950/5 text-slate-950/40 cursor-not-allowed;
+        @apply cursor-not-allowed;
+    }
+
+    button:disabled:not(.link-button),
+    input:disabled {
+        @apply bg-slate-950/5 text-slate-950/40;
     }
 
     .first-button-group {
@@ -106,7 +111,15 @@
     }
 
     .link-button {
-        @apply font-medium text-blue-600 dark:text-blue-500 hover:underline;
+        @apply font-medium text-blue-600 dark:text-blue-500;
+    }
+
+    .link-button:not(:disabled) {
+        @apply hover:underline
+    }
+
+    .link-button:disabled {
+        @apply text-neutral-400;
     }
 
     .dropdown-container {

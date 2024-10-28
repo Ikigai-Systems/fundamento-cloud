@@ -15,11 +15,11 @@
   </td>
   <td>
     <% if policy(organization_user).promote? %>
-      <%= button_to "Promote to manager", promote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "link-button", method: :patch %>
+      <%= button_to "Promote to manager", promote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure you want to promote that user?" } }, class: "link-button", method: :patch %>
     <% end %>
 
     <% if policy(organization_user).demote? %>
-      <%= button_to "Demote to member", demote_organizations_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "link-button", method: :patch %>
+      <%= button_to "Demote to member", demote_organizations_user_path(organization_user), disabled: organization_user.user == current_user, form: { data: { turbo_confirm: "Are you sure you want to demote that user?" } }, class: "link-button", method: :patch %>
     <% end %>
 
     <% if policy(organization_user).destroy? %>
