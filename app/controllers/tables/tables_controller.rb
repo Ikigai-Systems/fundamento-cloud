@@ -3,6 +3,8 @@ class Tables::TablesController < ApplicationController
 
   def index
     @tables = policy_scope(current_organization.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @tables = @tables.where(space: @space)
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
