@@ -1,7 +1,7 @@
 import "./main.css";
 import { jsxs as y, jsx as c, Fragment as X } from "react/jsx-runtime";
 import * as f from "react";
-import Ge, { createContext as pr, useRef as ce, createElement as gr, useCallback as Y, useContext as vr, useReducer as wr, useEffect as K, useDebugValue as br, useState as H, useLayoutEffect as xn, Children as xr, useMemo as W, forwardRef as yn } from "react";
+import Ge, { createContext as pr, useRef as ae, createElement as gr, useCallback as Y, useContext as vr, useReducer as wr, useEffect as K, useDebugValue as br, useState as H, useLayoutEffect as xn, Children as xr, useMemo as W, forwardRef as yn } from "react";
 import * as yr from "react-dom";
 import { createPortal as Cr } from "react-dom";
 var z = { BASE_URL: "/", MODE: "production", DEV: !1, PROD: !0, SSR: !1 };
@@ -327,7 +327,7 @@ const Rn = pr(void 0), St = (e) => {
   children: e,
   store: t
 }) => {
-  const n = ce();
+  const n = ae();
   return !t && !n.current && (n.current = Cn()), gr(
     Rn.Provider,
     {
@@ -562,7 +562,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
   (t, n, r) => {
     typeof r == "function" && (r = r(t(An(e)))), n($, (o) => ({ ...o, [e]: { ...o[e], ...r } })), t(ne).onChange({ type: Ur, rowId: e, update: r });
   }
-), me = (e) => D(
+), he = (e) => D(
   (t) => t(G)[e],
   (t, n, r) => {
     typeof r == "function" && (r = r(t(G)[e])), n(G, (o) => ({
@@ -581,7 +581,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
     Object.fromEntries(
       Object.entries(e($)).filter(([, o]) => o.isSelected !== !0)
     )
-  ), t(ue, !1), e(ne).onChange({
+  ), t(de, !1), e(ne).onChange({
     type: Wr,
     rows: [r]
   });
@@ -604,7 +604,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
           { ...o, isSelected: !1 }
         ])
       )
-    ), t(ue, !1);
+    ), t(de, !1);
   }
 ), Gr = D(null, (e, t, n) => {
   t($, Object.fromEntries(n.map((r) => [r.id, r])));
@@ -614,7 +614,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
     [n.id]: n
   })), t(et(n.id, e(se)[0]), "editing"), e(ne).onChange({ type: $r, rowId: n.id, update: n });
 }), Jr = D((e) => Object.keys(e($)).length), Qr = D(
-  (e) => e(ue) ? Object.keys(e($)).length : Object.entries(e($)).map(([, t]) => t.isSelected === !0).reduce(kt, 0)
+  (e) => e(de) ? Object.keys(e($)).length : Object.entries(e($)).map(([, t]) => t.isSelected === !0).reduce(kt, 0)
 ), At = D({}), Le = D((e) => Object.entries(e($)).filter(([, t]) => Br(t, e(Tt))).sort(
   ([, t], [, n]) => _r(t, n, [...e(Te), ...e(Lt)])
 ).map(([t, n]) => ({
@@ -670,9 +670,9 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
   t(Tt, n.filtering);
 }), jn = D(32), It = D((e) => e(jn)), ao = D(null, (e, t, n) => {
   t(jn, n.rowHeight);
-}), ue = D(!1), uo = D((e) => e(ue)), fo = D(null, (e, t, n) => {
-  const r = e(ue);
-  t(ue, !r), t(
+}), de = D(!1), uo = D((e) => e(de)), fo = D(null, (e, t, n) => {
+  const r = e(de);
+  t(de, !r), t(
     $,
     Object.fromEntries(
       Object.entries(e($)).map(([o, l]) => [
@@ -682,7 +682,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
     )
   );
 }), mo = D(null, (e, t, n) => {
-  t(ue, !1), t(
+  t(de, !1), t(
     $,
     Object.fromEntries(
       Object.entries(e($)).map(([r, o]) => [
@@ -693,7 +693,7 @@ const $ = D({}), zr = (e) => D((t) => new Set(Object.entries(t($)).map(([n, r]) 
   );
 });
 D(null, (e, t, n) => {
-  t(ue, n.value), t(
+  t(de, n.value), t(
     $,
     Object.fromEntries(
       Object.entries(e($)).map(([r, o]) => [
@@ -760,7 +760,7 @@ const Xt = D({}), et = (e, t) => D(
         return ((p = (a = (u = s == null ? void 0 : s.toLowerCase) == null ? void 0 : u.call(s)) == null ? void 0 : a.trim) == null ? void 0 : p.call(a)) === "true";
       };
   }
-  t(me(r), (s) => ({ ...s[r], type: o, options: l })), t(
+  t(he(r), (s) => ({ ...s[r], type: o, options: l })), t(
     $,
     Object.fromEntries(
       Object.entries(e($)).map(([s, u]) => [
@@ -1172,7 +1172,7 @@ function ri({
   }));
 }
 const oi = f.forwardRef(ri), ii = oi;
-function he({ name: e, color: t, onCancel: n }) {
+function ce({ name: e, color: t, onCancel: n }) {
   return /* @__PURE__ */ y(
     "div",
     {
@@ -1186,7 +1186,7 @@ function he({ name: e, color: t, onCancel: n }) {
   );
 }
 function li(e, t) {
-  const n = ce(t);
+  const n = ae(t);
   K(() => {
     let r = !1;
     for (const o in t) {
@@ -1326,7 +1326,7 @@ function fi({
     ] })
   ] }) });
 }
-function de(e) {
+function fe(e) {
   return Hn(e) ? (e.nodeName || "").toLowerCase() : "#document";
 }
 function J(e) {
@@ -1359,7 +1359,7 @@ function Fe(e) {
   return /auto|scroll|overlay|hidden|clip/.test(t + r + n) && !["inline", "contents"].includes(o);
 }
 function mi(e) {
-  return ["table", "td", "th"].includes(de(e));
+  return ["table", "td", "th"].includes(fe(e));
 }
 function jt(e) {
   const t = Vt(), n = ee(e);
@@ -1378,7 +1378,7 @@ function Vt() {
   return typeof CSS > "u" || !CSS.supports ? !1 : CSS.supports("-webkit-backdrop-filter", "none");
 }
 function Re(e) {
-  return ["html", "body", "#document"].includes(de(e));
+  return ["html", "body", "#document"].includes(fe(e));
 }
 function ee(e) {
   return J(e).getComputedStyle(e);
@@ -1393,7 +1393,7 @@ function tt(e) {
   };
 }
 function ve(e) {
-  if (de(e) === "html")
+  if (fe(e) === "html")
     return e;
   const t = (
     // Step into the shadow DOM of the parent of a slotted node.
@@ -1408,11 +1408,11 @@ function $n(e) {
   const t = ve(e);
   return Re(t) ? e.ownerDocument ? e.ownerDocument.body : e.body : Q(t) && Fe(t) ? t : $n(t);
 }
-function ae(e, t, n) {
+function ue(e, t, n) {
   var r;
   t === void 0 && (t = []), n === void 0 && (n = !0);
   const o = $n(e), l = o === ((r = e.ownerDocument) == null ? void 0 : r.body), i = J(o);
-  return l ? t.concat(i, i.visualViewport || [], Fe(o) ? o : [], i.frameElement && n ? ae(i.frameElement) : []) : t.concat(o, ae(o, [], n));
+  return l ? t.concat(i, i.visualViewport || [], Fe(o) ? o : [], i.frameElement && n ? ue(i.frameElement) : []) : t.concat(o, ue(o, [], n));
 }
 function pi(e) {
   let t = e.activeElement;
@@ -1469,7 +1469,7 @@ const bi = "input:not([type='hidden']):not([disabled]),[contenteditable]:not([co
 function xi(e) {
   return Q(e) && e.matches(bi);
 }
-const We = Math.min, pe = Math.max, Ue = Math.round, Be = Math.floor, fe = (e) => ({
+const We = Math.min, pe = Math.max, Ue = Math.round, Be = Math.floor, me = (e) => ({
   x: e,
   y: e
 }), yi = {
@@ -1911,7 +1911,7 @@ function _t(e) {
 function Ce(e) {
   const t = _t(e);
   if (!Q(t))
-    return fe(1);
+    return me(1);
   const n = t.getBoundingClientRect(), {
     width: r,
     height: o,
@@ -1923,7 +1923,7 @@ function Ce(e) {
     y: s
   };
 }
-const Di = /* @__PURE__ */ fe(0);
+const Di = /* @__PURE__ */ me(0);
 function zn(e) {
   const t = J(e);
   return !Vt() || !t.visualViewport ? Di : {
@@ -1937,9 +1937,9 @@ function Pi(e, t, n) {
 function be(e, t, n, r) {
   t === void 0 && (t = !1), n === void 0 && (n = !1);
   const o = e.getBoundingClientRect(), l = _t(e);
-  let i = fe(1);
+  let i = me(1);
   t && (r ? q(r) && (i = Ce(r)) : i = Ce(e));
-  const s = Pi(l, n, r) ? zn(l) : fe(0);
+  const s = Pi(l, n, r) ? zn(l) : me(0);
   let u = (o.left + s.x) / i.x, a = (o.top + s.y) / i.y, p = o.width / i.x, d = o.height / i.y;
   if (l) {
     const g = J(l), m = r && q(r) ? J(r) : r;
@@ -1968,9 +1968,9 @@ function Fi(e) {
   let i = {
     scrollLeft: 0,
     scrollTop: 0
-  }, s = fe(1);
-  const u = fe(0);
-  if ((o || !o && r !== "fixed") && ((de(n) !== "body" || Fe(l)) && (i = tt(n)), Q(n))) {
+  }, s = me(1);
+  const u = me(0);
+  if ((o || !o && r !== "fixed") && ((fe(n) !== "body" || Fe(l)) && (i = tt(n)), Q(n))) {
     const a = be(n);
     s = Ce(n), u.x = a.x + n.clientLeft, u.y = a.y + n.clientTop;
   }
@@ -2014,7 +2014,7 @@ function _i(e, t) {
   };
 }
 function Bi(e, t) {
-  const n = be(e, !0, t === "fixed"), r = n.top + e.clientTop, o = n.left + e.clientLeft, l = Q(e) ? Ce(e) : fe(1), i = e.clientWidth * l.x, s = e.clientHeight * l.y, u = o * l.x, a = r * l.y;
+  const n = be(e, !0, t === "fixed"), r = n.top + e.clientTop, o = n.left + e.clientLeft, l = Q(e) ? Ce(e) : me(1), i = e.clientWidth * l.x, s = e.clientHeight * l.y, u = o * l.x, a = r * l.y;
   return {
     width: i,
     height: s,
@@ -2048,7 +2048,7 @@ function Hi(e, t) {
   const n = t.get(e);
   if (n)
     return n;
-  let r = ae(e, [], !1).filter((s) => q(s) && de(s) !== "body"), o = null;
+  let r = ue(e, [], !1).filter((s) => q(s) && fe(s) !== "body"), o = null;
   const l = ee(e).position === "fixed";
   let i = l ? ve(e) : e;
   for (; q(i) && !Re(i); ) {
@@ -2084,9 +2084,9 @@ function Ui(e, t, n) {
     scrollLeft: 0,
     scrollTop: 0
   };
-  const u = fe(0);
+  const u = me(0);
   if (r || !r && !l)
-    if ((de(t) !== "body" || Fe(o)) && (s = tt(t)), r) {
+    if ((fe(t) !== "body" || Fe(o)) && (s = tt(t)), r) {
       const a = be(t, !0, l, t);
       u.x = a.x + t.clientLeft, u.y = a.y + t.clientTop;
     } else
@@ -2108,7 +2108,7 @@ function Gn(e, t) {
   let r = rn(e, t);
   for (; r && mi(r) && ee(r).position === "static"; )
     r = rn(r, t);
-  return r && (de(r) === "html" || de(r) === "body" && ee(r).position === "static" && !jt(r)) ? n : r || hi(e) || n;
+  return r && (fe(r) === "html" || fe(r) === "body" && ee(r).position === "static" && !jt(r)) ? n : r || hi(e) || n;
 }
 const Zi = async function(e) {
   let {
@@ -2194,7 +2194,7 @@ function Yi(e, t, n, r) {
     elementResize: i = typeof ResizeObserver == "function",
     layoutShift: s = typeof IntersectionObserver == "function",
     animationFrame: u = !1
-  } = r, a = _t(e), p = o || l ? [...a ? ae(a) : [], ...ae(t)] : [];
+  } = r, a = _t(e), p = o || l ? [...a ? ue(a) : [], ...ue(t)] : [];
   p.forEach((b) => {
     o && b.addEventListener("scroll", n, {
       passive: !0
@@ -2974,7 +2974,7 @@ function Fl(e, t) {
     const I = bt(s);
     p && I.addEventListener("keydown", E ? R : x, E), j && I.addEventListener(g, v ? A : P, v);
     let T = [];
-    return C && (q(i) && (T = ae(i)), q(s) && (T = T.concat(ae(s))), !q(l) && l && l.contextElement && (T = T.concat(ae(l.contextElement)))), T = T.filter((L) => {
+    return C && (q(i) && (T = ue(i)), q(s) && (T = T.concat(ue(s))), !q(l) && l && l.contextElement && (T = T.concat(ue(l.contextElement)))), T = T.filter((L) => {
       var Z;
       return L !== ((Z = I.defaultView) == null ? void 0 : Z.visualViewport);
     }), T.forEach((L) => {
@@ -3373,7 +3373,7 @@ function je({
   onNewOption: s,
   enableSearch: u = !0
 }) {
-  const [a, p] = H(e), d = a.find((v) => v.value === i.value), [g, m] = H(d || a[0]), [S, C] = H(!1), [w, b] = H(""), M = W(() => pt(), []), [F, j] = H({}), N = ce(!1);
+  const [a, p] = H(e), d = a.find((v) => v.value === i.value), [g, m] = H(d || a[0]), [S, C] = H(!1), [w, b] = H(""), M = W(() => pt(), []), [F, j] = H({}), N = ae(!1);
   K(() => {
     let v = !1;
     if (t)
@@ -3522,7 +3522,7 @@ function Ul({
     [t, e, a, o, l, r, m]
   );
   return /* @__PURE__ */ y(X, { children: [
-    i === "none" && /* @__PURE__ */ c("div", { className: "p-1 flex items-center h-full overflow-hidden", children: /* @__PURE__ */ c("div", { className: "flex gap-1", children: a.map((b) => b ? /* @__PURE__ */ c(he, { color: b.color, name: b.name }, b.name) : null) }) }),
+    i === "none" && /* @__PURE__ */ c("div", { className: "p-1 flex items-center h-full overflow-hidden", children: /* @__PURE__ */ c("div", { className: "flex gap-1", children: a.map((b) => b ? /* @__PURE__ */ c(ce, { color: b.color, name: b.name }, b.name) : null) }) }),
     (i === "focused" || i === "editing") && /* @__PURE__ */ y(
       re,
       {
@@ -3537,7 +3537,7 @@ function Ul({
               tabIndex: i === "editing" ? 0 : -1,
               children: /* @__PURE__ */ y("div", { className: "flex gap-1 flex-wrap", children: [
                 a.map((b) => b ? /* @__PURE__ */ c(
-                  he,
+                  ce,
                   {
                     color: b.color,
                     name: b.name,
@@ -3573,7 +3573,7 @@ function Ul({
                   );
                 },
                 inputRef: d,
-                OptionRenderer: he,
+                OptionRenderer: ce,
                 placeholder: "Search for an option...",
                 onNewOption: w,
                 enableSearch: s
@@ -3635,12 +3635,13 @@ function Kl({
     [t, e, o, l]
   );
   return /* @__PURE__ */ y(X, { children: [
-    i === "none" && /* @__PURE__ */ c("div", { className: "p-1 flex items-center h-full", children: a && /* @__PURE__ */ c(he, { color: a.color, name: a.name }) }),
-    (i === "focused" || i === "editing") && /* @__PURE__ */ y(
+    i === "none" && /* @__PURE__ */ c("div", { className: "p-1 flex items-center h-full", children: a && /* @__PURE__ */ c(ce, { color: a.color, name: a.name }) }),
+    u && (i === "focused" || i === "editing") && /* @__PURE__ */ c("div", { className: "flex items-center p-1 w-full h-full", children: a && /* @__PURE__ */ c(ce, { color: a.color, name: a.name }) }),
+    !u && (i === "focused" || i === "editing") && /* @__PURE__ */ y(
       re,
       {
         isOpen: g,
-        setIsOpen: S && !u,
+        setIsOpen: S,
         referenceClass: "w-full max-h-8",
         children: [
           /* @__PURE__ */ y(
@@ -3649,7 +3650,7 @@ function Kl({
               className: "flex items-center p-1 w-full h-full",
               tabIndex: i === "editing" ? 0 : -1,
               children: [
-                a && /* @__PURE__ */ c(he, { color: a.color, name: a.name }),
+                a && /* @__PURE__ */ c(ce, { color: a.color, name: a.name }),
                 /* @__PURE__ */ c(
                   Bn,
                   {
@@ -3670,7 +3671,7 @@ function Kl({
                   r(w.value), S(!1);
                 },
                 inputRef: d,
-                OptionRenderer: he,
+                OptionRenderer: ce,
                 placeholder: "Search for an option...",
                 value: a,
                 onNewOption: C,
@@ -3928,10 +3929,10 @@ function ts() {
 }
 const ns = Ge.memo(os), rs = ns;
 function os({ rowId: e, colId: t, data: n, rowData: r, setData: o }) {
-  const [l, i] = H(""), s = ce(null), u = W(
+  const [l, i] = H(""), s = ae(null), u = W(
     () => et(e, t),
     [e, t]
-  ), [a, p] = O(u), d = W(() => me(t), [t]), [g, m] = O(d), S = g.type === "custom" ? g.renderer : Xe(g.type).cell, C = W(
+  ), [a, p] = O(u), d = W(() => he(t), [t]), [g, m] = O(d), S = g.type === "custom" ? g.renderer : Xe(g.type).cell, C = W(
     () => po(e, t),
     [e, t]
   ), [, w] = O(C);
@@ -4011,7 +4012,7 @@ function is(e, t) {
   switch (t.type) {
     case "select": {
       const n = t.options.find((r) => r.value === e);
-      return /* @__PURE__ */ c(he, { color: n.color, name: n.name });
+      return /* @__PURE__ */ c(ce, { color: n.color, name: n.name });
     }
     case "date":
       return Me(new Date(Date.parse(e)));
@@ -4023,7 +4024,7 @@ function ls({ groupVal: e }) {
   const [t] = O(Se), n = W(
     () => {
       var i;
-      return me(((i = t[0]) == null ? void 0 : i.columnId) || "");
+      return he(((i = t[0]) == null ? void 0 : i.columnId) || "");
     },
     [t]
   ), [r] = O(n), [o, l] = O(At);
@@ -4194,7 +4195,7 @@ const hs = yn(({}, e) => {
   ] }) });
 }), ps = hs;
 function gs({ colId: e }) {
-  const t = W(() => me(e), [e]), [n, r] = O(t), o = vn(n.summary), l = W(
+  const t = W(() => he(e), [e]), [n, r] = O(t), o = vn(n.summary), l = W(
     () => o ? o.atomFactory(n.id) : D(""),
     [o, n.id]
   ), [i] = O(l), s = ms(), [u, a] = H(!1);
@@ -4392,7 +4393,7 @@ function Ls({
 }
 const Ms = f.forwardRef(Ls), it = Ms;
 function Ts({ colId: e, supportedTypes: t }) {
-  const [n] = O(W(() => me(e), [e])), [, r] = O(ho), o = W(() => Qe(e), [e]), [, l] = O(o);
+  const [n] = O(W(() => he(e), [e])), [, r] = O(ho), o = W(() => Qe(e), [e]), [, l] = O(o);
   function i(s, u) {
     s.preventDefault(), r({ colId: n.id, type: u }), l(!1);
   }
@@ -4441,7 +4442,7 @@ function Is({
   filterCallback: n,
   deleteCallback: r
 }) {
-  const [o, l] = O(W(() => me(e), [e])), i = ce(), s = o.type === "custom" ? o.icon : Xe(o.type).icon, u = o.type === "custom" ? "Custom" : Xe(o.type).name, [, a] = O(Tn), [, p] = O(In), d = W(() => Qe(e), [e]), [, g] = O(d), [m] = O(oe), S = W(() => [...ts(), ...m.extraColumnTypes], []);
+  const [o, l] = O(W(() => he(e), [e])), i = ae(), s = o.type === "custom" ? o.icon : Xe(o.type).icon, u = o.type === "custom" ? "Custom" : Xe(o.type).name, [, a] = O(Tn), [, p] = O(In), d = W(() => Qe(e), [e]), [, g] = O(d), [m] = O(oe), S = W(() => [...ts(), ...m.extraColumnTypes], []);
   K(() => {
     i.current && i.current.select();
   }, [i]);
@@ -4551,7 +4552,7 @@ function Ds({
   sortCallback: n,
   filterCallback: r
 }) {
-  const [o, l] = O(W(() => me(e), [e])), i = o.type === "custom" ? o.icon : Xe(o.type).icon, [s, u] = H(o.width), [a, p] = H(!1), d = W(() => Qe(e), [e]), [g, m] = O(d), [S] = O(oe);
+  const [o, l] = O(W(() => he(e), [e])), i = o.type === "custom" ? o.icon : Xe(o.type).icon, [s, u] = H(o.width), [a, p] = H(!1), d = W(() => Qe(e), [e]), [g, m] = O(d), [S] = O(oe);
   function C(w) {
     w.preventDefault();
     const b = w.pageX, M = s;
@@ -5110,7 +5111,7 @@ function Ws({ value: e, setValue: t }) {
   ] });
 }
 function Us({ colId: e }) {
-  const [t, n] = O(W(() => me(e), [e]));
+  const [t, n] = O(W(() => he(e), [e]));
   return /* @__PURE__ */ y(B.Section.Item, { children: [
     /* @__PURE__ */ c(
       Ws,
@@ -5537,7 +5538,7 @@ const oc = {
   dark: "dark"
 };
 function ic() {
-  const e = ce(null), t = ce(null), n = ce(null), [r] = O(oe);
+  const e = ae(null), t = ae(null), n = ae(null), [r] = O(oe);
   K(() => {
     if (!n.current)
       return () => null;
