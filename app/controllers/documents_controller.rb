@@ -12,23 +12,25 @@ class DocumentsController < ApplicationController
 
   def new
     @document = current_organization.documents.new
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @document.space = @space
 
     authorize @document, :create?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @documents = @space.documents_from_hierarchy
+    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
   end
 
   def create
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document = current_organization.documents.new(document_params)
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document.space = @space
 
     authorize @document, :create?
 
     if @document.save
       @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
-      @documents = @space.documents_from_hierarchy
+      @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
 
       if @space.save
         redirect_to edit_space_document_path(@space, @document), notice: 'Document was successfully created.'
@@ -50,7 +52,7 @@ class DocumentsController < ApplicationController
       format.json { render json: @document, :except => [:sync] }
       format.html do
         @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-        @documents = @space.documents_from_hierarchy
+        @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
       end
       format.all { head :unprocessable_content }
     end
@@ -62,7 +64,7 @@ class DocumentsController < ApplicationController
     authorize @document, :update?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @documents = @space.documents_from_hierarchy
+    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
   end
 
   def update

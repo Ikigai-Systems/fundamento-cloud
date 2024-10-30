@@ -1,27 +1,24 @@
-<% document = @documents.find { |document| document.id == document_id } %>
-<% if document.present? %>
-  <% if document.archived %>
-    <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
-  <% else %>
-    <div class="text-slate-800">
-  <% end %>
-      <%= link_to space_document_path(@space, document), class: "flex items-center" do %>
-        <div style="padding-left: <%=level * 16%>px" class="document-padding-left flex-grow flex items-center w-full group/document-item-link <%= @document == document ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
-          <div data-action="click->collapsible#toggle:prevent" class="multi-items-expander size-6 ml-1<%= !has_children ? " hidden" : "" %>">
-            <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
-          </div>
-          <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
-          <div data-document-id="<%= document.id %>" class="flex gap-2 text-left mx-0 p-2 truncate">
-            <div class="truncate">
-              <%= document.title %>
-            </div>
-            <% if document.versions.empty? %>
-              <div class="flex flex-row items-center">
-                <span class="uppercase bg-gray-100 group-hover/document-item-link:bg-gray-200 group-hover/document-item-link:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300">Draft</span>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-  </div>
+<% if document.archived %>
+  <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
+<% else %>
+  <div class="text-slate-800">
 <% end %>
+    <%= link_to space_document_path(@space, document), class: "flex items-center" do %>
+      <div style="padding-left: <%=level * 16%>px" class="document-padding-left flex-grow flex items-center w-full group/document-item-link <%= @document == document ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+        <div data-action="click->collapsible#toggle:prevent" class="multi-items-expander size-6 ml-1<%= !has_children ? " hidden" : "" %>">
+          <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
+        </div>
+        <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
+        <div data-document-id="<%= document.id %>" class="flex gap-2 text-left mx-0 p-2 truncate">
+          <div class="truncate">
+            <%= document.title %>
+          </div>
+          <% if document.versions.empty? %>
+            <div class="flex flex-row items-center">
+              <span class="uppercase bg-gray-100 group-hover/document-item-link:bg-gray-200 group-hover/document-item-link:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300">Draft</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+</div>

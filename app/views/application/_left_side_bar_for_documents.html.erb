@@ -15,7 +15,7 @@
       </div>
 
       <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">
-        <%= button_to space_documents_path(@space), method: :post, params: {"document": {title: ""}}, form_class: "flex flex-grow items-center", class: "flex flex-grow items-center" do %>
+        <%= button_to space_documents_path(@space), method: :post, params: {"document": {title: ""}}, disabled: !policy(@space).update?, form_class: "flex flex-grow items-center", class: "flex flex-grow items-center" do %>
           <span class="ml-1 size-5 icon-[heroicons--plus-16-solid]"></span>
           <span class="text-left mx-0 p-2">New document</span>
         <% end %>
