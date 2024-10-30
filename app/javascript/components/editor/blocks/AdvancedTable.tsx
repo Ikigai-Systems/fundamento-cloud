@@ -56,6 +56,7 @@ const AdvancedTable = createReactBlockSpec(
       }
     },
     content: "none",
+    isSelectable: false,
   },
   {
     /* eslint-disable react-hooks/rules-of-hooks */
