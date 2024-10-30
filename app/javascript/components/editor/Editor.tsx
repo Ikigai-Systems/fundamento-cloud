@@ -209,7 +209,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
         )}
       />
       <div className="ikigai-static-toolbar-overrides">
-        {selectedBlocks.length > 0 && <FormattingToolbar />}
+        {editable && selectedBlocks.length > 0 && <FormattingToolbar />}
       </div>
     </BlockNoteView>
   </>
