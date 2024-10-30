@@ -29,7 +29,7 @@ Rails.application.routes.draw do
 
       get :suggest_owners, on: :collection
 
-      resources :documents, only: [:create, :new, :edit, :update, :destroy] do
+      resources :documents, only: [:create, :new, :show, :edit, :update, :destroy] do
         resources :versions, module: :documents, only: [:create, :index, :show]
       end
 

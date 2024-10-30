@@ -17,7 +17,7 @@ type EditDocumentPanelProps = {
   currentUser: User,
 }
 
-const ViewVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {
+const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.content,
@@ -37,4 +37,4 @@ const ViewVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
   </QueryClientProvider>
 }
 
-export default ViewVersionPanel;
+export default ShowVersionPanel;

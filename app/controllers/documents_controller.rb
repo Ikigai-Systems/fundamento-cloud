@@ -48,6 +48,10 @@ class DocumentsController < ApplicationController
 
     respond_to do |format|
       format.json { render json: @document, :except => [:sync] }
+      format.html do
+        @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+        @documents = @space.documents_from_hierarchy
+      end
       format.all { head :unprocessable_content }
     end
   end

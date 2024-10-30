@@ -44,6 +44,7 @@ const tinySimpleHash = (s: string) => {
 type EditorProps = {
   currentUser: User,
   documentId: number,
+  editable?: boolean,
 }
 
 const LoadingContent = () => {
@@ -53,7 +54,7 @@ const LoadingContent = () => {
   </div>;
 }
 
-const Editor = ({currentUser, documentId}: EditorProps) => {
+const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
@@ -163,7 +164,7 @@ const Editor = ({currentUser, documentId}: EditorProps) => {
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} /*formattingToolbar={false}*/>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} /*formattingToolbar={false}*/ editable={editable}>
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}

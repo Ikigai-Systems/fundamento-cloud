@@ -62,7 +62,11 @@ class Documents::VersionsController < ApplicationController
 
     authorize @document, :show?
 
-    @version = @document.versions.find_by(sequential_id: params[:id])
+    if params[:id] == "latest"
+      @version = @document.versions.latest
+    else
+      @version = @document.versions.find_by(sequential_id: params[:id])
+    end
     raise ActionController::RoutingError, 'Not Found' if @version.blank?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
