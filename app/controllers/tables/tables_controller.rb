@@ -46,7 +46,7 @@ class Tables::TablesController < ApplicationController
         @table.import_from_csv(uploaded_file)
       else
         last_column = nil
-        params[:table][:columns].each do |column|
+        params.dig(:table, :columns)&.each do |column|
           last_column = @table.columns.create!(
             previous_column: last_column,
             organization_id: @table.organization_id,
@@ -56,7 +56,7 @@ class Tables::TablesController < ApplicationController
           )
         end
         last_row = nil
-        params[:table][:rows].each do |row|
+        params.dig(:table, :rows)&.each do |row|
           last_row = @table.rows.create!(
             previous_row: last_row,
             organization_id: @table.organization_id,
