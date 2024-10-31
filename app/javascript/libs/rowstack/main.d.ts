@@ -55,10 +55,9 @@ export declare interface Config {
     grouping: FeatureConfig;
     extraColumnTypes: ColumnType[];
     extraColumnHeaderPopupActions: PopupAction[];
-    formatDate: ({}: {
-        parsedData: Date;
-        configuration: {};
-    }) => string;
+    parseDate: (value: string, configuration: {}) => any | Date;
+    formatStorageDate: (date: Date, configuration: {}) => string;
+    formatDisplayDate: (date: Date, configuration: {}) => string;
 }
 
 export declare interface Data {

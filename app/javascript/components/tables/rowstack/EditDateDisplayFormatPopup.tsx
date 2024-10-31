@@ -1,4 +1,4 @@
-import React, {useRef, useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 
 const formats = [[
   "1/31/2024",
@@ -25,7 +25,7 @@ const formats = [[
   "Jan 2024"
 ]];
 
-function EditDateFormatPopup({
+function EditDateDisplayFormatPopup({
   column,
   setColumn,
   close,
@@ -37,16 +37,16 @@ function EditDateFormatPopup({
   useEffect(() => {
     const {current} = selectedDivRef;
     if (current !== null) {
-      current.scrollIntoView({behavior: "smooth"});
+      current.scrollIntoView({behavior: "smooth", block: "nearest"});
     }
   }, []);
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
       <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs">
-        Date format
+        Display format
       </div>
-      <div className="h-64 overflow-y-scroll">
+      <div className="h-64 overflow-y-auto">
         {formats.map((formatGroup, index) => (
           <div key={index} className="border-b py-1">
             {formatGroup.map((format, index) => {
@@ -60,13 +60,12 @@ function EditDateFormatPopup({
                 }
               }
 
-              const isSelected = (column.configuration?.dateFormat || 0) === optionIndex;
+              const isSelected = (column.configuration?.dateDisplayFormat || 0) === optionIndex;
 
               return (
                 <div key={index} ref={isSelected ? selectedDivRef : undefined} className={`rs-btn w-full px-3 py-1 flex items-center cursor-default${isSelected ? " bg-blue-500 text-inverted hover:bg-blue-500": " hover:bg-hover-light"}`}
                   onClick={() => {
-                    console.log({configuration: {...column.configuration, ...{dateFormat: optionIndex}}});
-                    setColumn({configuration: {...column.configuration, ...{dateFormat: optionIndex}}});
+                    setColumn({configuration: {...column.configuration, ...{dateDisplayFormat: optionIndex}}});
                     close();
                   }}
                 >
@@ -80,4 +79,4 @@ function EditDateFormatPopup({
   );
 }
 
-export default EditDateFormatPopup;
+export default EditDateDisplayFormatPopup;

@@ -7,13 +7,16 @@ import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
-import EditDateFormatPopup from "./rowstack/EditDateFormatPopup.tsx";
+import EditDateDisplayFormatPopup from "./rowstack/EditDateDisplayFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./rowstack-styles.css";
+import EditDateStorageFormatPopup from "./rowstack/EditDateStorageFormatPopup.tsx";
 
 dayjs.extend(localizedFormat);
+dayjs.extend(customParseFormat);
 
 const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
   switch (kind) {
@@ -140,12 +143,28 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
                   onClick={showPopup}
                 >
-                  <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
-                  Edit format
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
+                  Edit display format
                 </div>
               );
             },
-            popup: (popupProps) => <EditDateFormatPopup {...popupProps}/>
+            popup: (popupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
+          }, {
+            section: "main",
+            menuItem: ({column, showPopup}) => {
+              if (column.type !== "date") {
+                return null;
+              }
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={showPopup}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
+                  Edit storage format
+                </div>
+              );
+            },
+            popup: (popupProps) => <EditDateStorageFormatPopup {...popupProps}/>
           }, {
             section: "actions2",
             menuItem: ({column, showPopup}) => {
@@ -187,9 +206,62 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               );
             },
           }],
-          formatDate: ({parsedData, configuration}) => {
+          parseDate: (value, configuration) => {
+            if (!value) {
+              return null;
+            }
+            let dateDayJs;
+            switch (configuration?.storageDateFormat) {
+            case 0:
+              dateDayJs = dayjs(value, "M/D/YYYY");
+              break;
+            case 1:
+              dateDayJs = dayjs(value, "D/M/YYYY");
+              break;
+            case 2:
+              dateDayJs = dayjs(value, "DD.MM.YYYY");
+              break;
+            case 3:
+              dateDayJs = dayjs(value, "YYYY-MM-DD");
+              break;
+            default:
+              dateDayJs = dayjs(value);
+              break;
+            }
+            const date = dateDayJs.toDate();
+            if (!dateDayJs.isValid()) {
+              date._isValid = false;
+              date._originalValue = value;
+            }
+            return date;
+          },
+          formatStorageDate: (parsedData, configuration) => {
+            if (parsedData === null) {
+              return "";
+            }
+            if (parsedData?._isValid === false) {
+              return parsedData._originalValue;
+            }
             const dayDate = dayjs(parsedData);
-            switch (configuration?.dateFormat) {
+            switch (configuration?.storageDateFormat) {
+            case 0:
+              return dayDate.format("M/D/YYYY");
+            case 1:
+              return dayDate.format("D/M/YYYY");
+            case 2:
+              return dayDate.format("DD.MM.YYYY");
+            case 3:
+              return dayDate.format("YYYY-MM-DD");
+            default:
+              return dayDate.format("L");
+            }
+          },
+          formatDisplayDate: (parsedData, configuration) => {
+            if (parsedData._isValid === false) {
+              return "Invalid Date";
+            }
+            const dayDate = dayjs(parsedData);
+            switch (configuration?.dateDisplayFormat) {
             case 0:
               return dayDate.format("M/D/YYYY");
             case 1:
