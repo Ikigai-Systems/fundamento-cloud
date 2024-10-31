@@ -1,0 +1,70 @@
+<div
+  data-controller="dropdown"
+  data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.up->dropdown#previousItem keydown.down->dropdown#nextItem keydown.esc->dropdown#hide"
+  class="inline-block relative">
+
+  <button
+    id="document_menu_button"
+    data-action="dropdown#toggle:stop"
+    class="document-toolbar-button"
+    aria-expanded="true"
+    aria-haspopup="true"
+  >
+    <svg class="h-5" fill="currentColor" stroke="currentColor"  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg>
+  </button>
+
+  <div
+    data-dropdown-target="menu"
+    class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max"
+    role="menu"
+    aria-orientation="vertical"
+    aria-labelledby="document_menu_button"
+    tabindex="-1"
+  >
+    <div class="dropdown-container w-56">
+      <%= link_to "Document history",
+        space_document_version_path(space, document, "latest"),
+        disabled: document.versions.latest.blank?,
+        title: document.versions.latest.blank? ? "No document history yet, save a version first" : nil,
+        data: { "dropdown-target" => "menuItem" },
+        role: "menuitem",
+        tabindex: "-1"
+      %>
+
+      <% if @document.archived %>
+        <%= button_to "Restore",
+          space_document_path(space, document),
+          method: :put,
+          params: { document: { archived: false } },
+          form: {
+            data: { turbo_confirm: 'Restore this document? This will make it visible in the default view.' } },
+          disabled: !policy(document).update?,
+          data: { "dropdown-target" => "menuItem" },
+          role: "menuitem",
+          tabindex: "-1"
+        %>
+      <% else %>
+        <%= button_to "Archive",
+          space_document_path(space, document),
+          method: :put,
+          params: { document: { archived: true } },
+          form: { data: { turbo_confirm: 'Mark this document as archived? This will hide if from default view.' } },
+          disabled: !policy(document).update?,
+          data: { "dropdown-target" => "menuItem" },
+          role: "menuitem",
+          tabindex: "-1"
+        %>
+      <% end %>
+
+      <%= button_to "Delete",
+        space_document_path(space, document),
+        method: :delete,
+        form: { data: { turbo_confirm: 'Are you sure? Deleted document cannot be restored.' } },
+        disabled: !policy(document).destroy?,
+        data: { "dropdown-target" => "menuItem" },
+        role: "menuitem",
+        tabindex: "-1"
+      %>
+    </div>
+  </div>
+</div>

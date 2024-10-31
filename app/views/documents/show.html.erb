@@ -6,34 +6,13 @@
   <%= render 'application/left_side_bar_for_documents' %>
 
   <article class="document">
+
     <div class="h-12 flex justify-end items-center p-2">
       <div id="editor-connection-indicator"></div>
+
       <%= button_to "Edit", edit_space_document_path(@space, @document), method: :get,
                     disabled: !policy(@document).update?,
                     class: "primary-button document-toolbar-button" %>
-      <%= button_to "Document history", space_document_version_path(@space, @document, "latest"), method: :get,
-                    disabled: @document.versions.latest.blank?,
-                    title: @document.versions.latest.blank? ? "No document history yet, save a version first" : nil,
-                    class: "document-toolbar-button" %>
-
-      <% if @document.archived %>
-        <%= button_to "Restore", space_document_path(@space, @document), method: :put,
-                      params: {document: {archived: false}},
-                      form: {data: {turbo_confirm: 'Restore this document? This will make it visible in the default view.'}},
-                      disabled: !policy(@document).update?,
-                      class: "document-toolbar-button" %>
-      <% else %>
-        <%= button_to "Archive", space_document_path(@space, @document), method: :put,
-                      params: {document: {archived: true}},
-                      form: {data: {turbo_confirm: 'Mark this document as archived? This will hide if from default view.'}},
-                      disabled: !policy(@document).update?,
-                      class: "document-toolbar-button" %>
-      <% end %>
-
-      <%= button_to "Delete", space_document_path(@space, @document), method: :delete,
-                    form: {data: {turbo_confirm: 'Are you sure? Deleted document cannot be restored.'}},
-                    disabled: !policy(@document).destroy?,
-                    class: "document-toolbar-button" %>
 
       <div
         data-controller="dropdown"
@@ -54,6 +33,7 @@
         </div>
       </div>
 
+      <%= render partial: "document_menu", locals: { space: @space, document: @document } %>
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
