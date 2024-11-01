@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Configure credentials for gems
+        run: bundle config https://dl.fontawesome.com/basic/fontawesome-pro/ruby/ ${FONTAWESOME_AUTH}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
