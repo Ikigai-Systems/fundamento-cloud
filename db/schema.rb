@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_25_143138) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_01_164120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,6 +65,18 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_143138) do
     t.boolean "archived", default: false
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.bigint "organization_user_id", null: false
+    t.string "object_type", null: false
+    t.bigint "object_id", null: false
+    t.string "npi", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["object_id", "object_type", "organization_user_id"], name: "idx_on_object_id_object_type_organization_user_id_de4b921bd4", unique: true
+    t.index ["object_type", "object_id"], name: "index_favorites_on_object"
+    t.index ["organization_user_id"], name: "index_favorites_on_organization_user_id"
   end
 
   create_table "good_job_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -404,6 +416,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_143138) do
   add_foreign_key "attachments", "organizations"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
+  add_foreign_key "favorites", "organization_users"
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
