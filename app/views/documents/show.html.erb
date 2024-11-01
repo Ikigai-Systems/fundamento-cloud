@@ -10,9 +10,19 @@
     <div class="h-12 flex justify-end items-center p-2">
       <div id="editor-connection-indicator"></div>
 
-      <%= button_to "Edit", edit_space_document_path(@space, @document), method: :get,
-                    disabled: !policy(@document).update?,
-                    class: "primary-button document-toolbar-button" %>
+      <%= button_to "Star",
+        favorites_path,
+        method: :post,
+        params: { favorite: { object_type: "Document", object_id: @document.id } },
+        class: "secondary-button"
+      %>
+
+      <%= button_to "Edit",
+        edit_space_document_path(@space, @document),
+        method: :get,
+        disabled: !policy(@document).update?,
+        class: "primary-button document-toolbar-button"
+      %>
 
       <div
         data-controller="dropdown"
@@ -37,7 +47,7 @@
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
-      <%= react_component "ShowDocumentPanel", {document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
+      <%= react_component "ShowDocumentPanel", { document: @document.attributes.except("sync"), space: @space, current_user: current_user } %>
     </div>
   </article>
 </div>

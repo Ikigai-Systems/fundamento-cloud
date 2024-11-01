@@ -6,6 +6,8 @@ class OrganizationUser < ApplicationRecord
   belongs_to :organization
   belongs_to :user
 
+  has_many :favorites
+
   enum :role, [:manager, :member], scope: false
 
   delegate :display_name, to: :user

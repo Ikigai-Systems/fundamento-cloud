@@ -11,7 +11,7 @@
     </button>
 
     <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
-      Tab 2
+      Favorites
     </button>
 
     <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
@@ -24,7 +24,7 @@
   </div>
 
   <div data-tabs-target="panel" class="py-4">
-    Content for Tab 2
+    <%= render partial: "favorites_tab" %>
   </div>
 
   <div data-tabs-target="panel" class="py-4">
