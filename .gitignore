@@ -47,3 +47,5 @@ repo.key
 spec/examples.txt
 
 config/database.yml
+
+.bundle/

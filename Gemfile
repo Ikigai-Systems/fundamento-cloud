@@ -77,7 +77,7 @@ gem "logstash-event", "~> 1.2"
 gem "aws-sdk-s3", require: false
 
 # Pawel's font-awesome token
-source "https://token:3B073301-814C-4FB1-8EF9-594CEF480576@dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
+source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
 end
 
