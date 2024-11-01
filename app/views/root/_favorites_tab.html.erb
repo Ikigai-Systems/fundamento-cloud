@@ -5,7 +5,7 @@
 <div id="favorites_container">
   <div id="favorites_list">
     <% favorites.each do |favorite| %>
-      <%= render partial: "favorite", locals: { object: favorite.object } %>
+      <%= render partial: "favorite", locals: { favorite: favorite } %>
     <% end %>
   </div>
 
