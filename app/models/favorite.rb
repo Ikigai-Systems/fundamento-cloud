@@ -3,7 +3,7 @@ class Favorite < ApplicationRecord
 
   belongs_to :object, polymorphic: true
 
-  include ModelWithNpi
+  include ModelWithNpiAsParam
 
   validates_presence_of :object
 

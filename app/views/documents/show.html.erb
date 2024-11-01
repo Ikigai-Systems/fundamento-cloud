@@ -10,12 +10,18 @@
     <div class="h-12 flex justify-end items-center p-2">
       <div id="editor-connection-indicator"></div>
 
-      <%= button_to "Star",
-        favorites_path,
-        method: :post,
-        params: { favorite: { object_type: "Document", object_id: @document.id } },
-        class: "secondary-button"
-      %>
+      <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @document)) %>
+        <%= button_to favorite_path(favorite), method: :delete do %>
+          <i class="fa-solid fa-star fa-fw"></i>
+        <% end %>
+    <% else %>
+        <%= button_to favorites_path,
+          method: :post,
+          params: { favorite: { object_type: "Document", object_id: @document.id } } do
+        %>
+          <i class="fa-sharp fa-regular fa-star fa-fw"></i>
+        <% end %>
+      <% end %>
 
       <%= button_to "Edit",
         edit_space_document_path(@space, @document),
