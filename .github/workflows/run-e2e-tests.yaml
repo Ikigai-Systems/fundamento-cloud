@@ -14,11 +14,13 @@ jobs:
   run-e2e-tests:
     runs-on: ubuntu-latest
 
+    env:
+      BUNDLE_USERNAME__DL_FONT_AWESOME__COM: token
+      BUNDLE_PASSWORD__DL_FONT_AWESOME__COM: ${{ secrets.FONTAWESOME_TOKEN }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Configure credentials for gems
-        run: bundle config https://dl.fontawesome.com/basic/fontawesome-pro/ruby/ ${FONTAWESOME_AUTH}
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
