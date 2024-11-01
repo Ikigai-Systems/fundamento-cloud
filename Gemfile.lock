@@ -131,6 +131,12 @@ GEM
     erubi (1.13.0)
     et-orbi (1.2.11)
       tzinfo
+    ffi (1.17.0-aarch64-linux-gnu)
+    ffi (1.17.0-arm-linux-gnu)
+    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0-x86-linux-gnu)
+    ffi (1.17.0-x86_64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -298,6 +304,8 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
+    sassc (2.4.0)
+      ffi (~> 1.9)
     sentry-rails (5.18.2)
       railties (>= 5.0)
       sentry-ruby (~> 5.18.2)
@@ -371,6 +379,12 @@ GEM
       y-rb (>= 0.4.5)
     zeitwerk (2.6.18)
 
+GEM
+  remote: https://dl.fontawesome.com/basic/fontawesome-pro/ruby/
+  specs:
+    font-awesome-pro-sass (6.6.0)
+      sassc (~> 2.0)
+
 PLATFORMS
   aarch64-linux
   arm-linux
@@ -389,6 +403,7 @@ DEPENDENCIES
   devise (~> 4.9)
   devise_invitable
   dotenv-rails (~> 3.1)
+  font-awesome-pro-sass!
   good_job (~> 4.4)
   hash_diff
   importmap-rails
