@@ -1,4 +1,4 @@
-<%= turbo_stream_from ["favorites_list", pundit_user.organization_user] %>
+<%= turbo_stream_from [pundit_user.organization_user, "favorites"] %>
 
 <% favorites = pundit_user.organization_user.favorites %>
 
