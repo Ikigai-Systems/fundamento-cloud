@@ -20,14 +20,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
       - uses: actions/setup-node@v4
         with:
           cache: "npm"
+
       - run: npm ci
+
+      - name: Create secrets for docker compose
+        run: |
+          echo "${{ secrets.FONTAWESOME_AUTH }}" > dockerfiles/fontawesome-auth.secret
+          chmod 600 dockerfiles/*.secret
+
       - uses: hoverkraft-tech/compose-action@v2.0.1
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
@@ -37,15 +47,21 @@ jobs:
           config: baseUrl=http://localhost:3000
         env:
           DEBUG: "@cypress/github-action"
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: log/cypress/screenshots
           if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
+
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-videos
           path: log/cypress/videos
           if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
+
+      - name: Remove Secret File
+        if: always()
+        run: rm dockerfiles/*.secret
