@@ -62,6 +62,8 @@ services:
       target: ${RAILS_ENV:-production}
       args:
         - RAILS_ENV=${RAILS_ENV:-production}
+      secrets:
+        - fontawesome-auth
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
@@ -82,6 +84,8 @@ services:
       target: ${RAILS_ENV:-production}
       args:
         - RAILS_ENV=${RAILS_ENV:-production}
+      secrets:
+        - fontawesome-auth
     command: bundle exec good_job start
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
@@ -99,3 +103,7 @@ services:
 volumes:
   postgres:
   minio:
+
+secrets:
+  fontawesome-auth:
+    file: dockerfiles/fontawesome-auth.secret
