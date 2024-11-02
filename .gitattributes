@@ -12,3 +12,4 @@ config/credentials.yml.enc diff=rails_credentials
 # Encrypt files before storing them in git
 # check https://github.com/AGWA/git-crypt for details
 *.key filter=git-crypt diff=git-crypt
+*.secret filter=git-crypt diff=git-crypt
