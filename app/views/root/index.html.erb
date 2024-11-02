@@ -27,8 +27,10 @@
     <%=
       turbo_frame_tag "favorites_frame",
         src: favorites_path,
-        loading: "lazy"
+        loading: "lazy" do
     %>
+      <%= render template: "application/components/loading" %>
+    <% end %>
   </div>
 
   <div data-tabs-target="panel" class="py-4">
