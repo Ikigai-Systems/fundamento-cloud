@@ -33,7 +33,7 @@ jobs:
 
       - name: Create secrets for docker compose
         run: |
-          echo "${{ secrets.FONTAWESOME_AUTH }}" > dockerfiles/fontawesome-auth.secret
+          echo -n "${{ secrets.FONTAWESOME_AUTH }}" > dockerfiles/fontawesome-auth.secret
           chmod 600 dockerfiles/*.secret
 
       - uses: hoverkraft-tech/compose-action@v2.0.1
