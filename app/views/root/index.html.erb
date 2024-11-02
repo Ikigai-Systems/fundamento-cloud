@@ -24,7 +24,11 @@
   </div>
 
   <div data-tabs-target="panel" class="py-4">
-    <%= render partial: "favorites_tab" %>
+    <%=
+      turbo_frame_tag "favorites_frame",
+        src: favorites_path,
+        loading: "lazy"
+    %>
   </div>
 
   <div data-tabs-target="panel" class="py-4">

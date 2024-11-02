@@ -1,20 +1,8 @@
 class FavoritesController < ApplicationController
-  after_action :verify_authorized
-
-  def new
-    @public_link = current_organization.public_links.new(public_link_params)
-
-    authorize @public_link.object.space, :show?
-
-    respond_to do |format|
-      format.html { redirect_to public_links_path }
-      format.json { render json: @public_link }
-      format.turbo_stream
-    end
-  end
+  after_action :verify_authorized, except: [:index]
 
   def create
-    @favorite = pundit_user.organization_user.favorites.new(public_link_params)
+    @favorite = pundit_user.organization_user.favorites.new(favorite_params)
 
     authorize @favorite, :update?
 
@@ -43,33 +31,16 @@ class FavoritesController < ApplicationController
     end
   end
 
-  def show
-    @public_link = current_organization.public_links.find(params[:id])
-    # @public_link.increment!(:clicks)
-
-    authorize @public_link.object.space, :show?
-
-    respond_to do |format|
-      format.html { redirect_to public_links_path }
-      format.json { render json: @public_link }
-      format.turbo_stream
-    end
-  end
-
   def index
-    @public_links = current_organization.public_links
-
-    authorize current_organization, :show?
-
     respond_to do |format|
-      format.html
-      format.json { render json: @public_links }
+      format.html { render partial: "favorites_tab" }
+      format.json { render json: pundit_user.organization_user.favorites }
     end
   end
 
   protected
 
-  def public_link_params
+  def favorite_params
     params.require(:favorite).permit(:object_id, :object_type)
   end
 end
