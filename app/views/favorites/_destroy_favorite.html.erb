@@ -1,0 +1,7 @@
+<%=
+  button_to favorite_path(favorite),
+    form:  { id: dom_id(object, "favorite") },
+    method: :delete do
+%>
+  <i class="fa-solid fa-star fa-fw"></i>
+<% end %>

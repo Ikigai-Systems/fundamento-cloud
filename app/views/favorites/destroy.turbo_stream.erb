@@ -1,0 +1,5 @@
+<%=
+  turbo_stream.replace dom_id(@favorite.object, "favorite"),
+    partial: "create_favorite",
+    locals: { object: @favorite.object }
+%>

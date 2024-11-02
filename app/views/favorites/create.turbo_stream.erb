@@ -1,0 +1,5 @@
+<%=
+  turbo_stream.replace dom_id(@favorite.object, "favorite"),
+    partial: "destroy_favorite",
+    locals: { object: @favorite.object, favorite: @favorite }
+%>
