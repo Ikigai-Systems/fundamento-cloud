@@ -73,7 +73,7 @@ RUN cd formula && npm run build
 RUN cd blocknote && npm run build
 
 # Final stage for app image
-FROM base as packaged
+FROM base AS packaged
 
 # Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
