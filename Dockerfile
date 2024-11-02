@@ -37,7 +37,8 @@ COPY Gemfile Gemfile.lock ./
 
 # Improving bundle install performance based on the followin article -
 # https://release.com/blog/cache-bundle-install-with-buildkit
-RUN --mount=type=cache,sharing=locked,target=/var/cache/bundle \
+RUN --mount=type=secret,id=fontawesome-auth,env=BUNDLE_DL__FONTAWESOME__COM \
+    --mount=type=cache,sharing=locked,target=/var/cache/bundle \
     BUNDLE_PATH=/var/cache/bundle bundle install && \
     mkdir -p "${BUNDLE_PATH}" && \
     cp -ar /var/cache/bundle/* "${BUNDLE_PATH}" && \
