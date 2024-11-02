@@ -50,7 +50,7 @@ services:
     entrypoint: /bin/sh
     command: /minio-init.sh
     volumes:
-      - ./bin/minio-init.sh:/minio-init.sh
+      - ./dockerfiles/minio-init.sh:/minio-init.sh
     environment:
       <<: *minio-credentials
     depends_on:
