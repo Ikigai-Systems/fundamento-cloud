@@ -61,7 +61,3 @@ jobs:
           name: cypress-videos
           path: log/cypress/videos
           if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
-
-      - name: Remove Secret File
-        if: always()
-        run: rm dockerfiles/*.secret
