@@ -15,8 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      BUNDLE_USERNAME__DL_FONT_AWESOME__COM: token
-      BUNDLE_PASSWORD__DL_FONT_AWESOME__COM: ${{ secrets.FONTAWESOME_TOKEN }}
+      BUNDLE_DL__FONTAWESOME__COM: ${{ secrets.FONTAWESOME_AUTH }}
 
     steps:
       - name: Checkout repository
