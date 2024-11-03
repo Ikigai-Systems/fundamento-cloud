@@ -1,0 +1,24 @@
+@layer components {
+    div[data-controller="tabs"] {
+        @apply w-full;
+    }
+
+    div[data-controller="tabs"] nav[data-tabs-target="list"] button.active-tab {
+        @apply text-indigo-600 border-indigo-500;
+    }
+
+    /* Tabs container */
+    div[data-controller="tabs"] nav[data-tabs-target="list"] {
+        @apply -mb-px flex space-x-8;
+    }
+
+    /* Tab */
+    div[data-controller="tabs"] nav[data-tabs-target="list"] button {
+        @apply whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium text-gray-500  border-transparent hover:border-gray-300 hover:text-gray-700;
+    }
+
+    /* Tab content container */
+    div[data-controller="tabs"] div[data-tabs-target="panel"] {
+        @apply py-4;
+    }
+}

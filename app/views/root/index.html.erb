@@ -4,26 +4,31 @@
 
 <% content_for :focused_content do %>
 
-<div data-controller="tabs" class="w-full">
-  <div data-tabs-target="list" class="flex border-b">
-    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
-      Recently updated
-    </button>
+<div
+  data-controller="tabs"
+  data-tabs-active-tab-class="active-tab"
+>
+  <div class="border-b border-gray-200">
+    <nav data-tabs-target="list" aria-label="Tabs">
+      <button data-action="click->tabs#change" data-tabs-target="tab">
+        Recently updated
+      </button>
 
-    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
-      Favorites
-    </button>
+      <button data-action="click->tabs#change" data-tabs-target="tab">
+        Favorites
+      </button>
 
-    <button data-action="click->tabs#change" data-tabs-target="tab" class="py-2 px-4 text-blue-500 border-b-2 font-medium text-sm">
-      Tab 3
-    </button>
+      <button data-action="click->tabs#change" data-tabs-target="tab">
+        Tab 3
+      </button>
+    </nav>
   </div>
 
-  <div data-tabs-target="panel" class="py-4">
+  <div data-tabs-target="panel">
     <%= render partial: "recently_updated_documents_tab" %>
   </div>
 
-  <div data-tabs-target="panel" class="py-4">
+  <div data-tabs-target="panel">
     <%=
       turbo_frame_tag "favorites_frame",
         src: favorites_path,
@@ -33,7 +38,7 @@
     <% end %>
   </div>
 
-  <div data-tabs-target="panel" class="py-4">
+  <div data-tabs-target="panel">
     Content for Tab 3
   </div>
 </div>
