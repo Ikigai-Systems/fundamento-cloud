@@ -6,19 +6,20 @@
 
 <div
   data-controller="tabs"
+  data-tabs-update-anchor-value="true"
   data-tabs-active-tab-class="active-tab"
 >
   <div class="border-b border-gray-200">
     <nav data-tabs-target="list" aria-label="Tabs">
-      <button data-action="click->tabs#change" data-tabs-target="tab">
+      <button id="recently-updated" data-action="click->tabs#change" data-tabs-target="tab">
         Recently updated
       </button>
 
-      <button data-action="click->tabs#change" data-tabs-target="tab">
+      <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
         Favorites
       </button>
 
-      <button data-action="click->tabs#change" data-tabs-target="tab">
+      <button id="tab3" data-action="click->tabs#change" data-tabs-target="tab">
         Tab 3
       </button>
     </nav>
