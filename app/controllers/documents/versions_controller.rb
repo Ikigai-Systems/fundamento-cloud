@@ -26,11 +26,7 @@ class Documents::VersionsController < ApplicationController
     if @version.save
       respond_to do |format|
         flash[:notice] = "Document version has been saved."
-        format.html { redirect_to edit_space_document_path(params[:space_npi], @document) }
-        format.turbo_stream do
-          render turbo_stream: [turbo_stream.append("flashes", partial: "flash_messages_as_alerts", locals: { flash: flash})]
-          flash.clear
-        end
+        format.html { redirect_to space_document_path(params[:space_npi], @document) }
       end
     else
       render :new, status: :unprocessable_content
