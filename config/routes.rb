@@ -31,6 +31,11 @@ Rails.application.routes.draw do
 
       resources :documents, only: [:create, :new, :show, :edit, :update, :destroy] do
         resources :versions, module: :documents, only: [:create, :index, :show]
+
+        member do
+          get :select_destination
+          post :move
+        end
       end
 
       resources :tables, module: :tables, only: [:new, :create, :show, :edit, :update, :destroy, :index] do
