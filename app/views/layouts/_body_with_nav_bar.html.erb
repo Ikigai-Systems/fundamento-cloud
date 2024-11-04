@@ -22,11 +22,17 @@
     <%= yield(:head) %>
   <% end %>
 </head>
-<body>
+<body data-controller="modal" data-action="click->modal#backdropClose">
   <%= render "nav_bar" %>
 
   <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
 
   <%= yield %>
+
+  <dialog data-modal-target="dialog" class="p-8 rounded-lg backdrop:bg-black/80">
+    <button class="font-bold float-right" data-action="dialog#close">X</button>
+
+    <%= turbo_frame_tag "modal", data: {dialog_target: "frame"} %>
+  </dialog>
 </body>
 </html>

@@ -124,6 +124,18 @@ class DocumentsController < ApplicationController
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'
   end
 
+  def select_destination
+    @document = current_organization.documents.find(params[:id])
+
+    authorize @document, :show?
+
+    respond_to do |format|
+      format.html { render partial: "select_destination" }
+      format.json { render json: @document }
+      format.turbo_stream
+    end
+  end
+
   private
 
   def document_params

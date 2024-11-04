@@ -31,6 +31,14 @@
         tabindex: "-1"
       %>
 
+      <%= link_to "Move",
+        select_destination_space_document_path(space, document),
+        disabled: !policy(space).update?,
+        data: { "dropdown-target" => "menuItem", turbo_frame: "modal", action: "modal#open" },
+        role: "menuitem",
+        tabindex: "-1"
+      %>
+
       <% if @document.archived %>
         <%= button_to "Restore",
           space_document_path(space, document),
