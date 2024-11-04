@@ -52,6 +52,12 @@ class DocumentsController < ApplicationController
       format.json { render json: @document, :except => [:sync] }
       format.html do
         @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+
+        if @document.versions.empty?
+          redirect_to edit_space_document_path(@space, @document)
+          return
+        end
+
         @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
       end
       format.all { head :unprocessable_content }
