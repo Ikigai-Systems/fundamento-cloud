@@ -17,7 +17,7 @@
 
             <div class="form-field">
               <%= f.label :space %><br/>
-              <%= f.collection_select :space_id, policy_scope(current_organization.spaces).order(:name), :id, :name, {}, class: "form-input" %>
+              <%= f.collection_select :space_id, policy_scope(current_organization.spaces).without(@document.space).order(:name), :id, :name, {}, class: "form-input" %>
             </div>
         </div>
       </div>
