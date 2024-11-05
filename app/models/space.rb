@@ -17,8 +17,8 @@ class Space < ApplicationRecord
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
 
-  def documents_from_hierarchy
-    ids = traverse_hierarchy(hierarchy)
+  def documents_from_hierarchy(node = hierarchy)
+    ids = traverse_hierarchy(node)
     self.documents.where(id: ids)
   end
 
