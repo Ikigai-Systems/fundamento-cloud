@@ -14,9 +14,21 @@
       <%= f.collection_select :home_document_id, @space.documents.without_archived.order(:title), :id, :title, {}, class: "form-input" %>
     </div>
 
-    <div class="form-field">
+    <div class="form-field" data-controller="show-if-input-value-equals">
       <%= f.label :access_mode %><br/>
-      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input" %>
+      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input", data: { "show-if-input-value-equals_target" => "input", action: "change->show-if-input-value-equals#refresh" } %>
+
+      <div class="text-sm text-slate-400 mt-1">
+        <div <%= @space.access_mode != 'public' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="public">
+          In <b>public</b> mode every document in this space will be visible and editable to anyone within organization.
+        </div>
+        <div <%= @space.access_mode != 'restricted' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="restricted">
+          In <b>restricted</b> mode every document in this space will be visible to anyone within organization, but editable only to space managers or organization managers.
+        </div>
+        <div <%= @space.access_mode != 'private' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="private">
+          In <b>private</b> mode every document in this space will be visible and editable only to space managers or organization managers.
+        </div>
+      </div>
     </div>
 
     <div class="form-field">

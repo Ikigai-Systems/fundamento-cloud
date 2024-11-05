@@ -35,11 +35,14 @@ application.register("draggable", DraggableController);
 import UserSelectorController from "./controllers/user_selector_controller.js";
 application.register("user-selector", UserSelectorController);
 
-import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts"
+import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts";
 application.register("prevent-double-submit", PreventDoubleSubmitController);
 
-import ScrollIntoViewController from "./scroll_into_view_controller.ts"
+import ScrollIntoViewController from "./scroll_into_view_controller.ts";
 application.register("scroll-into-view", ScrollIntoViewController);
+
+import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
+application.register("show-if-input-value-equals", ShowIfInputValueEquals);
 
 // Configure Stimulus development experience
 application.debug = true
