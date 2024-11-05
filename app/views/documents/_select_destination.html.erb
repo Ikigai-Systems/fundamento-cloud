@@ -16,11 +16,6 @@
             <%= render "devise/shared/error_messages", resource: @document %>
 
             <div class="form-field">
-              <%= f.label :title %><br/>
-              <%= f.text_field :title, autofocus: true, class: "form-input" %>
-            </div>
-
-            <div class="form-field">
               <%= f.label :space %><br/>
               <%= f.collection_select :space_id, policy_scope(current_organization.spaces).order(:name), :id, :name, {}, class: "form-input" %>
             </div>
