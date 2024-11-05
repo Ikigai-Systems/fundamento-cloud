@@ -68,7 +68,7 @@ class Space < ApplicationRecord
 
       return node
     else
-      (node || []).each_with_index do |item, index|
+      (node || []).each do |item|
         if item["id"] == parent_id
           item["children"].insert(position, item_to_add)
           return item

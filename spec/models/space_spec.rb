@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
-  describe "#remove_single_item_from_hierarchy" do
+  describe "#remove_single_item_from_hierarchy!" do
     it "removes only one item and moves children level up" do
       hierarchy = [
         { "id" => 16, "children" => [] },
@@ -77,7 +77,7 @@ RSpec.describe Space, type: :model do
     end
   end
 
-  describe "#remove_item_with_children_from_hierarchy" do
+  describe "#remove_item_with_children_from_hierarchy!" do
     it "removes only one item and returns it with children" do
       hierarchy = [
         { "id" => 16, "children" => [] },
@@ -149,6 +149,84 @@ RSpec.describe Space, type: :model do
         { "id" => 18, "children" => [] },
         { "id" => 23, "children" => [{ "id" => 24, "children" => [
           { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ])
+    end
+  end
+
+  describe "#add_item_to_hierarchy!" do
+    it "adds element on the first position" do
+      hierarchy = [
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ]
+
+      insert_item = { "id" => 16, "children" => [] }
+
+      Space.new.add_item_to_hierarchy!(hierarchy, nil, insert_item, 0)
+
+      expect(hierarchy).to eq([
+        { "id" => 16, "children" => [] },
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ])
+    end
+
+    it "adds element on the second position" do
+      hierarchy = [
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ]
+
+      insert_item = { "id" => 16, "children" => [] }
+
+      Space.new.add_item_to_hierarchy!(hierarchy, nil, insert_item, 1)
+
+      expect(hierarchy).to eq([
+        { "id" => 18, "children" => [] },
+        { "id" => 16, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ])
+    end
+
+    it "adds element under another" do
+      hierarchy = [
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ]
+
+      insert_item = { "id" => 16, "children" => [] }
+
+      Space.new.add_item_to_hierarchy!(hierarchy, 26, insert_item, 0)
+
+      expect(hierarchy).to eq([
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [
+            { "id" => 16, "children" => [] },
+          ] }
         ] }] },
         { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
         { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
