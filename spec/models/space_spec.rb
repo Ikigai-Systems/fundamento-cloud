@@ -207,6 +207,31 @@ RSpec.describe Space, type: :model do
       ])
     end
 
+    it "adds element on the last position" do
+      hierarchy = [
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
+      ]
+
+      insert_item = { "id" => 16, "children" => [] }
+
+      Space.new.add_item_to_hierarchy!(hierarchy, nil, insert_item, nil)
+
+      expect(hierarchy).to eq([
+        { "id" => 18, "children" => [] },
+        { "id" => 23, "children" => [{ "id" => 24, "children" => [
+          { "id" => 26, "children" => [] }
+        ] }] },
+        { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
+        { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] },
+        { "id" => 16, "children" => [] },
+      ])
+    end
+
     it "adds element under another" do
       hierarchy = [
         { "id" => 18, "children" => [] },
