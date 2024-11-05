@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Space, type: :model do
   describe "hierarchy" do
     it do
-      new_hierarchy = Space.new.remove_document_from_hierarchy(23, [
+      new_hierarchy = Space.new.remove_single_item_from_hierarchy(23, [
         { "id" => 16, "children" => [] },
         { "id" => 18, "children" => [] },
         { "id" => 23, "children" => [{ "id" => 24, "children" => [

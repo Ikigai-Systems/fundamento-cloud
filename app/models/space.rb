@@ -22,7 +22,7 @@ class Space < ApplicationRecord
     self.documents.where(id: ids)
   end
 
-  def remove_document_from_hierarchy(document_id, node = hierarchy)
+  def remove_single_item_from_hierarchy(document_id, node = hierarchy)
     document_id = document_id.to_i
 
     node.each_with_index do |item, index|
@@ -32,11 +32,11 @@ class Space < ApplicationRecord
           node.insert(index, child)
         end
       end
-      remove_document_from_hierarchy(document_id, item["children"])
+      remove_single_item_from_hierarchy(document_id, item["children"])
     end
   end
 
-  def remove_from_hierarchy(node, document_id)
+  def remove_item_with_children_from_hierarchy(node, document_id)
     (node || []).each_with_index do |item, index|
       if item.is_a? Numeric
         if item == document_id
@@ -48,7 +48,7 @@ class Space < ApplicationRecord
           node.delete_at(index)
           return item
         else
-          removed_item = remove_from_hierarchy(item["children"], document_id)
+          removed_item = remove_item_with_children_from_hierarchy(item["children"], document_id)
           return removed_item if removed_item.present?
         end
       end
@@ -56,7 +56,7 @@ class Space < ApplicationRecord
     nil
   end
 
-  def add_to_hierarchy(node, item_to_add, parent_id, position, document_id)
+  def add_item_to_hierarchy(node, item_to_add, parent_id, position, document_id)
     if document_id == parent_id
       node.insert(position, item_to_add)
       return node
@@ -73,7 +73,7 @@ class Space < ApplicationRecord
             item["children"].insert(position, item_to_add)
             return item
           else
-            parent_item = add_to_hierarchy(item["children"], item_to_add, parent_id, position, item["id"])
+            parent_item = add_item_to_hierarchy(item["children"], item_to_add, parent_id, position, item["id"])
             return parent_item if parent_item.present?
           end
         end
