@@ -121,9 +121,53 @@ class DocumentsController < ApplicationController
     end
   end
 
+  def move
+    @document = current_organization.documents.find(params[:id])
+
+    authorize @document, :show?
+
+    @source_space = @document.space
+    @destination_space = current_organization.spaces.find(document_move_params[:space_id])
+
+    item_to_move = @source_space.remove_item_with_children_from_hierarchy!(@document.id)
+
+    @destination_space.add_item_to_hierarchy!(@destination_space.hierarchy, nil, item_to_move)
+
+    @source_space.documents_from_hierarchy([item_to_move]).each { |document| document.update!(space: @destination_space) }
+
+    if @source_space.save && @destination_space.save
+      respond_to do |format|
+        format.html { redirect_to space_path(@destination_space), notice: 'Document was successfully moved.' }
+        format.json { render json: @document }
+        format.turbo_stream
+      end
+    else
+      respond_to do |format|
+        format.html { render action: 'select_destination' }
+        format.json { render json: @document.errors, status: :unprocessable_content }
+        format.turbo_stream
+      end
+    end
+
+    # if !policy(@document).update? || !policy(@document.space).update?
+    #   head
+    # end
+    #
+    # if !policy(@destination_space).update?
+    #   head :unprocessable_content
+    #   return
+    # end
+
+
+  end
+
   private
 
   def document_params
     params.require(:document).permit(:title, :archived)
+  end
+
+  def document_move_params
+    params.require(:document).permit(:space_id)
   end
 end
