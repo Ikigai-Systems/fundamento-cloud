@@ -96,29 +96,14 @@ class DocumentsController < ApplicationController
   end
 
   def destroy
-    document_id = params[:id].to_i
-    @document = current_organization.documents.find(document_id)
+    @document = current_organization.documents.find(params[:id])
 
     authorize @document, :destroy?
 
     @document.destroy
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
-    def safely_remove_from_hierarchy(node, document_id)
-      node.each_with_index do |item, index|
-        if item["id"] == document_id
-          node.delete_at(index)
-          item["children"].each do |child|
-            node.insert(index, child)
-          end
-        end
-        safely_remove_from_hierarchy(item["children"], document_id)
-      end
-    end
-
-    safely_remove_from_hierarchy(@space.hierarchy, document_id)
-
+    @space.remove_document_from_hierarchy(params[:id])
     @space.save
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'

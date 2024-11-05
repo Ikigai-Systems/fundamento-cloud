@@ -22,6 +22,20 @@ class Space < ApplicationRecord
     self.documents.where(id: ids)
   end
 
+  def remove_document_from_hierarchy(document_id, node = hierarchy)
+    document_id = document_id.to_i
+
+    node.each_with_index do |item, index|
+      if item["id"] == document_id
+        node.delete_at(index)
+        item["children"].each do |child|
+          node.insert(index, child)
+        end
+      end
+      remove_document_from_hierarchy(document_id, item["children"])
+    end
+  end
+
   # for migration and etc:
   def fix_hierarchy_to_most_recent_format
     def process_node(node)
