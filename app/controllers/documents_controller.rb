@@ -103,7 +103,7 @@ class DocumentsController < ApplicationController
     @document.destroy
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @space.remove_document_from_hierarchy(params[:id])
+    @space.remove_single_item_from_hierarchy!(params[:id])
     @space.save
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'

@@ -22,18 +22,31 @@ class Space < ApplicationRecord
     self.documents.where(id: ids)
   end
 
-  def remove_single_item_from_hierarchy(document_id, node = hierarchy)
+  def remove_single_item_from_hierarchy!(document_id, node = hierarchy)
     document_id = document_id.to_i
 
-    node.each_with_index do |item, index|
-      if item["id"] == document_id
-        node.delete_at(index)
-        item["children"].each do |child|
-          node.insert(index, child)
+    already_removed = false
+
+    (node || []).each_with_index do |item, index|
+      unless already_removed
+        if item["id"] == document_id
+          node.delete_at(index)
+
+          item["children"].each do |child|
+            node.insert(index, child)
+          end
+
+          # No need to do anything more, we already removed the item
+          already_removed = true
+        else
+          if remove_single_item_from_hierarchy!(document_id, item["children"])
+            already_removed = true
+          end
         end
       end
-      remove_single_item_from_hierarchy(document_id, item["children"])
     end
+
+    already_removed
   end
 
   def remove_item_with_children_from_hierarchy(node, document_id)
