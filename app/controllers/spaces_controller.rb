@@ -74,55 +74,9 @@ class SpacesController < ApplicationController
 
     hierarchy = @space.hierarchy
 
-    def remove_from_hierarchy(node, document_id)
-      (node || []).each_with_index do |item, index|
-        if item.is_a? Numeric
-          if item == document_id
-            node.delete_at(index)
-            return item
-          end
-        else
-          if item["id"] == document_id
-            node.delete_at(index)
-            return item
-          else
-            removed_item = remove_from_hierarchy(item["children"], document_id)
-            return removed_item if removed_item.present?
-          end
-        end
-      end
-      nil
-    end
+    removed_item = @space.remove_from_hierarchy(hierarchy, document_id)
 
-    removed_item = remove_from_hierarchy(hierarchy, document_id)
-
-    def add_to_hierarchy(node, item_to_add, parent_id, position, document_id)
-      if document_id == parent_id
-        node.insert(position, item_to_add)
-        return node
-      else
-        (node || []).each_with_index do |item, index|
-          if item.is_a? Numeric
-            if item == parent_id
-              new_item = { id: item, children: [item_to_add] }
-              node[index] = new_item
-              return new_item
-            end
-          else
-            if item["id"] == parent_id
-              item["children"].insert(position, item_to_add)
-              return item
-            else
-              parent_item = add_to_hierarchy(item["children"], item_to_add, parent_id, position, item["id"])
-              return parent_item if parent_item.present?
-            end
-          end
-        end
-        nil
-      end
-    end
-
-    parent_item = add_to_hierarchy(hierarchy, removed_item, parent_id, position, nil)
+    parent_item = @space.add_to_hierarchy(hierarchy, removed_item, parent_id, position, nil)
 
     unless @space.save
       render json: @space.errors, status: :unprocessable_content
