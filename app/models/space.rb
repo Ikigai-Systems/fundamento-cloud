@@ -19,7 +19,7 @@ class Space < ApplicationRecord
 
   def documents_from_hierarchy
     ids = traverse_hierarchy(hierarchy)
-    organization.documents.where(id: ids)
+    self.documents.where(id: ids)
   end
 
   # for migration and etc:
