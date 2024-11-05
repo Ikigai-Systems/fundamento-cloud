@@ -25,47 +25,40 @@ class Space < ApplicationRecord
   def remove_single_item_from_hierarchy!(document_id, node = hierarchy)
     document_id = document_id.to_i
 
-    already_removed = false
-
     (node || []).each_with_index do |item, index|
-      unless already_removed
-        if item["id"] == document_id
-          node.delete_at(index)
+      if item["id"] == document_id
+        node.delete_at(index)
 
-          item["children"].each do |child|
-            node.insert(index, child)
-          end
+        item["children"].each do |child|
+          node.insert(index, child)
+        end
 
-          # No need to do anything more, we already removed the item
-          already_removed = true
-        else
-          if remove_single_item_from_hierarchy!(document_id, item["children"])
-            already_removed = true
-          end
+        return true
+      else
+        if remove_single_item_from_hierarchy!(document_id, item["children"])
+          return true
         end
       end
     end
 
-    already_removed
+    false
   end
 
-  def remove_item_with_children_from_hierarchy(node, document_id)
+  def remove_item_with_children_from_hierarchy!(document_id, node = hierarchy)
+    document_id = document_id.to_i
+
     (node || []).each_with_index do |item, index|
-      if item.is_a? Numeric
-        if item == document_id
-          node.delete_at(index)
-          return item
-        end
+      if item["id"] == document_id
+        node.delete_at(index)
+
+        return item
       else
-        if item["id"] == document_id
-          node.delete_at(index)
-          return item
-        else
-          removed_item = remove_item_with_children_from_hierarchy(item["children"], document_id)
-          return removed_item if removed_item.present?
+        if (removed_item = remove_item_with_children_from_hierarchy!(document_id, item["children"])).present?
+          return removed_item
         end
       end
     end
+
     nil
   end
 

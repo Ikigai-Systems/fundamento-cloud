@@ -74,7 +74,7 @@ class SpacesController < ApplicationController
 
     hierarchy = @space.hierarchy
 
-    removed_item = @space.remove_item_with_children_from_hierarchy(document_id, hierarchy)
+    removed_item = @space.remove_item_with_children_from_hierarchy!(document_id, hierarchy)
 
     parent_item = @space.add_item_to_hierarchy(hierarchy, removed_item, parent_id, position, nil)
 
