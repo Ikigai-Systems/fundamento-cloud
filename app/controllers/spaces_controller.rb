@@ -76,7 +76,7 @@ class SpacesController < ApplicationController
 
     removed_item = @space.remove_item_with_children_from_hierarchy!(document_id, hierarchy)
 
-    parent_item = @space.add_item_to_hierarchy(hierarchy, removed_item, parent_id, position, nil)
+    parent_item = @space.add_item_to_hierarchy!(hierarchy, parent_id, removed_item, position)
 
     unless @space.save
       render json: @space.errors, status: :unprocessable_content

@@ -62,28 +62,22 @@ class Space < ApplicationRecord
     nil
   end
 
-  def add_item_to_hierarchy(node, item_to_add, parent_id, position, document_id)
+  def add_item_to_hierarchy!(node, parent_id, item_to_add, position, document_id = nil)
     if document_id == parent_id
       node.insert(position, item_to_add)
+
       return node
     else
       (node || []).each_with_index do |item, index|
-        if item.is_a? Numeric
-          if item == parent_id
-            new_item = { id: item, children: [item_to_add] }
-            node[index] = new_item
-            return new_item
-          end
+        if item["id"] == parent_id
+          item["children"].insert(position, item_to_add)
+          return item
         else
-          if item["id"] == parent_id
-            item["children"].insert(position, item_to_add)
-            return item
-          else
-            parent_item = add_item_to_hierarchy(item["children"], item_to_add, parent_id, position, item["id"])
-            return parent_item if parent_item.present?
-          end
+          parent_item = add_item_to_hierarchy!(item["children"], parent_id, item_to_add, position, item["id"])
+          return parent_item if parent_item.present?
         end
       end
+
       nil
     end
   end
