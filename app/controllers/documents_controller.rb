@@ -110,37 +110,41 @@ class DocumentsController < ApplicationController
   def move
     authorize @document, :show?
 
-    @source_space = @document.space
-    @destination_space = current_organization.spaces.find(document_move_params[:space_id])
+    # FIXME: should lock both spaces
+    @document.transaction do
+      @source_space = @document.space
+      @destination_space = current_organization.spaces.find(document_move_params[:space_id])
 
-    item_to_move = @source_space.remove_item_with_children_from_hierarchy!(@document.id)
-
-    @destination_space.add_item_to_hierarchy!(@destination_space.hierarchy, nil, item_to_move)
-
-    @source_space.documents_from_hierarchy([item_to_move]).each { |document| document.update!(space: @destination_space) }
-
-    if @source_space.save && @destination_space.save
-      respond_to do |format|
-        format.html { redirect_to space_path(@destination_space), notice: 'Document was successfully moved.' }
-        format.json { render json: @document }
-        format.turbo_stream
+      if !policy(@document).update? || !policy(@document.space).update?
+        @document.errors.add(:base, "You're not authorized to update this space.")
       end
-    else
-      respond_to do |format|
-        format.html { render action: 'select_destination' }
-        format.json { render json: @document.errors, status: :unprocessable_content }
-        format.turbo_stream
+
+      unless policy(@destination_space).update?
+        @document.errors.add(:space, "You're not authorized to update the destination space.")
+      end
+
+      if @document.errors.empty?
+        # So far, so good, try to move it
+        item_to_move = @source_space.remove_item_with_children_from_hierarchy!(@document.id)
+
+        @destination_space.add_item_to_hierarchy!(@destination_space.hierarchy, nil, item_to_move)
+
+        @source_space.documents_from_hierarchy([item_to_move]).each { |document| document.update!(space: @destination_space) }
+      end
+
+      if @document.errors.empty? && @source_space.save && @destination_space.save
+        # FIXME: would be great to show notice here
+        render turbo_stream: turbo_stream.redirect_to(space_document_path(@destination_space, @document))
+      else
+        render turbo_stream: turbo_stream.replace(
+          "edit_document_#{@document.id}",
+          partial: "select_destination_form",
+          locals: {
+            document: @document
+          }
+        ), status: :unprocessable_content
       end
     end
-
-    # if !policy(@document).update? || !policy(@document.space).update?
-    #   head
-    # end
-    #
-    # if !policy(@destination_space).update?
-    #   head :unprocessable_content
-    #   return
-    # end
   end
 
   private
