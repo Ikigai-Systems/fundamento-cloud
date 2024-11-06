@@ -7,6 +7,11 @@
 
   <article class="document">
     <div class="h-12 flex justify-end items-center p-2">
+      <% if @document.versions.present? %>
+        <%= link_to "View current version", space_document_path(@space, @document), method: :get,
+                    class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+      <% end %>
+
       <div id="editor-connection-indicator"></div>
 
       <%= button_to "Save", space_document_versions_path(@space, @document), method: :create,

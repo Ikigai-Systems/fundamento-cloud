@@ -58,6 +58,7 @@ class DocumentsController < ApplicationController
           return
         end
 
+        @version = @document.versions.latest
         @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
       end
       format.all { head :unprocessable_content }

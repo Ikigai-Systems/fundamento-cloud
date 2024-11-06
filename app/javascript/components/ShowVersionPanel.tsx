@@ -1,4 +1,4 @@
-import {Document, Version, Space, User} from "../types";
+import {Document, Version, Space} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
@@ -14,7 +14,6 @@ type EditDocumentPanelProps = {
   version: Version,
   document: Document,
   space: Space,
-  currentUser: User,
 }
 
 const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {

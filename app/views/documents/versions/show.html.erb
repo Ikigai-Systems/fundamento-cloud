@@ -7,7 +7,7 @@
     </div>
 
     <div class="bg-white overflow-auto">
-      <%= react_component "ShowVersionPanel", {version: @version.attributes.except("id"), document: @document.attributes.except("sync"), space: @space, current_user: current_user} %>
+      <%= react_component "ShowVersionPanel", {version: @version.attributes.except("id"), document: @document.attributes.except("sync"), space: @space} %>
     </div>
   </article>
   <aside class="bg-white overflow-auto border-l">
