@@ -3,6 +3,8 @@ class DocumentsController < ApplicationController
 
   after_action :verify_authorized_or_index_scoped
 
+  before_action :load_document, except: [:new, :index, :create]
+
   def index
     respond_to do |format|
       format.json { render json: policy_scope(current_organization.documents), :except => [:sync] }
@@ -40,12 +42,9 @@ class DocumentsController < ApplicationController
     else
       render :new, status: :unprocessable_content
     end
-
   end
 
   def show
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :show?
 
     respond_to do |format|
@@ -65,8 +64,6 @@ class DocumentsController < ApplicationController
   end
 
   def edit
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :update?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
@@ -74,8 +71,6 @@ class DocumentsController < ApplicationController
   end
 
   def update
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :update?
 
     update_params = document_params
@@ -96,8 +91,6 @@ class DocumentsController < ApplicationController
   end
 
   def destroy
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :destroy?
 
     @document.destroy
@@ -110,8 +103,6 @@ class DocumentsController < ApplicationController
   end
 
   def select_destination
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :show?
 
     respond_to do |format|
@@ -122,8 +113,6 @@ class DocumentsController < ApplicationController
   end
 
   def move
-    @document = current_organization.documents.find(params[:id])
-
     authorize @document, :show?
 
     @source_space = @document.space
@@ -157,11 +146,13 @@ class DocumentsController < ApplicationController
     #   head :unprocessable_content
     #   return
     # end
-
-
   end
 
   private
+
+  def load_document
+    @document = current_organization.documents.find(params[:id])
+  end
 
   def document_params
     params.require(:document).permit(:title, :archived)
