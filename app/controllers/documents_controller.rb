@@ -4,6 +4,7 @@ class DocumentsController < ApplicationController
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_document, except: [:new, :index, :create]
+  before_action :ensure_turbo_request, only: [:select_destination, :move]
 
   def index
     respond_to do |format|
@@ -152,6 +153,10 @@ class DocumentsController < ApplicationController
 
   def load_document
     @document = current_organization.documents.find(params[:id])
+  end
+
+  def ensure_turbo_request
+    redirect_to space_document_path(@document.space, @document) unless turbo_frame_request?
   end
 
   def document_params
