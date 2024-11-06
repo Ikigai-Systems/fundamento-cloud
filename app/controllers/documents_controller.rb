@@ -105,12 +105,6 @@ class DocumentsController < ApplicationController
 
   def select_destination
     authorize @document, :show?
-
-    respond_to do |format|
-      format.html { render partial: "select_destination" }
-      format.json { render json: @document }
-      format.turbo_stream
-    end
   end
 
   def move
