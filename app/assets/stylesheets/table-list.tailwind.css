@@ -39,6 +39,10 @@
         @apply flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white;
     }
 
+    .table-list tbody tr th > div {
+        @apply max-w-xs xl:max-w-md;
+    }
+
     .table-list form.button_to {
         @apply inline-block;
     }
