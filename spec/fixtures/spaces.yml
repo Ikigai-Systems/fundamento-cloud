@@ -4,34 +4,34 @@ is_default:
   organization: :is
   name: "Default IS"
   access_mode: :public
-  hierarchy:
+  hierarchy: []
 
 is_stefans:
   organization: :is
   name: "Stefan's Private Space"
   access_mode: :private
-  hierarchy:
+  hierarchy: []
 
 hc_default:
   organization: :hc
   name: "Default HC"
   access_mode: :public
-  hierarchy: 
+  hierarchy: []
 
 hc_restricted:
   organization: :hc
   name: "Restricted HC"
   access_mode: :restricted
-  hierarchy:
+  hierarchy: []
 
 hc_pawels:
   organization: :hc
   name: "Pawel's Private Space"
   access_mode: :private
-  hierarchy:
+  hierarchy: []
 
 hc_administrators:
   organization: :hc
   name: "Administrators Space"
   access_mode: :private
-  hierarchy:
+  hierarchy: []
