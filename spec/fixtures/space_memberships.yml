@@ -5,19 +5,19 @@ is_stefans_membership_1:
   role: :manager
 
 hc_pawels_membership_1:
-  organization: :hs
+  organization: :hc
   space: :hc_pawels
   member: ou_is_pawel (OrganizationUser)
   role: :manager
 
 hc_secret_membership_1:
-  organization: :hs
+  organization: :hc
   space: :hc_secret
   member: ou_hc_stefan (OrganizationUser)
   role: :manager
 
 hc_administrators_membership_1:
-  organization: :hs
+  organization: :hc
   space: :hc_administrators
   member: hc_administrators (Team)
   role: :manager
