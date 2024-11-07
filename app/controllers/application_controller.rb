@@ -13,6 +13,8 @@ class ApplicationController < ActionController::Base
   # Suggested in https://github.com/rails/importmap-rails?tab=readme-ov-file#include-a-digest-of-the-import-map-in-your-etag
   etag { Rails.application.importmap.digest(resolver: helpers) if request.format&.html? }
 
+  rescue_from Pundit::NotAuthorizedError, with: :access_denied
+
   protected
 
   def ensure_organization_exists
@@ -69,5 +71,11 @@ class ApplicationController < ActionController::Base
     else
       verify_authorized
     end
+  end
+
+  def access_denied
+    render "application/access_denied",
+      layout: "application",
+      status: :forbidden
   end
 end
