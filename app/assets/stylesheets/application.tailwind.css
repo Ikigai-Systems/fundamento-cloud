@@ -1,5 +1,6 @@
 @import "./table-list.tailwind.css";
 @import "./tabs.tailwind.css";
+@import "./dropdown.tailwind.css";
 
 @tailwind base;
 @tailwind components;
@@ -132,21 +133,5 @@
 
     .link-button:disabled {
         @apply text-neutral-400;
-    }
-
-    .dropdown-container {
-        @apply text-sm shadow-lg rounded border overflow-hidden;
-        @apply bg-white;
-        @apply dark:bg-gray-900;
-    }
-
-    .dropdown-container [data-dropdown-target="menuItem"] {
-        @apply no-underline block pl-4 py-2 whitespace-nowrap w-full text-left;
-        @apply text-gray-900 hover:bg-gray-100 focus:bg-gray-100;
-        @apply dark:text-white dark:hover:bg-gray-500 dark:focus:bg-gray-500;
-    }
-
-    .dropdown-container button, .dropdown-container a {
-        @apply focus-visible:outline-none;
     }
 }
