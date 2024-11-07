@@ -11,6 +11,14 @@
         @apply dark:text-white dark:hover:bg-gray-500 dark:focus:bg-gray-500;
     }
 
+    .dropdown-container button:disabled[data-dropdown-target="menuItem"],
+    .dropdown-container span[disabled="disabled"][data-dropdown-target="menuItem"]{
+        @apply text-slate-950/40;
+        @apply bg-white;
+        @apply dark:bg-gray-900;
+        @apply focus-visible:outline-none;
+    }
+
     .dropdown-container button, .dropdown-container a {
         @apply focus-visible:outline-none;
     }
