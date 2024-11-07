@@ -17,20 +17,20 @@ class Space < ApplicationRecord
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
 
-  def documents_from_hierarchy(node = hierarchy)
-    ids = traverse_hierarchy(node)
+  def documents_from_hierarchy(starting_node = hierarchy)
+    ids = traverse_hierarchy(starting_node)
     self.documents.where(id: ids)
   end
 
-  def remove_single_item_from_hierarchy!(document_id, node = hierarchy)
+  def remove_single_item_from_hierarchy!(document_id, starting_node = hierarchy)
     document_id = document_id.to_i
 
-    (node || []).each_with_index do |item, index|
+    starting_node.each_with_index do |item, index|
       if item["id"] == document_id
-        node.delete_at(index)
+        starting_node.delete_at(index)
 
         item["children"].each do |child|
-          node.insert(index, child)
+          starting_node.insert(index, child)
         end
 
         return true
@@ -44,12 +44,12 @@ class Space < ApplicationRecord
     false
   end
 
-  def remove_item_with_children_from_hierarchy!(document_id, node = hierarchy)
+  def remove_item_with_children_from_hierarchy!(document_id, starting_node = hierarchy)
     document_id = document_id.to_i
 
-    (node || []).each_with_index do |item, index|
+    starting_node.each_with_index do |item, index|
       if item["id"] == document_id
-        node.delete_at(index)
+        starting_node.delete_at(index)
 
         return item
       else
@@ -62,18 +62,18 @@ class Space < ApplicationRecord
     nil
   end
 
-  def add_item_to_hierarchy!(node, parent_id, item_to_add, position = nil, document_id = nil)
+  def add_item_to_hierarchy!(starting_node, parent_id, item_to_add, position = nil, document_id = nil)
     if document_id == parent_id
       # FIXME: no idea why we have this here, doesn't make sense to me -- Pawel
       if position.nil?
-        node.append(item_to_add)
+        starting_node.append(item_to_add)
       else
-        node.insert(position, item_to_add)
+        starting_node.insert(position, item_to_add)
       end
 
-      return node
+      return starting_node
     else
-      (node || []).each do |item|
+      starting_node.each do |item|
         if item["id"] == parent_id
           if position.nil?
             item["children"].append(item_to_add)
@@ -92,10 +92,14 @@ class Space < ApplicationRecord
     end
   end
 
+  def create_hierarchy_node(document_id)
+    { "id" => document_id, "children" => [] }
+  end
+
   private
-  def traverse_hierarchy(node)
+  def traverse_hierarchy(starting_node)
     ids = []
-    (node || []).each do |item|
+    starting_node.each do |item|
       if item.is_a? Numeric
         ids << item
       else

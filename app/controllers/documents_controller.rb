@@ -32,7 +32,7 @@ class DocumentsController < ApplicationController
     authorize @document, :create?
 
     if @document.save
-      @space.hierarchy = (@space.hierarchy || []) + [{"id" => @document.id, "children" => []}]
+      @space.hierarchy.append(@space.create_hierarchy_node(@document.id))
       @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
 
       if @space.save
@@ -127,6 +127,11 @@ class DocumentsController < ApplicationController
       if @document.errors.empty?
         # So far, so good, try to move it
         item_to_move = @source_space.remove_item_with_children_from_hierarchy!(@document.id)
+
+        if item_to_move.nil?
+          # Hierarchy didn't include the document, let's create a new node
+          item_to_move = @destination_space.create_hierarchy_node(@document.id)
+        end
 
         @destination_space.add_item_to_hierarchy!(@destination_space.hierarchy, nil, item_to_move)
 
