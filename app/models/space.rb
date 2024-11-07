@@ -13,6 +13,8 @@ class Space < ApplicationRecord
   validates_presence_of :name
   validates_presence_of :home_document, if: -> { home_document_id.present? }
 
+  validates_uniqueness_of :name, scope: [:organization_id]
+
   after_create :create_home_document
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
