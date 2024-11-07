@@ -28,7 +28,7 @@ function EditDateDisplayFormatPopup({
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
       <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs">
-        Storage format
+        Stored format
       </div>
       <div className="h-full overflow-y-auto">
         {formats.map((formatGroup, index) => (

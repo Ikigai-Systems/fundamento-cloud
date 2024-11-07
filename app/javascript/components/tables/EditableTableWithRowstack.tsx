@@ -144,7 +144,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                   onClick={showPopup}
                 >
                   <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
-                  Edit display format
+                  Display format
                 </div>
               );
             },
@@ -160,7 +160,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                   onClick={showPopup}
                 >
                   <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
-                  Edit storage format
+                  Stored format
                 </div>
               );
             },
