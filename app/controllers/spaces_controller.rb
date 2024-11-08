@@ -2,6 +2,8 @@ class SpacesController < ApplicationController
 
   after_action :verify_authorized, except: [:suggest_owners]
 
+  before_action :load_space, except: [:new, :index, :create, :suggest_owners]
+
   helper_method :space_memberships_to_multiselect_value
 
   def index
@@ -11,8 +13,6 @@ class SpacesController < ApplicationController
   end
 
   def show
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
-
     authorize @space, :show?
 
     if @space.home_document.present?
@@ -44,14 +44,10 @@ class SpacesController < ApplicationController
   end
 
   def edit
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
-
     authorize @space, :update?
   end
 
   def update
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
-
     authorize @space, :update?
 
     if @space.update(space_params.without(:space_memberships))
@@ -64,8 +60,6 @@ class SpacesController < ApplicationController
   end
 
   def reorder_hierarchy
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
-
     authorize @space, :update?
 
     document_id = params["document_id"].to_i
@@ -140,4 +134,7 @@ class SpacesController < ApplicationController
     params.require(:space).permit(:name, :access_mode, :home_document_id, :home_document_type, space_memberships: [])
   end
 
+  def load_space
+    @space = current_organization.spaces.find_by_npi!(params[:npi])
+  end
 end
