@@ -12,7 +12,7 @@
       data-collapsible-expand-to-this="<%= selected %>"
     >
       <%=
-        render partial: "application/left_side_bar/document_link",
+        render partial: "spaces/_sidebar/document_link",
           locals: { document: document, level: level, has_children: item["children"].length > 0, selected: selected }
       %>
 
@@ -21,7 +21,7 @@
         data-draggable-target="item"
         data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0"
       >
-        <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+        <%= render partial: "spaces/_sidebar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
       </ul>
     </li>
   <% end %>
