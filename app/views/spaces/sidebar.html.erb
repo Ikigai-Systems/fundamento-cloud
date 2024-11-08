@@ -9,6 +9,7 @@
 
       <div>
         <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
+
         <ul data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
           <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
         </ul>
@@ -27,10 +28,15 @@
 
       <div>
         <div class="text-slate-400 mx-2 p-2 hidden only:block">No tables in this space</div>
+
         <ul>
           <% @tables.each do |table| %>
+            <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
+              <% selected = true %>
+            <% end %>
+
             <li class="relative w-64 group/table-item-link">
-              <%= link_to space_table_path(@space, table), class: "flex flex-row h-9 #{ @table == table ? "group-hover/table-item-link:bg-blue-200 group-hover/table-item-link:active:bg-blue-300 bg-blue-100" : "group-hover/table-item-link:bg-gray-100 group-hover/table-item-link:active:bg-gray-200"}" do %>
+              <%= link_to space_table_path(@space, table), class: "flex flex-row h-9 #{ selected ? "group-hover/table-item-link:bg-blue-200 group-hover/table-item-link:active:bg-blue-300 bg-blue-100" : "group-hover/table-item-link:bg-gray-100 group-hover/table-item-link:active:bg-gray-200"}" do %>
                 <div class="flex flex-row items-center w-full">
                   <div class="mx-2.5">•</div>
                   <div class="text-left pr-16 truncate">
@@ -38,9 +44,11 @@
                   </div>
                 </div>
               <% end %>
+
               <%= link_to edit_space_table_path(@space, table), class: "absolute right-8 top-1 rounded-md size-7 p-1 #{ @table == table ? "hover:bg-blue-300 active:bg-blue-400" : "hover:bg-gray-200 active:bg-gray-300"}" do %>
                 <div class="group-hover/table-item-link:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil]"></div>
               <% end %>
+
               <%= link_to space_table_path(@space, table), data: { turbo_method: :delete, turbo_confirm: "Are you sure? Deleted table cannot be restored." }, class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ @table == table ? "hover:bg-blue-300 active:bg-blue-400" : "hover:bg-gray-200 active:bg-gray-300"}" do %>
                 <div class="group-hover/table-item-link:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--trash]"></div>
               <% end %>

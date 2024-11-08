@@ -1,9 +1,26 @@
 <% (node || []).each do |item| %>
   <% document = @documents.find { |document| document.id == item["id"] } %>
+
   <% if document.present? %>
-    <li data-controller="collapsible<%= @document&.id == item["id"] ? " scroll-into-view" : "" %>" data-space-id="<%= @space.id %>" <%= @document&.id == item["id"] ? "data-collapsible-expand-to-this='true'" : "" %> >
-      <%= render partial: "application/left_side_bar/document_link", locals: { document: document, level: level, has_children: item["children"].length > 0 } %>
-      <ul data-collapsible-target="collapsible" data-draggable-target="item" data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0">
+    <% if document.id.to_s == params.dig(:object, :id) && document.class.to_s == params.dig(:object, :type) %>
+      <% selected = true %>
+    <% end %>
+
+    <li
+      data-controller="collapsible<%= selected ? " scroll-into-view" : "" %>"
+      data-space-id="<%= @space.id %>"
+      data-collapsible-expand-to-this="<%= selected %>"
+    >
+      <%=
+        render partial: "application/left_side_bar/document_link",
+          locals: { document: document, level: level, has_children: item["children"].length > 0, selected: selected }
+      %>
+
+      <ul
+        data-collapsible-target="collapsible"
+        data-draggable-target="item"
+        data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0"
+      >
         <%= render partial: "application/left_side_bar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
       </ul>
     </li>

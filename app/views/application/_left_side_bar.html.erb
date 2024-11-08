@@ -1,5 +1,13 @@
+<%
+  if defined?(@document)
+    object = @document
+  elsif defined?(@table)
+    object = @table
+  end
+%>
+
 <aside id="left-side-bar" class="bg-white dark:bg-gray-900 border-r overflow-auto" data-turbo-keep-scroll>
-  <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space) do %>
+  <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
     <%= render template: "application/components/loading" %>
   <% end %>
 </aside>
