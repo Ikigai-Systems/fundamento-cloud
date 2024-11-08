@@ -36,7 +36,7 @@ class DocumentsController < ApplicationController
       @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
 
       if @space.save
-        redirect_to edit_space_document_path(@space, @document), notice: 'Document was successfully created.'
+        redirect_to edit_space_document_path(@space, @document)
       else
         render :new, status: :unprocessable_content
       end
