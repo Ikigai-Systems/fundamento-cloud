@@ -103,7 +103,7 @@ class SpacesController < ApplicationController
     authorize @space, :show?
 
     @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
-    @tables = @space.tables
+    @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
   end
 
   private
