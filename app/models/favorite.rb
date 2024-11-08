@@ -7,7 +7,7 @@ class Favorite < ApplicationRecord
 
   validates_presence_of :object
 
-  validates :object_type, inclusion: { in: %w[Document Table] }
+  validates :object_type, inclusion: { in: %w[Document Tables::Table] }
 
   validates_uniqueness_of :object_id, scope: [:organization_user_id, :object_type]
 
