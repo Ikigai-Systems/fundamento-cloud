@@ -11,7 +11,12 @@ function convertToBlocks(base64: string) {
   const serverBlockNoteEditor = ServerBlockNoteEditor.create({
     schema,
   });
-  return serverBlockNoteEditor.yDocToBlocks(doc, "document-store");
+
+  if (doc.getXmlFragment("document-store").length !== 0) {
+    return serverBlockNoteEditor.yDocToBlocks(doc, "document-store");
+  } else {
+    return [];
+  }
 }
 
 async function readStdin() {

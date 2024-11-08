@@ -10,13 +10,15 @@ class Documents::VersionsController < ApplicationController
 
     authorize @document, :update?
 
-    blocks2 = @document.to_blocks
-    # pp JSON.pretty_generate(blocks2)
+    if ENV["BLOCKNOTE_DIFF"].to_bool
+      blocks2 = @document.to_blocks
+      # pp JSON.pretty_generate(blocks2)
 
-    diff = HashDiff.diff(blocks, blocks2)
-    if diff.present?
-      Sentry.capture_message("XmlfragmentToBlock mismatch for #{params[:space_id]} / #{params[:document_id]} (call stefan) : #{diff}")
-      flash[:warning] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
+      diff = HashDiff.diff(blocks, blocks2)
+      if diff.present?
+        Sentry.capture_message("XmlfragmentToBlock mismatch for #{params[:space_id]} / #{params[:document_id]} (call stefan) : #{diff}")
+        flash[:warning] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
+      end
     end
 
     @version = @document.versions.new
