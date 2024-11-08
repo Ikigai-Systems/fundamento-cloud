@@ -102,7 +102,7 @@ class SpacesController < ApplicationController
   def sidebar
     authorize @space, :show?
 
-    @documents = @space.documents_from_hierarchy
+    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
     @tables = @space.tables
   end
 
