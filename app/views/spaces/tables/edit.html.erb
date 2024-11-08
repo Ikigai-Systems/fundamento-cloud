@@ -5,7 +5,12 @@
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
   <%= render "application/left_side_bar" %>
 
-  <article class="bg-white flex-col overflow-auto">
-    <%= react_component "EditTablePanel", {table: @table, space: @space}, {data: @table.data_to_json} %>
+  <article class="document">
+    <div class="h-12 flex justify-end items-center p-2">
+    </div>
+
+    <div class="overflow-auto h-[calc(100%-48px)]">
+      <%= react_component "EditTablePanel", {table: @table, space: @space}, {data: @table.data_to_json} %>
+    </div>
   </article>
 </div>

@@ -1,8 +1,28 @@
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
   <%= render "application/left_side_bar" %>
 
-  <article class="bg-white flex-col overflow-auto">
-    <div class="bg-white overflow-auto text-slate-800">
+  <article class="document">
+    <div class="h-12 flex justify-end items-center p-2">
+
+      <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @table)) %>
+        <%= render partial: "favorites/destroy_favorite", locals: { object: @table, favorite: favorite } %>
+      <% else %>
+        <%= render partial: "favorites/create_favorite", locals: { object: @table } %>
+      <% end %>
+
+      <%= button_to "Edit",
+        edit_space_table_path(@space, @table),
+        method: :get,
+        # disabled: !policy(@table).update?,
+        class: "primary-button document-toolbar-button"
+      %>
+    </div>
+
+    <div class="overflow-auto h-[calc(100%-48px)]">
       <% if @table.present? %>
         <h1 class="text-3xl font-bold"><%= @table.name %></h1>
         <table>

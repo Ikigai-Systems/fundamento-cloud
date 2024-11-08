@@ -11,7 +11,7 @@
 
       <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @document)) %>
         <%= render partial: "favorites/destroy_favorite", locals: { object: @document, favorite: favorite } %>
-    <% else %>
+      <% else %>
         <%= render partial: "favorites/create_favorite", locals: { object: @document } %>
       <% end %>
 
