@@ -27,6 +27,8 @@
               <span class="uppercase bg-gray-100 group-hover/document-item-link:bg-gray-200 group-hover/document-item-link:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300">Draft</span>
             </div>
           <% end %>
+
+          <%= render partial: "spaces/_sidebar/sidebar_edit_link", locals: { edit_path: edit_space_document_path(document.space, document), selected: selected } %>
         </div>
       </div>
     <% end %>
