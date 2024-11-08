@@ -3,7 +3,7 @@
 <% end %>
 
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
-  <%= render 'application/left_side_bar_for_database' %>
+  <%= render "application/left_side_bar" %>
 
   <article class="bg-white flex-col overflow-auto">
     <%= react_component "EditTablePanel", {table: @table, space: @space}, {data: @table.data_to_json} %>

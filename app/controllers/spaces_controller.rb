@@ -3,6 +3,7 @@ class SpacesController < ApplicationController
   after_action :verify_authorized, except: [:suggest_owners]
 
   before_action :load_space, except: [:new, :index, :create, :suggest_owners]
+  before_action :ensure_turbo_request, only: [:sidebar]
 
   helper_method :space_memberships_to_multiselect_value
 
@@ -98,6 +99,13 @@ class SpacesController < ApplicationController
     render json: (@organization_users + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
 
+  def sidebar
+    authorize @space, :show?
+
+    @documents = @space.documents_from_hierarchy
+    @tables = @space.tables
+  end
+
   private
 
   def space_memberships_to_multiselect_value(space)
@@ -136,5 +144,9 @@ class SpacesController < ApplicationController
 
   def load_space
     @space = current_organization.spaces.find_by_npi!(params[:npi])
+  end
+
+  def ensure_turbo_request
+    redirect_to space_path(@space) unless turbo_frame_request?
   end
 end

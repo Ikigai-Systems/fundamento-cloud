@@ -1,5 +1,6 @@
 <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
-  <%= render 'application/left_side_bar_for_documents' %>
+  <%= render "application/left_side_bar" %>
+
   <article class="bg-white">
     <div class="bg-white h-12 flex justify-end items-center p-2">
       <%= link_to "View document", edit_space_document_path(@space, @document), method: :get,
