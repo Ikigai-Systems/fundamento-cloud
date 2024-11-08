@@ -359,6 +359,7 @@ GEM
       dry-cli (>= 0.7, < 2)
       rack-proxy (~> 0.6, >= 0.6.1)
       zeitwerk (~> 2.2)
+    wannabe_bool (0.7.1)
     warden (1.2.9)
       rack (>= 2.0.9)
     webrick (1.8.1)
@@ -433,6 +434,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   vite_rails
+  wannabe_bool
   y-rb
   y-rb_actioncable
 
