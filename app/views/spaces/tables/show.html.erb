@@ -23,41 +23,7 @@
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
-      <% if @table.present? %>
-        <h1 class="text-3xl font-bold"><%= @table.name %></h1>
-        <table>
-          <thead>
-            <tr>
-              <% if @table.columns.present? %>
-                <% @table.columns_in_order.each do |column| %>
-                  <th class="border-x"><%= column.name %></th>
-                <% end %>
-              <% else %>
-                No columns<br/>
-              <% end %>
-            </tr>
-          </thead>
-          <tbody>
-            <% if @table.rows.present? %>
-              <% @table.data_to_json[:rows].each do |row| %>
-                <tr class="h-6">
-                  <% row.each do |key, value| %>
-                    <% next if key == "npi" %>
-                    <td class="border"><%= value %></td>
-                  <% end %>
-                </tr>
-              <% end %>
-            <% else %>
-              No rows<br/>
-            <% end %>
-          </tbody>
-        </table>
-      <% end %>
+      <%= react_component "ViewTablePanel", {table: @table, space: @space}, {data: @table.data_to_json} %>
     </div>
   </article>
-<!--  <aside class="bg-white overflow-auto border-l">-->
-<!--    <h1 class="p-2 my-2 text-2xl text-slate-800">-->
-<!--      right side bar content-->
-<!--    </h1>-->
-<!--  </aside>-->
 </div>
