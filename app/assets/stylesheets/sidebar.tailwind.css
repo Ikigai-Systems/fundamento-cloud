@@ -1,0 +1,5 @@
+@layer components {
+    .sidebar {
+        @apply bg-white dark:bg-gray-900 border-r overflow-auto;
+    }
+}
