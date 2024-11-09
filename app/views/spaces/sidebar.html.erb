@@ -12,7 +12,7 @@
         <%= button_to space_documents_path(@space),
           method: :post,
           params: { "document": { title: "" } },
-          disabled: !policy(@space).update? || true,
+          disabled: !policy(@space).update?,
           form_class: "flex items-center",
           class: "secondary-button" do
         %>
@@ -35,7 +35,7 @@
         </div>
 
         <%= link_to_with_disable new_space_table_path(@space),
-          disabled: !policy(@space).update? || true,
+          disabled: !policy(@space).update?,
           class: "secondary-button" do
         %>
           <i class="fa-regular fa-plus"></i>
