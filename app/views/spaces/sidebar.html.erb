@@ -5,6 +5,19 @@
     <div class="flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
       <div class="flex justify-between items-center text-center">
         <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
+
+<!--        <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">-->
+        <div class="secondary-button">
+          <%= button_to space_documents_path(@space),
+            method: :post,
+            params: { "document": { title: "" } },
+            disabled: !policy(@space).update?,
+            form_class: "flex flex-grow items-center",
+            class: "flex flex-grow items-center" do
+          %>
+            <i class="fa-regular fa-plus"></i>
+          <% end %>
+        </div>
       </div>
 
       <div>
@@ -15,15 +28,15 @@
         </ul>
       </div>
 
-      <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">
-        <%= button_to space_documents_path(@space), method: :post, params: { "document": { title: "" } }, disabled: !policy(@space).update?, form_class: "flex flex-grow items-center", class: "flex flex-grow items-center" do %>
-          <span class="ml-1 size-5 icon-[heroicons--plus-16-solid]"></span>
-          <span class="text-left mx-0 p-2">New document</span>
-        <% end %>
-      </div>
-
       <div class="flex justify-between items-center text-center">
         <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Tables</div>
+
+<!--        <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">-->
+        <div class="secondary-button">
+          <%= link_to new_space_table_path(@space), class: "flex flex-grow items-center" do %>
+            <i class="fa-regular fa-plus"></i>
+          <% end %>
+        </div>
       </div>
 
       <div>
@@ -53,13 +66,6 @@
             </li>
           <% end %>
         </ul>
-      </div>
-
-      <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">
-        <%= link_to new_space_table_path(@space), class: "flex flex-grow items-center" do %>
-          <span class="ml-1 size-5 icon-[heroicons--plus-16-solid]"></span>
-          <span class="text-left mx-0 p-2">New table</span>
-        <% end %>
       </div>
 
       <div class="mt-auto self-end">
