@@ -8,12 +8,14 @@ import {Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
 import EditDateDisplayFormatPopup from "./rowstack/EditDateDisplayFormatPopup.tsx";
+import EditDateStoredFormatPopup from "./rowstack/EditDateStoredFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./rowstack-styles.css";
-import EditDateStorageFormatPopup from "./rowstack/EditDateStorageFormatPopup.tsx";
+import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopup.tsx";
+import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
@@ -166,6 +168,38 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             },
             popup: (popupProps) => <EditDateStorageFormatPopup {...popupProps}/>
           }, {
+            section: "main",
+            menuItem: ({column, showPopup}) => {
+              if (column.type !== "number") {
+                return null;
+              }
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={showPopup}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
+                  Display format
+                </div>
+              );
+            },
+            popup: (popupProps) => <EditNumberDisplayFormatPopup {...popupProps}/>
+          }, {
+            section: "main",
+            menuItem: ({column, showPopup}) => {
+              if (column.type !== "number") {
+                return null;
+              }
+              return (
+                <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                  onClick={showPopup}
+                >
+                  <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
+                  Stored format
+                </div>
+              );
+            },
+            popup: (popupProps) => <EditNumberStoredFormatPopup {...popupProps}/>
+          }, {
             section: "actions2",
             menuItem: ({column, showPopup}) => {
               return (
@@ -211,7 +245,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               return null;
             }
             let dateDayJs;
-            switch (configuration?.storageDateFormat) {
+            switch (configuration?.dateStoredFormat) {
             case 0:
               dateDayJs = dayjs(value, "M/D/YYYY");
               break;
@@ -235,7 +269,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             }
             return date;
           },
-          formatStorageDate: (parsedData, configuration) => {
+          formatStoredDate: (parsedData, configuration) => {
             if (parsedData === null) {
               return "";
             }
@@ -243,7 +277,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               return parsedData._originalValue;
             }
             const dayDate = dayjs(parsedData);
-            switch (configuration?.storageDateFormat) {
+            switch (configuration?.dateStoredFormat) {
             case 0:
               return dayDate.format("M/D/YYYY");
             case 1:
@@ -300,6 +334,39 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               return dayDate.format("MMM YYYY");
             default:
               return dayDate.format("L");
+            }
+          },
+          parseNumber: (value, configuration) => {
+            if (!value) {
+              return null;
+            }
+
+            switch (configuration?.numberStoredFormat) {
+            case "0.01":
+              return Number(value);
+            case "0,01":
+              return Number(value.replaceAll(",","."));
+            default:
+              return Number(value);
+            }
+          },
+          formatDisplayNumber: (parsedData, configuration) => {
+            debugger;
+            if (parsedData === null) {
+              return "";
+            }
+
+            if (isNaN(parsedData)) {
+              return "Invalid Number";
+            }
+
+            switch (configuration?.numberDisplayFormat) {
+            case "0.01":
+              return parsedData.toLocaleString("en-US", {maximumFractionDigits: 100});
+            case "0,01":
+              return parsedData.toLocaleString("pt-BR", {maximumFractionDigits: 100});
+            default:
+              return parsedData.toString();
             }
           }
         }}

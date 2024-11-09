@@ -56,8 +56,10 @@ export declare interface Config {
     extraColumnTypes: ColumnType[];
     extraColumnHeaderPopupActions: PopupAction[];
     parseDate: (value: string, configuration: {}) => any | Date;
-    formatStorageDate: (date: Date, configuration: {}) => string;
-    formatDisplayDate: (date: Date, configuration: {}) => string;
+    formatStoredDate: (parsedData: Date, configuration: {}) => string;
+    formatDisplayDate: (parsedData: Date, configuration: {}) => string;
+    parseNumber: (value: string | null | undefined, configuration: {}) => number | null;
+    formatDisplayNumber: (parsedData: number | null, configuration: {}) => string;
 }
 
 export declare interface Data {
