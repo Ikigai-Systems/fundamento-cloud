@@ -1,0 +1,21 @@
+<%= turbo_frame_tag "spaces_frame" do %>
+  <div id="spaces_container">
+    <div id="spaces_list">
+      <% spaces.each do |space| %>
+        <%= render partial: "space_tab", locals: { space: space } %>
+      <% end %>
+    </div>
+
+    <% if spaces.empty? %>
+      <div class="flex items-center justify-start p-5">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-12 h-12 text-gray-500 mr-4">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4m-2 0V6a2 2 0 00-2-2h-4a2 2 0 00-2 2v4h4m6 0a2 2 0 11-2 2 2 2 0 012-2z"></path>
+        </svg>
+        <div>
+          <h2 class="text-gray-600 text-2xl">No spaces</h2>
+          <p class="text-gray-500">We couldn't find any spaces in your organization.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

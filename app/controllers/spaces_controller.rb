@@ -11,6 +11,10 @@ class SpacesController < ApplicationController
     @spaces = policy_scope(current_organization.spaces).order(:name)
 
     authorize @spaces, :index?
+
+    if turbo_frame_request?
+      render partial: "spaces_tab", locals: { spaces: @spaces }
+    end
   end
 
   def show

@@ -1,0 +1,8 @@
+<div id="<%= dom_id(space) %>" class="flex items-center justify-start w-full">
+  <div class="p-2 flex-grow">
+    <div class="text-base font-semibold">
+      <%= link_to space.name, space_path(space) %>
+    </div>
+    <div class="font-normal text-gray-500">Last updated <%= time_ago_in_words space.updated_at %></div>
+  </div>
+</div>

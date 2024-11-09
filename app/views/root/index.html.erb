@@ -11,6 +11,10 @@
 >
   <div class="border-b border-gray-200">
     <nav data-tabs-target="list" aria-label="Tabs">
+      <button id="spaces" data-action="click->tabs#change" data-tabs-target="tab">
+        Spaces
+      </button>
+
       <button id="recently-updated" data-action="click->tabs#change" data-tabs-target="tab">
         Recently updated
       </button>
@@ -18,18 +22,24 @@
       <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
         Favorites
       </button>
-
-      <button id="tab3" data-action="click->tabs#change" data-tabs-target="tab">
-        Tab 3
-      </button>
     </nav>
   </div>
 
-  <div data-tabs-target="panel">
+  <div data-tabs-target="panel" class="hidden">
+    <%=
+      turbo_frame_tag "spaces_frame",
+        data: { turbo: false },
+        src: spaces_path do
+    %>
+      <%= render template: "application/components/loading" %>
+    <% end %>
+  </div>
+
+  <div data-tabs-target="panel" class="hidden">
     <%= render partial: "recently_updated_documents_tab" %>
   </div>
 
-  <div data-tabs-target="panel">
+  <div data-tabs-target="panel" class="hidden">
     <%=
       turbo_frame_tag "favorites_frame",
         src: favorites_path,
@@ -37,10 +47,6 @@
     %>
       <%= render template: "application/components/loading" %>
     <% end %>
-  </div>
-
-  <div data-tabs-target="panel">
-    Content for Tab 3
   </div>
 </div>
 
