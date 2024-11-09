@@ -1,5 +1,21 @@
 @layer components {
     .sidebar {
         @apply bg-white dark:bg-gray-900 border-r overflow-auto;
+
+        .section-header-container {
+            @apply flex justify-between items-center text-sm border-b;
+        }
+
+        .section-header-title {
+            @apply mx-2 py-2 font-bold text-slate-600 uppercase flex flex-grow gap-2 items-center;
+        }
+
+        .secondary-button {
+            @apply px-3;
+        }
+
+        .section-empty {
+            @apply text-slate-400 mx-2 p-2 only:block;
+        }
     }
 }

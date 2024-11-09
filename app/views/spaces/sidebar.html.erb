@@ -3,44 +3,44 @@
     <%= render partial: "spaces/_sidebar/space_bar" %>
 
     <div class="flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
-      <div class="flex justify-between items-center text-center">
-        <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Documents</div>
-
-<!--        <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">-->
-        <div class="secondary-button">
-          <%= button_to space_documents_path(@space),
-            method: :post,
-            params: { "document": { title: "" } },
-            disabled: !policy(@space).update?,
-            form_class: "flex flex-grow items-center",
-            class: "flex flex-grow items-center" do
-          %>
-            <i class="fa-regular fa-plus"></i>
-          <% end %>
+      <div class="section-header-container">
+        <div class="section-header-title">
+          <i class="fa-regular fa-file-lines"></i>
+          Documents
         </div>
+
+        <%= button_to space_documents_path(@space),
+          method: :post,
+          params: { "document": { title: "" } },
+          disabled: !policy(@space).update?,
+          form_class: "flex items-center",
+          class: "secondary-button" do
+        %>
+          <i class="fa-regular fa-plus"></i>
+        <% end %>
       </div>
 
       <div>
-        <div class="text-slate-400 mx-2 p-2 hidden only:block">No documents in this space</div>
+        <div class="section-empty hidden">No documents in this space</div>
 
         <ul data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
           <%= render partial: "spaces/_sidebar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
         </ul>
       </div>
 
-      <div class="flex justify-between items-center text-center">
-        <div class="mx-4 py-2 font-bold text-xs text-slate-600 uppercase">Tables</div>
-
-<!--        <div class="mt-2 flex items-center hover:bg-gray-100 active:bg-gray-200 text-slate-500">-->
-        <div class="secondary-button">
-          <%= link_to new_space_table_path(@space), class: "flex flex-grow items-center" do %>
-            <i class="fa-regular fa-plus"></i>
-          <% end %>
+      <div class="section-header-container">
+        <div class="section-header-title">
+          <i class="fa-regular fa-table"></i>
+          Tables
         </div>
+
+        <%= link_to new_space_table_path(@space), class: "secondary-button" do %>
+          <i class="fa-regular fa-plus"></i>
+        <% end %>
       </div>
 
       <div>
-        <div class="text-slate-400 mx-2 p-2 hidden only:block">No tables in this space</div>
+        <div class="section-empty hidden">No tables in this space</div>
 
         <ul>
           <% @tables.each do |table| %>
