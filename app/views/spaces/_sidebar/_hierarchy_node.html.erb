@@ -7,13 +7,14 @@
     <% end %>
 
     <li
+      class="section-content-link-container group/section-content-link-container"
       data-controller="collapsible<%= selected ? " scroll-into-view" : "" %>"
       data-space-id="<%= @space.id %>"
       data-collapsible-expand-to-this="<%= selected %>"
     >
       <%=
-        render partial: "spaces/_sidebar/document_link",
-          locals: { document: document, level: level, has_children: item["children"].length > 0, selected: selected }
+        render partial: "spaces/_sidebar/content_link",
+          locals: { content: document, level: level, has_children: item["children"].length > 0, selected: selected }
       %>
 
       <ul

@@ -21,5 +21,15 @@
         .section-empty {
             @apply text-slate-400 mx-2 p-2 only:block;
         }
+
+        .section-content-container {
+            .section-content-link-container {
+                @apply relative w-full ;
+            }
+
+            .section-content-link {
+                @apply flex flex-row items-center flex-grow;
+            }
+        }
     }
 }

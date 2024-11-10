@@ -20,10 +20,10 @@
         <% end %>
       </div>
 
-      <div>
+      <div class="section-content-container">
         <div class="section-empty hidden">No documents in this space</div>
 
-        <ul data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
+        <ul class="section-content-list" data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
           <%= render partial: "spaces/_sidebar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
         </ul>
       </div>
@@ -42,30 +42,20 @@
         <% end %>
       </div>
 
-      <div>
+      <div class="section-content-container">
         <div class="section-empty hidden">No tables in this space</div>
 
-        <ul>
+        <ul class="section-content-list">
           <% @tables.each do |table| %>
             <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
               <% selected = true %>
             <% end %>
 
-            <li class="relative w-64 group/table-item-link">
-              <%= link_to space_table_path(@space, table), class: "flex flex-row h-9 #{ selected ? "group-hover/table-item-link:bg-blue-200 group-hover/table-item-link:active:bg-blue-300 bg-blue-100" : "group-hover/table-item-link:bg-gray-100 group-hover/table-item-link:active:bg-gray-200"}" do %>
-                <div class="flex flex-row items-center w-full">
-                  <div class="mx-2.5">•</div>
-                  <div class="text-left pr-16 truncate">
-                    <%= table.name %>
-                  </div>
-                </div>
-              <% end %>
-
-              <%= render partial: "spaces/_sidebar/sidebar_edit_link", locals: { edit_path: edit_space_table_path(@space, table), selected: selected } %>
-
-              <%= link_to space_table_path(@space, table), data: { turbo_method: :delete, turbo_confirm: "Are you sure? Deleted table cannot be restored." }, class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ selected ? "hover:bg-blue-300 active:bg-blue-400" : "hover:bg-gray-200 active:bg-gray-300"}" do %>
-                <div class="group-hover/table-item-link:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--trash]"></div>
-              <% end %>
+            <li class="section-content-link-container group/section-content-link-container">
+              <%=
+                render partial: "spaces/_sidebar/content_link",
+                  locals: { content: table, level: 0, has_children: false, selected: selected }
+              %>
             </li>
           <% end %>
         </ul>
