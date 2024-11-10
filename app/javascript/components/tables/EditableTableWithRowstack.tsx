@@ -166,7 +166,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 </div>
               );
             },
-            popup: (popupProps) => <EditDateStorageFormatPopup {...popupProps}/>
+            popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
           }, {
             section: "main",
             menuItem: ({column, showPopup}) => {
