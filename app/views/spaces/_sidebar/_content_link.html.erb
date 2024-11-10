@@ -18,7 +18,7 @@
         <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
 
         <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
-          <span class="truncate flex-grow min-w-0">
+          <span class="truncate">
             <%= content.try(:title) || content.try(:name) %>
           </span>
 
