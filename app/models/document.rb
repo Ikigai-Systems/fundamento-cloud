@@ -1,8 +1,6 @@
 require 'open3'
 
 class Document < ApplicationRecord
-  include Content
-
   belongs_to :organization
   belongs_to :space
 
