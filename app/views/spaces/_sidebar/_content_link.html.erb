@@ -1,29 +1,12 @@
 <% if content.archived? %>
-  <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400">
+  <div data-visibility-target="hideable" <%= cookies["ikigai_userPreferences_showArchived"] == "true" ? "" : "hidden" %> class="text-slate-400 group">
 <% else %>
-  <div class="text-slate-800">
+  <div class="text-slate-800 group">
 <% end %>
-<!--            <li class="relative w-64 group/section-content-link-container">-->
-<%#= link_to space_table_path(@space, table), class: "flex flex-row h-9 #{ selected ? "group-hover/section-content-link-container:bg-blue-200 group-hover/section-content-link-container:active:bg-blue-300 bg-blue-100" : "group-hover/section-content-link-container:bg-gray-100 group-hover/section-content-link-container:active:bg-gray-200"}" do %>
-<!--                <div class="flex flex-row items-center w-full">-->
-<!--                  <div class="mx-2.5">•</div>-->
-<!--                  <div class="text-left pr-16 truncate">-->
-<%#= table.name %>
-<!--                  </div>-->
-<!--                </div>-->
-<%# end %>
-
-<%#= render partial: "spaces/_sidebar/sidebar_edit_link", locals: { edit_path: edit_space_table_path(@space, table), selected: selected } %>
-
-<%#= link_to space_table_path(@space, table), data: { turbo_method: :delete, turbo_confirm: "Are you sure? Deleted table cannot be restored." }, class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ selected ? "hover:bg-blue-300 active:bg-blue-400" : "hover:bg-gray-200 active:bg-gray-300"}" do %>
-<!--                <div class="group-hover/section-content-link-container:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--trash]"></div>-->
-<%# end %>
-<!--            </li>-->
-
     <%= link_to polymorphic_path([content.space, content]), class: "section-content-link" do %>
       <div
         style="padding-left: <%=level * 16%>px"
-        class="document-padding-left flex-grow flex items-center w-full <%= selected ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>"
+        class="document-padding-left flex items-center w-full <%= selected ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>"
       >
         <div
           data-action="click->collapsible#toggle:prevent"
@@ -34,21 +17,20 @@
 
         <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
 
-        <div data-document-id="<%= content.id %>" class="flex gap-1 mx-0 p-2 items-center">
-          <span class="truncate">
+        <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
+          <span class="truncate flex-grow min-w-0">
             <%= content.try(:title) || content.try(:name) %>
           </span>
 
           <% if content.try(:draft?) %>
-            <span class="uppercase bg-gray-100 group-hover/section-content-link-container:bg-gray-200 group-hover/section-content-link-container:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300">Draft</span>
+            <span class="uppercase bg-gray-100 group-hover:bg-gray-200 group-hover:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300">Draft</span>
           <% end %>
         </div>
-
-        <%= link_to polymorphic_path([:edit, content.space, content]),
-          class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ selected ? "hover:bg-blue-300 active:bg-blue-400" : "hover:bg-gray-200 active:bg-gray-300"}" do %>
-          <div class="group-hover/section-content-link-container:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil]"></div>
-        <% end %>
-
       </div>
+    <% end %>
+
+    <%= link_to polymorphic_path([:edit, content.space, content]),
+      class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ selected ? "group-hover:bg-blue-300 active:bg-blue-400" : "group-hover:bg-gray-200 active:bg-gray-300"}" do %>
+      <div class="group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil]"></div>
     <% end %>
 </div>
