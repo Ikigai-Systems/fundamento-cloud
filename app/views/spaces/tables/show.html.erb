@@ -20,6 +20,8 @@
         # disabled: !policy(@table).update?,
         class: "primary-button document-toolbar-button"
       %>
+
+      <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
