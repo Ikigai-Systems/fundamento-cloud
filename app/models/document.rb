@@ -27,7 +27,7 @@ class Document < ApplicationRecord
     super(options).merge(sync: Base64.encode64(sync))
   end
 
-  def dratf?
+  def draft?
     self.versions.empty?
   end
 
