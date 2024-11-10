@@ -1,3 +1,6 @@
+_fixture:
+  model_class: Table
+
 users:
   name: users
   organization: :is

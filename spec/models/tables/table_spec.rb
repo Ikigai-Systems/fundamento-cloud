@@ -1,7 +1,7 @@
 # spec/models/table_spec.rb
 require 'rails_helper'
 
-RSpec.describe Tables::Table, type: :model do
+RSpec.describe Table, type: :model do
   fixtures :organizations
   fixtures :spaces
   fixtures "tables/tables"

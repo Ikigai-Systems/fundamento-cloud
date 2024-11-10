@@ -1,6 +1,7 @@
 require "csv"
 
 class Tables::Table < ApplicationRecord
+class Table < ApplicationRecord
   belongs_to :organization
   belongs_to :space
 
