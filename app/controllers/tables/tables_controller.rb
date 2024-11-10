@@ -1,6 +1,8 @@
 class Tables::TablesController < ApplicationController
   after_action :verify_authorized_or_index_scoped
 
+  before_action :load_table, only: [:update]
+
   def index
     @tables = policy_scope(current_organization.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
@@ -117,13 +119,18 @@ class Tables::TablesController < ApplicationController
   end
 
   def update
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.find(params[:id])
+    authorize @table, :update?
 
-    authorize @table, :update?, policy_class: DocumentPolicy
+    @table.update!(table_params)
 
-    update_params = table_params
-    @table.update!(update_params)
+    if table_params[:archived].present?
+      if table_params[:archived] == "true"
+        redirect_to space_path(@table.space), notice: 'Table has been archived.'
+      else
+        redirect_to edit_space_table_path(@table.space, @table), notice: 'Table has been restored.'
+      end
+      return
+    end
 
     respond_to do |format|
       format.json { render json: @table }
@@ -299,7 +306,11 @@ class Tables::TablesController < ApplicationController
   private
 
   def table_params
-    params.require(:table).permit(:name)
+    params.require(:table).permit(:name, :archived)
+  end
+
+  def load_table
+    @table = current_organization.tables.find(params[:id])
   end
 
 end
