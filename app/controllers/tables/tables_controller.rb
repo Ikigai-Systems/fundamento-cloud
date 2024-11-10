@@ -145,7 +145,7 @@ class Tables::TablesController < ApplicationController
 
     @table.destroy
 
-    redirect_to space_tables_path(@space), notice: 'Table has been deleted.'
+    redirect_to space_path(@space), notice: 'Table has been deleted.'
   end
 
   def update_by_rowstack
