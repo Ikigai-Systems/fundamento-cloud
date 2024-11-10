@@ -1,6 +1,8 @@
 require 'open3'
 
 class Document < ApplicationRecord
+  include Content
+
   belongs_to :organization
   belongs_to :space
 
@@ -25,6 +27,10 @@ class Document < ApplicationRecord
 
   def as_json(options = {})
     super(options).merge(sync: Base64.encode64(sync))
+  end
+
+  def dratf?
+    self.versions.empty?
   end
 
   def to_blocks
