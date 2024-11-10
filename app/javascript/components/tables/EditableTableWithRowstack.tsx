@@ -351,7 +351,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             }
           },
           formatDisplayNumber: (parsedData, configuration) => {
-            debugger;
             if (parsedData === null) {
               return "";
             }
