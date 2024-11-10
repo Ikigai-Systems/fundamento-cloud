@@ -19,8 +19,7 @@ type EditDocumentPanelProps = {
 const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
-    initialContent: version.content
-      .filter(block => block.type !== "codeBlock"), //in Blocknote 0.19.0 non-recognized blocks break the editor, let's filter them out :shrug:
+    initialContent: version.content,
     resolveFileUrl: createFileUrlResolver(),
   });
 

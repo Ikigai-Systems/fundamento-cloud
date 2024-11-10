@@ -148,9 +148,10 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
         return;
       }
       const currentBlockText = block?.content[0]?.["text"];
-      if (currentBlockText === '```') {
-        editor.updateBlock(block, {type: "procode"} as PartialBlock);
-      }
+      // if (currentBlockText === '```') {
+      //   editor.updateBlock(block, {type: "procode"} as PartialBlock);
+      //   editor.setTextCursorPosition(block);
+      // }
     });
 
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
@@ -183,7 +184,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), CodeBlockMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem()],
             query
           )
         }}

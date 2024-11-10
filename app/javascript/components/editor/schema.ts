@@ -7,7 +7,8 @@ import CodeBlock from "./blocks/CodeBlock";
 // implementations for inline content that we want our editor to use.
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const {codeBlock, ...remainingBlockSpecs} = defaultBlockSpecs
+// const {codeBlock, ...remainingBlockSpecs} = defaultBlockSpecs
+const {...remainingBlockSpecs} = defaultBlockSpecs
 
 const schema = BlockNoteSchema.create({
   inlineContentSpecs: {

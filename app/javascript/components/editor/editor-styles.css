@@ -5,12 +5,16 @@
 }
 
 /* Simple `code` block */
-.bn-container .bn-editor code {
+.bn-container .bn-editor .bn-inline-content code {
     background-color: rgb(241 245 249);
     border: 1px solid rgb(203 213 225);
     border-radius: 4px;
     color: rgb(51 65 85);
     padding: 0 3px;
+}
+
+.bn-block-content[data-content-type=codeBlock] > div > select > option {
+    color: rgb(30 41 59);
 }
 
 /* static toolbar above document */
