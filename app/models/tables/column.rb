@@ -11,7 +11,7 @@ class Tables::Column < ApplicationRecord
 
   validates_presence_of :name
 
-  enum :kind, [:string, :integer, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people], scopes: false, validate: true
+  enum :kind, [:string, :integer, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :button], scopes: false, validate: true
 
   def self.to_kind(type)
     case (type)
@@ -33,6 +33,8 @@ class Tables::Column < ApplicationRecord
       :formula
     when "people"
       :people
+    when "button"
+      :button
     else
       :string
     end

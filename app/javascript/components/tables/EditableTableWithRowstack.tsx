@@ -6,6 +6,7 @@ import TablesApi from "../../api/Tables/TablesApi.js";
 import {Config} from "@js-from-routes/client";
 import {Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
+import ButtonCell from "./rowstack/ButtonCell.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
 import EditDateDisplayFormatPopup from "./rowstack/EditDateDisplayFormatPopup.tsx";
 import EditDateStoredFormatPopup from "./rowstack/EditDateStoredFormatPopup.tsx";
@@ -40,6 +41,8 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
     return "formula";
   case "people":
     return "people";
+  case "button":
+    return "button";
   default:
     return "text";
   }
@@ -80,6 +83,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
           cell: PeopleSelectCell,
           icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
           name: "People",
+        }, {
+          type: "button",
+          cell: ButtonCell,
+          icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--bolt]"></div>,
+          name: "Button",
         }],
         extraColumnHeaderPopupActions: [{
           section: "main",
