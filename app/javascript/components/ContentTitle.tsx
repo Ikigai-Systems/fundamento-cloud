@@ -1,12 +1,13 @@
-import {Document} from "../types.js";
+import {Document, Table} from "../types.js";
 
 type ContentTitleProps = {
     document: Document,
+    table: Table,
 }
 
-export const ContentTitle = ({document}: ContentTitleProps) => {
+export const ContentTitle = ({document, table}: ContentTitleProps) => {
   return <div
     className="content-title">
-    {document.title || "Untitled"}
+    {document?.title || table?.name || "Untitled"}
   </div>;
 }

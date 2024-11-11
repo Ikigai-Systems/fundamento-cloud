@@ -2,11 +2,11 @@ import EditableTableWithRowstack from "./tables/EditableTableWithRowstack.tsx";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext.tsx";
 import {TableData} from "tables/EditableTableWithRowstack.tsx"
 import {Space, Table} from "../types.ts"
-import {TableTitleInput} from "./EditTablePanel.tsx";
+import {ContentTitle} from "./ContentTitle.tsx";
 
 const ViewTablePanel = ({table, data, space}: ViewTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>
-    <TableTitleInput table={table} space={space}/>
+    <ContentTitle table={table}/>
 
     <EditableTableWithRowstack table={table} data={data} isEditable={false}/>
   </CurrentSpaceContext.Provider>
