@@ -10,7 +10,7 @@
         @apply flex-col overflow-auto;
     }
 
-    .content {
+    .full-width-container {
         @apply text-black dark:text-white;
         @apply bg-white dark:bg-gray-800;
     }
