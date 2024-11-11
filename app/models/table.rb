@@ -77,7 +77,7 @@ class Table < ApplicationRecord
             hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
           end
         end
-      end.merge({"npi" => row.npi}) # this is for Rowstack convenience
+      end.merge({ "npi" => row.npi }) # this is for Rowstack convenience
     end
 
     {
@@ -97,32 +97,34 @@ class Table < ApplicationRecord
     previous_row = nil
     previous_column = nil
 
-    CSV.read(csv_file, headers: true, return_headers: true).each do |row|
-      if row.header_row?
-        row.each do |header, value|
-          table_columns[header] = self.columns.
-            find_or_create_by!(
-              name: header,
-              organization_id: self.organization_id,
-              kind: 0,
-              previous_column: previous_column,
-            )
+    self.transaction do
+      CSV.read(csv_file, headers: true, return_headers: true).each do |row|
+        if row.header_row?
+          row.each do |header, value|
+            table_columns[header] = self.columns.
+              find_or_create_by!(
+                name: header,
+                organization_id: self.organization_id,
+                kind: 0,
+                previous_column: previous_column,
+              )
 
-          previous_column = table_columns[header]
-        end
-      else
-        previous_row = self.rows.create!(
-          previous_row: previous_row,
-          organization_id: self.organization_id,
-        )
-
-        row.each_with_index do |(header, value), index|
-          self.cells.create!(
-            column: table_columns[header],
-            row: previous_row,
-            value: value,
+            previous_column = table_columns[header]
+          end
+        else
+          previous_row = self.rows.create!(
+            previous_row: previous_row,
             organization_id: self.organization_id,
           )
+
+          row.each_with_index do |(header, value), index|
+            self.cells.create!(
+              column: table_columns[header],
+              row: previous_row,
+              value: value,
+              organization_id: self.organization_id,
+            )
+          end
         end
       end
     end
