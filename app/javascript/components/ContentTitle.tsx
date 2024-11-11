@@ -1,34 +1,36 @@
 import {Document, Space, Table} from "../types.js";
 import createFlash from "./createFlash.ts";
-import DocumentsApi from "../api/DocumentsApi";
-import TablesApi from "../api/Tables/TablesApi";
+import DocumentsApi from "../api/DocumentsApi.js";
+import TablesApi from "../api/Tables/TablesApi.js";
 
 type ContentTitleProps = {
-    document: Document,
-    table: Table,
+  document: Document,
+  table: Table,
+  extraClasses?: string,
 }
 
 const UNTITLED_CONTENT = "Untitled";
 
-export const ContentTitle = ({document, table}: ContentTitleProps) => {
+export const ContentTitle = ({document, table, extraClasses}: ContentTitleProps) => {
   return <div
-    className="content-title">
+    className={`content-title${extraClasses ? ` ${extraClasses}` : ""}`}>
     {document?.title || table?.name || UNTITLED_CONTENT}
   </div>;
 }
 
 type TableTitleInputProps = {
-    table: Table,
-    space: Space,
+  table: Table,
+  space: Space,
+  extraClasses?: string,
 }
 
-export const TableTitleInput = ({table, space}: TableTitleInputProps) => {
+export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputProps) => {
   return <input
     key={table.id + "_name"}
     type="text"
     placeholder={UNTITLED_CONTENT}
     defaultValue={table.name}
-    className="content-title-input"
+    className={`content-title-input${extraClasses ? ` ${extraClasses}` : ""}`}
     onKeyDown={(e) => {
       if (e.key === "Enter") {
         if (e.target instanceof HTMLElement) {
@@ -65,10 +67,11 @@ export const TableTitleInput = ({table, space}: TableTitleInputProps) => {
 }
 
 type DocumentTitleInputProps = {
-    document: Document,
+  document: Document,
+  extraClasses?: string,
 }
 
-export const DocumentTitleInput = ({document}: DocumentTitleInputProps) => {
+export const DocumentTitleInput = ({document, extraClasses}: DocumentTitleInputProps) => {
   return <>
     <input
       key={document.id + "_title"}
@@ -76,7 +79,7 @@ export const DocumentTitleInput = ({document}: DocumentTitleInputProps) => {
       autoFocus={!document.title}
       placeholder={UNTITLED_CONTENT}
       defaultValue={document.title}
-      className="content-title-input"
+      className={`content-title-input${extraClasses ? ` ${extraClasses}` : ""}`}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           if (e.target instanceof HTMLElement) {

@@ -6,7 +6,9 @@ import {ContentTitle} from "./ContentTitle.tsx";
 
 const ViewTablePanel = ({table, data, space}: ViewTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>
-    <ContentTitle table={table}/>
+    <div className="content-editor-padding">
+      <ContentTitle table={table}/>
+    </div>
 
     <div className="content-editor-padding">
       <EditableTableWithRowstack table={table} data={data} isEditable={false}/>

@@ -9,6 +9,7 @@ import {Config} from "@js-from-routes/client";
 import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
 import {request} from "@js-from-routes/axios";
 import deepmerge from "deepmerge";
+import {ContentTitle, TableTitleInput} from "../../ContentTitle.tsx";
 
 const sampleRows = [
   {
@@ -223,6 +224,9 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
+        {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space} extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
+        {!editor.isEditable && <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+
         <EditableTableWithRowstack
           isEditable={editor.isEditable}
           table={tableQuery.data.table}

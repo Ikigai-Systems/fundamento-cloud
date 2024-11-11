@@ -23,12 +23,11 @@
     }
 
     .content-title {
-        @apply content-editor-padding;
         @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800;
     }
 
     .content-title-input {
-        @apply content-title h-12;
+        @apply content-title h-12 p-0;
         @apply bg-transparent;
     }
 

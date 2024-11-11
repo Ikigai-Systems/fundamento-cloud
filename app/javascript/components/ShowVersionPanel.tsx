@@ -26,7 +26,9 @@ const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
 
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
-      <ContentTitle document={document}/>
+      <div className="content-editor-padding">
+        <ContentTitle document={document}/>
+      </div>
 
       <div className="editor-container">
         <BlockNoteView editor={editor} editable={false}/>

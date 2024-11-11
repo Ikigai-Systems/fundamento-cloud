@@ -8,7 +8,9 @@ const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>
 
     <div className="flex flex-col">
-      <TableTitleInput table={table} space={space}/>
+      <div className="content-editor-padding">
+        <TableTitleInput table={table} space={space}/>
+      </div>
 
       <div className="content-editor-padding">
         <EditableTableWithRowstack table={table} data={data}/>
