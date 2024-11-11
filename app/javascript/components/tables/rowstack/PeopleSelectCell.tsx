@@ -10,6 +10,7 @@ function PeopleSelectCell({
   setData,
   focusState,
   setFocus,
+  isViewOnly,
 }) {
   const usersQuery = useQuery({queryKey: ["users"], queryFn: async () => {
     return (await UsersApi.index());
@@ -50,7 +51,7 @@ function PeopleSelectCell({
               {initials}
             </div>
             {displayName}
-            {focusState === "focused" && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
+            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
           </div>
         </>);
       }
@@ -66,11 +67,11 @@ function PeopleSelectCell({
     );
   } else if (focusState === "focused") {
     return (
-      <div className="h-8 flex flex-row items-center" onClick={() => setFocus("editing")}>
+      <div className="h-8 flex flex-row items-center" onClick={() => !isViewOnly && setFocus("editing")}>
         {renderUserQuery()}
       </div>
     );
-  } else if (focusState === "editing") {
+  } else if (focusState === "editing" && !isViewOnly) {
     return (
       <div className="-mt-1">
         <AsyncSelect
