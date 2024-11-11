@@ -9,6 +9,7 @@ import "./editor/editor-styles.css";
 import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
+import {ContentTitle} from "./ContentTitle.tsx";
 
 type EditDocumentPanelProps = {
   version: Version,
@@ -25,9 +26,7 @@ const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
 
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
-      <div className="pl-[3.4rem] min-h-12 mt-1 -mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800">
-        {document.title || "Untitled"}
-      </div>
+      <ContentTitle document={document}/>
 
       <div className="editor-container">
         <BlockNoteView editor={editor} editable={false}/>

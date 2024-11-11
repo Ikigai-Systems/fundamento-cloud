@@ -2,33 +2,11 @@
 @import "./tabs.tailwind.css";
 @import "./dropdown.tailwind.css";
 @import "./sidebar.tailwind.css";
+@import "./content.tailwind.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-    .editor-container a {
-        text-decoration: underline;
-        cursor: pointer;
-
-        @apply text-sky-500
-    }
-
-    .document {
-        @apply flex-col overflow-auto;
-    }
-
-    .document-title {
-        @apply pl-[3.4rem] h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
-        @apply bg-transparent;
-    }
-
-    .content {
-        @apply text-black dark:text-white;
-        @apply bg-white dark:bg-gray-800;
-    }
-}
 
 @layer components {
     body {
@@ -108,12 +86,6 @@
 
     .first-button-group {
         @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
-    }
-
-    .document-toolbar-button {
-        /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
-        /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
-        @apply secondary-button ml-2 text-sm;
     }
 
     .primary-button {
