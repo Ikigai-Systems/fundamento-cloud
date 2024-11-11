@@ -8,7 +8,9 @@ const ViewTablePanel = ({table, data, space}: ViewTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>
     <ContentTitle table={table}/>
 
-    <EditableTableWithRowstack table={table} data={data} isEditable={false}/>
+    <div className="content-editor-padding">
+      <EditableTableWithRowstack table={table} data={data} isEditable={false}/>
+    </div>
   </CurrentSpaceContext.Provider>
 }
 

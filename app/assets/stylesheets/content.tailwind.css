@@ -17,8 +17,14 @@
 }
 
 @layer components {
+    /* This class is used to match BlockNote's content padding so all editors look similarly, see .bn-editor for current value of the padding */
+    .content-editor-padding {
+        padding-inline: 54px;
+    }
+
     .content-title {
-        @apply pl-[3.4rem] min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800;
+        @apply content-editor-padding;
+        @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800;
     }
 
     .content-title-input {
