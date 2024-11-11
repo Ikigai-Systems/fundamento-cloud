@@ -10,11 +10,6 @@
         @apply flex-col overflow-auto;
     }
 
-    .document-title {
-        @apply pl-[3.4rem] h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
-        @apply bg-transparent;
-    }
-
     .content {
         @apply text-black dark:text-white;
         @apply bg-white dark:bg-gray-800;
@@ -23,7 +18,12 @@
 
 @layer components {
     .content-title {
-        @apply pl-[3.4rem] min-h-12 mt-1 -mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800;
+        @apply pl-[3.4rem] h-12 mt-1 -mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl text-slate-800;
+    }
+
+    .content-title-input {
+        @apply content-title;
+        @apply bg-transparent;
     }
 
     .document-toolbar-button {

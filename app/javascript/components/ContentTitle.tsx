@@ -28,7 +28,7 @@ export const TableTitleInput = ({table, space}: TableTitleInputProps) => {
     type="text"
     placeholder={UNTITLED_CONTENT}
     defaultValue={table.name}
-    className="-my-2 p-0 h-12 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-2xl font-bold text-slate-800"
+    className="content-title-input"
     onKeyDown={(e) => {
       if (e.key === "Enter") {
         if (e.target instanceof HTMLElement) {
@@ -70,10 +70,13 @@ type DocumentTitleInputProps = {
 
 export const DocumentTitleInput = ({document}: DocumentTitleInputProps) => {
   return <>
-    <input key={document.id + "_title"} type="text" autoFocus={!document.title}
+    <input
+      key={document.id + "_title"}
+      type="text"
+      autoFocus={!document.title}
       placeholder={UNTITLED_CONTENT}
       defaultValue={document.title}
-      className="document-title"
+      className="content-title-input"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           if (e.target instanceof HTMLElement) {
