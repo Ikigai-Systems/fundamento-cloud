@@ -17,6 +17,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./rowstack-styles.css";
 import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopup.tsx";
 import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
+import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
@@ -209,6 +210,22 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               </div>
             );
           },
+        }, {
+          section: "main",
+          menuItem: ({column, showPopup}) => {
+            if (column.type !== "button") {
+              return null;
+            }
+            return (
+              <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+                onClick={showPopup}
+              >
+                <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+                Edit button
+              </div>
+            );
+          },
+          popup: (popupProps) => <EditButtonPopup {...popupProps}/>
         }],
         parseDate: (value, configuration) => {
           if (!value) {
