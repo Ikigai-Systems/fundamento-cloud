@@ -19,7 +19,8 @@
         edit_space_document_path(@space, @document),
         method: :get,
         disabled: !policy(@document).update?,
-        class: "primary-button document-toolbar-button"
+        class: "primary-button document-toolbar-button",
+        data: {controller: "hotkey", hotkey: "e"}
       %>
 
       <div

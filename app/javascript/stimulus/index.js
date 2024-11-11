@@ -44,6 +44,9 @@ application.register("scroll-into-view", ScrollIntoViewController);
 import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
 application.register("show-if-input-value-equals", ShowIfInputValueEquals);
 
+import HotkeyController from "./hotkey_controller.ts";
+application.register("hotkey", HotkeyController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application
