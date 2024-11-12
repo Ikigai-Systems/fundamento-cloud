@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Select from 'react-select'
 import {StateManagerProps} from "react-select/dist/declarations/src/useStateManager";
 
@@ -10,6 +10,8 @@ function EditButtonPopup({
   rows,
   table,
 }) {
+  const [advancedSectionExpanded, setAdvancedSectionExpanded] = useState<boolean>(false);
+
   const StyledSelect = (props: StateManagerProps) => <Select
     {...props}
     styles={{
@@ -45,11 +47,11 @@ function EditButtonPopup({
   />
 
   return (<>
-    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
+    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px] min-w-[300px]">
       <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs">
         Button settings
       </div>
-      <div className="h-96 overflow-y-auto">
+      <div className="overflow-y-auto">
         <div className="border-b py-2">
           <label className="px-2 text-xs">On click</label>
           <StyledSelect
@@ -98,23 +100,39 @@ function EditButtonPopup({
           <input className="rounded border h-8 p-2"/>
         </div>
         <div className="flex flex-col py-2 px-2">
-          <div className="font-medium text-secondary text-sm">Advanced</div>
-          <label className="mt-2 text-xs">Disable if</label>
-          <input className="rounded border h-8 p-2"/>
+          <div className="flex flex-row items-center justify-between">
+            <div className="font-medium text-secondary text-sm">Advanced</div>
+            <button className="bg-neutral-200 rounded-full border hover:opacity-70 active:bg-neutral-300"
+              onClick={(e) => {
+                setAdvancedSectionExpanded(!advancedSectionExpanded);
+              }}
+            >
+              <div className="size-5 flex items-center justify-center">
+                {advancedSectionExpanded
+                  ? <span className="p-2 icon-[heroicons--chevron-up]"/>
+                  : <span className="p-2 icon-[heroicons--chevron-down]"/>
+                }
+              </div>
+            </button>
+          </div>
+          {advancedSectionExpanded && (<>
+            <label className="mt-2 text-xs">Disable if</label>
+            <input className="rounded border h-8 p-2"/>
 
-          <label className="mt-3 text-xs">Badge</label>
-          <input className="rounded border h-8 p-2 placeholder-neutral-400" placeholder="Enter formula that returns number"/>
+            <label className="mt-3 text-xs">Badge</label>
+            <input className="rounded border h-8 p-2 placeholder-neutral-400" placeholder="Enter formula that returns number"/>
 
-          <label className="mt-3 text-xs">Show alert</label>
-          <StyledSelect
-            className="min-w-64"
-            placeholder="Select an action"
-            options={[
-              {label: "Every time", value: "every_time"},
-              {label: "Never", value: "never"},
-              {label: "Only for errors", value: "only_for_errors"},
-            ]}
-          />
+            <label className="mt-3 text-xs">Show alert</label>
+            <StyledSelect
+              className="min-w-64"
+              placeholder="Select an action"
+              options={[
+                {label: "Every time", value: "every_time"},
+                {label: "Never", value: "never"},
+                {label: "Only for errors", value: "only_for_errors"},
+              ]}
+            />
+          </>)}
         </div>
       </div>
     </div>
