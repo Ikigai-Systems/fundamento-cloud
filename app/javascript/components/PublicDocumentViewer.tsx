@@ -39,7 +39,7 @@ const PublicDocumentViewer = ({document, space}: PublicDocumentViewerProps) => {
     <QueryClientProvider client={queryClient}>
       <CurrentSpaceContext.Provider value={{space}}>
         <div className="editor-container">
-          <BlockNoteView editor={editor} editable={false}/>
+          <BlockNoteView editor={editor} editable={false} className={"read-only"}/>
         </div>
       </CurrentSpaceContext.Provider>
     </QueryClientProvider>

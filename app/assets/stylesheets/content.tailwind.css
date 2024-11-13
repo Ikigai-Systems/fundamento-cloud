@@ -6,6 +6,13 @@
         @apply text-sky-500
     }
 
+    .editor-container .read-only {
+        .bn-editor {
+            padding-inline: 0;
+            @apply p-5;
+        }
+    }
+
     .document {
         @apply flex-col overflow-auto;
     }
