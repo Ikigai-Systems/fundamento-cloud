@@ -1,4 +1,4 @@
-import Rowstack from "../../libs/rowstack/main.js";
+import Rowstack from "rowstack";
 import {useContext} from "react";
 import createFlash from "../createFlash.ts"
 import CurrentSpaceContext from "../../contextes/CurrentSpaceContext.tsx";
