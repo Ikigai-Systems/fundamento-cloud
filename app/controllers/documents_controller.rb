@@ -53,6 +53,11 @@ class DocumentsController < ApplicationController
       format.html do
         @space = current_organization.spaces.find_by_npi!(params[:space_npi])
 
+        if @space != @document.space
+          redirect_to space_document_path(@document.space, @document)
+          return
+        end
+
         if @document.versions.empty?
           redirect_to edit_space_document_path(@space, @document)
           return
