@@ -262,15 +262,35 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    res = Net::HTTP.post_form(
-      URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
-      formula: formula,
-      additional_context: additional_context.to_json,
-    )
+    if ENV["FORMULA_EVAL_MICROSERVICE_URL"].blank?
+      mini_racer_context = MiniRacer::Context.new
+      bundled_js = File.read(Rails.root.join("formula/build/formula.js"))
 
-    respond_to do |format|
-      format.json { render json: res.body }
-      format.all { head :unprocessable_content }
+      mini_racer_context.eval("var exports = {};")
+      mini_racer_context.eval(bundled_js)
+      mini_racer_context.eval("var formula = #{formula.to_json};")
+      mini_racer_context.eval("var context = #{additional_context.to_json}")
+      begin
+        formula_value = mini_racer_context.eval("exports.evaluateFormula(formula, context)")
+      rescue => e
+        formula_error = e
+      end
+
+      respond_to do |format|
+        format.json { render json: {result: formula_value, error: formula_error} }
+        format.all { head :unprocessable_content }
+      end
+    else
+      res = Net::HTTP.post_form(
+        URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
+        formula: formula,
+        additional_context: additional_context.to_json,
+      )
+
+      respond_to do |format|
+        format.json { render json: res }
+        format.all { head :unprocessable_content }
+      end
     end
   end
 
