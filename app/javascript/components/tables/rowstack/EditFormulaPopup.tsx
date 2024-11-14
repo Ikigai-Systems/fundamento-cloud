@@ -7,6 +7,7 @@ function EditFormulaPopup({
   setColumn,
   close,
   rows,
+  space,
   table,
 }) {
   const [formula, setFormula] = useState<string>(column.fundamentoFormula || "")
@@ -33,7 +34,7 @@ function EditFormulaPopup({
 
   useEffect(() => {
     const fetchPreview = async () => {
-      const response = await TablesApi.previewFormula({params: {space_npi: table.space_npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
+      const response = await TablesApi.previewFormula({params: {space_npi: space.npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
       setPreviewResult(response.result);
       setPreviewError(response.error);
     }
