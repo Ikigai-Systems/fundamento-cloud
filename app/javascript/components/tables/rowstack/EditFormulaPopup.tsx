@@ -11,7 +11,7 @@ function EditFormulaPopup({
 }) {
   const [formula, setFormula] = useState<string>(column.fundamentoFormula || "")
   const [previewRow, setPreviewRow] = useState<number>(0);
-  const [previewValue, setPreviewValue] = useState(undefined);
+  const [previewResult, setPreviewResult] = useState(undefined);
   const [previewError, setPreviewError] = useState(undefined);
 
   const componentWillUnmount = useRef(false);
@@ -34,11 +34,11 @@ function EditFormulaPopup({
   useEffect(() => {
     const fetchPreview = async () => {
       const response = await TablesApi.previewFormula({params: {space_npi: table.space_npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
-      setPreviewValue(response.value);
+      setPreviewResult(response.result);
       setPreviewError(response.error);
     }
 
-    setPreviewValue(undefined);
+    setPreviewResult(undefined);
     setPreviewError(undefined);
 
     fetchPreview();
@@ -72,9 +72,9 @@ function EditFormulaPopup({
       <div className="flex flex-row items-center pl-2 py-1 border-b">
         <div className="flex-grow">
           <div>
-            {previewValue !== undefined && !previewError && '= ' + previewValue}
-            {previewValue !== undefined && previewError && <span className="text-red-600">{previewError}</span>}
-            {previewValue === undefined && <Spinner size={4}/>}
+            {previewResult !== undefined && !previewError && '= ' + previewResult}
+            {previewResult !== undefined && previewError && <span className="text-red-600">{previewError}</span>}
+            {previewResult === undefined && <Spinner size={4}/>}
           </div>
         </div>
         <div className="flex flex-row items-center">
@@ -90,7 +90,7 @@ function EditFormulaPopup({
           </div>
           <div className="flex items-center justify-center size-6 hover:bg-neutral-200 active:bg-neutral-300"
             onClick={() => {
-              setPreviewRow(previewValue => (rows.length + previewValue - 1) % rows.length);
+              setPreviewRow(previewResult => (rows.length + previewResult - 1) % rows.length);
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-up]"></div>

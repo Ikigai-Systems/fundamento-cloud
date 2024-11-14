@@ -111,4 +111,7 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # this is going to be moved into separate micro-service, hosted on separate node process
+  post '/formulas/eval', to: "formulas#eval"
 end
