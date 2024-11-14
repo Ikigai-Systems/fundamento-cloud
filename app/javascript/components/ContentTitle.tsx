@@ -4,8 +4,8 @@ import DocumentsApi from "../api/DocumentsApi.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 
 type ContentTitleProps = {
-  document: Document,
-  table: Table,
+  document?: Document,
+  table?: Table,
   extraClasses?: string,
 }
 
