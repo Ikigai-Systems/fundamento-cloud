@@ -3,10 +3,10 @@ class Space < ApplicationRecord
 
   include ModelWithNpiAsParam
 
+  has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
-  has_many :tables, dependent: :destroy
-
   has_many :space_memberships, dependent: :destroy
+  has_many :tables, dependent: :destroy
 
   belongs_to :home_document, class_name: "Document", optional: true
 
