@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_07_162052) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_15_150622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_07_162052) do
     t.bigint "parent_id", null: false
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_attachments_on_parent"
+  end
+
+  create_table "automations", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.bigint "space_id"
+    t.string "title", null: false
+    t.integer "kind", limit: 2, null: false
+    t.string "formula"
+    t.string "npi"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_automations_on_organization_id"
+    t.index ["space_id"], name: "index_automations_on_space_id"
+    t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
   end
 
   create_table "documents", force: :cascade do |t|
@@ -414,6 +428,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_07_162052) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "attachments", "organizations"
+  add_foreign_key "automations", "organizations"
+  add_foreign_key "automations", "spaces"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"
