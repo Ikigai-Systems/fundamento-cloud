@@ -29,4 +29,16 @@ RSpec.describe Tables::Column, type: :model do
     expect(column.previous_column).to eq(tables_columns(:project_key))
     expect(column.next_column).to eq(tables_columns(:project_description))
   end
+
+  describe "#to_kind" do
+    it "converts unknown types to string" do
+      expect(described_class.to_kind("reallyStrangeType")).to eq(:string)
+    end
+
+    it "converts known types to their internal representation" do
+      expect(described_class.to_kind("multiSelect")).to eq(:multi_select)
+      expect(described_class.to_kind("datetime")).to eq(:datetime)
+      expect(described_class.to_kind("longText")).to eq(:long_text)
+    end
+  end
 end

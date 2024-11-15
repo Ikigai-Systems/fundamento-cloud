@@ -14,27 +14,10 @@ class Tables::Column < ApplicationRecord
   enum :kind, [:string, :integer, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :button], scopes: false, validate: true
 
   def self.to_kind(type)
-    case (type)
-    when "number"
-      :integer
-    when "longText"
-      :long_text
-    when "select"
-      :select
-    when "date"
-      :date
-    when "multiSelect"
-      :multi_select
-    when "url"
-      :url
-    when "checkbox"
-      :checkbox
-    when "formula"
-      :formula
-    when "people"
-      :people
-    when "button"
-      :button
+    possible_type = type.underscore
+
+    if self.kinds.has_key?(possible_type)
+      possible_type.to_sym
     else
       :string
     end
