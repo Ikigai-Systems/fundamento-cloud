@@ -1,4 +1,4 @@
-class Tables::Column < ApplicationRecord
+class Automation < ApplicationRecord
   belongs_to :organization
   belongs_to :space
 
