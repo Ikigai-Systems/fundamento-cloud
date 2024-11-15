@@ -99,6 +99,22 @@ services:
         condition: service_healthy
       minio-initialization:
         condition: service_completed_successfully
+  formula:
+    build:
+      context: ./formula-eval
+    environment:
+      FUNDAMENTO_FORMULAS_EVAL_URL: http://rails:3000/formulas/eval
+    ports:
+      - '3001:3001'
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-initialization:
+        condition: service_completed_successfully
 
 volumes:
   postgres:

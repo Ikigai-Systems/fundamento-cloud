@@ -27,7 +27,10 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
 })
 
 try {
-  await fastify.listen({ port: process.env.SERVER_PORT || 3001 })
+  const port = process.env.PORT || 3001;
+  const host = process.env.HTTP_HOST || "127.0.0.1";
+
+  await fastify.listen({ host, port })
 } catch (err) {
   fastify.log.error(err)
   process.exit(1)
