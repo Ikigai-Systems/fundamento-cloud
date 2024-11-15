@@ -22,7 +22,7 @@ import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
 
-const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "multi_select" | "url" | "checkbox") => {
+const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "datetime" | "multi_select" | "url" | "checkbox" | "formula" | "people" | "button") => {
   switch (kind) {
   case "integer":
     return "number";
@@ -32,6 +32,8 @@ const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "
     return "select";
   case "date":
     return "date";
+  case "datetime":
+    return "datetime";
   case "multi_select":
     return "multiSelect";
   case "url":
