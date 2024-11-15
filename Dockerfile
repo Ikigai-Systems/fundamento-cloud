@@ -116,9 +116,6 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # rails:
 EXPOSE 3000
 
-# probably this should go instead to deployment.yaml or kustomization.yaml in infrastructure/clusters/apps/fundamento-cloud repo, but I'm not 100% sure
-ENV FORMULA_EVAL_MICROSERVICE_URL=https://fundamento.cloud/formulas/eval
-
 CMD ["./bin/rails", "server"]
 
 FROM packaged AS test
