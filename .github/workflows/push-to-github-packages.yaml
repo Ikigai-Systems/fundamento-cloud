@@ -48,7 +48,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/fundamento-cloud
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento-cloud
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -104,7 +104,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/fundamento-formula
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento-formula
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
