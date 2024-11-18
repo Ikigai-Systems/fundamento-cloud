@@ -101,7 +101,7 @@ services:
         condition: service_completed_successfully
   formula:
     build:
-      context: ./formula-eval
+      context: ./micro-services/formula-eval
     environment:
       FUNDAMENTO_FORMULAS_EVAL_URL: http://rails:3000/formulas/eval
     ports:
