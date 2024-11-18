@@ -1,7 +1,10 @@
 import Fastify from 'fastify';
 import FormBodyPlugin from '@fastify/formbody'
 
-const fastify = Fastify({logger: true});
+const fastify = Fastify({
+  logger: true,
+  http2: true,
+});
 fastify.register(FormBodyPlugin);
 
 // Declare a route
