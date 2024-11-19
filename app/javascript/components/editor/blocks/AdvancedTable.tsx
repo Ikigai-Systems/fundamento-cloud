@@ -81,13 +81,13 @@ const AdvancedTable = createReactBlockSpec(
       const tableId = blockProps.tableId;
       const inputFile = useRef<HTMLInputElement | undefined>(undefined);
       const [isCreating, setIsCreating] = useState(false);
-      const tableQuery = useQuery({queryKey: ["tables", space.npi, tableId], queryFn: async () => {
+      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId], queryFn: async () => {
         if (tableId === -1) {
           return null;
         }
         const currentDataDeserializer = Config.deserializeData;
         Config.deserializeData = (val => val);
-        const promiseData = TablesApi.show({space_npi: space.npi, id: tableId});
+        const promiseData = TablesApi.show({space_npi: space?.npi, id: tableId});
         Config.deserializeData = currentDataDeserializer;
         const data = await promiseData
         return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -156,7 +156,7 @@ const AdvancedTable = createReactBlockSpec(
                     const body = new FormData();
                     body.append('table[csv_file]', file);
 
-                    const table = await request("post", TablesApi.create.path({space_npi: space.npi}), {
+                    const table = await request("post", TablesApi.create.path({space_npi: space?.npi}), {
                       data: body,
                       responseAs: "json",
                       headers: {
@@ -177,7 +177,7 @@ const AdvancedTable = createReactBlockSpec(
                   disabled={isCreating}
                   onClick={(e) => {
                     e.preventDefault();
-                    inputFile.current.click();
+                    inputFile?.current?.click();
                   }}
                 >
                   <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
@@ -194,7 +194,7 @@ const AdvancedTable = createReactBlockSpec(
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
                       params: {
-                        space_npi: space.npi,
+                        space_npi: space?.npi,
                         query: {query}
                       }
                     });
@@ -203,7 +203,7 @@ const AdvancedTable = createReactBlockSpec(
                   onChange={(newOption) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: newOption.value,
+                        tableId: (newOption as { value: any }).value,
                       },
                     });
                   }}

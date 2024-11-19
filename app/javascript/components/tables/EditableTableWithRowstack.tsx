@@ -22,7 +22,21 @@ import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
 
-const toType = (kind: "string" | "integer" | "long_text" | "select" | "date" | "datetime" | "multi_select" | "url" | "checkbox" | "formula" | "people" | "button") => {
+type Kind =
+    "string"
+    | "integer"
+    | "long_text"
+    | "select"
+    | "date"
+    | "datetime"
+    | "multi_select"
+    | "url"
+    | "checkbox"
+    | "formula"
+    | "people"
+    | "button";
+
+const toType = (kind: Kind) => {
   switch (kind) {
   case "integer":
     return "number";
@@ -62,7 +76,7 @@ export const EditableTableContext = createContext<EditableTableContextType>({
 });
 
 export interface EditableTableRowsContextType {
-  rows: any[],
+  rows: any[] | undefined,
 }
 
 export const EditableTableRowsContext = createContext<EditableTableRowsContextType>({
@@ -164,8 +178,8 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
         onClick={async () => {
-          const spaceNpi = space.npi;
-          const tableId = table.id;
+          const spaceNpi = space?.npi;
+          const tableId = table?.id;
           await TablesApi.moveColumnLeft({
             params: {space_npi: spaceNpi, id: tableId},
             data: {colId: column.id}
@@ -186,8 +200,8 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
         onClick={async () => {
-          const spaceNpi = space.npi;
-          const tableId = table.id;
+          const spaceNpi = space?.npi;
+          const tableId = table?.id;
           await TablesApi.moveColumnRight({
             params: {space_npi: spaceNpi, id: tableId},
             data: {colId: column.id}
@@ -413,13 +427,13 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               const currentDataSerializer = Config.serializeData;
               Config.serializeData = (val => val);
               const promise = TablesApi.updateByRowstack({
-                params: {space_npi: space.npi, id: table.id},
+                params: {space_npi: space?.npi, id: table.id},
                 data: {event}
               });
               Config.serializeData = currentDataSerializer;
               await promise;
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-                queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
+                queryClient.invalidateQueries({queryKey: ["tables", space?.npi, table.id]});
               }
             } catch (e) {
               //todo: Sentry.capture(e)
@@ -444,6 +458,11 @@ type Row = {
 type Column = {
   id: string,
   name: string,
+  npi: string,
+  kind: Kind,
+  formula: string,
+  configuration: any,
+  options: any,
 }
 
 export type TableData = {
@@ -456,7 +475,7 @@ type EditableTableWithRowstackProps = {
   table: Table,
   data: TableData,
   forceRerenderUuid: string,
-  initialViewProps: object,
+  initialViewProps: TableData,
   onViewPropsChange: (any) => void,
 }
 

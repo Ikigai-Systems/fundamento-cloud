@@ -19,7 +19,7 @@ function EditDateStoredFormatPopup({
   useEffect(() => {
     const {current} = selectedDivRef;
     if (current) {
-      current.scrollIntoView({behavior: "smooth", block: "nearest"});
+      (current as HTMLElement).scrollIntoView({behavior: "smooth", block: "nearest"});
     }
   }, []);
 
