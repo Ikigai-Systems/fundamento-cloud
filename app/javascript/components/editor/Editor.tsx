@@ -18,6 +18,7 @@ import {
   SuggestionMenuController,
   useSelectedBlocks,
 } from "@blocknote/react";
+import BlockQuoteMenuItem from './blocks/BlockQuoteMenuItem.tsx';
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
@@ -184,7 +185,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), BlockQuoteMenuItem()],
             query
           )
         }}

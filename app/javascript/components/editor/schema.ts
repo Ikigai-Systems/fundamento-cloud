@@ -1,4 +1,5 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
+import BlockQuote from './blocks/BlockQuote.tsx';
 import Mention from "./inline-content/Mention";
 import AdvancedTable from "./blocks/AdvancedTable.tsx";
 import CodeBlock from "./blocks/CodeBlock";
@@ -18,6 +19,7 @@ const schema = BlockNoteSchema.create({
   blockSpecs: {
     ...remainingBlockSpecs,
     advancedTable: AdvancedTable,
+		blockQuote: BlockQuote,
     procode: CodeBlock,
   }
 });
