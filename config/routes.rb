@@ -48,6 +48,8 @@ Rails.application.routes.draw do
         post :move_column_left, on: :member
         post :move_column_right, on: :member
       end
+
+      resources :automations, param: :npi
     end
 
     resources :attachments, only: [:create, :destroy, :show]
@@ -107,6 +109,12 @@ Rails.application.routes.draw do
           member do
             post :register
           end
+        end
+      end
+
+      resources :automations, param: :npi, only: [] do
+        member do
+          post :deliver
         end
       end
     end

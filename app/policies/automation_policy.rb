@@ -1,0 +1,3 @@
+class AutomationPolicy < DocumentPolicy
+
+end

@@ -1,0 +1,41 @@
+<%= turbo_stream_from ["automations_list", @space] %>
+
+<% content_for :focused_header do %>
+  Automations
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <% if policy(@space.automations.new).create? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to 'Create', new_space_automation_path(@space), class: "secondary-button" %>
+    </div>
+  <% end %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <p>A list of all automations in your organization.</p>
+    </div>
+  </div>
+
+  <table class="table-list">
+    <thead>
+      <tr>
+        <th scope="col">
+          Title
+        </th>
+        <th scope="col">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody id="automations">
+      <% @automations.each do |automation| %>
+        <%= render partial: automation %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render "focused_section" %>
