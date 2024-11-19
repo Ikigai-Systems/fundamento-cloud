@@ -1,15 +1,19 @@
 {
   "name": "blocknote",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "src/blocknoteServer.js",
+  "type": "module",
   "scripts": {
-    "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknote_bundle.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js"
+    "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknote_bundle.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
+    "start": "nodemon src/blocknoteServer.js"
   },
   "devDependencies": {
-    "esbuild": "^0.23.1"
+    "esbuild": "^0.23.1",
+    "nodemon": "^3.1.7"
   },
   "dependencies": {
-    "@blocknote/server-util": "^0.19.2"
+    "@blocknote/server-util": "^0.19.2",
+    "fastify": "^5.1.0"
   },
   "packageManager": "npm@10.8.3"
 }
