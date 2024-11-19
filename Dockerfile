@@ -53,9 +53,9 @@ COPY formula/package.json formula/package-lock.json ./formula/
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
     cd formula && npm ci --cache /var/cache/npm
 
-COPY blocknote/package.json blocknote/package-lock.json ./blocknote/
+COPY micro-services/blocknote/package.json micro-services/blocknote/package-lock.json ./micro-services/blocknote/
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
-    cd blocknote && npm ci --cache /var/cache/npm
+    cd micro-services/blocknote && npm ci --cache /var/cache/npm
 
 # Copy application code
 COPY . .
@@ -71,7 +71,7 @@ RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:passwor
 RUN cd formula && npm run build
 
 # Transpile blocknote server side utils for document-to-blocks conversion
-RUN cd blocknote && npm run build
+RUN cd micro-services/blocknote && npm run build
 
 # Final stage for app image
 FROM base AS packaged
@@ -96,8 +96,8 @@ COPY --from=build /rails/Gemfile* ./
 COPY --from=build /rails/app ./app
 COPY --from=build /rails/vendor ./vendor
 COPY --from=build /rails/formula/build ./formula/build
-COPY --from=build /rails/blocknote/build ./blocknote/build
-COPY --from=build /rails/blocknote/node_modules ./blocknote/node_modules
+COPY --from=build /rails/micro-services/blocknote/build ./micro-services/blocknote/build
+COPY --from=build /rails/micro-services/blocknote/node_modules ./micro-services/blocknote/node_modules
 
 # Use COPY --chown instead of chown as the latter is very slow (took 100s on my machine)
 # see https://github.com/docker/for-linux/issues/388

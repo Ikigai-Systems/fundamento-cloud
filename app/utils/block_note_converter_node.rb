@@ -3,7 +3,7 @@ module BlockNoteConverterNode
     data = Base64.encode64(binary_sync)
 
     # Call the Node.js script and pass the JSON data as an argument
-    stdout, stderr, status = Open3.capture3('node ./blocknote/build/blocknote_bundle.js', stdin_data: data)
+    stdout, stderr, status = Open3.capture3('node ./micro-services/blocknote/build/blocknote_bundle.js', stdin_data: data)
 
     if status.success?
       JSON.parse(stdout)

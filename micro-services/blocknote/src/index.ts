@@ -1,7 +1,7 @@
 import { ServerBlockNoteEditor } from "@blocknote/server-util";
 import * as Y from 'yjs';
 import fs from "fs";
-import schema from "../../app/javascript/components/editor/schema";
+import schema from "../../../app/javascript/components/editor/schema";
 
 function convertToBlocks(base64: string) {
   const update = Uint8Array.from(Buffer.from(base64, 'base64'));
