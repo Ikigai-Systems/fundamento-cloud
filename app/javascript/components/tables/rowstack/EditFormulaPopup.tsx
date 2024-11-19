@@ -12,8 +12,11 @@ function EditFormulaPopup({
 }) {
   const [formula, setFormula] = useState<string>(column.fundamentoFormula || "")
   const [previewRow, setPreviewRow] = useState<number>(0);
-  const [previewResult, setPreviewResult] = useState(undefined);
-  const [previewError, setPreviewError] = useState(undefined);
+  const [previewIsLoading, setPreviewIsLoading] = useState<boolean>(false);
+  const [previewResponse, setPreviewResponse] = useState({
+    result: undefined,
+    error: undefined,
+  })
 
   const componentWillUnmount = useRef(false);
   const saveFormulaUponClose = useRef(true);
@@ -34,16 +37,18 @@ function EditFormulaPopup({
 
   useEffect(() => {
     const fetchPreview = async () => {
-      const response = await TablesApi.previewFormula({params: {space_npi: space.npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
-      setPreviewResult(response.result);
-      setPreviewError(response.error);
+      setPreviewIsLoading(true);
+      setPreviewResponse({result: undefined, error: undefined});
+      try {
+        const response = await TablesApi.previewFormula({params: {space_npi: space.npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
+        setPreviewResponse(response);
+      } finally {
+        setPreviewIsLoading(false);
+      }
     }
 
-    setPreviewResult(undefined);
-    setPreviewError(undefined);
-
     fetchPreview();
-  }, [formula, previewRow, rows]);
+  }, [formula, previewRow, rows, space.npi, table.id]);
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
@@ -73,9 +78,9 @@ function EditFormulaPopup({
       <div className="flex flex-row items-center pl-2 py-1 border-b">
         <div className="flex-grow">
           <div>
-            {previewResult !== undefined && !previewError && '= ' + previewResult}
-            {previewResult !== undefined && previewError && <span className="text-red-600">{previewError}</span>}
-            {previewResult === undefined && <Spinner size={4}/>}
+            {previewIsLoading && <Spinner size={4}/>}
+            {!previewIsLoading && !previewResponse.error && '= ' + previewResponse.result}
+            {!previewIsLoading && previewResponse.error && <span className="text-red-600">{previewResponse.error}</span>}
           </div>
         </div>
         <div className="flex flex-row items-center">
@@ -91,7 +96,7 @@ function EditFormulaPopup({
           </div>
           <div className="flex items-center justify-center size-6 hover:bg-neutral-200 active:bg-neutral-300"
             onClick={() => {
-              setPreviewRow(previewResult => (rows.length + previewResult - 1) % rows.length);
+              setPreviewRow(previewRow => (rows.length + previewRow - 1) % rows.length);
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-up]"></div>

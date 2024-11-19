@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import FormBodyPlugin from '@fastify/formbody'
+import evaluateFormula from './evaluateFormula.js'
 
 const fastify = Fastify({
   logger: true,
@@ -13,20 +14,27 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
 
   const {formula, additional_context} = request.body;
 
-  // simulate formula evaluation via round-trip to fundamento formulas_controller.rb:
-  const fundamentoFormulasEvalUrl = process.env.FUNDAMENTO_FORMULAS_EVAL_URL || "http://localhost:3000/formulas/eval"
-  const response = await fetch(fundamentoFormulasEvalUrl, {
-    method: "POST",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: new URLSearchParams({
-      'formula': formula,
-      'additional_context': additional_context,
-    })
-  })
-  return await response.json();
+  // // simulate formula evaluation via round-trip to fundamento formulas_controller.rb:
+  // const fundamentoFormulasEvalUrl = process.env.FUNDAMENTO_FORMULAS_EVAL_URL || "http://localhost:3000/formulas/eval"
+  // const response = await fetch(fundamentoFormulasEvalUrl, {
+  //   method: "POST",
+  //   headers: {
+  //     'Accept': 'application/json',
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   },
+  //   body: new URLSearchParams({
+  //     'formula': formula,
+  //     'additional_context': JSON.stringify(additional_context),
+  //   })
+  // });
+  // const responseJson = await response.json();
+
+  try {
+    const evaluatedFormula = evaluateFormula(formula, additional_context);
+    return({result: evaluatedFormula});
+  } catch (e) {
+    return({error: e.toString()});
+  }
 })
 
 try {

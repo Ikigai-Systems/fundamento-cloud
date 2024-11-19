@@ -156,6 +156,8 @@ GEM
       railties (>= 6.1.0)
       thor (>= 1.0.0)
     hash_diff (1.1.1)
+    http-2 (0.12.0)
+      base64
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.1)
@@ -196,6 +198,8 @@ GEM
     msgpack (1.7.2)
     mutex_m (0.2.0)
     nanoid (2.0.0)
+    net-http2 (0.18.5)
+      http-2 (~> 0.11)
     net-imap (0.4.12)
       date
       net-protocol
@@ -413,6 +417,7 @@ DEPENDENCIES
   logstash-event (~> 1.2)
   mini_racer
   nanoid
+  net-http2
   pg
   puma (>= 5.0)
   pundit

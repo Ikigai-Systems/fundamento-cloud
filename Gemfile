@@ -104,3 +104,5 @@ group :development do
 end
 
 gem "good_job", "~> 4.4"
+
+gem "net-http2"

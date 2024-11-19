@@ -262,11 +262,24 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    res = Net::HTTP.post_form(
-      URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
+    microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
+
+    client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
+    res = client.call(:post, microservice_url.path, headers: {
+      "Content-type" => "application/json",
+      "Accept" => "application/json",
+    }, body: {
       formula: formula,
-      additional_context: additional_context.to_json,
-    )
+      additional_context: additional_context,
+    }.to_json)
+
+    # res = Net::HTTP.post_form(
+    #   URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
+    #   formula: formula,
+    #   additional_context: additional_context.to_json,
+    # )
+
+    client.close
 
     respond_to do |format|
       format.json { render json: res.body }
