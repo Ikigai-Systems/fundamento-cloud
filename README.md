@@ -8,6 +8,8 @@ This is equivalent to `foreman start -f Procfile.dev` run manually.
 It should spawn two processes:
 * rails app listening on port `3000`
 * vite devserver listening on port `3036`
+* rails background job processor
+* formula evaluation micro-service listening on port `3001`
 
 Access application via `http://localhost:3000`
 

@@ -1,3 +1,4 @@
 rails: bundle exec bin/rails server --port 3000
 vite: bin/vite dev
 jobs: bundle exec good_job start
+formula-eval: unset PORT && unset HTTP_HOST && npm start --prefix micro-services/formula-eval
