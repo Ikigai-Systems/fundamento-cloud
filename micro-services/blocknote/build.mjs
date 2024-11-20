@@ -10,7 +10,7 @@ const buildOptions = {
   format: "cjs",
   platform: 'node',
   target: ['node18'],
-  outfile: 'build/blocknoteServer.mjs',
+  outfile: 'build/blocknoteServer.js',
   loader: {
     ".css": "empty",
   },
