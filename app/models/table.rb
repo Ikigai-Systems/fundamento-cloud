@@ -63,10 +63,11 @@ class Table < ApplicationRecord
         }
 
         columns_in_order.each_with_object({}) do |column, hash|
-          begin
-            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.evaluate_value(additional_context)
-          rescue => e
-            hash[column.npi] = e
+          if column.formula?
+            formula_evaluation = FormulaEvalGateway.evaluate(column.formula, additional_context)
+            hash[column.npi] = formula_evaluation["error"] || formula_evaluation["result"]
+          else
+            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id]).value
           end
         end
       else

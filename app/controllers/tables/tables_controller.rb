@@ -253,7 +253,7 @@ class Tables::TablesController < ApplicationController
     row = table.rows.find_by(npi: params["row_id"])
     formula = params["formula"]
 
-    cells = row.cells.index_by(&:column_id);
+    cells = row.cells.index_by(&:column_id)
     current_row_values = table.columns_in_order.each_with_object({}) do |column, hash|
       hash[column.name] = cells[column.id]&.value
     end
@@ -262,27 +262,10 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
-
-    client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
-    res = client.call(:post, microservice_url.path, headers: {
-      "Content-type" => "application/json",
-      "Accept" => "application/json",
-    }, body: {
-      formula: formula,
-      additional_context: additional_context,
-    }.to_json)
-
-    # res = Net::HTTP.post_form(
-    #   URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
-    #   formula: formula,
-    #   additional_context: additional_context.to_json,
-    # )
-
-    client.close
+    formula_evaluation = FormulaEvalGateway.evaluate(formula, additional_context)
 
     respond_to do |format|
-      format.json { render json: res.body }
+      format.json { render json: formula_evaluation }
       format.all { head :unprocessable_content }
     end
   end

@@ -10,13 +10,6 @@ class Tables::Cell < ApplicationRecord
   def evaluate_value(additional_context)
     return value unless column.formula?
 
-    mini_racer_context = MiniRacer::Context.new
-    bundled_js = File.read(Rails.root.join("formula/build/formula.js"))
-
-    mini_racer_context.eval("var exports = {};")
-    mini_racer_context.eval(bundled_js)
-    mini_racer_context.eval("var formula = #{(column.formula || {}).to_json};")
-    mini_racer_context.eval("var context = #{additional_context.to_json}")
-    mini_racer_context.eval("exports.evaluateFormula(formula, context)")
+    FormulaEvalGateway.evaluate(column.formula, additional_context)
   end
 end
