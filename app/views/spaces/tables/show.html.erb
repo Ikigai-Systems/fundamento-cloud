@@ -18,7 +18,8 @@
         edit_space_table_path(@space, @table),
         method: :get,
         disabled: !policy(@table).update?,
-        class: "primary-button document-toolbar-button"
+        class: "primary-button document-toolbar-button",
+        data: {controller: "hotkey", hotkey: "e"}
       %>
 
       <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
