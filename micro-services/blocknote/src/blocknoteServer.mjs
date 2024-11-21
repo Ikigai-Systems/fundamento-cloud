@@ -1,13 +1,15 @@
 import Fastify from 'fastify';
+import FormBodyPlugin from '@fastify/formbody'
 import {convertToBlocks} from "./convertToBlocks.ts";
 
 const fastify = Fastify({
   logger: true,
-  http2: true,
+  // http2: true,
 });
+fastify.register(FormBodyPlugin);
 
 // Declare a route
-fastify.post('/blocknote/to_blocks', async function handler (request, reply) {
+fastify.post("/blocknote/to_blocks", async function handler (request, reply) {
   const {yjs} = request.body;
 
   const response = {
