@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_23_141537) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_23_143634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,6 +63,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_23_141537) do
     t.string "formula"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "webhook"
+    t.datetime "invoked_at"
     t.index ["automation_id"], name: "index_automation_invocations_on_automation_id"
     t.index ["organization_id"], name: "index_automation_invocations_on_organization_id"
     t.index ["space_id"], name: "index_automation_invocations_on_space_id"
