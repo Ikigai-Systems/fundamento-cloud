@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js"
+    "start": "nodemon src/server.js",
+    "regenerate-lexer-and-parser": "java -jar antlr-4.13.2-complete.jar -Dlanguage=JavaScript src/formula.g4 -o src/antlr4 -Xexact-output-dir -visitor"
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
