@@ -7,12 +7,16 @@ class Api::V1::AutomationInvocationsController < Api::ApiController
       return
     end
 
+    # If we ever get to a point this gives us memory bloat refer to CLK webhooks processing for a memory optimized version
     invocation = @automation.invocations.create!(
       organization_id: @automation.organization_id,
       space_id: @automation.space_id,
       kind: @automation.kind,
-      formula: @automation.formula
+      formula: @automation.formula,
+      webhook: request.raw_post
     )
+
+    AutomationInvocationJob.perform_later(invocation)
 
     render json: { id: invocation.id }, status: :created
   end
