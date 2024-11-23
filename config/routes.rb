@@ -114,7 +114,7 @@ Rails.application.routes.draw do
 
       resources :automations, param: :npi, only: [] do
         member do
-          post :deliver
+          post :invoke
         end
       end
     end
