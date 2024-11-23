@@ -113,9 +113,7 @@ Rails.application.routes.draw do
       end
 
       resources :automations, param: :npi, only: [] do
-        member do
-          post :invoke
-        end
+        resources :invocations, controller: "automation_invocations", only: [:create]
       end
     end
   end
