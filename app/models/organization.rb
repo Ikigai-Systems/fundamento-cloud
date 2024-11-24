@@ -1,6 +1,7 @@
 class Organization < ApplicationRecord
   include ModelWithNpiAsParam
 
+  has_many :api_tokens, dependent: :delete_all
   has_many :attachments, dependent: :destroy
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
