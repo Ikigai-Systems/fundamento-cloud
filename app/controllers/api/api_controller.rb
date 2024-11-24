@@ -1,5 +1,25 @@
 module Api
   class ApiController < ActionController::Base
     skip_before_action :verify_authenticity_token
+
+    before_action :authenticate_user_from_token!
+
+    protected
+
+    def authenticate_user_from_token!
+      authorization_header = request.headers['Authorization']
+      token = extract_bearer_token(authorization_header)
+
+      throw(:warden) unless (api_token = ApiToken.find_by_encrypted_token(token))
+
+      @current_user = api_token.organization_user.user
+      RequestContext.current_organization = api_token.organization
+    end
+
+    def extract_bearer_token(authorization_header)
+      return nil unless authorization_header.present? && authorization_header.start_with?("Bearer ")
+
+      authorization_header.split(" ").last
+    end
   end
 end
