@@ -77,7 +77,8 @@ class FormulaVisitorImplementation extends FormulaVisitor {
       } else {
         const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
 
-        return formulaFunction.call(functionContext, ...visitedExpressions);
+        const formulaResult = formulaFunction.call(functionContext, ...visitedExpressions);
+        return formulaResult;
       }
     } else {
       throw new Error(`Unrecognized formula: ${formulaName}`)

@@ -8,4 +8,9 @@ function CurrentRow(columnName = null) {
   return columnName ? _.get(this.currentRow, columnName) : this.currentRow;
 }
 
+defineFormula("AddRow", (...args) => {
+  // todo: validate if tableId is valid id ? should formula-eval micro-service be responsible for validation of the input formulas?
+  return {value: _.uniq(args).length, commands: [{type: "AddRow", tableId: args[0]}]};
+});
+
 defineFormula("CurrentRow", CurrentRow);
