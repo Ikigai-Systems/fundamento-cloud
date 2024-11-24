@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_23_215031) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_24_124750) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_23_215031) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.bigint "organization_id"
+    t.bigint "organization_user_id"
+    t.string "title", default: "", null: false
+    t.string "encrypted_token", null: false
+    t.datetime "used_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["encrypted_token"], name: "index_api_tokens_on_encrypted_token", unique: true
+    t.index ["organization_id"], name: "index_api_tokens_on_organization_id"
+    t.index ["organization_user_id"], name: "index_api_tokens_on_organization_user_id"
   end
 
   create_table "attachments", force: :cascade do |t|
@@ -444,6 +457,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_23_215031) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "api_tokens", "organization_users"
+  add_foreign_key "api_tokens", "organizations"
   add_foreign_key "attachments", "organizations"
   add_foreign_key "automation_invocations", "automations"
   add_foreign_key "automation_invocations", "organizations"
