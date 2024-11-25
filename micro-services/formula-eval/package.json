@@ -4,9 +4,9 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "regenerate-lexer-and-parser": "java -jar antlr-4.13.2-complete.jar -Dlanguage=JavaScript src/formula.g4 -o src/antlr4 -Xexact-output-dir -visitor",
     "start": "nodemon src/server.js",
-    "regenerate-lexer-and-parser": "java -jar antlr-4.13.2-complete.jar -Dlanguage=JavaScript src/formula.g4 -o src/antlr4 -Xexact-output-dir -visitor"
+    "test": "mocha"
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.1",
@@ -17,5 +17,6 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
-  }
+  },
+  "packageManager": "npm@10.8.3"
 }
