@@ -42,6 +42,7 @@ Rails.application.configure do
   config.action_cable.allowed_request_origins = [
     "https://wiki.ngrok.app",
     "https://fundamento.cloud",
+    "https://wiki.staging.ikigai.systems",
     # /http:\/\/example.*/
   ]
 
