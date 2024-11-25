@@ -162,6 +162,10 @@ class DocumentsController < ApplicationController
 
   private
 
+  def subtitle
+    instance_variable_defined?(:@document) && @document.title
+  end
+
   def load_document
     @document = current_organization.documents.find(params[:id])
   end

@@ -302,4 +302,7 @@ class Tables::TablesController < ApplicationController
     @table = current_organization.tables.find(params[:id])
   end
 
+  def subtitle
+    instance_variable_defined?(:@table) && @table.name
+  end
 end
