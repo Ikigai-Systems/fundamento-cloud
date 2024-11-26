@@ -3,6 +3,7 @@
 @import "./dropdown.tailwind.css";
 @import "./sidebar.tailwind.css";
 @import "./content.tailwind.css";
+@import "./form.tailwind.css";
 
 @tailwind base;
 @tailwind components;
@@ -26,36 +27,8 @@
         @apply border-y-2 px-2 py-2.5;
     }
 
-    .form-section {
-        @apply dark:bg-gray-800 bg-white max-w-4xl p-6 md:mt-8 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
-    }
-
-    .form-footer {
-        @apply flex justify-end mt-6 gap-2;
-    }
-
     .button {
         @apply px-6 py-2 leading-5 rounded-md font-semibold inline-flex items-center text-sm ;
-    }
-
-    .form-submit {
-        @apply button;
-        @apply text-white bg-gray-700 hover:enabled:bg-gray-600 focus:bg-gray-600;
-        @apply dark:bg-gray-500 dark:hover:enabled:bg-gray-400 dark:focus:bg-gray-400;
-        @apply transition-colors duration-200 transform focus:outline-none;
-    }
-
-    .form-input {
-        @apply block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full;
-        @apply dark:bg-gray-700;
-    }
-
-    .form-field {
-        @apply my-5;
-    }
-
-    .form-header {
-        @apply text-lg font-semibold text-gray-700 capitalize dark:text-white;
     }
 
     .focused-section {
