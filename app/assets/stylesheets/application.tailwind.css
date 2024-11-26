@@ -65,7 +65,7 @@
 
     .secondary-button {
         @apply button;
-        @apply bg-white text-gray-900 hover:bg-gray-100;
+        @apply bg-white text-gray-900 hover:bg-gray-100 active:bg-gray-200;
         @apply dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:bg-gray-600;
         @apply shadow-sm ring-1 ring-inset ring-gray-300;
         @apply dark:ring-0;

@@ -28,6 +28,7 @@ import CodeBlockMenuItem from "./blocks/CodeBlockMenuItem.tsx";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
+import ButtonBlockMenuItem from "./blocks/ButtonBlockMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -184,7 +185,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonBlockMenuItem()],
             query
           )
         }}
