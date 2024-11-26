@@ -1,21 +1,24 @@
 <section class="form-section">
   <h2 class="form-header">Create automation</h2>
 
-  <%= form_for(@automation, url: space_automations_path(@space), data: { turbo: false, controller: "prevent-double-submit"  }) do |f| %>
+  <%= form_for(@automation, url: space_automations_path(@space),
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: @automation %>
 
     <div class="form-field">
-      <%= f.label :title %><br/>
+      <%= f.label :title %>
       <%= f.text_field :title, autofocus: true, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :kind %><br/>
+      <%= f.label :kind %>
       <%= f.collection_select :kind, Automation.kinds.to_a, :first, :first, {}, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :formula %><br/>
+      <%= f.label :formula %>
       <%= f.text_area :formula, class: "form-input" %>
     </div>
 
