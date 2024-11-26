@@ -1,14 +1,16 @@
 <section class="form-section">
   <h2 class="form-header">Invite user to <%= @organization.name %></h2>
 
-  <%= form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :post }) do |f| %>
+  <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
+    html: { method: :post, class: "default-form" }) do |f|
+  %>
     <%= f.hidden_field :organization_id, value: @organization.id %>
 
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <% resource.class.invite_key_fields.without(:organization_id).each do |field| %>
       <div class="form-field">
-        <%= f.label field %><br />
+        <%= f.label field %>
         <%= f.text_field field, class: "form-input" %>
       </div>
     <% end %>
