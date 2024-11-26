@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {User} from "../../types";
-import {BlockNoteEditor, filterSuggestionItems, PartialBlock} from "@blocknote/core";
+import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -24,11 +24,10 @@ import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
-import CodeBlockMenuItem from "./blocks/CodeBlockMenuItem.tsx";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
-import ButtonBlockMenuItem from "./blocks/ButtonBlockMenuItem.tsx";
+import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -185,7 +184,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonBlockMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonInlineContentMenuItem()],
             query
           )
         }}
