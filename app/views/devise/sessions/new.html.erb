@@ -1,14 +1,16 @@
 <section class="form-section">
   <h2 class="form-header">Sign in</h2>
 
-  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name),
+    html: { class: "default-form" }) do |f|
+  %>
     <div class="form-field">
-      <%= f.label :email %><br />
+      <%= f.label :email %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :password %><br />
+      <%= f.label :password %>
       <%= f.password_field :password, autocomplete: "current-password", class: "form-input" %>
     </div>
 
