@@ -1,6 +1,38 @@
 class AutomationsController < ApplicationController
+  before_action :load_space
+
+  after_action :verify_authorized_or_index_scoped
+
   def index
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @automations = policy_scope(@space.automations).order(:title)
+  end
+
+  def new
+    @automation = @space.automations.new
+
+    authorize @automation, :create?
+  end
+
+  def create
+    @automation = @space.automations.new(automation_params)
+    @automation.organization_id = @space.organization_id
+
+    authorize @automation, :create?
+
+    if @automation.save
+      redirect_to @automation, notice: 'Automation was successfully created.'
+    else
+      render :new
+    end
+  end
+
+  protected
+
+  def load_space
+    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+  end
+
+  def automation_params
+    params.require(:automation).permit(:title, :formula, :kind)
   end
 end
