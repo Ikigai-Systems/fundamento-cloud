@@ -27,13 +27,13 @@ class AutomationsController < ApplicationController
   end
 
   def show
-    @automation = @space.automations.find_by!(params[:id])
+    @automation = @space.automations.find_by_npi!(params[:npi])
 
     authorize @automation, :show?
   end
 
   def edit
-    @automation = @space.automations.find_by!(params[:id])
+    @automation = @space.automations.find_by_npi!(params[:npi])
 
     authorize @automation, :update?
   end
