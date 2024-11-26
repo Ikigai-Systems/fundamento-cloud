@@ -1,11 +1,14 @@
 <section class="form-section">
   <h2 class="form-header">Edit organization</h2>
 
-  <%= form_for(@organization, data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
+  <%= form_for(@organization,
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: @organization %>
 
     <div class="form-field">
-      <%= f.label :name %><br/>
+      <%= f.label :name %>
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
