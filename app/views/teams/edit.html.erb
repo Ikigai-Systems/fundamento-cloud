@@ -1,21 +1,24 @@
 <section class="form-section">
   <h2 class="form-header">Edit team <%= @team.name %></h2>
 
-  <%= form_for(@team, data: { turbo: false, controller: "prevent-double-submit"  }) do |f| %>
+  <%= form_for(@team,
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit"  }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: @team %>
 
     <div class="form-field">
-      <%= f.label :name %><br/>
+      <%= f.label :name %>
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :shortcut %><br/>
+      <%= f.label :shortcut %>
       <%= f.text_field :shortcut, autofocus: true, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :team_members %><br/>
+      <%= f.label :team_members %>
 
       <div
           data-controller="multiselect"
