@@ -1,4 +1,8 @@
 @layer components {
+    .form-errors-summary {
+        @apply mt-3 bg-red-100 border-l-4 border-red-500 mb-4 p-4 text-red-700;
+    }
+
     .form-section {
         @apply dark:bg-gray-800 bg-white max-w-4xl p-6 md:mt-8 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
     }
