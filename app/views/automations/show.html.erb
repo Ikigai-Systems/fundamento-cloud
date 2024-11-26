@@ -33,7 +33,7 @@
 <% content_for :focused_content do %>
   <div class="table-legend">
     <div class="table-legend-description">
-      <h1>Users</h1>
+      <h1>Invocations</h1>
       <p>A list of recent invocations of this automation.</p>
     </div>
   </div>
@@ -50,7 +50,7 @@
     </tr>
     </thead>
     <tbody id="automation_invocations">
-    <% @automation.invocations.each do |invocation| %>
+    <% @automation.invocations.recently_invoked.each do |invocation| %>
       <%= render partial: "automations/invocation", locals: { invocation: invocation, automation: @automation } %>
     <% end %>
     </tbody>

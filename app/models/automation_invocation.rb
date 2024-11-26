@@ -4,4 +4,6 @@ class AutomationInvocation < ApplicationRecord
   belongs_to :automation
 
   enum :kind, [:webhook], scopes: false, validate: true
+
+  scope :recently_invoked, -> { order(invoked_at: :desc) }
 end
