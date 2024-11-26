@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_26_192317) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_26_193524) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -90,7 +90,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_26_192317) do
     t.string "title", null: false
     t.integer "kind", limit: 2, null: false
     t.string "formula"
-    t.string "npi"
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "debug_at"
