@@ -7,5 +7,7 @@ class Automation < ApplicationRecord
   validates_presence_of :title
   validates_uniqueness_of :title, scope: [:space_id]
 
+  validates_presence_of :formula, if: -> { webhook? }
+
   enum :kind, [:webhook], scopes: false, validate: true
 end
