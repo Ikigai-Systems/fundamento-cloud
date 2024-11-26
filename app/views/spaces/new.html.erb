@@ -1,21 +1,24 @@
 <section class="form-section">
   <h2 class="form-header">Create space</h2>
 
-  <%= form_for(@space, url: spaces_path, data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
+  <%= form_for(@space, url: spaces_path,
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: @space %>
 
     <div class="form-field">
-      <%= f.label :name %><br/>
+      <%= f.label :name %>
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :access_mode %><br/>
+      <%= f.label :access_mode %>
       <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :space_managers %><br/>
+      <%= f.label :space_managers %>
 
       <div
           data-controller="multiselect"
@@ -26,7 +29,7 @@
 
         <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
-      <br/>
+
       <em>You can pick among users and <%= link_to "teams", teams_path %>.</em>
     </div>
 

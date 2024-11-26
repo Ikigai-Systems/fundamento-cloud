@@ -1,21 +1,24 @@
 <section class="form-section">
   <h2 class="form-header">Edit space <%= @space.name %></h2>
 
-  <%= form_for(@space, data: { turbo: false, controller: "prevent-double-submit" }) do |f| %>
+  <%= form_for(@space,
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: @space %>
 
     <div class="form-field">
-      <%= f.label :name %><br/>
+      <%= f.label :name %>
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
     <div class="form-field">
-      <%= f.label :home_document %><br/>
+      <%= f.label :home_document %>
       <%= f.collection_select :home_document_id, @space.documents.without_archived.order(:title), :id, :title, {}, class: "form-input" %>
     </div>
 
     <div class="form-field" data-controller="show-if-input-value-equals">
-      <%= f.label :access_mode %><br/>
+      <%= f.label :access_mode %>
       <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input", data: { "show-if-input-value-equals_target" => "input", action: "change->show-if-input-value-equals#refresh" } %>
 
       <div class="text-sm text-slate-400 mt-1">
@@ -32,7 +35,7 @@
     </div>
 
     <div class="form-field">
-      <%= f.label :space_managers %><br/>
+      <%= f.label :space_managers %>
 
       <div
         data-controller="multiselect"
@@ -44,7 +47,7 @@
         <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
 
-      <br/>
+
       <em>You can pick among users and <%= link_to "teams", teams_path %>.</em>
     </div>
 
