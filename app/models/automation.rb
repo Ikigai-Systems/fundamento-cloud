@@ -1,4 +1,6 @@
 class Automation < ApplicationRecord
+  DEFAULT_INVOCATIONS_LIMIT = 5
+
   belongs_to :organization
   belongs_to :space
 
@@ -10,4 +12,8 @@ class Automation < ApplicationRecord
   validates_presence_of :formula, if: -> { webhook? }
 
   enum :kind, [:webhook], scopes: false, validate: true
+
+  def invocations_limit
+    super.presence || DEFAULT_INVOCATIONS_LIMIT
+  end
 end
