@@ -20,10 +20,22 @@ class AutomationsController < ApplicationController
     authorize @automation, :create?
 
     if @automation.save
-      redirect_to @automation, notice: 'Automation was successfully created.'
+      redirect_to space_automation_path(@space, @automation), notice: 'Automation was successfully created.'
     else
       render :new
     end
+  end
+
+  def show
+    @automation = @space.automations.find_by!(params[:id])
+
+    authorize @automation, :show?
+  end
+
+  def edit
+    @automation = @space.automations.find_by!(params[:id])
+
+    authorize @automation, :update?
   end
 
   protected

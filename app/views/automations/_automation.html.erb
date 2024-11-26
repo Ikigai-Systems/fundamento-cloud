@@ -1,8 +1,8 @@
-<tr id="<%= dom_id(team) %>">
+<tr id="<%= dom_id(automation) %>">
   <th scope="row">
-    <div class="text-base font-semibold"><%= team.name %></div>
+    <div class="text-base font-semibold"><%= automation.title %></div>
   </th>
   <td>
-    <%= link_to "Show", team_path(team), class: "link-button" %>
+    <%= link_to "Show", space_automation_path(automation.space, automation), class: "link-button" %>
   </td>
 </tr>
