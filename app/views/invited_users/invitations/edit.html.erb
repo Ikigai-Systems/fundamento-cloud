@@ -1,7 +1,9 @@
 <section class="form-section">
   <h2 class="form-header">Accept invitation to <%= resource.organization.name %></h2>
 
-  <%= form_for(resource, as: resource_name, url: invitation_path(resource_name), html: { method: :put }) do |f| %>
+  <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
+    html: { method: :put, class: "default-form" }) do |f|
+  %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <%= f.hidden_field :invitation_token, readonly: true %>
@@ -18,12 +20,12 @@
 
     <% if f.object.class.require_password_on_accepting %>
       <div class="form-field">
-        <%= f.label :password %><br />
+        <%= f.label :password %>
         <%= f.password_field :password, class: "form-input" %>
       </div>
 
       <div class="form-field">
-        <%= f.label :password_confirmation %><br />
+        <%= f.label :password_confirmation %>
         <%= f.password_field :password_confirmation, class: "form-input" %>
       </div>
     <% end %>
@@ -32,5 +34,4 @@
       <%= f.submit t("devise.invitations.edit.submit_button"), class: "form-submit" %>
     </div>
   <% end %>
-
 </section>
