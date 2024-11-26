@@ -21,7 +21,7 @@
       <%= f.label :access_mode %>
       <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input", data: { "show-if-input-value-equals_target" => "input", action: "change->show-if-input-value-equals#refresh" } %>
 
-      <div class="text-sm text-slate-400 mt-1">
+      <div class="form-hint">
         <div <%= @space.access_mode != 'public' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="public">
           In <b>public</b> mode every document in this space will be visible and editable to anyone within organization.
         </div>
@@ -47,8 +47,7 @@
         <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
 
-
-      <em>You can pick among users and <%= link_to "teams", teams_path %>.</em>
+      <p class="form-hint">You can pick among users and <%= link_to "teams", teams_path %>.</p>
     </div>
 
     <div class="form-footer">

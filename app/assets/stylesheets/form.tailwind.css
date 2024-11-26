@@ -28,9 +28,17 @@
     }
 
     .default-form {
+        .form-hint {
+            @apply mt-3 text-sm text-slate-500;
+        }
+
         .form-field {
             label {
                 @apply block text-sm/6 font-medium;
+            }
+
+            em {
+                @apply mt-1;
             }
 
             .field_with_errors {
