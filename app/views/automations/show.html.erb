@@ -50,8 +50,8 @@
     </tr>
     </thead>
     <tbody id="automation_invocations">
-    <% @automation.invocations.each do |membership| %>
-      <%= render partial: "automations/user", locals: { user: membership.member.user, automation: @automation } %>
+    <% @automation.invocations.each do |invocation| %>
+      <%= render partial: "automations/invocation", locals: { invocation: invocation, automation: @automation } %>
     <% end %>
     </tbody>
   </table>
