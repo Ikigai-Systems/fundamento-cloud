@@ -12,9 +12,14 @@
       <%= f.text_field :name, autofocus: true, class: "form-input" %>
     </div>
 
-    <div class="form-field">
+    <div class="form-field" data-controller="show-if-input-value-equals">
       <%= f.label :access_mode %>
-      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {}, class: "form-input" %>
+      <%= f.collection_select :access_mode, Space.access_modes.to_a, :first, :first, {},
+        class: "form-input",
+        data: { "show-if-input-value-equals_target" => "input", action: "change->show-if-input-value-equals#refresh" }
+      %>
+
+      <%= render partial: "space_access_mode_hint" %>
     </div>
 
     <div class="form-field">
@@ -30,7 +35,7 @@
         <%= f.select :space_memberships, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
       </div>
 
-      <em>You can pick among users and <%= link_to "teams", teams_path %>.</em>
+      <p class="form-hint">You can pick among users and <%= link_to "teams", teams_path %>.</p>
     </div>
 
     <div class="form-footer">
