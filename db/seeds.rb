@@ -7,3 +7,19 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+if Rails.env.standalone?
+  # Code to initialize a standalone server
+  unless Organization.exists?
+    Organization.create!(
+      name: ENV.fetch("FUNDAMENTO_ORGANIZATION", "Acme Inc.")
+    )
+  end
+
+  unless User.exists?
+    User.create!(
+      email: ENV.fetch("FUNDAMENTO_ADMIN_EMAIL", "root@localhost"),
+      password:
+    )
+  end
+end
