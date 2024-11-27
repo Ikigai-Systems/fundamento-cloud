@@ -1,4 +1,4 @@
-<%= turbo_stream_from ["space_automations_list", @space] %>
+<%= turbo_stream_from [@space, @automation, :invocations] %>
 
 <% content_for :focused_breadcrumbs do %>
   <li>
@@ -54,7 +54,7 @@
     </thead>
     <tbody id="automation_invocations">
     <% @automation.invocations.recently_invoked.each do |invocation| %>
-      <%= render partial: "automations/invocation", locals: { invocation: invocation, automation: @automation } %>
+      <%= render partial: "automations/invocation", locals: { automation_invocation: invocation, automation: @automation } %>
     <% end %>
     </tbody>
   </table>
