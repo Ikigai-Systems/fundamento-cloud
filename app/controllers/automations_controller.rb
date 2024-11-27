@@ -38,6 +38,18 @@ class AutomationsController < ApplicationController
     authorize @automation, :update?
   end
 
+  def update
+    @automation = @space.automations.find_by_npi!(params[:npi])
+
+    authorize @automation, :update?
+
+    if @automation.update(automation_params.without(:kind))
+      redirect_to space_automation_path(@space, @automation), notice: 'Automation was successfully updated.'
+    else
+      render :edit
+    end
+  end
+
   protected
 
   def load_space
