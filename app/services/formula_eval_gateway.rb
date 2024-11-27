@@ -54,9 +54,7 @@ class FormulaEvalGateway
       end
     end
 
-    return {
-      "result" => formula_result&.[]("result")
-    }
+    return formula_result
 
     # non HTTP/2 way:
     # res = Net::HTTP.post_form(

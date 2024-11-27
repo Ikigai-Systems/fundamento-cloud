@@ -1,28 +1,16 @@
 class FormulasController < ActionController::Base
-  skip_before_action :verify_authenticity_token
-
   def eval
-    # todo: authorization (will be implemented in node process, if at all)
+    # todo: some kind of autorization? that user is logged in?
 
     formula = params["formula"]
-    additional_context = JSON.parse(params["additional_context"].to_s)
+    # additional_context = JSON.parse(params["additional_context"].to_s)
 
-    mini_racer_context = MiniRacer::Context.new
-    bundled_js = File.read(Rails.root.join("formula/build/formula.js"))
+    formula_evaluation = FormulaEvalGateway.evaluate(formula)
 
-    mini_racer_context.eval("var exports = {};")
-    mini_racer_context.eval(bundled_js)
-    mini_racer_context.eval("var formula = #{formula.to_json};")
-    mini_racer_context.eval("var context = #{additional_context.to_json}")
-    begin
-      formula_result = mini_racer_context.eval("exports.evaluateFormula(formula, context)")
-    rescue => e
-      formula_error = e
+    respond_to do |format|
+      format.json { render json: formula_evaluation }
+      format.all { head :unprocessable_content }
     end
-
-    # resulting json will need to be extended with "operations" chunk indicating what operations should rails
-    # app perform upon finishing evaluating formula - operations like 'add_row', 'modify_cell', 'copy document' etc
-    render json: {result: formula_result, error: formula_error}
   end
 
   private

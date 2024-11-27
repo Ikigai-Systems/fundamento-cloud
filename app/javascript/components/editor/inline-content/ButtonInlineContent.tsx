@@ -3,6 +3,8 @@ import {autoUpdate, flip, FloatingPortal, useDismiss, useFloating, useInteractio
 import {Placement} from '@floating-ui/utils'
 import {useState} from "react";
 import ButtonConfiguration from "./button/ButtonConfiguration.tsx";
+import FormulasApi from "../../../api/FormulasApi.js";
+import createFlash from "../../createFlash.ts";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -53,7 +55,27 @@ const ButtonInlineContent = createReactInlineContentSpec(
 
       return (<>
         <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex flex-row items-center group">
-          <button className="secondary-button z-10 min-h-9">
+          <button className="secondary-button z-10 min-h-9"
+            onClick={async () => {
+              // todo: disable button during requesting server
+              try {
+                const formulaResult = await FormulasApi.eval({data: {formula}});
+                if (!formulaResult.commands) {
+                  createFlash({
+                    type: "error",
+                    message: "Unable to proceed, invalid action"
+                  })
+                } else {
+                  // todo: process result commands, maybe force refresh updated AdvancedTable in this document
+                }
+              } catch (e) {
+                createFlash({
+                  type: "error",
+                  message: e.message
+                })
+              }
+            }}
+          >
             {label || "Button"}
           </button>
           {isEditable && <button

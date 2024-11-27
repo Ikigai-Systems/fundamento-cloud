@@ -224,8 +224,11 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
-        {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space} extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
-        {!editor.isEditable && <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+        <div className="flex flex-row items-center">
+          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space} extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
+          {!editor.isEditable && <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+          <div title={`ID of this table is ${tableQuery.data.table.id} - you can use it in formulas`}  className="text-slate-400 text-sm">#{tableQuery.data.table.id}</div>
+        </div>
 
         <EditableTableWithRowstack
           isEditable={editor.isEditable}
