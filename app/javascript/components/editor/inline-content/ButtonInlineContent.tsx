@@ -1,7 +1,8 @@
 import {createReactInlineContentSpec, useBlockNoteEditor} from "@blocknote/react";
-import {autoUpdate, useFloating, useDismiss, useInteractions, FloatingPortal, flip} from '@floating-ui/react';
+import {autoUpdate, flip, FloatingPortal, useDismiss, useFloating, useInteractions} from '@floating-ui/react';
+import {Placement} from '@floating-ui/utils'
 import {useState} from "react";
-import EditButtonPopup from "../../tables/rowstack/EditButtonPopup.tsx";
+import ButtonConfiguration from "./button/ButtonConfiguration.tsx";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -11,6 +12,9 @@ const ButtonInlineContent = createReactInlineContentSpec(
       // textColor: defaultProps.textColor,
       formula: {
         default: "",
+      },
+      label: {
+        default: "",
       }
     },
     content: "none",
@@ -19,27 +23,38 @@ const ButtonInlineContent = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const inlineContentProps = props.inlineContent.props;
+      const {formula, label} = props.inlineContent.props;
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
+      const [editedConfiguration, setEditedConfiguration] = useState({formula, label});
       const {refs, floatingStyles, context} = useFloating({
         whileElementsMounted: autoUpdate,
         open: isConfigurationOpen,
-        onOpenChange: setIsConfigurationOpen,
+        onOpenChange: (open, event, reason) => {
+          setIsConfigurationOpen(open);
+          if (reason === "escape-key") {
+            return;
+          }
+          props.updateInlineContent({
+            type: "button",
+            props: {
+              formula: editedConfiguration.formula,
+              label: editedConfiguration.label,
+            }
+          });
+        },
         middleware: [flip()],
-        placement: "bottom-start",
+        placement: "bottom-start" as Placement,
       });
-
       const dismiss = useDismiss(context);
-
       const {getReferenceProps, getFloatingProps} = useInteractions([
         dismiss,
       ]);
 
       return (<>
         <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex flex-row items-center group">
-          <button className="secondary-button z-10">
-            Button
+          <button className="secondary-button z-10 min-h-9">
+            {label || "Button"}
           </button>
           {isEditable && <button
             className="flex flex-row items-center secondary-button pl-2.5 py-1 pr-1 -ml-2"
@@ -56,7 +71,13 @@ const ButtonInlineContent = createReactInlineContentSpec(
               {...getFloatingProps()}
               className="bg-neutral-100 z-10"
             >
-              <EditButtonPopup/>
+              <ButtonConfiguration
+                configuration={editedConfiguration}
+                setConfiguration={(updatedConfiguration) => {
+                  console.log(updatedConfiguration);
+                  setEditedConfiguration(updatedConfiguration)
+                }}
+              />
             </div>
           </FloatingPortal>}
         </span>
