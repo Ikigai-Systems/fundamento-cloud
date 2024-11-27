@@ -9,12 +9,17 @@ Rails.application.routes.draw do
     invitations: "invited_users/invitations"
   }
 
+  # Add in our Websocket route
+  mount ActionCable.server => '/cable'
+
+  # Add GoodJob's dashboard - https://github.com/bensheldon/good_job?tab=readme-ov-file#dashboard
+  if Rails.env.development?
+    mount GoodJob::Engine => "/jobs"
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Add in our Websocket route
-  mount ActionCable.server => '/cable'
 
   # Defines the root path route ("/")
   root "root#index"
