@@ -19,6 +19,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
       },
       label: {
         default: "",
+      },
+      size: {
+        default: "Small",
+        values: ["Small", "Medium", "Large"]
       }
     },
     content: "none",
@@ -27,10 +31,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const {formula, label} = props.inlineContent.props;
+      const {formula, label, size} = props.inlineContent.props;
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
-      const [editedConfiguration, setEditedConfiguration] = useState({formula, label});
+      const [editedConfiguration, setEditedConfiguration] = useState({formula, label, size});
       const [isExecuting, setIsExecuting] = useState(false);
       const {space} = useContext(CurrentSpaceContext);
       const {refs, floatingStyles, context} = useFloating({
@@ -46,6 +50,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
             props: {
               formula: editedConfiguration.formula,
               label: editedConfiguration.label,
+              size: editedConfiguration.size,
             }
           });
         },
@@ -57,9 +62,13 @@ const ButtonInlineContent = createReactInlineContentSpec(
         dismiss,
       ]);
 
+      const sizeClassNames = size === "Large" ? {height: "h-10", button: "text-lg px-8", cog: "size-8"}
+        : (size === "Medium") ? {height: "h-8", button: "text-md px-6", cog: "size-6"}
+          : {height: "h-6", button: "text-sm px-4", cog: "size-4"}
+
       return (<>
         <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex flex-row items-center group">
-          <button className="secondary-button z-10 min-h-9"
+          <button className={`secondary-button z-10 ${sizeClassNames.height} ${sizeClassNames.button}`}
             disabled={isExecuting}
             onClick={async () => {
               try {
@@ -72,7 +81,6 @@ const ButtonInlineContent = createReactInlineContentSpec(
                   })
                 } else {
                   formulaResult.commands.forEach(command => {
-                    console.log(command);
                     switch(command.type) {
                     case "AddRow":
                       queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
@@ -94,13 +102,13 @@ const ButtonInlineContent = createReactInlineContentSpec(
             {label || "Button"}
           </button>
           {isEditable && <button
-            className="flex flex-row items-center secondary-button pl-2.5 py-1 pr-1 -ml-2"
+            className={`flex flex-row items-center secondary-button pl-2.5 py-1 pr-1 -ml-2 ${sizeClassNames.height}`}
             disabled={isExecuting}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className="group-hover:opacity-30 opacity-0 size-7 icon-[heroicons--cog-6-tooth]"></span>
+            <span className={`group-hover:opacity-30 opacity-0 icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
           </button>}
           {isConfigurationOpen && <FloatingPortal>
             <div
