@@ -1,0 +1,9 @@
+@layer components {
+    .example-code-container {
+        @apply max-w-xl mx-auto mt-5;
+
+        pre {
+            @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto;
+        }
+    }
+}

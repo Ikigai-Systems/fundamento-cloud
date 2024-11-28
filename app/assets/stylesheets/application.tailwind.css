@@ -4,6 +4,7 @@
 @import "./sidebar.tailwind.css";
 @import "./content.tailwind.css";
 @import "./form.tailwind.css";
+@import "./automation.tailwind.css";
 
 @tailwind base;
 @tailwind components;
