@@ -1,10 +1,12 @@
 import {createReactInlineContentSpec, useBlockNoteEditor} from "@blocknote/react";
 import {autoUpdate, flip, FloatingPortal, useDismiss, useFloating, useInteractions} from '@floating-ui/react';
 import {Placement} from '@floating-ui/utils'
-import {useState} from "react";
+import {useContext, useState} from "react";
 import ButtonConfiguration from "./button/ButtonConfiguration.tsx";
 import FormulasApi from "../../../api/FormulasApi.js";
 import createFlash from "../../createFlash.ts";
+import queryClient from "../../../contextes/ReactQueryClient.tsx";
+import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -29,6 +31,8 @@ const ButtonInlineContent = createReactInlineContentSpec(
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
       const [editedConfiguration, setEditedConfiguration] = useState({formula, label});
+      const [isExecuting, setIsExecuting] = useState(false);
+      const {space} = useContext(CurrentSpaceContext);
       const {refs, floatingStyles, context} = useFloating({
         whileElementsMounted: autoUpdate,
         open: isConfigurationOpen,
@@ -56,9 +60,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
       return (<>
         <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex flex-row items-center group">
           <button className="secondary-button z-10 min-h-9"
+            disabled={isExecuting}
             onClick={async () => {
-              // todo: disable button during requesting server
               try {
+                setIsExecuting(true);
                 const formulaResult = await FormulasApi.eval({data: {formula}});
                 if (!formulaResult.commands) {
                   createFlash({
@@ -66,13 +71,23 @@ const ButtonInlineContent = createReactInlineContentSpec(
                     message: "Unable to proceed, invalid action"
                   })
                 } else {
-                  // todo: process result commands, maybe force refresh updated AdvancedTable in this document
+                  formulaResult.commands.forEach(command => {
+                    console.log(command);
+                    switch(command.type) {
+                    case "AddRow":
+                      queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
+                      // todo: show flash message about performed actions, in this case "1 row added" ?
+                      break;
+                    }
+                  })
                 }
               } catch (e) {
                 createFlash({
                   type: "error",
                   message: e.message
                 })
+              } finally {
+                setIsExecuting(false);
               }
             }}
           >
@@ -80,6 +95,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
           </button>
           {isEditable && <button
             className="flex flex-row items-center secondary-button pl-2.5 py-1 pr-1 -ml-2"
+            disabled={isExecuting}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
