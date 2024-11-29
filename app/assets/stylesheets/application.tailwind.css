@@ -5,6 +5,7 @@
 @import "./content.tailwind.css";
 @import "./form.tailwind.css";
 @import "./automation.tailwind.css";
+@import "./modal.tailwind.css";
 
 @tailwind base;
 @tailwind components;
