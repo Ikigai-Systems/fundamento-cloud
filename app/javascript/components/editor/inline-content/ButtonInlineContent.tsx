@@ -62,13 +62,13 @@ const ButtonInlineContent = createReactInlineContentSpec(
         dismiss,
       ]);
 
-      const sizeClassNames = size === "Large" ? {height: "h-10", button: "text-lg px-8", cog: "size-8"}
-        : (size === "Medium") ? {height: "h-8", button: "text-md px-6", cog: "size-6"}
-          : {height: "h-6", button: "text-sm px-4", cog: "size-4"}
+      const sizeClassNames = size === "Large" ? {height: "h-10", button: "text-lg px-10", cog: "size-8"}
+        : (size === "Medium") ? {height: "h-8", button: "text-md px-8", cog: "size-6"}
+          : {height: "h-6", button: "text-sm px-6", cog: "size-4"}
 
       return (<>
-        <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex flex-row items-center group">
-          <button className={`secondary-button z-10 ${sizeClassNames.height} ${sizeClassNames.button}`}
+        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group rounded border shadow-sm ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : "bg-white"}`}>
+          <button className={`ignore-default-disabled-styling hover:bg-gray-100 active:bg-gray-200 ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
             disabled={isExecuting}
             onClick={async () => {
               try {
@@ -102,20 +102,20 @@ const ButtonInlineContent = createReactInlineContentSpec(
             {label || "Button"}
           </button>
           {isEditable && <button
-            className={`flex flex-row items-center secondary-button pl-2.5 py-1 pr-1 -ml-2 ${sizeClassNames.height}`}
+            className={`ignore-default-disabled-styling flex flex-row items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0 hover:bg-gray-100 active:bg-gray-200 ${sizeClassNames.height}`}
             disabled={isExecuting}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className={`group-hover:opacity-30 opacity-0 icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
+            <span className={`bg-gray-400 icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
           </button>}
           {isConfigurationOpen && <FloatingPortal>
             <div
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="bg-neutral-100 z-10"
+              className="bg-neutral-100"
             >
               <ButtonConfiguration
                 configuration={editedConfiguration}

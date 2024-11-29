@@ -111,7 +111,7 @@ export default function SelectButtonSize({
         <FloatingFocusManager context={context} modal={false}>
             <div
               ref={refs.setFloating}
-              className="z-10 shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg"
+              className="shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg"
               style={{
                 ...floatingStyles,
               }}
