@@ -49,6 +49,20 @@ class FormulaEvalGateway
             organization_id: table.organization_id,
             )
         end
+      when "DeleteRows"
+        table = Table.find(command["tableId"])
+        # todo: validate the user is permitted to update this table
+
+        # todo: extract row ids from command payload, iterate over them. Otherwise, just remove all rows
+
+        # todo: removing rows logic should go to table.rb model probably
+        loop do
+          row = table.rows.first
+          break if row.nil?
+          next_row = row.next_row
+          next_row.update(previous_row: row.previous_row) unless next_row.nil?
+          row.destroy
+        end
       else
         puts "Failed to parse formula `#{formula}` results: unrecognized command `#{command}`"
       end

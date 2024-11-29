@@ -86,6 +86,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
                       queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
                       // todo: show flash message about performed actions, in this case "1 row added" ?
                       break;
+                    case "DeleteRows":
+                      queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
+                      // todo: show flash message about performed actions, in this case "X rows removed" ? backend (formula_eval_gateway) could provide that number...
+                      break;
                     }
                   })
                 }

@@ -10,7 +10,12 @@ function CurrentRow(columnName = null) {
 
 defineFormula("AddRow", (...args) => {
   // todo: validate if tableId is valid id ? should formula-eval micro-service be responsible for validation of the input formulas?
-  return {value: _.uniq(args).length, commands: [{type: "AddRow", tableId: args[0]}]};
+  return {commands: [{type: "AddRow", tableId: args[0]}]};
+});
+
+defineFormula("DeleteRows", (...args) => {
+  // todo: validate if tableId is valid id ? should formula-eval micro-service be responsible for validation of the input formulas?
+  return {commands: [{type: "DeleteRows", tableId: args[0]}]};
 });
 
 defineFormula("CurrentRow", CurrentRow);
