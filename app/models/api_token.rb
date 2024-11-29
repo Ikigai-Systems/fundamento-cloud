@@ -4,7 +4,13 @@ class ApiToken < ApplicationRecord
 
   encrypts :encrypted_token, deterministic: true
 
+  before_validation :ensure_has_encrypted_token, on: :create
+
   def generate_api_token
     self.encrypted_token = SecureRandom.hex(32)
+  end
+
+  def ensure_has_encrypted_token
+    generate_api_token if self.encrypted_token.blank?
   end
 end

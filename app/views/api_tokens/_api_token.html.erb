@@ -18,10 +18,12 @@
     <% end %>
   </td>
   <td>
-    <% if current_organization != api_token %>
-      <%= button_to "Switch to", select_organization_path(api_token), method: :post, class: "link-button" %>
-    <% end %>
-
-    <%= link_to "Show", organization_path(api_token), class: "link-button" %>
+    <%= button_to "Delete",
+      user_api_token_path(current_user, api_token),
+      method: :delete,
+      class: "link-button",
+      form: { data: { turbo_confirm: 'Are you sure? Removing API Token might break existing integrations.' } },
+      disabled: !policy(api_token).destroy?
+    %>
   </td>
 </tr>
