@@ -7,6 +7,7 @@ import FormulasApi from "../../../api/FormulasApi.js";
 import createFlash from "../../createFlash.ts";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
+import {colorNameToClass, colorNameToHoverAndActiveClass} from "./button/buttonColorUtils.ts";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -22,7 +23,11 @@ const ButtonInlineContent = createReactInlineContentSpec(
       },
       size: {
         default: "Small",
-        values: ["Small", "Medium", "Large"]
+        values: ["Small", "Medium", "Large"],
+      },
+      color: {
+        default: "white",
+        values: ["green", "orange", "blue", "yellow", "red", "black", "white", "pink", "violet"],
       }
     },
     content: "none",
@@ -31,10 +36,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const {formula, label, size} = props.inlineContent.props;
+      const {formula, label, size, color} = props.inlineContent.props;
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
-      const [editedConfiguration, setEditedConfiguration] = useState({formula, label, size});
+      const [editedConfiguration, setEditedConfiguration] = useState({formula, label, size, color});
       const [isExecuting, setIsExecuting] = useState(false);
       const {space} = useContext(CurrentSpaceContext);
       const {refs, floatingStyles, context} = useFloating({
@@ -51,6 +56,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
               formula: editedConfiguration.formula,
               label: editedConfiguration.label,
               size: editedConfiguration.size,
+              color: editedConfiguration.color,
             }
           });
         },
@@ -67,8 +73,8 @@ const ButtonInlineContent = createReactInlineContentSpec(
           : {height: "h-6", button: "text-sm px-6", cog: "size-4"}
 
       return (<>
-        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group rounded border shadow-sm ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : "bg-white"}`}>
-          <button className={`ignore-default-disabled-styling hover:bg-gray-100 active:bg-gray-200 ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
+        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group rounded border shadow-sm ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : colorNameToClass(color)}`}>
+          <button className={`ignore-default-disabled-styling ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
             disabled={isExecuting}
             onClick={async () => {
               try {
@@ -106,13 +112,13 @@ const ButtonInlineContent = createReactInlineContentSpec(
             {label || "Button"}
           </button>
           {isEditable && <button
-            className={`ignore-default-disabled-styling flex flex-row items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0 hover:bg-gray-100 active:bg-gray-200 ${sizeClassNames.height}`}
+            className={`ignore-default-disabled-styling flex flex-row items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0 ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height}`}
             disabled={isExecuting}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className={`bg-gray-400 icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
+            <span className={`${color === "white" ? "bg-gray-400" : "bg-white"} icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
           </button>}
           {isConfigurationOpen && <FloatingPortal>
             <div

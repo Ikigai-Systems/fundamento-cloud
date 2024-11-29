@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Select from 'react-select'
 import {StateManagerProps} from "react-select/dist/declarations/src/useStateManager";
 import SelectButtonSize from "./SelectButtonSize.tsx";
+import SelectButtonColor from "./SelectButtonColor.tsx";
 
 function ButtonConfiguration({
   configuration,
@@ -75,14 +76,18 @@ function ButtonConfiguration({
               <input className="bg-white rounded border h-8 p-2"/>
             </div>
             <div className="flex flex-col w-24">
-              <label className="mt-3 text-xs">Color</label>
-              <input className="bg-white rounded border h-8 p-2"/>
+              <SelectButtonColor
+                value={configuration.color}
+                onChange={(newColor) => {
+                  setConfiguration({...configuration, ...{color: newColor}});
+                }}
+              />
             </div>
             <div className="flex flex-col w-24">
               <SelectButtonSize
-                value={configuration.size || "Small"}
-                onChange={(newValue) => {
-                  setConfiguration({...configuration, ...{size: newValue}});
+                value={configuration.size}
+                onChange={(newSize) => {
+                  setConfiguration({...configuration, ...{size: newSize}});
                 }}
               />
             </div>
