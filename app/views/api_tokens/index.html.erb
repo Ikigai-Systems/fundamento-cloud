@@ -1,0 +1,47 @@
+<%= turbo_stream_from [current_organization, current_user, :api_tokens_list] %>
+
+<% content_for :focused_header do %>
+  API Tokens
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <% if policy(ApiToken).create? %>
+    <div class="mt-4 flex md:ml-4 md:mt-0">
+      <%= link_to 'Create', new_user_api_token_path(current_user), class: "secondary-button" %>
+    </div>
+  <% end %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <p>A list of all API tokens you created for this organization.</p>
+    </div>
+  </div>
+
+  <table class="table-list">
+    <thead>
+      <tr>
+        <th scope="col">
+          Name
+        </th>
+        <th scope="col">
+          Created at
+        </th>
+        <th scope="col">
+          Used at
+        </th>
+        <th scope="col">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody id="api_tokens">
+      <% @api_tokens.each do |api_token| %>
+        <%= render partial: api_token %>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= render "focused_section" %>

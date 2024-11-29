@@ -26,6 +26,8 @@
 
       <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem"} %>
 
+      <%= link_to "API Tokens", user_api_tokens_path(current_user), data: {"dropdown-target" => "menuItem"} %>
+
       <hr class="border-t" />
 
       <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}  %>

@@ -61,6 +61,8 @@ Rails.application.routes.draw do
 
     resources :users, only: [:index, :show] do
       get :suggestions, on: :collection
+
+      resources :api_tokens
     end
 
     resources :tables, module: :tables, only: [:show] do

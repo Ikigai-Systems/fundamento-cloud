@@ -1,0 +1,27 @@
+<tr id="<%= dom_id(api_token) %>">
+  <th scope="row">
+    <div>
+      <div class="text-base font-semibold"><%= api_token.title.presence || "Untitled" %></div>
+      <div class="font-normal text-gray-500"><%= api_token.encrypted_token.first(4) %>...</div>
+    </div>
+  </th>
+  <td>
+    <div class="text-base font-semibold"><%= api_token.created_at %></div>
+    <div class="font-normal text-gray-500"><%= time_ago_in_words api_token.created_at %> ago</div>
+  </td>
+  <td>
+    <% if api_token.used_at.present? %>
+      <div class="text-base font-semibold"><%= api_token.used_at %></div>
+      <div class="font-normal text-gray-500"><%= time_ago_in_words api_token.used_at %> ago</div>
+    <% else %>
+      <div class="text-base font-semibold">Unused</div>
+    <% end %>
+  </td>
+  <td>
+    <% if current_organization != api_token %>
+      <%= button_to "Switch to", select_organization_path(api_token), method: :post, class: "link-button" %>
+    <% end %>
+
+    <%= link_to "Show", organization_path(api_token), class: "link-button" %>
+  </td>
+</tr>
