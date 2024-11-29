@@ -14,6 +14,8 @@ module Api
 
       @current_user = api_token.organization_user.user
       RequestContext.current_organization = api_token.organization
+
+      api_token.update!(used_at: Time.now)
     end
 
     def extract_bearer_token(authorization_header)
