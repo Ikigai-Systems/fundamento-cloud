@@ -6,6 +6,8 @@ class ApiToken < ApplicationRecord
 
   before_validation :ensure_has_encrypted_token, on: :create
 
+  validates_presence_of :title
+
   def generate_api_token
     self.encrypted_token = SecureRandom.hex(32)
   end
