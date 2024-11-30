@@ -46,6 +46,10 @@
         @apply dark:ring-0;
     }
 
+    .danger-button {
+        @apply bg-red-600 text-white hover:bg-red-500;
+    }
+
     button:disabled,
     input:disabled,
     .disabled-button {
