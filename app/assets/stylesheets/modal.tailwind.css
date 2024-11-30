@@ -16,7 +16,7 @@
     }
 
     .modal-main-content-container {
-        @apply mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left;
+        @apply mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full;
     }
 
     .modal-buttons-container {
@@ -24,7 +24,11 @@
     }
 
     .modal-submit-button {
-        @apply inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto;
+        @apply inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm sm:ml-3 sm:w-auto;
+    }
+
+    .danger-button {
+        @apply bg-red-600 text-white hover:bg-red-500;
     }
 
     .modal-cancel-button {

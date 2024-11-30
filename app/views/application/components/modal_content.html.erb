@@ -1,0 +1,19 @@
+<div class="modal-content-container">
+  <% if content_for?(:modal_icon) %>
+    <div class="modal-icon-container">
+      <%= content_for :modal_icon %>
+    </div>
+  <% end %>
+
+  <div class="modal-main-content-container">
+    <h3 class="modal-title" id="modal-title"><%= content_for :modal_title %></h3>
+
+    <div class="mt-2">
+      <%= content_for :modal_main_content %>
+    </div>
+  </div>
+</div>
+
+<div class="modal-buttons-container">
+  <%= content_for :modal_buttons %>
+</div>
