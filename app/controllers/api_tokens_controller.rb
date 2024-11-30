@@ -1,5 +1,6 @@
 class ApiTokensController < ApplicationController
   after_action :verify_authorized, except: [:index]
+  before_action :ensure_turbo_request, only: [:new, :create]
 
   def index
     @api_tokens = pundit_user.organization_user.api_tokens
@@ -38,5 +39,9 @@ class ApiTokensController < ApplicationController
 
   def api_token_params
     params.require(:api_token).permit(:title)
+  end
+
+  def ensure_turbo_request
+    redirect_to user_api_tokens_path(current_user) unless turbo_frame_request?
   end
 end
