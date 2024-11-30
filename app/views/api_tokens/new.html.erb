@@ -1,20 +1,32 @@
-<section class="form-section">
-  <h2 class="form-header">Create API Token</h2>
-
+<%= turbo_frame_tag "modal" do %>
   <%= form_for(@api_token, url: user_api_tokens_path(current_user),
     html: { class: "default-form" },
     data: { turbo: false, controller: "prevent-double-submit" }) do |f|
   %>
-    <%= render "devise/shared/error_messages", resource: @api_token %>
+    <% content_for :modal_icon do %>
+      <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+      </svg>
+    <% end %>
 
-    <div class="form-field">
-      <%= f.label :title %>
-      <%= f.text_field :title, autofocus: true, class: "form-input" %>
-    </div>
+    <% content_for :modal_title do %>
+      Create API Token
+    <% end %>
 
-    <div class="form-footer">
-      <%= link_to "Cancel", user_api_tokens_path(current_user), class: "secondary-button" %>
-      <%= f.submit "Create", class: "form-submit" %>
-    </div>
+    <% content_for :modal_main_content do %>
+      <%= render "devise/shared/error_messages", resource: @api_token %>
+
+      <div class="form-field">
+        <%= f.label :title %>
+        <%= f.text_field :title, autofocus: true, class: "form-input" %>
+      </div>
+    <% end %>
+
+    <% content_for :modal_buttons do %>
+      <button type="submit" class="modal-submit-button create-button">Create</button>
+      <button type="button" data-action="modal#close" class="modal-cancel-button">Cancel</button>
+    <% end %>
+
+    <%= render template: "application/components/modal_content" %>
   <% end %>
-</section>
+<% end %>
