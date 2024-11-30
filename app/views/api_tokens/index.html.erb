@@ -7,7 +7,11 @@
 <% content_for :focused_header_buttons do %>
   <% if policy(ApiToken).create? %>
     <div class="mt-4 flex md:ml-4 md:mt-0">
-      <%= link_to 'Create', new_user_api_token_path(current_user), class: "secondary-button" %>
+      <%= link_to "Create",
+        new_user_api_token_path(current_user),
+        class: "secondary-button",
+        data: { turbo_frame: "modal", action: "modal#open" }
+      %>
     </div>
   <% end %>
 <% end %>
