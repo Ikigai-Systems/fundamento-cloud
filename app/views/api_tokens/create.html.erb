@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "modal" do %>
   <%= form_for(@api_token, url: user_api_tokens_path(current_user),
     html: { class: "default-form" },
-    data: { controller: "prevent-double-submit" }) do |f|
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
   %>
     <% content_for :modal_icon do %>
       <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
@@ -10,23 +10,22 @@
     <% end %>
 
     <% content_for :modal_title do %>
-      Create API Token
+      Save API Token
     <% end %>
 
     <% content_for :modal_main_content do %>
-      <%= f.hidden_field :encrypted_token, value: @api_token.encrypted_token %>
-
-      <%= render "devise/shared/error_messages", resource: @api_token %>
+      <p class="mt-2">
+        Save your API Token, it's the only place you will be able to see it.
+      </p>
 
       <div class="form-field">
-        <%= f.label :title %>
-        <%= f.text_field :title, autofocus: true, class: "form-input" %>
+        <%= f.label :encrypted_token, "API Token" %>
+        <%= f.text_field :encrypted_token, autofocus: true, disabled: true, class: "form-input" %>
       </div>
     <% end %>
 
     <% content_for :modal_buttons do %>
-      <button type="submit" class="modal-submit-button create-button">Create</button>
-      <button type="button" data-action="modal#close" class="modal-cancel-button">Cancel</button>
+      <button type="button" data-action="modal#close" class="modal-cancel-button">Close</button>
     <% end %>
 
     <%= render template: "application/components/modal_content" %>
