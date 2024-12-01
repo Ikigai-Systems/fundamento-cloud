@@ -20,7 +20,11 @@ class ApiTokensController < ApplicationController
     authorize @api_token, :create?
 
     if @api_token.save
-      render :create
+      @api_tokens = pundit_user.organization_user.api_tokens
+
+      respond_to do |format|
+        format.turbo_stream
+      end
     else
       render :new
     end

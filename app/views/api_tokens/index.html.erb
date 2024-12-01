@@ -23,29 +23,7 @@
     </div>
   </div>
 
-  <table class="table-list">
-    <thead>
-      <tr>
-        <th scope="col">
-          Name
-        </th>
-        <th scope="col">
-          Created at
-        </th>
-        <th scope="col">
-          Used at
-        </th>
-        <th scope="col">
-          Action
-        </th>
-      </tr>
-    </thead>
-    <tbody id="api_tokens">
-      <% @api_tokens.each do |api_token| %>
-        <%= render partial: api_token %>
-      <% end %>
-    </tbody>
-  </table>
+  <%= render partial: "api_tokens/api_tokens_table" %>
 <% end %>
 
 <%= render "focused_section" %>
