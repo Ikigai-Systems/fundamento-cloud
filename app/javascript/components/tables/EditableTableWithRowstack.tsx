@@ -259,6 +259,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
       <EditableTableRowsContext.Provider value={{rows}}>
         <Rowstack
           key={forceRerenderUuid}
+          tableNpi={table.id}
           columns={columns}
           data={rows}
           config={{
