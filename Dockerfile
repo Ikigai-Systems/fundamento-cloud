@@ -49,10 +49,6 @@ COPY package.json package-lock.json ./
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
     npm ci --cache /var/cache/npm
 
-COPY formula/package.json formula/package-lock.json ./formula/
-RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
-    cd formula && npm ci --cache /var/cache/npm
-
 COPY micro-services/blocknote/package.json micro-services/blocknote/package-lock.json ./micro-services/blocknote/
 RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
     cd micro-services/blocknote && npm ci --cache /var/cache/npm
@@ -66,9 +62,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
-
-# Compile formula evaluation engine
-RUN cd formula && npm run build
 
 # Transpile blocknote server side utils for document-to-blocks conversion
 RUN cd micro-services/blocknote && npm run build
@@ -95,7 +88,6 @@ COPY --from=build /rails/config ./config
 COPY --from=build /rails/Gemfile* ./
 COPY --from=build /rails/app ./app
 COPY --from=build /rails/vendor ./vendor
-COPY --from=build /rails/formula/build ./formula/build
 COPY --from=build /rails/micro-services/blocknote/build ./micro-services/blocknote/build
 COPY --from=build /rails/micro-services/blocknote/node_modules ./micro-services/blocknote/node_modules
 
