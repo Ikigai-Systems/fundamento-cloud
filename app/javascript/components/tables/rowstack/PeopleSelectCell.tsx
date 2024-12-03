@@ -65,7 +65,7 @@ function PeopleSelectCell({
         {renderUserQuery()}
       </div>
     );
-  } else if (focusState === "focused") {
+  } else if (focusState === "focused" || isViewOnly) {
     return (
       <div className="h-8 flex flex-row items-center" onClick={() => !isViewOnly && setFocus("editing")}>
         {renderUserQuery()}

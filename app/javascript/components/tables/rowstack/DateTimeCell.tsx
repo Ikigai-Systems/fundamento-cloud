@@ -16,13 +16,12 @@ function DateTimeCell({
         </div>
       )}
       {(focusState === "focused" || focusState === "editing") && (<>
-        {(focusState === "focused") && (
-          <div className="h-full w-full flex flex-row items-center"
-            onClick={() => setFocus("editing")}>
+        {(focusState === "focused" || isViewOnly) && (
+          <div className="h-full w-full flex flex-row items-center">
             {data}
           </div>
         )}
-        {(focusState === "editing") && (
+        {(focusState === "editing" && !isViewOnly) && (
           <input autoFocus aria-label="Date and time" type="datetime-local" className="h-full w-full"
             value={data || dayjs().format("YYYY-MM-DDThh:mm")}
             onChange={(e) => {
