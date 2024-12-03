@@ -7,6 +7,8 @@ import {Config} from "@js-from-routes/client";
 import {Space, Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import ButtonCell from "./rowstack/ButtonCell.tsx";
+import DateTimeCell from "./rowstack/DateTimeCell.tsx";
+import CalendarDaysIcon from "./rowstack/CalendarDaysIcon.tsx"
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
 import EditDateDisplayFormatPopup from "./rowstack/EditDateDisplayFormatPopup.tsx";
 import EditDateStoredFormatPopup from "./rowstack/EditDateStoredFormatPopup.tsx";
@@ -272,6 +274,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               cell: PeopleSelectCell,
               icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
               name: "People",
+            }, {
+              type: "datetime",
+              cell: DateTimeCell,
+              icon: CalendarDaysIcon,
+              name: "Date and time",
             }, {
               type: "button",
               cell: ButtonCell,
