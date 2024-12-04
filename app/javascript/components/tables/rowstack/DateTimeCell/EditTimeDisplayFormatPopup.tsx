@@ -1,11 +1,14 @@
 import React, {useEffect, useRef} from "react";
 
 const formats = [[
-  "0.01",
-  "0,01",
+  "None",
+  "11:00:00 PM",
+  "11:00 PM",
+  "23:00:00",
+  "23:00",
 ]];
 
-function EditNumberDisplayFormatPopup({
+function EditTimeDisplayFormatPopup({
   column,
   setColumn,
   close,
@@ -29,12 +32,12 @@ function EditNumberDisplayFormatPopup({
           <div key={index} className="border-b py-1">
             {formatGroup.map((format, index) => {
 
-              const isSelected = (column.configuration?.numberDisplayFormat) === format;
+              const isSelected = (column.configuration?.timeDisplayFormat) === format;
 
               return (
                 <div key={index} ref={isSelected ? selectedDivRef : undefined} className={`rs-btn w-full px-3 py-1 flex items-center cursor-default${isSelected ? " bg-blue-500 text-inverted hover:bg-blue-500": " hover:bg-hover-light"}`}
                   onClick={() => {
-                    setColumn({configuration: {...column.configuration, ...{numberDisplayFormat: format}}});
+                    setColumn({configuration: {...column.configuration, ...{timeDisplayFormat: format}}});
                     close();
                   }}
                 >
@@ -48,4 +51,4 @@ function EditNumberDisplayFormatPopup({
   );
 }
 
-export default EditNumberDisplayFormatPopup;
+export default EditTimeDisplayFormatPopup;

@@ -7,11 +7,11 @@ import {Config} from "@js-from-routes/client";
 import {Space, Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import ButtonCell from "./rowstack/ButtonCell.tsx";
-import DateTimeCell from "./rowstack/DateTimeCell.tsx";
-import CalendarDaysIcon from "./rowstack/CalendarDaysIcon.tsx"
+import DateTimeCell from "./rowstack/DateTimeCell/DateTimeCell.tsx";
+import CalendarDaysIcon from "./rowstack/DateTimeCell/CalendarDaysIcon.tsx"
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
-import EditDateDisplayFormatPopup from "./rowstack/EditDateDisplayFormatPopup.tsx";
-import EditDateStoredFormatPopup from "./rowstack/EditDateStoredFormatPopup.tsx";
+import EditDateDisplayFormatPopup from "./rowstack/DateCell/EditDateDisplayFormatPopup.tsx";
+import EditDateStoredFormatPopup from "./rowstack/DateCell/EditDateStoredFormatPopup.tsx";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
@@ -20,6 +20,8 @@ import "./rowstack-styles.css";
 import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopup.tsx";
 import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
 import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
+import EditDateTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditDateTimeDisplayFormatPopup.tsx";
+import EditTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditTimeDisplayFormatPopup.tsx";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
@@ -140,6 +142,38 @@ const extraColumnHeaderPopupActions = [{
     );
   },
   popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
+}, {
+  section: "main",
+  menuItem: ({column, showPopup}) => {
+    if (column.type !== "datetime") {
+      return null;
+    }
+    return (
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+        onClick={showPopup}
+      >
+        <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
+        Display date format
+      </div>
+    );
+  },
+  popup: (popupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
+}, {
+  section: "main",
+  menuItem: ({column, showPopup}) => {
+    if (column.type !== "datetime") {
+      return null;
+    }
+    return (
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+        onClick={showPopup}
+      >
+        <div className="w-5 h-5 mr-1 icon-[heroicons--clock]"></div>
+        Display time format
+      </div>
+    );
+  },
+  popup: (popupProps) => <EditTimeDisplayFormatPopup {...popupProps}/>
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
@@ -286,12 +320,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               name: "Button",
             }],
             extraColumnHeaderPopupActions: extraColumnHeaderPopupActions,
-            parseDate: (value, configuration) => {
+            parseDate: (value, columnConfiguration) => {
               if (!value) {
                 return null;
               }
               let dateDayJs;
-              switch (configuration?.dateStoredFormat) {
+              switch (columnConfiguration?.dateStoredFormat) {
               case 0:
                 dateDayJs = dayjs(value, "M/D/YYYY");
                 break;
@@ -315,7 +349,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
               return date;
             },
-            formatStoredDate: (parsedData, configuration) => {
+            formatStoredDate: (parsedData, columnConfiguration) => {
               if (parsedData === null) {
                 return "";
               }
@@ -323,7 +357,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 return parsedData._originalValue;
               }
               const dayDate = dayjs(parsedData);
-              switch (configuration?.dateStoredFormat) {
+              switch (columnConfiguration?.dateStoredFormat) {
               case 0:
                 return dayDate.format("M/D/YYYY");
               case 1:
@@ -336,12 +370,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 return dayDate.format("L");
               }
             },
-            formatDisplayDate: (parsedData, configuration) => {
+            formatDisplayDate: (parsedData, columnConfiguration) => {
               if (parsedData._isValid === false) {
                 return "Invalid Date";
               }
               const dayDate = dayjs(parsedData);
-              switch (configuration?.dateDisplayFormat) {
+              switch (columnConfiguration?.dateDisplayFormat) {
               case 0:
                 return dayDate.format("M/D/YYYY");
               case 1:
@@ -382,12 +416,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 return dayDate.format("L");
               }
             },
-            parseNumber: (value, configuration) => {
+            parseNumber: (value, columnConfiguration) => {
               if (!value) {
                 return null;
               }
 
-              switch (configuration?.numberStoredFormat) {
+              switch (columnConfiguration?.numberStoredFormat) {
               case "0.01":
                 return Number(value);
               case "0,01":
@@ -396,7 +430,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 return Number(value);
               }
             },
-            formatDisplayNumber: (parsedData, configuration) => {
+            formatDisplayNumber: (parsedData, columnConfiguration) => {
               if (parsedData === null) {
                 return "";
               }
@@ -405,7 +439,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 return "Invalid Number";
               }
 
-              switch (configuration?.numberDisplayFormat) {
+              switch (columnConfiguration?.numberDisplayFormat) {
               case "0.01":
                 return parsedData.toLocaleString("en-US", {maximumFractionDigits: 100});
               case "0,01":
