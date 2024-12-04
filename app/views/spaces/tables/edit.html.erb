@@ -12,7 +12,7 @@
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
-      <%= react_component "EditTablePanel", { table: @table, space: @table.space }, { data: @table.data_to_json } %>
+      <%= react_component "EditTablePanel", { table: @table, space: @table.space }, { data: @table.data_to_json(evaluate_formulas: true) } %>
     </div>
   </article>
 </div>

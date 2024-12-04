@@ -111,9 +111,9 @@ class Tables::TablesController < ApplicationController
   def edit
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
-    @tables = @space.tables.lexicographically
-
     authorize @table, :update?, policy_class: DocumentPolicy
+
+    @tables = @space.tables.lexicographically
 
     render "spaces/tables/edit", layout: "full_width_application"
   end
