@@ -71,11 +71,7 @@ function ButtonConfiguration({
           />
 
           <div className="flex flex-row items-center gap-2">
-            <div className="flex flex-col w-24">
-              <label className="mt-3 text-xs">Icon</label>
-              <input className="bg-white rounded border h-8 p-2"/>
-            </div>
-            <div className="flex flex-col w-24">
+            <div className="flex flex-col w-full">
               <SelectButtonColor
                 value={configuration.color}
                 onChange={(newColor) => {
@@ -83,7 +79,7 @@ function ButtonConfiguration({
                 }}
               />
             </div>
-            <div className="flex flex-col w-24">
+            <div className="flex flex-col w-full">
               <SelectButtonSize
                 value={configuration.size}
                 onChange={(newSize) => {

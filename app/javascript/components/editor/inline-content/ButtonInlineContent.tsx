@@ -68,12 +68,12 @@ const ButtonInlineContent = createReactInlineContentSpec(
         dismiss,
       ]);
 
-      const sizeClassNames = size === "Large" ? {height: "h-10", button: "text-lg px-10", cog: "size-8"}
-        : (size === "Medium") ? {height: "h-8", button: "text-md px-8", cog: "size-6"}
-          : {height: "h-6", button: "text-sm px-6", cog: "size-4"}
+      const sizeClassNames = size === "Large" ? {height: "h-10", wrapper: "rounded-2xl", button: "text-lg px-10", cog: "size-8"}
+        : (size === "Medium") ? {height: "h-8", wrapper: "rounded-xl", button: "text-md px-8", cog: "size-6"}
+          : {height: "h-6", wrapper: "rounded-lg", button: "text-sm px-6", cog: "size-4"}
 
       return (<>
-        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group rounded border shadow-sm ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : colorNameToClass(color)}`}>
+        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group border shadow-sm overflow-hidden ${sizeClassNames.wrapper} ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : colorNameToClass(color)}`}>
           <button className={`ignore-default-disabled-styling ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
             disabled={isExecuting}
             onClick={async () => {

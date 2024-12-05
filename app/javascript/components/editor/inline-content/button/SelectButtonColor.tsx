@@ -162,7 +162,7 @@ export default function SelectButtonColor({
       <div
         tabIndex={0}
         ref={refs.setReference}
-        className="bg-white h-8 w-24 pr-2 pl-1 flex flex-row items-center justify-between rounded-lg text-sm"
+        className="bg-white h-8 w-32 pr-2 pl-1 flex flex-row items-center justify-between rounded-lg text-sm"
         {...getReferenceProps()}
       >
         {selectedColor && <div className={`rounded flex items-center justify-center size-6 ${colorNameToClass(selectedColor)} font-bold m-1`}>

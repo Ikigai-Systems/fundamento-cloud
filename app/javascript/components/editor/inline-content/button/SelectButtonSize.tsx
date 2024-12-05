@@ -100,7 +100,7 @@ export default function SelectButtonSize({
       <div
         tabIndex={0}
         ref={refs.setReference}
-        className="bg-white h-8 w-24 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
+        className="bg-white h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
         {...getReferenceProps()}
       >
         {selectedItemLabel || "Select..."}
