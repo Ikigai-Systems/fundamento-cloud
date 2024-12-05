@@ -74,6 +74,12 @@ class DocumentsController < ApplicationController
     authorize @document, :update?
 
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+
+    if @space != @document.space
+      redirect_to edit_space_document_path(@document.space, @document)
+      return
+    end
+
     @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
   end
 
