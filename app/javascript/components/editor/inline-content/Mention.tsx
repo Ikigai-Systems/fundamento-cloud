@@ -36,7 +36,7 @@ const Mention = createReactInlineContentSpec(
         const {space} = useContext(CurrentSpaceContext);
         return (
           <a
-            href={DocumentsApi.edit.path({id: documentId, space_npi: space?.npi})}
+            href={`/spaces/${space?.npi}` + DocumentsApi.show.path({id: documentId})}
             className="border p-0.5 text-sky-500"
           >
             @{displayName}
