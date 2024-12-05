@@ -1,4 +1,5 @@
 import {defineFormula} from "./define-formula.js";
+import {getTable} from "../fundamento-gateway.js"
 
 import _ from "lodash";
 
@@ -7,6 +8,12 @@ function CurrentRow(columnName = null) {
 
   return columnName ? _.get(this.currentRow, columnName) : this.currentRow;
 }
+
+defineFormula("Table", (...args) => {
+  const tableId = args[0];
+  const result = getTable(tableId);
+  return result;
+})
 
 defineFormula("AddRow", (...args) => {
   // todo: validate if tableId is valid id ? should formula-eval micro-service be responsible for validation of the input formulas?

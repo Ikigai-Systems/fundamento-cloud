@@ -81,6 +81,10 @@ Rails.application.routes.draw do
     post '/formulas/eval', to: "formulas#eval"
   end
 
+  namespace :tables_no_auth do
+    resources :tables, only: [:show]
+  end
+
   resources :organizations, param: :npi do
     member do
       post :select

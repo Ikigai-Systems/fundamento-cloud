@@ -108,7 +108,7 @@ export default function SelectButtonSize({
       </div>
       {isOpen && (
         <FloatingPortal>
-        <FloatingFocusManager context={context} modal={false}>
+          <FloatingFocusManager context={context} modal={false}>
             <div
               ref={refs.setFloating}
               className="shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg"
