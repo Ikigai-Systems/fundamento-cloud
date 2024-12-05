@@ -120,27 +120,11 @@ const extraColumnHeaderPopupActions = [{
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
-        Display format
+        Display {column.type === "datetime" ? "date" : ""} format
       </div>
     );
   },
   popup: (popupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
-}, {
-  section: "main",
-  menuItem: ({column, showPopup}) => {
-    if (column.type !== "date" && column.type !== "datetime") {
-      return null;
-    }
-    return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
-        onClick={showPopup}
-      >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
-        Stored format
-      </div>
-    );
-  },
-  popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
@@ -157,6 +141,22 @@ const extraColumnHeaderPopupActions = [{
     );
   },
   popup: (popupProps) => <EditTimeDisplayFormatPopup {...popupProps}/>
+}, {
+  section: "main",
+  menuItem: ({column, showPopup}) => {
+    if (column.type !== "date" && column.type !== "datetime") {
+      return null;
+    }
+    return (
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+        onClick={showPopup}
+      >
+        <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
+        Stored format
+      </div>
+    );
+  },
+  popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
