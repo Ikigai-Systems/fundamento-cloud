@@ -13,9 +13,11 @@ function DateTimeCell({
   //todo: convert to useMemo
   let dateChunk = null;
   let timeChunk = null;
+  let parsedDate = null;
   if (data != null) {
-    const dayjsDate = dayjs(data);
-    dateChunk = tableConfiguration.formatDisplayDate(dayjsDate.toDate(), columnConfiguration);
+    parsedDate = tableConfiguration.parseDate(data, columnConfiguration);
+    const dayjsDate = dayjs(parsedDate);
+    dateChunk = tableConfiguration.formatDisplayDate(parsedDate, columnConfiguration);
     switch (columnConfiguration?.timeDisplayFormat) {
     case "None":
       break;
@@ -50,9 +52,11 @@ function DateTimeCell({
         )}
         {(focusState === "editing" && !isViewOnly) && (
           <input autoFocus aria-label="Date and time" type="datetime-local" className="h-full w-full focus:ring-0"
-            value={data || dayjs().format("YYYY-MM-DDThh:mm")}
+            value={dayjs(parsedDate).format("YYYY-MM-DDThh:mm")}
             onChange={(e) => {
-              setData(e.target.value);
+              const storedDate = tableConfiguration.formatStoredDate(e.target.value, columnConfiguration);
+              const storedTime = dayjs(e.target.value).format("hh:mm");
+              setData(`${storedDate} ${storedTime}`);
             }}
           />
         )}

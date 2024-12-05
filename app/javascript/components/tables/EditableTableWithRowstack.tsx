@@ -20,7 +20,6 @@ import "./rowstack-styles.css";
 import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopup.tsx";
 import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
 import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
-import EditDateTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditDateTimeDisplayFormatPopup.tsx";
 import EditTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditTimeDisplayFormatPopup.tsx";
 
 dayjs.extend(localizedFormat);
@@ -113,7 +112,7 @@ const extraColumnHeaderPopupActions = [{
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
-    if (column.type !== "date") {
+    if (column.type !== "date" && column.type !== "datetime") {
       return null;
     }
     return (
@@ -129,7 +128,7 @@ const extraColumnHeaderPopupActions = [{
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
-    if (column.type !== "date") {
+    if (column.type !== "date" && column.type !== "datetime") {
       return null;
     }
     return (
@@ -142,22 +141,6 @@ const extraColumnHeaderPopupActions = [{
     );
   },
   popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
-}, {
-  section: "main",
-  menuItem: ({column, showPopup}) => {
-    if (column.type !== "datetime") {
-      return null;
-    }
-    return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
-        onClick={showPopup}
-      >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
-        Display date format
-      </div>
-    );
-  },
-  popup: (popupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
@@ -327,16 +310,16 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               let dateDayJs;
               switch (columnConfiguration?.dateStoredFormat) {
               case 0:
-                dateDayJs = dayjs(value, "M/D/YYYY");
+                dateDayJs = dayjs(value, "M/D/YYYY HH:mm");
                 break;
               case 1:
-                dateDayJs = dayjs(value, "D/M/YYYY");
+                dateDayJs = dayjs(value, "D/M/YYYY HH:mm");
                 break;
               case 2:
-                dateDayJs = dayjs(value, "DD.MM.YYYY");
+                dateDayJs = dayjs(value, "DD.MM.YYYY HH:mm");
                 break;
               case 3:
-                dateDayJs = dayjs(value, "YYYY-MM-DD");
+                dateDayJs = dayjs(value, "YYYY-MM-DD HH:mm");
                 break;
               default:
                 dateDayJs = dayjs(value);
@@ -361,7 +344,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               case 0:
                 return dayDate.format("M/D/YYYY");
               case 1:
-                return dayDate.format("D/M/YYYY");
+                return dayDate.format("D/MM/YYYY");
               case 2:
                 return dayDate.format("DD.MM.YYYY");
               case 3:
