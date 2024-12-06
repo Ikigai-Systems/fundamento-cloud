@@ -103,7 +103,7 @@ services:
     build:
       context: ./micro-services/formula-eval
     environment:
-      FUNDAMENTO_FORMULAS_EVAL_URL: http://rails:3000/formulas/eval
+      FUNDAMENTO_BASE_URL: http://rails:3000
     ports:
       - '3001:3001'
     depends_on:
