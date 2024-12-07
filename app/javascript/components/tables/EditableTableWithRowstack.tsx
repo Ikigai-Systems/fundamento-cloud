@@ -270,7 +270,14 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
 
   columns.filter(({type}) => type === "formula").forEach(column => {
-    column.formula = (row) => row[column.id];
+    column.formula = (row) => {
+      const formulaResult = row[column.id];
+      if (typeof formulaResult === 'object' && formulaResult !== null) {
+        return JSON.stringify(formulaResult);
+      } else {
+        return row[column.id]?.toString();
+      }
+    }
   });
 
   return (<div className="ikigai-rowstack-overrides">

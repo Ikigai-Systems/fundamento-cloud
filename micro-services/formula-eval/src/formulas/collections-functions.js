@@ -16,11 +16,11 @@ defineFormula("List", (...args) => {
 });
 
 defineFormula("First", (...args) => {
-  return _.first(args);
+  return _.first(args[0]);
 });
 
 defineFormula("Last", (...args) => {
-  return _.last(args);
+  return _.last(args[0]);
 });
 
 defineFormula("ForEach", _.map, true);
