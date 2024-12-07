@@ -18,8 +18,10 @@ if Rails.env.standalone?
 
   unless User.exists?
     User.create!(
+      first_name: ENV.fetch("FUNDAMENTO_ADMIN_FIRST_NAME", "Root"),
+      last_name: ENV.fetch("FUNDAMENTO_ADMIN_LAST_NAME", "Beloved"),
       email: ENV.fetch("FUNDAMENTO_ADMIN_EMAIL", "root@localhost"),
-      password:
+      password: ENV.fetch("FUNDAMENTO_ADMIN_PASSWORD", "password!"),
     )
   end
 end

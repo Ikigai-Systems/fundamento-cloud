@@ -83,11 +83,14 @@ source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
 end
 
+group :development do
+  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
+  # gem "spring"
+end
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
-
-  gem "dotenv-rails", "~> 3.1"
 
   gem "js_from_routes"
 
@@ -98,9 +101,8 @@ group :development, :test do
   gem 'cypress-on-rails'
 end
 
-group :development do
-  # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
-  # gem "spring"
+group :development, :test, :standalone do
+  gem "dotenv-rails", "~> 3.1"
 end
 
 gem "good_job", "~> 4.4"
