@@ -10,18 +10,15 @@
 
 if Rails.env.standalone?
   # Code to initialize a standalone server
-  unless Organization.exists?
-    Organization.create!(
-      name: ENV.fetch("FUNDAMENTO_ORGANIZATION", "Acme Inc.")
-    )
+  organization = Organization.find_or_create_by!(
+    name: ENV.fetch("FUNDAMENTO_ORGANIZATION", "Acme Inc.")
+  )
+
+  administrator = User.find_or_create_by!(email: ENV.fetch("FUNDAMENTO_ADMIN_EMAIL", "root@localhost")) do |user|
+    user.first_name = ENV.fetch("FUNDAMENTO_ADMIN_FIRST_NAME", "Root")
+    user.last_name = ENV.fetch("FUNDAMENTO_ADMIN_LAST_NAME", "Beloved")
+    user.password = ENV.fetch("FUNDAMENTO_ADMIN_PASSWORD", "password!")
   end
 
-  unless User.exists?
-    User.create!(
-      first_name: ENV.fetch("FUNDAMENTO_ADMIN_FIRST_NAME", "Root"),
-      last_name: ENV.fetch("FUNDAMENTO_ADMIN_LAST_NAME", "Beloved"),
-      email: ENV.fetch("FUNDAMENTO_ADMIN_EMAIL", "root@localhost"),
-      password: ENV.fetch("FUNDAMENTO_ADMIN_PASSWORD", "password!"),
-    )
-  end
+  organization_user = organization.organization_users.find_or_create_by!(user: administrator)
 end
