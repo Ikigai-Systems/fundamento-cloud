@@ -1,25 +1,27 @@
 <section class="focused-section">
   <div class="lg:flex lg:items-center lg:justify-between">
     <div class="min-w-0 flex-1">
-      <section class="focused-header p-5">
-        <% if content_for? :focused_breadcrumbs %>
-          <nav class="flex" aria-label="Breadcrumb">
-            <ol role="list" class="flex items-center space-x-4">
-              <%= content_for :focused_breadcrumbs %>
-            </ol>
-          </nav>
-        <% end %>
+      <% if content_for?(:focused_header) %>
+        <section class="focused-header p-5">
+          <% if content_for? :focused_breadcrumbs %>
+            <nav class="flex" aria-label="Breadcrumb">
+              <ol role="list" class="flex items-center space-x-4">
+                <%= content_for :focused_breadcrumbs %>
+              </ol>
+            </nav>
+          <% end %>
 
-        <div class="md:flex md:items-center md:justify-between">
-          <div class="min-w-0 flex-1">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
-              <%= content_for :focused_header %>
-            </h1>
+          <div class="md:flex md:items-center md:justify-between">
+            <div class="min-w-0 flex-1">
+              <h1 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
+                <%= content_for :focused_header %>
+              </h1>
+            </div>
+
+            <%= content_for :focused_header_buttons %>
           </div>
-
-          <%= content_for :focused_header_buttons %>
-        </div>
-      </section>
+        </section>
+      <% end %>
 
       <%= content_for :focused_content %>
     </div>
