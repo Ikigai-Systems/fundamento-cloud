@@ -9,7 +9,7 @@
     .editor-container .read-only {
         .bn-editor {
             padding-inline: 0;
-            @apply p-5;
+            @apply px-5;
         }
     }
 

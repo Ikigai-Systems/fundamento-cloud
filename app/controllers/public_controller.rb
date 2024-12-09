@@ -15,7 +15,10 @@ class PublicController < ApplicationController
     @object = @public_link.object
 
     if @object.is_a?(Document)
-      render "document", locals: { document: @object }
+      render "document", locals: {
+        document: @object,
+        version: @object.versions.latest
+      }
     else
       render status: :unprocessable_content
     end
