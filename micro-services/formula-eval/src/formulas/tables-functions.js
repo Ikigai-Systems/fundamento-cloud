@@ -10,9 +10,7 @@ function CurrentRow(columnName = null) {
 }
 
 defineFormula("Table", (...args) => {
-  const tableId = args[0];
-  const result = getTable(tableId);
-  return result;
+  return getTable(args[0]);
 })
 
 defineFormula("AddRow", (...args) => {
