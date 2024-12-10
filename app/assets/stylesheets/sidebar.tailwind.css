@@ -27,7 +27,7 @@
         }
 
         .section-content-container {
-            .section-content-link-container {
+            .section-content-node-container {
                 @apply relative w-full ;
             }
 
