@@ -2,15 +2,20 @@
 name: Create and publish a Docker image
 
 on:
-  workflow_run:
-    workflows: [ "Run Tests" ]
-    # types:
-    #   - completed
-    branches:
-      - master
-      - ci/set-up-stable-releases
-    tags:
-      - 'v*'
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+# on:
+#   workflow_run:
+#     workflows: [ "Run Tests" ]
+#     types:
+#       - completed
+#     branches:
+#       - master
+#     tags:
+#       - 'v*'
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
