@@ -32,12 +32,7 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
   try {
     const evaluatedFormula = evaluateFormula(formula, additional_context);
     // todo: probably better will be to replace FormulaVisitorImplementation logic to return tuples from every call/statement/expr/etc:
-    if (typeof evaluatedFormula === 'object' && !Array.isArray(evaluatedFormula) && evaluatedFormula !== null) {
-      return ({result: evaluatedFormula.value, commands: evaluatedFormula.commands});
-    } else {
-      // formula that returned only value, with no commands or other meta
-      return ({result: evaluatedFormula});
-    }
+    return ({result: evaluatedFormula, commands: evaluatedFormula?.commands});
   } catch (e) {
     return({error: e.toString()});
   }

@@ -180,20 +180,7 @@ class Tables::TablesController < ApplicationController
       end
     when "add_row"
       row_npi = event["rowId"]
-      last_row = @table.rows_in_order.last
-      new_row = @table.rows.create!(
-        previous_row: last_row,
-        organization_id: @table.organization_id,
-        npi: row_npi
-      )
-      @table.columns.each do |column|
-        new_row.cells.create!(
-          table: @table,
-          column: column,
-          # value: value, # todo: maybe in event["update"]["data"] there is prefilled value, handle that
-          organization_id: @table.organization_id,
-        )
-      end
+      @table.add_row(row_npi)
     when "delete_rows"
       event["rows"][0].each do |row_npi|
         row = @table.rows.find_by(npi: row_npi)

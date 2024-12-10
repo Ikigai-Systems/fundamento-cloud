@@ -3,41 +3,36 @@ class FormulaEvalGateway
   def self.evaluate(formula, additional_context = {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
 
-    client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
-
-    res = client.call(:post, microservice_url.path, headers: {
-      "Content-type" => "application/json",
-      "Accept" => "application/json",
-    }, body: {
+    req_body_json = {
       formula: formula,
       additional_context: additional_context,
-    }.to_json)
+    }.to_json
+    req_headers = {
+      "Content-type" => "application/json",
+      "Accept" => "application/json",
+    }
 
-    #todo: preserve client open between calls
-    client.close
+    use_http2 = true # for development/debugging only
 
-    formula_result = JSON.parse(res.body)
+    if use_http2
+      client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
+      res = client.call(:post, microservice_url.path, body: req_body_json, headers: req_headers)
+      #todo: preserve client open between calls
+      client.close
+    else
+      http = Net::HTTP.new(microservice_url.host, microservice_url.port)
+      res = http.post(microservice_url.path, req_body_json, req_headers)
+    end
 
-    formula_result&.[]("commands")&.each do |command|
+    res_json = JSON.parse(res.body)
+
+    res_json&.[]("commands")&.each do |command|
       case command["type"]
       when "AddRow"
         table = Table.find(command["tableId"])
         # todo: validate the user is permitted to update this table
 
-        # todo: adding row logic should go to table.rb model probably
-        last_row = table.rows_in_order.last
-        new_row = table.rows.create!(
-          previous_row: last_row,
-          organization_id: table.organization_id,
-        )
-        table.columns.each do |column|
-          new_row.cells.create!(
-            table: table,
-            column: column,
-            # value: value, # todo: update this when AddRow formula allows creating rows with prefilled column values
-            organization_id: table.organization_id,
-            )
-        end
+        table.add_row
       when "DeleteRows"
         table = Table.find(command["tableId"])
         # todo: validate the user is permitted to update this table
@@ -52,12 +47,48 @@ class FormulaEvalGateway
           next_row.update(previous_row: row.previous_row) unless next_row.nil?
           row.destroy
         end
+      when "AddOrUpdateRows"
+        table = Table.find(command["tableId"])
+        # todo: validate the user is permitted to update this table
+
+        condition_formula = command["conditionFormula"]
+        column_name = command["columnName"]
+        column_value = command["columnValue"]
+
+        rows_to_update = table.rows.filter do |row|
+          if condition_formula.nil?
+            true
+          else
+            cells = row.cells.index_by(&:column_id)
+            current_row_values = table.columns.each_with_object({}) do |column, hash|
+              hash[column.name] = cells[column.id]&.value
+            end
+
+            additional_context = {
+              "currentRow" => current_row_values
+            }
+
+            formula_evaluation = FormulaEvalGateway.evaluate(condition_formula, additional_context)
+
+            formula_evaluation
+          end
+        end
+
+        if rows_to_update.empty?
+          table.add_row
+        else
+          rows_to_update.each do |row|
+            # todo: update row logic should go to table.rb model probably
+            column_id = table.columns.find_by(name: column_name).id
+            row.cells.find_by(column_id: column_id).update(value: column_value)
+          end
+        end
       else
         puts "Failed to parse formula `#{formula}` results: unrecognized command `#{command}`"
       end
     end
 
-    return formula_result
+    return res_json
 
     # non HTTP/2 way:
     # res = Net::HTTP.post_form(

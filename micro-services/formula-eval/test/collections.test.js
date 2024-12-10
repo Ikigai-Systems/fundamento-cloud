@@ -9,10 +9,10 @@ describe("Collection formulas", () => {
   });
 
   describe('CountUnique Function', () => {
-    testFormula(`CountUnique(1, 2, 3, 3, 3, 4)`, 4);
-    testFormula(`CountUnique(1, 2, 3, 4)`, 4);
-    testFormula(`CountUnique(1, 1, 2, 2)`, 2);
-    testFormula(`CountUnique("world", "world", "hello")`, 2);
+    testFormula(`CountUnique(List(1, 2, 3, 3, 3, 4))`, 4);
+    testFormula(`CountUnique(List(1, 2, 3, 4))`, 4);
+    testFormula(`CountUnique(List(1, 1, 2, 2))`, 2);
+    testFormula(`CountUnique(List("world", "world", "hello"))`, 2);
   });
 
   describe('List', () => {
