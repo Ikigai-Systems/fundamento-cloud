@@ -7,8 +7,12 @@ defineFormula("Find", (arg1, arg2) => {
   return arg2.indexOf(arg1) !== -1;
 });
 
+defineFormula("Unique", (...args) => {
+  return _.uniq(args[0]);
+});
+
 defineFormula("CountUnique", (...args) => {
-  return _.uniq(args).length;
+  return _.uniq(args[0]).length;
 });
 
 defineFormula("List", (...args) => {

@@ -130,4 +130,21 @@ class Table < ApplicationRecord
       end
     end
   end
+
+  def add_row(row_npi = nil)
+    last_row = self.rows_in_order.last
+    new_row = self.rows.create!(
+      previous_row: last_row,
+      organization_id: self.organization_id,
+      npi: row_npi,
+    )
+    self.columns.each do |column|
+      new_row.cells.create!(
+        table: self,
+        column: column,
+        # value: value, # todo: update this when AddRow formula allows creating rows with prefilled column values
+        organization_id: self.organization_id,
+        )
+    end
+  end
 end

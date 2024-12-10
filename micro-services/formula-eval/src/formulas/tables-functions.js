@@ -23,4 +23,9 @@ defineFormula("DeleteRows", (...args) => {
   return {commands: [{type: "DeleteRows", tableId: args[0]}]};
 });
 
+defineFormula("AddOrUpdateRows", (...args) => {
+  // todo: validate if tableId is valid id ? should formula-eval micro-service be responsible for validation of the input formulas?
+  return {commands: [{type: "AddOrUpdateRows", tableId: args[0], conditionFormula: args[1], columnName: args[2], columnValue: args[3]}]};
+});
+
 defineFormula("CurrentRow", CurrentRow);
