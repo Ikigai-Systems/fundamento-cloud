@@ -8,6 +8,7 @@ on:
       - completed
     branches:
       - master
+      - ci/set-up-stable-releases
     tags:
       - 'v*'
 
