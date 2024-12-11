@@ -31,8 +31,9 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
 
   try {
     const evaluatedFormula = evaluateFormula(formula, additional_context);
+    console.log("evaluatedFormula:", evaluatedFormula);
     // todo: probably better will be to replace FormulaVisitorImplementation logic to return tuples from every call/statement/expr/etc:
-    return ({result: evaluatedFormula, commands: evaluatedFormula?.commands});
+    return evaluatedFormula
   } catch (e) {
     return({error: e.toString()});
   }

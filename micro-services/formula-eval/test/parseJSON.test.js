@@ -11,7 +11,7 @@ describe("ParseJSON", () => {
       evaluateFormula(
         `ParseJSON(${JSON.stringify(jsonToParse)})`,
         {}
-      )
+      ).result
     ).to.deep.equal(JSON.parse(jsonToParse));
   });
 });

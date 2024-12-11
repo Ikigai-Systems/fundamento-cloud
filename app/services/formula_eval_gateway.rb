@@ -52,8 +52,6 @@ class FormulaEvalGateway
         # todo: validate the user is permitted to update this table
 
         condition_formula = command["conditionFormula"]
-        column_name = command["columnName"]
-        column_value = command["columnValue"]
 
         rows_to_update = table.rows.filter do |row|
           if condition_formula.nil?
@@ -74,15 +72,20 @@ class FormulaEvalGateway
           end
         end
 
+        column_name = command["columnName"]
+        column_value = command["columnValue"]
+
         if rows_to_update.empty?
           table.add_row(nil, {
             column_name => column_value
           })
         else
-          rows_to_update.each do |row|
-            # todo: update row logic should go to table.rb model probably
-            column_id = table.columns.find_by(name: column_name).id
-            row.cells.find_by(column_id: column_id).update(value: column_value)
+          unless column_name.nil? || column_value.nil?
+            rows_to_update.each do |row|
+              # todo: update row logic should go to table.rb model probably
+              column_id = table.columns.find_by(name: column_name).id
+              row.cells.find_by(column_id: column_id).update(value: column_value)
+            end
           end
         end
       else

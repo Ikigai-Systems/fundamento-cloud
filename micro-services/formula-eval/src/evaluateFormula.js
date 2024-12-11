@@ -65,26 +65,30 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
-          const list = this.visit(ctx.expression(0));
+          const {result, commands} = this.visit(ctx.expression(0));
 
-          return formulaFunction.call(functionContext, list, (currentValue) => {
+          const called = formulaFunction.call(functionContext, result, (currentValue) => {
             this.currentValueManager.declareVariable("currentValue", currentValue);
             return this.visit(formula);
           });
+          return called;
         } finally {
           this.currentValueManager.exitScope();
         }
       } else {
         const visitedExpressions = ctx.expression().map((expression, index) => {
           if (formulaName === "AddOrUpdateRows" && index === 1) {
-            return expression.getText();
+            return {result: expression.getText(), commands: []};
           } else {
             return this.visit(expression);
           }
         });
 
-        const formulaResult = formulaFunction.call(functionContext, ...visitedExpressions);
-        return formulaResult;
+        const formulaResult = formulaFunction.call(functionContext, ...visitedExpressions.map(visitedExpression => visitedExpression.result));
+        return {
+          result: formulaResult.result,
+          commands: [...visitedExpressions.flatMap(visitedExpression => visitedExpression.commands), ...formulaResult.commands],
+        };
       }
     } else {
       throw new Error(`Unrecognized formula: ${formulaName}`)
@@ -93,10 +97,10 @@ class FormulaVisitorImplementation extends FormulaVisitor {
 
   visitLiteral(ctx) {
     if (ctx.NUMBER()) {
-      return parseFloat(ctx.NUMBER().getText());
+      return {result: parseFloat(ctx.NUMBER().getText()), commands: []};
     } else if (ctx.STRING()) {
       // Use JSON.parse to handle escape characters
-      return JSON.parse(ctx.STRING().getText());
+      return {result: JSON.parse(ctx.STRING().getText()), commands: []};
     }
     throw new Error(`Unrecognized literal found ${ctx.getText()}`)
   }
@@ -105,34 +109,36 @@ class FormulaVisitorImplementation extends FormulaVisitor {
     const left = this.visit(ctx.term(0));
 
     if (ctx.operator(0)) {
-      const right = this.visit(ctx.term(1))
+      const right = this.visit(ctx.term(1));
       const operator = ctx.operator(0).getText();
+      const commands = [...left.commands, ...right.commands];
+      let result;
 
       switch (operator) {
       case "+":
-        return left + right;
+        result = left.result + right.result; break;
       case "*":
-        return left * right;
+        result = left.result * right.result; break;
       case "/":
-        return left / right;
+        result = left.result / right.result; break;
       case "-":
-        return left - right;
+        result = left.result - right.result; break;
       case "<":
-        return left < right;
+        result = left.result < right.result; break;
       case "<=":
-        return left <= right;
+        result = left.result <= right.result; break;
       case ">":
-        return left > right;
+        result = left.result > right.result; break;
       case ">=":
-        return left >= right;
+        result = left.result >= right.result; break;
       case "==":
-        return left === right;
+        result = left.result === right.result; break;
       case "!=":
-        return left !== right;
+        result = left.result !== right.result; break;
       default:
         throw new Error(`Unexpected operator in: ${ctx.getText()}`);
       }
-
+      return {result, commands}
     } else {
       return left;
     }
@@ -153,7 +159,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
   }
 
   visitCurrentValue(ctx) {
-    return this.currentValueManager.lookupVariable("currentValue");
+    return {result: this.currentValueManager.lookupVariable("currentValue"), commands: []};
   }
 }
 

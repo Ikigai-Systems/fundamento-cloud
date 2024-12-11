@@ -5,6 +5,6 @@ import {it} from "mocha";
 
 export function testFormula(formula, expectedResult, context = {}) {
   it(`evaluates ${formula}`, () => {
-    expect(evaluateFormula(formula, context)).to.deep.equal(expectedResult);
+    expect(evaluateFormula(formula, context).result).to.deep.equal(expectedResult);
   });
 }

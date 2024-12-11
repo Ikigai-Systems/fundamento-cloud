@@ -6,11 +6,11 @@ import _ from "lodash";
 function CurrentRow(columnName = null) {
   if (!this.currentRow) throw new Error("Current row is not available in this context");
 
-  return columnName ? _.get(this.currentRow, columnName) : this.currentRow;
+  return {result: columnName ? _.get(this.currentRow, columnName) : this.currentRow, commands: []};
 }
 
 defineFormula("Table", (...args) => {
-  return getTable(args[0]);
+  return {result: getTable(args[0]), commands: []};
 })
 
 defineFormula("AddRow", (...args) => {

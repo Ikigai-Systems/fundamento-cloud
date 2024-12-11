@@ -133,7 +133,6 @@ const ButtonInlineContent = createReactInlineContentSpec(
               <ButtonConfiguration
                 configuration={editedConfiguration}
                 setConfiguration={(updatedConfiguration) => {
-                  console.log(updatedConfiguration);
                   setEditedConfiguration(updatedConfiguration)
                 }}
               />

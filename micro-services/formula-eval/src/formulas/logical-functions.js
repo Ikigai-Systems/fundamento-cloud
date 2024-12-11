@@ -1,37 +1,37 @@
 import {defineFormula} from "./define-formula.js";
 
 defineFormula("And", (...[arg1, arg2]) => {
-  return !!arg1 && !!arg2;
+  return {result: !!arg1 && !!arg2, commands: []};
 });
 
 defineFormula("Not", (value) => {
-  return !value;
+  return {result: !value, commands: []};
 });
 
 defineFormula("Or", (...[arg1, arg2]) => {
-  return !!arg1 || !!arg2;
+  return {result: !!arg1 || !!arg2, commands: []};
 });
 
 defineFormula("True", () => {
-  return true;
+  return {result: true, commands: []};
 });
 
 defineFormula("False", () => {
-  return false;
+  return {result: false, commands: []};
 });
 
 defineFormula("If", (condition, ifTrue, ifFalse) => {
   if (condition) {
-    return ifTrue;
+    return {result: ifTrue, commands: []};
   } else {
-    return ifFalse;
+    return {result: ifFalse, commands: []};
   }
 });
 
 defineFormula("IfBlank", (text, ifBlank) => {
   if (text === "") {
-    return ifBlank;
+    return {result: ifBlank, commands: []};
   } else {
-    return text;
+    return {result: text, commands: []};
   }
 });

@@ -12,7 +12,7 @@ describe("Dig", () => {
       evaluateFormula(
         `Dig(ParseJSON(${JSON.stringify(jsonToParse)}), "data", "raw_data", "cols")`,
         {json: JSON.parse(jsonToParse)}
-      )
+      ).result
     ).to.deep.equal(["week_start", "sum"]);
   });
 
