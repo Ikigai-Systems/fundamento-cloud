@@ -31,7 +31,15 @@
                 @apply relative w-full ;
             }
 
-            .section-content-link {
+            .content-link-container {
+                @apply text-slate-800;
+            }
+
+            .content-link-container.archived {
+                @apply text-slate-400;
+            }
+
+            .content-link {
                 @apply flex flex-row items-center flex-grow;
             }
         }
