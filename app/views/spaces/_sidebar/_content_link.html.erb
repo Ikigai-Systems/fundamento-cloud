@@ -1,6 +1,6 @@
 <%= tag.div(
   hidden: content.archived? && cookies["ikigai_userPreferences_showArchived"] != "true",
-  class: content.archived? ? "text-slate-400 group" : "text-green-800 group",
+  class: content.archived? ? "text-slate-400 group" : "text-slate-800 group",
   data: {"visibility-target" => content.archived? ? "hideable" : nil },
 ) do %>
   <%= link_to polymorphic_path([content.space, content]), class: "section-content-link" do %>
