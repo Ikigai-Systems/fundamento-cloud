@@ -131,7 +131,7 @@ class Table < ApplicationRecord
     end
   end
 
-  def add_row(row_npi = nil)
+  def add_row(row_npi = nil, values = {})
     last_row = self.rows_in_order.last
     new_row = self.rows.create!(
       previous_row: last_row,
@@ -142,7 +142,7 @@ class Table < ApplicationRecord
       new_row.cells.create!(
         table: self,
         column: column,
-        # value: value, # todo: update this when AddRow formula allows creating rows with prefilled column values
+        value: values[column.name],
         organization_id: self.organization_id,
         )
     end

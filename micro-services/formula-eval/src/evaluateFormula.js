@@ -75,7 +75,13 @@ class FormulaVisitorImplementation extends FormulaVisitor {
           this.currentValueManager.exitScope();
         }
       } else {
-        const visitedExpressions = ctx.expression().map(expression => this.visit(expression));
+        const visitedExpressions = ctx.expression().map((expression, index) => {
+          if (formulaName === "AddOrUpdateRows" && index === 1) {
+            return expression.getText();
+          } else {
+            return this.visit(expression);
+          }
+        });
 
         const formulaResult = formulaFunction.call(functionContext, ...visitedExpressions);
         return formulaResult;

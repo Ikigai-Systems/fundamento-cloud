@@ -70,12 +70,14 @@ class FormulaEvalGateway
 
             formula_evaluation = FormulaEvalGateway.evaluate(condition_formula, additional_context)
 
-            formula_evaluation
+            formula_evaluation["result"] == true
           end
         end
 
         if rows_to_update.empty?
-          table.add_row
+          table.add_row(nil, {
+            column_name => column_value
+          })
         else
           rows_to_update.each do |row|
             # todo: update row logic should go to table.rb model probably
@@ -89,14 +91,6 @@ class FormulaEvalGateway
     end
 
     return res_json
-
-    # non HTTP/2 way:
-    # res = Net::HTTP.post_form(
-    #   URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"]),
-    #   formula: formula,
-    #   additional_context: additional_context.to_json,
-    # )
-
   rescue Exception => e
     Rails.logger.error e.message
     Rails.logger.error e.backtrace.join("\n")
