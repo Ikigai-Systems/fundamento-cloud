@@ -22,7 +22,10 @@
         <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
       </div>
 
-      <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]<%= has_children ? " hidden" : "" %>">•</div>
+      <%= tag.div("•", class: {
+        "single-item-dot pt-1 mx-2.5 -mt-[0.3rem]" => true,
+        "hidden" => has_children,
+      } ) %>
 
       <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
         <span class="truncate">
