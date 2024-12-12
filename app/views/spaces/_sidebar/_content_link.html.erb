@@ -41,6 +41,6 @@
 
   <%= link_to polymorphic_path([:edit, content.space, content]),
     class: "absolute right-1 top-1 rounded-md size-7 p-1 #{ selected ? "group-hover:bg-blue-300 active:bg-blue-400" : "group-hover:bg-gray-200 active:bg-gray-300"}" do %>
-    <div class="group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil]"></div>
+    <div class="edit-button"></div>
   <% end %>
 <% end %>

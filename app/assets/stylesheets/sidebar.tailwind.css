@@ -47,6 +47,10 @@
                 @apply flex flex-row items-center flex-grow;
             }
 
+            .edit-button {
+                @apply group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil];
+            }
+
             .draft-lozenge {
                 @apply uppercase bg-gray-100 group-hover:bg-gray-200 group-hover:active:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded dark:bg-gray-700 dark:text-gray-300;
             }
