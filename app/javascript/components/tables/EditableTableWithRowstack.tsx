@@ -1,5 +1,5 @@
 import Rowstack from "rowstack";
-import {createContext, useContext} from "react";
+import {createContext, useContext, useState} from "react";
 import createFlash from "../createFlash.ts"
 import CurrentSpaceContext from "../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../api/Tables/TablesApi.js";
@@ -21,6 +21,7 @@ import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopu
 import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
 import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 import EditTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditTimeDisplayFormatPopup.tsx";
+import {download, generateCsv, mkConfig} from "export-to-csv";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
@@ -285,7 +286,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
       <EditableTableRowsContext.Provider value={{rows}}>
         <Rowstack
           key={forceRerenderUuid}
-          tableNpi={table.id}
           columns={columns}
           data={rows}
           config={{
@@ -310,6 +310,49 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               name: "Button",
             }],
             extraColumnHeaderPopupActions: extraColumnHeaderPopupActions,
+            extraToolbarItems: [{
+              render: () => {
+                const [isDownloadingAsCsv, setIsDownloadingAsCsv] = useState(false);
+
+                return (<>
+                  <button style={{marginLeft: "auto"}} className="secondary-button p-2" title="Download as CSV"
+                    disabled={isDownloadingAsCsv}
+                    onClick={async () => {
+                      setIsDownloadingAsCsv(true);
+                      try {
+                        const currentDataDeserializer = Config.deserializeData;
+                        Config.deserializeData = (val => val);
+                        const promiseData = TablesApi.show({space_npi: space?.npi, id: table.id});
+                        Config.deserializeData = currentDataDeserializer;
+                        const tableData = await promiseData;
+
+                        const {columns, rows} = tableData.data;
+                        const csvConfig = mkConfig({
+                          columnHeaders: columns.map((column: any) => ({key: column.npi, displayLabel: column.name})),
+                          filename: `${tableData.table.name}_${dayjs().toISOString()}`,
+                        });
+                        const csv = generateCsv(csvConfig)(rows.map((row: any) => {
+                          const obj = {};
+                          Object.entries(row).map(([key, value]) => obj[key] = (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value);
+                          console.log(obj);
+                          return obj;
+                        }));
+                        download(csvConfig)(csv);
+                      } finally {
+                        setIsDownloadingAsCsv(false);
+                      }
+                    }}>
+                    <div className="bg-slate-500 size-5 icon-[heroicons--arrow-down-tray]"></div>
+                  </button>
+                </>)
+              }
+            }, {
+              render: () => {
+                return (<>
+                  {table && <div title={`ID of this table is ${table.id} - you can use it in formulas`} className="text-slate-400 text-sm">#{table.id}</div>}
+                </>)
+              }
+            }],
             parseDate: (value, columnConfiguration) => {
               if (!value) {
                 return null;

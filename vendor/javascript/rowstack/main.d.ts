@@ -1,6 +1,6 @@
-import { default as default_2 } from 'react';
 import { EVALUATION_LICENSE } from '../utils/license.js';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { default as React_2 } from 'react';
 
 declare interface AddRowConfig {
     enabled: boolean;
@@ -22,8 +22,8 @@ export declare interface Column {
 
 export declare interface ColumnType {
     type: ColumnTypeKey | string;
-    cell: default_2.ElementType;
-    icon: default_2.ElementType;
+    cell: React_2.ElementType;
+    icon: React_2.ElementType;
     name: string;
 }
 
@@ -55,6 +55,7 @@ export declare interface Config {
     grouping: FeatureConfig;
     extraColumnTypes: ColumnType[];
     extraColumnHeaderPopupActions: PopupAction[];
+    extraToolbarItems: ToolbarItem[];
     parseDate: (value: string, configuration: {}) => any | Date;
     formatStoredDate: (parsedData: Date, configuration: {}) => string;
     formatDisplayDate: (parsedData: Date, configuration: {}) => string;
@@ -82,8 +83,8 @@ export { Option_2 as Option }
 
 export declare interface PopupAction {
     section: "main" | "actions1" | "actions2";
-    menuItem: default_2.ReactNode;
-    popup?: default_2.ReactNode;
+    menuItem: React_2.ReactNode;
+    popup?: React_2.ReactNode;
 }
 
 declare function Table({ data, columns, onChange, config, licenseKey, tableNpi, }: {
@@ -98,6 +99,10 @@ export default Table;
 
 export declare interface ThemeConfig {
     color: string;
+}
+
+declare interface ToolbarItem {
+    render: React_2.ReactNode;
 }
 
 export { }
