@@ -171,8 +171,6 @@ GEM
     jmespath (1.6.2)
     js_from_routes (3.0.1)
       railties (>= 5.1, < 8)
-    jwt (2.9.3)
-      base64
     libv8-node (18.19.0.0)
     libv8-node (18.19.0.0-aarch64-linux)
     libv8-node (18.19.0.0-arm64-darwin)
@@ -415,7 +413,6 @@ DEPENDENCIES
   hash_diff
   importmap-rails
   js_from_routes
-  jwt
   lograge (~> 0.14.0)
   logstash-event (~> 1.2)
   mini_racer

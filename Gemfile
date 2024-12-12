@@ -78,12 +78,6 @@ gem "aws-sdk-s3", require: false
 
 gem "wannabe_bool"
 
-gem "good_job", "~> 4.4"
-
-gem "net-http2"
-
-gem "jwt"
-
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
@@ -110,3 +104,7 @@ end
 group :development, :test, :standalone do
   gem "dotenv-rails", "~> 3.1"
 end
+
+gem "good_job", "~> 4.4"
+
+gem "net-http2"
