@@ -42,8 +42,7 @@
   <%= link_to polymorphic_path([:edit, content.space, content]),
     class: {
       "edit-button-container" => true,
-      "group-hover:bg-blue-300 active:bg-blue-400" => selected,
-      "group-hover:bg-gray-200 active:bg-gray-300" => !selected,
+      "selected" => selected,
     } do %>
     <div class="edit-button"></div>
   <% end %>
