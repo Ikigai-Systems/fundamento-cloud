@@ -81,7 +81,7 @@ const AdvancedTable = createReactBlockSpec(
       const tableId = blockProps.tableId;
       const inputFile = useRef<HTMLInputElement | undefined>(undefined);
       const [isCreating, setIsCreating] = useState(false);
-      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId], queryFn: async () => {
+      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
         if (tableId === -1) {
           return null;
         }

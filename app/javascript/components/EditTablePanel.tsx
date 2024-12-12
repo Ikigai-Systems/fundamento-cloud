@@ -12,7 +12,7 @@ import {useRef} from "react";
 const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   const initialRender = useRef(true);
 
-  const tableQuery = useQuery({queryKey: ["tables", space?.npi, table.id], queryFn: async () => {
+  const tableQuery = useQuery({queryKey: ["tables", space?.npi, table.id.toString()], queryFn: async () => {
     if (initialRender.current === true) {
       initialRender.current = false;
       return {table, data, forceReRenderUuid: crypto.randomUUID()}

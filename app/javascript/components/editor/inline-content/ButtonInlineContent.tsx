@@ -77,6 +77,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
           <button className={`ignore-default-disabled-styling ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
             disabled={isExecuting}
             onClick={async () => {
+              const tableIdsToInvalidate: any = {};
               try {
                 setIsExecuting(true);
                 const formulaResult = await FormulasApi.eval({data: {formula}});
@@ -89,15 +90,15 @@ const ButtonInlineContent = createReactInlineContentSpec(
                   formulaResult.commands.forEach(command => {
                     switch(command.type) {
                     case "AddRow":
-                      queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
+                      tableIdsToInvalidate[command.tableId] = true;
                       // todo: show flash message about performed actions, in this case "1 row added" ?
                       break;
                     case "DeleteRows":
-                      queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
+                      tableIdsToInvalidate[command.tableId] = true;
                       // todo: show flash message about performed actions, in this case "X rows removed" ? backend (formula_eval_gateway) could provide that number...
                       break;
                     case "AddOrUpdateRows":
-                      queryClient.invalidateQueries({queryKey: ["tables", space?.npi, command.tableId]});
+                      tableIdsToInvalidate[command.tableId] = true;
                       break;
                     }
                   })
@@ -108,6 +109,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
                   message: e.message
                 })
               } finally {
+                Object.keys(tableIdsToInvalidate).forEach(tableId => queryClient.invalidateQueries({queryKey: ["tables", space?.npi, tableId.toString()]}));
                 setIsExecuting(false);
               }
             }}

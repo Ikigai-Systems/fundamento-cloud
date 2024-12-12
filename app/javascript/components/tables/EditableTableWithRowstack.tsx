@@ -203,7 +203,7 @@ const extraColumnHeaderPopupActions = [{
             params: {space_npi: spaceNpi, id: tableId},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId]});
+          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId.toString()]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
@@ -225,7 +225,7 @@ const extraColumnHeaderPopupActions = [{
             params: {space_npi: spaceNpi, id: tableId},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId]});
+          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId.toString()]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
@@ -465,7 +465,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               Config.serializeData = currentDataSerializer;
               await promise;
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-                queryClient.invalidateQueries({queryKey: ["tables", space?.npi, table.id]});
+                queryClient.invalidateQueries({queryKey: ["tables", space?.npi, table.id.toString()]});
               }
             } catch (e) {
               //todo: Sentry.capture(e)
