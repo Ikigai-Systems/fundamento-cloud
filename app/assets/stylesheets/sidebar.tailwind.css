@@ -47,6 +47,10 @@
                 @apply flex flex-row items-center flex-grow;
             }
 
+            .edit-button-container {
+                @apply absolute right-1 top-1 rounded-md size-7 p-1;
+            }
+
             .edit-button {
                 @apply group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil];
             }
