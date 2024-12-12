@@ -56,8 +56,8 @@ gem "devise", "~> 4.9"
 gem "devise_invitable"
 
 gem "tailwindcss-rails", "~> 2.6"
-
 gem "vite_rails"
+gem "view_component"
 
 gem "stackprof"
 gem "sentry-ruby"
@@ -77,6 +77,11 @@ gem "logstash-event", "~> 1.2"
 gem "aws-sdk-s3", require: false
 
 gem "wannabe_bool"
+
+gem "good_job", "~> 4.4"
+
+gem "net-http2"
+
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
@@ -104,7 +109,3 @@ end
 group :development, :test, :standalone do
   gem "dotenv-rails", "~> 3.1"
 end
-
-gem "good_job", "~> 4.4"
-
-gem "net-http2"

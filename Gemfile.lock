@@ -191,6 +191,7 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    method_source (1.1.0)
     mini_mime (1.1.5)
     mini_racer (0.14.1)
       libv8-node (~> 18.19.0.0)
@@ -356,6 +357,10 @@ GEM
       railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    view_component (3.20.0)
+      activesupport (>= 5.2.0, < 8.1)
+      concurrent-ruby (~> 1.0)
+      method_source (~> 1.0)
     vite_rails (3.0.17)
       railties (>= 5.1, < 8)
       vite_ruby (~> 3.0, >= 3.2.2)
@@ -438,6 +443,7 @@ DEPENDENCIES
   tailwindcss-rails (~> 2.6)
   turbo-rails
   tzinfo-data
+  view_component
   vite_rails
   wannabe_bool
   y-rb
