@@ -9,7 +9,13 @@ async function fetchFromFundamento(url, callback) {
     },
   });
   const responseJson = await response.json();
-  return callback && callback(null, responseJson.data.rows);
+  return callback && callback(null, responseJson.data.rows.map(row => {
+    const cell_values = {};
+    responseJson.data.columns.forEach(column => {
+      cell_values[column.name] = row[column.npi];
+    });
+    return {...cell_values, ...row}
+  }));
 }
 
 const fundamentoBaseUrl = process.env.FUNDAMENTO_BASE_URL || "http://localhost:3000";

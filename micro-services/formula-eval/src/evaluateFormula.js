@@ -78,7 +78,11 @@ class FormulaVisitorImplementation extends FormulaVisitor {
       } else {
         const visitedExpressions = ctx.expression().map((expression, index) => {
           if (formulaName === "AddOrUpdateRows" && index === 1) {
-            return {result: expression.getText().replaceAll("CurrentValue", `"${this.currentValueManager.lookupVariable("currentValue")}"`), commands: []};
+            const rawText = expression.getText();
+            const resultText = (rawText.indexOf("CurrentValue") !== -1)
+              ? rawText.replaceAll("CurrentValue", `"${this.currentValueManager.lookupVariable("currentValue")}"`)
+              : rawText;
+            return {result: resultText, commands: []};
           } else {
             return this.visit(expression);
           }
