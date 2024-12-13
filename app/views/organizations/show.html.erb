@@ -19,15 +19,15 @@
     <%= button_to "Switch to", select_organization_path(@organization), method: :post, class: "secondary-button" %>
 
     <% if policy(@organization).update? && policy(@organization).destroy? %>
-      <% content_for :button_group_primary_buttons do %>
-        <%= link_to 'Edit', edit_organization_path(@organization), class: "first-button-group ml-2" %>
-      <% end %>
+      <%= render ButtonGroupComponent.new do |component| %>
+        <% component.with_primary_buttons do %>
+          <%= link_to 'Edit', edit_organization_path(@organization), class: "first-button-group ml-2" %>
+        <% end %>
 
-      <% content_for :button_group_dropdown_menu do %>
-        <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
+        <% component.with_dropdown_menu do %>
+          <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
+        <% end %>
       <% end %>
-
-      <%= render template: "application/components/button_group" %>
     <% end %>
   </div>
 <% end %>
