@@ -30,7 +30,7 @@ class Tables::TablesController < ApplicationController
 
   def create
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    create_params = table_params
+    create_params = table_params.except(:csv_file)
     if create_params[:name].nil?
       create_params[:name] = "Table " + Nanoid.generate(size: 4)
     end
@@ -282,7 +282,7 @@ class Tables::TablesController < ApplicationController
   private
 
   def table_params
-    params.require(:table).permit(:name, :archived)
+    params.require(:table).permit(:name, :archived, :csv_file)
   end
 
   def load_table

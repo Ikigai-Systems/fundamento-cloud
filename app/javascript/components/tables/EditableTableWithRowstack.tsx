@@ -330,6 +330,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                         const csvConfig = mkConfig({
                           columnHeaders: columns.map((column: any) => ({key: column.npi, displayLabel: column.name})),
                           filename: `${tableData.table.name}_${dayjs().toISOString()}`,
+                          useBom: false,
                         });
                         const csv = generateCsv(csvConfig)(rows.map((row: any) => {
                           const obj = {};
