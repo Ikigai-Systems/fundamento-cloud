@@ -67,6 +67,7 @@ services:
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
+      - REDIS_URL=redis://redis
     ports:
       - '3000:3000'
     depends_on:
@@ -90,6 +91,7 @@ services:
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
+      - REDIS_URL=redis://redis
     depends_on:
       postgresql:
         condition: service_healthy
