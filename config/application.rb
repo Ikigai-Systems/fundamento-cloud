@@ -30,7 +30,7 @@ module InteractiveDocumentsSelfHostedPrototype1
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Logstash.new
 
-    unless Rails.env.production?
+    if !Rails.env.production? && !Rails.env.standalone?
       config.lograge.keep_original_rails_log = true
       config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/#{Rails.env}-lograge.log"
     end
