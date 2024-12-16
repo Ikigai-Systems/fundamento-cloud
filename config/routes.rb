@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :supermen
+  devise_for :superintendent
 
   devise_for :users, controllers: {
     registrations: 'users/registrations',
@@ -15,8 +15,8 @@ Rails.application.routes.draw do
   mount ActionCable.server => '/cable'
 
   # Add GoodJob's dashboard - https://github.com/bensheldon/good_job?tab=readme-ov-file#dashboard
-  authenticate :superman do
-    mount GoodJob::Engine => "/metropolis/jobs"
+  authenticate :superintendent do
+    mount GoodJob::Engine => "/construction/jobs"
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -24,6 +24,10 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
+  authenticated :superintendent do
+    root "root#index", as: :construction_root
+  end
+
   root "root#index"
 
   # We use `defaults export: true` here to export routes to app/javascript/api,
