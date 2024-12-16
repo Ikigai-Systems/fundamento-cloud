@@ -15,8 +15,8 @@ Rails.application.routes.draw do
   mount ActionCable.server => '/cable'
 
   # Add GoodJob's dashboard - https://github.com/bensheldon/good_job?tab=readme-ov-file#dashboard
-  if Rails.env.development?
-    mount GoodJob::Engine => "/jobs"
+  authenticate :superman do
+    mount GoodJob::Engine => "/metropolis/jobs"
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
