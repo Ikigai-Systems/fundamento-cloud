@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   authenticated :superintendent do
-    root "root#index", as: :construction_root
+    root "construction/root#index", as: :construction_root
   end
 
   root "root#index"
