@@ -1,12 +1,14 @@
 import Fastify from 'fastify';
-import FormBodyPlugin from '@fastify/formbody'
-import evaluateFormula from './evaluateFormula.js'
+import FormBodyPlugin from '@fastify/formbody';
+import {fastifyRequestContext, requestContext} from '@fastify/request-context';
+import evaluateFormula from './evaluateFormula.js';
 
 const fastify = Fastify({
   logger: true,
   http2: true,
 });
 fastify.register(FormBodyPlugin);
+fastify.register(fastifyRequestContext);
 
 fastify.post('/formulas/eval', async function handler (request, reply) {
   // todo: some kind of authentication for veryfing this is legitimate request from fundamento app

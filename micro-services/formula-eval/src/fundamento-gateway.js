@@ -1,4 +1,5 @@
 import deasync from "deasync";
+import {requestContext} from '@fastify/request-context';
 
 async function fetchFromFundamento(url, callback) {
   console.log(`fetching from fundamento ${url}...`)
@@ -21,5 +22,12 @@ async function fetchFromFundamento(url, callback) {
 const fundamentoBaseUrl = process.env.FUNDAMENTO_BASE_URL || "http://localhost:3000";
 
 export const getTable = (tableId) => {
-  return deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/tables_no_auth/tables/${tableId}`);
+  const cacheKey = `tables/${tableId.toString()}`;
+  const cachedResponse = requestContext.get(cacheKey);
+  if (cachedResponse !== undefined) {
+    return cachedResponse;
+  }
+  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/tables_no_auth/tables/${tableId}`);
+  requestContext.set(cacheKey, response);
+  return response;
 };

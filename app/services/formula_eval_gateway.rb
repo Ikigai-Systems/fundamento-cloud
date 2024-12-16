@@ -26,7 +26,52 @@ class FormulaEvalGateway
 
     res_json = JSON.parse(res.body)
 
-    res_json&.[]("commands")&.each do |command|
+    process_commands(res_json&.[]("commands"))
+
+    return res_json
+  rescue Exception => e
+    Rails.logger.error e.message
+    Rails.logger.error e.backtrace.join("\n")
+
+    return {
+      "error" => "Fatal error: unable to evaluate formula"
+    }
+  end
+
+  def self.batch_evaluate(evaluations)
+    microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
+
+    req_body_json = {
+      evaluations: evaluations,
+    }.to_json
+    req_headers = {
+      "Content-type" => "application/json",
+      "Accept" => "application/json",
+    }
+
+    use_http2 = true # for development/debugging only
+
+    if use_http2
+      client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
+      res = client.call(:post, microservice_url.path, body: req_body_json, headers: req_headers)
+      #todo: preserve client open between calls
+      client.close
+    else
+      http = Net::HTTP.new(microservice_url.host, microservice_url.port)
+      res = http.post(microservice_url.path, req_body_json, req_headers)
+    end
+
+    res_json = JSON.parse(res.body)
+
+    res_json&.each do |evaluated_formula|
+      process_commands(evaluated_formula&.[]("commands"))
+    end
+
+    return res_json
+  end
+
+  def self.process_commands(commands)
+    commands&.each do |command|
       case command["type"]
       when "AddRow"
         table = Table.find(command["tableId"])
@@ -92,41 +137,6 @@ class FormulaEvalGateway
         puts "Failed to parse formula `#{formula}` results: unrecognized command `#{command}`"
       end
     end
-
-    return res_json
-  rescue Exception => e
-    Rails.logger.error e.message
-    Rails.logger.error e.backtrace.join("\n")
-
-    return {
-      "error" => "Fatal error: unable to evaluate formula"
-    }
-  end
-
-  def self.batch_evaluate(evaluations)
-    microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
-
-    req_body_json = {
-      evaluations: evaluations,
-    }.to_json
-    req_headers = {
-      "Content-type" => "application/json",
-      "Accept" => "application/json",
-    }
-
-    use_http2 = true # for development/debugging only
-
-    if use_http2
-      client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
-      res = client.call(:post, microservice_url.path, body: req_body_json, headers: req_headers)
-      #todo: preserve client open between calls
-      client.close
-    else
-      http = Net::HTTP.new(microservice_url.host, microservice_url.port)
-      res = http.post(microservice_url.path, req_body_json, req_headers)
-    end
-
-    res_json = JSON.parse(res.body)
   end
 
 end
