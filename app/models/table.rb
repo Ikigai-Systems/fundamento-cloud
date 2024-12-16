@@ -52,6 +52,8 @@ class Table < ApplicationRecord
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
 
+    formulas_to_evaluate = []
+
     jsonized_rows = rows_in_order.map do |row|
       if evaluate_formulas
         current_row_values = columns_in_order.each_with_object({}) do |column, hash|
@@ -64,8 +66,12 @@ class Table < ApplicationRecord
 
         columns_in_order.each_with_object({}) do |column, hash|
           if column.formula?
-            formula_evaluation = FormulaEvalGateway.evaluate(column.formula, additional_context)
-            hash[column.npi] = formula_evaluation["error"] || formula_evaluation["result"]
+            formulas_to_evaluate << {
+              row_npi: row.npi,
+              column_npi: column.npi,
+              formula: column.formula,
+              additional_context: additional_context
+            }
           else
             hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id]).value
           end
@@ -79,6 +85,17 @@ class Table < ApplicationRecord
           end
         end
       end.merge({ "npi" => row.npi }) # this is for Rowstack convenience
+    end
+
+    formulas_to_evaluate.map do |formula_to_evaluate|
+      {
+        row_npi: formula_to_evaluate[:row_npi],
+        column_npi: formula_to_evaluate[:column_npi],
+        formula_evaluation: FormulaEvalGateway.evaluate(formula_to_evaluate[:formula], formula_to_evaluate[:additional_context]),
+      }
+    end.each do |formula_evaluation|
+      result = formula_evaluation[:formula_evaluation]["error"] || formula_evaluation[:formula_evaluation]["result"]
+      jsonized_rows.find { |row| row["npi"] == formula_evaluation[:row_npi] }[formula_evaluation[:column_npi]] = result
     end
 
     {
