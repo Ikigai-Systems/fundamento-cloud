@@ -8,7 +8,6 @@ const fastify = Fastify({
 });
 fastify.register(FormBodyPlugin);
 
-// Declare a route
 fastify.post('/formulas/eval', async function handler (request, reply) {
   // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
@@ -32,11 +31,26 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
   try {
     const evaluatedFormula = evaluateFormula(formula, additional_context);
     console.log("evaluatedFormula:", evaluatedFormula);
-    // todo: probably better will be to replace FormulaVisitorImplementation logic to return tuples from every call/statement/expr/etc:
     return evaluatedFormula
   } catch (e) {
     return({error: e.toString()});
   }
+})
+
+fastify.post('/formulas/eval/batch', async function handler (request, reply) {
+  // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
+
+  const {evaluations} = request.body;
+
+  return evaluations.map(({formula, additional_context}) => {
+    try {
+      const evaluatedFormula = evaluateFormula(formula, additional_context);
+      console.log("evaluatedFormula:", evaluatedFormula);
+      return evaluatedFormula
+    } catch (e) {
+      return({error: e.toString()});
+    }
+  });
 })
 
 try {

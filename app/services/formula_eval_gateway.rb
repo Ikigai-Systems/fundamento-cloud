@@ -104,9 +104,29 @@ class FormulaEvalGateway
   end
 
   def self.batch_evaluate(evaluations)
-    evaluations.map do |formula_evaluation|
-      self.evaluate(formula_evaluation[:formula], formula_evaluation[:additional_context])
+    microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
+
+    req_body_json = {
+      evaluations: evaluations,
+    }.to_json
+    req_headers = {
+      "Content-type" => "application/json",
+      "Accept" => "application/json",
+    }
+
+    use_http2 = true # for development/debugging only
+
+    if use_http2
+      client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
+      res = client.call(:post, microservice_url.path, body: req_body_json, headers: req_headers)
+      #todo: preserve client open between calls
+      client.close
+    else
+      http = Net::HTTP.new(microservice_url.host, microservice_url.port)
+      res = http.post(microservice_url.path, req_body_json, req_headers)
     end
+
+    res_json = JSON.parse(res.body)
   end
 
 end
