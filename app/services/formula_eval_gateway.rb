@@ -103,4 +103,10 @@ class FormulaEvalGateway
     }
   end
 
+  def self.batch_evaluate(evaluations)
+    evaluations.map do |formula_evaluation|
+      self.evaluate(formula_evaluation[:formula], formula_evaluation[:additional_context])
+    end
+  end
+
 end

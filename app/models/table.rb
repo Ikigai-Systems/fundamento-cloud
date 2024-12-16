@@ -87,14 +87,9 @@ class Table < ApplicationRecord
       end.merge({ "npi" => row.npi }) # this is for Rowstack convenience
     end
 
-    formulas_to_evaluate.map do |formula_to_evaluate|
-      {
-        row_npi: formula_to_evaluate[:row_npi],
-        column_npi: formula_to_evaluate[:column_npi],
-        formula_evaluation: FormulaEvalGateway.evaluate(formula_to_evaluate[:formula], formula_to_evaluate[:additional_context]),
-      }
-    end.each do |formula_evaluation|
-      result = formula_evaluation[:formula_evaluation]["error"] || formula_evaluation[:formula_evaluation]["result"]
+    FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}).each_with_index do |evaluated_formula, index|
+      formula_evaluation = formulas_to_evaluate[index]
+      result = evaluated_formula["error"] || evaluated_formula["result"]
       jsonized_rows.find { |row| row["npi"] == formula_evaluation[:row_npi] }[formula_evaluation[:column_npi]] = result
     end
 
