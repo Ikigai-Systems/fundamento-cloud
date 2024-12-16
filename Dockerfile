@@ -28,7 +28,7 @@ FROM base AS build
 # Install packages needed to build gems
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install --no-install-recommends -y build-essential git libvips pkg-config nodejs && \
     npm install -g npm@latest
 
@@ -72,7 +72,7 @@ FROM base AS packaged
 # Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install --no-install-recommends -y libvips gettext nodejs
 
 # Run and own only the runtime files as a non-root user for security
