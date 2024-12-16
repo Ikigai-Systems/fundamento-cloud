@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  devise_for :supermen
+
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     passwords: 'users/passwords',
