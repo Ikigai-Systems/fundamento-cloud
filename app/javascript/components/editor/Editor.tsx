@@ -21,6 +21,7 @@ import {
 import schema from "./schema";
 import {getMentionMenuItems} from "./inline-content/mention-menu-items";
 import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
+import ChartBlockMenuItem from "./blocks/ChartBlockMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
@@ -184,7 +185,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonInlineContentMenuItem()],
+            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonInlineContentMenuItem(), ChartBlockMenuItem()],
             query
           )
         }}

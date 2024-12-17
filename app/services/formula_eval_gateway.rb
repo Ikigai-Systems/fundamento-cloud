@@ -68,6 +68,11 @@ class FormulaEvalGateway
     end
 
     return res_json
+  rescue Exception => e
+    Rails.logger.error e.message
+    Rails.logger.error e.backtrace.join("\n")
+
+    return evaluations.map { |e| { "error" => "Fatal error: unable to evaluate formula" } }
   end
 
   def self.process_commands(commands)

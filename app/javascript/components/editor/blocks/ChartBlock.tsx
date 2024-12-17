@@ -43,18 +43,18 @@ const sampleColumns = [
   },
 ];
 
-const AdvancedTable = createReactBlockSpec(
+const ChartBlock = createReactBlockSpec(
   {
-    type: "advancedTable",
+    type: "chartBlock",
     propSchema: {
       // textAlignment: defaultProps.textAlignment,
       // textColor: defaultProps.textColor,
       tableId: {
         default: -1
       },
-      viewProps: {
-        default: JSON.stringify({columns: {}}),
-      }
+      // viewProps: {
+      //   default: JSON.stringify({columns: {}}),
+      // }
     },
     content: "none",
     isSelectable: false,
@@ -63,19 +63,7 @@ const AdvancedTable = createReactBlockSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       const blockProps = props.block.props;
-      const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
-      const initialRender = useRef(true);
-      useEffect(() => {
-        if (initialRender.current === true) {
-          initialRender.current = false;
-        } else {
-          editor.updateBlock(props.block, {
-            props: {
-              viewProps: JSON.stringify(viewProps),
-            },
-          });
-        }
-      }, [viewProps])
+      // const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableId = blockProps.tableId;
@@ -107,7 +95,7 @@ const AdvancedTable = createReactBlockSpec(
         return (
           <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
-              <div className="font-bold">New table</div>
+              <div className="font-bold">New chart</div>
               <button
                 className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 onClick={() => {
@@ -118,73 +106,7 @@ const AdvancedTable = createReactBlockSpec(
               </button>
             </div>
             <div className="px-4 py-3 sm:p-6">
-              <div className="flex flex-row gap-6 justify-center">
-                <button
-                  className="secondary-button"
-                  disabled={isCreating}
-                  onClick={async () => {
-                    setIsCreating(true);
-                    try {
-                      const table = await TablesApi.create({
-                        params: {
-                          space_npi: space.npi
-                        },
-                        data: {
-                          table: {
-                            rows: sampleRows,
-                            columns: sampleColumns,
-                          }
-                        }
-                      });
-                      editor.updateBlock(props.block, {
-                        props: {
-                          tableId: table.id,
-                        },
-                      });
-                    } finally {
-                      setIsCreating(false);
-                    }
-                  }}
-                >
-                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
-                  Start blank
-                </button>
-                <input type="file" accept="text/csv" className="hidden" ref={inputFile} onChange={async (e) => {
-                  setIsCreating(true);
-                  try {
-                    const file = e.target?.files[0];
-                    const body = new FormData();
-                    body.append('table[csv_file]', file);
-
-                    const table = await request("post", TablesApi.create.path({space_npi: space?.npi}), {
-                      data: body,
-                      responseAs: "json",
-                      headers: {
-                        'Content-Type': 'multipart/form-data',
-                      }
-                    })
-                    editor.updateBlock(props.block, {
-                      props: {
-                        tableId: table.id,
-                      },
-                    });
-                  } finally {
-                    setIsCreating(false);
-                  }
-                }}/>
-                <button
-                  className="secondary-button"
-                  disabled={isCreating}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    inputFile?.current?.click();
-                  }}
-                >
-                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
-                  Import data
-                </button>
-              </div>
-              <div className="font-bold text-sm py-3">Or use existing table</div>
+              <div className="font-bold text-sm py-3">Data source table</div>
 
               <div className="mb-48">
                 <AsyncSelect
@@ -210,40 +132,67 @@ const AdvancedTable = createReactBlockSpec(
                 />
               </div>
             </div>
-            {/*<div className="px-4 py-3 sm:px-6">*/}
-            {/*  FOOTER*/}
-            {/*</div>*/}
           </div>
         )
       }
 
       if (isError) {
-        return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable to load table with id {tableId}</div>
-        )
+        return (<>
+          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+            <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
+              <div className="text-red-800 flex items-center justify-center font-bold">
+                Unable to load table with id {tableId}
+              </div>
+              <button
+                className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                onClick={() => {
+                  editor.removeBlocks([props.block]);
+                }}
+              >
+                <div className="size-5 icon-[heroicons--x-mark]"></div>
+              </button>
+            </div>
+            <div className="px-4 py-3 sm:p-6">
+              <div className="font-bold text-sm py-3">Data source table</div>
+
+              <div className="mb-48">
+                <AsyncSelect
+                  isDisabled={isCreating}
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={async (query) => {
+                    const tables = await TablesApi.index({
+                      params: {
+                        space_npi: space?.npi,
+                        query: {query}
+                      }
+                    });
+                    return tables.map(table => ({value: table.id, label: table.name}));
+                  }}
+                  onChange={(newOption) => {
+                    editor.updateBlock(props.block, {
+                      props: {
+                        tableId: (newOption as { value: any }).value,
+                      },
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </>)
       }
 
       return (<div className="flex flex-col w-full">
         <div className="flex flex-row items-center">
-          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space} extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
-          {!editor.isEditable && <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space}
+                                                          extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
+          {!editor.isEditable &&
+            <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
         </div>
-
-        <EditableTableWithRowstack
-          isEditable={editor.isEditable}
-          table={tableQuery.data.table}
-          data={tableQuery.data.data}
-          forceRerenderUuid={tableQuery.data.forceRerenderUuid}
-          initialViewProps={JSON.parse(blockProps.viewProps)}
-          onViewPropsChange={(event) => {
-            setViewProps((prevViewProps) => {
-              return deepmerge(prevViewProps, event);
-            })
-          }}
-        />
       </div>);
     },
   }
 );
 
-export default AdvancedTable;
+export default ChartBlock;
