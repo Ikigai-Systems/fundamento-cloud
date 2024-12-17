@@ -6,42 +6,9 @@ import AsyncSelect from 'react-select/async';
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
-import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.tsx";
-import {request} from "@js-from-routes/axios";
-import deepmerge from "deepmerge";
+import Chart from 'react-apexcharts'
 import {ContentTitle, TableTitleInput} from "../../ContentTitle.tsx";
-
-const sampleRows = [
-  {
-    id: "sample_row_1",
-  },
-  {
-    id: "sample_row_2",
-  },
-  {
-    id: "sample_row_3",
-  },
-];
-
-const sampleColumns = [
-  {
-    id: "sample_column_name",
-    name: "Name",
-  },
-  {
-    id: "sample_column_2",
-    name: "Column 2",
-  },
-  {
-    id: "sample_column_3",
-    name: "Column 3",
-  },
-  {
-    id: "sample_column_4",
-    name: "Notes",
-    type: "longText",
-  },
-];
+import {BlockTitle} from "../BlockTitle.tsx";
 
 const ChartBlock = createReactBlockSpec(
   {
@@ -50,8 +17,11 @@ const ChartBlock = createReactBlockSpec(
       // textAlignment: defaultProps.textAlignment,
       // textColor: defaultProps.textColor,
       tableId: {
-        default: -1
+        default: ""
       },
+      title: {
+        default: ""
+      }
       // viewProps: {
       //   default: JSON.stringify({columns: {}}),
       // }
@@ -66,11 +36,11 @@ const ChartBlock = createReactBlockSpec(
       // const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
-      const tableId = blockProps.tableId;
+      const {tableId, title} = blockProps;
       const inputFile = useRef<HTMLInputElement | undefined>(undefined);
       const [isCreating, setIsCreating] = useState(false);
       const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
-        if (tableId === -1) {
+        if (tableId === "") {
           return null;
         }
         const currentDataDeserializer = Config.deserializeData;
@@ -91,7 +61,7 @@ const ChartBlock = createReactBlockSpec(
         )
       }
 
-      if (tableId === -1) {
+      if (tableId === "") {
         return (
           <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
@@ -122,10 +92,11 @@ const ChartBlock = createReactBlockSpec(
                     });
                     return tables.map(table => ({value: table.id, label: table.name}));
                   }}
-                  onChange={(newOption) => {
+                  onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: (newOption as { value: any }).value,
+                        tableId: newOption.value,
+                        title: `Chart for ${newOption.label}`,
                       },
                     });
                   }}
@@ -169,10 +140,11 @@ const ChartBlock = createReactBlockSpec(
                     });
                     return tables.map(table => ({value: table.id, label: table.name}));
                   }}
-                  onChange={(newOption) => {
+                  onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: (newOption as { value: any }).value,
+                        tableId: newOption.value,
+                        title: `Chart for ${newOption.label}`,
                       },
                     });
                   }}
@@ -185,10 +157,33 @@ const ChartBlock = createReactBlockSpec(
 
       return (<div className="flex flex-col w-full">
         <div className="flex flex-row items-center">
-          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space}
-                                                          extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
-          {!editor.isEditable &&
-            <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+          <BlockTitle defaultValue={title} onChange={(value) => {
+            editor.updateBlock(props.block, {
+              props: {
+                title: value,
+              },
+            });
+          }}/>
+        </div>
+
+        <div className="flex flex-row items-center">
+          <Chart
+            options={{
+              chart: {
+                id: 'apexchart-example'
+              },
+              xaxis: {
+                categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+              }
+            }}
+            series={[{
+              name: 'series-1',
+              data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+            }]}
+            type="bar"
+            width={500}
+            height={320}
+          />
         </div>
       </div>);
     },
