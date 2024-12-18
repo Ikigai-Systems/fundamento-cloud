@@ -1,7 +1,9 @@
 <section class="form-section">
   <h2 class="form-header">Create user</h2>
 
-  <%= form_for(@organization_user, html: { class: "default-form" }) do |f|
+  <%= form_for(@organization_user,
+    html: { class: "default-form" },
+    data: { turbo: false, controller: "prevent-double-submit" }) do |f|
   %>
     <%= render "devise/shared/error_messages", resource: @organization_user %>
 
