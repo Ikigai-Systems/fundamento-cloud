@@ -66,7 +66,8 @@ class OrganizationUsersController < ApplicationController
 
   def create_params
     params.require(:organization_user).permit(
-      user_attributes: [:email, :first_name, :last_name, :password, :password_confirm]
+      :organization_id,
+      user_attributes: [:email, :first_name, :last_name, :password, :password_confirmation]
     )
   end
 end
