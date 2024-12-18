@@ -8,6 +8,8 @@ class OrganizationUsersController < ApplicationController
   def new
     @organization_user = current_organization.organization_users.new
     @organization_user.user = User.new
+
+    authorize @organization_user, :create?
   end
 
   def create
