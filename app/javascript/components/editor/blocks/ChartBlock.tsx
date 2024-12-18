@@ -1,5 +1,5 @@
 import {createReactBlockSpec} from "@blocknote/react";
-import {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext, useEffect, useRef, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -9,22 +9,25 @@ import {Config} from "@js-from-routes/client";
 import Chart from 'react-apexcharts'
 import {ContentTitle, TableTitleInput} from "../../ContentTitle.tsx";
 import {BlockTitle} from "../BlockTitle.tsx";
+import SelectButton from "../../SelectButton.tsx";
+
+const CHART_TYPES = ["line", "area", "bar", "pie", "donut", "radialBar", "scatter", "bubble", "heatmap", "candlestick", "boxPlot", "radar", "polarArea", "rangeBar", "rangeArea", "treemap"];
+
 
 const ChartBlock = createReactBlockSpec(
   {
     type: "chartBlock",
     propSchema: {
-      // textAlignment: defaultProps.textAlignment,
-      // textColor: defaultProps.textColor,
       tableId: {
         default: ""
       },
       title: {
         default: ""
-      }
-      // viewProps: {
-      //   default: JSON.stringify({columns: {}}),
-      // }
+      },
+      chartType: {
+        default: "line",
+        values: CHART_TYPES,
+      },
     },
     content: "none",
     isSelectable: false,
@@ -33,12 +36,9 @@ const ChartBlock = createReactBlockSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       const blockProps = props.block.props;
-      // const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
-      const {tableId, title} = blockProps;
-      const inputFile = useRef<HTMLInputElement | undefined>(undefined);
-      const [isCreating, setIsCreating] = useState(false);
+      const {tableId, title, chartType} = blockProps;
       const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
         if (tableId === "") {
           return null;
@@ -52,7 +52,7 @@ const ChartBlock = createReactBlockSpec(
       }}, queryClient);
       const {isLoading, isError} = tableQuery;
 
-      if (isLoading || isCreating) {
+      if (isLoading) {
         return (
           <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
             Loading table...
@@ -97,6 +97,7 @@ const ChartBlock = createReactBlockSpec(
                       props: {
                         tableId: newOption.value,
                         title: `Chart for ${newOption.label}`,
+                        chartType: "line",
                       },
                     });
                   }}
@@ -144,7 +145,6 @@ const ChartBlock = createReactBlockSpec(
                     editor.updateBlock(props.block, {
                       props: {
                         tableId: newOption.value,
-                        title: `Chart for ${newOption.label}`,
                       },
                     });
                   }}
@@ -156,14 +156,27 @@ const ChartBlock = createReactBlockSpec(
       }
 
       return (<div className="flex flex-col w-full">
-        <div className="flex flex-row items-center">
-          <BlockTitle defaultValue={title} onChange={(value) => {
+        <BlockTitle isEditable={editor.isEditable} placeholder="Untitled chart" defaultValue={title} onChange={(value) => {
+          editor.updateBlock(props.block, {
+            props: {
+              title: value,
+            },
+          });
+        }}/>
+
+        <div className="flex flex-row items-center w-full gap-2 h-8 my-3">
+          <label className="text-sm">Chart type</label>
+          <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
             editor.updateBlock(props.block, {
               props: {
-                title: value,
+                chartType: value,
               },
             });
-          }}/>
+          }}>
+            Chart type
+          </SelectButton>
+          <div>x axis</div>
+          <div>y axis</div>
         </div>
 
         <div className="flex flex-row items-center">
@@ -180,7 +193,7 @@ const ChartBlock = createReactBlockSpec(
               name: 'series-1',
               data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
             }]}
-            type="bar"
+            type={chartType}
             width={500}
             height={320}
           />
