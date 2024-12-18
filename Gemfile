@@ -82,6 +82,8 @@ gem "good_job", "~> 4.4"
 
 gem "net-http2"
 
+gem "flipper-active_record"
+gem "flipper-ui"
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
