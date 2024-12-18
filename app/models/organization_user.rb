@@ -13,6 +13,14 @@ class OrganizationUser < ApplicationRecord
 
   delegate :display_name, to: :user
 
+  delegate :email, :email=, to: :user
+  # delegate :first_name, :first_name=, to: :user
+  # delegate :last_name, :last_name=, to: :user
+  # delegate :password, :password=, to: :user
+  # delegate :password_confirmation, :password_confirmation=, to: :user
+
+  accepts_nested_attributes_for :user, allow_destroy: false
+
   after_create_commit do
     broadcast_refresh_to(
       ["organization_users_list", self.organization]

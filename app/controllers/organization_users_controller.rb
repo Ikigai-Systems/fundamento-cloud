@@ -1,9 +1,26 @@
 # frozen_string_literal: true
 
-class OrganizationsUsersController < ApplicationController
+class OrganizationUsersController < ApplicationController
   skip_before_action :select_current_organization
 
   before_action :load_organization_user, only: [:promote, :demote, :destroy]
+
+  def new
+    @organization_user = current_organization.organization_users.new
+    @organization_user.user = User.new
+  end
+
+  def create
+    @organization_user = current_organization.organization_users.new(create_params)
+
+    authorize @organization_user, :create?
+
+    if @organization_user.save
+      redirect_to organization_path(current_organization), notice: 'User was successfully created.'
+    else
+      render :new
+    end
+  end
 
   def destroy
     authorize @organization_user, :destroy?
@@ -43,5 +60,11 @@ class OrganizationsUsersController < ApplicationController
 
   def load_organization_user
     @organization_user = OrganizationUser.find_by_param!(params[:npi])
+  end
+
+  def create_params
+    params.require(:organization_user).permit(
+      user_attributes: [:email, :first_name, :last_name, :password, :password_confirm]
+    )
   end
 end

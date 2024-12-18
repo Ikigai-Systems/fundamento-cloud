@@ -1,0 +1,40 @@
+<section class="form-section">
+  <h2 class="form-header">Create user</h2>
+
+  <%= form_for(@organization_user, html: { class: "default-form" }) do |f|
+  %>
+    <%= render "devise/shared/error_messages", resource: @organization_user %>
+
+    <%= fields_for :user do |f| %>
+      <div class="form-field">
+        <%= f.label :email %>
+        <%= f.email_field :email, class: "form-input"  %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :first_name %>
+        <%= f.text_field :first_name, class: "form-input"  %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :last_name %>
+        <%= f.text_field :last_name, class: "form-input"  %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :password %>
+        <%= f.password_field :password, class: "form-input"  %>
+      </div>
+
+      <div class="form-field">
+        <%= f.label :password_confirmation %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input"  %>
+      </div>
+    <% end %>
+
+    <div class="form-footer">
+      <%= link_to "Cancel", organization_path(current_organization), class: "secondary-button" %>
+      <%= f.submit "Create", class: "form-submit" %>
+    </div>
+  <% end %>
+</section>
