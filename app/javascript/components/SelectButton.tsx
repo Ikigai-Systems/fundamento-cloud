@@ -16,10 +16,12 @@ import {
 } from "@floating-ui/react";
 import {Placement} from "@floating-ui/utils";
 
+type OptionType = string | {value: string, label: string}
+
 type SelectButtonProps = {
   value: string,
   onChange?: (value: string) => Promise<void>,
-  options: string[]
+  options: OptionType[],
 }
 
 export default function SelectButton({
@@ -27,7 +29,7 @@ export default function SelectButton({
 }: SelectButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(options.indexOf(value));
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(options.findIndex(option => (option?.value || option) === value));
 
   useEffect(() => {
     onChange(options[selectedIndex]);
@@ -88,7 +90,7 @@ export default function SelectButton({
   };
 
   const selectedItemLabel =
-    selectedIndex !== null ? options[selectedIndex] : undefined;
+    selectedIndex !== null ? options[selectedIndex]?.label || options[selectedIndex] : undefined;
 
   return (
     <>
@@ -106,15 +108,15 @@ export default function SelectButton({
           <FloatingFocusManager context={context} modal={false}>
             <div
               ref={refs.setFloating}
-              className="shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg"
+              className="shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg z-20"
               style={{
                 ...floatingStyles,
               }}
               {...getFloatingProps()}
             >
-              {options.map((value, i) => (
+              {options.map((option, i) => (
                 <div
-                  key={value}
+                  key={option?.value || option}
                   ref={(node) => {
                     listRef.current[i] = node;
                   }}
@@ -141,7 +143,7 @@ export default function SelectButton({
                     },
                   })}
                 >
-                  {value}
+                  {option?.label || option}
                 </div>
               ))}
             </div>

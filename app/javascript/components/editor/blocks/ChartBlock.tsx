@@ -19,15 +19,21 @@ const ChartBlock = createReactBlockSpec(
     type: "chartBlock",
     propSchema: {
       tableId: {
-        default: ""
+        default: "",
       },
       title: {
-        default: ""
+        default: "",
       },
       chartType: {
         default: "line",
         values: CHART_TYPES,
       },
+      xAxisColumnNpi: {
+        default: "",
+      },
+      yAxisColumnNpi: {
+        default: "",
+      }
     },
     content: "none",
     isSelectable: false,
@@ -38,7 +44,7 @@ const ChartBlock = createReactBlockSpec(
       const blockProps = props.block.props;
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
-      const {tableId, title, chartType} = blockProps;
+      const {tableId, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
       const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
         if (tableId === "") {
           return null;
@@ -55,7 +61,7 @@ const ChartBlock = createReactBlockSpec(
       if (isLoading) {
         return (
           <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
-            Loading table...
+            Loading data source table...
             <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
           </div>
         )
@@ -155,6 +161,8 @@ const ChartBlock = createReactBlockSpec(
         </>)
       }
 
+      const columns = tableQuery.data.data.columns;
+
       return (<div className="flex flex-col w-full">
         <BlockTitle isEditable={editor.isEditable} placeholder="Untitled chart" defaultValue={title} onChange={(value) => {
           editor.updateBlock(props.block, {
@@ -164,19 +172,45 @@ const ChartBlock = createReactBlockSpec(
           });
         }}/>
 
-        <div className="flex flex-row items-center w-full gap-2 h-8 my-3">
-          <label className="text-sm">Chart type</label>
-          <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
-            editor.updateBlock(props.block, {
-              props: {
-                chartType: value,
-              },
-            });
-          }}>
-            Chart type
-          </SelectButton>
-          <div>x axis</div>
-          <div>y axis</div>
+        <div className="flex flex-row items-center w-full gap-8 h-8 my-3">
+          <div className="flex flex-row items-center">
+            <label className="text-sm mx-2">Chart type</label>
+            <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
+              editor.updateBlock(props.block, {
+                props: {
+                  chartType: value,
+                },
+              });
+            }}/>
+          </div>
+          <div className="flex flex-row items-center">
+            <label className="text-sm mx-2">X axis</label>
+            <SelectButton
+              value={xAxisColumnNpi}
+              options={columns.map(column => ({value: column.npi, label: column.name}))}
+              onChange={(option) => {
+                editor.updateBlock(props.block, {
+                  props: {
+                    xAxisColumnNpi: option?.value,
+                  },
+                });
+              }}
+            />
+          </div>
+          <div className="flex flex-row items-center">
+            <label className="text-sm mx-2">Y axis</label>
+            <SelectButton
+              value={yAxisColumnNpi}
+              options={columns.map(column => ({value: column.npi, label: column.name}))}
+              onChange={(option) => {
+                editor.updateBlock(props.block, {
+                  props: {
+                    yAxisColumnNpi: option?.value,
+                  },
+                });
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex flex-row items-center">
