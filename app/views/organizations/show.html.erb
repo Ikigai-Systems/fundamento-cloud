@@ -40,7 +40,7 @@
     </div>
 
     <% if policy(@organization).invite_user? %>
-      <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+      <div class="table-legend-button-container">
         <%= link_to 'Add user', new_invited_user_invitation_path(organization_npi: @organization.npi), class: "secondary-button" %>
       </div>
     <% end %>

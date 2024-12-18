@@ -15,6 +15,10 @@
         @apply mt-2 text-sm text-gray-700 dark:text-gray-300;
     }
 
+    .table-legend .table-legend-buttons-container {
+        @apply mt-4 sm:ml-16 sm:mt-0 sm:flex-none;
+    }
+
     .table-list {
         @apply w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400;
     }
