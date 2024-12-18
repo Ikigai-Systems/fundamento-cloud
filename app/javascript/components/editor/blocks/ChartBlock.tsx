@@ -1,5 +1,5 @@
 import {createReactBlockSpec} from "@blocknote/react";
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useContext} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -7,7 +7,6 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import Chart from 'react-apexcharts'
-import {ContentTitle, TableTitleInput} from "../../ContentTitle.tsx";
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
 
@@ -86,7 +85,6 @@ const ChartBlock = createReactBlockSpec(
 
               <div className="mb-48">
                 <AsyncSelect
-                  isDisabled={isCreating}
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
@@ -130,12 +128,11 @@ const ChartBlock = createReactBlockSpec(
                 <div className="size-5 icon-[heroicons--x-mark]"></div>
               </button>
             </div>
-            <div className="px-4 py-3 sm:p-6">
+            {editor.isEditable && <div className="px-4 py-3 sm:p-6">
               <div className="font-bold text-sm py-3">Data source table</div>
 
               <div className="mb-48">
                 <AsyncSelect
-                  isDisabled={isCreating}
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
@@ -156,12 +153,12 @@ const ChartBlock = createReactBlockSpec(
                   }}
                 />
               </div>
-            </div>
+            </div>}
           </div>
         </>)
       }
 
-      const columns = tableQuery.data.data.columns;
+      const {columns, rows} = tableQuery.data.data;
 
       return (<div className="flex flex-col w-full">
         <BlockTitle isEditable={editor.isEditable} placeholder="Untitled chart" defaultValue={title} onChange={(value) => {
@@ -175,17 +172,20 @@ const ChartBlock = createReactBlockSpec(
         <div className="flex flex-row items-center w-full gap-8 h-8 my-3">
           <div className="flex flex-row items-center">
             <label className="text-sm mx-2">Chart type</label>
-            <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
+            {editor.isEditable && <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
               editor.updateBlock(props.block, {
                 props: {
                   chartType: value,
                 },
               });
-            }}/>
+            }}/>}
+            {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
+              {chartType}
+            </div>}
           </div>
           <div className="flex flex-row items-center">
             <label className="text-sm mx-2">X axis</label>
-            <SelectButton
+            {editor.isEditable && <SelectButton
               value={xAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
               onChange={(option) => {
@@ -195,11 +195,14 @@ const ChartBlock = createReactBlockSpec(
                   },
                 });
               }}
-            />
+            />}
+            {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
+              {columns.find(column => column.npi === xAxisColumnNpi)?.name || "None"}
+            </div>}
           </div>
           <div className="flex flex-row items-center">
             <label className="text-sm mx-2">Y axis</label>
-            <SelectButton
+            {editor.isEditable && <SelectButton
               value={yAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
               onChange={(option) => {
@@ -209,29 +212,38 @@ const ChartBlock = createReactBlockSpec(
                   },
                 });
               }}
-            />
+            />}
+            {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
+              {columns.find(column => column.npi === yAxisColumnNpi)?.name || "None"}
+            </div>}
           </div>
         </div>
 
-        <div className="flex flex-row items-center">
+        {xAxisColumnNpi !== "" && yAxisColumnNpi !== "" &&
           <Chart
             options={{
               chart: {
-                id: 'apexchart-example'
+                id: `${props.block.id}-chart`,
+                width: '100%',
               },
               xaxis: {
-                categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+                categories: rows.map(row => {
+                  const cellValue = row[xAxisColumnNpi];
+                  if (cellValue === null) {
+                    return ""
+                  } else {
+                    return cellValue;
+                  }
+                }),
               }
             }}
             series={[{
               name: 'series-1',
-              data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
+              data: rows.map(row => row[yAxisColumnNpi]),
             }]}
             type={chartType}
-            width={500}
-            height={320}
           />
-        </div>
+        }
       </div>);
     },
   }

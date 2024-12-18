@@ -16,12 +16,12 @@ import {
 } from "@floating-ui/react";
 import {Placement} from "@floating-ui/utils";
 
-type OptionType = string | {value: string, label: string}
+type OptionOrString = string | {value: string, label: string}
 
 type SelectButtonProps = {
   value: string,
-  onChange?: (value: string) => Promise<void>,
-  options: OptionType[],
+  onChange?: (value: OptionOrString) => Promise<void>,
+  options: OptionOrString[],
 }
 
 export default function SelectButton({
@@ -97,7 +97,7 @@ export default function SelectButton({
       <div
         tabIndex={0}
         ref={refs.setReference}
-        className="bg-white border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
+        className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
         {...getReferenceProps()}
       >
         {selectedItemLabel || "Select..."}
