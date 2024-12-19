@@ -17,6 +17,11 @@ class OrganizationUsersController < ApplicationController
 
     authorize @organization_user, :create?
 
+    user = User.find_by_email(@organization_user.user.email)
+    if user.present?
+      @organization_user.user = user
+    end
+
     if @organization_user.save
       redirect_to organization_path(current_organization), notice: 'User was successfully created.'
     else
