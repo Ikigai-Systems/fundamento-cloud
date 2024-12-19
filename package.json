@@ -24,7 +24,7 @@
     "@uiw/react-codemirror": "^4.23.3",
     "@wizardhealth/stimulus-multiselect": "^1.0.0",
     "@y-rb/actioncable": "^0.2.1",
-    "apexcharts": "^4.2.0",
+    "apexcharts": "^4.3.0",
     "dayjs": "^1.11.13",
     "deepmerge": "^4.3.1",
     "export-to-csv": "^1.4.0",

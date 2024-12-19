@@ -6,7 +6,7 @@ import AsyncSelect from 'react-select/async';
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
-import Chart from 'react-apexcharts'
+import ReactApexChart from 'react-apexcharts'
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
 import FormulasApi from "../../../api/FormulasApi";
@@ -250,9 +250,10 @@ const ChartBlock = createReactBlockSpec(
           </div>
         </div>
 
+
         {chartType !== "" && xAxisDataset?.length > 0 && yAxisDataset?.length > 0 &&
-          <Chart
-            key={`${chartType}-${xAxisColumnNpi}-${yAxisColumnNpi}`} //hack to avoid https://github.com/apexcharts/apexcharts.js/issues/4870
+          <ReactApexChart
+            type={chartType}
             options={{
               chart: {
                 id: `${props.block.id}-chart`,
@@ -263,9 +264,19 @@ const ChartBlock = createReactBlockSpec(
             }}
             series={[{
               name: 'series-1',
-              data: yAxisDataset,
+              data: yAxisDataset.map(value => {
+                if (value !== null && value !== '') {
+                  const number = Number(value);
+                  if (isNaN(number)) {
+                    return null;
+                  } else {
+                    return number;
+                  }
+                } else {
+                  return null;
+                }
+              })
             }]}
-            type={chartType}
           />
         }
       </div>);

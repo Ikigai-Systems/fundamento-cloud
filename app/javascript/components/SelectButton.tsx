@@ -31,8 +31,14 @@ export default function SelectButton({
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(options.findIndex(option => (option?.value || option) === value));
 
+  const initialRender = useRef(true);
+
   useEffect(() => {
-    onChange(options[selectedIndex]);
+    if (initialRender.current === true) {
+      initialRender.current = false;
+    } else {
+      onChange(options[selectedIndex]);
+    }
   }, [selectedIndex]);
 
   const { refs, floatingStyles, context } = useFloating<HTMLElement>({
