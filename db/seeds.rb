@@ -9,6 +9,8 @@
 #   end
 
 if Rails.env.standalone?
+  DatabaseId.upsert(ActiveRecord::Base.connection)
+
   # Code to initialize a standalone server
   organization = Organization.find_or_create_by!(
     name: ENV.fetch("FUNDAMENTO_ORGANIZATION", "Acme Inc.")
