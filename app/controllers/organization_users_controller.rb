@@ -20,6 +20,8 @@ class OrganizationUsersController < ApplicationController
     if @organization_user.save
       redirect_to organization_path(current_organization), notice: 'User was successfully created.'
     else
+      @organization_user.user.clean_up_passwords if @organization_user.user.respond_to?(:clean_up_passwords)
+      # @minimum_password_length = @organization_user.user.password_length.min if @organization_user.user.validatable?
       render :new
     end
   end
