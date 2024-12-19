@@ -4,7 +4,7 @@ class OrganizationUsersController < ApplicationController
   skip_before_action :select_current_organization
 
   before_action :load_organization_user, only: [:promote, :demote, :destroy, :change_password, :update]
-  before_action :ensure_turbo_request, only: [:change_password]
+  before_action :ensure_turbo_request, only: [:change_password, :update]
 
   def new
     @organization_user = current_organization.organization_users.new
@@ -38,6 +38,21 @@ class OrganizationUsersController < ApplicationController
 
   def update
     authorize @organization_user, :change_password?
+
+    user = @organization_user.user
+    def user.password_required?
+      true
+    end
+
+    if user.update(update_params[:user_attributes].except(:id))
+      render turbo_stream: turbo_stream.redirect_to(organization_path(current_organization))
+    else
+      user.errors.each do |error|
+        @organization_user.errors.import(error)
+      end
+
+      render :change_password
+    end
   end
 
   def destroy
@@ -82,8 +97,13 @@ class OrganizationUsersController < ApplicationController
 
   def create_params
     params.require(:organization_user).permit(
-      :organization_id,
       user_attributes: [:email, :first_name, :last_name, :password, :password_confirmation]
+    )
+  end
+
+  def update_params
+    params.require(:organization_user).permit(
+      user_attributes: [:id, :password, :password_confirmation]
     )
   end
 
