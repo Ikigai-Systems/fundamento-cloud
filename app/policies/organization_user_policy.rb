@@ -1,6 +1,7 @@
 class OrganizationUserPolicy < ApplicationPolicy
   def create?
-    destroy?
+    # Currently we don't allow creating users manually in Cloud
+    destroy? && !Flipper.enabled?(:cloud)
   end
 
   def destroy?
