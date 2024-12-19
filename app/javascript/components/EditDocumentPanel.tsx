@@ -9,6 +9,7 @@ type EditDocumentPanelProps = {
   document: Document,
   space: Space,
   currentUser: User,
+  databaseId: string,
 }
 
 const EditDocumentPanel = ({document, space, currentUser, databaseId}: EditDocumentPanelProps) => {
