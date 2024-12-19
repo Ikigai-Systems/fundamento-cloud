@@ -49,5 +49,9 @@
 
     .table-list form.button_to {
         @apply inline-block;
+
+        button {
+            text-align: left;
+        }
     }
 }
