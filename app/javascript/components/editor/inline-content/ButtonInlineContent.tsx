@@ -8,6 +8,7 @@ import createFlash from "../../createFlash.ts";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import {colorNameToClass, colorNameToHoverAndActiveClass} from "./button/buttonColorUtils.ts";
+import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -77,39 +78,22 @@ const ButtonInlineContent = createReactInlineContentSpec(
           <button className={`ignore-default-disabled-styling ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
             disabled={isExecuting}
             onClick={async () => {
-              const tableIdsToInvalidate: any = {};
               try {
                 setIsExecuting(true);
                 const formulaResult = await FormulasApi.eval({data: {formula}});
+                handleFormulaResultCommands(formulaResult);
                 if (!formulaResult.commands) {
                   createFlash({
                     type: "error",
                     message: "Unable to proceed, invalid action"
-                  })
-                } else {
-                  formulaResult.commands.forEach(command => {
-                    switch(command.type) {
-                    case "AddRow":
-                      tableIdsToInvalidate[command.tableId] = true;
-                      // todo: show flash message about performed actions, in this case "1 row added" ?
-                      break;
-                    case "DeleteRows":
-                      tableIdsToInvalidate[command.tableId] = true;
-                      // todo: show flash message about performed actions, in this case "X rows removed" ? backend (formula_eval_gateway) could provide that number...
-                      break;
-                    case "AddOrUpdateRows":
-                      tableIdsToInvalidate[command.tableId] = true;
-                      break;
-                    }
-                  })
+                  });
                 }
               } catch (e) {
                 createFlash({
                   type: "error",
-                  message: e.message
-                })
+                  message: e.message,
+                });
               } finally {
-                Object.keys(tableIdsToInvalidate).forEach(tableId => queryClient.invalidateQueries({queryKey: ["tables", space?.npi, tableId.toString()]}));
                 setIsExecuting(false);
               }
             }}

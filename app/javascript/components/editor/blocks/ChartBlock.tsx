@@ -1,5 +1,5 @@
 import {createReactBlockSpec} from "@blocknote/react";
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -9,6 +9,9 @@ import {Config} from "@js-from-routes/client";
 import Chart from 'react-apexcharts'
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
+import FormulasApi from "../../../api/FormulasApi";
+import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
+import useAsyncEffect from "use-async-effect";
 
 const CHART_TYPES = ["line", "area", "bar", "pie", "donut", "radialBar", "scatter", "bubble", "heatmap", "candlestick", "boxPlot", "radar", "polarArea", "rangeBar", "rangeArea", "treemap"];
 
@@ -44,6 +47,8 @@ const ChartBlock = createReactBlockSpec(
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const {tableId, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
+      const [xAxisDataset, setXAxisDataset] = useState([]);
+      const [yAxisDataset, setYAxisDataset] = useState([]);
       const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
         if (tableId === "") {
           return null;
@@ -56,6 +61,30 @@ const ChartBlock = createReactBlockSpec(
         return {...data, forceRerenderUuid: crypto.randomUUID()}
       }}, queryClient);
       const {isLoading, isError} = tableQuery;
+
+      const useFormula = false;
+
+      useAsyncEffect(async () => {
+        if (useFormula) {
+          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableId}), Dig(CurrentValue, "${xAxisColumnNpi}"))`}});
+          handleFormulaResultCommands(formulaResult, space);
+          setXAxisDataset(formulaResult.result);
+        } else {
+          const xAxisColumnValues = tableQuery?.data?.data?.rows.map((row: Array<any>) => row[xAxisColumnNpi]);
+          setXAxisDataset(xAxisColumnValues);
+        }
+      }, [xAxisColumnNpi, tableQuery.data]);
+
+      useAsyncEffect(async () => {
+        if (useFormula) {
+          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableId}), Dig(CurrentValue, "${yAxisColumnNpi}"))`}});
+          handleFormulaResultCommands(formulaResult, space);
+          setYAxisDataset(formulaResult.result);
+        } else {
+          const yAxisColumnValues = tableQuery?.data?.data?.rows.map((row: Array<any>) => row[yAxisColumnNpi]);
+          setYAxisDataset(yAxisColumnValues);
+        }
+      }, [yAxisColumnNpi, tableQuery.data]);
 
       if (isLoading) {
         return (
@@ -189,6 +218,7 @@ const ChartBlock = createReactBlockSpec(
               value={xAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
               onChange={(option) => {
+                setXAxisDataset(undefined);
                 editor.updateBlock(props.block, {
                   props: {
                     xAxisColumnNpi: option?.value,
@@ -206,6 +236,7 @@ const ChartBlock = createReactBlockSpec(
               value={yAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
               onChange={(option) => {
+                setYAxisDataset(undefined);
                 editor.updateBlock(props.block, {
                   props: {
                     yAxisColumnNpi: option?.value,
@@ -219,27 +250,20 @@ const ChartBlock = createReactBlockSpec(
           </div>
         </div>
 
-        {xAxisColumnNpi !== "" && yAxisColumnNpi !== "" &&
+        {chartType !== "" && xAxisDataset?.length > 0 && yAxisDataset?.length > 0 &&
           <Chart
+            key={`${chartType}-${xAxisColumnNpi}-${yAxisColumnNpi}`} //hack to avoid https://github.com/apexcharts/apexcharts.js/issues/4870
             options={{
               chart: {
                 id: `${props.block.id}-chart`,
-                width: '100%',
               },
               xaxis: {
-                categories: rows.map(row => {
-                  const cellValue = row[xAxisColumnNpi];
-                  if (cellValue === null) {
-                    return ""
-                  } else {
-                    return cellValue;
-                  }
-                }),
+                categories: xAxisDataset.map(data => data === null ? "" : data),
               }
             }}
             series={[{
               name: 'series-1',
-              data: rows.map(row => row[yAxisColumnNpi]),
+              data: yAxisDataset,
             }]}
             type={chartType}
           />
