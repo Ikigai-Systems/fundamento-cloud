@@ -6,4 +6,8 @@ module ApplicationHelper
       link_to(name, options, html_options, &block)
     end
   end
+
+  def database_id
+    DatabaseId.get(ActiveRecord::Base.connection)
+  end
 end
