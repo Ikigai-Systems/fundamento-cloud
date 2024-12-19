@@ -3,10 +3,11 @@ export type Document = {
   title: string,
 }
 
+// Make sure you keep it in sync with Space#to_react_props
 export type Space = {
   npi: string,
+  name: string,
   hierarchy: number[],
-  homeDocumentId?: number,
 }
 
 export type User = {

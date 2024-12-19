@@ -4,7 +4,8 @@ class Space < ApplicationRecord
   include ModelWithNpiAsParam
   include ToReactProps
 
-  set_react_props :npi, :name
+  # Keep it in sync with app/javascript/types.ts
+  set_react_props :npi, :name, :hierarchy
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
