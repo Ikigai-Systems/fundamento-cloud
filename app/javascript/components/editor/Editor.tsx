@@ -43,6 +43,7 @@ const tinySimpleHash = (s: string) => {
 }
 
 type EditorProps = {
+  databaseId: string,
   currentUser: User,
   documentId: number,
   editable?: boolean,
@@ -55,7 +56,7 @@ const LoadingContent = () => {
   </div>;
 }
 
-const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
+const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
@@ -104,7 +105,7 @@ const Editor = ({currentUser, documentId, editable = true}: EditorProps) => {
     }
 
     ydoc = new Y.Doc();
-    new IndexeddbPersistence("document:" + documentId.toString(), ydoc);
+    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${documentId.toString()}`, ydoc);
 
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";

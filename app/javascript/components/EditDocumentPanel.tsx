@@ -11,7 +11,7 @@ type EditDocumentPanelProps = {
   currentUser: User,
 }
 
-const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProps) => {
+const EditDocumentPanel = ({document, space, currentUser, databaseId}: EditDocumentPanelProps) => {
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <div className="content-editor-padding">
@@ -22,6 +22,7 @@ const EditDocumentPanel = ({document, space, currentUser}: EditDocumentPanelProp
         <Editor
           currentUser={currentUser}
           documentId={document.id}
+          databaseId={databaseId}
         />
       </div>
     </CurrentSpaceContext.Provider>
