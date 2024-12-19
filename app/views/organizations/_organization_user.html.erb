@@ -22,6 +22,10 @@
       <%= button_to "Demote to member", demote_organization_user_path(organization_user), disabled: organization_user.user == current_user, form: { data: { turbo_confirm: "Are you sure you want to demote that user?" } }, class: "link-button", method: :patch %>
     <% end %>
 
+    <% if policy(organization_user).change_password? %>
+      <%= link_to "Change password", change_password_organization_user_path(organization_user), data: { turbo_frame: "modal", action: "modal#open" }, class: "link-button" %>
+    <% end %>
+
     <% if policy(organization_user).destroy? %>
       <%= button_to "Remove user", organization_user_path(organization_user), form: { data: { turbo_confirm: "Are you sure? This user will be immediately removed from the organization!" } }, class: "link-button", method: :delete %>
     <% end %>

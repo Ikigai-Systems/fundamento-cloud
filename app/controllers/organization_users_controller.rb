@@ -3,7 +3,8 @@
 class OrganizationUsersController < ApplicationController
   skip_before_action :select_current_organization
 
-  before_action :load_organization_user, only: [:promote, :demote, :destroy]
+  before_action :load_organization_user, only: [:promote, :demote, :destroy, :change_password, :update]
+  before_action :ensure_turbo_request, only: [:change_password]
 
   def new
     @organization_user = current_organization.organization_users.new
@@ -29,6 +30,14 @@ class OrganizationUsersController < ApplicationController
       # @minimum_password_length = @organization_user.user.password_length.min if @organization_user.user.validatable?
       render :new
     end
+  end
+
+  def change_password
+    authorize @organization_user, :change_password?
+  end
+
+  def update
+    authorize @organization_user, :change_password?
   end
 
   def destroy
@@ -76,5 +85,9 @@ class OrganizationUsersController < ApplicationController
       :organization_id,
       user_attributes: [:email, :first_name, :last_name, :password, :password_confirmation]
     )
+  end
+
+  def ensure_turbo_request
+    redirect_to @organization_user.organization unless turbo_frame_request?
   end
 end
