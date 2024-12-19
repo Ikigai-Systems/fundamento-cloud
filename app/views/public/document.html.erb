@@ -3,7 +3,7 @@
     <%= react_component "PublicDocumentViewer", {
       document: document.attributes.except("sync"),
       version: version.attributes.except("id"),
-      space: document.space
+      space: document.space.to_react_props
     }
     %>
   </div>

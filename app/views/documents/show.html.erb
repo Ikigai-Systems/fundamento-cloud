@@ -46,7 +46,11 @@
     </div>
 
     <div class="overflow-auto h-[calc(100%-48px)]">
-      <%= react_component "ShowVersionPanel", { version: @version.attributes.except("id"), document: @document.attributes.except("sync"), space: @space } %>
+      <%= react_component "ShowVersionPanel", {
+        version: @version.attributes.except("id"),
+        document: @document.attributes.except("sync"),
+        space: @space.to_react_props
+      } %>
     </div>
   </article>
 </div>

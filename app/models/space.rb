@@ -2,6 +2,9 @@ class Space < ApplicationRecord
   belongs_to :organization
 
   include ModelWithNpiAsParam
+  include ToReactProps
+
+  set_react_props :npi, :name
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
