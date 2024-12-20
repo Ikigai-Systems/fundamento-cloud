@@ -14,7 +14,12 @@
     >
       <%=
         render partial: "spaces/_sidebar/content_link",
-          locals: { content: document, level: level, has_children: item["children"].length > 0, selected: selected }
+          locals: {
+            content: document,
+            level: level,
+            has_children: item["children"].length > 0,
+            selected: selected
+          }
       %>
 
       <ul
@@ -22,7 +27,12 @@
         data-draggable-target="item"
         data-document-id="<%= item["id"] %>" class="overflow-hidden max-h-0"
       >
-        <%= render partial: "spaces/_sidebar/hierarchy_node", locals: { node: item["children"], level: level + 1 } %>
+        <%= render partial: "spaces/_sidebar/hierarchy_node",
+          locals: {
+            node: item["children"],
+            level: level + 1
+          }
+        %>
       </ul>
     </li>
   <% end %>

@@ -24,7 +24,12 @@
         <div class="section-empty hidden">No documents in this space</div>
 
         <ul class="section-content-list" data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
-          <%= render partial: "spaces/_sidebar/hierarchy_node", locals: { node: @space.hierarchy, level: 0 } %>
+          <%= render partial: "spaces/_sidebar/hierarchy_node",
+            locals: {
+              node: @space.hierarchy,
+              level: 0
+            }
+          %>
         </ul>
       </div>
 
