@@ -39,11 +39,13 @@
     <% end %>
   <% end %>
 
-  <%= link_to polymorphic_path([:edit, content.space, content]),
-    class: {
-      "edit-button-container" => true,
-      "selected" => selected,
-    } do %>
-    <div class="edit-button"></div>
-  <% end %>
+  <div class="content-link-buttons-container">
+    <%= link_to polymorphic_path([:edit, content.space, content]),
+      class: {
+        "content-link-button" => true,
+        "selected" => selected,
+      } do %>
+      <i class="fa-regular fa-pencil"></i>
+    <% end %>
+  </div>
 <% end %>

@@ -47,16 +47,21 @@
                 @apply flex flex-row items-center flex-grow;
             }
 
-            .edit-button-container {
-                @apply absolute right-1 top-1 rounded-md size-7 p-1 group-hover:bg-gray-200 active:bg-gray-300;
+            .content-link-buttons-container {
+                @apply absolute gap-1 right-1 top-1 p-1 flex;
             }
 
-            .edit-button-container.selected {
+            .content-link-button {
+                @apply rounded-md size-7 group-hover:bg-gray-200 active:bg-gray-300 inline-flex justify-center items-center;
+                @apply group-hover:opacity-100 opacity-0 transition-opacity duration-300;
+
+                i {
+                    @apply  text-gray-950 opacity-50;
+                }
+            }
+
+            .content-link-button.selected {
                 @apply group-hover:bg-blue-300 active:bg-blue-400;
-            }
-
-            .edit-button {
-                @apply group-hover:opacity-30 opacity-0 transition-opacity duration-300 bg-gray-950 size-5 icon-[heroicons--pencil];
             }
 
             .draft-lozenge {
