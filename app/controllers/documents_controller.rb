@@ -176,7 +176,7 @@ class DocumentsController < ApplicationController
 
     children_ids = @document.space.get_children_ids_from_hierarchy(@document.id) || []
 
-    @children = @document.space.documents.where(id: children_ids).filter { |document| policy(document).update? || document.versions.present? }
+    @children = @document.space.documents.find(children_ids).filter { |document| policy(document).update? || document.versions.present? }
   end
 
   private
