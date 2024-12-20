@@ -68,6 +68,21 @@ class Space < ApplicationRecord
     nil
   end
 
+  def get_children_ids_from_hierarchy(document_id, starting_node = hierarchy)
+    document_id = document_id.to_i
+
+    starting_node.each do |item|
+      if item["id"] == document_id
+        return item["children"].map { _1["id"] }
+      else
+        ids = get_children_ids_from_hierarchy(document_id, item["children"])
+        return ids unless ids.nil?
+      end
+    end
+
+    nil
+  end
+
   def add_item_to_hierarchy!(starting_node, parent_id, item_to_add, position = nil, document_id = nil)
     if document_id == parent_id
       # FIXME: no idea why we have this here, doesn't make sense to me -- Pawel

@@ -18,31 +18,9 @@ RSpec.describe Space, type: :model do
       { "id" => 16, "children" => [] },
       { "id" => 18, "children" => [] },
       { "id" => 23, "children" => [{ "id" => 24, "children" => [
-        { "id" => 26, "children" => [] }
-      ] }] },
-      { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
-      { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
-    ]
-  end
-
-  let(:hierarchy_2) do
-    [
-      { "id" => 16, "children" => [] },
-      { "id" => 18, "children" => [] },
-      { "id" => 23, "children" => [{ "id" => 24, "children" => [
-        { "id" => 26, "children" => [] }
-      ] }] },
-      { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
-      { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
-    ]
-  end
-
-  let(:hierarchy_3) do
-    [
-      { "id" => 16, "children" => [] },
-      { "id" => 18, "children" => [] },
-      { "id" => 23, "children" => [{ "id" => 24, "children" => [
-        { "id" => 26, "children" => [] }
+        { "id" => 26, "children" => [] },
+        { "id" => 28, "children" => [] },
+        { "id" => 29, "children" => [] },
       ] }] },
       { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
       { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
@@ -65,10 +43,10 @@ RSpec.describe Space, type: :model do
     end
 
     it "removes only one item" do
-      item_removed = Space.new.remove_single_item_from_hierarchy!(16, hierarchy_1)
+      item_removed = Space.new.remove_single_item_from_hierarchy!(16, hierarchy)
 
       expect(item_removed).to be_truthy
-      expect(hierarchy_1).to eq([
+      expect(hierarchy).to eq([
         { "id" => 18, "children" => [] },
         { "id" => 23, "children" => [{ "id" => 24, "children" => [
           { "id" => 26, "children" => [] }
@@ -79,11 +57,11 @@ RSpec.describe Space, type: :model do
     end
 
     it "returns false it item was not found" do
-      item_removed = Space.new.remove_single_item_from_hierarchy!(666, hierarchy_2)
+      item_removed = Space.new.remove_single_item_from_hierarchy!(666, hierarchy)
 
       # The document with id 23 is removed, children are moved level up
       expect(item_removed).to be_falsey
-      expect(hierarchy_2).to eq([
+      expect(hierarchy).to eq([
         { "id" => 16, "children" => [] },
         { "id" => 18, "children" => [] },
         { "id" => 23, "children" => [{ "id" => 24, "children" => [
@@ -97,14 +75,14 @@ RSpec.describe Space, type: :model do
 
   describe "#remove_item_with_children_from_hierarchy!" do
     it "removes only one item and returns it with children" do
-      removed_item = Space.new.remove_item_with_children_from_hierarchy!(23, hierarchy_3)
+      removed_item = Space.new.remove_item_with_children_from_hierarchy!(23, hierarchy)
 
       # The document with id 23 is removed, children are moved level up
       expect(removed_item).to eq({ "id" => 23, "children" => [{ "id" => 24, "children" => [
         { "id" => 26, "children" => [] }
       ] }] })
 
-      expect(hierarchy_3).to eq([
+      expect(hierarchy).to eq([
         { "id" => 16, "children" => [] },
         { "id" => 18, "children" => [] },
         { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
@@ -264,6 +242,24 @@ RSpec.describe Space, type: :model do
         { "id" => 19, "children" => [{ "id" => 20, "children" => [] }] },
         { "id" => 22, "children" => [{ "id" => 25, "children" => [] }] }
       ])
+    end
+  end
+
+  describe "#get_children_ids_from_hierarchy" do
+    it do
+      expect(Space.new.get_children_ids_from_hierarchy(16, hierarchy)).to eq []
+      expect(Space.new.get_children_ids_from_hierarchy(23, hierarchy)).to eq [24]
+      expect(Space.new.get_children_ids_from_hierarchy(24, hierarchy)).to eq [26]
+      expect(Space.new.get_children_ids_from_hierarchy(26, hierarchy)).to eq []
+      expect(Space.new.get_children_ids_from_hierarchy(666, hierarchy)).to be_nil
+    end
+
+    it do
+      expect(Space.new.get_children_ids_from_hierarchy(16, hierarchy_1)).to eq []
+      expect(Space.new.get_children_ids_from_hierarchy(23, hierarchy_1)).to eq [24]
+      expect(Space.new.get_children_ids_from_hierarchy(24, hierarchy_1)).to eq [26, 28, 29]
+      expect(Space.new.get_children_ids_from_hierarchy(26, hierarchy_1)).to eq []
+      expect(Space.new.get_children_ids_from_hierarchy(666, hierarchy_1)).to be_nil
     end
   end
 end
