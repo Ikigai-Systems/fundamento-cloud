@@ -13,7 +13,7 @@ import FormulasApi from "../../../api/FormulasApi";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import useAsyncEffect from "use-async-effect";
 
-const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "bubble", "heatmap", "candlestick", "boxPlot", "radar", "polarArea", "rangeBar", "rangeArea", "treemap"];
+const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
 
 
 const ChartBlock = createReactBlockSpec(
@@ -189,16 +189,16 @@ const ChartBlock = createReactBlockSpec(
 
       const {columns, rows} = tableQuery.data.data;
 
-      const valueToSeriesPoint = (value) => {
+      const valueToSeriesPoint = (invalidValue = null) => (value) => {
         if (value !== null && value !== '') {
           const number = Number(value);
           if (isNaN(number)) {
-            return null;
+            return invalidValue;
           } else {
             return number;
           }
         } else {
-          return null;
+          return invalidValue;
         }
       }
 
@@ -208,16 +208,20 @@ const ChartBlock = createReactBlockSpec(
           case "line":
           case "area":
           case "bar":
+          case "radar":
             chart = {};
             chart.type = chartType;
             chart.options = {
+              chart: {
+                type: chartType
+              },
               xaxis: {
                 categories: xAxisDataset.map((data: any) => data === null ? "" : data),
               }
             };
             chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi).name,
-              data: yAxisDataset.map(valueToSeriesPoint)
+              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+              data: yAxisDataset.map(valueToSeriesPoint())
             }];
             break;
           case "funnel":
@@ -225,8 +229,6 @@ const ChartBlock = createReactBlockSpec(
             chart.type = "bar";
             chart.options = {
               chart: {
-                type: 'bar',
-                height: 350,
                 dropShadow: {
                   enabled: true,
                 },
@@ -257,20 +259,66 @@ const ChartBlock = createReactBlockSpec(
             };
             chart.series = [{
               name: columns.find(column => column.npi === yAxisColumnNpi).name,
-              data: yAxisDataset.map(valueToSeriesPoint)
+              data: yAxisDataset.map(valueToSeriesPoint())
             }];
             break;
           case "pie":
           case "donut":
+          case "radialBar":
+          case "polarArea":
             chart = {};
             chart.type = chartType;
-            chart.series = yAxisDataset.map(valueToSeriesPoint);
+            chart.series = yAxisDataset.map(valueToSeriesPoint(chartType === "polarArea" ? "" : null));
             chart.options = {
               chart: {
-                type: chartType
+                type: chartType,
               },
               labels: xAxisDataset.map((data: any) => data === null ? "" : data),
             };
+            break;
+          case "scatter":
+          case "heatmap":
+            chart = {};
+            chart.type = chartType;
+            chart.options = {
+              chart: {
+                type: chartType,
+              },
+              xaxis: {
+                labels: {
+                  formatter: function(val) {
+                    return parseFloat(val).toFixed(1)
+                  }
+                }
+              },
+              yaxis: {
+                labels: {
+                  formatter: function(val) {
+                    return parseFloat(val).toFixed(1)
+                  }
+                }
+              },
+            };
+            chart.series = [{
+              name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
+              data: yAxisDataset.map((yValue, index) => {
+                return [valueToSeriesPoint()(yValue), valueToSeriesPoint()(xAxisDataset[index])];
+              }),
+            }];
+            break;
+          case "treemap":
+            chart = {};
+            chart.type = chartType;
+            chart.options = {
+              chart: {
+                type: chartType,
+              }
+            };
+            chart.series = [{
+              data: yAxisDataset.map((yValue, index) => {
+                return {x: xAxisDataset[index] !== null ? xAxisDataset[index] : "", y: valueToSeriesPoint()(yValue)}
+              }),
+            }];
             break;
         }
       }
@@ -287,13 +335,23 @@ const ChartBlock = createReactBlockSpec(
         <div className="flex flex-row items-center w-full gap-8 h-8 my-3">
           <div className="flex flex-row items-center">
             <label className="text-sm mx-2">Chart type</label>
-            {editor.isEditable && <SelectButton value={chartType} options={CHART_TYPES} onChange={(value) => {
-              editor.updateBlock(props.block, {
-                props: {
-                  chartType: value,
-                },
-              });
-            }}/>}
+            {editor.isEditable && <SelectButton
+              value={chartType}
+              options={CHART_TYPES.map(type => {
+                return {
+                  value: type,
+                  label: type === "radialBar" ? "radial bar" : type === "polarArea" ? "polar area" : type
+                }
+              })}
+              onChange={(option) => {
+                console.log(option);
+                editor.updateBlock(props.block, {
+                  props: {
+                    chartType: option.value,
+                  },
+                });
+              }}
+            />}
             {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
               {chartType}
             </div>}
