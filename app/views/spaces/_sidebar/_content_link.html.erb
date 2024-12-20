@@ -9,14 +9,14 @@
 ) do %>
   <%= link_to polymorphic_path([content.space, content]), class: "content-link" do %>
     <%= tag.div(
-      style: "padding-left: #{level * 16}px",
+      style: "padding-left: #{local_assigns.fetch(:level, 0) * 16}px",
       class: "document-padding-left flex items-center w-full",
     ) do %>
       <%= tag.div(
         data: {  "action" => "click->collapsible#toggle:prevent"  },
         class: {
           "multi-items-expander size-6 ml-1" => true,
-          "hidden" => !has_children,
+          "hidden" => !local_assigns.fetch(:has_children, false),
         }
       ) do %>
         <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
@@ -24,7 +24,7 @@
 
       <%= tag.div("•", class: {
         "single-item-dot pt-1 mx-2.5 -mt-[0.3rem]" => true,
-        "hidden" => has_children,
+        "hidden" => local_assigns.fetch(:has_children, false),
       } ) %>
 
       <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
@@ -40,12 +40,29 @@
   <% end %>
 
   <div class="content-link-buttons-container">
-    <%= link_to polymorphic_path([:edit, content.space, content]),
-      class: {
-        "content-link-button" => true,
-        "selected" => selected,
-      } do %>
-      <i class="fa-regular fa-pencil"></i>
+    <% if local_assigns.fetch(:hierarchical, false) && policy(content.space).update? %>
+      <%= button_to polymorphic_path([content.space, content.class]),
+        method: :post,
+        params: {
+          "document": { title: "" },
+          "parent_type": content.class,
+          "parent_id": content.id,
+        },
+        form_class: "flex items-center",
+        class: { "content-link-button" => true, "selected" => selected } do
+      %>
+        <i class="fa-regular fa-plus"></i>
+      <% end %>
+    <% end %>
+
+    <% if policy(content.space).update? %>
+      <%= link_to polymorphic_path([:edit, content.space, content]),
+        class: {
+          "content-link-button" => true,
+          "selected" => selected,
+        } do %>
+        <i class="fa-regular fa-pencil"></i>
+      <% end %>
     <% end %>
   </div>
 <% end %>

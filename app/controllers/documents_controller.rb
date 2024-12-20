@@ -32,7 +32,12 @@ class DocumentsController < ApplicationController
     authorize @document, :create?
 
     if @document.save
-      @space.hierarchy.append(@space.create_hierarchy_node(@document.id))
+      hierarchy_node = @space.create_hierarchy_node(@document.id)
+
+      if params[:parent_id].blank? || @space.add_item_to_hierarchy!(@space.hierarchy, params[:parent_id].to_i, hierarchy_node).blank?
+        @space.hierarchy.append(hierarchy_node)
+      end
+
       @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
 
       if @space.save
