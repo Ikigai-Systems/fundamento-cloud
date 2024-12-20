@@ -54,6 +54,8 @@ Rails.application.routes.draw do
         member do
           get :select_destination
           post :move
+
+          get :hierarchy
         end
       end
 

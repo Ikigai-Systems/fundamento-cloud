@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "document_hierarchy" do %>
+  <% if @children.present? %>
+  <div class="flex flex-row gap-3 content-editor-padding mb-5">
+    <% @children.each do |child| %>
+      <div class="rounded-md border p-1 px-2 max-w-[10em] truncate">
+        <i class="fa-regular fa-file-lines"></i>
+        <%= link_to child.title, space_document_path(child.space, child) %>
+      </div>
+    <% end %>
+  </div>
+  <% end %>
+<% end %>

@@ -4,7 +4,7 @@ class DocumentsController < ApplicationController
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_document, except: [:new, :index, :create]
-  before_action :ensure_turbo_request, only: [:select_destination, :move]
+  before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy]
 
   def index
     respond_to do |format|
@@ -169,6 +169,14 @@ class DocumentsController < ApplicationController
         ), status: :unprocessable_content
       end
     end
+  end
+
+  def hierarchy
+    authorize @document, :show?
+
+    children_ids = @document.space.get_children_ids_from_hierarchy(@document.id) || []
+
+    @children = @document.space.documents.where(id: children_ids).filter { |document| policy(document).update? || document.versions.present? }
   end
 
   private
