@@ -10,7 +10,6 @@ import useInterval from "../../hooks/useInterval"
 import {
   BlockColorsItem,
   DragHandleMenu,
-  FormattingToolbar,
   getDefaultReactSlashMenuItems,
   RemoveBlockItem,
   SideMenu,
@@ -167,7 +166,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} /*formattingToolbar={false}*/ editable={editable}>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable}>
       {/* Replaces the default Slash Menu. */}
       <SuggestionMenuController
         triggerCharacter={"/"}
@@ -211,9 +210,6 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
           />
         )}
       />
-      <div className="ikigai-static-toolbar-overrides">
-        {editable && selectedBlocks.length > 0 && <FormattingToolbar />}
-      </div>
     </BlockNoteView>
   </>
 }
