@@ -1,22 +1,25 @@
 import deasync from "deasync";
 import {requestContext} from '@fastify/request-context';
+import axios from "axios";
 
 async function fetchFromFundamento(url, callback) {
   console.log(`fetching from fundamento ${url}...`)
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      'Accept': 'application/json',
-    },
-  });
-  const responseJson = await response.json();
-  return callback && callback(null, responseJson.data.rows.map(row => {
-    const cell_values = {};
-    responseJson.data.columns.forEach(column => {
-      cell_values[column.name] = row[column.npi];
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'Accept': 'application/json',
+      },
     });
-    return {...cell_values, ...row}
-  }));
+    return callback && callback(null, response.data.rows.map(row => {
+      const cell_values = {};
+      response.data.columns.forEach(column => {
+        cell_values[column.name] = row[column.npi];
+      });
+      return {...cell_values, ...row}
+    }));
+  } catch (e) {
+    return callback && callback(e, null);
+  }
 }
 
 const fundamentoBaseUrl = process.env.FUNDAMENTO_BASE_URL || "http://localhost:3000";
