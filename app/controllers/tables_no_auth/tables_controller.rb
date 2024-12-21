@@ -3,8 +3,12 @@ class TablesNoAuth::TablesController < ActionController::Base
     @table = Table.find_by_id(params[:id])
 
     if @table.nil?
-      # maybe it was table Name provided? but how to know which space/user context we are in?
-      @table = Table.find_by_name!(params[:id])
+      # maybe it was table Name provided instead of id?
+      evaluation_context = params["evaluationContext"]
+
+      @space = Space.find_by_npi!(evaluation_context["space_npi"])
+      # todo: ensure first the user has "view" permission to the @space
+      @table = @space.tables.find_by_name!(params[:id])
     end
 
     respond_to do |format|

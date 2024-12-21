@@ -249,7 +249,7 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    formula_evaluation = FormulaEvalGateway.evaluate(formula, additional_context)
+    formula_evaluation = FormulaEvalGateway.evaluate(formula, additional_context: additional_context)
 
     respond_to do |format|
       format.json { render json: formula_evaluation }

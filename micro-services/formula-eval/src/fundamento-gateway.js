@@ -3,12 +3,16 @@ import {requestContext} from '@fastify/request-context';
 import axios from "axios";
 
 async function fetchFromFundamento(url, callback) {
+  const evaluationContext = requestContext.get("evaluation_context");
   console.log(`fetching from fundamento ${url}...`)
   try {
     const response = await axios.get(url, {
       headers: {
         'Accept': 'application/json',
       },
+      params: {
+        evaluationContext: evaluationContext
+      }
     });
     const {rows, columns} = response.data.data;
     return callback && callback(null, rows.map(row => {

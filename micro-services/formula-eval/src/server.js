@@ -13,7 +13,8 @@ fastify.register(fastifyRequestContext);
 fastify.post('/formulas/eval', async function handler (request, reply) {
   // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
-  const {formula, additional_context} = request.body;
+  const {formula, additional_context, evaluation_context} = request.body;
+  requestContext.set("evaluation_context", evaluation_context);
 
   // // simulate formula evaluation via round-trip to fundamento formulas_controller.rb:
   // const fundamentoFormulasEvalUrl = process.env.FUNDAMENTO_FORMULAS_EVAL_URL || "http://localhost:3000/formulas/eval"

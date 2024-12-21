@@ -1,11 +1,12 @@
 class FormulaEvalGateway
 
-  def self.evaluate(formula, additional_context = {})
+  def self.evaluate(formula, additional_context: {}, evaluation_context: {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
 
     req_body_json = {
       formula: formula,
       additional_context: additional_context,
+      evaluation_context: evaluation_context,
     }.to_json
     req_headers = {
       "Content-type" => "application/json",
@@ -116,7 +117,7 @@ class FormulaEvalGateway
               "currentRow" => current_row_values
             }
 
-            formula_evaluation = FormulaEvalGateway.evaluate(condition_formula, additional_context)
+            formula_evaluation = FormulaEvalGateway.evaluate(condition_formula, additional_context: additional_context)
 
             formula_evaluation["result"] == true
           end

@@ -14,7 +14,7 @@ class AutomationInvocation < ApplicationRecord
 
     additional_context = JSON.parse(self.webhook)
 
-    result = FormulaEvalGateway.evaluate(self.formula, additional_context)
+    result = FormulaEvalGateway.evaluate(self.formula, additional_context: additional_context)
 
     self.update!(invoked_at: invoked_at, result: result.to_json)
   rescue => e
