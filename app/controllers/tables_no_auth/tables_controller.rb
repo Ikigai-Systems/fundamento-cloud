@@ -1,6 +1,11 @@
 class TablesNoAuth::TablesController < ActionController::Base
   def show
-    @table = Table.find(params[:id])
+    @table = Table.find_by_id(params[:id])
+
+    if @table.nil?
+      # maybe it was table Name provided? but how to know which space/user context we are in?
+      @table = Table.find_by_name!(params[:id])
+    end
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint

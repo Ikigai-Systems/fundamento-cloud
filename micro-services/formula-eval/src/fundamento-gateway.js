@@ -10,9 +10,10 @@ async function fetchFromFundamento(url, callback) {
         'Accept': 'application/json',
       },
     });
-    return callback && callback(null, response.data.rows.map(row => {
+    const {rows, columns} = response.data.data;
+    return callback && callback(null, rows.map(row => {
       const cell_values = {};
-      response.data.columns.forEach(column => {
+      columns.forEach(column => {
         cell_values[column.name] = row[column.npi];
       });
       return {...cell_values, ...row}
