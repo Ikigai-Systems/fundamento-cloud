@@ -13,8 +13,7 @@ class Tables::TablesController < ApplicationController
     respond_to do |format|
       format.json { render json: @tables }
       format.html do
-        @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-        render "spaces/tables/index", layout: "full_width_application"
+        redirect_to space_path(@space)
       end
     end
   end
