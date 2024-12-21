@@ -1,6 +1,6 @@
 <tr id="<%= dom_id(space) %>">
   <th scope="row">
-    <div class="text-base font-semibold"><%= space.name %></div>
+    <div class="text-base font-semibold truncate"><%= space.name %></div>
   </th>
   <td>
     <% if policy(space).update? %>
