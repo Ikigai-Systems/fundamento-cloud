@@ -3,7 +3,17 @@
     <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
       <%= render "application/left_sidebar" %>
 
-      <%= yield %>
+      <div class="flex-col">
+        <nav class="w-full flex justify-end p-3 gap-1 items-center">
+          <%= content_for :content_menu %>
+
+          <div class="ml-3">
+            <%= render "application/user_menu" %>
+          </div>
+        </nav>
+
+        <%= yield %>
+      </div>
     </div>
   </div>
 
