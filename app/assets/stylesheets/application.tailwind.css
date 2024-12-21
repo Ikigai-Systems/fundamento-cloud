@@ -26,7 +26,7 @@
     .top-nav-bar {
         @apply bg-white border-gray-200;
         @apply dark:border-gray-500 dark:bg-gray-700;
-        @apply border-y-2 px-2 py-2.5;
+        @apply border-b-2 px-2 py-2.5;
     }
 
     .button {
