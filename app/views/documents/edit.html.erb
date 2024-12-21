@@ -2,29 +2,27 @@
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
 
+<% content_for :content_menu do %>
+  <% if @document.versions.present? %>
+    <%= link_to "View current version", space_document_path(@space, @document),
+      class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+  <% end %>
+
+  <div id="editor-connection-indicator"></div>
+
+  <%= button_to "Save", space_document_versions_path(@space, @document), method: :create,
+    params: {blocks: ""},
+    :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
+    class: "primary-button document-toolbar-button" %>
+
+  <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
+<% end %>
+
 <article class="document">
-  <div class="h-12 flex justify-end items-center p-2">
-    <% if @document.versions.present? %>
-      <%= link_to "View current version", space_document_path(@space, @document), method: :get,
-                  class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
-    <% end %>
-
-    <div id="editor-connection-indicator"></div>
-
-    <%= button_to "Save", space_document_versions_path(@space, @document), method: :create,
-                  params: {blocks: ""},
-                  :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
-                  class: "primary-button document-toolbar-button" %>
-
-    <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
-  </div>
-
-  <div class="overflow-auto h-[calc(100%-48px)]">
-    <%= react_component "EditDocumentPanel", {
-      document: @document.attributes.except("sync"),
-      space: @space.to_react_props,
-      current_user: current_user,
-      database_id: database_id,
-    } %>
-  </div>
+  <%= react_component "EditDocumentPanel", {
+    document: @document.attributes.except("sync"),
+    space: @space.to_react_props,
+    current_user: current_user,
+    database_id: database_id,
+  } %>
 </article>

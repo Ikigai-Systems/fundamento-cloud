@@ -2,55 +2,53 @@
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
 
-<article class="document">
-  <div class="h-12 flex justify-end items-center p-2">
-    <div id="editor-connection-indicator"></div>
+<% content_for :content_menu do %>
+  <div id="editor-connection-indicator"></div>
 
-    <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @document)) %>
-      <%= render partial: "favorites/destroy_favorite", locals: { object: @document, favorite: favorite } %>
-    <% else %>
-      <%= render partial: "favorites/create_favorite", locals: { object: @document } %>
-    <% end %>
+  <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @document)) %>
+    <%= render partial: "favorites/destroy_favorite", locals: { object: @document, favorite: favorite } %>
+  <% else %>
+    <%= render partial: "favorites/create_favorite", locals: { object: @document } %>
+  <% end %>
 
-    <%= button_to "Edit",
-      edit_space_document_path(@space, @document),
-      method: :get,
-      disabled: !policy(@document).update?,
-      class: "primary-button document-toolbar-button",
-      data: {controller: "hotkey", hotkey: "e"}
-    %>
+  <%= button_to "Edit",
+    edit_space_document_path(@space, @document),
+    method: :get,
+    disabled: !policy(@document).update?,
+    class: "primary-button document-toolbar-button",
+    data: {controller: "hotkey", hotkey: "e"}
+  %>
+
+  <div
+    data-controller="dropdown"
+    data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.esc->dropdown#hide"
+    class="inline-block relative">
+
+    <%= render partial: "public_links/document_share_button", locals: { public_link_exists: @document.public_link.present? } %>
 
     <div
-      data-controller="dropdown"
-      data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.esc->dropdown#hide"
-      class="inline-block relative">
-
-      <%= render partial: "public_links/document_share_button", locals: { public_link_exists: @document.public_link.present? } %>
-
-      <div
-        data-dropdown-target="menu"
-        class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max"
-        role="dialog"
-        aria-orientation="vertical"
-        aria-labelledby="document_share_button">
-        <div class="dropdown-container w-90">
-          <%= turbo_frame_tag "document_share_dropdown", src: @document.public_link.present? ? public_link_path(@document.public_link, format: "turbo_stream") : new_public_link_path(public_link: { object_type: @document.class, object_id: @document.id }, format: "turbo_stream"), loading: "lazy" %>
-        </div>
+      data-dropdown-target="menu"
+      class="hidden absolute top-5 right-0 z-10 mt-5 flex w-screen max-w-max"
+      role="dialog"
+      aria-orientation="vertical"
+      aria-labelledby="document_share_button">
+      <div class="dropdown-container w-90">
+        <%= turbo_frame_tag "document_share_dropdown", src: @document.public_link.present? ? public_link_path(@document.public_link, format: "turbo_stream") : new_public_link_path(public_link: { object_type: @document.class, object_id: @document.id }, format: "turbo_stream"), loading: "lazy" %>
       </div>
     </div>
-
-    <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
   </div>
 
-  <div class="overflow-auto h-[calc(100%-48px)]">
-    <%= turbo_frame_tag "document_hierarchy",
-      data: { turbo: false },
-      src: hierarchy_space_document_path(@space, @document) %>
+  <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
+<% end %>
 
-    <%= react_component "ShowVersionPanel", {
-      version: @version.attributes.except("id"),
-      document: @document.attributes.except("sync"),
-      space: @space.to_react_props
-    } %>
-  </div>
+<article class="document">
+  <%= turbo_frame_tag "document_hierarchy",
+    data: { turbo: false },
+    src: hierarchy_space_document_path(@space, @document) %>
+
+  <%= react_component "ShowVersionPanel", {
+    version: @version.attributes.except("id"),
+    document: @document.attributes.except("sync"),
+    space: @space.to_react_props
+  } %>
 </article>

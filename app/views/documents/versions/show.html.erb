@@ -1,10 +1,11 @@
-<div class="h-full grid grid-cols-[minmax(10px,_3fr)_minmax(10px,400px)]">
-  <article class="document">
-    <div class="h-12 flex justify-end items-center p-2">
-      <%= link_to "View current version", space_document_path(@space, @document), method: :get,
-                  class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
-    </div>
+<% content_for :content_menu do %>
+  <%= link_to "View current version",
+    space_document_path(@space, @document),
+    class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+<% end %>
 
+<div class="grid grid-cols-[minmax(10px,_3fr)_minmax(10px,400px)]">
+  <article class="document">
     <div class="overflow-auto">
       <%= react_component "ShowVersionPanel", {
         version: @version.attributes.except("id"),
@@ -15,7 +16,7 @@
   </article>
 
   <aside class="overflow-auto border-l">
-    <h1 class="p-2 my-2 text-2xl text-slate-800">
+    <h1 class="p-2 my-2 text-2xl">
       Historical versions
     </h1>
     <% @versions.each do |version| %>
