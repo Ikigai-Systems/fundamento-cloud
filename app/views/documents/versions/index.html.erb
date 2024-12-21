@@ -1,57 +1,53 @@
-<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
-  <%= render "application/left_sidebar" %>
+<article class="document">
+  <div class="bg-white h-12 flex justify-end items-center p-2">
+    <%= link_to "View document", edit_space_document_path(@space, @document), method: :get,
+                  class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+  </div>
+  <div class="overflow-auto">
+    <div class="px-[3.4rem]">
+      <h1 class="mt-1 text-4xl text-slate-800">
+        Document history - <%= @document.title %>
+      </h1>
 
-  <article class="bg-white">
-    <div class="bg-white h-12 flex justify-end items-center p-2">
-      <%= link_to "View document", edit_space_document_path(@space, @document), method: :get,
-                    class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
-    </div>
-    <div class="overflow-auto">
-      <div class="px-[3.4rem]">
-        <h1 class="mt-1 text-4xl text-slate-800">
-          Document history - <%= @document.title %>
-        </h1>
-
-        <div class="mt-4">
-          <div class="sm:flex sm:items-center">
-            <div class="sm:flex-auto">
-              <h1 class="text-base font-semibold text-xl leading-6 text-slate-900">Versions</h1>
-            </div>
+      <div class="mt-4">
+        <div class="sm:flex sm:items-center">
+          <div class="sm:flex-auto">
+            <h1 class="text-base font-semibold text-xl leading-6 text-slate-900">Versions</h1>
           </div>
-          <div class="mt-4 flow-root">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                <table class="min-w-full divide-y divide-gray-300">
-                  <thead>
-                  <tr>
-                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Version</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Date</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Created by</th>
-                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Actions</th>
-                  </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200">
-                    <% @versions.each do |version| %>
-                      <tr>
-                        <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0"><%= version.sequential_id %></td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500"><%= version.created_at.strftime("%F") %></td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                          <div title="<%= version.created_by&.display_name || "Deleted user" %>" class="w-8 h-8 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
-                            <%= version.created_by&.initials || "?" %>
-                          </div>
-                        </td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
-                          <%= link_to "Show", space_document_version_path(@space, @document, version), class: "link-button" %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  </tbody>
-                </table>
-              </div>
+        </div>
+        <div class="mt-4 flow-root">
+          <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+            <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+              <table class="min-w-full divide-y divide-gray-300">
+                <thead>
+                <tr>
+                  <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Version</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Date</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Created by</th>
+                  <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <% @versions.each do |version| %>
+                    <tr>
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-0"><%= version.sequential_id %></td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500"><%= version.created_at.strftime("%F") %></td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                        <div title="<%= version.created_by&.display_name || "Deleted user" %>" class="w-8 h-8 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
+                          <%= version.created_by&.initials || "?" %>
+                        </div>
+                      </td>
+                      <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">
+                        <%= link_to "Show", space_document_version_path(@space, @document, version), class: "link-button" %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </article>
-</div>
+  </div>
+</article>

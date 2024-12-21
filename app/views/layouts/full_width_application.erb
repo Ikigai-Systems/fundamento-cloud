@@ -1,6 +1,10 @@
-<%= render "layouts/body_with_nav_bar" do %>
-  <div class="h-[calc(100vh-60px)] full-width-container">
-    <%= yield %>
+<%= render "layouts/body" do %>
+  <div class="h-screen full-width-container">
+    <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
+      <%= render "application/left_sidebar" %>
+
+      <%= yield %>
+    </div>
   </div>
 
   <div id="flashes" class="fixed top-0 w-full flex flex-col items-end pointer-events-none">

@@ -2,22 +2,18 @@
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
 
-<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)]">
-  <%= render "application/left_sidebar" %>
+<article class="document">
+  <div class="h-12 flex justify-end items-center p-2">
+    Each change is saved automatically
+    <%= render partial: "content/document_menu", locals: { space: @table.space, content: @table } %>
+  </div>
 
-  <article class="document">
-    <div class="h-12 flex justify-end items-center p-2">
-      Each change is saved automatically
-      <%= render partial: "content/document_menu", locals: { space: @table.space, content: @table } %>
-    </div>
-
-    <div class="overflow-auto h-[calc(100%-48px)]">
-      <%= react_component "EditTablePanel", {
-        table: @table,
-        space: @table.space.to_react_props
-      }, {
-        data: @table.data_to_json(evaluate_formulas: true)
-      } %>
-    </div>
-  </article>
-</div>
+  <div class="overflow-auto h-[calc(100%-48px)]">
+    <%= react_component "EditTablePanel", {
+      table: @table,
+      space: @table.space.to_react_props
+    }, {
+      data: @table.data_to_json(evaluate_formulas: true)
+    } %>
+  </div>
+</article>

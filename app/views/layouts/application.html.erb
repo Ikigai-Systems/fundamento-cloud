@@ -1,5 +1,7 @@
-<%= render "layouts/body_with_nav_bar" do %>
+<%= render "layouts/body" do %>
   <%= render partial: "flash_messages" %>
+
+  <%= render "nav_bar" %>
 
   <%= yield %>
 <% end %>

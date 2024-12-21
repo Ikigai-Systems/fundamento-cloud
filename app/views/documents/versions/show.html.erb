@@ -1,13 +1,11 @@
-<div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(10px,_3fr)_minmax(10px,400px)]">
-  <%= render "application/left_sidebar" %>
-
-  <article class="bg-white flex-col overflow-auto">
-    <div class="bg-white h-12 flex justify-end items-center p-2">
+<div class="h-full grid grid-cols-[minmax(10px,_3fr)_minmax(10px,400px)]">
+  <article class="document">
+    <div class="h-12 flex justify-end items-center p-2">
       <%= link_to "View current version", space_document_path(@space, @document), method: :get,
                   class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
     </div>
 
-    <div class="bg-white overflow-auto">
+    <div class="overflow-auto">
       <%= react_component "ShowVersionPanel", {
         version: @version.attributes.except("id"),
         document: @document.attributes.except("sync"),
@@ -15,7 +13,8 @@
       } %>
     </div>
   </article>
-  <aside class="bg-white overflow-auto border-l">
+
+  <aside class="overflow-auto border-l">
     <h1 class="p-2 my-2 text-2xl text-slate-800">
       Historical versions
     </h1>
@@ -36,6 +35,5 @@
         </div>
       <% end %>
     <% end %>
-
   </aside>
 </div>
