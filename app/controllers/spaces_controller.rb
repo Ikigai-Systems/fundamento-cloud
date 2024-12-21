@@ -1,5 +1,4 @@
 class SpacesController < ApplicationController
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "full_width_application" }
 
   after_action :verify_authorized, except: [:suggest_owners]
 
@@ -25,6 +24,7 @@ class SpacesController < ApplicationController
       redirect_to space_document_url(@space, @space.home_document)
     else
       @documents = @space.documents_from_hierarchy
+      render layout: "full_width_application"
     end
   end
 
