@@ -1,54 +1,54 @@
-<div class="flex items-center gap-3">
-  <div
-    data-controller="dropdown"
-    data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.up->dropdown#previousItem keydown.down->dropdown#nextItem keydown.esc->dropdown#hide"
-    class="relative inline-block text-left w-full"
-  >
+<div
+  data-controller="dropdown"
+  data-action="click@window->dropdown#hide touchstart@window->dropdown#hide keydown.up->dropdown#previousItem keydown.down->dropdown#nextItem keydown.esc->dropdown#hide"
+  class="relative inline-block w-full"
+>
+  <div class="flex items-center gap-3">
     <button
       id="spaces-dropdown"
       data-action="dropdown#toggle:stop"
-      class="inline-flex w-full justify-between rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      class="secondary-button w-full justify-between py-1.5 truncate"
       aria-expanded="true"
       aria-haspopup="true">
-      <%= @space.name %>
+      <span class="truncate"><%= @space.name %></span>
 
-      <svg class="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+      <svg class="-mr-1 h-5 w-5 text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
       </svg>
     </button>
 
-    <div
-      data-dropdown-target="menu"
-      class="hidden absolute top-5 left-0 z-10 mt-5 flex w-screen max-w-max"
-      role="menu"
-      aria-orientation="vertical"
-      aria-labelledby="spaces-dropdown"
-      tabindex="-1"
-    >
-      <div class="dropdown-container w-56">
-        <% if current_organization.present? %>
-          <% policy_scope(current_organization.spaces).order(:name).filter(&:persisted?).each do |space| %>
-            <%= link_to  space.name, space_path(space),
-              data: {"dropdown-target" => "menuItem"},
-              class: "truncate",
-              role: "menuitem",
-              tabindex: "-1"
-            %>
-          <% end %>
-        <% end %>
-
-        <% if policy(Space).create? %>
-          <hr class="border-t" />
-
-          <%= link_to "Create space", new_space_path, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1" %>
-        <% end %>
-      </div>
-    </div>
+    <% if policy(@space).update? %>
+      <%= link_to edit_space_path(@space), class: "secondary-button" do %>
+        <i class="fa-regular fa-gear"></i>
+      <% end %>
+    <% end %>
   </div>
 
-  <% if policy(@space).update? %>
-    <%= link_to edit_space_path(@space), class: "secondary-button" do %>
-      <i class="fa-regular fa-gear"></i>
-    <% end %>
-  <% end %>
+  <div
+    data-dropdown-target="menu"
+    class="hidden absolute top-5 left-0 z-10 mt-5 flex w-screen max-w-max"
+    role="menu"
+    aria-orientation="vertical"
+    aria-labelledby="spaces-dropdown"
+    tabindex="-1"
+  >
+    <div class="dropdown-container w-56">
+      <% if current_organization.present? %>
+        <% policy_scope(current_organization.spaces).order(:name).filter(&:persisted?).each do |space| %>
+          <%= link_to  space.name, space_path(space),
+            data: {"dropdown-target" => "menuItem"},
+            class: "truncate",
+            role: "menuitem",
+            tabindex: "-1"
+          %>
+        <% end %>
+      <% end %>
+
+      <% if policy(Space).create? %>
+        <hr class="border-t" />
+
+        <%= link_to "Create space", new_space_path, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1" %>
+      <% end %>
+    </div>
+  </div>
 </div>
