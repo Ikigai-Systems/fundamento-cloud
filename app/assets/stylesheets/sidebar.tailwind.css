@@ -7,7 +7,7 @@
         }
 
         .section-header-container {
-            @apply flex justify-between items-center text-sm border-b;
+            @apply flex justify-between items-center text-sm border-b px-1;
         }
 
         .section-header-title {

@@ -1,92 +1,97 @@
 <%= turbo_frame_tag "left_sidebar_content", data: { turbo_action: "advance" } do %>
-  <div class="px-4 pb-0 flex flex-col h-full">
-    <div class="mt-2">
-      <%= link_to root_path, class: "flex items-center" do %>
+  <div
+    class="flex flex-col h-full overflow-hidden"
+    data-controller="visibility" data-action="toggle-button:change->visibility#onChange"
+  >
+    <div class="flex flex-col px-3 border-b">
+      <div class="mt-2">
+        <%= link_to root_path, class: "flex items-center" do %>
         <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
           <i class="fa-regular fa-cubes"></i>
           Fundamento
         </span>
+        <% end %>
+      </div>
+
+      <%if user_signed_in? && current_organization.present? %>
+        <div class="mt-2 pb-3 w-full">
+          <%= render "spaces/_sidebar/spaces_menu" %>
+        </div>
       <% end %>
     </div>
 
-    <%if user_signed_in? && current_organization.present? %>
-      <div class="mt-2 pb-3 w-full">
-        <%= render "spaces/_sidebar/spaces_menu" %>
-      </div>
-    <% end %>
+    <div class="flex flex-col grow overflow-y-auto">
+        <div class="section-header-container">
+          <div class="section-header-title">
+            <i class="fa-regular fa-file-lines"></i>
+            Documents
+          </div>
 
-    <div class="flex flex-col h-full" data-controller="visibility" data-action="toggle-button:change->visibility#onChange">
-      <div class="section-header-container">
-        <div class="section-header-title">
-          <i class="fa-regular fa-file-lines"></i>
-          Documents
-        </div>
-
-        <%= button_to space_documents_path(@space),
-          method: :post,
-          params: { "document": { title: "" } },
-          disabled: !policy(@space).update?,
-          form_class: "flex items-center",
-          class: "secondary-button" do
-        %>
-          <i class="fa-regular fa-plus"></i>
-        <% end %>
-      </div>
-
-      <div class="section-content-container">
-        <div class="section-empty hidden">No documents in this space</div>
-
-        <ul class="section-content-list" data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
-          <%= render partial: "spaces/_sidebar/hierarchy_node",
-            locals: {
-              node: @space.hierarchy,
-              level: 0
-            }
+          <%= button_to space_documents_path(@space),
+            method: :post,
+            params: { "document": { title: "" } },
+            disabled: !policy(@space).update?,
+            form_class: "flex items-center",
+            class: "secondary-button" do
           %>
-        </ul>
-      </div>
-
-      <div class="section-header-container">
-        <div class="section-header-title">
-          <i class="fa-regular fa-table"></i>
-          Tables
-        </div>
-
-        <%= link_to_with_disable new_space_table_path(@space),
-          disabled: !policy(@space).update?,
-          class: "secondary-button" do
-        %>
-          <i class="fa-regular fa-plus"></i>
-        <% end %>
-      </div>
-
-      <div class="section-content-container">
-        <div class="section-empty hidden">No tables in this space</div>
-
-        <ul class="section-content-list">
-          <% @tables.each do |table| %>
-            <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
-              <% selected = true %>
-            <% end %>
-
-            <li class="section-content-node-container">
-              <%=
-                render partial: "spaces/_sidebar/content_link",
-                  locals: {
-                    content: table,
-                    selected: selected
-                  }
-              %>
-            </li>
+            <i class="fa-regular fa-plus"></i>
           <% end %>
-        </ul>
-      </div>
-
-      <div class="mt-auto self-end">
-        <div class="flex items-center my-4">
-          <span class="mr-2">Show archived:</span>
-          <%= render partial: "application/components/toggle_button", locals: { checked: cookies["ikigai_userPreferences_showArchived"] == "true" } %>
         </div>
+
+        <div class="section-content-container">
+          <div class="section-empty hidden">No documents in this space</div>
+
+          <ul class="section-content-list" data-controller="draggable" data-draggable-target="item" data-space-npi="<%= @space.npi %>">
+            <%= render partial: "spaces/_sidebar/hierarchy_node",
+              locals: {
+                node: @space.hierarchy,
+                level: 0
+              }
+            %>
+          </ul>
+        </div>
+
+        <div class="section-header-container">
+          <div class="section-header-title">
+            <i class="fa-regular fa-table"></i>
+            Tables
+          </div>
+
+          <%= link_to_with_disable new_space_table_path(@space),
+            disabled: !policy(@space).update?,
+            class: "secondary-button" do
+          %>
+            <i class="fa-regular fa-plus"></i>
+          <% end %>
+        </div>
+
+        <div class="section-content-container">
+          <div class="section-empty hidden">No tables in this space</div>
+
+          <ul class="section-content-list">
+            <% @tables.each do |table| %>
+              <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
+                <% selected = true %>
+              <% end %>
+
+              <li class="section-content-node-container">
+                <%=
+                  render partial: "spaces/_sidebar/content_link",
+                    locals: {
+                      content: table,
+                      selected: selected
+                    }
+                %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+    </div>
+
+    <div class="mt-auto w-full self-end px-3 border-t flex justify-end">
+      <div class="flex items-center my-3">
+        <span class="mr-2">Show archived:</span>
+        <%= render partial: "application/components/toggle_button", locals: { checked: cookies["ikigai_userPreferences_showArchived"] == "true" } %>
       </div>
     </div>
   </div>
