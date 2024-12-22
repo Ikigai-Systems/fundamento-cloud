@@ -71,6 +71,11 @@ class ApplicationController < ActionController::Base
     PolicyUserContext.new(current_user, current_organization)
   end
 
+  # TODO: In the future implement this as devise scope, the same way we handle Superintendents
+  def current_organization_user
+    pundit_user&.organization_user
+  end
+
   def verify_authorized_or_index_scoped
     if action_name == "index"
       verify_policy_scoped
