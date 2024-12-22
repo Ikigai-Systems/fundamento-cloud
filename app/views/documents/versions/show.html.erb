@@ -36,11 +36,9 @@
 <% end %>
 
 <article class="document">
-  <div class="overflow-auto">
-    <%= react_component "ShowVersionPanel", {
-      version: @version.attributes.except("id"),
-      document: @document.attributes.except("sync"),
-      space: @space.to_react_props
-    } %>
-  </div>
+  <%= react_component "ShowVersionPanel", {
+    version: @version.attributes.except("id"),
+    document: @document.attributes.except("sync"),
+    space: @space.to_react_props
+  } %>
 </article>
