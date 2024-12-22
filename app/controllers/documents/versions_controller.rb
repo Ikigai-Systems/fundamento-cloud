@@ -1,5 +1,6 @@
 class Documents::VersionsController < ApplicationController
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "full_width_application" }
+  layout "content_two_sidebars", only: [:show]
 
   after_action :verify_authorized
 

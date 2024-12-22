@@ -4,37 +4,39 @@
     class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
 <% end %>
 
-<div class="grid grid-cols-[minmax(10px,_3fr)_minmax(10px,400px)]">
-  <article class="document">
-    <div class="overflow-auto">
-      <%= react_component "ShowVersionPanel", {
-        version: @version.attributes.except("id"),
-        document: @document.attributes.except("sync"),
-        space: @space.to_react_props
-      } %>
-    </div>
-  </article>
-
-  <aside class="overflow-auto border-l">
-    <h1 class="p-2 my-2 text-2xl">
+<% content_for :content_sidebar do %>
+  <div class="mt-2 flex items-center px-3 border-b">
+    <span class="self-center text-lg font-semibold whitespace-nowrap mb-2 truncate">
+      <i class="fa-regular fa-rectangle-history"></i>
       Historical versions
-    </h1>
-    <% @versions.each do |version| %>
-      <%= link_to space_document_version_path(@space, @document, version) do %>
-        <div class="flex flex-row ml-2 <%= @version == version ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
-          <div class="<%= @version == version ? "bg-blue-500" : "" %> w-1"></div>
-          <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
-            <div title="<%= version.created_by&.display_name %>" class="w-10 h-10 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
-              <%= version.created_by&.initials || "?" %>
-            </div>
-          </div>
-          <div class="p-2">
-            <div class="font-bold">Version <%= version.sequential_id %></div>
-            <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
-            <div><%= version.created_at.strftime("%F") %></div>
+    </span>
+  </div>
+
+  <% @versions.each do |version| %>
+    <%= link_to space_document_version_path(@space, @document, version) do %>
+      <div class="flex flex-row <%= @version == version ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+        <div class="<%= @version == version ? "bg-blue-500" : "" %> w-1"></div>
+        <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
+          <div title="<%= version.created_by&.display_name %>" class="w-10 h-10 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
+            <%= version.created_by&.initials || "?" %>
           </div>
         </div>
-      <% end %>
+        <div class="p-2">
+          <div class="font-bold">Version <%= version.sequential_id %></div>
+          <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
+          <div><%= version.created_at.strftime("%F") %></div>
+        </div>
+      </div>
     <% end %>
-  </aside>
-</div>
+  <% end %>
+<% end %>
+
+<article class="document">
+  <div class="overflow-auto">
+    <%= react_component "ShowVersionPanel", {
+      version: @version.attributes.except("id"),
+      document: @document.attributes.except("sync"),
+      space: @space.to_react_props
+    } %>
+  </div>
+</article>

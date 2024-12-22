@@ -1,0 +1,27 @@
+<%= render "layouts/body" do %>
+  <div class="h-screen full-width-container">
+    <div class="h-full grid grid-cols-[minmax(10px,300px)_minmax(200px,_3fr)_minmax(10px,300px)]">
+      <%= render "application/left_sidebar" %>
+
+      <div class="flex-col">
+        <nav class="w-full flex justify-end p-3 gap-1 items-center">
+          <%= content_for :content_menu %>
+
+          <div class="ml-3">
+            <%= render "application/user_menu" %>
+          </div>
+        </nav>
+
+        <%= yield %>
+      </div>
+
+      <aside id="content-sidebar" class="content-sidebar">
+        <%= content_for :content_sidebar %>
+      </aside>
+    </div>
+  </div>
+
+  <div id="flashes" class="fixed top-0 w-full flex flex-col items-end pointer-events-none">
+    <%= render partial: "flash_messages_as_alerts" %>
+  </div>
+<% end %>
