@@ -4,6 +4,7 @@ class DocumentsController < ApplicationController
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_document, except: [:new, :index, :create]
+  before_action :create_object_visitor, if: -> { instance_variable_defined?(:@document) }
   before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy]
 
   def index
@@ -199,5 +200,9 @@ class DocumentsController < ApplicationController
 
   def document_move_params
     params.require(:document).permit(:space_id)
+  end
+
+  def create_object_visitor
+    current_organization_user.visited_objects.find_or_initialize_by(object_type: @document.class.to_s, object_id: @document.id).update!(visited_at: Time.now)
   end
 end
