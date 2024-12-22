@@ -14,7 +14,11 @@
 
   <% @versions.each do |version| %>
     <%= link_to space_document_version_path(@space, @document, version) do %>
-      <div class="flex flex-row <%= @version == version ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" : "hover:bg-gray-100 active:bg-gray-200" %>">
+      <%= tag.div(class: {
+        "flex flex-row" => true,
+        "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" => @version == version,
+        "hover:bg-gray-100 active:bg-gray-200" => @version != version,
+      }) do %>
         <div class="<%= @version == version ? "bg-blue-500" : "" %> w-1"></div>
         <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
           <div title="<%= version.created_by&.display_name %>" class="w-10 h-10 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
@@ -26,7 +30,7 @@
           <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
           <div><%= version.created_at.strftime("%F") %></div>
         </div>
-      </div>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
