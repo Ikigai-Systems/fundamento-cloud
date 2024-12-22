@@ -8,6 +8,7 @@ class OrganizationUser < ApplicationRecord
 
   has_many :api_tokens, dependent: :delete_all
   has_many :favorites
+  has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
 
   enum :role, [:manager, :member], scope: false
 

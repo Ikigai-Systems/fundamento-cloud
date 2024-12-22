@@ -1,0 +1,2 @@
+class ObjectVisitor < ApplicationRecord
+end
