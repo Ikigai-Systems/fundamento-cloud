@@ -1,6 +1,5 @@
 class Documents::VersionsController < ApplicationController
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "full_width_application" }
-  layout "content_two_sidebars", only: [:show]
+  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
   after_action :verify_authorized
 
@@ -54,6 +53,8 @@ class Documents::VersionsController < ApplicationController
     @documents = @space.documents_from_hierarchy
 
     @versions = @document.versions.order('created_at DESC')
+
+    render layout: "full_width_application"
   end
 
   def show
