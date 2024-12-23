@@ -13,7 +13,7 @@
 
 @layer components {
     body {
-        @apply full-width-container;
+        @apply content-container;
         @apply md:bg-gray-100;
         @apply dark:md:bg-gray-900;
         @apply antialiased;
