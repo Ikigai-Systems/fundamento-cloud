@@ -397,6 +397,7 @@ const ChartBlock = createReactBlockSpec(
 
         {chart !== undefined &&
           <ReactApexChart
+            key={chartType} // to force full rerender upon changing chart type, to avoid ApexChart fancy/broken animations when switching charts
             type={chart.type}
             options={{...{...chart.options}, ...{id: `${props.block.id}-chart`}}}
             series={chart.series}
