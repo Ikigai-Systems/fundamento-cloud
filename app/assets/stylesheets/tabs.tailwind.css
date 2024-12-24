@@ -5,6 +5,7 @@
 
     div[data-controller="tabs"] nav[data-tabs-target="list"] button.active-tab {
         @apply text-indigo-600 border-indigo-500;
+        @apply hover:text-indigo-600 hover:border-indigo-500;
     }
 
     /* Tabs container */
@@ -14,7 +15,8 @@
 
     /* Tab */
     div[data-controller="tabs"] nav[data-tabs-target="list"] button {
-        @apply whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium text-gray-500  border-transparent hover:border-gray-300 hover:text-gray-700;
+        @apply whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium border-transparent;
+        @apply text-gray-500  hover:text-gray-700 hover:border-gray-300 ;
     }
 
     /* Tab content container */
