@@ -106,10 +106,12 @@ class FormulaEvalGateway
 
         condition_formula = command["conditionFormula"]
 
-        rows_to_update = table.rows.filter do |row|
-          if condition_formula.nil?
-            true
-          else
+        if condition_formula.nil?
+          rows_to_update = table.rows
+        else
+          formulas_to_evaluate = []
+
+          table.rows.each do |row|
             cells = row.cells.index_by(&:column_id)
             current_row_values = table.columns.each_with_object({}) do |column, hash|
               hash[column.name] = cells[column.id]&.value
@@ -119,10 +121,21 @@ class FormulaEvalGateway
               "currentRow" => current_row_values
             }
 
-            formula_evaluation = FormulaEvalGateway.evaluate(condition_formula, additional_context: additional_context)
-
-            formula_evaluation["result"] == true
+            formulas_to_evaluate << {
+              formula: condition_formula,
+              additional_context: additional_context,
+              row_id: row.id,
+            }
           end
+
+          row_ids_to_update = []
+          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, {}).each_with_index do |evaluated_formula, index|
+            if evaluated_formula["result"] == true
+              row_ids_to_update << formulas_to_evaluate[index].row_id
+            end
+          end
+
+          rows_to_update = table.rows.filter { |row| row_ids_to_update.include?(row.id) }
         end
 
         column_name = command["columnName"]

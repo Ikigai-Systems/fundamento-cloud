@@ -71,7 +71,7 @@ class Table < ApplicationRecord
               row_npi: row.npi,
               column_npi: column.npi,
               formula: column.formula,
-              additional_context: additional_context
+              additional_context: additional_context,
             }
           else
             hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id]).value
