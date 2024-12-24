@@ -27,7 +27,7 @@ class FormulaEvalGateway
 
     res_json = JSON.parse(res.body)
 
-    process_commands(res_json&.[]("commands"))
+    process_commands(res_json&.[]("commands"), evaluation_context)
 
     return res_json
   rescue Exception => e
@@ -39,7 +39,7 @@ class FormulaEvalGateway
     }
   end
 
-  def self.batch_evaluate(evaluations)
+  def self.batch_evaluate(evaluations, evaluation_context)
     microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
 
     req_body_json = {
@@ -65,7 +65,7 @@ class FormulaEvalGateway
     res_json = JSON.parse(res.body)
 
     res_json&.each do |evaluated_formula|
-      process_commands(evaluated_formula&.[]("commands"))
+      process_commands(evaluated_formula&.[]("commands"), evaluation_context)
     end
 
     return res_json
@@ -76,7 +76,7 @@ class FormulaEvalGateway
     return evaluations.map { |e| { "error" => "Fatal error: unable to evaluate formula" } }
   end
 
-  def self.process_commands(commands)
+  def self.process_commands(commands, evaluation_context)
     commands&.each do |command|
       case command["type"]
       when "AddRow"
@@ -85,7 +85,8 @@ class FormulaEvalGateway
 
         table.add_row
       when "DeleteRows"
-        table = Table.find(command["tableId"])
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableId"], evaluation_context)
+        command["tableId"] = table.id # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         # todo: extract row ids from command payload, iterate over them. Otherwise, just remove all rows
@@ -99,7 +100,8 @@ class FormulaEvalGateway
           row.destroy
         end
       when "AddOrUpdateRows"
-        table = Table.find(command["tableId"])
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableId"], evaluation_context)
+        command["tableId"] = table.id # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         condition_formula = command["conditionFormula"]

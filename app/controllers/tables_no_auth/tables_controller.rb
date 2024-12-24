@@ -1,15 +1,6 @@
 class TablesNoAuth::TablesController < ActionController::Base
   def show
-    @table = Table.find_by_id(params[:id])
-
-    if @table.nil?
-      # maybe it was table Name provided instead of id?
-      evaluation_context = params["evaluationContext"]
-
-      @space = Space.find_by_npi!(evaluation_context["space_npi"])
-      # todo: ensure first the user has "view" permission to the @space
-      @table = @space.tables.find_by_name!(params[:id])
-    end
+    @table = TablesNoAuth::TablesController::find_relevant_table(params[:id], params["evaluationContext"])
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
@@ -18,4 +9,15 @@ class TablesNoAuth::TablesController < ActionController::Base
     end
   end
 
+  def self.find_relevant_table(id_or_name, evaluation_context)
+    table = Table.find_by_id(id_or_name)
+
+    if table.nil? && evaluation_context.present? # maybe it was table Name provided instead of id?
+      @space = Space.find_by_npi!(evaluation_context["space_npi"])
+      # todo: ensure first the user has "view" permission to the @space (user id should be availabble in "evaluation_context")
+      table = @space.tables.find_by_name!(id_or_name)
+    end
+
+    return table
+  end
 end
