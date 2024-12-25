@@ -1,5 +1,6 @@
 export type Document = {
   id: number,
+  npi: string,
   title: string,
 }
 
@@ -24,6 +25,7 @@ export type Table = {
   archived: boolean,
   createdAt: string, //date
   id: string,
+  npi: string,
   name: string,
   organizationId: number,
   parentId: number,
