@@ -10,7 +10,7 @@
   <% end %>
 
   <%= button_to "Edit",
-    edit_space_table_path(@space, @table),
+    edit_table_path(@table),
     method: :get,
     disabled: !policy(@table).update?,
     class: "primary-button document-toolbar-button",

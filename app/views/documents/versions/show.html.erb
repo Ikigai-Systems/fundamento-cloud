@@ -1,6 +1,6 @@
 <% content_for :content_menu do %>
   <%= link_to "View current version",
-    space_document_path(@space, @document),
+    document_path(@document),
     class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
 <% end %>
 
@@ -13,7 +13,7 @@
   </div>
 
   <% @versions.each do |version| %>
-    <%= link_to space_document_version_path(@space, @document, version) do %>
+    <%= link_to document_version_path(@document, version) do %>
       <%= tag.div(class: {
         "flex flex-row" => true,
         "bg-blue-100 hover:bg-blue-200 active:bg-blue-300" => @version == version,

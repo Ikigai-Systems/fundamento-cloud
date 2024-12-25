@@ -40,7 +40,7 @@ function EditFormulaPopup({
       setPreviewIsLoading(true);
       setPreviewResponse({result: undefined, error: undefined});
       try {
-        const response = await TablesApi.previewFormula({params: {space_npi: space.npi, id: table.id}, data: {formula, rowId: rows[previewRow].id}});
+        const response = await TablesApi.previewFormula({params: {npi: table.npi}, data: {formula, rowId: rows[previewRow].id}});
         setPreviewResponse(response);
       } finally {
         setPreviewIsLoading(false);

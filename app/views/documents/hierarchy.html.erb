@@ -2,7 +2,7 @@
   <% if @children.present? %>
   <div class="flex flex-row flex-wrap gap-3 content-editor-padding mb-5">
     <% @children.each do |child| %>
-      <%= link_to space_document_path(child.space, child), class: "rounded-md border p-1 px-2 max-w-[10em] truncate" do %>
+      <%= link_to document_path(child), class: "rounded-md border p-1 px-2 max-w-[10em] truncate" do %>
         <i class="fa-regular fa-file-lines"></i>
         <%= child.title %>
       <% end %>

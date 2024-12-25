@@ -12,14 +12,14 @@ import {useRef} from "react";
 const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   const initialRender = useRef(true);
 
-  const tableQuery = useQuery({queryKey: ["tables", space?.npi, table.id.toString()], queryFn: async () => {
-    if (initialRender.current === true) {
+  const tableQuery = useQuery({queryKey: ["tables", space.npi, table.npi], queryFn: async () => {
+    if (initialRender.current) {
       initialRender.current = false;
       return {table, data, forceReRenderUuid: crypto.randomUUID()}
     } else {
       const currentDataDeserializer = Config.deserializeData;
       Config.deserializeData = (val => val);
-      const promiseData = TablesApi.show({space_npi: space?.npi, id: table.id});
+      const promiseData = TablesApi.show({npi: table.npi});
       Config.deserializeData = currentDataDeserializer;
       const data = await promiseData
       return {...data, forceRerenderUuid: crypto.randomUUID()}

@@ -37,9 +37,7 @@ Rails.application.routes.draw do
   # We use `defaults export: true` here to export routes to app/javascript/api,
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
   defaults export: true do
-    resources :documents, only: [:index, :show, :update]
-
-    resources :spaces, param: :npi do
+    resources :spaces, path: "s", param: :npi do
       put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
 
       get :suggest_owners, on: :collection
@@ -48,25 +46,31 @@ Rails.application.routes.draw do
         get :sidebar
       end
 
-      resources :documents, only: [:create, :new, :show, :edit, :update, :destroy] do
-        resources :versions, module: :documents, only: [:create, :index, :show]
-
-        member do
-          get :select_destination
-          post :move
-
-          get :hierarchy
-        end
-      end
-
-      resources :tables, module: :tables, only: [:new, :create, :show, :edit, :update, :destroy, :index] do
-        put :update_by_rowstack, on: :member
-        post :preview_formula, on: :member
-        post :move_column_left, on: :member
-        post :move_column_right, on: :member
-      end
-
       resources :automations, param: :npi
+    end
+
+    resources :documents, path: "d", param: :npi do
+      resources :versions, module: :documents, only: [:create, :index, :show]
+
+      member do
+        get :select_destination
+        post :move
+
+        get :hierarchy
+      end
+    end
+
+    resources :tables, path: "t", param: :npi, module: :tables do
+      put :update_by_rowstack, on: :member
+      post :preview_formula, on: :member
+      post :move_column_left, on: :member
+      post :move_column_right, on: :member
+
+      resources :columns
+
+      resources :rows do
+        resources :cells
+      end
     end
 
     resources :attachments, only: [:create, :destroy, :show]
@@ -75,14 +79,6 @@ Rails.application.routes.draw do
       get :suggestions, on: :collection
 
       resources :api_tokens, only: [:index, :new, :create, :destroy]
-    end
-
-    resources :tables, module: :tables, only: [:show] do
-      resources :columns
-
-      resources :rows do
-        resources :cells
-      end
     end
 
     resources :public_links
@@ -123,6 +119,12 @@ Rails.application.routes.draw do
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get '/api/v1/attachments/:id', to: 'attachments#show'
+
+  # TODO: remove those after some time
+  get "/spaces/:space_npi/documents/:npi", to: "documents#show"
+  get "/spaces/:space_npi/documents/:npi/edit", to: "documents#edit"
+  get "/spaces/:space_npi/tables/:npi", to: "tables/tables#show"
+  get "/spaces/:space_npi/tables/:npi/edit", to: "tables/tables#edit"
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do

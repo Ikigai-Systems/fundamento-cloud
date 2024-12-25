@@ -3,10 +3,10 @@ class Documents::VersionsController < ApplicationController
 
   after_action :verify_authorized
 
+  before_action :load_document
+
   def create
     blocks = JSON.parse(params["blocks"].to_s)
-
-    @document = current_organization.documents.find(params[:document_id])
 
     authorize @document, :update?
 
@@ -16,7 +16,7 @@ class Documents::VersionsController < ApplicationController
 
       diff = HashDiff.diff(blocks, blocks2)
       if diff.present?
-        Sentry.capture_message("XmlfragmentToBlock mismatch for #{params[:space_id]} / #{params[:document_id]} (call stefan) : #{diff}")
+        Sentry.capture_message("XmlfragmentToBlock mismatch for #{@space.id} / #{@document.id} (call stefan) : #{diff}")
         flash[:warning] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
       end
     end
@@ -28,7 +28,7 @@ class Documents::VersionsController < ApplicationController
     if @version.save
       respond_to do |format|
         flash[:notice] = "Document version has been saved."
-        format.html { redirect_to space_document_path(params[:space_npi], @document) }
+        format.html { redirect_to document_path(@document) }
       end
     else
       render :new, status: :unprocessable_content
@@ -45,11 +45,8 @@ class Documents::VersionsController < ApplicationController
   end
 
   def index
-    @document = current_organization.documents.find(params[:document_id])
-
     authorize @document, :show?
 
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
 
     @versions = @document.versions.order('created_at DESC')
@@ -58,8 +55,6 @@ class Documents::VersionsController < ApplicationController
   end
 
   def show
-    @document = current_organization.documents.find(params[:document_id])
-
     authorize @document, :show?
 
     if params[:id] == "latest"
@@ -69,9 +64,15 @@ class Documents::VersionsController < ApplicationController
     end
     raise ActionController::RoutingError, 'Not Found' if @version.blank?
 
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @documents = @space.documents_from_hierarchy
 
     @versions = @document.versions.order('created_at DESC')
+  end
+
+  private
+
+  def load_document
+    @document = current_organization.documents.find_by_param!(params[:document_npi])
+    @space = @document.space
   end
 end

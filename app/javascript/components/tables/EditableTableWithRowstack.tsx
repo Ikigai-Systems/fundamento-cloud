@@ -198,13 +198,13 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
         onClick={async () => {
-          const spaceNpi = space?.npi;
-          const tableId = table?.id;
+          const spaceNpi = space.npi;
+          const tableNpi = table.npi;
           await TablesApi.moveColumnLeft({
-            params: {space_npi: spaceNpi, id: tableId},
+            params: {npi: tableNpi},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId.toString()]});
+          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableNpi]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
@@ -220,13 +220,13 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
         onClick={async () => {
-          const spaceNpi = space?.npi;
-          const tableId = table?.id;
+          const spaceNpi = space.npi;
+          const tableNpi = table.npi;
           await TablesApi.moveColumnRight({
-            params: {space_npi: spaceNpi, id: tableId},
+            params: {npi: tableNpi},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableId.toString()]});
+          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableNpi]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
@@ -322,7 +322,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                       try {
                         const currentDataDeserializer = Config.deserializeData;
                         Config.deserializeData = (val => val);
-                        const promiseData = TablesApi.show({space_npi: space?.npi, id: table.id});
+                        const promiseData = TablesApi.show({npi: table.npi});
                         Config.deserializeData = currentDataDeserializer;
                         const tableData = await promiseData;
 
@@ -503,13 +503,13 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               const currentDataSerializer = Config.serializeData;
               Config.serializeData = (val => val);
               const promise = TablesApi.updateByRowstack({
-                params: {space_npi: space?.npi, id: table.id},
+                params: {npi: table.npi},
                 data: {event}
               });
               Config.serializeData = currentDataSerializer;
               await promise;
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-                queryClient.invalidateQueries({queryKey: ["tables", space?.npi, table.id.toString()]});
+                queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.npi]});
               }
             } catch (e) {
               //todo: Sentry.capture(e)

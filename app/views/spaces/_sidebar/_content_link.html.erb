@@ -7,7 +7,7 @@
   },
   data: {"visibility-target" => content.archived? ? "hideable" : nil },
 ) do %>
-  <%= link_to polymorphic_path([content.space, content]), class: "content-link" do %>
+  <%= link_to polymorphic_path([content]), class: "content-link" do %>
     <%= tag.div(
       style: "padding-left: #{local_assigns.fetch(:level, 0) * 16}px",
       class: "document-padding-left flex items-center w-full",
@@ -41,9 +41,10 @@
 
   <div class="content-link-buttons-container">
     <% if local_assigns.fetch(:hierarchical, false) && policy(content.space).update? %>
-      <%= button_to polymorphic_path([content.space, content.class]),
+      <%= button_to polymorphic_path([content.class]),
         method: :post,
         params: {
+          "space_npi": @space.npi,
           "document": { title: "" },
           "parent_type": content.class,
           "parent_id": content.id,
@@ -56,7 +57,7 @@
     <% end %>
 
     <% if policy(content.space).update? %>
-      <%= link_to polymorphic_path([:edit, content.space, content]),
+      <%= link_to polymorphic_path([:edit, content]),
         class: {
           "content-link-button" => true,
           "selected" => selected,

@@ -1,11 +1,11 @@
 class Tables::TablesController < ApplicationController
   after_action :verify_authorized_or_index_scoped
 
-  before_action :load_table, only: [:update]
+  before_action :load_space, only: [:new, :create, :index]
+  before_action :load_table, except: [:new, :create, :index]
 
   def index
     @tables = policy_scope(current_organization.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @tables = @tables.where(space: @space)
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
@@ -19,16 +19,14 @@ class Tables::TablesController < ApplicationController
   end
 
   def new
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.new
 
-    authorize @table, :create?, policy_class: DocumentPolicy
+    authorize @table, :create?
 
-    render "spaces/tables/new"
+    render "tables/new"
   end
 
   def create
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     create_params = table_params.except(:csv_file)
     if create_params[:name].nil?
       create_params[:name] = "Table " + Nanoid.generate(size: 4)
@@ -75,44 +73,41 @@ class Tables::TablesController < ApplicationController
 
       respond_to do |format|
         format.json { render json: @table }
-        format.html { redirect_to edit_space_table_path(@space, @table), notice: "Table created" }
+        format.html { redirect_to edit_table_path(@table), notice: "Table created" }
       end
     else
       respond_to do |format|
         format.json { render json: @table, status: :unprocessable_content}
-        format.html { render "spaces/tables/new" }
+        format.html { render "tables/new" }
       end
     end
   rescue ActiveRecord::RecordNotUnique => e
     @table.errors.add(:name, "must be unique within Space")
     respond_to do |format|
       format.json { render json: @table, status: :unprocessable_content }
-      format.html { render "spaces/tables/new" }
+      format.html { render "tables/new" }
     end
   end
 
   def show
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.find(params[:id])
-
+    authorize @table, :show?
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
       format.json { render json: { table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}), data: @table.data_to_json(evaluate_formulas: true) } }
       format.html do
         @tables = @space.tables.lexicographically
-        render "spaces/tables/show", layout: "full_width_application"
+        render "tables/show", layout: "full_width_application"
       end
     end
   end
 
   def edit
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.find(params[:id])
+    authorize @table, :update?
 
     @tables = @space.tables.lexicographically
 
-    render "spaces/tables/edit", layout: "full_width_application"
+    render "tables/edit", layout: "full_width_application"
   end
 
   def update
@@ -124,7 +119,7 @@ class Tables::TablesController < ApplicationController
       if table_params[:archived] == "true"
         redirect_to space_path(@table.space), notice: 'Table has been archived.'
       else
-        redirect_to edit_space_table_path(@table.space, @table), notice: 'Table has been restored.'
+        redirect_to edit_table_path(@table), notice: 'Table has been restored.'
       end
       return
     end
@@ -142,9 +137,7 @@ class Tables::TablesController < ApplicationController
   end
 
   def destroy
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.find(params[:id])
-
+    authorize @table, :destroy?
 
     @table.destroy
 
@@ -153,9 +146,6 @@ class Tables::TablesController < ApplicationController
 
   def update_by_rowstack
     # note: as an exception, frontend doesn't use camelCase -> snake_case serialization of request payload before sending it to this endpoint
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @table = @space.tables.find(params[:id])
-
     authorize @table, :update?
 
     event = params[:event]
@@ -228,16 +218,13 @@ class Tables::TablesController < ApplicationController
   end
 
   def preview_formula
-    space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    table = space.tables.find(params[:id])
+    authorize @table, :show?
 
-    authorize table, :show?
-
-    row = table.rows.find_by(npi: params["row_id"])
+    row = @table.rows.find_by(npi: params["row_id"])
     formula = params["formula"]
 
     cells = row.cells.index_by(&:column_id)
-    current_row_values = table.columns_in_order.each_with_object({}) do |column, hash|
+    current_row_values = @table.columns_in_order.each_with_object({}) do |column, hash|
       hash[column.name] = cells[column.id]&.value
     end
 
@@ -254,23 +241,17 @@ class Tables::TablesController < ApplicationController
   end
 
   def move_column_left
-    space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    table = space.tables.find(params[:id])
+    authorize @table, :update?
 
-    authorize table, :update?
-
-    column = table.columns.find_by(npi: params["col_id"])
+    column = @table.columns.find_by(npi: params["col_id"])
 
     column.move_left
   end
 
   def move_column_right
-    space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    table = space.tables.find(params[:id])
+    authorize @table, :update?
 
-    authorize table, :update?
-
-    column = table.columns.find_by(npi: params["col_id"])
+    column = @table.columns.find_by(npi: params["col_id"])
 
     column.move_right
   end
@@ -282,7 +263,13 @@ class Tables::TablesController < ApplicationController
   end
 
   def load_table
-    @table = current_organization.tables.find(params[:id])
+    @table = current_organization.tables.find_by_param!(params[:npi])
+    @space = @table.space
+  end
+
+
+  def load_space
+    @space = current_organization.spaces.find_by_param!(params[:space_npi] || params.dig(:table, :space_npi))
   end
 
   def subtitle

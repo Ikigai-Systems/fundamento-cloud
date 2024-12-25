@@ -4,13 +4,13 @@
 
 <% content_for :content_menu do %>
   <% if @document.versions.present? %>
-    <%= link_to "View current version", space_document_path(@space, @document),
+    <%= link_to "View current version", document_path(@document),
       class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
   <% end %>
 
   <div id="editor-connection-indicator"></div>
 
-  <%= button_to "Save", space_document_versions_path(@space, @document), method: :create,
+  <%= button_to "Save", document_versions_path(@document), method: :create,
     params: {blocks: ""},
     :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
     class: "primary-button document-toolbar-button" %>

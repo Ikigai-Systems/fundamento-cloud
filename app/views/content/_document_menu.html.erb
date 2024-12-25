@@ -23,10 +23,8 @@
   >
     <div class="dropdown-container w-56">
       <% if content.is_a?(Document) %>
-        <%= link_to "Document history",
-          space_document_version_path(space, content, "latest"),
-          disabled: content.versions.latest.blank?,
         <%= link_to_with_disable "Document history",
+          document_version_path(content, "latest"),
           disabled: content.versions.empty?,
           title: content.versions.latest.blank? ? "No document history yet, save a version first" : nil,
           data: { "dropdown-target" => "menuItem" },
@@ -35,7 +33,7 @@
         %>
 
         <%= link_to_with_disable "Move",
-          select_destination_space_document_path(space, content),
+          select_destination_document_path(content),
           disabled: !policy(space).update?,
           data: { "dropdown-target" => "menuItem", turbo_frame: "modal", action: "modal#open" },
           role: "menuitem",
@@ -45,7 +43,7 @@
 
       <% if content.archived? %>
         <%= button_to "Restore",
-          polymorphic_path([space, content]),
+          polymorphic_path([content]),
           method: :put,
           params: { content.model_name.to_s.downcase => { archived: false } },
           form: {
@@ -57,7 +55,7 @@
         %>
       <% else %>
         <%= button_to "Archive",
-          polymorphic_path([space, content]),
+          polymorphic_path([content]),
           method: :put,
           params: { content.model_name.to_s.downcase => { archived: true } },
           form: { data: { turbo_confirm: 'Mark this document as archived? This will hide if from default view.' } },
@@ -69,7 +67,7 @@
       <% end %>
 
       <%= button_to "Delete",
-        polymorphic_path([space, content]),
+        polymorphic_path([content]),
         method: :delete,
         form: { data: { turbo_confirm: 'Are you sure? Deleted document cannot be restored.' } },
         disabled: !policy(content).destroy?,

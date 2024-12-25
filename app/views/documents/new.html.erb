@@ -1,7 +1,7 @@
 <article class="document p-5">
   <h2 class="form-header">Create document</h2>
 
-  <%= form_for(@document, url: space_documents_path(@space), html: { method: :post }) do |f| %>
+  <%= form_for(@document, url: documents_path, html: { method: :post }) do |f| %>
     <%= f.hidden_field :space_id, value: @space.id %>
 
     <%= render "devise/shared/error_messages", resource: @document %>

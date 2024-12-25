@@ -27,8 +27,7 @@
             Documents
           </div>
 
-          <%= button_to space_documents_path(@space),
-            method: :post,
+          <%= button_to documents_path(space_npi: @space.npi),
             params: { "document": { title: "" } },
             disabled: !policy(@space).update?,
             form_class: "flex items-center",
@@ -57,7 +56,7 @@
             Tables
           </div>
 
-          <%= link_to_with_disable new_space_table_path(@space),
+          <%= link_to_with_disable new_table_path(space_npi: @space.npi),
             disabled: !policy(@space).update?,
             class: "secondary-button" do
           %>

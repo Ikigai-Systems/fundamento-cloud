@@ -12,7 +12,7 @@
   <% end %>
 
   <%= button_to "Edit",
-    edit_space_document_path(@space, @document),
+    edit_document_path(@document),
     method: :get,
     disabled: !policy(@document).update?,
     class: "primary-button document-toolbar-button",
@@ -44,7 +44,7 @@
 <article class="document">
   <%= turbo_frame_tag "document_hierarchy",
     data: { turbo: false },
-    src: hierarchy_space_document_path(@space, @document) %>
+    src: hierarchy_document_path(@document) %>
 
   <%= react_component "ShowVersionPanel", {
     version: @version.attributes.except("id"),

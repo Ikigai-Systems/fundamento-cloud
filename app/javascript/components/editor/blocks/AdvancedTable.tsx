@@ -52,6 +52,9 @@ const AdvancedTable = createReactBlockSpec(
       tableId: {
         default: -1
       },
+      tableNpi: {
+        default: "",
+      },
       viewProps: {
         default: JSON.stringify({columns: {}}),
       }
@@ -78,16 +81,17 @@ const AdvancedTable = createReactBlockSpec(
       }, [viewProps])
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
+      const tableNpi = blockProps.tableNpi;
       const tableId = blockProps.tableId;
       const inputFile = useRef<HTMLInputElement | undefined>(undefined);
       const [isCreating, setIsCreating] = useState(false);
-      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
+      const tableQuery = useQuery({queryKey: ["tables", space.npi, tableNpi || tableId.toString()], queryFn: async () => {
         if (tableId === -1) {
           return null;
         }
         const currentDataDeserializer = Config.deserializeData;
         Config.deserializeData = (val => val);
-        const promiseData = TablesApi.show({space_npi: space?.npi, id: tableId});
+        const promiseData = TablesApi.show({npi: tableNpi || tableId});
         Config.deserializeData = currentDataDeserializer;
         const data = await promiseData;
         return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -127,7 +131,9 @@ const AdvancedTable = createReactBlockSpec(
                     try {
                       const table = await TablesApi.create({
                         params: {
-                          space_npi: space.npi
+                          query: {
+                            space_npi: space.npi,
+                          },
                         },
                         data: {
                           table: {
@@ -156,7 +162,8 @@ const AdvancedTable = createReactBlockSpec(
                     const body = new FormData();
                     body.append('table[csv_file]', file);
 
-                    const table = await request("post", TablesApi.create.path({space_npi: space?.npi}), {
+                    const table = await request("post", TablesApi.create.path(), {
+                      params: {space_npi: space?.npi},
                       data: body,
                       responseAs: "json",
                       headers: {
@@ -166,6 +173,7 @@ const AdvancedTable = createReactBlockSpec(
                     editor.updateBlock(props.block, {
                       props: {
                         tableId: table.id,
+                        tableNpi: table.npi,
                       },
                     });
                   } finally {
@@ -193,17 +201,17 @@ const AdvancedTable = createReactBlockSpec(
                   defaultOptions
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
-                      params: {
-                        space_npi: space?.npi,
-                        query: {query}
+                      query: {
+                        space_npi: space.npi,
+                        query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name}));
+                    return tables.map(table => ({value: table.npi, label: table.name}));
                   }}
                   onChange={(newOption) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: (newOption as { value: any }).value,
+                        tableNpi: (newOption as { value: any }).value,
                       },
                     });
                   }}

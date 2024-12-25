@@ -3,6 +3,7 @@ class DocumentsController < ApplicationController
 
   after_action :verify_authorized_or_index_scoped
 
+  before_action :load_space, only: [:new, :create]
   before_action :load_document, except: [:new, :index, :create]
   before_action :create_object_visitor, if: -> { instance_variable_defined?(:@document) }
   before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy]
@@ -16,18 +17,13 @@ class DocumentsController < ApplicationController
 
   def new
     @document = current_organization.documents.new
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document.space = @space
 
     authorize @document, :create?
-
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
   end
 
   def create
     @document = current_organization.documents.new(document_params)
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @document.space = @space
 
     authorize @document, :create?
@@ -39,10 +35,8 @@ class DocumentsController < ApplicationController
         @space.hierarchy.append(hierarchy_node)
       end
 
-      @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
-
       if @space.save
-        redirect_to edit_space_document_path(@space, @document)
+        redirect_to edit_document_path(@document)
       else
         render :new, status: :unprocessable_content
       end
@@ -57,20 +51,12 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.json { render json: @document, :except => [:sync] }
       format.html do
-        @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
-        if @space != @document.space
-          redirect_to space_document_path(@document.space, @document)
-          return
-        end
-
         if @document.versions.empty?
-          redirect_to edit_space_document_path(@space, @document)
+          redirect_to edit_document_path(@document)
           return
         end
 
         @version = @document.versions.latest
-        @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
       end
       format.all { head :unprocessable_content }
     end
@@ -78,15 +64,6 @@ class DocumentsController < ApplicationController
 
   def edit
     authorize @document, :update?
-
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
-
-    if @space != @document.space
-      redirect_to edit_space_document_path(@document.space, @document)
-      return
-    end
-
-    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || document.versions.present? }
   end
 
   def update
@@ -100,7 +77,7 @@ class DocumentsController < ApplicationController
       if update_params[:archived] == "true"
         redirect_to space_path(@document.space), notice: 'Document has been archived.'
       else
-        redirect_to edit_space_document_path(@document.space, @document), notice: 'Document has been restored.'
+        redirect_to edit_document_path(@document), notice: 'Document has been restored.'
       end
       return
     end
@@ -116,9 +93,9 @@ class DocumentsController < ApplicationController
 
     @document.destroy
 
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @space = @document.space
     @space.remove_single_item_from_hierarchy!(params[:id])
-    @space.save
+    @space.save!
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'
   end
@@ -159,7 +136,7 @@ class DocumentsController < ApplicationController
 
       if @document.errors.empty? && @source_space.save && @destination_space.save
         # FIXME: would be great to show notice here
-        render turbo_stream: turbo_stream.redirect_to(space_document_path(@destination_space, @document))
+        render turbo_stream: turbo_stream.redirect_to(document_path(@document))
       else
         render turbo_stream: turbo_stream.replace(
           "edit_document_#{@document.id}",
@@ -187,11 +164,16 @@ class DocumentsController < ApplicationController
   end
 
   def load_document
-    @document = current_organization.documents.find(params[:id])
+    @document = current_organization.documents.find_by_param!(params[:npi])
+    @space = @document.space
+  end
+
+  def load_space
+    @space = current_organization.spaces.find_by_param!(params[:space_npi])
   end
 
   def ensure_turbo_request
-    redirect_to space_document_path(@document.space, @document) unless turbo_frame_request?
+    redirect_to document_path(@document) unless turbo_frame_request?
   end
 
   def document_params

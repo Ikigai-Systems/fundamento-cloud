@@ -21,7 +21,7 @@ class SpacesController < ApplicationController
     authorize @space, :show?
 
     if @space.home_document.present?
-      redirect_to space_document_url(@space, @space.home_document)
+      redirect_to document_url(@space.home_document)
     else
       @documents = @space.documents_from_hierarchy
       render layout: "full_width_application"
