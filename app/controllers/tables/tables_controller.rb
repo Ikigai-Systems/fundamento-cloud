@@ -35,7 +35,7 @@ class Tables::TablesController < ApplicationController
     end
     @table = @space.tables.new(create_params)
 
-    authorize @table, :create?, policy_class: DocumentPolicy
+    authorize @table, :create?
 
     @table.organization = @space.organization
     @table.parent = @space.home_document || @space.documents.first || nil
@@ -95,7 +95,6 @@ class Tables::TablesController < ApplicationController
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
 
-    authorize @table, :show?, policy_class: DocumentPolicy
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
@@ -110,7 +109,6 @@ class Tables::TablesController < ApplicationController
   def edit
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
-    authorize @table, :update?, policy_class: DocumentPolicy
 
     @tables = @space.tables.lexicographically
 
@@ -147,7 +145,6 @@ class Tables::TablesController < ApplicationController
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
 
-    authorize @table, :destroy?, policy_class: DocumentPolicy
 
     @table.destroy
 
@@ -159,7 +156,7 @@ class Tables::TablesController < ApplicationController
     @space = current_organization.spaces.find_by_npi!(params[:space_npi])
     @table = @space.tables.find(params[:id])
 
-    authorize @table, :update?, policy_class: DocumentPolicy
+    authorize @table, :update?
 
     event = params[:event]
     event_type = event["type"]
@@ -234,7 +231,7 @@ class Tables::TablesController < ApplicationController
     space = current_organization.spaces.find_by_npi!(params[:space_npi])
     table = space.tables.find(params[:id])
 
-    authorize table, :show?, policy_class: DocumentPolicy
+    authorize table, :show?
 
     row = table.rows.find_by(npi: params["row_id"])
     formula = params["formula"]
@@ -260,7 +257,7 @@ class Tables::TablesController < ApplicationController
     space = current_organization.spaces.find_by_npi!(params[:space_npi])
     table = space.tables.find(params[:id])
 
-    authorize table, :update?, policy_class: DocumentPolicy
+    authorize table, :update?
 
     column = table.columns.find_by(npi: params["col_id"])
 
@@ -271,7 +268,7 @@ class Tables::TablesController < ApplicationController
     space = current_organization.spaces.find_by_npi!(params[:space_npi])
     table = space.tables.find(params[:id])
 
-    authorize table, :update?, policy_class: DocumentPolicy
+    authorize table, :update?
 
     column = table.columns.find_by(npi: params["col_id"])
 
