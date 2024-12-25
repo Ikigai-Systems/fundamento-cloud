@@ -5,6 +5,8 @@ module ModelWithNpiAsParam
 
   included do
     class_attribute :allow_fallback_to_id, default: false
+    class_attribute :attach_to_param, default: []
+    class_attribute :additional_params_delimiter, default: "+"
   end
 
   class_methods do
@@ -12,16 +14,28 @@ module ModelWithNpiAsParam
       self.allow_fallback_to_id = allowed
     end
 
+    def set_attach_to_param(*attrs)
+      self.attach_to_param = attrs
+    end
+
     def find_by_param!(param)
       if self.allow_fallback_to_id && !param.to_i.zero?
         find_by_id!(param.to_i)
       else
-        find_by_npi!(param)
+        if self.attach_to_param.present?
+          find_by_npi!(param.split(self.additional_params_delimiter).first)
+        else
+          find_by_npi!(param)
+        end
       end
     end
   end
 
   def to_param
-    npi
+    if self.attach_to_param.present?
+      npi + self.additional_params_delimiter + self.attach_to_param.map { send(_1.to_sym) }.join(self.additional_params_delimiter)
+    else
+      npi
+    end
   end
 end

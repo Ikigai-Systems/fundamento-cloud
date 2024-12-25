@@ -4,6 +4,7 @@ class Table < ApplicationRecord
   include ModelWithNpiAsParam
 
   set_allow_fallback_to_id true
+  set_attach_to_param :name
 
   belongs_to :organization
   belongs_to :space
