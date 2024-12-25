@@ -26,6 +26,8 @@
         <%= link_to "Document history",
           space_document_version_path(space, content, "latest"),
           disabled: content.versions.latest.blank?,
+        <%= link_to_with_disable "Document history",
+          disabled: content.versions.empty?,
           title: content.versions.latest.blank? ? "No document history yet, save a version first" : nil,
           data: { "dropdown-target" => "menuItem" },
           role: "menuitem",
