@@ -15,7 +15,7 @@ RSpec.describe Tables::CellsController, type: :request do
     expect(response).to have_http_status(:found)
   end
 
-  describe "PATCH /tables/:table_id/rows/:row_id/cells/:id" do
+  describe "PATCH /tables/:table_npi/rows/:row_id/cells/:id" do
     context "with valid attributes" do
       it "updates the cell" do
         patch table_row_cell_path(cell.table, cell.row, cell), params: { cell: { value: "Updated value" } }
