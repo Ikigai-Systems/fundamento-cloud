@@ -132,7 +132,7 @@ const AdvancedTable = createReactBlockSpec(
                       const table = await TablesApi.create({
                         params: {
                           query: {
-                            space_npi: space.npi,
+                            space_npi: space?.npi,
                           },
                         },
                         data: {
@@ -145,6 +145,7 @@ const AdvancedTable = createReactBlockSpec(
                       editor.updateBlock(props.block, {
                         props: {
                           tableId: table.id,
+                          tableNpi: table.npi,
                         },
                       });
                     } finally {
@@ -163,13 +164,18 @@ const AdvancedTable = createReactBlockSpec(
                     body.append('table[csv_file]', file);
 
                     const table = await request("post", TablesApi.create.path(), {
-                      params: {space_npi: space?.npi},
+                      params: {
+                        query: {
+                          space_npi: space?.npi
+                        }
+                      },
                       data: body,
                       responseAs: "json",
                       headers: {
                         'Content-Type': 'multipart/form-data',
                       }
-                    })
+                    });
+
                     editor.updateBlock(props.block, {
                       props: {
                         tableId: table.id,
