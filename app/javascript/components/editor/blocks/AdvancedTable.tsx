@@ -43,6 +43,130 @@ const sampleColumns = [
   },
 ];
 
+const SelectOrCreateTableContainer = ({space, editor, block}) => {
+  const inputFile = useRef<HTMLInputElement | undefined>(undefined);
+  const [isCreating, setIsCreating] = useState(false);
+
+  return (
+    <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+      <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
+        <div className="font-bold">New table</div>
+        <button
+          className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          onClick={() => {
+            editor.removeBlocks([block]);
+          }}
+        >
+          <div className="size-5 icon-[heroicons--x-mark]"></div>
+        </button>
+      </div>
+      <div className="px-4 py-3 sm:p-6">
+        <div className="flex flex-row gap-6 justify-center">
+          <button
+            className="secondary-button"
+            disabled={isCreating}
+            onClick={async () => {
+              setIsCreating(true);
+              try {
+                const table = await TablesApi.create({
+                  params: {
+                    query: {
+                      space_npi: space?.npi,
+                    },
+                  },
+                  data: {
+                    table: {
+                      rows: sampleRows,
+                      columns: sampleColumns,
+                    }
+                  }
+                });
+                editor.updateBlock(block, {
+                  props: {
+                    tableId: table.id,
+                    tableNpi: table.npi,
+                  },
+                });
+              } finally {
+                setIsCreating(false);
+              }
+            }}
+          >
+            <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
+            Start blank
+          </button>
+          <input type="file" accept="text/csv" className="hidden" ref={inputFile} onChange={async (e) => {
+            setIsCreating(true);
+            try {
+              const file = e.target?.files?.[0];
+              const body = new FormData();
+              body.append('table[csv_file]', file);
+
+              const table = await request("post", TablesApi.create.path(), {
+                params: {
+                  query: {
+                    space_npi: space?.npi
+                  }
+                },
+                data: body,
+                responseAs: "json",
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                }
+              });
+
+              editor.updateBlock(block, {
+                props: {
+                  tableId: table.id,
+                  tableNpi: table.npi,
+                },
+              });
+            } finally {
+              setIsCreating(false);
+            }
+          }}/>
+          <button
+            className="secondary-button"
+            disabled={isCreating}
+            onClick={(e) => {
+              e.preventDefault();
+              inputFile?.current?.click();
+            }}
+          >
+            <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
+            Import data
+          </button>
+        </div>
+        <div className="font-bold text-sm py-3">Or use existing table</div>
+
+        <div className="mb-48">
+          <AsyncSelect
+            isDisabled={isCreating}
+            cacheOptions
+            defaultOptions
+            loadOptions={async (query) => {
+              const tables = await TablesApi.index({
+                query: {
+                  space_npi: space.npi,
+                  query,
+                }
+              });
+              return tables.map(table => ({value: table.id, label: table.name}));
+            }}
+            onChange={(newOption) => {
+              editor.updateBlock(block, {
+                props: {
+                  tableId: (newOption as { value: any }).value,
+                },
+              });
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
@@ -85,22 +209,22 @@ const AdvancedTable = createReactBlockSpec(
       const {space} = useContext(CurrentSpaceContext);
       const tableNpi = blockProps.tableNpi;
       const tableId = blockProps.tableId;
-      const inputFile = useRef<HTMLInputElement | undefined>(undefined);
-      const [isCreating, setIsCreating] = useState(false);
-      const tableQuery = useQuery({queryKey: ["tables", space.npi, tableNpi || tableId.toString()], queryFn: async () => {
-        if (tableId === -1) {
-          return null;
+      const tableQuery = useQuery({
+        queryKey: ["tables", space.npi, tableNpi || tableId.toString()], queryFn: async () => {
+          if (tableId === -1) {
+            return null;
+          }
+          const currentDataDeserializer = Config.deserializeData;
+          Config.deserializeData = (val => val);
+          const promiseData = TablesApi.show({npi: tableNpi || tableId});
+          Config.deserializeData = currentDataDeserializer;
+          const data = await promiseData;
+          return {...data, forceRerenderUuid: crypto.randomUUID()}
         }
-        const currentDataDeserializer = Config.deserializeData;
-        Config.deserializeData = (val => val);
-        const promiseData = TablesApi.show({npi: tableNpi || tableId});
-        Config.deserializeData = currentDataDeserializer;
-        const data = await promiseData;
-        return {...data, forceRerenderUuid: crypto.randomUUID()}
-      }}, queryClient);
+      }, queryClient);
       const {isLoading, isError} = tableQuery;
 
-      if (isLoading || isCreating) {
+      if (isLoading) {
         return (
           <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
             Loading table...
@@ -110,136 +234,23 @@ const AdvancedTable = createReactBlockSpec(
       }
 
       if (tableId === -1) {
-        return (
-          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
-            <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
-              <div className="font-bold">New table</div>
-              <button
-                className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                onClick={() => {
-                  editor.removeBlocks([props.block]);
-                }}
-              >
-                <div className="size-5 icon-[heroicons--x-mark]"></div>
-              </button>
-            </div>
-            <div className="px-4 py-3 sm:p-6">
-              <div className="flex flex-row gap-6 justify-center">
-                <button
-                  className="secondary-button"
-                  disabled={isCreating}
-                  onClick={async () => {
-                    setIsCreating(true);
-                    try {
-                      const table = await TablesApi.create({
-                        params: {
-                          query: {
-                            space_npi: space?.npi,
-                          },
-                        },
-                        data: {
-                          table: {
-                            rows: sampleRows,
-                            columns: sampleColumns,
-                          }
-                        }
-                      });
-                      editor.updateBlock(props.block, {
-                        props: {
-                          tableId: table.id,
-                          tableNpi: table.npi,
-                        },
-                      });
-                    } finally {
-                      setIsCreating(false);
-                    }
-                  }}
-                >
-                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
-                  Start blank
-                </button>
-                <input type="file" accept="text/csv" className="hidden" ref={inputFile} onChange={async (e) => {
-                  setIsCreating(true);
-                  try {
-                    const file = e.target?.files[0];
-                    const body = new FormData();
-                    body.append('table[csv_file]', file);
-
-                    const table = await request("post", TablesApi.create.path(), {
-                      params: {
-                        query: {
-                          space_npi: space?.npi
-                        }
-                      },
-                      data: body,
-                      responseAs: "json",
-                      headers: {
-                        'Content-Type': 'multipart/form-data',
-                      }
-                    });
-
-                    editor.updateBlock(props.block, {
-                      props: {
-                        tableId: table.id,
-                        tableNpi: table.npi,
-                      },
-                    });
-                  } finally {
-                    setIsCreating(false);
-                  }
-                }}/>
-                <button
-                  className="secondary-button"
-                  disabled={isCreating}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    inputFile?.current?.click();
-                  }}
-                >
-                  <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
-                  Import data
-                </button>
-              </div>
-              <div className="font-bold text-sm py-3">Or use existing table</div>
-
-              <div className="mb-48">
-                <AsyncSelect
-                  isDisabled={isCreating}
-                  cacheOptions
-                  defaultOptions
-                  loadOptions={async (query) => {
-                    const tables = await TablesApi.index({
-                      query: {
-                        space_npi: space.npi,
-                        query,
-                      }
-                    });
-                    return tables.map(table => ({value: table.npi, label: table.name}));
-                  }}
-                  onChange={(newOption) => {
-                    editor.updateBlock(props.block, {
-                      props: {
-                        tableNpi: (newOption as { value: any }).value,
-                      },
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )
+        return (<SelectOrCreateTableContainer editor={editor} space={space} block={props.block}/>);
       }
 
       if (isError) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable to load table with id {tableId}</div>
+          <div
+            className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable
+            to load table with id {tableId}</div>
         )
       }
 
       return (<div className="flex flex-col w-full">
         <div className="flex flex-row items-center">
-          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space} extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
-          {!editor.isEditable && <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
+          {space && editor.isEditable && <TableTitleInput table={tableQuery.data.table} space={space}
+            extraClasses="text-xl font-bold min-h-0 max-h-6 mt-0 p-0"/>}
+          {!editor.isEditable &&
+                <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
         </div>
 
         <EditableTableWithRowstack
