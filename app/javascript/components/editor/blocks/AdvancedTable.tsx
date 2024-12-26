@@ -68,6 +68,7 @@ const AdvancedTable = createReactBlockSpec(
       const blockProps = props.block.props;
       const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
       const initialRender = useRef(true);
+
       useEffect(() => {
         if (initialRender.current === true) {
           initialRender.current = false;
@@ -79,6 +80,7 @@ const AdvancedTable = createReactBlockSpec(
           });
         }
       }, [viewProps])
+
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableNpi = blockProps.tableNpi;
@@ -224,9 +226,6 @@ const AdvancedTable = createReactBlockSpec(
                 />
               </div>
             </div>
-            {/*<div className="px-4 py-3 sm:px-6">*/}
-            {/*  FOOTER*/}
-            {/*</div>*/}
           </div>
         )
       }
