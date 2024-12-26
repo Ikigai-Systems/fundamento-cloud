@@ -6,7 +6,7 @@ module ModelWithNpiAsParam
   included do
     class_attribute :allow_fallback_to_id, default: false
     class_attribute :attach_to_param, default: []
-    class_attribute :additional_params_delimiter, default: "+"
+    class_attribute :additional_params_delimiter, default: "~"
   end
 
   class_methods do
@@ -37,7 +37,9 @@ module ModelWithNpiAsParam
 
   def to_param
     if self.attach_to_param.present?
-      npi + self.additional_params_delimiter + self.attach_to_param.map { send(_1.to_sym) }.join(self.additional_params_delimiter)
+      npi +
+        self.additional_params_delimiter +
+        self.attach_to_param.map { send(_1.to_sym).to_s.parameterize(preserve_case: true) }.join("_")
     else
       npi
     end
