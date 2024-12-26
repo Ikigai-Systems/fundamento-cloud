@@ -47,6 +47,9 @@ application.register("show-if-input-value-equals", ShowIfInputValueEquals);
 import HotkeyController from "./hotkey_controller.ts";
 application.register("hotkey", HotkeyController);
 
+import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controller.js";
+application.register("emoji-picker", EmojiPickerController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application

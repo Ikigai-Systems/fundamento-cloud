@@ -52,3 +52,12 @@
     space: @space.to_react_props
   } %>
 </article>
+
+<div class="p-3">
+  <div data-controller="emoji-picker">
+    <button class="secondary-button" data-action="click->emoji-picker#showPicker">
+      <i class="fa-sharp fa-solid fa-face-awesome"></i>
+    </button>
+    <div data-emoji-picker-target="pickerContainer"></div>
+  </div>
+</div>
