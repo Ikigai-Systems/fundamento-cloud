@@ -19,14 +19,18 @@ module ModelWithNpiAsParam
     end
 
     def find_by_param!(param)
-      if self.allow_fallback_to_id && !param.to_i.zero?
-        find_by_id!(param.to_i)
-      else
-        if self.attach_to_param.present?
-          find_by_npi!(param.split(self.additional_params_delimiter).first)
-        else
-          find_by_npi!(param)
+      if self.allow_fallback_to_id
+        begin
+          return find_by_id!(Integer(param))
+        rescue ArgumentError
+          # It's not a proper integer, must be NPI then
         end
+      end
+
+      if self.attach_to_param.present?
+        find_by_npi!(param.split(self.additional_params_delimiter).first)
+      else
+        find_by_npi!(param)
       end
     end
   end
