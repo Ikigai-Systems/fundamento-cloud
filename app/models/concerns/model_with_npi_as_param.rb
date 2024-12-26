@@ -28,7 +28,7 @@ module ModelWithNpiAsParam
       end
 
       if self.attach_to_param.present?
-        find_by_npi!(param.split(self.additional_params_delimiter).first)
+        find_by_npi!(param.split(self.additional_params_delimiter).last)
       else
         find_by_npi!(param)
       end
@@ -37,9 +37,9 @@ module ModelWithNpiAsParam
 
   def to_param
     if self.attach_to_param.present?
-      npi +
+      self.attach_to_param.map { send(_1.to_sym).to_s.parameterize(preserve_case: true) }.join("_") +
         self.additional_params_delimiter +
-        self.attach_to_param.map { send(_1.to_sym).to_s.parameterize(preserve_case: true) }.join("_")
+        npi
     else
       npi
     end
