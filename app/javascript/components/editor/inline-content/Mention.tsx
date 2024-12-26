@@ -29,14 +29,13 @@ const Mention = createReactInlineContentSpec(
       if (props.inlineContent.props.entity === "document") {
         const documentId = props.inlineContent.props.id;
         const documentQuery = useQuery({queryKey: ["documents", documentId], queryFn: async () => {
-          return (await DocumentsApi.show({id: documentId}));
+          return (await DocumentsApi.show({npi: documentId}));
         }}, queryClient);
         const isLoading = documentQuery.isLoading;
         const displayName = documentQuery.data?.title || documentId;
-        const {space} = useContext(CurrentSpaceContext);
         return (
           <a
-            href={`/spaces/${space?.npi}` + DocumentsApi.show.path({id: documentId})}
+            href={DocumentsApi.show.path({npi: documentId})}
             className="border p-0.5 text-sky-500"
           >
             @{displayName}
