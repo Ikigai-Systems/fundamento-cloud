@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_25_164802) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_27_213849) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -253,6 +253,19 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_25_164802) do
     t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_invited_users_on_invited_by"
     t.index ["organization_id"], name: "index_invited_users_on_organization_id"
+  end
+
+  create_table "object_reactions", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "organization_user_id", null: false
+    t.string "object_type", null: false
+    t.bigint "object_id", null: false
+    t.string "emoji", null: false
+    t.datetime "created_at", null: false
+    t.index ["emoji", "object_id", "object_type", "organization_user_id"], name: "idx_on_emoji_object_id_object_type_organization_use_9a84494fac", unique: true
+    t.index ["object_type", "object_id"], name: "index_object_reactions_on_object"
+    t.index ["organization_id"], name: "index_object_reactions_on_organization_id"
+    t.index ["organization_user_id"], name: "index_object_reactions_on_organization_user_id"
   end
 
   create_table "object_visitors", force: :cascade do |t|
@@ -522,6 +535,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_25_164802) do
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"
   add_foreign_key "invited_users", "organizations"
+  add_foreign_key "object_reactions", "organization_users"
+  add_foreign_key "object_reactions", "organizations"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"
