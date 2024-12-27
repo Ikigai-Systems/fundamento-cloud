@@ -1,6 +1,8 @@
 class Documents::VersionsController < ApplicationController
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
+  include LoadDocument
+
   after_action :verify_authorized
 
   before_action :load_document
@@ -67,12 +69,5 @@ class Documents::VersionsController < ApplicationController
     @documents = @space.documents_from_hierarchy
 
     @versions = @document.versions.order('created_at DESC')
-  end
-
-  private
-
-  def load_document
-    @document = current_organization.documents.find_by_param!(params[:document_npi])
-    @space = @document.space
   end
 end
