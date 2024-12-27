@@ -3,7 +3,7 @@ import { Picker } from "emoji-mart";
 // import "emoji-mart/css/emoji-mart.css"; // Ensure this is imported to style the picker
 
 export default class extends Controller {
-  static targets = ["button", "pickerContainer"];
+  static targets = ["button", "pickerContainer", "emojiInput"];
 
   connect() {
     this.picker = null;
@@ -13,34 +13,21 @@ export default class extends Controller {
     event.preventDefault();
 
     if (this.picker) {
-      this.pickerContainerTarget.innerHTML = "";
+      this.pickerContainerTarget.innerHTML = ""; // Clear the picker container
       this.picker = null;
     } else {
       this.picker = new Picker({
         onEmojiSelect: this.handleEmojiSelect.bind(this),
-        autoFocus: true,
       });
-      this.pickerContainerTarget.appendChild(this.picker);
+      this.pickerContainerTarget.appendChild(this.picker); // Append the picker to the container
     }
   }
 
   handleEmojiSelect(emoji) {
-    this.picker.destroy();
+    this.pickerContainerTarget.innerHTML = ""; // Clear the picker container
     this.picker = null;
 
-    fetch("/emojis", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
-      },
-      body: JSON.stringify({ emoji: emoji.native }),
-    }).then((response) => {
-      if (response.ok) {
-        alert("Emoji sent successfully!");
-      } else {
-        alert("Failed to send emoji.");
-      }
-    });
+    this.emojiInputTarget.value = emoji.native; // Set the hidden field value
+    this.emojiInputTarget.dispatchEvent(new Event('change')); // Trigger the change event
   }
 }
