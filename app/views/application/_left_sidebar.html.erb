@@ -6,7 +6,7 @@
   end
 %>
 
-<aside id="left-sidebar" class="sidebar" data-turbo-keep-scroll>
+<aside id="left-sidebar" class="sidebar w-[300px]" data-turbo-keep-scroll>
   <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
     <%= render SidebarLoadingComponent.new %>
   <% end %>
