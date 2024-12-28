@@ -17,7 +17,7 @@ class Documents::ReactionsController < ApplicationController
   def create
     authorize @document, :show?
 
-    @document.reactions.create!(
+    @document.reactions.find_or_create_by!(
       organization: current_organization,
       organization_user: current_organization_user,
       emoji: params[:reaction][:emoji],
