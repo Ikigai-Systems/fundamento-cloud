@@ -2,7 +2,11 @@
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, destroyable)| %>
-        <div class="destroy-reaction-button">
+        <div class="destroy-reaction-button"
+          data-controller="popover"
+          data-popover-url-value="<%= document_reaction_path(@document, 1) %>"
+          data-action="mouseenter->popover#show mouseleave->popover#hide"
+        >
           <%= button_to document_reaction_path(@document, destroyable),
             method: :delete,
             disabled: destroyable.nil?,

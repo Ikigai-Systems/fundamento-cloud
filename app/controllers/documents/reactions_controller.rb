@@ -6,7 +6,7 @@ class Documents::ReactionsController < ApplicationController
   after_action :verify_authorized
 
   before_action :load_document
-  before_action :ensure_turbo_request
+  before_action :ensure_turbo_request, except: [:show]
 
   def index
     authorize @document, :show?
@@ -26,6 +26,12 @@ class Documents::ReactionsController < ApplicationController
     @reactions_grouped = group_reactions
 
     render :index
+  end
+
+  def show
+    authorize @document, :show?
+
+    render layout: "turbo_rails/frame"
   end
 
   def destroy

@@ -51,7 +51,7 @@ Rails.application.routes.draw do
 
     resources :documents, path: "d", param: :npi do
       resources :versions, module: :documents, only: [:create, :index, :show]
-      resources :reactions, module: :documents, only: [:create, :index, :destroy]
+      resources :reactions, module: :documents, only: [:create, :index, :show, :destroy]
 
       member do
         get :select_destination
