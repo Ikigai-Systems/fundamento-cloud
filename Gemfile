@@ -55,7 +55,9 @@ gem "y-rb_actioncable"
 gem "devise", "~> 4.9"
 gem "devise_invitable"
 
-gem "tailwindcss-rails", "~> 2.6"
+gem "tailwindcss-rails", "~> 3.0"
+# pin to tailwindcss version:
+gem "tailwindcss-ruby", "3.4.17"
 gem "vite_rails"
 gem "view_component"
 

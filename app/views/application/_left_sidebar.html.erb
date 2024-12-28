@@ -6,8 +6,23 @@
   end
 %>
 
-<aside id="left-sidebar" class="sidebar w-[300px]" data-turbo-keep-scroll>
-  <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
-    <%= render SidebarLoadingComponent.new %>
-  <% end %>
+<aside id="left-sidebar" class="sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-3 transition-all"
+       data-controller="toggle"
+       data-toggle-target="toggleable" data-toggle-class="collapsed" data-toggle-open-value="true"
+       data-turbo-keep-scroll>
+  <div class="relative">
+    <div class="absolute size-7 bg-white border top-4 -right-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100"
+         data-controller="hotkey" data-hotkey="["
+         data-action="click->toggle#toggle touch->toggle#toggle"
+    >
+      <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden" title="Collapse `[`"></span>
+      <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block" title="Expand `[`"></span>
+    </div>
+  </div>
+
+  <div class="h-full overflow-auto">
+    <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
+      <%= render SidebarLoadingComponent.new %>
+    <% end %>
+  </div>
 </aside>
