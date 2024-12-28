@@ -1,12 +1,17 @@
 <%= turbo_frame_tag "document_reactions" do %>
-  <div class="flex p-3 items-center">
-    <div class="flex gap-3">
-      <% @reactions.each do |reaction| %>
-      <span>
-        <%= button_to document_reaction_path(@document, reaction), method: :delete, data: { turbo_frame: "document_reactions" } do %>
-          <%= reaction.emoji %>
+  <div class="object-reactions-container">
+    <div class="object-current-reactions-container">
+      <% @reactions_grouped.each_pair do |emoji, (count, destroyable)| %>
+      <div class="reaction">
+        <%= button_to document_reaction_path(@document, destroyable),
+          method: :delete,
+          disabled: destroyable.nil?,
+          data: { turbo_frame: "document_reactions" } do
+        %>
+          <%= emoji %>
+          <span class="reaction-count"><%= count %></span>
         <% end %>
-      </span>
+      </div>
       <% end %>
     </div>
 

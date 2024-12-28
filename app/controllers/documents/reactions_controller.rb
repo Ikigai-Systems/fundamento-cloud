@@ -11,7 +11,7 @@ class Documents::ReactionsController < ApplicationController
   def index
     authorize @document, :show?
 
-    @reactions = @document.reactions
+    @reactions_grouped = group_reactions
   end
 
   def create
@@ -23,7 +23,7 @@ class Documents::ReactionsController < ApplicationController
       emoji: params[:reaction][:emoji],
     )
 
-    @reactions = @document.reactions
+    @reactions_grouped = group_reactions
 
     render :index
   end
@@ -33,12 +33,21 @@ class Documents::ReactionsController < ApplicationController
 
     @document.reactions.find_by(id: params[:id], organization_user: current_organization_user).destroy!
 
-    @reactions = @document.reactions
+    @reactions_grouped = group_reactions
 
     render :index
   end
 
   protected
+
+  def group_reactions
+    @document.reactions.group_by(&:emoji).transform_values do |reactions|
+      count = reactions.size
+      destroyable = reactions.first { _1.organization_user == current_organization_user }
+
+      [count, destroyable]
+    end
+  end
 
   def ensure_turbo_request
     redirect_to document_path(@document) unless turbo_frame_request?

@@ -7,6 +7,7 @@
 @import "./automation.tailwind.css";
 @import "./modal.tailwind.css";
 @import "./lozenges.tailwind.css";
+@import "./reactions.tailwind.css";
 
 @tailwind base;
 @tailwind components;

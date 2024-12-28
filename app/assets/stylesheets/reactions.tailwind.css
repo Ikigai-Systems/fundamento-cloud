@@ -1,0 +1,13 @@
+@layer components {
+    .object-reactions-container {
+        @apply flex p-3;
+    }
+
+    .object-current-reactions-container {
+        @apply flex gap-3;
+
+        .reaction {
+            @apply border rounded;
+        }
+    }
+}
