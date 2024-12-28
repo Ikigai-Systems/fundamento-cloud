@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "document_reactions" do %>
+<%= turbo_frame_tag "object_reactions" do %>
   <%= turbo_stream_from ["object_reactions", @document] %>
 
   <div class="object-reactions-container">
@@ -12,7 +12,7 @@
           <%= button_to document_reaction_path(@document, destroyable),
             method: :delete,
             disabled: destroyable.nil?,
-            data: { turbo_frame: "document_reactions", "action" => "click->popover#hide" } do
+            data: { turbo_frame: "object_reactions", "action" => "click->popover#hide" } do
           %>
             <%= emoji %>
             <span class="reaction-count"><%= count %></span>
@@ -24,7 +24,7 @@
     <%= form_with scope: :reaction,
       url: document_reactions_path(@document),
       method: :post,
-      data: { "controller" => "emoji-picker", turbo_frame: "document_reactions" } do |f|
+      data: { "controller" => "emoji-picker", turbo_frame: "object_reactions" } do |f|
     %>
       <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
 

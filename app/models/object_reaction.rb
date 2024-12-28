@@ -7,7 +7,7 @@ class ObjectReaction < ApplicationRecord
     broadcast_action_to(
       [:object_reactions, object_reaction.object],
       action: :reload_turbo_frame,
-      target: "#document_reactions",
+      target: "#object_reactions",
       render: false
     )
   }
