@@ -31,6 +31,9 @@ class Documents::ReactionsController < ApplicationController
   def show
     authorize @document, :show?
 
+    @reaction = @document.reactions.find(params[:id])
+    @reactions = @document.reactions.where(emoji: @reaction.emoji).order(created_at: :desc)
+
     render layout: "turbo_rails/frame"
   end
 
@@ -47,11 +50,12 @@ class Documents::ReactionsController < ApplicationController
   protected
 
   def group_reactions
-    @document.reactions.group_by(&:emoji).transform_values do |reactions|
+    @document.reactions.order(:emoji).group_by(&:emoji).transform_values do |reactions|
       count = reactions.size
+      reaction = reactions.first
       destroyable = reactions.first { _1.organization_user == current_organization_user }
 
-      [count, destroyable]
+      [count, reaction, destroyable]
     end
   end
 

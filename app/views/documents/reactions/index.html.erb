@@ -1,10 +1,10 @@
 <%= turbo_frame_tag "document_reactions" do %>
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
-      <% @reactions_grouped.each_pair do |emoji, (count, destroyable)| %>
+      <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
         <div class="destroy-reaction-button"
           data-controller="popover"
-          data-popover-url-value="<%= document_reaction_path(@document, 1) %>"
+          data-popover-url-value="<%= document_reaction_path(@document, reaction) %>"
           data-action="mouseenter->popover#show mouseleave->popover#hide"
         >
           <%= button_to document_reaction_path(@document, destroyable),

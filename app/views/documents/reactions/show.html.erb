@@ -1,3 +1,10 @@
 <div data-popover-target="card" class="absolute max-w-xs bg-grey-light border rounded p-2">
-  <p>This content is loaded with AJAX.</p>
+  <div class="flex-col">
+    <% @reactions.each do |reaction| %>
+      <div>
+        <%= reaction.organization_user.display_name %>
+        <%= time_ago_in_words reaction.created_at %>
+      </div>
+    <% end %>
+  </div>
 </div>
