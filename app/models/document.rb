@@ -13,6 +13,7 @@ class Document < ApplicationRecord
 
   has_many :versions, dependent: :destroy
   has_many :visitors, class_name: "ObjectVisitor", dependent: :delete_all
+  has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
 
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }

@@ -7,8 +7,9 @@ class OrganizationUser < ApplicationRecord
   belongs_to :user
 
   has_many :api_tokens, dependent: :delete_all
-  has_many :favorites
+  has_many :favorites, dependent: :delete_all
   has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
+  has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
 
   enum :role, [:manager, :member], scope: false
 

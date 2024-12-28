@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "document_reactions" do %>
+  <div class="flex p-3 items-center">
+    <div class="flex gap-3">
+      <% @reactions.each do |reaction| %>
+      <span>
+        <%= button_to document_reaction_path(@document, reaction), method: :delete, data: { turbo_frame: "document_reactions" } do %>
+          <%= reaction.emoji %>
+        <% end %>
+      </span>
+      <% end %>
+    </div>
+
+    <%= form_with scope: :reaction,
+      url: document_reactions_path(@document),
+      method: :post,
+      data: { "controller" => "emoji-picker", turbo_frame: "document_reactions" } do |f|
+    %>
+      <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
+
+      <button class="secondary-button" data-action="click->emoji-picker#showPicker">
+        <i class="fa-sharp fa-solid fa-face-awesome"></i>
+      </button>
+
+      <div data-emoji-picker-target="pickerContainer"></div>
+    <% end %>
+  </div>
+<% end %>

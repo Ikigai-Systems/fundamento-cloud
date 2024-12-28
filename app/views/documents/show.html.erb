@@ -53,13 +53,4 @@
   } %>
 </article>
 
-<div class="p-3">
-  <%= form_with url: document_reactions_path(@document), method: :post,  data: { "controller" => "emoji-picker"} do |f| %>
-    <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.submit()" %>
-
-    <button class="secondary-button" data-action="click->emoji-picker#showPicker">
-      <i class="fa-sharp fa-solid fa-face-awesome"></i>
-    </button>
-    <div data-emoji-picker-target="pickerContainer"></div>
-  <% end %>
-</div>
+<%= turbo_frame_tag "document_reactions", src: document_reactions_path(@document), loading: "lazy" %>
