@@ -1,5 +1,5 @@
 class Documents::ReactionsController < ApplicationController
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
+  layout "turbo_rails/frame"
 
   include LoadDocument
 
@@ -23,9 +23,7 @@ class Documents::ReactionsController < ApplicationController
       emoji: params[:reaction][:emoji],
     )
 
-    @reactions_grouped = group_reactions
-
-    render :index
+    render html: "", status: :no_content
   end
 
   def show
@@ -42,9 +40,7 @@ class Documents::ReactionsController < ApplicationController
 
     @document.reactions.find_by(id: params[:id], organization_user: current_organization_user).destroy!
 
-    @reactions_grouped = group_reactions
-
-    render :index
+    render html: "", status: :no_content
   end
 
   protected

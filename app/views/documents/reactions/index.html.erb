@@ -1,4 +1,6 @@
 <%= turbo_frame_tag "document_reactions" do %>
+  <%= turbo_stream_from ["object_reactions", @document] %>
+
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
@@ -10,7 +12,7 @@
           <%= button_to document_reaction_path(@document, destroyable),
             method: :delete,
             disabled: destroyable.nil?,
-            data: { turbo_frame: "document_reactions" } do
+            data: { turbo_frame: "document_reactions", "action" => "click->popover#hide" } do
           %>
             <%= emoji %>
             <span class="reaction-count"><%= count %></span>
