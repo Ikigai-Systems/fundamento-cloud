@@ -2,16 +2,16 @@
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, destroyable)| %>
-      <div class="reaction">
-        <%= button_to document_reaction_path(@document, destroyable),
-          method: :delete,
-          disabled: destroyable.nil?,
-          data: { turbo_frame: "document_reactions" } do
-        %>
-          <%= emoji %>
-          <span class="reaction-count"><%= count %></span>
-        <% end %>
-      </div>
+        <div class="destroy-reaction-button">
+          <%= button_to document_reaction_path(@document, destroyable),
+            method: :delete,
+            disabled: destroyable.nil?,
+            data: { turbo_frame: "document_reactions" } do
+          %>
+            <%= emoji %>
+            <span class="reaction-count"><%= count %></span>
+          <% end %>
+        </div>
       <% end %>
     </div>
 
@@ -22,7 +22,7 @@
     %>
       <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
 
-      <button class="secondary-button" data-action="click->emoji-picker#showPicker">
+      <button class="create-reaction-button" data-action="click->emoji-picker#showPicker">
         <i class="fa-sharp fa-solid fa-face-awesome"></i>
       </button>
 
