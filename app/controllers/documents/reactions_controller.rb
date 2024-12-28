@@ -47,7 +47,7 @@ class Documents::ReactionsController < ApplicationController
     @document.reactions.order(:emoji).group_by(&:emoji).transform_values do |reactions|
       count = reactions.size
       reaction = reactions.first
-      destroyable = reactions.first { _1.organization_user == current_organization_user }
+      destroyable = reactions.find { _1.organization_user == current_organization_user }
 
       [count, reaction, destroyable]
     end
