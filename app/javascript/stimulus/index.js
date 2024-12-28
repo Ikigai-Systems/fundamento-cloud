@@ -14,7 +14,15 @@ application.register('tabs', Tabs)
 application.register('toggle', Toggle)
 
 import Popover from "@stimulus-components/popover";
-application.register('popover', Popover);
+
+class FixedPopover extends Popover {
+  show(event) {
+    super.hide();
+    return super.show(event);
+  }
+}
+
+application.register('popover', FixedPopover);
 
 import { Multiselect } from '@wizardhealth/stimulus-multiselect'
 application.register('multiselect', Multiselect);
