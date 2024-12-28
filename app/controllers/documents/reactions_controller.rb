@@ -31,8 +31,6 @@ class Documents::ReactionsController < ApplicationController
 
     @reaction = @document.reactions.find(params[:id])
     @reactions = @document.reactions.where(emoji: @reaction.emoji).order(created_at: :desc)
-
-    render layout: "turbo_rails/frame"
   end
 
   def destroy
