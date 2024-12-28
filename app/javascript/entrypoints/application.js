@@ -35,13 +35,13 @@ import "~/stimulus"
 import * as Sentry from "@sentry/react";
 
 Sentry.init({
-	dsn: "https://0c7463b60827173872eb7d3bc8a9f8e5@o4507769834373120.ingest.de.sentry.io/4508331149951056",
-	integrations: [
-		Sentry.replayIntegration(),
-	],
-	// Session Replay
-	// This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-	replaysSessionSampleRate: 0.1,
-	// If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-	replaysOnErrorSampleRate: 1.0,
+  dsn: "https://0c7463b60827173872eb7d3bc8a9f8e5@o4507769834373120.ingest.de.sentry.io/4508331149951056",
+  integrations: [
+    Sentry.replayIntegration(),
+  ],
+  // Session Replay
+  // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+  replaysSessionSampleRate: 0.1,
+  // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  replaysOnErrorSampleRate: 1.0,
 });
