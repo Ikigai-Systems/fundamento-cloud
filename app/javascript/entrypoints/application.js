@@ -20,6 +20,7 @@ Turbo.start()
 
 import "~/turbo/turbo_keep_scroll.js"
 import "~/turbo/turbo_redirect_to.js"
+import "~/turbo/turbo_reload_turbo_frame.js"
 
 import * as ActiveStorage from '@rails/activestorage'
 ActiveStorage.start()
