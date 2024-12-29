@@ -5,10 +5,10 @@ import {useContext, useState} from "react";
 import ButtonConfiguration from "./button/ButtonConfiguration.tsx";
 import FormulasApi from "../../../api/FormulasApi.js";
 import createFlash from "../../createFlash.ts";
-import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import {colorNameToClass, colorNameToHoverAndActiveClass} from "./button/buttonColorUtils.ts";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
+import clsx from "clsx";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -64,6 +64,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
         middleware: [flip()],
         placement: "bottom-start" as Placement,
       });
+
       const dismiss = useDismiss(context);
       const {getReferenceProps, getFloatingProps} = useInteractions([
         dismiss,
@@ -73,45 +74,76 @@ const ButtonInlineContent = createReactInlineContentSpec(
         : (size === "Medium") ? {height: "h-8", wrapper: "rounded-xl", button: "text-md px-8", cog: "size-6"}
           : {height: "h-6", wrapper: "rounded-lg", button: "text-sm px-6", cog: "size-4"}
 
+      const spanClassNames = clsx(
+        "inline-flex items-center group border shadow-sm overflow-hidden",
+        colorNameToClass(color),
+        sizeClassNames.wrapper,
+      );
+
+      const buttonClassNames = clsx(
+        colorNameToClass(color),
+        colorNameToHoverAndActiveClass(color),
+        sizeClassNames.height,
+        sizeClassNames.button,
+        isEditable && !isExecuting && "pr-0",
+      );
+
+      const configureButtonClassNames = clsx(
+        "flex items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0",
+        colorNameToClass(color),
+        colorNameToHoverAndActiveClass(color),
+        sizeClassNames.height,
+      );
+
+      const executeButtonFormula = async () => {
+        try {
+          setIsExecuting(true);
+          const evaluationContext = {
+            spaceNpi: space.npi
+          };
+          const formulaResult = await FormulasApi.eval({data: {formula, evaluationContext}});
+          handleFormulaResultCommands(formulaResult, space);
+          if (!formulaResult.commands) {
+            createFlash({
+              type: "error",
+              message: "Unable to proceed, invalid action"
+            });
+          }
+        } catch (e) {
+          createFlash({
+            type: "error",
+            message: e.message,
+          });
+        } finally {
+          setIsExecuting(false);
+        }
+      };
+
       return (<>
-        <span ref={refs.setReference} {...getReferenceProps()} className={`inline-flex flex-row items-center group border shadow-sm overflow-hidden ${sizeClassNames.wrapper} ${isExecuting ? "bg-slate-950/5 text-slate-950/40" : colorNameToClass(color)}`}>
-          <button className={`ignore-default-disabled-styling ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height} ${sizeClassNames.button}${isEditable ? " pr-0" : ""}`}
+        <span ref={refs.setReference} {...getReferenceProps()} className={spanClassNames}>
+          <button className={buttonClassNames}
             disabled={isExecuting}
-            onClick={async () => {
-              try {
-                setIsExecuting(true);
-                const evaluationContext = {
-                  spaceNpi: space.npi
-                };
-                const formulaResult = await FormulasApi.eval({data: {formula, evaluationContext}});
-                handleFormulaResultCommands(formulaResult, space);
-                if (!formulaResult.commands) {
-                  createFlash({
-                    type: "error",
-                    message: "Unable to proceed, invalid action"
-                  });
-                }
-              } catch (e) {
-                createFlash({
-                  type: "error",
-                  message: e.message,
-                });
-              } finally {
-                setIsExecuting(false);
-              }
-            }}
+            onClick={executeButtonFormula}
           >
+            {isExecuting && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
             {label || "Button"}
           </button>
-          {isEditable && <button
-            className={`ignore-default-disabled-styling flex flex-row items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0 ${colorNameToHoverAndActiveClass(color)} ${sizeClassNames.height}`}
-            disabled={isExecuting}
+
+          {isEditable && !isExecuting && <button
+            className={configureButtonClassNames}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className={`${color === "white" ? "bg-gray-400" : "bg-white"} icon-[heroicons--cog-6-tooth] ${sizeClassNames.cog}`}></span>
+            <span className={
+              clsx(
+                color === "white" ? "bg-gray-400" : "bg-white",
+                "icon-[heroicons--cog-6-tooth]",
+                sizeClassNames.cog
+              )
+            }/>
           </button>}
+
           {isConfigurationOpen && <FloatingPortal>
             <div
               ref={refs.setFloating}
