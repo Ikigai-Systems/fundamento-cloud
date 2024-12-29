@@ -24,6 +24,11 @@
     label {
         @apply dark:text-white;
     }
+
+    button:disabled,
+    input:disabled {
+        @apply cursor-not-allowed;
+    }
 }
 
 @layer components {
@@ -52,12 +57,6 @@
 
     .danger-button {
         @apply bg-red-600 text-white hover:bg-red-500;
-    }
-
-    button:disabled,
-    input:disabled,
-    .disabled-button {
-        @apply cursor-not-allowed;
     }
 
     button:disabled:not(.link-button):not(.ignore-default-disabled-styling),
