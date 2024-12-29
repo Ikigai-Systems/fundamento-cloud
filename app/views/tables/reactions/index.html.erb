@@ -1,0 +1,39 @@
+<%= turbo_frame_tag "object_reactions" do %>
+  <%= turbo_stream_from ["object_reactions", @table] %>
+
+  <div class="object-reactions-container">
+    <div class="object-current-reactions-container">
+      <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
+        <div
+          data-controller="popover"
+          data-popover-url-value="<%= table_reaction_path(@table, reaction) %>"
+          data-action="mouseenter->popover#show mouseleave->popover#hide"
+        >
+          <%= button_to destroyable.present? ? table_reaction_path(@table, destroyable) : "#",
+            method: :delete,
+            disabled: destroyable.nil?,
+            class: "destroy-reaction-button",
+            data: { turbo_frame: "object_reactions", "action" => "click->popover#hide" } do
+          %>
+            <%= emoji %>
+            <span class="reaction-count"><%= count %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with scope: :reaction,
+      url: table_reactions_path(@table),
+      method: :post,
+      data: { "controller" => "emoji-picker", turbo_frame: "object_reactions" } do |f|
+    %>
+      <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
+
+      <button class="create-reaction-button" data-action="click->emoji-picker#showPicker">
+        <i class="fa-sharp fa-solid fa-face-awesome"></i>
+      </button>
+
+      <div data-emoji-picker-target="pickerContainer"></div>
+    <% end %>
+  </div>
+<% end %>

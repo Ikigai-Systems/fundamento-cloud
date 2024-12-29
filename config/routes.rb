@@ -62,15 +62,17 @@ Rails.application.routes.draw do
     end
 
     resources :tables, path: "t", param: :npi, module: :tables do
-      put :update_by_rowstack, on: :member
-      post :preview_formula, on: :member
-      post :move_column_left, on: :member
-      post :move_column_right, on: :member
-
       resources :columns
-
       resources :rows do
         resources :cells
+      end
+      resources :reactions, only: [:create, :index, :show, :destroy]
+
+      member do
+        put :update_by_rowstack
+        post :preview_formula
+        post :move_column_left
+        post :move_column_right
       end
     end
 

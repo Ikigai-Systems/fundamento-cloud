@@ -1,4 +1,6 @@
 class Tables::TablesController < ApplicationController
+  include LoadTable.from_param(:npi)
+
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_space, only: [:new, :create, :index]
@@ -261,12 +263,6 @@ class Tables::TablesController < ApplicationController
   def table_params
     params.require(:table).permit(:name, :archived, :csv_file)
   end
-
-  def load_table
-    @table = current_organization.tables.find_by_param!(params[:npi])
-    @space = @table.space
-  end
-
 
   def load_space
     @space = current_organization.spaces.find_by_param!(params[:space_npi] || params.dig(:table, :space_npi))
