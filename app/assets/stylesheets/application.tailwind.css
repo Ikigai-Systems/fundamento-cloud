@@ -14,6 +14,11 @@
 @tailwind utilities;
 
 @layer base {
+    /*
+     * Do not add any additional selectors in base section like button:disabled:not(.link-button) otherwise
+     * it will be very difficult to override those styles in other layers.
+     */
+
     body {
         @apply content-container;
         @apply md:bg-gray-100;
@@ -35,7 +40,8 @@
         @apply dark:bg-slate-300/5 dark:text-slate-300/40;
     }
 
-    button:disabled:not(.link-button):not(.ignore-default-disabled-styling),
+    button:disabled,
+    button:disabled:active,
     .disabled-button {
         @apply bg-slate-950/5 text-slate-950/40;
         @apply focus-visible:outline-none;
@@ -92,7 +98,9 @@
         @apply hover:underline
     }
 
-    .link-button:disabled {
+    .link-button:disabled,
+    .link-button:disabled:active {
         @apply text-neutral-400;
+        @apply bg-transparent;
     }
 }
