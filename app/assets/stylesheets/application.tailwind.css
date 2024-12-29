@@ -28,6 +28,8 @@
     button:disabled,
     input:disabled {
         @apply cursor-not-allowed;
+        @apply bg-slate-950/5 text-slate-950/40;
+        @apply dark:bg-slate-300/5 dark:text-slate-300/40;
     }
 }
 
@@ -60,7 +62,6 @@
     }
 
     button:disabled:not(.link-button):not(.ignore-default-disabled-styling),
-    input:disabled,
     .disabled-button {
         @apply bg-slate-950/5 text-slate-950/40;
         @apply focus-visible:outline-none;
@@ -77,8 +78,7 @@
         @apply dark:bg-orange-300 dark:text-slate-100 dark:hover:bg-orange-400 dark:hover:text-slate-200;
     }
 
-    button:disabled:not(.link-button).primary-button,
-    input:disabled.primary-button {
+    button:disabled:not(.link-button).primary-button {
         @apply bg-orange-400/40 text-slate-950/40;
     }
 
