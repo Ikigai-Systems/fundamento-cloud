@@ -13,14 +13,16 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
     body {
         @apply content-container;
         @apply md:bg-gray-100;
         @apply dark:md:bg-gray-900;
         @apply antialiased;
     }
+}
 
+@layer components {
     label {
         @apply dark:text-white;
     }
