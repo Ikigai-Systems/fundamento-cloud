@@ -17,6 +17,7 @@ class Document < ApplicationRecord
 
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
+  scope :with_has_versions, -> { select("documents.*, EXISTS (SELECT 1 FROM versions WHERE versions.document_id = documents.id) AS has_versions") }
 
   scope :recently_updated, -> { without_archived.order(updated_at: :desc).limit(50) }
 
@@ -35,7 +36,11 @@ class Document < ApplicationRecord
   end
 
   def draft?
-    self.versions.empty?
+    if has_attribute?(:has_versions)
+      !has_versions
+    else
+      self.versions.empty?
+    end
   end
 
   def to_blocks

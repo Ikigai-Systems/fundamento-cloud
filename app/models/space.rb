@@ -25,7 +25,7 @@ class Space < ApplicationRecord
 
   def documents_from_hierarchy(starting_node = hierarchy)
     ids = traverse_hierarchy(starting_node)
-    self.documents.where(id: ids)
+    self.documents.with_has_versions.where(id: ids)
   end
 
   def remove_single_item_from_hierarchy!(document_id, starting_node = hierarchy)
