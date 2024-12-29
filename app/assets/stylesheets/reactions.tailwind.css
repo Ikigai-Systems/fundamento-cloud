@@ -15,6 +15,10 @@
         @apply whitespace-nowrap;
     }
 
+    button.destroy-reaction-button:not(:disabled) {
+        @apply border-blue-600;
+    }
+
      button.create-reaction-button,
      button.create-reaction-button:disabled {
         @apply destroy-reaction-button;
