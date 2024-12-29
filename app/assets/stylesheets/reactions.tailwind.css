@@ -24,7 +24,7 @@
         @apply destroy-reaction-button;
         @apply px-3;
 
-        @apply border-transparent;
+        @apply border rounded-full border-transparent;
         @apply hover:border-inherit;
     }
 }
