@@ -9,7 +9,7 @@
           data-popover-url-value="<%= document_reaction_path(@document, reaction) %>"
           data-action="mouseenter->popover#show mouseleave->popover#hide"
         >
-          <%= button_to document_reaction_path(@document, destroyable),
+          <%= button_to destroyable.present? ? document_reaction_path(@document, destroyable) : "#",
             method: :delete,
             disabled: destroyable.nil?,
             data: { turbo_frame: "object_reactions", "action" => "click->popover#hide" } do
