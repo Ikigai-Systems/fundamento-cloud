@@ -4,20 +4,22 @@
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
-        <div class="destroy-reaction-button"
-          data-controller="popover"
-          data-popover-url-value="<%= document_reaction_path(@document, reaction) %>"
-          data-action="mouseenter->popover#show mouseleave->popover#hide"
-        >
-          <%= button_to destroyable.present? ? document_reaction_path(@document, destroyable) : "#",
-            method: :delete,
-            disabled: destroyable.nil?,
-            data: { turbo_frame: "object_reactions", "action" => "click->popover#hide" } do
-          %>
-            <%= emoji %>
-            <span class="reaction-count"><%= count %></span>
-          <% end %>
-        </div>
+        <%= button_to destroyable.present? ? document_reaction_path(@document, destroyable) : "#",
+          method: :delete,
+          disabled: destroyable.nil?,
+          class: {
+            "destroy-reaction-button" => true,
+          },
+          data: {
+            turbo_frame: "object_reactions",
+            controller: "popover",
+            "popover-url-value" => document_reaction_path(@document, reaction),
+            "action" => "mouseenter->popover#show mouseleave->popover#hide click->popover#hide"
+          } do
+        %>
+          <%= emoji %>
+          <span class="reaction-count"><%= count %></span>
+        <% end %>
       <% end %>
     </div>
 

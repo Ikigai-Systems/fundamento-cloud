@@ -8,11 +8,15 @@
 
     }
 
-    .destroy-reaction-button {
+     button.destroy-reaction-button,
+     button.destroy-reaction-button:disabled {
         @apply border rounded-full h-6 px-2;
+        @apply content-container;
+        @apply whitespace-nowrap;
     }
 
-    .create-reaction-button {
+     button.create-reaction-button,
+     button.create-reaction-button:disabled {
         @apply destroy-reaction-button;
         @apply px-3;
 
