@@ -19,7 +19,7 @@ class Space < ApplicationRecord
 
   validates_uniqueness_of :name, scope: [:organization_id]
 
-  after_create :create_home_document
+  after_create :create_home_document!
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
 
@@ -131,10 +131,14 @@ class Space < ApplicationRecord
     ids
   end
 
-  def create_home_document
+  def create_home_document!
     return if home_document_id.present?
 
     home_document = documents.create!(title: "Home for #{name}", organization: organization)
+
+    home_document.versions.create!(
+      content: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))
+    )
 
     update!(home_document: home_document)
   end
