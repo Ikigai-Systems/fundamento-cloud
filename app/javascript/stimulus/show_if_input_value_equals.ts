@@ -4,6 +4,9 @@ import {Controller} from "@hotwired/stimulus"
 export default class extends Controller<HTMLElement> {
   static targets = ['input', 'output']
 
+  declare inputTarget: HTMLInputElement;
+  declare outputTargets: HTMLElement[];
+
   connect() {
     this.refresh();
   }

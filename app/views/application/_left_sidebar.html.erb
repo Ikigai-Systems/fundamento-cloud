@@ -6,15 +6,16 @@
   end
 %>
 
-<aside id="left-sidebar" class="sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-3 transition-all"
-       data-controller="toggle"
-       data-toggle-target="toggleable" data-toggle-class="collapsed" data-toggle-open-value="true"
+<aside id="left-sidebar" class="sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-3 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
+       data-controller="cookie-controlled-toggle"
+       data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
+       data-cookie-controlled-toggle-target="toggleable" data-toggle-class="collapsed" data-cookie-controlled-toggle-open-value="<%= !(cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false")%>"
        data-turbo-keep-scroll>
   <div class="relative">
     <div class="absolute size-7 bg-white border top-4 -right-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100"
          data-controller="hotkey popover"
          data-hotkey="["
-         data-action="click->toggle#toggle touch->toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
+         data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
     >
       <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
 
