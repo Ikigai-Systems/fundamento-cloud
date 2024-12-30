@@ -1,15 +1,15 @@
 <%= turbo_frame_tag "object_reactions" do %>
-  <%= turbo_stream_from ["object_reactions", @table] %>
+  <%= turbo_stream_from ["object_reactions", resource] %>
 
   <div class="object-reactions-container">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
         <div
           data-controller="popover"
-          data-popover-url-value="<%= table_reaction_path(@table, reaction) %>"
+          data-popover-url-value="<%= resource_reaction_path(resource, reaction) %>"
           data-action="mouseenter->popover#show mouseleave->popover#hide"
         >
-          <%= button_to destroyable.present? ? table_reaction_path(@table, destroyable) : "#",
+          <%= button_to destroyable.present? ? resource_reaction_path(resource, destroyable) : "#",
             method: :delete,
             disabled: destroyable.nil?,
             class: "destroy-reaction-button",
@@ -23,7 +23,7 @@
     </div>
 
     <%= form_with scope: :reaction,
-      url: table_reactions_path(@table),
+      url: resource_reactions_path(resource),
       method: :post,
       data: { "controller" => "emoji-picker", turbo_frame: "object_reactions" } do |f|
     %>
