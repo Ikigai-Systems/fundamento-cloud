@@ -1,0 +1,10 @@
+<%= turbo_frame_tag :content_sidebar do %>
+  <div class="flex flex-col p-3">
+    <% @document.visitors.each do |visitor| %>
+      <div class="flex flex-row gap-3 items-center">
+        <%= render OrganizationUserAvatarComponent.new(organization_user: visitor.organization_user) %>
+        <%= time_ago_in_words visitor.visited_at %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
