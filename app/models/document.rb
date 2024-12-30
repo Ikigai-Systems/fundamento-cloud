@@ -12,7 +12,7 @@ class Document < ApplicationRecord
   has_one :public_link, as: :object, dependent: :destroy
 
   has_many :versions, dependent: :destroy
-  has_many :visitors, class_name: "ObjectVisitor", dependent: :delete_all
+  has_many :visitors, class_name: "ObjectVisitor", as: :object, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
 
   scope :archived, -> { where(archived: true) }
