@@ -42,21 +42,23 @@
           </div>
         </div>
 
-        <% if content_for?(:content_sidebar) %>
-          <%= content_for :content_sidebar %>
-        <% else %>
-          <%
-            if defined?(@document)
-              object = @document
-            elsif defined?(@table)
-              object = @table
-            end
-          %>
+        <div class="h-full overflow-auto">
+          <% if content_for?(:content_sidebar) %>
+            <%= content_for :content_sidebar %>
+          <% else %>
+            <%
+              if defined?(@document)
+                object = @document
+              elsif defined?(@table)
+                object = @table
+              end
+            %>
 
-          <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
-            <%= render SidebarLoadingComponent.new %>
+            <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
+              <%= render SidebarLoadingComponent.new %>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
       </aside>
     </div>
   </div>
