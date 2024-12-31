@@ -15,15 +15,20 @@
         <%= yield %>
       </div>
 
-      <aside
-        id="content-sidebar"
-        class="content-sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
-        data-controller="cookie-controlled-toggle"
-        data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
-        data-cookie-controlled-toggle-target="toggleable"
-        data-toggle-class="collapsed"
-        data-cookie-controlled-toggle-open-value="<%= !(cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false") %>"
-      >
+      <%= tag.aside(
+        id: "content-sidebar",
+        class: {
+          "content-sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-5 transition-all" => true,
+          "collapsed" => cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false",
+        },
+        data: {
+          "controller" => "cookie-controlled-toggle",
+          "cookie-controlled-toggle-cookie-key-value" => "ikigai_userPreferences_contentSideBarExpanded",
+          "cookie-controlled-toggle-target" => "toggleable",
+          "toggle-class" => "collapsed",
+          "cookie-controlled-toggle-open-value" => !(cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false"),
+        }) do
+      %>
         <div class="relative z-10">
           <div class="absolute size-7 content-container border top-4 -left-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-500"
                data-controller="hotkey popover"
@@ -59,7 +64,7 @@
             <% end %>
           <% end %>
         </div>
-      </aside>
+      <% end %>
     </div>
   </div>
 
