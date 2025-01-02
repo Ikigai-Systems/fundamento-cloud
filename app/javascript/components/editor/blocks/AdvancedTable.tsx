@@ -64,7 +64,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
         <div className="flex flex-row gap-6 justify-center">
           <button
             className="secondary-button"
-            disabled={isCreating}
+            disabled={isCreating || !editor.isEditable}
             onClick={async () => {
               setIsCreating(true);
               try {
@@ -83,7 +83,6 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
                 });
                 editor.updateBlock(block, {
                   props: {
-                    tableId: table.id,
                     tableNpi: table.npi,
                   },
                 });
@@ -117,7 +116,6 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
 
               editor.updateBlock(block, {
                 props: {
-                  tableId: table.id,
                   tableNpi: table.npi,
                 },
               });
@@ -127,7 +125,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
           }}/>
           <button
             className="secondary-button"
-            disabled={isCreating}
+            disabled={isCreating || !editor.isEditable}
             onClick={(e) => {
               e.preventDefault();
               inputFile?.current?.click();
@@ -141,7 +139,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
 
         <div className="mb-48">
           <AsyncSelect
-            isDisabled={isCreating}
+            isDisabled={isCreating || !editor.isEditable}
             cacheOptions
             defaultOptions
             loadOptions={async (query) => {
@@ -151,12 +149,12 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
                   query,
                 }
               });
-              return tables.map(table => ({value: table.id, label: table.name}));
+              return tables.map(table => ({value: table.npi, label: table.name}));
             }}
             onChange={(newOption) => {
               editor.updateBlock(block, {
                 props: {
-                  tableId: (newOption as { value: any }).value,
+                  tableNpi: (newOption as { value: any }).value,
                 },
               });
             }}
@@ -171,8 +169,7 @@ const AdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
     propSchema: {
-      // textAlignment: defaultProps.textAlignment,
-      // textColor: defaultProps.textColor,
+      // 2025-01-02 tableId is deprecated, remove it after Pawel implements blocknote to yjs converter and plays with backend migration
       tableId: {
         default: -1
       },
@@ -208,15 +205,14 @@ const AdvancedTable = createReactBlockSpec(
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const tableNpi = blockProps.tableNpi;
-      const tableId = blockProps.tableId;
       const tableQuery = useQuery({
-        queryKey: ["tables", space.npi, tableNpi || tableId.toString()], queryFn: async () => {
-          if (tableId === -1) {
+        queryKey: ["tables", space.npi, tableNpi], queryFn: async () => {
+          if (tableNpi === "") {
             return null;
           }
           const currentDataDeserializer = Config.deserializeData;
           Config.deserializeData = (val => val);
-          const promiseData = TablesApi.show({npi: tableNpi || tableId});
+          const promiseData = TablesApi.show({npi: tableNpi});
           Config.deserializeData = currentDataDeserializer;
           const data = await promiseData;
           return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -233,7 +229,7 @@ const AdvancedTable = createReactBlockSpec(
         )
       }
 
-      if (tableId === -1) {
+      if (tableNpi === "") {
         return (<SelectOrCreateTableContainer editor={editor} space={space} block={props.block}/>);
       }
 
@@ -241,7 +237,7 @@ const AdvancedTable = createReactBlockSpec(
         return (
           <div
             className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable
-            to load table with id {tableId}</div>
+            to load table with id {tableNpi}</div>
         )
       }
 
