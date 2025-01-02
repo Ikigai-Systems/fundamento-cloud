@@ -6,7 +6,7 @@
   end
 %>
 
-<aside id="left-sidebar" class="sidebar w-[300px] group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
+<aside id="left-sidebar" class="sidebar h-screen w-[300px] group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
        data-controller="cookie-controlled-toggle"
        data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
        data-cookie-controlled-toggle-target="toggleable" data-toggle-class="collapsed"
