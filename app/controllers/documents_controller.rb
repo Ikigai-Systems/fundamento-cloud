@@ -1,18 +1,22 @@
 class DocumentsController < ApplicationController
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "full_width_application" }
+  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_space, only: [:new, :create]
   before_action :load_document, except: [:new, :index, :create]
   before_action :create_object_visitor, if: -> { instance_variable_defined?(:@document) }
-  before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy]
+  before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy, :sidebar]
 
   def index
     respond_to do |format|
       format.json { render json: policy_scope(current_organization.documents), :except => [:sync] }
       format.all { head :unprocessable_content }
     end
+  end
+
+  def sidebar
+    authorize @document, :show?
   end
 
   def new

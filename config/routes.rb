@@ -58,6 +58,7 @@ Rails.application.routes.draw do
         post :move
 
         get :hierarchy
+        get :sidebar
       end
     end
 

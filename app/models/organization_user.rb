@@ -14,6 +14,7 @@ class OrganizationUser < ApplicationRecord
   enum :role, [:manager, :member], scope: false
 
   delegate :display_name, to: :user
+  delegate :initials, to: :user
 
   delegate :email, :email=, to: :user
   # delegate :first_name, :first_name=, to: :user

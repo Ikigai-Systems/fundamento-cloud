@@ -4,6 +4,7 @@ import Cookies from "js-cookie"
 const COOKIE_NAME = "ikigai_userPreferences_showArchived";
 
 // Connects to data-controller="toggle-button"
+// 30-Dec-2024: actually, this controller should be renamed to "showArchivedToggleButton" or similar: it's not generic toggle-button
 export default class extends Controller<HTMLElement> {
   static values = {
     checked: Boolean,

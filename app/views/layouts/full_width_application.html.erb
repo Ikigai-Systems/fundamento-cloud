@@ -1,9 +1,9 @@
 <%= render "layouts/body" do %>
   <div class="h-screen">
-    <div class="h-full grid grid-cols-[min-content,minmax(300px,_3fr)]">
+    <div class="grid grid-cols-[min-content,minmax(300px,_3fr)]">
       <%= render "application/left_sidebar" %>
 
-      <div class="flex-col content-container">
+      <div class="h-screen overflow-y-auto content-container">
         <nav class="w-full flex justify-end p-3 gap-1 items-center">
           <%= content_for :content_menu %>
 

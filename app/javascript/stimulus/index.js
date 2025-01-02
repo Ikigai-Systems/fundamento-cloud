@@ -13,6 +13,9 @@ application.register('slideover', Slideover)
 application.register('tabs', Tabs)
 application.register('toggle', Toggle)
 
+import CookieControlledToggle from "./cookie_controlled_toogle.js";
+application.register("cookie-controlled-toggle", CookieControlledToggle);
+
 import Popover from "@stimulus-components/popover";
 
 class FixedPopover extends Popover {

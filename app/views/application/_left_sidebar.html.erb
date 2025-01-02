@@ -6,29 +6,33 @@
   end
 %>
 
-<aside id="left-sidebar" class="sidebar w-[300px] overflow-visible group/collapser [&.collapsed]:w-3 transition-all"
-       data-controller="toggle"
-       data-toggle-target="toggleable" data-toggle-class="collapsed" data-toggle-open-value="true"
+<aside id="left-sidebar" class="sidebar h-screen w-[300px] group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
+       data-controller="cookie-controlled-toggle"
+       data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
+       data-cookie-controlled-toggle-target="toggleable" data-toggle-class="collapsed"
+       data-cookie-controlled-toggle-open-value="<%= !(cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false")%>"
        data-turbo-keep-scroll>
-  <div class="relative">
-    <div class="absolute size-7 bg-white border top-4 -right-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100"
-         data-controller="hotkey popover"
-         data-hotkey="["
-         data-action="click->toggle#toggle touch->toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
-    >
-      <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
+  <div class="relative z-10">
+    <div class="absolute content-container top-4 right-3.5">
+      <div class="fixed size-7 border rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer bg-white hover:bg-gray-100 hover:dark:bg-gray-500"
+           data-controller="hotkey popover"
+           data-hotkey="["
+           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
+      >
+        <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
+        <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
 
-      <template data-popover-target="content">
-        <div data-popover-target="card" class="bg-gray-800 text-gray-50 text-xs p-2 w-24 flex flex-row items-center justify-center rounded absolute left-8 -top-1">
-          <p class="block group-[.collapsed]/collapser:hidden">Collapse <span class="font-monospace bg-gray-700 rounded p-1 px-2">[</span></p>
-          <p class="hidden group-[.collapsed]/collapser:block">Expand <span class="font-monospace bg-gray-700 rounded p-1 px-2">[</span></p>
-        </div>
-      </template>
-      <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
+        <template data-popover-target="content">
+          <div data-popover-target="card" class="bg-gray-800 text-gray-50 text-xs p-2 w-24 flex flex-row items-center justify-center rounded absolute left-8 -top-1">
+            <p class="block group-[.collapsed]/collapser:hidden">Collapse <span class="font-monospace bg-gray-700 rounded p-1 px-2">[</span></p>
+            <p class="hidden group-[.collapsed]/collapser:block">Expand <span class="font-monospace bg-gray-700 rounded p-1 px-2">[</span></p>
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 
-  <div class="h-full overflow-auto">
+  <div class="h-full overflow-auto group-[.collapsed]/collapser:hidden">
     <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
       <%= render SidebarLoadingComponent.new %>
     <% end %>
