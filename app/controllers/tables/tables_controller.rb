@@ -234,7 +234,9 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    formula_evaluation = FormulaEvalGateway.evaluate(formula, additional_context: additional_context)
+    formula_evaluation = FormulaEvalGateway.evaluate(formula, additional_context: additional_context, evaluation_context: {
+      "space_npi" => @table.space.npi
+    })
 
     respond_to do |format|
       format.json { render json: formula_evaluation }

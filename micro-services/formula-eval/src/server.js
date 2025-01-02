@@ -43,7 +43,8 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
 fastify.post('/formulas/eval/batch', async function handler (request, reply) {
   // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
-  const {evaluations} = request.body;
+  const {evaluations, evaluation_context} = request.body;
+  requestContext.set("evaluation_context", evaluation_context);
 
   return evaluations.map(({formula, additional_context}) => {
     try {

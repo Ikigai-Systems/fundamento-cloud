@@ -44,6 +44,7 @@ class FormulaEvalGateway
 
     req_body_json = {
       evaluations: evaluations,
+      evaluation_context: evaluation_context,
     }.to_json
     req_headers = {
       "Content-type" => "application/json",

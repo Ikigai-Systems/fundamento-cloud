@@ -9,13 +9,14 @@ class TablesNoAuth::TablesController < ActionController::Base
     end
   end
 
-  def self.find_relevant_table(id_or_name, evaluation_context)
-    table = Table.find_by_id(id_or_name)
+  def self.find_relevant_table(npi_or_name, evaluation_context)
+    @space = Space.find_by_npi!(evaluation_context["space_npi"])
+    # todo: ensure first the user has "view" permission to the @space (user id should be availabble in "evaluation_context")
 
-    if table.nil? && evaluation_context.present? # maybe it was table Name provided instead of id?
-      @space = Space.find_by_npi!(evaluation_context["space_npi"])
-      # todo: ensure first the user has "view" permission to the @space (user id should be availabble in "evaluation_context")
-      table = @space.tables.find_by_name!(id_or_name)
+    table = Table.find_by_npi(npi_or_name)
+
+    if table.nil? # maybe it was table Name provided instead of id?
+      table = @space.tables.find_by_name!(npi_or_name)
     end
 
     return table

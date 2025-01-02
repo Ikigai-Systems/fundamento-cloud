@@ -95,7 +95,7 @@ class Table < ApplicationRecord
     end
 
     unless formulas_to_evaluate.empty?
-      FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, {}).each_with_index do |evaluated_formula, index|
+      FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, {"space_npi" => space.npi}).each_with_index do |evaluated_formula, index|
         formula_evaluation = formulas_to_evaluate[index]
         result = evaluated_formula["error"] || evaluated_formula["result"]
         jsonized_rows.find { |row| row["npi"] == formula_evaluation[:row_npi] }[formula_evaluation[:column_npi]] = result
