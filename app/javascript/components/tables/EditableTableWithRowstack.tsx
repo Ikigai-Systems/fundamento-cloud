@@ -350,7 +350,19 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             }, {
               render: () => {
                 return (<>
-                  {table && <div title={`ID of this table is ${table.id} - you can use it in formulas`} className="text-slate-400 text-sm">#{table.id}</div>}
+                  {table && <div
+                    title={`Click to copy this table ID (${table.npi}) to clipboard - you can use it in formulas`}
+                    className="text-slate-400 text-sm truncate max-w-24 cursor-pointer"
+                    onClick={() => {
+                      navigator.clipboard.writeText(table.npi);
+                      createFlash({
+                        type: "info",
+                        message: `Table ID (${table.npi}) copied to clipboard.`
+                      })
+                    }}
+                  >
+                    {table.npi}
+                  </div>}
                 </>)
               }
             }],
@@ -517,7 +529,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 key: "table_update_failed",
                 type: "error",
                 message: "Failed to update the table, please reload page and try again."
-              })
+              });
             }
           }}
         />  
