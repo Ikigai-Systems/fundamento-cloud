@@ -20,7 +20,7 @@ const ChartBlock = createReactBlockSpec(
   {
     type: "chartBlock",
     propSchema: {
-      tableId: {
+      tableNpi: {
         default: "",
       },
       title: {
@@ -46,16 +46,16 @@ const ChartBlock = createReactBlockSpec(
       const blockProps = props.block.props;
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
-      const {tableId, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
+      const {tableNpi, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
       const [xAxisDataset, setXAxisDataset] = useState<any>(undefined);
       const [yAxisDataset, setYAxisDataset] = useState<any>(undefined);
-      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableId.toString()], queryFn: async () => {
-        if (tableId === "") {
+      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableNpi], queryFn: async () => {
+        if (tableNpi === "") {
           return null;
         }
         const currentDataDeserializer = Config.deserializeData;
         Config.deserializeData = (val => val);
-        const promiseData = TablesApi.show({space_npi: space?.npi, id: tableId});
+        const promiseData = TablesApi.show({npi: tableNpi});
         Config.deserializeData = currentDataDeserializer;
         const data = await promiseData;
         return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -66,7 +66,7 @@ const ChartBlock = createReactBlockSpec(
 
       useAsyncEffect(async () => {
         if (useFormula) {
-          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableId}), Dig(CurrentValue, "${xAxisColumnNpi}"))`}});
+          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableNpi}), Dig(CurrentValue, "${xAxisColumnNpi}"))`}});
           handleFormulaResultCommands(formulaResult, space);
           setXAxisDataset(formulaResult.result);
         } else {
@@ -77,7 +77,7 @@ const ChartBlock = createReactBlockSpec(
 
       useAsyncEffect(async () => {
         if (useFormula) {
-          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableId}), Dig(CurrentValue, "${yAxisColumnNpi}"))`}});
+          const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableNpi}), Dig(CurrentValue, "${yAxisColumnNpi}"))`}});
           handleFormulaResultCommands(formulaResult, space);
           setYAxisDataset(formulaResult.result);
         } else {
@@ -95,7 +95,7 @@ const ChartBlock = createReactBlockSpec(
         )
       }
 
-      if (tableId === "") {
+      if (tableNpi === "") {
         return (
           <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
@@ -114,21 +114,22 @@ const ChartBlock = createReactBlockSpec(
 
               <div className="mb-48">
                 <AsyncSelect
+                  isDisabled={!editor.isEditable}
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
-                      params: {
+                      query: {
                         space_npi: space?.npi,
-                        query: {query}
+                        query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name}));
+                    return tables.map(table => ({value: table.npi, label: table.name}));
                   }}
                   onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: newOption.value,
+                        tableNpi: newOption.value,
                         title: `Chart for ${newOption.label}`,
                         chartType: "line",
                       },
@@ -146,7 +147,7 @@ const ChartBlock = createReactBlockSpec(
           <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
               <div className="text-red-800 flex items-center justify-center font-bold">
-                Unable to load table with id {tableId}
+                Unable to load table with id {tableNpi}
               </div>
               <button
                 className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
@@ -171,12 +172,12 @@ const ChartBlock = createReactBlockSpec(
                         query: {query}
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name}));
+                    return tables.map(table => ({value: table.npi, label: table.name}));
                   }}
                   onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
-                        tableId: newOption.value,
+                        tableNpi: newOption.value,
                       },
                     });
                   }}
