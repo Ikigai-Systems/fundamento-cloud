@@ -4,11 +4,11 @@
   "main": "src/blocknoteServer.mjs",
   "scripts": {
     "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknote_bundle.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
-    "build:server": "node build.mjs",
-    "build:watch": "node build.mjs --watch",
-    "server": "node build/blocknoteServer.js",
-    "server:watch": "nodemon build/blocknoteServer.js",
-    "dev": "concurrently -k -n esbuild,server -c yellow.bold,cyan.bold \"npm run build:watch\" \"npm run server:watch\""
+    "server:build": "node build.mjs",
+    "server:build:watch": "node build.mjs --watch",
+    "server:run": "node build/blocknoteServer.js",
+    "server:run:watch": "nodemon build/blocknoteServer.js",
+    "dev": "concurrently -k -n esbuild,server -c yellow.bold,cyan.bold \"npm run server:build:watch\" \"npm run server:run:watch\""
   },
   "devDependencies": {
     "@esbuild-plugins/tsconfig-paths": "^0.1.2bn",
