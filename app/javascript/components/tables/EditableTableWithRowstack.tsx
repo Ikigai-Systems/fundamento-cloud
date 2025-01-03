@@ -335,7 +335,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                         const csv = generateCsv(csvConfig)(rows.map((row: any) => {
                           const obj = {};
                           Object.entries(row).map(([key, value]) => obj[key] = (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value);
-                          console.log(obj);
                           return obj;
                         }));
                         download(csvConfig)(csv);

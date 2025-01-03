@@ -345,7 +345,6 @@ const ChartBlock = createReactBlockSpec(
                 }
               })}
               onChange={(option) => {
-                console.log(option);
                 editor.updateBlock(props.block, {
                   props: {
                     chartType: option.value,

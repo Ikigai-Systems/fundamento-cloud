@@ -3,6 +3,7 @@ import Mention from "./inline-content/Mention";
 import AdvancedTable from "./blocks/AdvancedTable.tsx";
 import CodeBlock from "./blocks/CodeBlock.tsx";
 import ButtonInlineContent from "./inline-content/ButtonInlineContent.tsx";
+import FormulaInlineContent from "./inline-content/FormulaInlineContent.tsx";
 import ChartBlock from "./blocks/ChartBlock.tsx";
 
 // Our schema with inline content specs, which contain the configs and
@@ -17,6 +18,7 @@ const schema = BlockNoteSchema.create({
     ...defaultInlineContentSpecs,
     mention: Mention,
     button: ButtonInlineContent,
+    formula: FormulaInlineContent,
   },
   blockSpecs: {
     ...remainingBlockSpecs,

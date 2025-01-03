@@ -28,6 +28,7 @@ import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
 import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
+import FormulaInlineContentMenuItem from "./inline-content/FormulaInlineContentMenuItem.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -185,7 +186,14 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
           defaultTableMenuItem.subtext = "Simple rows and columns formatting";
 
           return filterSuggestionItems(
-            [...itemsWithoutTable, defaultTableMenuItem, AdvancedTableMenuItem(), ButtonInlineContentMenuItem(), ChartBlockMenuItem()],
+            [
+              ...itemsWithoutTable,
+              defaultTableMenuItem,
+              AdvancedTableMenuItem(),
+              ChartBlockMenuItem(),
+              ButtonInlineContentMenuItem(),
+              FormulaInlineContentMenuItem(),
+            ],
             query
           )
         }}
