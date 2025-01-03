@@ -79,9 +79,9 @@ program
     });
 
     inputStream.on('end', () => {
-      const convertedData = convertToYjs(JSON.parse(Buffer.concat(chunks).toString()));
+      const convertedData = convertToYjs(JSON.parse(Buffer.concat(chunks).toString("utf8")));
 
-      outputStream.write(JSON.stringify(convertedData));
+      outputStream.write(convertedData);
 
       if (!options.output) {
         outputStream.end();
