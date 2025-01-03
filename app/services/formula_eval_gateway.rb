@@ -81,13 +81,14 @@ class FormulaEvalGateway
     commands&.each do |command|
       case command["type"]
       when "AddRow"
-        table = Table.find(command["tableId"])
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         table.add_row
       when "DeleteRows"
-        table = TablesNoAuth::TablesController::find_relevant_table(command["tableId"], evaluation_context)
-        command["tableId"] = table.id # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         # todo: extract row ids from command payload, iterate over them. Otherwise, just remove all rows
@@ -101,8 +102,8 @@ class FormulaEvalGateway
           row.destroy
         end
       when "AddOrUpdateRows"
-        table = TablesNoAuth::TablesController::find_relevant_table(command["tableId"], evaluation_context)
-        command["tableId"] = table.id # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         condition_formula = command["conditionFormula"]

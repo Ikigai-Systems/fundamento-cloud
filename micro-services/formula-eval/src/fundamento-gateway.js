@@ -29,13 +29,13 @@ async function fetchFromFundamento(url, callback) {
 
 const fundamentoBaseUrl = process.env.FUNDAMENTO_BASE_URL || "http://localhost:3000";
 
-export const getTable = (tableId) => {
-  const cacheKey = `tables/${tableId.toString()}`;
+export const getTable = (tableNpiOrName) => {
+  const cacheKey = `tables/${tableNpiOrName}`;
   const cachedResponse = requestContext.get(cacheKey);
   if (cachedResponse !== undefined) {
     return cachedResponse;
   }
-  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/tables_no_auth/tables/${tableId}`);
+  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/tables_no_auth/tables/${tableNpiOrName}`);
   requestContext.set(cacheKey, response);
   return response;
 };
