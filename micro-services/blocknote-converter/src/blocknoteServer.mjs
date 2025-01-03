@@ -14,7 +14,7 @@ fastify.post("/convert/yjs/blocks", async function handler (request, reply) {
   const {yjs} = request.body;
 
   const response = {
-    blocknote: convertToBlocks(yjs)
+    blocknote: convertToBlocks(Buffer.from(yjs, 'base64'))
   };
 
   return response;
