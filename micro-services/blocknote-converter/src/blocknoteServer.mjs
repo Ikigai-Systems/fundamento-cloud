@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import FormBodyPlugin from '@fastify/formbody'
 import {convertToBlocks} from "./convertToBlocks.ts";
 import {convertToYjs} from "./convertToYjs";
+import { Buffer } from 'buffer';
 
 const fastify = Fastify({
   logger: true,
@@ -24,7 +25,7 @@ fastify.post("/convert/blocks/yjs", async function handleConverterRequest (reque
   const {blocks} = request.body;
 
   const response = {
-    yjs: convertToYjs(blocks),
+    yjs: Buffer.from(convertToYjs(blocks)).toString("base64"),
     // blocknote: convertToBlocks(content),
   }
 
