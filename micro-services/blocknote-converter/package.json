@@ -13,6 +13,7 @@
   "devDependencies": {
     "@esbuild-plugins/tsconfig-paths": "^0.1.2bn",
     "@fastify/formbody": "^8.0.1",
+    "commander": "^13.0.0",
     "concurrently": "^9.1.0",
     "esbuild": "^0.23.1",
     "esbuild-register": "^3.6.0",
