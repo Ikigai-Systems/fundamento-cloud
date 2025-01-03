@@ -100,14 +100,14 @@ const ChartBlock = createReactBlockSpec(
           <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
               <div className="font-bold">New chart</div>
-              <button
+              {editor.isEditable && <button
                 className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 onClick={() => {
                   editor.removeBlocks([props.block]);
                 }}
               >
                 <div className="size-5 icon-[heroicons--x-mark]"></div>
-              </button>
+              </button>}
             </div>
             <div className="px-4 py-3 sm:p-6">
               <div className="font-bold text-sm py-3">Data source table</div>

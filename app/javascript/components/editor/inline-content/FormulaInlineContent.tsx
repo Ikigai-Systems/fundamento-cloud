@@ -1,7 +1,7 @@
 import {createReactInlineContentSpec, useBlockNoteEditor} from "@blocknote/react";
 import {autoUpdate, flip, FloatingPortal, useDismiss, useFloating, useInteractions} from '@floating-ui/react';
 import {Placement} from '@floating-ui/utils'
-import {useContext, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import FormulaConfiguration from "./formula/FormulaConfiguration.tsx";
 import FormulasApi from "../../../api/FormulasApi.js";
 import createFlash from "../../createFlash.ts";
@@ -9,6 +9,7 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import clsx from "clsx";
 import useAsyncEffect from "use-async-effect";
+import {useQuery} from "@tanstack/react-query";
 
 const FormulaInlineContent = createReactInlineContentSpec(
   {
@@ -17,6 +18,9 @@ const FormulaInlineContent = createReactInlineContentSpec(
       formula: {
         default: "",
       },
+      id: {
+        default: "",
+      }
       // - property to determine how to render the formula result, i.e. as slider, as progress, as star-rating, etc
       // displayAs: {
       //   default: "auto",
@@ -34,11 +38,19 @@ const FormulaInlineContent = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const {formula} = props.inlineContent.props;
+      const {formula, id} = props.inlineContent.props;
+      if (id === "") {
+        props.updateInlineContent({
+          type: "formula",
+          props: {
+            ...props.inlineContent.props,
+            id: crypto.randomUUID(),
+          }
+        });
+      }
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
       const [editedConfiguration, setEditedConfiguration] = useState({formula});
-      const [formulaResult, setFormulaResult] = useState(undefined);
       const [isExecuting, setIsExecuting] = useState(false);
       const {space} = useContext(CurrentSpaceContext);
       const {refs, floatingStyles, context} = useFloating({
@@ -52,6 +64,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
           props.updateInlineContent({
             type: "formula",
             props: {
+              ...props.inlineContent.props,
               formula: editedConfiguration.formula,
             }
           });
@@ -60,26 +73,31 @@ const FormulaInlineContent = createReactInlineContentSpec(
         placement: "bottom-start" as Placement,
       });
 
-      useAsyncEffect(async() => {
-        try {
-          setIsExecuting(true);
-          const evaluationContext = {
-            spaceNpi: space.npi
-          };
-          const formulaResult = formula !== ""
-            ? await FormulasApi.eval({data: {formula, evaluationContext}})
-            : {};
-          handleFormulaResultCommands(formulaResult, space);
-          setFormulaResult(formulaResult);
-        } catch (e) {
-          createFlash({
-            type: "error",
-            message: e.message,
-          });
-        } finally {
-          setIsExecuting(false);
+      const {data: formulaResult} = useQuery({
+        queryKey: ['formulaInlineContent', id, formula],
+        queryFn: async () => {
+          if (formula === "" || id === "") {
+            return {};
+          }
+
+          try {
+            setIsExecuting(true);
+            const evaluationContext = {
+              spaceNpi: space.npi
+            };
+            const formulaResult = await FormulasApi.eval({data: {formula, evaluationContext}});
+            handleFormulaResultCommands(formulaResult, space);
+            return formulaResult;
+          } catch (e) {
+            createFlash({
+              type: "error",
+              message: e.message,
+            });
+          } finally {
+            setIsExecuting(false);
+          }
         }
-      }, [formula]);
+      })
 
       const dismiss = useDismiss(context);
       const {getReferenceProps, getFloatingProps} = useInteractions([
@@ -99,7 +117,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       if (formulaResult?.error) {
         displayResult = <span className="text-red-500">{formulaResult.error}</span>
       } else if (formulaResult?.result) {
-        displayResult = <span>{formulaResult.result}</span>
+        displayResult = <span>{JSON.stringify(formulaResult.result)}</span>
       } else if (formulaResult?.commands) {
         displayResult = <div className=""><span className="relative top-0.5 size-4 icon-[heroicons--bolt]"></span>Action</div>
       }

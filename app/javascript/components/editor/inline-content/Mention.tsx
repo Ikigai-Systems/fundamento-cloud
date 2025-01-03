@@ -1,9 +1,7 @@
 import {createReactInlineContentSpec} from "@blocknote/react";
-import {useContext} from "react";
 import {useQuery} from "@tanstack/react-query";
 import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
-import CurrentSpaceContext from "../../.././contextes/CurrentSpaceContext.tsx";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 
 const Loading = () => {
