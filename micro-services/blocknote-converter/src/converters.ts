@@ -19,3 +19,9 @@ export function convertToYjs(blocks: any) {
 
   return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
 }
+
+export async function convertMarkdownToBlocks(markdown: string) {
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+
+  return await serverBlockNoteEditor.tryParseMarkdownToBlocks(markdown);
+}
