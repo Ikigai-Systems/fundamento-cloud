@@ -1,14 +1,13 @@
 import {createReactInlineContentSpec, useBlockNoteEditor} from "@blocknote/react";
 import {autoUpdate, flip, FloatingPortal, useDismiss, useFloating, useInteractions} from '@floating-ui/react';
 import {Placement} from '@floating-ui/utils'
-import {useContext, useEffect, useRef, useState} from "react";
+import {useContext, useState} from "react";
 import FormulaConfiguration from "./formula/FormulaConfiguration.tsx";
 import FormulasApi from "../../../api/FormulasApi.js";
 import createFlash from "../../createFlash.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import clsx from "clsx";
-import useAsyncEffect from "use-async-effect";
 import {useQuery} from "@tanstack/react-query";
 
 const FormulaInlineContent = createReactInlineContentSpec(
@@ -51,7 +50,6 @@ const FormulaInlineContent = createReactInlineContentSpec(
       const {isEditable} = useBlockNoteEditor();
       const [isConfigurationOpen, setIsConfigurationOpen] = useState(false);
       const [editedConfiguration, setEditedConfiguration] = useState({formula});
-      const [isExecuting, setIsExecuting] = useState(false);
       const {space} = useContext(CurrentSpaceContext);
       const {refs, floatingStyles, context} = useFloating({
         whileElementsMounted: autoUpdate,
@@ -73,7 +71,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
         placement: "bottom-start" as Placement,
       });
 
-      const {data: formulaResult} = useQuery({
+      const {data: formulaResult, isLoading} = useQuery({
         queryKey: ['formulaInlineContent', id, formula],
         queryFn: async () => {
           if (formula === "" || id === "") {
@@ -81,7 +79,6 @@ const FormulaInlineContent = createReactInlineContentSpec(
           }
 
           try {
-            setIsExecuting(true);
             const evaluationContext = {
               spaceNpi: space.npi
             };
@@ -93,8 +90,6 @@ const FormulaInlineContent = createReactInlineContentSpec(
               type: "error",
               message: e.message,
             });
-          } finally {
-            setIsExecuting(false);
           }
         }
       })
@@ -116,20 +111,20 @@ const FormulaInlineContent = createReactInlineContentSpec(
 
       if (formulaResult?.error) {
         displayResult = <span className="text-red-500">{formulaResult.error}</span>
-      } else if (formulaResult?.result) {
+      } else if (formulaResult?.result !== undefined) {
         displayResult = <span>{JSON.stringify(formulaResult.result)}</span>
-      } else if (formulaResult?.commands) {
+      } else if (formulaResult?.commands?.length > 0) {
         displayResult = <div className=""><span className="relative top-0.5 size-4 icon-[heroicons--bolt]"></span>Action</div>
       }
 
       return (<>
         <span ref={refs.setReference} {...getReferenceProps()} className={spanClassNames}>
           <div className="">
-            {isExecuting && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
-            {!isExecuting && displayResult}
+            {isLoading && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
+            {!isLoading && displayResult}
           </div>
 
-          {isEditable && !isExecuting && <button
+          {isEditable && !isLoading && <button
             className={configureButtonClassNames}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
