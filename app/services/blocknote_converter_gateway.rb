@@ -1,11 +1,30 @@
 class BlocknoteConverterGateway
-  def self.convert(blocknote)
-    microservice_url = URI(ENV["BLOCKNOTE_CONVERTER_MICROSERVICE_URL"])
+  def self.convert_yjs_to_blocks(yjs)
+    request_body = {
+      yjs: Base64.encode64(yjs),
+    }
 
-    req_body_json = {
-      blocks: blocknote,
-    }.to_json
-    req_headers = {
+    request_url = "/convert/yjs/blocks"
+
+    request_conversion(request_url, request_body)
+  end
+
+  def self.convert_blocks_to_yjs(blocks)
+    request_body = {
+      blocks: blocks,
+    }
+
+    request_url = "/convert/blocks/yjs"
+
+    request_conversion(request_url, request_body)
+  end
+
+  protected
+
+  def self.request_conversion(request_path, request_body)
+    request_uri = URI.join(ENV["BLOCKNOTE_CONVERTER_MICROSERVICE_URL"], request_path)
+
+    request_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
     }
@@ -13,18 +32,16 @@ class BlocknoteConverterGateway
     use_http2 = true # for development/debugging only
 
     if use_http2
-      client = NetHttp2::Client.new(URI.join(microservice_url, "/"))
-      res = client.call(:post, microservice_url.path, body: req_body_json, headers: req_headers)
+      client = NetHttp2::Client.new(request_uri)
+      response = client.call(:post, request_uri.path, body: request_body.to_json, headers: request_headers)
       #todo: preserve client open between calls
       client.close
     else
-      http = Net::HTTP.new(microservice_url.host, microservice_url.port)
-      res = http.post(microservice_url.path, req_body_json, req_headers)
+      http = Net::HTTP.new(request_uri.host, request_uri.port)
+      response = http.post(request_uri.path, request_body.to_json, request_headers)
     end
 
-    res_json = JSON.parse(res.body)
-
-    return res_json
+    return JSON.parse(response.body)
   rescue Exception => e
     Rails.logger.error e.message
     Rails.logger.error e.backtrace.join("\n")
