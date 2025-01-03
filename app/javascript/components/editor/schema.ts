@@ -2,7 +2,6 @@ import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@bl
 import Mention from "./inline-content/Mention";
 import AdvancedTable from "./blocks/AdvancedTable.tsx";
 import CodeBlock from "./blocks/CodeBlock.tsx";
-import ButtonBlock from "./blocks/ButtonBlock.tsx";
 import ButtonInlineContent from "./inline-content/ButtonInlineContent.tsx";
 import ChartBlock from "./blocks/ChartBlock.tsx";
 

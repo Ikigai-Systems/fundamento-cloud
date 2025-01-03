@@ -1,0 +1,80 @@
+//{
+//  "compilerOptions": {
+//    "target": "ES2020",
+//    "useDefineForClassFields": true,
+//    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+//    "module": "ESNext",
+//    "skipLibCheck": true,
+//
+//    /* Bundler mode */
+//    "moduleResolution": "bundler",
+//    "allowImportingTsExtensions": true,
+//    "resolveJsonModule": true,
+//    "isolatedModules": true,
+//    "noEmit": true,
+//    "jsx": "react-jsx",
+//
+//    /* Linting */
+////    "strict": true,
+////    "noUnusedLocals": true,
+////    "noUnusedParameters": true,
+//    "noImplicitAny": false,
+//    "noFallthroughCasesInSwitch": true
+//  },
+//  "include": [
+//    "**/*"
+//  ]
+//}
+
+//{
+//  "compilerOptions": {
+//    "strict": false,
+//    "noEmitOnError": false,
+//    "allowImportingTsExtensions": true,
+//    "skipLibCheck": true,
+//    "noImplicitAny": false,
+//    "noImplicitReturns": false,
+//    "noImplicitThis": false,
+//    "strictNullChecks": false,
+//    "esModuleInterop": true,
+//    "moduleResolution": "Node",
+//    "jsx": "react-jsx",
+//    "target": "ES2020",
+//    "module": "ESNext",
+//    "noEmit": true,
+////    "rootDir": "./src",
+//    "outDir": "./dist",
+//    "paths": {
+//      "rowstack": ["../../vendor/javascript/rowstack/main.js"]
+//    }
+//  },
+//  "include": ["src/**/*"],
+//  "exclude": ["node_modules"]
+//}
+
+
+{
+  "compilerOptions": {
+        "paths": {
+          "rowstack": ["../../vendor/javascript/rowstack/main.js"]
+        },
+
+    // Treat files as modules even if it doesn't use import/export
+    "moduleDetection": "force",
+
+    // Ignore module structure
+    "module": "Preserve",
+
+    // Allow JSON modules to be imported
+    "resolveJsonModule": true,
+
+    // Allow JS files to be imported from TS and vice versa
+    "allowJs": true,
+
+    // Use correct ESM import behavior
+    "esModuleInterop": true,
+
+    // Disallow features that require cross-file awareness
+    "isolatedModules": true
+  }
+}
