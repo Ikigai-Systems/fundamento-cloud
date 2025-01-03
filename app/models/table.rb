@@ -14,7 +14,7 @@ class Table < ApplicationRecord
   has_many :cells, class_name: "Tables::Cell", dependent: :delete_all
   has_many :columns, class_name: "Tables::Column", dependent: :delete_all
   has_many :rows, class_name: "Tables::Row", dependent: :delete_all
-  has_many :visitors, class_name: "ObjectVisitor", dependent: :delete_all
+  has_many :visitors, class_name: "ObjectVisitor", as: :object, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
 
   scope :lexicographically, -> { order(name: :asc) }

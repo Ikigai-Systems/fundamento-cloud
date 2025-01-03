@@ -141,4 +141,14 @@ RSpec.describe Table, type: :model do
       ])
     end
   end
+
+  describe "#destroy" do
+    fixtures "tables/object_visitors"
+
+    it "removes the table" do
+      expect do
+        tables_tables(:projects).destroy!
+      end.not_to raise_error
+    end
+  end
 end
