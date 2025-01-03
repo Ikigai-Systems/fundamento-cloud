@@ -134,7 +134,11 @@ class Space < ApplicationRecord
   def create_home_document!
     return if home_document_id.present?
 
-    home_document = documents.create!(title: "Home for #{name}", organization: organization)
+    home_document = documents.create!(
+      title: "Home for #{name}",
+      organization: organization,
+      sync: File.read(Rails.root.join("app", "templates", "space.yjs"))
+    )
 
     home_document.versions.create!(
       content: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))
