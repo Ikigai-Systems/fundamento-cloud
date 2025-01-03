@@ -1,7 +1,6 @@
 import Fastify from 'fastify';
 import FormBodyPlugin from '@fastify/formbody'
-import {convertToBlocks} from "./convertToBlocks.ts";
-import {convertToYjs} from "./convertToYjs";
+import {convertToBlocks, convertToYjs} from "./converters.ts";
 import { Buffer } from 'buffer';
 
 const fastify = Fastify({

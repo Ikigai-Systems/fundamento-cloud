@@ -1,10 +1,9 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
 
-export function convertToBlocks(base64: string) {
-  const update = Uint8Array.from(Buffer.from(base64, 'base64'));
+export function convertToBlocks(yjs : Buffer) {
   const doc = new Y.Doc();
-  Y.applyUpdate(doc, update);
+  Y.applyUpdate(doc, new Uint8Array(yjs));
 
   const serverBlockNoteEditor = ServerBlockNoteEditor.create();
 
@@ -13,4 +12,10 @@ export function convertToBlocks(base64: string) {
   } else {
     return [];
   }
+}
+
+export function convertToYjs(blocks: any) {
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+
+  return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
 }

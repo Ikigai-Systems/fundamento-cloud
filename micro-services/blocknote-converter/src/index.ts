@@ -1,7 +1,6 @@
 import fs from "fs";
-import {convertToBlocks} from "./convertToBlocks";
 import path from "path";
-import {convertToYjs} from "./convertToYjs";
+import {convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
 
 const program = new Command();
