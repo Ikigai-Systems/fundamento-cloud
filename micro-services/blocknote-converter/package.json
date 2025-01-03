@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/blocknoteServer.mjs",
   "scripts": {
-    "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknote_bundle.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
+    "converter:build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknoteConverter.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
     "server:build": "node build.mjs",
     "server:build:watch": "node build.mjs --watch",
     "server:run": "node build/blocknoteServer.js",
