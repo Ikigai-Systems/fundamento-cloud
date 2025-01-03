@@ -8,7 +8,7 @@
     "build:watch": "node build.mjs --watch",
     "server": "node build/blocknoteServer.js",
     "server:watch": "nodemon build/blocknoteServer.js",
-    "dev": "concurrently -k -n esbuild,nodemon -c yellow.bold,cyan.bold \"npm run build:watch\" \"npm run server:watch\""
+    "dev": "concurrently -k -n esbuild,server -c yellow.bold,cyan.bold \"npm run build:watch\" \"npm run server:watch\""
   },
   "devDependencies": {
     "@esbuild-plugins/tsconfig-paths": "^0.1.2bn",
