@@ -1,10 +1,32 @@
 <%= turbo_frame_tag :content_sidebar do %>
-  <div class="flex flex-col gap-3 p-3">
-    <% @document.visitors.order(visited_at: :desc).each do |visitor| %>
-      <div class="flex flex-row gap-3 items-center">
-        <%= render OrganizationUserAvatarComponent.new(organization_user: visitor.organization_user) %>
-        <%= time_ago_in_words visitor.visited_at %>
-      </div>
-    <% end %>
+  <div
+    data-controller="tabs"
+    data-tabs-active-tab-class="active-tab"
+  >
+    <div class="border-b border-gray-200">
+      <nav data-tabs-target="list" aria-label="Tabs">
+        <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-memo-circle-info"></i>
+          Details
+        </button>
+
+        <button id="visitors" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-screen-users"></i>
+          Visitors
+        </button>
+      </nav>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden">
+      <%= turbo_frame_tag "details_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :details) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden">
+      <%= turbo_frame_tag "visitors_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
   </div>
 <% end %>

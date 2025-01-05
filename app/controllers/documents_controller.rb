@@ -17,6 +17,12 @@ class DocumentsController < ApplicationController
 
   def sidebar
     authorize @document, :show?
+
+    if params[:tab] == "details"
+      render template: "documents/_sidebar/details"
+    elsif params[:tab] == "visitors"
+      render template: "documents/_sidebar/visitors"
+    end
   end
 
   def new
