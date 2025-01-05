@@ -1,5 +1,24 @@
 <%= turbo_frame_tag :details_sidebar_tab do %>
-  <div class="flex flex-col gap-3 p-3">
-    Document details will go here.
-  </div>
+  <ul role="list" class="divide-y divide-gray-100 px-3">
+    <li class="flex justify-between gap-x-6 py-5">
+      <div class="flex-auto min-w-0 gap-x-4">
+        <p class="text-sm/6 font-semibold text-gray-900">Created at</p>
+<!--        <p class="mt-1 truncate text-xs/5 text-gray-500">leslie.alexander@example.com</p>-->
+      </div>
+      <div class="shrink-0 flex flex-col sm:items-end">
+        <p class="text-sm/6 text-gray-900"><%= time_ago_in_words @document.created_at %></p>
+        <p class="mt-1 text-xs/5 text-gray-500"><time datetime="<%= @document.created_at.to_s %>"><%= @document.created_at %></time></p>
+      </div>
+    </li>
+    <li class="flex justify-between gap-x-6 py-5">
+      <div class="flex-auto min-w-0 gap-x-4">
+        <p class="text-sm/6 font-semibold text-gray-900">Updated at</p>
+<!--        <p class="mt-1 truncate text-xs/5 text-gray-500">michael.foster@example.com</p>-->
+      </div>
+      <div class="shrink-0 flex flex-col sm:items-end">
+        <p class="text-sm/6 text-gray-900"><%= time_ago_in_words @document.updated_at %></p>
+        <p class="mt-1 text-xs/5 text-gray-500"><time datetime="<%= @document.updated_at.to_s %>"><%= @document.updated_at %></time></p>
+      </div>
+    </li>
+  </ul>
 <% end %>
