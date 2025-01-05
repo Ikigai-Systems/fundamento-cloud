@@ -27,6 +27,12 @@
   <% end %>
 </head>
 <body data-controller="modal" data-action="click->modal#backdropClose">
+  <script>
+    window.FundamentoConfig = {
+      sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json %>,
+    };
+  </script>
+
   <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
 
   <%= yield %>
