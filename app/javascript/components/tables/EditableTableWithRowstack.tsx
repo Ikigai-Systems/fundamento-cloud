@@ -372,16 +372,16 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               let dateDayJs;
               switch (columnConfiguration?.dateStoredFormat) {
               case 0:
-                dateDayJs = dayjs(value, "M/D/YYYY HH:mm");
+                dateDayJs = dayjs(value, ["M/D/YYYY HH:mm", "M/D/YYYY"]);
                 break;
               case 1:
-                dateDayJs = dayjs(value, "D/M/YYYY HH:mm");
+                dateDayJs = dayjs(value, ["D/M/YYYY HH:mm", "D/M/YYYY"]);
                 break;
               case 2:
-                dateDayJs = dayjs(value, "DD.MM.YYYY HH:mm");
+                dateDayJs = dayjs(value, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY"]);
                 break;
               case 3:
-                dateDayJs = dayjs(value, "YYYY-MM-DD HH:mm");
+                dateDayJs = dayjs(value, ["YYYY-MM-DD HH:mm", "YYYY-MM-DD"]);
                 break;
               default:
                 dateDayJs = dayjs(value);
