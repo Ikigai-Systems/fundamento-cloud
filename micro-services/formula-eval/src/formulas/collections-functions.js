@@ -15,6 +15,10 @@ defineFormula("CountUnique", (...args) => {
   return {result: _.uniq(args[0]).length, commands: []};
 });
 
+defineFormula("Sum", (...args) => {
+  return {result: _.sum(args[0]), commands: []};
+});
+
 defineFormula("List", (...args) => {
   return {result: Array.from(args), commands: []};
 });

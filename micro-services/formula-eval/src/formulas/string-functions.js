@@ -54,3 +54,7 @@ defineFormula("Upper", (text) => {
 defineFormula("Lower", (text) => {
   return {result: text.toLowerCase(), commands: []};
 });
+
+defineFormula("Number", (text) => {
+  return {result: Number(text), commands: []};
+})

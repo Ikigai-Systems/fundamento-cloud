@@ -49,4 +49,8 @@ describe('String related formulas', () => {
   describe('Lower', () => {
     testFormula(`Lower("hello WORLD")`, "hello world");
   });
+
+  describe('Number', () => {
+    testFormula(`Number(5)`, 5);
+  });
 });

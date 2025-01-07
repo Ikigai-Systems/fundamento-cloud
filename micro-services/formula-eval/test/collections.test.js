@@ -46,4 +46,8 @@ describe("Collection formulas", () => {
     testFormula(`Last(List(1, 2, 3, 3, 3, 4))`, 4);
     testFormula(`Last(List(1))`, 1);
   });
+
+  describe('Sum', () => {
+    testFormula(`Sum(List(1,2,3,4))`, 10);
+  });
 });
