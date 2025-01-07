@@ -100,7 +100,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       ]);
 
       const spanClassNames = clsx(
-        "inline-flex items-center group border shadow-sm overflow-hidden bg-gray-100 px-1",
+        "inline-flex max-w-full items-start group border shadow-sm overflow-hidden bg-gray-100 px-1",
       );
 
       const configureButtonClassNames = clsx(
@@ -112,29 +112,24 @@ const FormulaInlineContent = createReactInlineContentSpec(
       if (formulaResult?.error) {
         displayResult = <span className="text-red-500">{formulaResult.error}</span>
       } else if (formulaResult?.result !== undefined) {
-        displayResult = <span>{JSON.stringify(formulaResult.result)}</span>
+        displayResult = <span className={clsx({"max-w-[calc(100%_-_18px)]": isEditable})}>{JSON.stringify(formulaResult.result)}</span>
       } else if (formulaResult?.commands?.length > 0) {
         displayResult = <div className=""><span className="relative top-0.5 size-4 icon-[heroicons--bolt]"></span>Action</div>
       }
 
       return (<>
-        <span ref={refs.setReference} {...getReferenceProps()} className={spanClassNames}>
-          <div className="">
-            {isLoading && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
-            {!isLoading && displayResult}
-          </div>
+        <span {...getReferenceProps()} className={spanClassNames}>
+          {isLoading && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
+          {!isLoading && displayResult}
 
           {isEditable && !isLoading && <button
+            ref={refs.setReference}
             className={configureButtonClassNames}
             onClick={() => {
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className={
-              clsx(
-                "icon-[heroicons--cog-6-tooth]",
-              )
-            }/>
+            <span className="icon-[heroicons--cog-6-tooth]"/>
           </button>}
 
           {isConfigurationOpen && <FloatingPortal>
