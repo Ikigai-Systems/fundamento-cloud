@@ -28,7 +28,7 @@ dayjs.extend(customParseFormat);
 
 type Kind =
     "string"
-    | "integer"
+    | "number"
     | "long_text"
     | "select"
     | "date"
@@ -42,7 +42,7 @@ type Kind =
 
 const toType = (kind: Kind) => {
   switch (kind) {
-  case "integer":
+  case "number":
     return "number";
   case "long_text":
     return "longText";
