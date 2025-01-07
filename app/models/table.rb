@@ -64,7 +64,9 @@ class Table < ApplicationRecord
     jsonized_rows = rows_in_order.map do |row|
       if evaluate_formulas
         current_row_values = columns_in_order.each_with_object({}) do |column, hash|
-          hash[column.name] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          cell_value = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          hash[column.name] = cell_value
+          hash[column.npi] = cell_value
         end
 
         additional_context = {
