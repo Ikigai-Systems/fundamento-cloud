@@ -31,7 +31,7 @@ class Api::V1::AutomationInvocationsController < Api::ApiController
       invocation = @automation.invocations.create!(
         organization_id: @automation.organization_id,
         space_id: @automation.space_id,
-        run_as_id: @automation.run_as_id,
+        run_as: current_organization_user,
         kind: @automation.kind,
         formula: @automation.formula,
         webhook: request.raw_post
