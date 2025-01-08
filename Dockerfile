@@ -60,6 +60,7 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Attempt to fix failing CI builds
+RUN apt-get update
 RUN apt-get install --no-install-recommends -y software-properties-common
 RUN add-apt-repository universe
 RUN apt-get update
