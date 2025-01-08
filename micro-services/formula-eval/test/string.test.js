@@ -5,6 +5,7 @@ import { testFormula } from "./formulaHelpers.js";
 describe('String related formulas', () => {
   describe('Join', () => {
     testFormula(`Join("-", "This", "is", "Awesome")`, "This-is-Awesome");
+    testFormula(`Join(", ", "This", "is", "Awesome")`, "This, is, Awesome");
   });
 
   describe('Concatenate', () => {
