@@ -98,11 +98,16 @@ const ButtonInlineContent = createReactInlineContentSpec(
       const executeButtonFormula = async () => {
         try {
           setIsExecuting(true);
-          const evaluationContext = {
-            spaceNpi: space.npi
-          };
-          const formulaResult = await FormulasApi.eval({data: {formula, evaluationContext}});
+
+          const formulaResult = await FormulasApi.eval({
+            data: {
+              formula,
+              spaceNpi: space?.npi,
+            }
+          });
+
           handleFormulaResultCommands(formulaResult, space);
+
           if (!formulaResult.commands) {
             createFlash({
               type: "error",

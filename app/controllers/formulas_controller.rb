@@ -6,7 +6,7 @@ class FormulasController < ApplicationController
 
     formula_evaluation = FormulaEvalGateway.evaluate(
       formula,
-      current_organization.spaces.find_by_param!(params.dig("evaluation_context", "space_npi")),
+      current_organization.spaces.find_by_param!(params[:space_npi] || params.dig("evaluation_context", "space_npi")),
       current_organization_user,
     )
 

@@ -79,10 +79,13 @@ const FormulaInlineContent = createReactInlineContentSpec(
           }
 
           try {
-            const evaluationContext = {
-              spaceNpi: space.npi
-            };
-            const formulaResult = await FormulasApi.eval({data: {formula, evaluationContext}});
+            const formulaResult = await FormulasApi.eval({
+              data: {
+                formula,
+                spaceNpi: space?.npi
+              }
+            });
+
             handleFormulaResultCommands(formulaResult, space);
             return formulaResult;
           } catch (e) {
