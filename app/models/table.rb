@@ -21,7 +21,7 @@ class Table < ApplicationRecord
 
   validates_presence_of :name
 
-  validates_uniqueness_of :name, scope: [:organization_id]
+  validates_uniqueness_of :name, scope: [:space_id]
 
   def order_linked_list(rows, method)
     return [] if rows.nil? || rows.empty?
