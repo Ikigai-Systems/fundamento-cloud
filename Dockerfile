@@ -60,7 +60,9 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Attempt to fix failing CI builds
-RUN apt-get install --no-install-recommends -y libsass-dev
+RUN add-apt-repository universe && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y libsass-dev
 
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
