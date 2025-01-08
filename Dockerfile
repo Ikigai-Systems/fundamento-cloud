@@ -10,7 +10,7 @@ ARG RAILS_ENV="production"
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean && \
-    apt-get update -qq && \
+#    apt-get update -qq && \
     apt-get install --no-install-recommends -y libpq-dev curl
 
 # Rails app lives here
