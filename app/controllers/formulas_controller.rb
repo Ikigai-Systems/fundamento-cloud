@@ -1,4 +1,4 @@
-class FormulasController < ActionController::Base
+class FormulasController < ApplicationController
   def eval
     # todo: some kind of autorization? that user is logged in?
 
