@@ -75,6 +75,16 @@
         role: "menuitem",
         tabindex: "-1"
       %>
+
+      <hr class="border-t" />
+
+      <%= link_to_with_disable "Automations",
+        space_automations_path(content.space),
+        disabled: !policy(space).update?,
+        data: { "dropdown-target" => "menuItem" },
+        role: "menuitem",
+        tabindex: "-1"
+      %>
     </div>
   </div>
 </div>
