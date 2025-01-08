@@ -18,6 +18,19 @@ module Api
       api_token.update!(used_at: Time.now)
     end
 
+    def current_organization
+      RequestContext.current_organization
+    end
+
+    def pundit_user
+      PolicyUserContext.new(current_user, current_organization)
+    end
+
+    # TODO: In the future implement this as devise scope, the same way we handle Superintendents
+    def current_organization_user
+      pundit_user&.organization_user
+    end
+
     def extract_bearer_token(authorization_header)
       return nil unless authorization_header.present? && authorization_header.start_with?("Bearer ")
 
