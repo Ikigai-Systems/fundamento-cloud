@@ -4,11 +4,11 @@ import _ from "lodash";
 
 // Define the Find function
 defineFormula("Join", (delimiter, ...args) => {
-  return {result: _.join(args, delimiter), commands: []};
+  return {result: _.join(_.flatten(args), delimiter), commands: []};
 });
 
 defineFormula("Concatenate", (...args) => {
-  return {result: _.join(args, ""), commands: []};
+  return {result: _.join(_.flatten(args), ""), commands: []};
 });
 
 function normalizeText(text, ignoreCase, ignoreAccents) {

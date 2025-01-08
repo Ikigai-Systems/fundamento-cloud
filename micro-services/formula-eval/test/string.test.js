@@ -6,10 +6,12 @@ describe('String related formulas', () => {
   describe('Join', () => {
     testFormula(`Join("-", "This", "is", "Awesome")`, "This-is-Awesome");
     testFormula(`Join(", ", "This", "is", "Awesome")`, "This, is, Awesome");
+    testFormula(`Join("| ", List("This", "is", "Awesome"]))`, "This| is| Awesome");
   });
 
   describe('Concatenate', () => {
     testFormula(`Concatenate("This", "Is", "Awesome")`, "ThisIsAwesome");
+    testFormula(`Concatenate(List("This", "Is", "Awesome"))`, "ThisIsAwesome");
   });
 
   describe('ContainsText', () => {
