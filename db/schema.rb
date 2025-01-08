@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_27_213849) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_08_113826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,7 +96,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_213849) do
     t.datetime "debug_at"
     t.datetime "disabled_at"
     t.integer "invocations_limit", limit: 2
+    t.bigint "run_as_id"
     t.index ["organization_id"], name: "index_automations_on_organization_id"
+    t.index ["run_as_id"], name: "index_automations_on_run_as_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
   end
@@ -529,6 +531,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_27_213849) do
   add_foreign_key "automation_invocations", "automations"
   add_foreign_key "automation_invocations", "organizations"
   add_foreign_key "automation_invocations", "spaces"
+  add_foreign_key "automations", "organization_users", column: "run_as_id"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
   add_foreign_key "documents", "organizations"
