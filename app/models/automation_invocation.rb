@@ -2,6 +2,7 @@ class AutomationInvocation < ApplicationRecord
   belongs_to :organization
   belongs_to :space
   belongs_to :automation
+  belongs_to :run_as, class_name: "OrganizationUser"
 
   enum :kind, [:webhook], scopes: false, validate: true
 

@@ -10,6 +10,8 @@ class OrganizationUser < ApplicationRecord
   has_many :favorites, dependent: :delete_all
   has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
+  has_many :automations, inverse_of: :run_as
+  has_many :automation_invocations, inverse_of: :run_as
 
   enum :role, [:manager, :member], scope: false
 
