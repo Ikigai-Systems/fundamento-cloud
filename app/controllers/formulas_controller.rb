@@ -3,10 +3,12 @@ class FormulasController < ApplicationController
     # todo: some kind of autorization? that user is logged in?
 
     formula = params["formula"]
-    evaluation_context = params["evaluation_context"] || {}
-    evaluation_context["user_id"] = current_user.id
 
-    formula_evaluation = FormulaEvalGateway.evaluate(formula, evaluation_context: evaluation_context)
+    formula_evaluation = FormulaEvalGateway.evaluate(
+      formula,
+      current_organization.spaces.find_by_param!(params.dig("evaluation_context", "space_npi")),
+      current_organization_user,
+    )
 
     respond_to do |format|
       format.json { render json: formula_evaluation }

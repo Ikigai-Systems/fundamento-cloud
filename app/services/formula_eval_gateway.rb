@@ -1,7 +1,15 @@
 class FormulaEvalGateway
 
-  def self.evaluate(formula, additional_context: {}, evaluation_context: {})
+  def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {}, evaluation_context: {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
+
+    if space
+      evaluation_context[:space_npi] = space.npi
+    end
+
+    if organization_user
+      evaluation_context[:user_id] = organization_user.user.id
+    end
 
     req_body_json = {
       formula: formula,
