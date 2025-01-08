@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_08_113826) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_08_114124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -79,8 +79,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_08_113826) do
     t.string "webhook"
     t.datetime "invoked_at"
     t.string "result"
+    t.bigint "run_as_id"
     t.index ["automation_id"], name: "index_automation_invocations_on_automation_id"
     t.index ["organization_id"], name: "index_automation_invocations_on_organization_id"
+    t.index ["run_as_id"], name: "index_automation_invocations_on_run_as_id"
     t.index ["space_id"], name: "index_automation_invocations_on_space_id"
   end
 
@@ -529,6 +531,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_08_113826) do
   add_foreign_key "api_tokens", "organizations"
   add_foreign_key "attachments", "organizations"
   add_foreign_key "automation_invocations", "automations"
+  add_foreign_key "automation_invocations", "organization_users", column: "run_as_id"
   add_foreign_key "automation_invocations", "organizations"
   add_foreign_key "automation_invocations", "spaces"
   add_foreign_key "automations", "organization_users", column: "run_as_id"
