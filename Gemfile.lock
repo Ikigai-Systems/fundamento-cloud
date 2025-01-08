@@ -183,11 +183,6 @@ GEM
     jmespath (1.6.2)
     js_from_routes (3.0.1)
       railties (>= 5.1, < 8)
-    libv8-node (18.19.0.0)
-    libv8-node (18.19.0.0-aarch64-linux)
-    libv8-node (18.19.0.0-arm64-darwin)
-    libv8-node (18.19.0.0-x86_64-darwin)
-    libv8-node (18.19.0.0-x86_64-linux)
     logger (1.6.3)
     lograge (0.14.0)
       actionpack (>= 4)
@@ -206,8 +201,6 @@ GEM
     marcel (1.0.4)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    mini_racer (0.14.1)
-      libv8-node (~> 18.19.0.0)
     minitest (5.25.1)
     msgpack (1.7.2)
     mutex_m (0.2.0)
@@ -439,7 +432,6 @@ DEPENDENCIES
   js_from_routes
   lograge (~> 0.14.0)
   logstash-event (~> 1.2)
-  mini_racer
   nanoid
   net-http2
   pg

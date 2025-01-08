@@ -67,7 +67,6 @@ gem "sentry-rails"
 gem "solid_assert"
 
 gem "hash_diff"
-gem "mini_racer"
 gem "nanoid"
 gem "pundit"
 gem "sequenced"
