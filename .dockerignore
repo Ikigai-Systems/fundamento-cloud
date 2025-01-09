@@ -21,6 +21,9 @@
 # Ignore npm modules as they will be installed (cleanly)
 /node_modules/
 
+# Ignore bundler packages
+/vendor/bundle/
+
 # Ignore any assets
 /public/*
 !/public/.keep
