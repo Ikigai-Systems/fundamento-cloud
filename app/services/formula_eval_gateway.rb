@@ -16,6 +16,7 @@ class FormulaEvalGateway
       additional_context: additional_context,
       evaluation_context: evaluation_context,
     }.to_json
+
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
@@ -54,6 +55,7 @@ class FormulaEvalGateway
       evaluations: evaluations,
       evaluation_context: evaluation_context,
     }.to_json
+
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
