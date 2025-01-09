@@ -54,7 +54,7 @@ class Table < ApplicationRecord
     self.order_linked_list(self.rows, :previous_row_id)
   end
 
-  def data_to_json(evaluate_formulas: false)
+  def data_to_json(evaluate_formulas: false, evaluate_as: nil)
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
@@ -97,9 +97,11 @@ class Table < ApplicationRecord
     end
 
     unless formulas_to_evaluate.empty?
-      results = FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map do |e|
+      evaluations = formulas_to_evaluate.map do |e|
         { formula: e[:formula], additional_context: e[:additional_context] }
-      end, { "space_npi" => space.npi })
+      end
+
+      results = FormulaEvalGateway.batch_evaluate(evaluations, space, evaluate_as)
 
       results.each_with_index do |formula_result, index|
         formula_evaluation = formulas_to_evaluate[index]
