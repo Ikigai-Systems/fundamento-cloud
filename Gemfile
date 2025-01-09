@@ -82,6 +82,7 @@ gem "wannabe_bool"
 gem "good_job", "~> 4.4"
 
 gem "net-http2"
+gem "jwt"
 
 gem "flipper-active_record"
 gem "flipper-ui"
