@@ -14,6 +14,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
+      "Authorization" => prepare_jwt_token(space, organization_user)
     }
 
     use_http2 = true # for development/debugging only
@@ -55,6 +56,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
+      "Authorization" => prepare_jwt_token(space, organization_user)
     }
 
     use_http2 = true # for development/debugging only
@@ -170,7 +172,10 @@ class FormulaEvalGateway
 
   private
 
-  def self.prepare_evaluation_context(organization_user, space, evaluation_context = {})
+  def self.prepare_jwt_token(space, organization_user)
+    "Empty"
+  end
+
   def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
     if space
       evaluation_context[:space_npi] = space.npi
