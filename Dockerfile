@@ -61,6 +61,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 
 # Attempt to fix failing CI builds
 RUN ls -R /rails/vendor/bundle/ruby/3.3.0/gems/sassc-2.4.0
+RUN lsb_release -a
 RUN ldd --version
 RUN ldd -v /rails/vendor/bundle/ruby/3.3.0/gems/sassc-2.4.0/lib/sassc/libsass.so
 
