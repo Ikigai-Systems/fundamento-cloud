@@ -64,6 +64,7 @@ RUN apt-get update
 RUN apt-get install --no-install-recommends -y libsass-dev
 RUN ls -R /rails/vendor/bundle/ruby/3.3.0/gems/sassc-2.4.0
 RUN ldd --version
+RUN ldd -v /rails/vendor/bundle/ruby/3.3.0/gems/sassc-2.4.0/lib/sassc/libsass.so
 
 # Ikigai-specific: precompile assets
 RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
