@@ -3,7 +3,7 @@ class FormulaEvalGateway
   def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {}, evaluation_context: {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
 
-    prepare_evaluation_context(organization_user, space, evaluation_context)
+    prepare_evaluation_context(space, organization_user, evaluation_context)
 
     req_body_json = {
       formula: formula,
@@ -45,6 +45,8 @@ class FormulaEvalGateway
   def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
     microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
 
+    evaluation_context = prepare_evaluation_context(space, organization_user)
+
     req_body_json = {
       evaluations: evaluations,
       evaluation_context: evaluation_context,
@@ -54,8 +56,6 @@ class FormulaEvalGateway
       "Content-type" => "application/json",
       "Accept" => "application/json",
     }
-
-    evaluation_context = prepare_evaluation_context(space, organization_user)
 
     use_http2 = true # for development/debugging only
 
@@ -171,6 +171,7 @@ class FormulaEvalGateway
   private
 
   def self.prepare_evaluation_context(organization_user, space, evaluation_context = {})
+  def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
     if space
       evaluation_context[:space_npi] = space.npi
     end
