@@ -8,7 +8,8 @@ async function fetchFromFundamento(url, callback) {
   try {
     const response = await axios.get(url, {
       headers: {
-        'Accept': 'application/json',
+        "Accept": "application/json",
+        "Authorization": requestContext.get("authorization"),
       },
       params: {
         evaluationContext: evaluationContext
