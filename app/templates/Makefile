@@ -6,7 +6,7 @@ BLOCKNOTE_CONVERTER := node ../../micro-services/blocknote-converter/build/block
 all: $(BLOCKNOTE_FILES) $(YJS_FILES)
 
 build_converter:
-	cd ../../micro-services/blocknote-converter && npm run converter:build
+	cd ../../micro-services/blocknote-converter && npm install && npm run converter:build
 
 %.blocknote.json: %.markdown | build_converter
 	$(BLOCKNOTE_CONVERTER) convert-markdown-to-blocks -i $< -o $@
