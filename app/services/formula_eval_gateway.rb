@@ -173,7 +173,7 @@ class FormulaEvalGateway
   private
 
   def self.prepare_jwt_token(space, organization_user)
-    "Empty"
+    "JWT Empty"
   end
 
   def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
