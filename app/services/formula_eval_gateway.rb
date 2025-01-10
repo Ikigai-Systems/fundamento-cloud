@@ -3,13 +3,7 @@ class FormulaEvalGateway
   def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {}, evaluation_context: {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
 
-    if space
-      evaluation_context[:space_npi] = space.npi
-    end
-
-    if organization_user
-      evaluation_context[:user_id] = organization_user.user.id
-    end
+    prepare_evaluation_context(space, organization_user, evaluation_context)
 
     req_body_json = {
       formula: formula,
@@ -20,6 +14,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
+      "Authorization" => prepare_jwt_token(space, organization_user)
     }
 
     use_http2 = true # for development/debugging only
@@ -36,7 +31,7 @@ class FormulaEvalGateway
 
     res_json = JSON.parse(res.body)
 
-    process_commands(res_json&.[]("commands"), evaluation_context)
+    process_commands(res_json&.[]("commands"), space, organization_user)
 
     return res_json
   rescue Exception => e
@@ -48,8 +43,10 @@ class FormulaEvalGateway
     }
   end
 
-  def self.batch_evaluate(evaluations, evaluation_context)
+  def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
     microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
+
+    evaluation_context = prepare_evaluation_context(space, organization_user)
 
     req_body_json = {
       evaluations: evaluations,
@@ -59,6 +56,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
+      "Authorization" => prepare_jwt_token(space, organization_user)
     }
 
     use_http2 = true # for development/debugging only
@@ -76,7 +74,7 @@ class FormulaEvalGateway
     res_json = JSON.parse(res.body)
 
     res_json&.each do |evaluated_formula|
-      process_commands(evaluated_formula&.[]("commands"), evaluation_context)
+      process_commands(evaluated_formula&.[]("commands"), space, organization_user)
     end
 
     return res_json
@@ -87,17 +85,17 @@ class FormulaEvalGateway
     return evaluations.map { |e| { "error" => "Fatal error: unable to evaluate formula" } }
   end
 
-  def self.process_commands(commands, evaluation_context)
+  def self.process_commands(commands, space, organization_user)
     commands&.each do |command|
       case command["type"]
       when "AddRow"
-        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         table.add_row
       when "DeleteRows"
-        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -112,7 +110,7 @@ class FormulaEvalGateway
           row.destroy
         end
       when "AddOrUpdateRows"
-        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], evaluation_context)
+        table = TablesNoAuth::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -170,6 +168,24 @@ class FormulaEvalGateway
         puts "Failed to parse formula `#{formula}` results: unrecognized command `#{command}`"
       end
     end
+  end
+
+  private
+
+  def self.prepare_jwt_token(space, organization_user)
+    "JWT Empty"
+  end
+
+  def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
+    if space
+      evaluation_context[:space_npi] = space.npi
+    end
+
+    if organization_user
+      evaluation_context[:user_id] = organization_user.user.id
+    end
+
+    evaluation_context
   end
 
 end

@@ -10,6 +10,17 @@ const fastify = Fastify({
 fastify.register(FormBodyPlugin);
 fastify.register(fastifyRequestContext);
 
+fastify.addHook("onRequest", async (request, reply) => {
+  const authorizationHeader = request.headers["authorization"];
+
+  if (!authorizationHeader || !authorizationHeader.startsWith("JWT ")) {
+    reply.status(401).send({ error: "Unauthorized" });
+    return;
+  }
+
+  requestContext.set("authorization", authorizationHeader);
+});
+
 fastify.post('/formulas/eval', async function handler (request, reply) {
   // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
