@@ -6,17 +6,16 @@ on:
   pull_request:
     branches: [ "*" ]
 
-env:
-  RAILS_ENV: test
-  DATABASE_URL: postgres://postgres:password@localhost/postgres
-
 jobs:
   run-tests:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:password@localhost/postgres
       BUNDLE_DL__FONTAWESOME__COM: ${{ secrets.FONTAWESOME_AUTH }}
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
     steps:
       - name: Checkout repository
