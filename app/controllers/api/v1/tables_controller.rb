@@ -6,7 +6,8 @@ class Api::V1::TablesController < Api::ApiController
     @table = self.class.find_relevant_table(
       params[:id],
       params.dig("evaluationContext", "space_npi"),
-      current_organization_user
+      current_organization_user,
+      for_update: false
     )
 
     respond_to do |format|
@@ -16,15 +17,22 @@ class Api::V1::TablesController < Api::ApiController
     end
   end
 
-  def self.find_relevant_table(npi_or_name, space_npi, organization_user)
-    @space = Space.find_by_npi!(space_npi)
-    # todo: ensure first the user has "view" permission to the @space (user id should be availabble in "evaluation_context")
+  def self.find_relevant_table(npi_or_name, space_npi, organization_user, for_update: true)
+    space = Space.find_by_npi!(space_npi)
 
-    table = Table.find_by_npi(npi_or_name)
+    pundit_user = PolicyUserContext.new(organization_user.user, organization_user.organization)
+
+    # Will throw if unauthorized
+    Pundit.authorize(pundit_user, space, for_update ? :update? : :show?)
+
+    table = space.tables.find_by_npi(npi_or_name)
 
     if table.nil? # maybe it was table Name provided instead of id?
-      table = @space.tables.find_by_name!(npi_or_name)
+      table = space.tables.find_by_name!(npi_or_name)
     end
+
+    # Will throw if unauthorized
+    Pundit.authorize(pundit_user, table, for_update ? :update? : :show?)
 
     return table
   end
