@@ -1,9 +1,9 @@
-class TablesNoAuth::TablesController < Api::ApiController
+class Api::V1::TablesController < Api::ApiController
   skip_before_action :authenticate_user_from_api_token!
   before_action :authenticate_user_from_jwt_token!
 
   def show
-    @table = TablesNoAuth::TablesController::find_relevant_table(
+    @table = self.class.find_relevant_table(
       params[:id],
       params.dig("evaluationContext", "space_npi"),
       current_organization_user

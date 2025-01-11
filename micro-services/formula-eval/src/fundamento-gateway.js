@@ -36,7 +36,7 @@ export const getTable = (tableNpiOrName) => {
   if (cachedResponse !== undefined) {
     return cachedResponse;
   }
-  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/tables_no_auth/tables/${tableNpiOrName}`);
+  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/api/v1/tables/${tableNpiOrName}`);
   requestContext.set(cacheKey, response);
   return response;
 };
