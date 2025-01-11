@@ -2,11 +2,11 @@ module Api
   class ApiController < ActionController::Base
     skip_before_action :verify_authenticity_token
 
-    before_action :authenticate_user_from_token!
+    before_action :authenticate_user_from_api_token!
 
     protected
 
-    def authenticate_user_from_token!
+    def authenticate_user_from_api_token!
       authorization_header = request.headers['Authorization']
       token = extract_bearer_token(authorization_header)
 
