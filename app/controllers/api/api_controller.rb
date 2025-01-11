@@ -24,7 +24,7 @@ module Api
 
       jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
 
-      payload, headers = JWT.decode(token, jwt_secret_key, true, algorithm: "HS256")
+      payload, _headers = JWT.decode(token, jwt_secret_key, true, algorithm: "HS256")
 
       organization_user = GlobalID::Locator.locate payload["sub"]
       # space = GlobalID::Locator.locate payload["aud"]
