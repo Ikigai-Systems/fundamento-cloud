@@ -3,6 +3,7 @@ require 'rails_helper'
 
 RSpec.describe Table, type: :model do
   fixtures :organizations
+  fixtures :organization_users
   fixtures :spaces
   fixtures "tables/tables"
 
@@ -95,7 +96,10 @@ RSpec.describe Table, type: :model do
           {"result" => 15},
         ])
 
-        table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+        table_data = tables_tables(:projects).data_to_json(
+          evaluate_formulas: true,
+          evaluate_as: organization_users(:ou_is_pawel)
+        )
 
         expect(table_data).to match(hash_including(:rows, :columns))
         expect(table_data[:rows].map(&:values)).to match([
@@ -125,7 +129,10 @@ RSpec.describe Table, type: :model do
         {"result" => "MON Monday"}
       ])
 
-      table_data = tables_tables(:projects).data_to_json(evaluate_formulas: true)
+      table_data = tables_tables(:projects).data_to_json(
+        evaluate_formulas: true,
+        evaluate_as: organization_users(:ou_is_stefan)
+      )
 
       expect(table_data).to match(hash_including(:rows, :columns))
       expect(table_data[:rows].map(&:values)).to match([

@@ -55,6 +55,8 @@ class Table < ApplicationRecord
   end
 
   def data_to_json(evaluate_formulas: false, evaluate_as: nil)
+    assert !evaluate_formulas || (evaluate_formulas && evaluate_as.present?), "evaluate_as must be set!"
+
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
