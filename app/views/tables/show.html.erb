@@ -25,7 +25,10 @@
     table: @table,
     space: @space.to_react_props
   }, {
-    data: @table.data_to_json(evaluate_formulas: true)
+    data: @table.data_to_json(
+      evaluate_formulas: true,
+      evaluate_as: current_organization_user,
+    )
   } %>
 </article>
 

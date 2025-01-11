@@ -1,14 +1,17 @@
-class TablesNoAuth::TablesController < ActionController::Base
+class TablesNoAuth::TablesController < Api::ApiController
+  skip_before_action :authenticate_user_from_api_token!
+  before_action :authenticate_user_from_jwt_token!
+
   def show
     @table = TablesNoAuth::TablesController::find_relevant_table(
       params[:id],
       params.dig("evaluationContext", "space_npi"),
-      nil
+      current_organization_user
     )
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
-      format.json { render json: { table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}), data: @table.data_to_json(evaluate_formulas: true) } }
+      format.json { render json: { table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}), data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user) } }
       format.all { head :unprocessable_content }
     end
   end
