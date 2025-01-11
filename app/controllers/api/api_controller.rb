@@ -18,6 +18,23 @@ module Api
       api_token.update!(used_at: Time.now)
     end
 
+    def authenticate_user_from_jwt_token!
+      authorization_header = request.headers['Authorization']
+      token = extract_bearer_token(authorization_header, "JWT")
+
+      jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
+
+      payload, headers = JWT.decode(token, jwt_secret_key, true, algorithm: "HS256")
+
+      organization_user = GlobalID::Locator.locate payload["sub"]
+      # space = GlobalID::Locator.locate payload["aud"]
+
+      throw(:warden) unless organization_user
+
+      @current_user = organization_user.user
+      RequestContext.current_organization = organization_user.organization
+    end
+
     def current_organization
       RequestContext.current_organization
     end
@@ -31,8 +48,8 @@ module Api
       pundit_user&.organization_user
     end
 
-    def extract_bearer_token(authorization_header)
-      return nil unless authorization_header.present? && authorization_header.start_with?("Bearer ")
+    def extract_bearer_token(authorization_header, token_type = "Bearer")
+      return nil unless authorization_header.present? && authorization_header.start_with?("#{token_type} ")
 
       authorization_header.split(" ").last
     end
