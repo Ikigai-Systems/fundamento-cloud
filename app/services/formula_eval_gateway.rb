@@ -173,7 +173,16 @@ class FormulaEvalGateway
   private
 
   def self.prepare_jwt_token(space, organization_user)
-    "JWT Empty"
+    jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
+    jwt_payload = {
+      exp: Time.now.to_i + 60,
+      sub: organization_user.to_global_id.to_s,
+      aud: space.to_global_id.to_s
+    }
+
+    token = JWT.encode(jwt_payload, jwt_secret_key, "HS256")
+
+    "JWT #{token}"
   end
 
   def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
