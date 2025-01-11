@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   before_action :ensure_space_exists
 
   helper_method :current_organization
+  helper_method :current_organization_user
   helper_method :subtitle
 
   # Suggested in https://github.com/rails/importmap-rails?tab=readme-ov-file#include-a-digest-of-the-import-map-in-your-etag
