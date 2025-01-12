@@ -97,6 +97,16 @@ COPY --from=build --chown=rails:rails /rails/log /rails/log
 COPY --from=build --chown=rails:rails /rails/storage /rails/storage
 COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
 
+# Make this directory writable in the standalone version so users can create their own credentials,
+# and make sure there's editor available
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    if [ "$RAILS_ENV" = "standalone" ]; then \
+      rm -f ./config/credentials/*.yml.enc && \
+      chown rails:rails ./config/credentials && \
+      apt-get install --no-install-recommends -y nano; \
+    fi
+
 USER rails:rails
 
 # Entrypoint prepares the database.
