@@ -109,6 +109,18 @@ class FormulaVisitorImplementation extends FormulaVisitor {
     throw new Error(`Unrecognized literal found ${ctx.getText()}`)
   }
 
+  visitReference(ctx) {
+    const referenceName = ctx.IDENTIFIER().getText();
+    if (Object.hasOwn(this.context, referenceName)) {
+      return {
+        result: this.context[referenceName],
+        commands: []
+      }
+    } else {
+      throw new Error(`Unrecognized reference found ${referenceName}`)
+    }
+  }
+
   visitExpression(ctx) {
     const left = this.visit(ctx.term(0));
 
@@ -157,6 +169,8 @@ class FormulaVisitorImplementation extends FormulaVisitor {
       return this.visit(ctx.functionCall(0));
     } else if (ctx.currentValue(0)) {
       return this.visit(ctx.currentValue(0));
+    } else if (ctx.reference(0)) {
+      return this.visit(ctx.reference(0));
     } else {
       throw new Error(`Unexpected term found: ${ctx.getText()}`)
     }

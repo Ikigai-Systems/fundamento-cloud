@@ -17,7 +17,12 @@ term
     : literal
     | functionCall
     | currentValue
+    | reference
     | LBRACKET expression RBRACKET
+    ;
+
+reference
+    : LEFT_SQUARE_BRACKET IDENTIFIER RIGHT_SQUARE_BRACKET
     ;
 
 operator
@@ -51,6 +56,14 @@ LBRACKET
 
 RBRACKET
     : ')'
+    ;
+
+LEFT_SQUARE_BRACKET
+    : '['
+    ;
+
+RIGHT_SQUARE_BRACKET
+    : ']'
     ;
 
 COMMA

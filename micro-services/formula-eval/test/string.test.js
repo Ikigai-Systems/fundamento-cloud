@@ -6,7 +6,7 @@ describe('String related formulas', () => {
   describe('Join', () => {
     testFormula(`Join("-", "This", "is", "Awesome")`, "This-is-Awesome");
     testFormula(`Join(", ", "This", "is", "Awesome")`, "This, is, Awesome");
-    testFormula(`Join("| ", List("This", "is", "Awesome"]))`, "This| is| Awesome");
+    testFormula(`Join("| ", List("This", "is", "Awesome"))`, "This| is| Awesome");
   });
 
   describe('Concatenate', () => {

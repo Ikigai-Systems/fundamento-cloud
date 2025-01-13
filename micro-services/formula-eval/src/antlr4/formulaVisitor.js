@@ -30,6 +30,12 @@ export default class formulaVisitor extends antlr4.tree.ParseTreeVisitor {
 	}
 
 
+	// Visit a parse tree produced by formulaParser#reference.
+	visitReference(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
 	// Visit a parse tree produced by formulaParser#operator.
 	visitOperator(ctx) {
 	  return this.visitChildren(ctx);
