@@ -165,11 +165,13 @@ class Table < ApplicationRecord
 
   def add_row(row_npi = nil, values = {})
     last_row = self.rows_in_order.last
+
     new_row = self.rows.create!(
       previous_row: last_row,
       organization_id: self.organization_id,
       npi: row_npi,
     )
+
     self.columns.each do |column|
       new_row.cells.create!(
         table: self,
