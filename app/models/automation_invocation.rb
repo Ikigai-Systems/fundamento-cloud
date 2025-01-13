@@ -13,7 +13,7 @@ class AutomationInvocation < ApplicationRecord
   def invoke!
     invoked_at = Time.now
 
-    additional_context = JSON.parse(self.webhook)
+    additional_context = { "WebhookBody" => self.webhook }
 
     result = FormulaEvalGateway.evaluate(
       self.formula,
