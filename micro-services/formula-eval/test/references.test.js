@@ -17,6 +17,19 @@ describe("references", () => {
     ).to.deep.equal(JSON.parse(jsonToParse));
   });
 
+  it("can be used as formula arguments", () => {
+    const jsonToParse = fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8");
+
+    expect(
+      evaluateFormula(
+        `ParseJSON([WebhookBody])`,
+        {
+          "WebhookBody": jsonToParse
+        }
+      ).result
+    ).to.deep.equal(JSON.parse(jsonToParse));
+  });
+
   it("returns error for undefined", () => {
     expect(() => {
       evaluateFormula(
