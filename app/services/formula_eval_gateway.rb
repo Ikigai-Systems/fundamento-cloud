@@ -89,13 +89,13 @@ class FormulaEvalGateway
     commands&.each do |command|
       case command["type"]
       when "AddRow"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         table.add_row
       when "DeleteRows"
-        table = API::V1::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
+        table = API::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -110,7 +110,7 @@ class FormulaEvalGateway
           row.destroy
         end
       when "AddOrUpdateRows"
-        table = API::V1::TablesController::find_relevant_table(command["tableNpi"], space, organization_user)
+        table = API::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
