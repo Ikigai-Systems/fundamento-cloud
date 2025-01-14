@@ -39,7 +39,7 @@ class FormulaEvalGateway
     Rails.logger.error e.backtrace.join("\n")
 
     return {
-      "error" => "Fatal error: unable to evaluate formula"
+      "error" => error_message(e)
     }
   end
 
@@ -82,7 +82,7 @@ class FormulaEvalGateway
     Rails.logger.error e.message
     Rails.logger.error e.backtrace.join("\n")
 
-    return evaluations.map { |e| { "error" => "Fatal error: unable to evaluate formula" } }
+    return evaluations.map { |e| { "error" => error_message(e) } }
   end
 
   def self.process_commands(commands, space, organization_user)
@@ -171,6 +171,10 @@ class FormulaEvalGateway
   end
 
   private
+
+  def error_message(e)
+    "Unable to evaluate formula due to error: #{e.message}"
+  end
 
   def self.prepare_jwt_token(space, organization_user)
     jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
