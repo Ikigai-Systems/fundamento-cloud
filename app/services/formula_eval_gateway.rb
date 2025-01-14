@@ -172,7 +172,7 @@ class FormulaEvalGateway
 
   private
 
-  def error_message(e)
+  def self.error_message(e)
     "Unable to evaluate formula due to error: #{e.message}"
   end
 
