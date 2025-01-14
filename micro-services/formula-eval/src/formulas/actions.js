@@ -1,9 +1,8 @@
 import {defineAction} from "./define-formula.js";
 
-defineAction("RunActions", (commands) => {
+defineAction("RunActions", (...args) => {
   return {
-    commands: [
-      { type: "RunActions", commands: []}
-    ]
+    results: null,
+    commands: []
   };
 });
