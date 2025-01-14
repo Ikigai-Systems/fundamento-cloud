@@ -13,7 +13,7 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
+// Import actions.js using ES2015 syntax:
 // import 'cypress-on-rails/support/index'
 import './commands'
 import './on-rails'

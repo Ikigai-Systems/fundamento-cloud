@@ -4,8 +4,8 @@ import "./string-functions.js";
 import "./tables-functions.js";
 import "./file-functions.js";
 import "./object-functions.js";
-import "./tables-commands.js";
-import "./commands.js";
+import "./tables-actions.js";
+import "./actions.js";
 
 import {definedFormulas} from "./define-formula.js";
 

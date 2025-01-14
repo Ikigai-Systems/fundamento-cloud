@@ -7,10 +7,10 @@ export function defineFormula(formulaName, formulaFunction, iterative = false) {
   };
 }
 
-export function defineCommand(formulaName, formulaFunction, iterative = false) {
+export function defineAction(formulaName, formulaFunction, iterative = false) {
   definedFormulas[formulaName] = {
     formulaFunction,
     iterative,
-    command: true
+    action: true
   };
 }
