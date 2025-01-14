@@ -8,3 +8,9 @@ export function testFormula(formula, expectedResult, context = {}) {
     expect(evaluateFormula(formula, context).result).to.deep.equal(expectedResult);
   });
 }
+
+export function testAction(formula, expectedResult, context = {}) {
+  it(`evaluates ${formula}`, () => {
+    expect(evaluateFormula(formula, context).commands).to.deep.equal(expectedResult);
+  });
+}
