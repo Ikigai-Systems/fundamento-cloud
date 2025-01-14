@@ -6,3 +6,11 @@ export function defineFormula(formulaName, formulaFunction, iterative = false) {
     iterative,
   };
 }
+
+export function defineCommand(formulaName, formulaFunction, iterative = false) {
+  definedFormulas[formulaName] = {
+    formulaFunction,
+    iterative,
+    command: true
+  };
+}
