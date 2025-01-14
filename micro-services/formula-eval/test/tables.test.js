@@ -1,7 +1,7 @@
 // string.test.js
 import { describe } from "mocha";
 import {testAction, testFormula} from "./formulaHelpers.js";
-import * as fs from "node:fs";
+import {jsonFixture} from "./fixtureHelpers.js";
 
 describe("Table related formulas", () => {
   describe("CurrentRow", () => {
@@ -25,7 +25,7 @@ describe("Table related formulas", () => {
   });
 
   describe("AddRow with object", () => {
-    const webhookBody = JSON.parse(fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8"));
+    const webhookBody = jsonFixture("metabase-webhook.json");
 
     testAction(`AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))`, [
       { type: "AddRow", tableNpi: "npi" }

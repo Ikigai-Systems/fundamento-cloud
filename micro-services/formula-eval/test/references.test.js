@@ -1,24 +1,24 @@
 import { describe, it } from "mocha";
-import * as fs from "node:fs";
 import {expect} from "chai";
 import evaluateFormula from "../src/evaluateFormula.js";
+import {fileFixture, jsonFixture} from "./fixtureHelpers.js";
 
 describe("references", () => {
   it("allow accessing additional context", () => {
-    const jsonToParse = fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8");
+    const json = jsonFixture("metabase-webhook.json");
 
     expect(
       evaluateFormula(
         `[WebhookBody]`,
         {
-          "WebhookBody": JSON.parse(jsonToParse)
+          "WebhookBody": json
         }
       ).result
-    ).to.deep.equal(JSON.parse(jsonToParse));
+    ).to.deep.equal(json);
   });
 
   it("can be used as formula arguments", () => {
-    const jsonToParse = fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8");
+    const jsonToParse = fileFixture("metabase-webhook.json");
 
     expect(
       evaluateFormula(
@@ -31,7 +31,7 @@ describe("references", () => {
   });
 
   it("", () => {
-    const jsonToParse = fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8");
+    const jsonToParse = fileFixture("metabase-webhook.json");
 
     expect(
       evaluateFormula(

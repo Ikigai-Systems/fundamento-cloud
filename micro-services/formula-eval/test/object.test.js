@@ -1,12 +1,12 @@
 import { describe, it } from "mocha";
-import * as fs from "node:fs";
 import {expect} from "chai";
 import evaluateFormula from "../src/evaluateFormula.js";
 import { testFormula } from "./formulaHelpers.js";
+import {fileFixture} from "./fixtureHelpers.js";
 
 describe("Dig", () => {
   it("gets different fields from an object", () => {
-    const jsonToParse = fs.readFileSync(`./test/fixtures/metabase-webhook.json`).toString("utf8");
+    const jsonToParse = fileFixture("metabase-webhook.json");
 
     expect(
       evaluateFormula(
