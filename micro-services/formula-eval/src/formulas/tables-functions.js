@@ -13,8 +13,8 @@ defineFormula("Table", (...args) => {
   return {result: getTable(args[0]), commands: []};
 })
 
-defineFormula("AddRow", (...args) => {
-  return {commands: [{type: "AddRow", tableNpi: args[0]}]};
+defineFormula("AddRow", (tableNpi, ...args) => {
+  return {commands: [{type: "AddRow", tableNpi: tableNpi, values: _.fromPairs(_.chunk(args, 2))}]};
 });
 
 defineFormula("DeleteRows", (...args) => {
