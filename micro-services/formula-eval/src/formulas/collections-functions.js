@@ -23,6 +23,10 @@ defineFormula("List", (...args) => {
   return {result: Array.from(args), commands: []};
 });
 
+defineFormula("Nth", (list, index) => {
+  return {result: _.nth(list, index - 1), commands: []};
+});
+
 defineFormula("First", (...args) => {
   return {result: _.first(args[0]), commands: []};
 });

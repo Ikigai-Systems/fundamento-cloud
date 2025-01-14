@@ -47,6 +47,12 @@ describe("Collection formulas", () => {
     testFormula(`Last(List(1))`, 1);
   });
 
+  describe('Nth', () => {
+    testFormula(`Nth(List(1, 2, 3, 3, 3, 4), 2)`, 2);
+    testFormula(`Nth(List(1), 1)`, 1);
+    testFormula(`Nth(List(1), 10)`, undefined);
+  });
+
   describe('Sum', () => {
     testFormula(`Sum(List(1,2,3,4))`, 10);
   });
