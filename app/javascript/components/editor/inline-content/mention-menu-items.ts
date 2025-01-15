@@ -30,7 +30,7 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
     UsersApi.index()
   ]);
 
-  const documentMenuItems = documents.map((document: Document) => createMentionItem("document", document.id, document.title));
+  const documentMenuItems = documents.map((document: Document) => createMentionItem("document", document.npi, document.title));
   const tableMenuItems = tables.map((table: Table) => createMentionItem("table", table.npi, table.name));
   const userMenuItems = users.map((user: User) => createMentionItem("user", user.id, `${user.firstName} ${user.lastName}`));
 

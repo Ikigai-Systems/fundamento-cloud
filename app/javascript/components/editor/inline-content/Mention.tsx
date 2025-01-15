@@ -10,16 +10,16 @@ const Loading = () => {
     <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
   </span>;
 }
-const DocumentMention = ({documentId}) => {
+const DocumentMention = ({documentNpi}) => {
   const documentQuery = useQuery({
-    queryKey: ["documents", documentId], 
+    queryKey: ["documents", documentNpi],
     queryFn: async () => {
-      return await DocumentsApi.show({npi: documentId});
+      return await DocumentsApi.show({npi: documentNpi});
     }}, queryClient);
   
   const isLoading = documentQuery.isLoading;
   const document = documentQuery.data;
-  const displayName = document?.title || documentId;
+  const displayName = document?.title || documentNpi;
 
   return (
     <a
@@ -99,7 +99,7 @@ const Mention = createReactInlineContentSpec(
 
       switch (entity) {
       case "document":
-        return <DocumentMention documentId={props.inlineContent.props.id}/>;
+        return <DocumentMention documentNpi={props.inlineContent.props.id}/>;
       case "table":
         return <TableMention tableNpi={props.inlineContent.props.id}/>;
       case "user":
