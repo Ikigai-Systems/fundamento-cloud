@@ -7,6 +7,7 @@ import schema from "../schema.ts";
 
 function createMentionItem(entity, id, title ) {
   return {
+    // TODO: Change SuggestionMenu.tsx in blocknote to use - key: `${entity}/${id}`,
     title,
     onItemClick: (editor: typeof schema.BlockNoteEditor) => {
       editor.insertInlineContent([
