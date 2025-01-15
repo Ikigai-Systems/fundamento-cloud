@@ -97,18 +97,8 @@ class FormulaEvalGateway
       when "DeleteRows"
         table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
-        # todo: validate the user is permitted to update this table
 
-        # todo: extract row ids from command payload, iterate over them. Otherwise, just remove all rows
-
-        # todo: removing rows logic should go to table.rb model probably
-        loop do
-          row = table.rows.first
-          break if row.nil?
-          next_row = row.next_row
-          next_row.update(previous_row: row.previous_row) unless next_row.nil?
-          row.destroy
-        end
+        Tables::DeleteRowsService.new(table).call
       when "AddOrUpdateRows"
         table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
