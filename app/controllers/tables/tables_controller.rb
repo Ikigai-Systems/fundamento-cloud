@@ -3,12 +3,15 @@ class Tables::TablesController < ApplicationController
 
   after_action :verify_authorized_or_index_scoped
 
-  before_action :load_space, only: [:new, :create, :index]
+  before_action :load_space, only: [:new, :create]
   before_action :load_table, except: [:new, :create, :index]
 
   def index
     @tables = policy_scope(current_organization.tables.lexicographically)
-    @tables = @tables.where(space: @space) if @space.present?
+
+    space_npi = params[:space_npi]
+    @tables = @tables.where(space: current_organization.spaces.find_by_param!(space_npi)) if space_npi.present?
+
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
