@@ -3,11 +3,12 @@ import {Document, Table, User} from "../../../types.ts";
 import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
 import TablesApi from "../../../api/Tables/TablesApi";
+import schema from "../schema.ts";
 
 function createMentionItem(entity, id, title ) {
   return {
     title,
-    onItemClick: (editor) => {
+    onItemClick: (editor: typeof schema.BlockNoteEditor) => {
       editor.insertInlineContent([
         {
           type: "mention",
