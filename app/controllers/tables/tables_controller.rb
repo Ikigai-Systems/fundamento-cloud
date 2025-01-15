@@ -14,9 +14,7 @@ class Tables::TablesController < ApplicationController
 
     respond_to do |format|
       format.json { render json: @tables }
-      format.html do
-        redirect_to space_path(@space)
-      end
+      format.all { head :unprocessable_content }
     end
   end
 
