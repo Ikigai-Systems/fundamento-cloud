@@ -3,6 +3,7 @@ import {useQuery} from "@tanstack/react-query";
 import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
+import TablesApi from "../../../api/Tables/TablesApi";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -23,6 +24,28 @@ const DocumentMention = ({documentId}) => {
   return (
     <a
       href={DocumentsApi.show.path({npi: document?.npi})}
+      className="border p-0.5 text-sky-500"
+    >
+      @{displayName}
+      {isLoading && <Loading/>}
+    </a>
+  )
+}
+
+const TableMention = ({tableNpi}) => {
+  const contentQuery = useQuery({
+    queryKey: ["tables", tableNpi],
+    queryFn: async () => {
+      return await TablesApi.show({npi: tableNpi});
+    }}, queryClient);
+
+  const isLoading = contentQuery.isLoading;
+  const content = contentQuery.data;
+  const displayName = content?.table?.name || tableNpi;
+
+  return (
+    <a
+      href={TablesApi.show.path({npi: content?.table?.npi})}
       className="border p-0.5 text-sky-500"
     >
       @{displayName}
@@ -72,10 +95,17 @@ const Mention = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      if (props.inlineContent.props.entity === "document") {
-        return <DocumentMention documentId={props.inlineContent.props.id}/>
-      } else if (props.inlineContent.props.entity === "user") {
-        return <UserMention userId={props.inlineContent.props.id}/>
+      const entity = props.inlineContent.props.entity;
+
+      switch (entity) {
+      case "document":
+        return <DocumentMention documentId={props.inlineContent.props.id}/>;
+      case "table":
+        return <TableMention tableNpi={props.inlineContent.props.id}/>;
+      case "user":
+        return <UserMention userId={props.inlineContent.props.id}/>;
+      default:
+        throw new Error(`Unhandled content type ${entity}`);
       }
     },
   }
