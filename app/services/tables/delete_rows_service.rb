@@ -4,14 +4,18 @@ class Tables::DeleteRowsService
     @table = table
   end
 
-  def call
+  def call(rows_to_delete: nil)
     @table.transaction do
-      loop do
-        row = @table.rows.first
-        break if row.nil?
-        next_row = row.next_row
-        next_row.update(previous_row: row.previous_row) unless next_row.nil?
-        row.destroy!
+      if rows_to_delete.blank?
+        @table.cells.delete_all
+        @table.rows.delete_all
+      else
+        rows_to_delete.each do |row_to_delete|
+          next_row = row_to_delete.next_row
+          next_row&.update(previous_row: row_to_delete.previous_row)
+
+          row_to_delete.destroy!
+        end
       end
     end
   end
