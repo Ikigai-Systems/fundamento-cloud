@@ -2,11 +2,17 @@
   <div class="max-w-screen-md">
 
     <section class="form-section w-full">
-      <h1 class="mt-0 max-w-75">
-        <span class="text-xl">Free 30-day trial</span>
-        <span class="text-4xl font-semibold block mt-3">Fundamento Cloud</span>
-        <span class="text-lg font-normal">Sign up for a free trial of the most productive knowledge platform</span>
-      </h1>
+      <% if Rails.env.standalone? %>
+        <h1 class="mt-0 max-w-75">
+          <span class="text-3xl">Create an account</span>
+        </h1>
+      <% else %>
+        <h1 class="mt-0 max-w-75">
+          <span class="text-xl">Free 30-day trial</span>
+          <span class="text-4xl font-semibold block mt-3">Fundamento Cloud</span>
+          <span class="text-lg font-normal">Sign up for a free trial of the most productive knowledge platform</span>
+        </h1>
+      <% end %>
 
       <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
                    html: { class: "default-form" }) do |f|
