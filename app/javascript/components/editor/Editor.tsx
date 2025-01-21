@@ -139,7 +139,8 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
         user: {
           name: `${currentUser.firstName} ${currentUser.lastName}`,
           color: `hsl(${~~(360 * pseudoRandomFromUserId)}, 72%,  78%)`,
-        }
+        },
+        showCursorLabels: "always",
       },
       uploadFile: uploadFile(documentId),
       resolveFileUrl: createFileUrlResolver(),
