@@ -1,5 +1,5 @@
 <%= turbo_frame_tag :table_of_contents_sidebar_tab do %>
   <%= react_component "TableOfContentsPanel", {
-    content: @document.versions.latest&.content,
+    content: @document.versions.latest.present? ? @document.versions.latest.content : [],
   } %>
 <% end %>

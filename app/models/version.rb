@@ -4,7 +4,7 @@ class Version < ApplicationRecord
 
   belongs_to :created_by, class_name: "User", optional: true
 
-  scope :latest, -> { order(updated_at: :desc).limit(1).first }
+  scope :latest, -> { order(updated_at: :desc).first }
 
   # Automatically use the sequential ID in URLs
   def to_param

@@ -1,5 +1,3 @@
-import {QueryClientProvider} from "@tanstack/react-query";
-import queryClient from ".././contextes/ReactQueryClient.tsx";
 import '@blocknote/mantine/style.css';
 import "./editor/editor-styles.css";
 
