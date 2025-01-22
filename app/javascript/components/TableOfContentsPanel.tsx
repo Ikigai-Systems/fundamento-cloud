@@ -16,7 +16,20 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
     }
   }, 1000);
 
-  const headerBlocks = documentBlocks.filter(block => block.type === "heading" && block.content && block.content[0]?.text);
+  const headerBlocks = documentBlocks.filter(block => block.type === "heading").map(block => {
+    return {
+      ...block,
+      label: block.content.reduce((acc, curr) => {
+        let toAdd = "";
+        if (curr.text) {
+          toAdd += curr.text;
+        } else if (curr.content) {
+          toAdd += curr.content.map(content => content.text);
+        }
+        return (acc + toAdd);
+      }, ""),
+    }
+  }).filter(block => block.label !== "");
 
   return (
     <div className="px-3">
@@ -29,7 +42,7 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
                   document.querySelector(`[data-id="${block.id}"]`)?.scrollIntoView({behavior: "smooth"});
                 }}
             >
-              {block.content[0].text}
+              {block.label}
             </li>
           ))}
         </ul>
