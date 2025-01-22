@@ -82,7 +82,7 @@ class FormulaEvalGateway
     Rails.logger.error e.message
     Rails.logger.error e.backtrace.join("\n")
 
-    return evaluations.map { |e| { "error" => error_message(e) } }
+    return evaluations.map { |evaluation| { "error" => error_message(e) } }
   end
 
   def self.process_commands(commands, space, organization_user)

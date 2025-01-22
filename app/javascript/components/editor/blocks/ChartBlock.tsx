@@ -169,7 +169,7 @@ const ChartBlock = createReactBlockSpec(
                     const tables = await TablesApi.index({
                       params: {
                         space_npi: space?.npi,
-                        query: {query}
+                        query,
                       }
                     });
                     return tables.map(table => ({value: table.npi, label: table.name}));
