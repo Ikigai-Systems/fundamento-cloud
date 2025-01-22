@@ -25,19 +25,19 @@
       </nav>
     </div>
 
-    <div data-tabs-target="panel" class="hidden">
+    <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "details_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :details) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
 
-    <div data-tabs-target="panel" class="hidden">
+    <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "visitors_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
 
-    <div data-tabs-target="panel" class="hidden">
+    <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "table_of_contents_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :table_of_contents) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
