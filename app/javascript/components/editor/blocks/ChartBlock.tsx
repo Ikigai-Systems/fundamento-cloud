@@ -259,7 +259,7 @@ const ChartBlock = createReactBlockSpec(
               },
             };
             chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi).name,
+              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
               data: yAxisDataset.map(valueToSeriesPoint())
             }];
             break;
