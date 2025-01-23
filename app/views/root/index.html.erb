@@ -22,6 +22,10 @@
       <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
         Favorites
       </button>
+
+      <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
+        Mentions
+      </button>
     </nav>
   </div>
 
@@ -44,6 +48,17 @@
       turbo_frame_tag "favorites_frame",
         src: favorites_path,
         loading: "lazy" do
+    %>
+      <%= render template: "application/components/loading" %>
+    <% end %>
+  </div>
+
+  <div data-tabs-target="panel" class="hidden">
+    <%=
+      turbo_frame_tag "mentions_frame",
+                      data: { turbo: false },
+                      src: mentions_path,
+                      loading: "lazy" do
     %>
       <%= render template: "application/components/loading" %>
     <% end %>
