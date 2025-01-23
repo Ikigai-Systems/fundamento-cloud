@@ -44,7 +44,11 @@ class Tables::TablesController < ApplicationController
     if @table.save
       uploaded_file = params[:table].fetch(:csv_file, nil)
       if uploaded_file.present?
-        @table.import_from_csv(uploaded_file)
+        begin
+          @table.import_from_csv(uploaded_file)
+        rescue CSV::InvalidEncodingError
+          @table.import_from_csv(uploaded_file, "iso-8859-1")
+        end
       else
         last_column = nil
         params.dig(:table, :columns)&.each do |column|

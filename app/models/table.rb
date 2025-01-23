@@ -119,7 +119,7 @@ class Table < ApplicationRecord
     }
   end
 
-  def import_from_csv(csv_file)
+  def import_from_csv(csv_file, file_encoding = "utf-8")
     # First ensure table is empty as this code assumes that
     assert self.cells.count.zero?
     assert self.rows.count.zero?
@@ -131,7 +131,7 @@ class Table < ApplicationRecord
     previous_column = nil
 
     self.transaction do
-      CSV.read(csv_file, headers: true, return_headers: true).each do |row|
+      CSV.read(csv_file, headers: true, return_headers: true, encoding: "#{file_encoding}:utf-8").each do |row|
         if row.header_row?
           row.each do |header, value|
             table_columns[header] = self.columns.
