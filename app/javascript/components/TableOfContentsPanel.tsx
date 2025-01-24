@@ -37,7 +37,7 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
       {headerBlocks.length > 0 && (
         <ul>
           {headerBlocks.map(block => (
-            <li key={block.id} style={{marginLeft: `${(block.props.level - 1)}rem`}} className="p-1 cursor-pointer hover:underline"
+            <li key={block.id} style={{marginLeft: `${(block.props.level) + 0.25}rem`}} className="p-1 cursor-pointer hover:underline list-disc"
                 onClick={() => {
                   document.querySelector(`[data-id="${block.id}"]`)?.scrollIntoView({behavior: "smooth"});
                 }}
