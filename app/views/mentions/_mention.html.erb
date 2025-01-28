@@ -1,0 +1,15 @@
+<% version = mention[:version] %>
+<% document = version.document %>
+
+<div id="<%= dom_id(document) %>">
+  <div class="p-2">
+    <div class="text-base font-semibold truncate">
+      <% if version == document.versions.latest %>
+        <%= link_to document.title, document_path(document, anchor: "mention-#{mention["props"]["id"]}") %>
+      <% else %>
+        <%= link_to document.title, document_version_path(document, version, anchor: "mention-#{mention["props"]["id"]}") %>
+      <% end %>
+    </div>
+    <div class="font-normal text-gray-500">Mentioned <%= time_ago_in_words version.created_at %> ago</div>
+  </div>
+</div>
