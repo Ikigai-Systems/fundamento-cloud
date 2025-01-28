@@ -31,13 +31,20 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
     }
   }).filter(block => block.label !== "");
 
+  const markerStyle = (level) => {
+    switch (level) {
+      case 1: return "list-disc";
+      case 2: return "list-[circle]";
+      case 3: default: return "list-[square]";
+    }
+  };
+
   return (
     <div className="px-3">
-      <div className="text-2xl font-bold mb-4">Table of contents</div>
       {headerBlocks.length > 0 && (
-        <ul>
+        <ul className="list-inside">
           {headerBlocks.map(block => (
-            <li key={block.id} style={{marginLeft: `${(block.props.level) + 0.25}rem`}} className="p-1 cursor-pointer hover:underline list-disc"
+            <li key={block.id} style={{marginLeft: `${(block.props.level - 1) + 0.25}rem`}} className={`p-1 cursor-pointer hover:underline ${markerStyle(block.props.level)}`}
                 onClick={() => {
                   document.querySelector(`[data-id="${block.id}"]`)?.scrollIntoView({behavior: "smooth"});
                 }}
