@@ -13,9 +13,9 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
         {
           type: "mention",
           props: {
-            title: document.title,
-            id: document.id,
+            id: crypto.randomUUID(),
             entity: "document",
+            entityId: document.id,
           },
         },
         " ", // add a space after the mention
@@ -28,9 +28,9 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
         {
           type: "mention",
           props: {
-            title: `${user.firstName} ${user.lastName}`,
-            id: user.id,
+            id: crypto.randomUUID(),
             entity: "user",
+            entityId: user.id,
           }
         }
       ])

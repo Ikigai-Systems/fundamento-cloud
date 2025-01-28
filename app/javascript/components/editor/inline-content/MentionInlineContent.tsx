@@ -53,18 +53,21 @@ const UserMention = ({userId}) => {
 };
 
 // The Mention inline content.
-const Mention = createReactInlineContentSpec(
+const MentionInlineContent = createReactInlineContentSpec(
   {
     type: "mention",
     propSchema: {
-      title: {
-        default: "Untitled",
-      },
       id: {
-        default: -1,
+        default: "",
       },
       entity: {
         default: "document"
+      },
+      entityId: { //formerly 'id'
+        default: -1,
+      },
+      mentionId: {
+        default: "",
       }
     },
     content: "none",
@@ -72,13 +75,27 @@ const Mention = createReactInlineContentSpec(
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
+      let {id, entityId} = props.inlineContent.props;
+      if (entityId === -1) {
+        entityId = Number(id);
+        id = crypto.randomUUID();
+        props.updateInlineContent({
+          type: "mention",
+          props: {
+            ...props.inlineContent.props,
+            id,
+            entityId,
+          }
+        });
+      }
+
       if (props.inlineContent.props.entity === "document") {
-        return <DocumentMention documentId={props.inlineContent.props.id}/>
+        return <DocumentMention documentId={entityId}/>
       } else if (props.inlineContent.props.entity === "user") {
-        return <UserMention userId={props.inlineContent.props.id}/>
+        return <UserMention userId={entityId}/>
       }
     },
   }
 );
 
-export default Mention;
+export default MentionInlineContent;
