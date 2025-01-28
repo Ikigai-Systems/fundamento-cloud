@@ -24,7 +24,7 @@ class MentionsController < ApplicationController
   private
 
   def find_mention_in(block)
-    if (block.dig("type") == "mention") && block.dig("props", "entity") == "user" && block.dig("props", "id") == current_user.id
+    if (block.dig("type") == "mention") && block.dig("props", "entity") == "user" && block.dig("props", "entityId") == current_user.id
       return true
     end
     block.each do |key, value|
