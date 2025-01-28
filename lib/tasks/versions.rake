@@ -16,10 +16,12 @@ namespace :versions do
   end
 
   def each_mention(node, &block)
-    if node&.dig("type") == "mention"
+    return unless node.is_a? Hash
+
+    if node.dig("type") == "mention"
       yield node
     end
-    node&.each do |key, value|
+    node.each do |key, value|
       if key.is_a? Hash
         each_mention(key, &block)
       end
