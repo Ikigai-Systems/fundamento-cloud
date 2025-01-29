@@ -88,18 +88,27 @@ const MentionInlineContent = createReactInlineContentSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       let {id, entityId} = props.inlineContent.props;
+
+      useEffect(() => {
+        if (entityId === -1) {
+          entityId = Number(id);
+          id = crypto.randomUUID();
+          setTimeout(() => {
+            props.updateInlineContent({
+              type: "mention",
+              props: {
+                ...props.inlineContent.props,
+                // dupa: "zupa",
+                id,
+                entityId,
+              }
+            });
+          }, 0);
+        }
+      }, [entityId])
+
       if (entityId === -1) {
-        entityId = Number(id);
-        id = crypto.randomUUID();
-        props.updateInlineContent({
-          type: "mention",
-          props: {
-            ...props.inlineContent.props,
-            id,
-            entityId,
-          }
-        });
-        return null;
+        return null
       }
 
       if (props.inlineContent.props.entity === "document") {
