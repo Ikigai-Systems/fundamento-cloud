@@ -3,7 +3,7 @@ class MentionsController < ApplicationController
 
   def index
     all_mentions = []
-    policy_scope(current_organization.documents).each do |document|
+    policy_scope(current_organization.documents).includes(:versions).each do |document|
       document.versions.each do |version|
         version.content.each do |block|
           each_mention(block) do |mention|
