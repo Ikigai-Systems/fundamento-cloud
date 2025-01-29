@@ -67,6 +67,6 @@
     }
 
     .content-sidebar {
-        @apply bg-gray-50 dark:bg-gray-900 border-l overflow-auto;
+        @apply bg-gray-50 dark:bg-gray-900 border-l overflow-auto max-h-screen;
     }
 }
