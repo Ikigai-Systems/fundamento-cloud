@@ -25,6 +25,7 @@
 
       <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
         Mentions
+        <%= render(partial: 'mentions/count_badge', locals: {mentions_count: @mentions_count} ) %>
       </button>
     </nav>
   </div>
