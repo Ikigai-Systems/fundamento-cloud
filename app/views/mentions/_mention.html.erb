@@ -1,10 +1,11 @@
 <% version = mention[:version] %>
+<% most_recent_version = mention[:most_recent_version] %>
 <% document = version.document %>
 
 <div id="<%= dom_id(document) %>">
   <div class="p-2">
     <div class="text-base font-semibold truncate">
-      <% if version == document.versions.latest %>
+      <% if most_recent_version == document.versions.latest %>
         <%= link_to document.title, document_path(document, anchor: "mention-#{mention["props"]["id"]}") %>
       <% else %>
         <%= link_to document.title, document_version_path(document, version, anchor: "mention-#{mention["props"]["id"]}") %>

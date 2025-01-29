@@ -2,18 +2,26 @@ class MentionsController < ApplicationController
   after_action :verify_authorized, except: [:index]
 
   def index
-    @mentions = []
+    all_mentions = []
     policy_scope(current_organization.documents).each do |document|
       document.versions.each do |version|
         version.content.each do |block|
           each_mention(block) do |mention|
             if mention.dig("props", "entity") == "user" && mention.dig("props", "entityId") == current_user.id
-              @mentions.push(mention.merge({ version: version }))
+              all_mentions.push(mention.merge({ version: version }))
             end
           end
         end
       end
     end
+
+    @mentions = all_mentions.group_by { |mention| mention["props"]["id"] }.each do |mention_id, mentions|
+      mentions.sort_by do |elem|
+        elem[:version].created_at
+      end
+    end.map do |mention_id, mentions|
+      mentions.first.merge({ most_recent_version: mentions.last[:version] })
+    end.sort_by { |mention| mention[:version].created_at }.reverse
 
     respond_to do |format|
       format.html { render partial: "mentions_tab" }
