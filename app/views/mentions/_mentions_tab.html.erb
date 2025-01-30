@@ -3,8 +3,17 @@
 <%#= turbo_stream_from [pundit_user.organization_user, "mentions"] %>
 
 <div id="mentions_container">
+
+  <% separator_index = @last_mention_seen_at.nil? ? 0 : @mentions.index { |m| m[:version].created_at < @last_mention_seen_at } %>
+
   <div id="mentions_list">
-    <% @mentions.each do |mention| %>
+    <% @mentions.each_with_index do |mention, index| %>
+      <% if index != 0 && index == separator_index %>
+        <div class="flex flex-row-reverse items-center w-full h-px bg-red-600">
+          <span class="uppercase text-xs font-bold text-white bg-red-600 px-1 rounded-ee-md rounded-se-md">new</span>
+          <span class="w-0 h-0 border-t-[0.5rem] border-t-transparent border-r-[0.5rem] border-r-red-600 border-b-[0.5rem] border-b-transparent"></span>
+        </div>
+      <% end %>
       <%= render partial: "mentions/mention", locals: { mention: mention } %>
     <% end %>
   </div>
