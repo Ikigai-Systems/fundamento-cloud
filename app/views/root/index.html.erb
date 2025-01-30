@@ -25,7 +25,7 @@
 
       <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
         Mentions
-        <%= render(partial: 'mentions/count_badge', locals: {mentions_count: @mentions_count} ) %>
+        <%= render(partial: 'mentions/count_badge', locals: {mentions_count: @mentions.count} ) %>
       </button>
     </nav>
   </div>
@@ -55,14 +55,7 @@
   </div>
 
   <div data-tabs-target="panel" class="hidden">
-    <%=
-      turbo_frame_tag "mentions_frame",
-                      data: { turbo: false },
-                      src: mentions_path,
-                      loading: "lazy" do
-    %>
-      <%= render template: "application/components/loading" %>
-    <% end %>
+    <%= render partial: "mentions/mentions_tab" %>
   </div>
 </div>
 
