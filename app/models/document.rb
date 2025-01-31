@@ -32,7 +32,7 @@ class Document < ApplicationRecord
   end
 
   def as_json(options = {})
-    super(options).merge(sync: Base64.encode64(sync))
+    super(options).merge(sync: sync.nil? ? nil : Base64.encode64(sync))
   end
 
   def draft?
