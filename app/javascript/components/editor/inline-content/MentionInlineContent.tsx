@@ -12,6 +12,7 @@ const Loading = () => {
     <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
   </span>;
 }
+
 const DocumentMention = ({documentNpi}) => {
   const documentQuery = useQuery({
     queryKey: ["documents", documentNpi],
@@ -145,11 +146,11 @@ const MentionInlineContent = createReactInlineContentSpec(
 
       switch (entity) {
       case "document":
-        return <DocumentMention documentNpi={props.inlineContent.props.entityId}/>;
+        return <DocumentMention documentNpi={entityId}/>;
       case "table":
-        return <TableMention tableNpi={props.inlineContent.props.entityId}/>;
+        return <TableMention tableNpi={entityId}/>;
       case "user":
-        return <UserMention mentionId={id} userId={props.inlineContent.props.entityId}/>;
+        return <UserMention mentionId={id} userId={entityId}/>;
       default:
         throw new Error(`Unhandled content type ${entity}`);
       }
