@@ -27,7 +27,7 @@ const DocumentMention = ({documentNpi}) => {
   return (
     <a
       href={DocumentsApi.show.path({npi: document?.npi})}
-      className="border p-0.5 text-sky-500"
+      className="border rounded p-0.5 text-sky-500"
     >
       @{displayName}
       {isLoading && <Loading/>}
@@ -49,7 +49,7 @@ const TableMention = ({tableNpi}) => {
   return (
     <a
       href={TablesApi.show.path({npi: content?.table?.npi})}
-      className="border p-0.5 text-sky-500"
+      className="border rounded p-0.5 text-sky-500"
     >
       @{displayName}
       {isLoading && <Loading/>}
@@ -85,7 +85,7 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: number })
       ref={spanElementRef}
       id={spanElementId}
       className={clsx(
-        "border p-0.5",
+        "border rounded p-0.5",
         isTargeted && "bg-sky-500 text-white",
         !isTargeted && "text-sky-500"
       )}
