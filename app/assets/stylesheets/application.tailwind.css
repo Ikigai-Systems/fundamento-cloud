@@ -8,6 +8,7 @@
 @import "./modal.tailwind.css";
 @import "./lozenges.tailwind.css";
 @import "./reactions.tailwind.css";
+@import "./mentions.tailwind.css";
 
 @tailwind base;
 @tailwind components;
