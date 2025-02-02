@@ -1,44 +1,79 @@
-<section class="form-section">
-  <h2 class="form-header">Account settings</h2>
+<% if !Rails.env.standalone? %>
+  <div class="w-full grid grid-cols-1 md:grid-cols-10 md:gap-8 md:px-8">
+    <div class="max-w-screen-md md:col-start-2 md:col-span-5">
+<% else %>
+  <div class="w-full flex flex-col items-center">
+    <div class="max-w-screen-md w-full">
+<% end %>
 
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
-    html: { class: "default-form" }) do |f|
-  %>
-    <%= render "devise/shared/error_messages", resource: resource %>
+    <section class="form-section w-full">
+      <% if !Rails.env.standalone? %>
+        <h1 class="mt-0 max-w-75">
+          <span class="text-xl">Free 30-day trial</span>
+          <span class="text-4xl font-semibold block mt-3">Fundamento Cloud</span>
+          <span class="text-lg font-normal">Sign up for a free trial to unlock your internal collaboration</span>
+        </h1>
+      <% else %>
+        <h1 class="mt-0 max-w-75">
+          <span class="text-3xl">Create an account</span>
+        </h1>
+      <% end %>
 
-    <div class="form-field">
-      <%= f.label :email %>
-      <%= f.email_field :email, class: "form-input"  %>
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
+                   html: { class: "default-form" }) do |f|
+      %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="form-field">
+          <%= f.label :email %>
+          <%= f.email_field :email, class: "form-input" %>
+        </div>
+
+        <% if resource.respond_to?(:first_name) %>
+          <div class="form-field">
+            <%= f.label :first_name %>
+            <%= f.text_field :first_name, class: "form-input" %>
+          </div>
+        <% end %>
+
+        <% if resource.respond_to?(:last_name) %>
+          <div class="form-field">
+            <%= f.label :last_name %>
+            <%= f.text_field :last_name, class: "form-input" %>
+          </div>
+        <% end %>
+
+        <div class="form-field">
+          <%= f.label :password %>
+          <%= f.password_field :password, class: "form-input" %>
+        </div>
+
+        <div class="form-field">
+          <%= f.label :password_confirmation %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
+        </div>
+
+        <div class="form-footer">
+          <%= f.submit "Sign up", class: "form-submit" %>
+        </div>
+      <% end %>
+
+    </section>
+
+    <div class="md:my-4 mb-4 px-6">
+      Already have an account? <%= link_to "Sign in", new_session_path(resource_name), class: "link-button" %>
     </div>
-
-    <% if resource.respond_to?(:first_name) %>
-      <div class="form-field">
-        <%= f.label :first_name %>
-        <%= f.text_field :first_name, class: "form-input"  %>
-      </div>
-    <% end %>
-
-    <% if resource.respond_to?(:last_name) %>
-      <div class="form-field">
-        <%= f.label :last_name %>
-        <%= f.text_field :last_name, class: "form-input"  %>
-      </div>
-    <% end %>
-
-    <div class="form-field">
-      <%= f.label :password %>
-      <%= f.password_field :password, class: "form-input"  %>
-    </div>
-
-    <div class="form-field">
-      <%= f.label :password_confirmation %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input"  %>
-    </div>
-
-    <div class="form-footer">
-      <%= f.submit "Sign up", class: "form-submit" %>
+  </div>
+  <% if !Rails.env.standalone? %>
+    <div class="md:col-start-7 md:col-span-3">
+      <hr class="mt-4 md:hidden">
+      <section class="form-section w-full p-0">
+        <a href="https://fundamento.it/self-hosted-trial" class="py-8 px-4 bg-white font-semibold md:shadow md:mt-8 text-sm rounded flex flex-row items-center gap-2 hover:bg-gray-50 active:bg-gray-100">
+          <span class="min-w-6 size-6 icon-[heroicons--server-stack]"></span>
+          Want to host Fundamento on your own servers? Start a Self-Hosted trial
+          <span class="ml-auto min-w-6 size-6 icon-[heroicons--arrow-right]"></span>
+        </a>
+      </section>
     </div>
   <% end %>
-
-  <%= render "devise/shared/links" %>
-</section>
+</div>

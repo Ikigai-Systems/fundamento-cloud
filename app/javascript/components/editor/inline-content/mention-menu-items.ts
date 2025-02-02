@@ -5,7 +5,7 @@ import UsersApi from "../../../api/UsersApi.js";
 import TablesApi from "../../../api/Tables/TablesApi";
 import schema from "../schema.ts";
 
-function createMentionItem(entity, id, title ) {
+function createMentionItem(entity, entityId, title) {
   return {
     // TODO: Change SuggestionMenu.tsx in blocknote to use - key: `${entity}/${id}`,
     title,
@@ -14,9 +14,10 @@ function createMentionItem(entity, id, title ) {
         {
           type: "mention",
           props: {
+            id: crypto.randomUUID(),
             title,
-            id,
             entity,
+            entityId,
           },
         },
         " ", // add a space after the mention

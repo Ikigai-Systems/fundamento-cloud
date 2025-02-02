@@ -22,6 +22,11 @@
       <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
         Favorites
       </button>
+
+      <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
+        Mentions
+        <%= render(partial: 'mentions/count_badge', locals: {mentions_count: @mentions.count} ) %>
+      </button>
     </nav>
   </div>
 
@@ -47,6 +52,10 @@
     %>
       <%= render template: "application/components/loading" %>
     <% end %>
+  </div>
+
+  <div data-tabs-target="panel" class="hidden">
+    <%= render partial: "mentions/mentions_tab" %>
   </div>
 </div>
 

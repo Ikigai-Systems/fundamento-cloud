@@ -22,6 +22,8 @@ class DocumentsController < ApplicationController
       render template: "documents/_sidebar/details"
     elsif params[:tab] == "visitors"
       render template: "documents/_sidebar/visitors"
+    elsif params[:tab] == "table_of_contents"
+      render template: "documents/_sidebar/table_of_contents"
     end
   end
 

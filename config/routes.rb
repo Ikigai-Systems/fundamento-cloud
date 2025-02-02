@@ -109,6 +109,8 @@ Rails.application.routes.draw do
 
   resources :favorites, param: :npi, only: [:create, :destroy, :index]
 
+  resources :mentions, param: :npi, only: [:index]
+
   resources :teams, param: :npi do
     get :suggest_members, on: :collection
   end

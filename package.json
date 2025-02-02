@@ -9,9 +9,9 @@
     "preview": "vite preview frontend"
   },
   "dependencies": {
-    "@blocknote/core": "^0.22.0",
-    "@blocknote/mantine": "^0.22.0",
-    "@blocknote/react": "^0.22.0",
+    "@blocknote/core": "^0.23.1",
+    "@blocknote/mantine": "^0.23.1",
+    "@blocknote/react": "^0.23.1",
     "@floating-ui/react": "^0.26.28",
     "@github/hotkey": "^3.1.1",
     "@hotwired/stimulus": "^3.2.2",
@@ -24,7 +24,7 @@
     "@uiw/react-codemirror": "^4.23.3",
     "@wizardhealth/stimulus-multiselect": "^1.0.0",
     "@y-rb/actioncable": "^0.2.1",
-    "apexcharts": "^4.3.0",
+    "apexcharts": "^4.4.0",
     "dayjs": "^1.11.13",
     "deepmerge": "^4.3.1",
     "export-to-csv": "^1.4.0",

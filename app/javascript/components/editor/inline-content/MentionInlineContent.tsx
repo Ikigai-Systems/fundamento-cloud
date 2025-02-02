@@ -2,8 +2,10 @@ import {createReactInlineContentSpec} from "@blocknote/react";
 import {useQuery} from "@tanstack/react-query";
 import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
-import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import TablesApi from "../../../api/Tables/TablesApi";
+import queryClient from "../../.././contextes/ReactQueryClient.tsx";
+import {useEffect, useRef} from "react";
+import clsx from "clsx";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -54,20 +56,38 @@ const TableMention = ({tableNpi}) => {
   )
 }
 
-const UserMention = ({userId}) => {
+const UserMention = ({mentionId, userId}: { mentionId: string, userId: number }) => {
+  const spanElementRef = useRef();
+  const spanElementId = `mention-${mentionId}`;
+  const isTargeted = location.hash.split("#")[1] === spanElementId;
+
   const userQuery = useQuery({
     queryKey: ["users", userId], 
     queryFn: async () => {
       return await UsersApi.show({id: userId});
     }}, queryClient);
-  
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (isTargeted) {
+        spanElementRef.current?.scrollIntoView();
+      }
+    }, 0);
+  }, [spanElementRef, isTargeted])
+
   const isLoading = userQuery.isLoading;
   const user = userQuery.data;
   const displayName = user ? `${user.firstName} ${user.lastName}` : userId;
   
   return (
     <span
-      className="border p-0.5 text-sky-500"
+      ref={spanElementRef}
+      id={spanElementId}
+      className={clsx(
+        "border p-0.5",
+        isTargeted && "bg-sky-500 text-white",
+        !isTargeted && "text-sky-500"
+      )}
     >
       @{displayName}
       {isLoading && <Loading/>}
@@ -76,34 +96,60 @@ const UserMention = ({userId}) => {
 };
 
 // The Mention inline content.
-const Mention = createReactInlineContentSpec(
+const MentionInlineContent = createReactInlineContentSpec(
   {
     type: "mention",
     propSchema: {
-      title: {
-        default: "Untitled",
-      },
       id: {
-        default: -1,
+        default: "",
       },
       entity: {
         default: "document"
-      }
+      },
+      entityId: {
+        default: -1,
+      },
+      title: {
+        default: "Untitled",
+      },
     },
     content: "none",
   },
   {
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
-      const entity = props.inlineContent.props.entity;
+      let {id, entityId} = props.inlineContent.props;
+      const {entity} = props.inlineContent.props;
+
+      useEffect(() => {
+        if (entityId === -1) {
+          entityId = Number(id);
+          id = crypto.randomUUID();
+          setTimeout(() => {
+            props.updateInlineContent({
+              type: "mention",
+              props: {
+                ...props.inlineContent.props,
+                // dupa: "zupa",
+                id,
+                entityId,
+              }
+            });
+          }, 0);
+        }
+      }, [entityId])
+
+      if (entityId === -1) {
+        return null
+      }
 
       switch (entity) {
       case "document":
-        return <DocumentMention documentNpi={props.inlineContent.props.id}/>;
+        return <DocumentMention documentNpi={props.inlineContent.props.entityId}/>;
       case "table":
-        return <TableMention tableNpi={props.inlineContent.props.id}/>;
+        return <TableMention tableNpi={props.inlineContent.props.entityId}/>;
       case "user":
-        return <UserMention userId={props.inlineContent.props.id}/>;
+        return <UserMention mentionId={id} userId={props.inlineContent.props.entityId}/>;
       default:
         throw new Error(`Unhandled content type ${entity}`);
       }
@@ -111,4 +157,4 @@ const Mention = createReactInlineContentSpec(
   }
 );
 
-export default Mention;
+export default MentionInlineContent;

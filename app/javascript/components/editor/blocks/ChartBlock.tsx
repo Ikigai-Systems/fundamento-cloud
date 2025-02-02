@@ -169,7 +169,7 @@ const ChartBlock = createReactBlockSpec(
                     const tables = await TablesApi.index({
                       params: {
                         space_npi: space?.npi,
-                        query: {query}
+                        query,
                       }
                     });
                     return tables.map(table => ({value: table.npi, label: table.name}));
@@ -259,7 +259,7 @@ const ChartBlock = createReactBlockSpec(
               },
             };
             chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi).name,
+              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
               data: yAxisDataset.map(valueToSeriesPoint())
             }];
             break;

@@ -11,13 +11,21 @@
     <%= render partial: "favorites/create_favorite", locals: { object: @document } %>
   <% end %>
 
-  <%= button_to "Edit",
-    edit_document_path(@document),
-    method: :get,
-    disabled: !policy(@document).update?,
-    class: "primary-button document-toolbar-button",
-    data: {controller: "hotkey", hotkey: "e"}
-  %>
+  <% has_permission_to_edit = policy(@document).update? %>
+  <div data-controller="popover">
+    <%= button_to "Edit",
+      edit_document_path(@document),
+      method: :get,
+      disabled: !has_permission_to_edit,
+      class: "primary-button document-toolbar-button",
+      data: {controller: "hotkey", hotkey: "e", action: "mouseenter->popover#show mouseleave->popover#hide"}
+    %>
+    <template data-popover-target="content">
+      <div data-popover-target="card" class="<%= has_permission_to_edit ? "hidden " : "" %>z-10 bg-gray-800 text-gray-50 text-xs p-2 w-24 flex flex-row items-center justify-center rounded absolute top-12">
+        <p class="block">You have no permission to edit this document</p>
+      </div>
+    </template>
+  </div>
 
   <div
     data-controller="dropdown"
