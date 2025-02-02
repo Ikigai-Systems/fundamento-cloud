@@ -2,7 +2,11 @@ namespace :versions do
   desc "Make sure Mentions stored in document Versions are referencing entities by 'entityId' prop instead of 'id'"
   task rename_mentions_id_to_entity_id: :environment do
     Version.find_each do |version|
-      content = version.content.each do |block|
+      json_content = version.content.is_a?(String) ?
+        JSON.parse(version.content) :
+        version.content
+
+      content = json_content.each do |block|
         each_mention(block) do |mention|
           props = mention["props"]
           if props["entityId"].nil?

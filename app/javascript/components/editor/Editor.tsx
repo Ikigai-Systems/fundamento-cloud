@@ -18,7 +18,7 @@ import {
   useSelectedBlocks,
 } from "@blocknote/react";
 import schema from "./schema";
-import {getMentionMenuItems} from "./inline-content/mention-menu-items";
+import {getMentionMenuItems} from "./inline-content/mentionMenuItems.ts";
 import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import ChartBlockMenuItem from "./blocks/ChartBlockMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
