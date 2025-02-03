@@ -7,7 +7,9 @@
         <nav class="w-full flex justify-end p-3 gap-1 items-center">
           <%= content_for :content_menu %>
 
-          <div class="ml-3">
+          <%= render "application/notifications_menu" %>
+
+          <div class="ml-1">
             <%= render "application/user_menu" %>
           </div>
         </nav>

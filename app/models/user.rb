@@ -46,4 +46,8 @@ class User < ApplicationRecord
   def send_reset_password_instructions
     super if invitation_token.nil?
   end
+
+  def mentions_count(documents)
+    @mentions = MentionsExtractor::get_all_mentions(documents, self).count
+  end
 end
