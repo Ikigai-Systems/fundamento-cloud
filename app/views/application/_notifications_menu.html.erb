@@ -4,8 +4,11 @@
               class: "ml-2 document-toolbar-button relative inline-flex items-center p-2 text-sm font-medium text-center rounded-lg focus:ring-2 focus:ring-inset focus:outline-none focus:ring-black" do %>
     <span class="icon-[heroicons--bell] size-5"></span>
     <span class="sr-only">Notifications</span>
-    <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
-      <%= current_user.mentions_count(policy_scope(current_organization.documents)) %>
-    </div>
+    <% unread_mentions_count = current_organization_user.unread_mentions_count(policy_scope(current_organization.documents)) %>
+    <% if unread_mentions_count > 0 %>
+      <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+        <%= unread_mentions_count %>
+      </div>
+    <% end %>
   <% end %>
 <% end %>

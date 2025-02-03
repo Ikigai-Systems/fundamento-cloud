@@ -59,4 +59,12 @@ class OrganizationUser < ApplicationRecord
       target: self.organization
     )
   end
+
+  def unread_mentions_count(documents)
+    last_mention_seen_at = self.organization_user_properties.find_by_key("last_mention_seen_at")&.value&.to_datetime
+    MentionsExtractor::get_all_mentions(documents, self.user)
+      .filter{ |mention| mention[:version].created_at > last_mention_seen_at}
+      .count
+  end
+
 end
