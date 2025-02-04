@@ -48,7 +48,6 @@ function DocumentsSelectCell({
         } else if (selectedDocuments === null) {
           return (<>
             <div className="flex flex-row items-center flex-grow h-8" onClick={() => {}}>
-              {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
             </div>
           </>);
         } else {
@@ -57,7 +56,6 @@ function DocumentsSelectCell({
             <a className="flex items-center border rounded gap-1 px-1" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
               <i className="fa-regular fa-file-lines"></i>
               {title}
-              {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
             </a>
           </>);
         }
