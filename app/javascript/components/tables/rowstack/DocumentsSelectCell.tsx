@@ -54,10 +54,11 @@ function DocumentsSelectCell({
         } else {
           const title = documentQuery.data ? documentQuery.data.title : undefined;
           return (<>
-            <div className="flex flex-row items-center flex-grow" onClick={() => {}}>
+            <a className="flex items-center border rounded gap-1 px-1" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
+              <i className="fa-regular fa-file-lines"></i>
               {title}
               {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
-            </div>
+            </a>
           </>);
         }
       }
@@ -66,14 +67,14 @@ function DocumentsSelectCell({
 
   if (focusState === "none") {
     return (
-      <div className="h-8 flex flex-row items-center">
+      <div className="h-8 flex flex-row items-center gap-1">
         <span/>
         {renderSelectedDocuments()}
       </div>
     );
   } else if (focusState === "focused" || isViewOnly) {
     return (
-      <div className="h-8 flex flex-row items-center" onClick={() => !isViewOnly && setFocus("editing")}>
+      <div className="h-8 flex flex-row items-center gap-1" onClick={() => !isViewOnly && setFocus("editing")}>
         {renderSelectedDocuments()}
       </div>
     );
