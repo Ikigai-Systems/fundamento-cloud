@@ -15,6 +15,7 @@ class OrganizationUsersController < ApplicationController
 
   def create
     @organization_user = current_organization.organization_users.new(create_params)
+    @organization_user.role = :member
 
     authorize @organization_user, :create?
 
