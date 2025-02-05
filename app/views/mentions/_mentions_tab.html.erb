@@ -4,6 +4,26 @@
 
 <div id="mentions_container">
 
+  <%= javascript_tag do %>
+    (function() {
+      if (window.mentionsReadIntervalId === undefined)
+      window.mentionsReadIntervalId = setInterval(function() {
+        if (document.hasFocus()) {
+          fetch("/users/myself/user_properties/last_mention_seen_at", {
+            method: "PUT",
+            headers: {
+              "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(new Date())
+          });
+          clearInterval(window.mentionsReadIntervalId);
+          window.mentionsReadIntervalId = undefined;
+        }
+      }, 1000);
+    })();
+  <% end %>
+
   <% separator_index = @last_mention_seen_at.nil? ? 0 : @mentions.index { |m| m[:version].created_at < @last_mention_seen_at } %>
 
   <div id="mentions_list">
