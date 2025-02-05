@@ -53,7 +53,7 @@ function DocumentsSelectCell({
         } else {
           const title = documentQuery.data ? documentQuery.data.title : undefined;
           return (<>
-            <a className="flex items-center border rounded gap-1 px-1" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
+            <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
               <i className="fa-regular fa-file-lines"></i>
               {title}
             </a>
