@@ -86,20 +86,12 @@ function DocumentsSelectCell({
           defaultOptions
           isMulti={true}
           value={selectedDocuments.map(document => ({ value: document.npi, title: document.title }))}
-          loadOptions={async (query) => {
-            return [{
-              value: undefined, title: "leave empty",
-            }].concat(
-              documentsQuery.data.map(document => ({
-                value: document.npi,
-                title: document.title,
-              }))
-            );
-          }}
+          loadOptions={async (query) =>
+            documentsQuery.data.map(document => ({
+              value: document.npi,
+              title: document.title,
+            }))}
           formatOptionLabel={({value, title}) => {
-            if (!value) {
-              return <div className="italic">Empty</div>
-            }
             return (
               <div className="flex flex-row items-center ml-2">
                 {title}
