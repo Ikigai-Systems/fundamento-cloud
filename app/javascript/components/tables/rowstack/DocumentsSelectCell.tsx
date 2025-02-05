@@ -30,35 +30,32 @@ function DocumentsSelectCell({
       }})),
   }, queryClient);
 
-  const selectedDocuments = documentQueries.map(documentQuery => documentQuery.data);
+  const selectedDocuments = documentQueries
+    .filter(documentsQuery => documentsQuery.isSuccess)
+    .map(documentQuery => documentQuery.data);
 
   function renderSelectedDocuments() {
     return documentQueries.map(documentQuery => {
       if (documentQuery.isLoading) {
-        return (<div className="pl-2">
-          <Spinner size={4}/>
-        </div>)
-      } else {
-        if (documentQuery.isError) {
-          return (
-            <div className="flex flex-row items-center text-red-800">
-              Unable to load document with id '{documentNpi}'
-            </div>
-          );
-        } else if (selectedDocuments === null) {
-          return (<>
-            <div className="flex flex-row items-center flex-grow h-8" onClick={() => {}}>
-            </div>
-          </>);
-        } else {
-          const title = documentQuery.data ? documentQuery.data.title : undefined;
-          return (<>
-            <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
-              <i className="fa-regular fa-file-lines"></i>
-              {title}
-            </a>
-          </>);
-        }
+        return (
+          <div className="pl-2">
+            <Spinner size={4}/>
+          </div>
+        )
+      } else if (documentQuery.isError) {
+        return (
+          <div className="flex items-center border rounded text-red-800  px-1 truncate">
+            Unable to load document
+          </div>
+        );
+      } else if (documentQuery.isSuccess) {
+        const title = documentQuery.data ? documentQuery.data.title : undefined;
+        return (
+          <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
+            <i className="fa-regular fa-file-lines"></i>
+            {title}
+          </a>
+        );
       }
     })
   }
@@ -91,9 +88,9 @@ function DocumentsSelectCell({
               value: document.npi,
               title: document.title,
             }))}
-          formatOptionLabel={({value, title}) => {
+          formatOptionLabel={({title}) => {
             return (
-              <div className="flex flex-row items-center ml-2">
+              <div className="flex flex-row items-center">
                 {title}
               </div>
             )}
