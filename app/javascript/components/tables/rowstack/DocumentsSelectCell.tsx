@@ -85,7 +85,7 @@ function DocumentsSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          // value={{value: userId, initials: selectedUser.firstName[0] + selectedUser.lastName[0], displayName: `${selectedUser.firstName} ${selectedUser.lastName}`}}
+          value={selectedDocuments.map(document => ({ value: document.npi, title: document.title }))}
           loadOptions={async (query) => {
             return [{
               value: undefined, title: "leave empty",
