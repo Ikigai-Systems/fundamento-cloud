@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_08_115311) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_30_122955) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -282,6 +282,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_08_115311) do
     t.index ["organization_user_id"], name: "index_object_visitors_on_organization_user_id"
   end
 
+  create_table "organization_user_properties", force: :cascade do |t|
+    t.bigint "organization_user_id", null: false
+    t.string "key", null: false
+    t.jsonb "value", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["key", "organization_user_id"], name: "idx_on_key_organization_user_id_f0a3f857a8", unique: true
+    t.index ["organization_user_id"], name: "index_organization_user_properties_on_organization_user_id"
+  end
+
   create_table "organization_users", force: :cascade do |t|
     t.bigint "organization_id"
     t.bigint "user_id"
@@ -543,6 +553,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_08_115311) do
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "object_reactions", "organization_users"
   add_foreign_key "object_reactions", "organizations"
+  add_foreign_key "organization_user_properties", "organization_users"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"

@@ -6,6 +6,13 @@
   >
     <div class="border-b border-gray-200">
       <nav data-tabs-target="list" aria-label="Tabs">
+        <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab"
+                class="flex flex-row items-center"
+        >
+          <span class="size-6 icon-[heroicons--clipboard-document-list]"></span>
+          <span>Structure</span>
+        </button>
+
         <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
           <i class="fa-regular fa-memo-circle-info"></i>
           Details
@@ -16,13 +23,13 @@
           Visitors
         </button>
 
-        <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab"
-                class="flex flex-row items-center"
-        >
-          <span class="size-6 icon-[heroicons--clipboard-document-list]"></span>
-          <span>TOC</span>
-        </button>
       </nav>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden max-h-0">
+      <%= turbo_frame_tag "table_of_contents_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :table_of_contents) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
     </div>
 
     <div data-tabs-target="panel" class="hidden max-h-0">
@@ -33,12 +40,6 @@
 
     <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "visitors_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
-        <%= render SidebarLoadingComponent.new %>
-      <% end %>
-    </div>
-
-    <div data-tabs-target="panel" class="hidden max-h-0">
-      <%= turbo_frame_tag "table_of_contents_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :table_of_contents) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>

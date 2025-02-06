@@ -12,6 +12,7 @@ class OrganizationUser < ApplicationRecord
   has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
   has_many :automations, inverse_of: :run_as
   has_many :automation_invocations, inverse_of: :run_as
+  has_many :organization_user_properties, dependent: :delete_all
 
   enum :role, [:manager, :member], scope: false
 
@@ -58,4 +59,12 @@ class OrganizationUser < ApplicationRecord
       target: self.organization
     )
   end
+
+  def unread_mentions_count(documents)
+    last_mention_seen_at = self.organization_user_properties.find_by_key("last_mention_seen_at")&.value&.to_datetime
+    MentionsExtractor::get_all_mentions(documents, self.user)
+      .filter{ |mention| last_mention_seen_at.present? ? mention[:version].created_at > last_mention_seen_at : true}
+      .count
+  end
+
 end

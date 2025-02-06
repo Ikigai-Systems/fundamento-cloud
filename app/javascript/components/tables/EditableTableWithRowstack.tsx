@@ -6,6 +6,7 @@ import TablesApi from "../../api/Tables/TablesApi.js";
 import {Config} from "@js-from-routes/client";
 import {Space, Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
+import DocumentsSelectCell from "./rowstack/DocumentsSelectCell.tsx";
 import ButtonCell from "./rowstack/ButtonCell.tsx";
 import DateTimeCell from "./rowstack/DateTimeCell/DateTimeCell.tsx";
 import CalendarDaysIcon from "./rowstack/DateTimeCell/CalendarDaysIcon.tsx"
@@ -38,6 +39,7 @@ type Kind =
     | "checkbox"
     | "formula"
     | "people"
+    | "documents"
     | "button";
 
 const toType = (kind: Kind) => {
@@ -62,6 +64,8 @@ const toType = (kind: Kind) => {
     return "formula";
   case "people":
     return "people";
+  case "documents":
+    return "documents";
   case "button":
     return "button";
   default:
@@ -298,6 +302,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               cell: PeopleSelectCell,
               icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
               name: "People",
+            }, {
+              type: "documents",
+              cell: DocumentsSelectCell,
+              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--document-text]"></div>,
+              name: "Documents",
             }, {
               type: "datetime",
               cell: DateTimeCell,

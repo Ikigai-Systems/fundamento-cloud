@@ -3,20 +3,21 @@ class Tables::TablesController < ApplicationController
 
   after_action :verify_authorized_or_index_scoped
 
-  before_action :load_space, only: [:new, :create, :index]
+  before_action :load_space, only: [:new, :create]
   before_action :load_table, except: [:new, :create, :index]
 
   def index
-    @tables = policy_scope(current_organization.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
-    @tables = @tables.where(space: @space)
+    @tables = policy_scope(current_organization.tables.lexicographically)
+
+    space_npi = params[:space_npi]
+    @tables = @tables.where(space: current_organization.spaces.find_by_param!(space_npi)) if space_npi.present?
+
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
     respond_to do |format|
       format.json { render json: @tables }
-      format.html do
-        redirect_to space_path(@space)
-      end
+      format.all { head :unprocessable_content }
     end
   end
 

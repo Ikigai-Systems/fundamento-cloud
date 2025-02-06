@@ -1,4 +1,9 @@
 class RootController < ApplicationController
   def index
+    @mentions = MentionsExtractor::get_all_mentions(policy_scope(current_organization.documents), current_user)
+                  .sort_by { |mention| mention[:version].created_at }.reverse
+
+    last_mention_seen_at_property = current_organization_user.organization_user_properties.find_by_key("last_mention_seen_at")
+    @last_mention_seen_at = last_mention_seen_at_property&.value&.to_datetime
   end
 end

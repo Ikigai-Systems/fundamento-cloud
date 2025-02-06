@@ -28,7 +28,8 @@ class OrganizationsController < ApplicationController
     if @organization.save
       OrganizationUser.create!(
         organization: @organization,
-        user: current_user
+        user: current_user,
+        role: :manager,
       )
 
       redirect_to @organization, notice: 'Organization was successfully created.'

@@ -1,0 +1,5 @@
+@layer components {
+    .mention {
+        @apply border rounded p-0.5 text-sky-500
+    }
+}

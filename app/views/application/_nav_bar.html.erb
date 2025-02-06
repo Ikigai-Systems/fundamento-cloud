@@ -19,7 +19,12 @@
       
     </div>
 
-    <div class="w-auto">
+    <div class="w-auto flex flex-row items-center gap-2">
+
+      <% if user_signed_in? %>
+        <%= render "application/notifications_menu" %>
+      <% end %>
+
       <ul class="flex flex-col md:flex-row md:space-x-8 pr-2 md:text-sm md:font-medium">
         <li>
           <% if user_signed_in? %>

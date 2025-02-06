@@ -1,5 +1,5 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
-import Mention from "./inline-content/Mention";
+import MentionInlineContent from "./inline-content/MentionInlineContent.tsx";
 import AdvancedTable from "./blocks/AdvancedTable.tsx";
 import CodeBlock from "./blocks/CodeBlock.tsx";
 import ButtonInlineContent from "./inline-content/ButtonInlineContent.tsx";
@@ -16,7 +16,7 @@ const {...remainingBlockSpecs} = defaultBlockSpecs
 const schema = BlockNoteSchema.create({
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,
-    mention: Mention,
+    mention: MentionInlineContent,
     button: ButtonInlineContent,
     formula: FormulaInlineContent,
   },

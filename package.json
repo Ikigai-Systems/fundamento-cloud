@@ -9,9 +9,9 @@
     "preview": "vite preview frontend"
   },
   "dependencies": {
-    "@blocknote/core": "^0.23.0",
-    "@blocknote/mantine": "^0.23.0",
-    "@blocknote/react": "^0.23.0",
+    "@blocknote/core": "^0.23.1",
+    "@blocknote/mantine": "^0.23.1",
+    "@blocknote/react": "^0.23.1",
     "@floating-ui/react": "^0.26.28",
     "@github/hotkey": "^3.1.1",
     "@hotwired/stimulus": "^3.2.2",
@@ -47,6 +47,7 @@
     "@stylistic/eslint-plugin-js": "^2.1.0",
     "@tanstack/eslint-plugin-query": "^5.50.1",
     "@types/js-cookie": "^3.0.6",
+    "@types/lodash": "^4.17.15",
     "@types/rails__actioncable": "^6.1.10",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",

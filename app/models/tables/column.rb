@@ -11,7 +11,7 @@ class Tables::Column < ApplicationRecord
 
   validates_presence_of :name
 
-  enum :kind, [:string, :number, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :button], scopes: false, validate: true
+  enum :kind, [:string, :number, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :documents, :button], scopes: false, validate: true
 
   def self.to_kind(type)
     possible_type = type&.underscore
