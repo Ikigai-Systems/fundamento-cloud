@@ -13,12 +13,10 @@ class MentionsExtractor
       end
     end
 
-    all_mentions.group_by { |mention| mention["props"]["id"] }.each do |mention_id, mentions|
-      mentions.sort_by do |elem|
-        elem[:version].created_at
-      end
-    end.map do |mention_id, mentions|
-      mentions.first.merge({ most_recent_version: mentions.last[:version] })
+    all_mentions.group_by { |mention| mention["props"]["id"] }
+                .map do |mention_id, mentions|
+      sorted_mentions = mentions.sort_by { |elem| elem[:version]["sequential_id"] }
+      sorted_mentions.first.merge({ most_recent_version: sorted_mentions.last[:version] })
     end
   end
 
