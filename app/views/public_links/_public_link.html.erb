@@ -3,7 +3,7 @@
     <div>
       <div class="text-base font-semibold truncate">
         <%=
-          link_to(polymorphic_path([public_link.object.space, public_link.object])) do
+          link_to(polymorphic_path([public_link.object])) do
             public_link.object.title
           end
         %>
