@@ -35,6 +35,7 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
     console.log("evaluatedFormula:", evaluatedFormula);
     return evaluatedFormula
   } catch (e) {
+    Sentry.captureException(e);
     return({error: e.toString()});
   }
 })
@@ -51,6 +52,7 @@ fastify.post('/formulas/eval/batch', async function handler (request, reply) {
       console.log("evaluatedFormula:", evaluatedFormula);
       return evaluatedFormula
     } catch (e) {
+      Sentry.captureException(e);
       return({error: e.toString()});
     }
   });
