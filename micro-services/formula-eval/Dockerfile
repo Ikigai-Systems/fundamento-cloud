@@ -27,4 +27,4 @@ ENV HTTP_HOST=0.0.0.0
 
 EXPOSE 3001
 
-CMD ["node", "src/server.js"]
+CMD ["node", "--import", "./src/instrument.js", "src/server.js"]
