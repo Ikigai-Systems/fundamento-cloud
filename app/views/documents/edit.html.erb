@@ -10,7 +10,7 @@
 
   <div id="editor-connection-indicator"></div>
 
-  <%= button_to "Save", document_versions_path(@document), method: :create,
+  <%= button_to "Update", document_versions_path(@document), method: :create,
     params: {blocks: ""},
     :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
     class: "primary-button document-toolbar-button" %>
