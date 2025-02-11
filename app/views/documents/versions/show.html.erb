@@ -28,7 +28,7 @@
         <div class="p-2">
           <div class="font-bold">Version <%= version.sequential_id %></div>
           <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
-          <div><%= version.created_at.strftime("%F") %></div>
+          <div title="<%= version.created_at %>"><%= time_ago_in_words version.created_at %> ago</div>
         </div>
       <% end %>
     <% end %>
