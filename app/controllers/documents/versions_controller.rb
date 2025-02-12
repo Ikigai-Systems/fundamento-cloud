@@ -29,7 +29,7 @@ class Documents::VersionsController < ApplicationController
 
     if @version.save
       respond_to do |format|
-        flash[:notice] = "Document version has been saved."
+        flash[:notice] = "Document has been updated."
         format.html { redirect_to document_path(@document) }
       end
     else
