@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
 
-  before_action :authenticate_user!
+  prepend_before_action :authenticate_user!
 
   before_action :ensure_organization_exists
   before_action :select_current_organization
