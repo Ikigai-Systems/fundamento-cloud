@@ -107,6 +107,8 @@ Rails.application.configure do
     # Allow internal requests in Kubernetes cluster
     "website",
     "website.fundamento-cloud.svc.cluster.local",
+    "api",
+    "api.fundamento-cloud.svc.cluster.local",
   ]
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
