@@ -1,4 +1,5 @@
-rails: bundle exec bin/rails server --port 3000
+website: bundle exec bin/rails server --port 3000 --pid tmp/pids/website.pid
+api: bundle exec bin/rails server --port 3002 --pid tmp/pids/api.pid
 vite: bin/vite dev
 jobs: bundle exec good_job start
-formula-eval: unset PORT && unset HTTP_HOST && npm start --prefix micro-services/formula-eval
+formula-eval: unset PORT && unset HTTP_HOST && FUNDAMENTO_BASE_URL=http://127.0.0.1:3002 npm start --prefix micro-services/formula-eval
