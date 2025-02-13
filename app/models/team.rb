@@ -6,7 +6,6 @@ class Team < ApplicationRecord
   scope :query, ->(query) { where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%") }
 
   has_many :team_memberships, dependent: :destroy
-  has_many :users, through: :team_memberships, dependent: :destroy
 
   validates_presence_of :name, :shortcut
 
