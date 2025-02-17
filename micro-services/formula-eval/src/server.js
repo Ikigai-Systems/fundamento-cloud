@@ -25,36 +25,42 @@ fastify.addHook("onRequest", async (request, reply) => {
 });
 
 fastify.post('/formulas/eval', async function handler (request, reply) {
-  // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
+  Sentry.withScope(scope => {
+    scope.clearBreadcrumbs();
+    // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
-  const {formula, additional_context, evaluation_context} = request.body;
-  requestContext.set("evaluation_context", evaluation_context);
+    const {formula, additional_context, evaluation_context} = request.body;
+    requestContext.set("evaluation_context", evaluation_context);
 
-  try {
-    const evaluatedFormula = evaluateFormula(formula, additional_context);
-    console.log("evaluatedFormula:", evaluatedFormula);
-    return evaluatedFormula
-  } catch (e) {
-    Sentry.captureException(e);
-    return({error: e.toString()});
-  }
-})
-
-fastify.post('/formulas/eval/batch', async function handler (request, reply) {
-  // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
-
-  const {evaluations, evaluation_context} = request.body;
-  requestContext.set("evaluation_context", evaluation_context);
-
-  return evaluations.map(({formula, additional_context}) => {
     try {
       const evaluatedFormula = evaluateFormula(formula, additional_context);
       console.log("evaluatedFormula:", evaluatedFormula);
-      return evaluatedFormula
+      return evaluatedFormula;
     } catch (e) {
       Sentry.captureException(e);
       return({error: e.toString()});
     }
+  });
+})
+
+fastify.post('/formulas/eval/batch', async function handler (request, reply) {
+  Sentry.withScope(scope => {
+    scope.clearBreadcrumbs();
+    // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
+
+    const {evaluations, evaluation_context} = request.body;
+    requestContext.set("evaluation_context", evaluation_context);
+
+    return evaluations.map(({formula, additional_context}) => {
+      try {
+        const evaluatedFormula = evaluateFormula(formula, additional_context);
+        console.log("evaluatedFormula:", evaluatedFormula);
+        return evaluatedFormula;
+      } catch (e) {
+        Sentry.captureException(e);
+        return ({error: e.toString()});
+      }
+    });
   });
 })
 
