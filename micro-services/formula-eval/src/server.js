@@ -35,7 +35,11 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
     try {
       const evaluatedFormula = evaluateFormula(formula, additional_context);
       console.log("evaluatedFormula:", evaluatedFormula);
-      return evaluatedFormula;
+      if (evaluatedFormula === undefined) {
+        return({error: "Undefined formula"});
+      } else {
+        return evaluatedFormula;
+      }
     } catch (e) {
       Sentry.captureException(e);
       return({error: e.toString()});
@@ -55,7 +59,11 @@ fastify.post('/formulas/eval/batch', async function handler (request, reply) {
       try {
         const evaluatedFormula = evaluateFormula(formula, additional_context);
         console.log("evaluatedFormula:", evaluatedFormula);
-        return evaluatedFormula;
+        if (evaluatedFormula === undefined) {
+          return({error: "Undefined formula"});
+        } else {
+          return evaluatedFormula;
+        }
       } catch (e) {
         Sentry.captureException(e);
         return ({error: e.toString()});
