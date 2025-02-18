@@ -25,7 +25,7 @@ fastify.addHook("onRequest", async (request, reply) => {
 });
 
 fastify.post('/formulas/eval', async function handler (request, reply) {
-  Sentry.withIsolationScope(scope => {
+  return Sentry.withIsolationScope(scope => {
     scope.clearBreadcrumbs();
     // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
@@ -44,7 +44,7 @@ fastify.post('/formulas/eval', async function handler (request, reply) {
 })
 
 fastify.post('/formulas/eval/batch', async function handler (request, reply) {
-  Sentry.withIsolationScope(scope => {
+  return Sentry.withIsolationScope(scope => {
     scope.clearBreadcrumbs();
     // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
 
