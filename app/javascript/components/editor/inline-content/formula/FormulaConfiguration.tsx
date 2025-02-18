@@ -50,8 +50,8 @@ function FormulaConfiguration({
         Formula settings
       </div>
       <div className="overflow-y-auto">
-        <div className="flex flex-col px-2 border-b py-2">
-          <input className="bg-white rounded border h-8 p-2 placeholder-neutral-400"
+        <div className="flex flex-col px-2 border-b py-1">
+          <textarea className="bg-white rounded p-2 px-2 border mb-1 min-w-96 h-10 min-h-10 placeholder-neutral-400"
             value={configuration.formula}
             placeholder="Add formula"
             onChange={(e) => {
