@@ -69,6 +69,9 @@ class FormulaVisitorImplementation extends FormulaVisitor {
 
           const called = formulaFunction.call(functionContext, result, (currentValue) => {
             this.currentValueManager.declareVariable("currentValue", currentValue);
+            console.log(formulaName);
+            console.log(Array.isArray(formula));
+            console.log(formula.accept);
             return this.visit(formula);
           });
           return called;
