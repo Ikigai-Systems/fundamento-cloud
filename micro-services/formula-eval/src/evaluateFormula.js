@@ -65,6 +65,9 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         this.currentValueManager.enterScope();
         try {
           const formula = ctx.expression(1);
+          if (formula === null) {
+            throw new Error(`Missing arguments in ${formulaName} formula`);
+          }
           const {result, commands} = this.visit(ctx.expression(0));
 
           const called = formulaFunction.call(functionContext, result, (currentValue) => {
