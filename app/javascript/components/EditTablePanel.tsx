@@ -27,6 +27,8 @@ const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   }}, queryClient);
   const {isLoading, isError} = tableQuery;
 
+  window.tableData = tableQuery.data;
+
   return <CurrentSpaceContext.Provider value={{space}}>
 
     <div className="flex flex-col">

@@ -157,7 +157,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
       // }
     });
 
-    window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version)
+    window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version) + for displaying document Structure in right sidebar
     return blockNoteEditor;
   }, [documentId]);
 

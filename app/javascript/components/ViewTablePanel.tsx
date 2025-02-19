@@ -5,6 +5,8 @@ import {Space, Table} from "../types.ts"
 import {ContentTitle} from "./ContentTitle.tsx";
 
 const ViewTablePanel = ({table, data, space}: ViewTablePanelProps) => {
+  window.tableData = {table, data};
+
   return <CurrentSpaceContext.Provider value={{space}}>
     <div className="content-editor-padding">
       <ContentTitle table={table}/>
