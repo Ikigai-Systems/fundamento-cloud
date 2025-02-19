@@ -87,13 +87,12 @@ export declare interface PopupAction {
     popup?: React_2.ReactNode;
 }
 
-declare function Table({ data, columns, onChange, config, licenseKey, tableNpi, }: {
+declare function Table({ data, columns, onChange, config, licenseKey, }: {
     data: Array<Data>;
     columns: Array<Partial<Column>>;
     onChange: (x: any) => void;
     config: Partial<Config>;
     licenseKey: string;
-    tableNpi?: string;
 }): JSX_2.Element;
 export default Table;
 
