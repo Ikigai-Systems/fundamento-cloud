@@ -1,29 +1,239 @@
-<div style="display: flex; flex-direction: column; align-items: center; max-width: 720px; margin: auto;">
-  <div>
-    <!--replace with real Fundamento icon later:-->
-    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor" viewBox="0 0 576 512" style="height: 4rem; width: 4rem;"><path d="m290.8 48.6 78.4 29.7-81.2 31.2-81.2-31.2 78.4-29.7c1.8-.7 3.8-.7 5.7 0zM136 92.5v112.2c-1.3.4-2.6.8-3.9 1.3l-96 36.4C14.4 250.6 0 271.5 0 294.7v119.2c0 22.2 13.1 42.3 33.5 51.3l96 42.2c14.4 6.3 30.7 6.3 45.1 0L288 457.5l113.5 49.9c14.4 6.3 30.7 6.3 45.1 0l96-42.2c20.3-8.9 33.5-29.1 33.5-51.3V294.8c0-23.3-14.4-44.1-36.1-52.4L444 206c-1.3-.5-2.6-.9-3.9-1.3V92.5c0-23.3-14.4-44.1-36.1-52.4L308 3.7c-12.8-4.8-26.9-4.8-39.7 0l-96 36.4C150.4 48.4 136 69.3 136 92.5zm256 118.1-82.4 31.2v-89.2L392 121zm-237.2 40.3 78.4 29.7-81.2 31.1-81.2-31.1 78.4-29.7c1.8-.7 3.8-.7 5.7 0zm18.8 204.4V354.8l82.4-31.6v95.9zm247.6-204.4c1.8-.7 3.8-.7 5.7 0l78.4 29.7-81.3 31.1-81.2-31.1zm102 170.3-77.6 34.1V354.8l82.4-31.6v90.7c0 3.2-1.9 6-4.8 7.3z"></path></svg>
-  </div>
-  <div style="font-size: 1.5rem; line-height: 2rem;">
-    <%= @resource.invited_by.display_name %> invited you to <strong><%= @resource.organization.name %></strong>, an organization on <a href="https://fundamento.it">Fundamento</a>.
-  </div>
-  <div style="margin-top: 2rem; display: flex; flex-direction: column; align-items: center; max-width: 480px; height: 200px; border-style: solid; border-radius: 1rem; border-width: 1px; border-color: #ccc; padding: 1rem;">
-    <div style="display: flex; flex-direction: row; align-items: center; justify-content: center">
-      <div style="min-width: 2rem; min-height: 2rem; background-color: rgb(59 130 246); border-radius: 9999px; display:flex; align-items: center; justify-content: center; color:white; font-weight: 700;">
-        <%= @resource.invited_by.initials %>
-      </div>
-      <div style="padding: 1rem;">
-        I've just added you to a Fundamento organization, where we can collaborate on our documents and our data. Let's get started!
-      </div>
-    </div>
-
-    <%= link_to t("devise.mailer.invitation_instructions.accept"), accept_invitation_url(@resource, invitation_token: @token), style: 'margin-top: 2rem; font-weight: 600; text-decoration: none; background-color: rgb(251 146 60); color: rgb(15 23 42); padding: 0.5rem 1.5rem; border-radius: .375rem;'%>
-  </div>
-  <div style="color: #aaa; font-size: 0.8rem; ">
-    <% if @resource.invitation_due_at %>
-      <p><%= t("devise.mailer.invitation_instructions.accept_until", due_date: l(@resource.invitation_due_at, format: :'devise.mailer.invitation_instructions.accept_until_format')) %></p>
-    <% end %>
-
-    <p><%= t("devise.mailer.invitation_instructions.ignore") %></p>
-  </div>
-  <!--  here we should later include some kind of footer, maybe who we are, maybe icons to our social accounts-->
-</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+  <tbody>
+  <tr>
+    <td style="font-size:0;line-height:0;mso-line-height-rule:exactly;background-color:#F9F9F9;background-image:none;background-repeat:repeat;background-size:auto;background-position:center top;" valign="top" align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center" id="innerTable">
+        <tbody>
+        <tr>
+          <td>
+            <div style="mso-line-height-rule:exactly;mso-line-height-alt:70px;line-height:70px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+          </td>
+        </tr>
+        <tr>
+          <td align="center">
+            <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+              <tbody>
+              <tr>
+                <td style="background-color:#FFFFFF;border:1px solid #CECECE;overflow:hidden;width:480px;border-radius:20px 20px 20px 20px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                    <tbody>
+                    <tr>
+                      <td style="padding:50px 40px 40px 40px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100% !important;">
+                          <tbody>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="width:60px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td>
+                                          <!--replace with real Fundamento icon later:-->
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="currentColor" viewBox="0 0 576 512" style="height: 4rem; width: 4rem;"><path d="m290.8 48.6 78.4 29.7-81.2 31.2-81.2-31.2 78.4-29.7c1.8-.7 3.8-.7 5.7 0zM136 92.5v112.2c-1.3.4-2.6.8-3.9 1.3l-96 36.4C14.4 250.6 0 271.5 0 294.7v119.2c0 22.2 13.1 42.3 33.5 51.3l96 42.2c14.4 6.3 30.7 6.3 45.1 0L288 457.5l113.5 49.9c14.4 6.3 30.7 6.3 45.1 0l96-42.2c20.3-8.9 33.5-29.1 33.5-51.3V294.8c0-23.3-14.4-44.1-36.1-52.4L444 206c-1.3-.5-2.6-.9-3.9-1.3V92.5c0-23.3-14.4-44.1-36.1-52.4L308 3.7c-12.8-4.8-26.9-4.8-39.7 0l-96 36.4C150.4 48.4 136 69.3 136 92.5zm256 118.1-82.4 31.2v-89.2L392 121zm-237.2 40.3 78.4 29.7-81.2 31.1-81.2-31.1 78.4-29.7c1.8-.7 3.8-.7 5.7 0zm18.8 204.4V354.8l82.4-31.6v95.9zm247.6-204.4c1.8-.7 3.8-.7 5.7 0l78.4 29.7-81.3 31.1-81.2-31.1zm102 170.3-77.6 34.1V354.8l82.4-31.6v90.7c0 3.2-1.9 6-4.8 7.3z"></path></svg>
+                                        </td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="width:398px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td>
+                                          <h1 style="margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:28px;font-weight:500;font-style:normal;font-size:24px;text-decoration:none;text-transform:none;letter-spacing:-1.2px;direction:ltr;color:#111111;text-align:center;mso-line-height-rule:exactly;mso-text-raise:1px;">
+                                            <%= @resource.invited_by.display_name %> invited you to <strong><%= @resource.organization.name %></strong>, an organization on <a href="https://fundamento.it">Fundamento</a>.</h1>
+                                        </td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:17px;line-height:17px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="width:388px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td>
+                                          <p style="display: flex; align-items: center; justify-content: center; min-width: 32px; min-height: 32px; background-color: rgb(59 130 246); border-radius: 9999px; color:white; margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:22px;font-weight:700;font-style:normal;font-size:15px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                                            <%= @resource.invited_by.initials %>
+                                          </p>
+                                        </td>
+                                        <td>
+                                          <p style="margin:0;Margin:0;margin-left: 16px;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:22px;font-weight:500;font-style:normal;font-size:15px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#424040;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                                            I've just added you to a Fundamento organization, where we can collaborate on our documents and our data. Let's get started!
+                                          </p>
+                                        </td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="background-color:#fb923c;overflow:hidden;width:154px;border-radius:8px 8px 8px 8px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td style="text-align:center;line-height:40px;mso-line-height-rule:exactly;mso-text-raise:8px;">
+<!--                                          <a href="#"-->
+<!--                                             style="display:block;margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:40px;font-weight:700;font-style:normal;font-size:15px;text-decoration:none;letter-spacing:-0.5px;direction:ltr;color:#0f172a;text-align:center;mso-line-height-rule:exactly;mso-text-raise:8px;" target="_blank">-->
+<!--                                            Accept invite-->
+<!--                                          </a>-->
+                                          <%= link_to "Accept invite", accept_invitation_url(@resource, invitation_token: @token), style: 'display:block;margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:40px;font-weight:700;font-style:normal;font-size:15px;text-decoration:none;letter-spacing:-0.5px;direction:ltr;color:#0f172a;text-align:center;mso-line-height-rule:exactly;mso-text-raise:8px;'%>
+                                        </td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="width:398px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td>
+                                          <% if @resource.invitation_due_at %>
+                                          <p style="margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:20px;font-weight:500;font-style:normal;font-size:13px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#aaa;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                                            <%= t("devise.mailer.invitation_instructions.accept_until", due_date: l(@resource.invitation_due_at, format: :'devise.mailer.invitation_instructions.accept_until_format')) %>
+                                          </p>
+                                          <% end %>
+                                          <p style="margin:0;Margin:0;margin-top: 12px; font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:20px;font-weight:500;font-style:normal;font-size:13px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#aaa;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                                            <%= t("devise.mailer.invitation_instructions.ignore") %>
+                                          </p>
+                                        </td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:30px;line-height:30px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="center">
+                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+                                <tbody>
+                                <tr>
+                                  <td style="background-color:#F2EFF3;overflow:hidden;width:398px;border-radius:8px 8px 8px 8px;">
+                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                                      <tbody>
+                                      <tr>
+                                        <td style="padding:20px 30px 20px 30px;">
+                                          <p style="margin:0;Margin:0;font-family:Albert Sans,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:18px;font-weight:500;font-style:normal;font-size:12px;text-transform:none;direction:ltr;color:#84828E;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                                            P.S. Need help getting started? Check out our <a target=_blank" style="color: #0e87bc; text-decoration: underline" href="https://docs.fundamento.it">help documentation</a>.
+                                          </p></td>
+                                      </tr>
+                                      </tbody>
+                                    </table>
+                                  </td>
+                                </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+            <tbody>
+            <tr>
+              <td style="width:398px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+                  <tbody>
+                  <tr>
+                    <td>
+                      <p style="margin:0;Margin:0;margin-top: 40px; margin-bottom: 40px; font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:20px;font-weight:500;font-style:normal;font-size:13px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#aaa;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                        © 2025 Fundamento. All Rights Reserved.
+                      </p>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </tr>
+        <tr>
+          <td>
+            <div style="mso-line-height-rule:exactly;mso-line-height-alt:70px;line-height:70px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  </tbody>
+</table>
