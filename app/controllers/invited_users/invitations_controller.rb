@@ -69,7 +69,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   protected
 
   def authenticate_inviter!
-    authenticate_user!
+    current_user
   end
 
   # Permit the new params here.
