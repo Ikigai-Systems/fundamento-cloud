@@ -1,4 +1,6 @@
 class FundamentoDeviseMailer < Devise::Mailer
+  before_action :add_inline_attachment!
+
   protected
 
   def subject_for(key)
@@ -16,5 +18,9 @@ class FundamentoDeviseMailer < Devise::Mailer
     headers[:from] = "#{resource.invited_by.display_name} via Fundamento <no-reply@outgoing.ikigai.systems>"
 
     headers
+  end
+
+  def add_inline_attachment!
+    attachments.inline["logo.png"] = File.read(Rails.root.join("app", "assets", "images", "fundamento-logo.png"))
   end
 end
