@@ -12,6 +12,6 @@ class DeviseMailerPreview < ActionMailer::Preview
 
     token = "dummy_token"
 
-    Devise::Mailer.invitation_instructions(invited_user, token)
+    FundamentoDeviseMailer.invitation_instructions(invited_user, token)
   end
 end
