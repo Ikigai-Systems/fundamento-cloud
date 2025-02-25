@@ -58,7 +58,7 @@ const TableMention = ({tableNpi}) => {
 }
 
 const UserMention = ({mentionId, userId}: { mentionId: string, userId: number }) => {
-  const spanElementRef = useRef();
+  const spanElementRef = useRef<HTMLElement>();
   const spanElementId = `mention-${mentionId}`;
   const isTargeted = location.hash.split("#")[1] === spanElementId;
 
