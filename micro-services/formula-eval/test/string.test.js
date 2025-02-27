@@ -14,6 +14,11 @@ describe('String related formulas', () => {
     testFormula(`Concatenate(List("This", "Is", "Awesome"))`, "ThisIsAwesome");
   });
 
+  describe('Substring', () => {
+    testFormula(`Substring("This Is Awesome", 5, 7)`, "Is");
+    testFormula(`Substring("This Is Awesome", 5)`, "Is Awesome");
+  });
+
   describe('ContainsText', () => {
     testFormula(`ContainsText("a needle in the haystack", "needle")`, true);
     testFormula(`ContainsText("Trippers and askers surround me", "trip")`, false);

@@ -11,6 +11,10 @@ defineFormula("Concatenate", (...args) => {
   return {result: _.join(_.flatten(args), ""), commands: []};
 });
 
+defineFormula("Substring", (...args) => {
+  return {result: args[0].substring(args[1], args[2]), commands: []};
+});
+
 function normalizeText(text, ignoreCase, ignoreAccents) {
   if (ignoreAccents) {
     text = _.deburr(text);
