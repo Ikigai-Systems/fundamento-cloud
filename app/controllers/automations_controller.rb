@@ -51,6 +51,16 @@ class AutomationsController < ApplicationController
     end
   end
 
+  def destroy
+    @automation = @space.automations.find_by_npi!(params[:npi])
+
+    authorize @automation, :destroy?
+
+    @automation.destroy!
+
+    redirect_to space_automations_path(@space), notice: "Automation was successfully deleted."
+  end
+
   protected
 
   def load_space
