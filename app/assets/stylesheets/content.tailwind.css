@@ -3,7 +3,7 @@
         text-decoration: underline;
         cursor: pointer;
 
-        @apply text-sky-500
+        @apply text-primary-blue-500
     }
 
     .editor-container .read-only {

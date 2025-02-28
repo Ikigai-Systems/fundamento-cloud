@@ -31,20 +31,22 @@
 <% end %>
 
 <% content_for :focused_content do %>
-  <p>
-    Send data with a following command to test your automation:
-  </p>
+  <div class="px-5">
+    <p>
+      Send data with a following command to test your automation:
+    </p>
 
-  <div class="example-code-container">
-    <pre><code>FUNDAMENTO_API_TOKEN="TOKEN"; curl -X POST <%= api_v1_automation_invocations_url(@automation) %> \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $FUNDAMENTO_API_TOKEN" \
-  -d '{"test": 1}'</code></pre>
+    <div class="example-code-container">
+      <pre><code>FUNDAMENTO_API_TOKEN="TOKEN"; curl -X POST <%= api_v1_automation_invocations_url(@automation) %> \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $FUNDAMENTO_API_TOKEN" \
+    -d '{"test": 1}'</code></pre>
+    </div>
+
+    <p>
+      Visit <%= link_to "API Tokens", user_api_tokens_path(current_user), class: "default-link" %> to create API credentials.
+    </p>
   </div>
-
-  <p>
-    Visit <%= link_to "API Tokens", user_api_tokens_path(current_user) %> to create API credentials.
-  </p>
 
   <div class="table-legend">
     <div class="table-legend-description">
