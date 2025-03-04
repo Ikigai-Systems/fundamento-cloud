@@ -73,6 +73,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
           type: isStale ? "error" : "success",
           replacePrevious: true,
           key: `isStaleMessage`,
+          durationMilliseconds: isStale ? undefined : 5000,
         });
       }
       return isStale;

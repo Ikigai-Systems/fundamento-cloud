@@ -2,7 +2,8 @@ type FlashOptions = {
   key?: string,
   replacePrevious?: boolean,
   type?: "success" | "error" | "warning" | "info",
-  message: string
+  message: string,
+  durationMilliseconds?: number,
 }
 
 const createFlash = (options: FlashOptions) => {
@@ -29,6 +30,7 @@ const createFlash = (options: FlashOptions) => {
   flashesDiv.insertAdjacentHTML('beforeend', `
   <div data-flash-key="${options.key}"
       data-controller="alert"
+      ${options.durationMilliseconds !== undefined ? `data-alert-dismiss-after-value="${options.durationMilliseconds}"` : ""}
       data-transition-enter="transition-position ease-in-out duration-500"
       data-transition-enter-from="left-96"
       data-transition-enter-to="-left-8"
