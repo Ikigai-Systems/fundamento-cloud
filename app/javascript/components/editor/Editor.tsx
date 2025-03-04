@@ -70,7 +70,9 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
       if (isStale !== prevState) {
         createFlash({
           message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
-          type: isStale ? "error" : "success"
+          type: isStale ? "error" : "success",
+          replacePrevious: true,
+          key: `isStaleMessage`,
         });
       }
       return isStale;

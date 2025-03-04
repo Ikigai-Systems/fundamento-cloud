@@ -1,5 +1,6 @@
 type FlashOptions = {
   key?: string,
+  replacePrevious?: boolean,
   type?: "success" | "error" | "warning" | "info",
   message: string
 }
@@ -14,9 +15,14 @@ const createFlash = (options: FlashOptions) => {
     color = "sky";
   }
 
-  if (options.key && document.querySelector(`#flashes div[data-flash-key="${options.key}"]`) !== null) {
-    //skipping rendering flash for already displayed message
-    return
+  const previousFlash = document.querySelector(`#flashes div[data-flash-key="${options.key}"]`);
+  if (options.key &&  previousFlash !== null) {
+    if (options.replacePrevious === true) {
+      previousFlash.remove();
+    } else {
+      //skipping rendering flash for already displayed message
+      return
+    }
   }
 
   const flashesDiv = document.querySelector("#flashes");

@@ -3,12 +3,12 @@
 <% end %>
 
 <% content_for :content_menu do %>
+  <div id="editor-connection-indicator"></div>
+
   <% if @document.versions.present? %>
     <%= link_to "View current version", document_path(@document),
       class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
   <% end %>
-
-  <div id="editor-connection-indicator"></div>
 
   <%= button_to "Update", document_versions_path(@document), method: :create,
     params: {blocks: ""},
