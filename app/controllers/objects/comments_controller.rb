@@ -20,15 +20,17 @@ class Objects::CommentsController < ApplicationController
   end
 
   def create
-    authorize resource, :show?
+    @comment = resource.comments.new(create_params)
+    @comment.organization = current_organization
+    @comment.organization_user = current_organization_user
 
-    resource.comments.find_or_create_by!(
-      organization: current_organization,
-      organization_user: current_organization_user,
-      emoji: params[:reaction][:emoji],
-    )
+    authorize resource, :create?
 
-    render html: "", status: :no_content
+    if @comment.save
+      redirect_to @comment, notice: 'Comment was successfully created.'
+    else
+      render :new
+    end
   end
 
   def show
@@ -76,5 +78,9 @@ class Objects::CommentsController < ApplicationController
 
   def ensure_turbo_request
     redirect_to polymorphic_path(resource) unless turbo_frame_request?
+  end
+
+  def create_params
+    params.require(:comment).permit(:comment)
   end
 end
