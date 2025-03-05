@@ -27,9 +27,9 @@ class Objects::CommentsController < ApplicationController
     authorize resource, :create?
 
     if @comment.save
-      redirect_to @comment, notice: 'Comment was successfully created.'
+      render turbo_stream: turbo_stream.update(ObjectComment.new, "")
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 
