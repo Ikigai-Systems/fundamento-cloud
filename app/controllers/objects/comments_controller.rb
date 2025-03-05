@@ -68,8 +68,8 @@ class Objects::CommentsController < ApplicationController
     send("#{resource.model_name.singular_route_key}_comments_path", resource)
   end
 
-  def resource_comment_path(resource, reaction)
-    send("#{resource.model_name.singular_route_key}_comment_path", resource, reaction)
+  def resource_comment_path(resource, comment)
+    send("#{resource.model_name.singular_route_key}_comment_path", resource, comment)
   end
 
   def new_resource_comment_path(resource)

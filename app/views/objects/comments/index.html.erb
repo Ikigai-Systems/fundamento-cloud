@@ -1,25 +1,19 @@
 <%= turbo_frame_tag "object_comments" do %>
   <%= turbo_stream_from ["object_comments", resource] %>
 
-  <div class="object-comments-container">
-    <div class="object-current-comments-container">
-      <% @comments.each do |comment| %>
-        <div
-          data-controller="popover"
-          data-popover-url-value="<%= resource_comment_path(resource, comment) %>"
-          data-action="mouseenter->popover#show mouseleave->popover#hide"
-        >
-          <%= button_to destroyable.present? ? resource_comment_path(resource, destroyable) : "#",
-            method: :delete,
-            disabled: destroyable.nil?,
-            class: "destroy-comment-button",
-            data: { turbo_frame: "object_comments", "action" => "click->popover#hide" } do
-          %>
-            <%= comment.comment %>
-          <% end %>
-        </div>
-      <% end %>
-    </div>
+  <div class="m-3 flex flex-col gap-3">
+    <% @comments.each do |comment| %>
+      <div class="rounded-b border p-3">
+        <%= button_to resource_comment_path(resource, comment),
+          method: :delete,
+          disabled: !policy(comment).destroy?,
+          class: "destroy-comment-button",
+          data: { turbo_frame: "object_comments" } do
+        %>
+          <%= comment.comment %>
+        <% end %>
+      </div>
+    <% end %>
 
     <%= turbo_frame_tag "new_object_comment" do %>
       <%= link_to "Add comment",

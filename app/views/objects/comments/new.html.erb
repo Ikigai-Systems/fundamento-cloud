@@ -2,11 +2,12 @@
   <%= form_with scope: :comment,
     url: resource_comments_path(resource),
     method: :post,
+    html: { class: "default-form" },
     data: { turbo_frame: "new_object_comment" } do |f|
   %>
     <%= render "devise/shared/error_messages", resource: @comment %>
 
-    <div class="flex flex-col gap-3 px-3">
+    <div class="flex flex-col gap-3">
       <%= f.text_area :comment, class: "w-full" %>
 
       <%= f.submit "Add", class: "primary-button" %>
