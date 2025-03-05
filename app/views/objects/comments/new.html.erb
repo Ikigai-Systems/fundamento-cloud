@@ -4,12 +4,10 @@
     method: :post,
     data: { turbo_frame: "new_object_comment" } do |f|
   %>
-    <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
+    <div class="flex flex-col gap-3 px-3">
+      <%= f.text_area :comment, class: "w-full" %>
 
-    <button class="create-reaction-button" data-action="click->emoji-picker#showPicker">
-      <i class="fa-sharp fa-solid fa-face-awesome"></i>
-    </button>
-
-    <div data-emoji-picker-target="pickerContainer"></div>
+      <%= f.submit "Add", class: "primary-button" %>
+    </div>
   <% end %>
 <% end %>
