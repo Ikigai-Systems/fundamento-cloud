@@ -33,3 +33,7 @@
 </article>
 
 <%= turbo_frame_tag "object_reactions", src: table_reactions_path(@table), loading: "lazy" %>
+
+<% if Flipper.enabled?(:comments) %>
+  <%= turbo_frame_tag "object_comments", src: table_comments_path(@table), loading: "lazy" %>
+<% end %>

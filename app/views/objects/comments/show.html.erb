@@ -1,0 +1,10 @@
+<div data-popover-target="card" class="absolute max-w-xs bg-grey-light border rounded p-2">
+  <div class="flex-col">
+    <% @comments.each do |comment| %>
+      <div>
+        <%= comment.organization_user.display_name %>
+        <%= time_ago_in_words comment.created_at %>
+      </div>
+    <% end %>
+  </div>
+</div>

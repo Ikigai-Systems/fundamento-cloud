@@ -52,6 +52,7 @@ Rails.application.routes.draw do
     resources :documents, path: "d", param: :npi do
       resources :versions, module: :documents, only: [:create, :index, :show]
       resources :reactions, module: :documents, only: [:create, :index, :show, :destroy]
+      resources :comments, module: :documents
 
       member do
         get :select_destination
@@ -68,6 +69,7 @@ Rails.application.routes.draw do
         resources :cells
       end
       resources :reactions, only: [:create, :index, :show, :destroy]
+      resources :comments, module: :documents
 
       member do
         put :update_by_rowstack

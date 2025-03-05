@@ -62,3 +62,7 @@
 </article>
 
 <%= turbo_frame_tag "object_reactions", src: document_reactions_path(@document), loading: "lazy" %>
+
+<% if Flipper.enabled?(:comments) %>
+  <%= turbo_frame_tag "object_comments", src: document_comments_path(@document), loading: "lazy" %>
+<% end %>
