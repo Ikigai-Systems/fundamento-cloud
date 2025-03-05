@@ -21,14 +21,11 @@
       <% end %>
     </div>
 
-    <%= form_with scope: :comment,
-      url: resource_comments_path(resource),
-      method: :post,
-      data: { turbo_frame: "object_comments" } do |f|
-    %>
-      <button class="primary-button">
-        Add comment
-      </button>
+    <%= turbo_frame_tag "new_object_comment" do %>
+      <%= link_to "Add comment",
+        new_resource_comment_path(resource),
+        class: "primary-button"
+      %>
     <% end %>
   </div>
 <% end %>

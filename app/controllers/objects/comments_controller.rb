@@ -9,6 +9,7 @@ class Objects::CommentsController < ApplicationController
   helper_method :resource
   helper_method :resource_comments_path
   helper_method :resource_comment_path
+  helper_method :new_resource_comment_path
 
   def index
     authorize resource, :show?
@@ -39,6 +40,14 @@ class Objects::CommentsController < ApplicationController
     render "objects/comments/show"
   end
 
+  def new
+    authorize resource, :create?
+
+    @comment = resource.comments.new
+
+    render "objects/comments/new"
+  end
+
   def destroy
     authorize resource, :show?
 
@@ -59,6 +68,10 @@ class Objects::CommentsController < ApplicationController
 
   def resource_comment_path(resource, reaction)
     send("#{resource.model_name.singular_route_key}_comment_path", resource, reaction)
+  end
+
+  def new_resource_comment_path(resource)
+    send("new_#{resource.model_name.singular_route_key}_comment_path", resource)
   end
 
   def ensure_turbo_request
