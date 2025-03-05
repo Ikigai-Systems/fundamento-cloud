@@ -29,6 +29,7 @@ import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
 import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
 import FormulaInlineContentMenuItem from "./inline-content/FormulaInlineContentMenuItem.tsx";
+import LoadingContent from "./LoadingContent.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -49,12 +50,6 @@ type EditorProps = {
   editable?: boolean,
 }
 
-const LoadingContent = () => {
-  return <div className="pl-[3.4rem] pb-1 mt-5 flex gap-2">
-    <span className="animate-spin size-5 icon-[heroicons--arrow-path]"></span>
-    Loading content...
-  </div>;
-}
 
 const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);

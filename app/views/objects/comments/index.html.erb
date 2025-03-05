@@ -3,21 +3,19 @@
 
   <div class="m-3 flex flex-col gap-3">
     <% @comments.each do |comment| %>
-      <div class="rounded-b border p-3">
-        <%= button_to resource_comment_path(resource, comment),
-          method: :delete,
-          disabled: !policy(comment).destroy?,
-          class: "destroy-comment-button",
-          data: { turbo_frame: "object_comments" } do
-        %>
-          <%= comment.comment %>
-        <% end %>
+      <div class="rounded-b border">
+        <%= react_component "EditCommentPanel", {
+          document: @document.attributes.except("sync"),
+          comment: comment.comment,
+          editable: false,
+          space: @space.to_react_props,
+        } %>
       </div>
     <% end %>
 
     <%= turbo_frame_tag ObjectComment.new %>
 
-    <%= turbo_frame_tag "new_object_comment" do %>
+    <%= turbo_frame_tag "add_object_comment" do %>
       <%= link_to "Add comment",
         new_resource_comment_path(resource),
         data: { turbo_frame: dom_id(ObjectComment.new) },

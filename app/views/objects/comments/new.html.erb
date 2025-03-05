@@ -2,13 +2,29 @@
   <%= form_with scope: :comment,
     url: resource_comments_path(resource),
     method: :post,
-    html: { class: "default-form" },
+    html: {
+      class: "default-form",
+      data: {
+        controller: "serialize-blocknote",
+        "serialize-blocknote-editor-value": "commentEditor",
+      }
+
+    },
     data: { turbo_frame: "new_object_comment" } do |f|
   %>
     <%= render "devise/shared/error_messages", resource: @comment %>
 
+    <%= f.hidden_field :comment, data: { target: "serialize-blocknote.field" } %>
+
     <div class="flex flex-col gap-3">
-      <%= f.text_area :comment, class: "w-full" %>
+      <div class="rounded-b border">
+        <%= react_component "EditCommentPanel", {
+          document: @document.attributes.except("sync"),
+          space: @space.to_react_props,
+          current_user: current_user,
+          database_id: database_id,
+        } %>
+      </div>
 
       <%= f.submit "Add", class: "primary-button" %>
     </div>

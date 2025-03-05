@@ -63,6 +63,9 @@ application.register("hotkey", HotkeyController);
 import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controller.js";
 application.register("emoji-picker", EmojiPickerController);
 
+import SerializeBlockNote from "@/stimulus/controllers/serialize_blocknote_controller.js";
+application.register("serialize-blocknote", SerializeBlockNote);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application
