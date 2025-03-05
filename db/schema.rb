@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_30_122955) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_05_085649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -257,6 +257,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_122955) do
     t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_invited_users_on_invited_by"
     t.index ["organization_id"], name: "index_invited_users_on_organization_id"
+  end
+
+  create_table "object_comments", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "organization_user_id", null: false
+    t.string "object_type", null: false
+    t.bigint "object_id", null: false
+    t.json "comment", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
+    t.index ["organization_id"], name: "index_object_comments_on_organization_id"
+    t.index ["organization_user_id"], name: "index_object_comments_on_organization_user_id"
   end
 
   create_table "object_reactions", force: :cascade do |t|
@@ -551,6 +564,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_30_122955) do
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"
   add_foreign_key "invited_users", "organizations"
+  add_foreign_key "object_comments", "organization_users"
+  add_foreign_key "object_comments", "organizations"
   add_foreign_key "object_reactions", "organization_users"
   add_foreign_key "object_reactions", "organizations"
   add_foreign_key "organization_user_properties", "organization_users"
