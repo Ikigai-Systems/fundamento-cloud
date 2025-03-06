@@ -24,7 +24,7 @@
     })();
   <% end %>
 
-  <% separator_index = @last_mention_seen_at.nil? ? 0 : @mentions.index { |m| m[:version].created_at < @last_mention_seen_at } %>
+  <% separator_index = @last_mention_seen_at.nil? ? 0 : @mentions.index { |mention| mention.created_at < @last_mention_seen_at } %>
 
   <div id="mentions_list">
     <% @mentions.each_with_index do |mention, index| %>
