@@ -5,8 +5,8 @@ class MentionsExtractor
   def self.get_all_mentions(documents, user)
     all_mentions_by_id = Hash.new
 
-    documents.includes(:versions).each do |document|
-      document_versions = document.versions.order(:sequential_id)
+    documents.each do |document|
+      document_versions = document.versions.order(sequential_id: :desc)
       document_versions.each do |version|
         mentions_ids = mentions_from_blocknote(version.content, user)
         mentions_ids.each do |mention_id|
@@ -17,7 +17,7 @@ class MentionsExtractor
               mention_id: mention_id,
               created_at: version.created_at,
               object_title: document.title,
-              object_path: version  == document.versions.first ?
+              object_path: version  == document_versions.first ?
                   document_path(document, anchor: "mention-#{mention_id}") :
                   document_version_path(document, version, anchor: "mention-#{mention_id}")
             )
