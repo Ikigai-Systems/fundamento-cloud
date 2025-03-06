@@ -1,15 +1,10 @@
 class MentionsExtractor
   def self.get_all_mentions(documents, user)
     all_mentions = []
+
     documents.includes(:versions).each do |document|
       document.versions.each do |version|
-        version.content.each do |block|
-          each_mention(block) do |mention|
-            if mention.dig("props", "entity") == "user" && mention.dig("props", "entityId") == user.id
-              all_mentions.push(mention.merge({ version: version }))
-            end
-          end
-        end
+        all_mentions.concat(mentions_from_blocknote(user, version.content, version))
       end
     end
 
@@ -21,6 +16,22 @@ class MentionsExtractor
   end
 
   private
+
+  def self.mentions_from_blocknote(user, blocknote_document, version)
+    assert blocknote_document.is_a?(Array), "BlockNote document should be an Array"
+
+    all_mentions = []
+
+    blocknote_document.each do |block|
+      each_mention(block) do |mention|
+        if mention.dig("props", "entity") == "user" && mention.dig("props", "entityId") == user.id
+          all_mentions.push(mention.merge({ version: version }))
+        end
+      end
+    end
+
+    all_mentions
+  end
 
   def self.each_mention(node, &block)
     return unless node.is_a? Hash
