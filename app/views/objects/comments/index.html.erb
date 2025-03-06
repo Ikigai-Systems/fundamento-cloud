@@ -9,11 +9,15 @@
     <%= turbo_frame_tag ObjectComment.new %>
 
     <%= turbo_frame_tag "add_object_comment" do %>
-      <%= link_to "Add comment",
+      <%= link_to(
         new_resource_comment_path(resource),
         data: { turbo_frame: dom_id(ObjectComment.new) },
-        class: "secondary-button"
+        class: "secondary-button gap-1"
+      ) do
       %>
+        <i class="fa fa-comment"></i>
+        Comment
+      <% end %>
     <% end %>
   </div>
 <% end %>
