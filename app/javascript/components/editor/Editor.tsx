@@ -1,6 +1,6 @@
 import {useEffect, useMemo, useState} from "react";
 import {User} from "../../types";
-import {BlockNoteEditor, filterSuggestionItems} from "@blocknote/core";
+import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -8,28 +8,16 @@ import {WebsocketProvider} from "@y-rb/actioncable";
 import * as ActionCable from "@rails/actioncable";
 import useInterval from "../../hooks/useInterval"
 import {
-  BlockColorsItem,
-  DragHandleMenu,
-  getDefaultReactSlashMenuItems,
-  RemoveBlockItem,
-  SideMenu,
-  SideMenuController,
-  SuggestionMenuController,
   useSelectedBlocks,
 } from "@blocknote/react";
 import schema from "./schema";
-import {getMentionMenuItems} from "./inline-content/mentionMenuItems.ts";
-import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
-import ChartBlockMenuItem from "./blocks/ChartBlockMenuItem.tsx";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
 import "./editor-styles.css";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
-import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
-import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
-import FormulaInlineContentMenuItem from "./inline-content/FormulaInlineContentMenuItem.tsx";
 import LoadingContent from "./LoadingContent.tsx";
+import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
@@ -49,7 +37,6 @@ type EditorProps = {
   documentId: number,
   editable?: boolean,
 }
-
 
 const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
@@ -159,8 +146,6 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
     return blockNoteEditor;
   }, [documentId]);
 
-  const selectedBlocks = useSelectedBlocks(editor);
-
   if (editor === undefined || !initialStateReceived) {
     return <LoadingContent/>
   }
@@ -168,55 +153,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
   return <>
     <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable}>
       {/* Replaces the default Slash Menu. */}
-      <SuggestionMenuController
-        triggerCharacter={"/"}
-        getItems={async (query) => {
-          // Gets all default slash menu items and `insertAlert` item.
-          let defaultTableMenuItem = undefined;
-          const itemsWithoutTable = getDefaultReactSlashMenuItems(editor).filter(defaultMenuItem => {
-            if (defaultMenuItem.key === 'table') {
-              defaultTableMenuItem = defaultMenuItem;
-              return false;
-            } else {
-              return true;
-            }
-          });
-          defaultTableMenuItem.title = "Grid table";
-          defaultTableMenuItem.subtext = "Simple rows and columns formatting";
-
-          return filterSuggestionItems(
-            [
-              ...itemsWithoutTable,
-              defaultTableMenuItem,
-              AdvancedTableMenuItem(),
-              ChartBlockMenuItem(),
-              ButtonInlineContentMenuItem(),
-              FormulaInlineContentMenuItem(),
-            ],
-            query
-          )
-        }}
-      />
-      <SuggestionMenuController
-        // Gets the mentions menu items
-        triggerCharacter={"@"}
-        getItems={async (query) =>
-          filterSuggestionItems(await getMentionMenuItems(), query)
-        }
-      />
-      <SideMenuController
-        sideMenu={(props) => (
-          <SideMenu {...props}
-            dragHandleMenu={(props) => (
-              <DragHandleMenu {...props}>
-                <TurnIntoItem {...props}>Turn into</TurnIntoItem>
-                <RemoveBlockItem {...props}>Delete</RemoveBlockItem>
-                <BlockColorsItem {...props}>Colors</BlockColorsItem>
-              </DragHandleMenu>
-            )}
-          />
-        )}
-      />
+      <CommonSuggestionMenus editor={editor}/>
     </BlockNoteView>
   </>
 }
