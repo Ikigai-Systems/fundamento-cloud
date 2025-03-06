@@ -9,7 +9,7 @@ class ObjectReaction < ApplicationRecord
     broadcast_action_to(
       [:object_reactions, object_reaction.object],
       action: :reload_turbo_frame,
-      target: "#object_reactions",
+      target: "#" + ActionView::RecordIdentifier.dom_id(object_reaction.object, :reactions),
       render: false
     )
   }
