@@ -1,4 +1,6 @@
 class ObjectComment < ApplicationRecord
+  ALLOWED_OBJECT_TYPES = %w[Document Table]
+
   belongs_to :organization
   belongs_to :organization_user
   belongs_to :object, polymorphic: true
@@ -11,6 +13,9 @@ class ObjectComment < ApplicationRecord
       render: false
     )
   }
+
+  validates_presence_of :object
+  validates :object_type, inclusion: { in: ALLOWED_OBJECT_TYPES }
 
   validates_presence_of :content
 
