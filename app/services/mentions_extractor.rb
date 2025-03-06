@@ -10,8 +10,12 @@ class MentionsExtractor
       document_versions.each do |version|
         mentions_ids = mentions_from_blocknote(version.content, user)
         mentions_ids.each do |mention_id|
-          # We assume mention was created in the oldest version it was referenced so we skip all subsequent versions
-          unless all_mentions_by_id.has_key?(mention_id)
+          # We assume mention was created in the oldest version it was referenced ever so we skip all subsequent versions,
+          # unless the mention is still present in the most recent (current) version - in that case we want to provide link
+          # to the current Document view page instead of to the historical Version page
+          if all_mentions_by_id.has_key?(mention_id) && version == document_versions.last
+            all_mentions_by_id[mention_id].object_path = document_path(document, anchor: "mention-#{mention_id}")
+          else
             all_mentions_by_id[mention_id] = Mention.new(
               mention_id: mention_id,
               created_at: version.created_at,
