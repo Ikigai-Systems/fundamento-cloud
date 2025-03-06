@@ -13,8 +13,10 @@ class MentionsExtractor
           # We assume mention was created in the oldest version it was referenced ever so we skip all subsequent versions,
           # unless the mention is still present in the most recent (current) version - in that case we want to provide link
           # to the current Document view page instead of to the historical Version page
-          if all_mentions_by_id.has_key?(mention_id) && version == document_versions.last
-            all_mentions_by_id[mention_id].object_path = document_path(document, anchor: "mention-#{mention_id}")
+          if all_mentions_by_id.has_key?(mention_id)
+            if version == document_versions.last
+              all_mentions_by_id[mention_id].object_path = document_path(document, anchor: "mention-#{mention_id}")
+            end
           else
             all_mentions_by_id[mention_id] = Mention.new(
               mention_id: mention_id,
