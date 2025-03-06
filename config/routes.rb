@@ -69,7 +69,7 @@ Rails.application.routes.draw do
         resources :cells
       end
       resources :reactions, only: [:create, :index, :show, :destroy]
-      resources :comments, module: :documents
+      resources :comments
 
       member do
         put :update_by_rowstack
