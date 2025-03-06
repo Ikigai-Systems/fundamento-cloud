@@ -24,6 +24,21 @@ class MentionsExtractor
           end
         end
       end
+
+      document_comments = document.comments.order(created_at: :desc)
+      document_comments.each do |comment|
+        mentions_ids = mentions_from_blocknote(comment.comment, user)
+        mentions_ids.each do |mention_id|
+          unless all_mentions_by_id.has_key?(mention_id)
+            all_mentions_by_id[mention_id] = Mention.new(
+              mention_id: mention_id,
+              created_at: comment.created_at,
+              object_title: document.title,
+              object_path: document_path(document, anchor: "mention-#{mention_id}")
+            )
+          end
+        end
+      end
     end
 
     all_mentions_by_id.values

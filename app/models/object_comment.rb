@@ -13,4 +13,14 @@ class ObjectComment < ApplicationRecord
   }
 
   validates_presence_of :comment
+
+  def comment
+    # FIXME: workaround for serialization problem
+    comment = super
+    if comment.is_a?(String)
+      JSON.parse(comment)
+    else
+      comment
+    end
+  end
 end

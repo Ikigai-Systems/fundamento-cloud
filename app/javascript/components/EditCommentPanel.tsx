@@ -17,7 +17,7 @@ const EditCommentPanel = ({document, space, editable, comment}: EditCommentPanel
       <CommentEditor
         documentId={document.id}
         editable={editable}
-        comment={comment && JSON.parse(comment)}
+        comment={comment}
       />
     </CurrentSpaceContext.Provider>
   </QueryClientProvider>
