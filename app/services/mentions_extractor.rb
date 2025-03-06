@@ -6,18 +6,17 @@ class MentionsExtractor
     all_mentions_by_id = Hash.new
 
     documents.each do |document|
-      document_versions = document.versions.order(sequential_id: :desc)
+      document_versions = document.versions.order(sequential_id: :asc)
       document_versions.each do |version|
         mentions_ids = mentions_from_blocknote(version.content, user)
         mentions_ids.each do |mention_id|
-          # As we go through all versions from the newest to the oldest store only
-          # the latest version given mention was included in, and skip all previous versions
+          # We assume mention was created in the oldest version it was referenced so we skip all subsequent versions
           unless all_mentions_by_id.has_key?(mention_id)
             all_mentions_by_id[mention_id] = Mention.new(
               mention_id: mention_id,
               created_at: version.created_at,
               object_title: document.title,
-              object_path: version  == document_versions.first ?
+              object_path: version  == document_versions.last ?
                   document_path(document, anchor: "mention-#{mention_id}") :
                   document_version_path(document, version, anchor: "mention-#{mention_id}")
             )
