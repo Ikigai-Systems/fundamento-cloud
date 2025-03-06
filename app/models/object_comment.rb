@@ -5,6 +5,8 @@ class ObjectComment < ApplicationRecord
   belongs_to :organization_user
   belongs_to :object, polymorphic: true
 
+  has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
+
   after_commit -> (object_comment) {
     broadcast_action_to(
       [:object_comments, object_comment.object],
