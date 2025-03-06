@@ -90,6 +90,7 @@ Rails.application.routes.draw do
     end
 
     resources :public_links
+    resources :reactions, only: [:create, :index, :show, :destroy]
 
     get "/public/:npi" => "public#show"
     get "/public/attachments/:id" => "public#attachment"
