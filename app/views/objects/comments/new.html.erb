@@ -14,7 +14,7 @@
   %>
     <%= render "devise/shared/error_messages", resource: @comment %>
 
-    <%= f.hidden_field :comment, data: { target: "serialize-blocknote.field" } %>
+    <%= f.hidden_field :content, data: { target: "serialize-blocknote.field" } %>
 
     <div class="flex flex-col gap-3">
       <div class="rounded-b border">

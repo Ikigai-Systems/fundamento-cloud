@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_05_085649) do
+ActiveRecord::Schema[7.1].define(version: 2025_03_06_165914) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -264,7 +264,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_05_085649) do
     t.bigint "organization_user_id", null: false
     t.string "object_type", null: false
     t.bigint "object_id", null: false
-    t.json "comment", null: false
+    t.json "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"

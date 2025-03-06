@@ -81,6 +81,6 @@ class Objects::CommentsController < ApplicationController
   end
 
   def create_params
-    params.require(:comment).permit(:comment)
+    params.require(:comment).permit(:content)
   end
 end
