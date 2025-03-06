@@ -6,11 +6,11 @@ class ObjectCommentPolicy < ApplicationPolicy
   end
 
   def show?
-    Pundit.policy!(user_context, record.space).show?
+    Pundit.policy!(user_context, record.object).show?
   end
 
   def create?
-    Pundit.policy!(user_context, record.space).show?
+    Pundit.policy!(user_context, record.object).show?
   end
 
   def update?
