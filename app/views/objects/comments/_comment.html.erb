@@ -1,8 +1,13 @@
-<div class="rounded-b border">
-  <%= react_component "EditCommentPanel", {
-    document: document.attributes.except("sync"),
-    comment: comment.content,
-    editable: false,
-    space: space.to_react_props,
-  } %>
+<div class="rounded-xl border flex flex-row bg-gray-100 pt-3">
+  <div class="pl-3">
+    <%= render OrganizationUserAvatarComponent.new(organization_user: comment.organization_user) %>
+  </div>
+  <div>
+    <%= react_component "EditCommentPanel", {
+      document: document.attributes.except("sync"),
+      comment: comment.content,
+      editable: false,
+      space: space.to_react_props,
+    } %>
+  </div>
 </div>
