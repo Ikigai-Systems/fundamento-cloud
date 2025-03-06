@@ -1,0 +1,8 @@
+<div class="rounded-b border">
+  <%= react_component "EditCommentPanel", {
+    document: document.attributes.except("sync"),
+    comment: comment.comment,
+    editable: false,
+    space: space.to_react_props,
+  } %>
+</div>

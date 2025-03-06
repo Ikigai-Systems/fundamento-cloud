@@ -3,14 +3,7 @@
 
   <div class="m-3 flex flex-col gap-3">
     <% @comments.each do |comment| %>
-      <div class="rounded-b border">
-        <%= react_component "EditCommentPanel", {
-          document: @document.attributes.except("sync"),
-          comment: comment.comment,
-          editable: false,
-          space: @space.to_react_props,
-        } %>
-      </div>
+      <%= render partial: "comment", locals: { comment: comment, document: @document, space: @space } %>
     <% end %>
 
     <%= turbo_frame_tag ObjectComment.new %>
