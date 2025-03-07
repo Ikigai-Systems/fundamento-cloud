@@ -18,5 +18,5 @@
     } %>
   </div>
 
-  <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_type: comment.class.to_s, object_id: comment.id), loading: "lazy" %>
+  <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>
 </div>

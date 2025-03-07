@@ -3,12 +3,20 @@ class ReactionsController < Objects::ReactionsController
   protected
 
   def load_resource
-    unless ObjectReaction::ALLOWED_OBJECT_TYPES.include?(params[:object_type])
-      return head :unprocessable_entity
-    end
+    if params[:object_gid]
+      @resource = GlobalID::Locator.locate(params[:object_gid], only: ObjectReaction::ALLOWED_OBJECT_TYPES.map(&:constantize))
 
-    @resource = params[:object_type].constantize.
-      find_by_param!(params[:object_id])
+      if @resource.nil? || @resource.organization != current_organization
+        return head :unprocessable_entity
+      end
+    else
+      unless ObjectReaction::ALLOWED_OBJECT_TYPES.include?(params[:object_type])
+        return head :unprocessable_entity
+      end
+
+      @resource = params[:object_type].constantize.
+        find_by_param!(params[:object_id])
+    end
   end
 
   def resource_reactions_path(resource)
