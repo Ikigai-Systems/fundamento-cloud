@@ -6,10 +6,10 @@
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
         <div
           data-controller="popover"
-          data-popover-url-value="<%= resource_reaction_path(resource, reaction) %>"
+          data-popover-url-value="<%= reaction_path(reaction, object_gid: resource.to_gid_param) %>"
           data-action="mouseenter->popover#show mouseleave->popover#hide"
         >
-          <%= button_to destroyable.present? ? resource_reaction_path(resource, destroyable) : "#",
+          <%= button_to destroyable.present? ? reaction_path(destroyable, object_gid: resource.to_gid_param) : "#",
             method: :delete,
             disabled: destroyable.nil?,
             class: "destroy-reaction-button",
@@ -23,7 +23,7 @@
     </div>
 
     <%= form_with scope: :reaction,
-      url: resource_reactions_path(resource),
+      url: reactions_path(object_gid: resource.to_gid_param),
       method: :post,
       data: { "controller" => "emoji-picker", turbo_frame: dom_id(resource, :reactions) } do |f|
     %>
