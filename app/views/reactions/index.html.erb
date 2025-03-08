@@ -1,19 +1,19 @@
-<%= turbo_frame_tag resource, :reactions do %>
-  <%= turbo_stream_from ["object_reactions", resource] %>
+<%= turbo_frame_tag @resource, :reactions do %>
+  <%= turbo_stream_from ["object_reactions", @resource] %>
 
   <div class="object-reactions-container relative">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
         <div
           data-controller="popover"
-          data-popover-url-value="<%= reaction_path(reaction, object_gid: resource.to_gid_param) %>"
+          data-popover-url-value="<%= reaction_path(reaction, object_gid: @resource.to_gid_param) %>"
           data-action="mouseenter->popover#show mouseleave->popover#hide"
         >
-          <%= button_to destroyable.present? ? reaction_path(destroyable, object_gid: resource.to_gid_param) : "#",
+          <%= button_to destroyable.present? ? reaction_path(destroyable, object_gid: @resource.to_gid_param) : "#",
             method: :delete,
             disabled: destroyable.nil?,
             class: "destroy-reaction-button",
-            data: { turbo_frame: dom_id(resource, :reactions), "action" => "click->popover#hide" } do
+            data: { turbo_frame: dom_id(@resource, :reactions), "action" => "click->popover#hide" } do
           %>
             <%= emoji %>
             <span class="reaction-count"><%= count %></span>
@@ -23,9 +23,9 @@
     </div>
 
     <%= form_with scope: :reaction,
-      url: reactions_path(object_gid: resource.to_gid_param),
+      url: reactions_path(object_gid: @resource.to_gid_param),
       method: :post,
-      data: { "controller" => "emoji-picker", turbo_frame: dom_id(resource, :reactions) } do |f|
+      data: { "controller" => "emoji-picker", turbo_frame: dom_id(@resource, :reactions) } do |f|
     %>
       <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
 
