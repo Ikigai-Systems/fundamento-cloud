@@ -51,7 +51,6 @@ Rails.application.routes.draw do
 
     resources :documents, path: "d", param: :npi do
       resources :versions, module: :documents, only: [:create, :index, :show]
-      resources :comments, module: :documents
 
       member do
         get :select_destination
@@ -67,7 +66,6 @@ Rails.application.routes.draw do
       resources :rows do
         resources :cells
       end
-      resources :comments
 
       member do
         put :update_by_rowstack
@@ -89,6 +87,7 @@ Rails.application.routes.draw do
 
     resources :public_links
     resources :reactions, only: [:create, :index, :show, :destroy]
+    resources :comments
 
     get "/public/:npi" => "public#show"
     get "/public/attachments/:id" => "public#attachment"

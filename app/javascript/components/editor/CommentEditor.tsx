@@ -10,17 +10,17 @@ import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 
 type CommentEditorProps = {
-  documentId: number,
+  objectId: number,
   comment: any,
   editable?: boolean,
 }
 
-const CommentEditor = ({documentId, comment, editable = true}: CommentEditorProps) => {
+const CommentEditor = ({objectId, comment, editable = true}: CommentEditorProps) => {
   const editor = useMemo(() => {
     const commentEditor = BlockNoteEditor.create({
       schema,
       initialContent: comment,
-      uploadFile: uploadFile(documentId),
+      uploadFile: uploadFile(objectId),
       resolveFileUrl: createFileUrlResolver(),
     });
 

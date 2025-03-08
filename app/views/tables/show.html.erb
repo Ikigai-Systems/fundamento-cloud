@@ -35,5 +35,5 @@
 <%= turbo_frame_tag @table, :reactions, src: reactions_path(object_gid: @table.to_gid_param), loading: "lazy" %>
 
 <% if Flipper.enabled?(:comments) %>
-  <%= turbo_frame_tag "object_comments", src: table_comments_path(@table), loading: "lazy" %>
+  <%= turbo_frame_tag "object_comments", src: comments_path(object_gid: @table.to_gid_param), loading: "lazy" %>
 <% end %>

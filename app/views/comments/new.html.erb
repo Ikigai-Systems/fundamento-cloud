@@ -1,6 +1,6 @@
 <%= turbo_frame_tag "new_object_comment" do %>
   <%= form_with scope: :comment,
-    url: resource_comments_path(resource),
+    url: comments_path(object_gid: @resource.to_gid_param),
     method: :post,
     html: {
       class: "default-form",
@@ -19,8 +19,8 @@
     <div class="flex flex-col gap-3">
       <div class="rounded-b border">
         <%= react_component "EditCommentPanel", {
-          document: @document.attributes.except("sync"),
-          space: @space.to_react_props,
+          object: @resource.to_react_props,
+          space: @resource.space.to_react_props,
           current_user: current_user,
           database_id: database_id,
         } %>
