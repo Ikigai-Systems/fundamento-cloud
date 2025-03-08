@@ -24,7 +24,7 @@ export type User = {
 export type Table = {
   archived: boolean,
   createdAt: string, //date
-  id: string,
+  id: number,
   npi: string,
   name: string,
   organizationId: number,
