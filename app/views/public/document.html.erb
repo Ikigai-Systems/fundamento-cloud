@@ -1,7 +1,7 @@
 <% content_for :focused_content do %>
   <div class="bg-white overflow-auto">
     <%= react_component "PublicDocumentViewer", {
-      document: document.attributes.except("sync"),
+      document: document.to_react_props,
       version: version.attributes.except("id"),
       space: document.space.to_react_props
     }

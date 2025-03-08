@@ -20,7 +20,7 @@
 
 <article class="document">
   <%= react_component "EditDocumentPanel", {
-    document: @document.attributes.except("sync"),
+    document: @document.to_react_props,
     space: @space.to_react_props,
     current_user: current_user,
     database_id: database_id,

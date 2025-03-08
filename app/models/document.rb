@@ -6,6 +6,9 @@ class Document < ApplicationRecord
   set_allow_fallback_to_id true
   set_attach_to_param :title
 
+  include ToReactProps
+  set_react_props :id, :npi, :title
+
   belongs_to :organization
   belongs_to :space
 

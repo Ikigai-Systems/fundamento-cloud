@@ -11,7 +11,7 @@
 
   <div>
     <%= react_component "EditCommentPanel", {
-      document: document.attributes.except("sync"),
+      object: resource.to_react_props,
       comment: comment.content,
       editable: false,
       space: space.to_react_props,
