@@ -1,0 +1,21 @@
+<div class="m-3 flex flex-col gap-3">
+  <%= turbo_frame_tag "object_comments", src: comments_path(object_gid: resource.to_gid_param), loading: "lazy" %>
+
+  <% if policy(resource.comments.new).create? %>
+    <div>
+      <%= turbo_frame_tag ObjectComment.new %>
+
+      <%= turbo_frame_tag "add_object_comment" do %>
+        <%= link_to(
+              new_comment_path(object_gid: resource.to_gid_param),
+              data: { turbo_frame: dom_id(ObjectComment.new) },
+              class: "secondary-button gap-1"
+            ) do
+        %>
+          <i class="fa fa-comment"></i>
+          Comment
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
