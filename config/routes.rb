@@ -51,7 +51,6 @@ Rails.application.routes.draw do
 
     resources :documents, path: "d", param: :npi do
       resources :versions, module: :documents, only: [:create, :index, :show]
-      resources :reactions, module: :documents, only: [:create, :index, :show, :destroy]
       resources :comments, module: :documents
 
       member do
@@ -68,7 +67,6 @@ Rails.application.routes.draw do
       resources :rows do
         resources :cells
       end
-      resources :reactions, only: [:create, :index, :show, :destroy]
       resources :comments
 
       member do
