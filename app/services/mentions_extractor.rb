@@ -5,16 +5,16 @@ class MentionsExtractor
   def self.get_all_mentions(documents, user)
     all_mentions_by_id = Hash.new
 
-    documents.each do |document|
-      document_versions = document.versions.order(sequential_id: :asc)
-      document_versions.each do |version|
+    documents.includes(:versions).order('versions.sequential_id': :asc).each do |document|
+      most_recent_version = document.versions.last
+      document.versions.each do |version|
         mentions_ids = mentions_from_blocknote(version.content, user)
         mentions_ids.each do |mention_id|
           # We assume mention was created in the oldest version it was referenced ever so we skip all subsequent versions,
           # unless the mention is still present in the most recent (current) version - in that case we want to provide link
           # to the current Document view page instead of to the historical Version page
           if all_mentions_by_id.has_key?(mention_id)
-            if version == document_versions.last
+            if version == most_recent_version
               all_mentions_by_id[mention_id].object_path = document_path(document, anchor: "mention-#{mention_id}")
             end
           else
@@ -22,16 +22,17 @@ class MentionsExtractor
               mention_id: mention_id,
               created_at: version.created_at,
               object_title: document.title,
-              object_path: version  == document_versions.last ?
+              object_path: version  == most_recent_version ?
                   document_path(document, anchor: "mention-#{mention_id}") :
                   document_version_path(document, version, anchor: "mention-#{mention_id}")
             )
           end
         end
       end
+    end
 
-      document_comments = document.comments.order(created_at: :desc)
-      document_comments.each do |comment|
+    documents.includes(:comments).order('object_comments.created_at': :desc).each do |document|
+      document.comments.each do |comment|
         mentions_ids = mentions_from_blocknote(comment.content, user)
         mentions_ids.each do |mention_id|
           unless all_mentions_by_id.has_key?(mention_id)
