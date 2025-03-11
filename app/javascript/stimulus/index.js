@@ -66,6 +66,9 @@ application.register("emoji-picker", EmojiPickerController);
 import SerializeBlockNote from "@/stimulus/controllers/serialize_blocknote_controller.js";
 application.register("serialize-blocknote", SerializeBlockNote);
 
+import CommandPaletteController from "./controllers/command_palette_controller.ts";
+application.register("command-palette", CommandPaletteController);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application
