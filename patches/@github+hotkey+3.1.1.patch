@@ -1,0 +1,12 @@
+diff --git a/node_modules/@github/hotkey/dist/index.js b/node_modules/@github/hotkey/dist/index.js
+index ce8fa83..e098eb0 100644
+--- a/node_modules/@github/hotkey/dist/index.js
++++ b/node_modules/@github/hotkey/dist/index.js
+@@ -311,6 +311,7 @@ function isFormField(element) {
+     const name = element.nodeName.toLowerCase();
+     const type = (element.getAttribute('type') || '').toLowerCase();
+     return (name === 'select' ||
++        name === 'ninja-keys' ||
+         name === 'textarea' ||
+         (name === 'input' &&
+             type !== 'submit' &&
