@@ -1,5 +1,7 @@
-import {Controller} from "@hotwired/stimulus"
-import "ninja-keys"
+import {Controller} from "@hotwired/stimulus";
+import "ninja-keys";
+import {debounce} from "lodash";
+import DocumentsApi from "../../api/DocumentsApi.js";
 
 // Connects to data-controller="command-palette"
 export default class CommandPaletteController extends Controller {
@@ -8,19 +10,36 @@ export default class CommandPaletteController extends Controller {
   }
 
   connect() {
-    this.element.addEventListener("change", this.handleChange);
+    this.element.addEventListener("change", debounce(this.handleChange.bind(this), 300));
     this.element.addEventListener("selected", this.handleSelected);
 
     this.element.data = defaultCommands;
   }
 
-  handleChange(ev) {
-    //  { detail: { search: string } }
-    // console.log(ev.detail.search);
+  async handleChange(e) {
+    // console.log(e.detail.search);
+
+    // todo: while we don't narrow down query for specific documents and instead we retrieve all, let's cache results:
+    if (this._cachedResults) {
+      return;
+    }
+    const documents = await DocumentsApi.index(); //todo: use e.detail.search as query parameter to narrow down documents in response
+
+    this.element.data = this.element.data.filter(command => {
+      return !command.id.startsWith("documentSearch#");
+    }).concat(documents.map(document => ({
+      id: `documentSearch#${document.npi}`,
+      title: document.title,
+      section: "Documents",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9"/></svg>',
+      handler: () => {
+        Turbo.visit(DocumentsApi.show.path({npi: document?.npi}));
+      }
+    })));
+    this._cachedResults = true;
   }
 
-  handleSelected(cmd) {
-    // console.log(cmd);
+  handleSelected(e) {
   }
 }
 
@@ -28,7 +47,7 @@ const defaultCommands = [
   {
     id: "home",
     section: 'Site navigation',
-    title: "Go to home",
+    title: "Go to dashboard",
     hotkey: "ctrl+h,cmd+h",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 12l8.955-8.955a1.124 1.124 0 0 1 1.59 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>`,
     handler: () => {

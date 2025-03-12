@@ -130,7 +130,6 @@ const MentionInlineContent = createReactInlineContentSpec(
               type: "mention",
               props: {
                 ...props.inlineContent.props,
-                // dupa: "zupa",
                 id,
                 entityId,
               }
