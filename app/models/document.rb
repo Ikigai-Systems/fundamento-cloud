@@ -33,6 +33,7 @@ class Document < ApplicationRecord
 
   def title
     super.presence || "Untitled"
+    # [STE] - ask Pawel why do we need to provide default "Untitled" value instead of handling nil title by the callers
   end
 
   def as_json(options = {})
