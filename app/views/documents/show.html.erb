@@ -17,9 +17,13 @@
       edit_document_path(@document),
       method: :get,
       disabled: !has_permission_to_edit,
-      class: "primary-button document-toolbar-button",
-      data: {controller: "hotkey", hotkey: "e", action: "mouseenter->popover#show mouseleave->popover#hide"}
+      class: "primary-button document-toolbar-button edit-document-button",
+      # data: {controller: "hotkey", hotkey: "e", action: "mouseenter->popover#show mouseleave->popover#hide"}
+      data: {action: "mouseenter->popover#show mouseleave->popover#hide"}
     %>
+    <% if has_permission_to_edit %>
+      <% add_palette_command id: "edit_document", title: "Edit document", section: "Actions", hotkey: "e", handler: "document.querySelector('.edit-document-button').click()" %>
+    <% end %>
     <template data-popover-target="content">
       <div data-popover-target="card" class="<%= has_permission_to_edit ? "hidden " : "" %>z-10 bg-gray-800 text-gray-50 text-xs p-2 w-24 flex flex-row items-center justify-center rounded absolute top-12">
         <p class="block">You have no permission to edit this document</p>

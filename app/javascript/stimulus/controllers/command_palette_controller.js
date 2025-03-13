@@ -13,7 +13,17 @@ export default class CommandPaletteController extends Controller {
     this.element.addEventListener("change", debounce(this.handleChange.bind(this), 300));
     this.element.addEventListener("selected", this.handleSelected);
 
-    this.element.data = defaultCommands;
+    const commands = this.commandsValue || [];
+
+    this.element.data = defaultCommands.concat(commands.map(command => ({
+      id: command.id,
+      title: command.title,
+      section: command.section,
+      hotkey: command.hotkey,
+      handler: () => {
+        eval(command.handler);
+      }
+    })));
   }
 
   async handleChange(e) {
