@@ -7,9 +7,9 @@ module CommandPalette
 
   protected
 
-  def add_palette_command(id:, title:, section:, hotkey:, handler:)
+  def add_palette_command(id:, title:, section:, icon:, hotkey:, handler:)
     @pallete_commands ||= []
-    @pallete_commands << {id: id, title: title, section: section, hotkey: hotkey, handler: handler}
+    @pallete_commands << {id: id, title: title, section: section, icon: icon, hotkey: hotkey, handler: handler}
   end
 
   def palette_commands

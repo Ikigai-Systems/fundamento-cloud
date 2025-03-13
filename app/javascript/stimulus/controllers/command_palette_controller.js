@@ -19,6 +19,7 @@ export default class CommandPaletteController extends Controller {
       id: command.id,
       title: command.title,
       section: command.section,
+      icon: command.icon,
       hotkey: command.hotkey,
       handler: () => {
         eval(command.handler);
