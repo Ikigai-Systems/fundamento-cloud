@@ -1,20 +1,22 @@
-<%= render "layouts/body" do %>
+<%= render "layouts/body", body_class: "overflow-hidden" do %>
   <div class="h-screen">
     <div class="h-full grid grid-cols-[min-content_minmax(200px,_3fr)_min-content]">
       <%= render "application/left_sidebar" %>
 
-      <div class="h-screen overflow-y-auto content-container">
-        <nav class="w-full flex justify-end p-3 gap-1 items-center">
+      <div class="h-screen content-container flex flex-col">
+        <nav class="w-full flex justify-end p-3 gap-1 items-center min-h-15 max-h-15 border-b">
           <%= content_for :content_menu %>
 
           <%= render "application/notifications_menu" %>
 
-          <div class="ml-1">
+          <div class="mx-1">
             <%= render "application/user_menu" %>
           </div>
         </nav>
 
-        <%= yield %>
+        <div class="overflow-y-auto pt-1">
+          <%= yield %>
+        </div>
       </div>
 
       <%= tag.aside(

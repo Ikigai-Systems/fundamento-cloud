@@ -26,7 +26,8 @@
     <%= yield(:head) %>
   <% end %>
 </head>
-<body data-controller="modal" data-action="click->modal#backdropClose">
+<%= body_class ||= nil %>
+<body data-controller="modal" data-action="click->modal#backdropClose"<% if body_class.present? %> class="<%=body_class%>"<% end %>>
   <script>
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
