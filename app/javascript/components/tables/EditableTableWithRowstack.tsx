@@ -7,7 +7,7 @@ import {Config} from "@js-from-routes/client";
 import {Space, Table} from "../../types.ts";
 import PeopleSelectCell from "./rowstack/PeopleSelectCell.tsx";
 import DocumentsSelectCell from "./rowstack/DocumentsSelectCell.tsx";
-import ButtonCell from "./rowstack/ButtonCell.tsx";
+// import ButtonCell from "./rowstack/ButtonCell.tsx";
 import DateTimeCell from "./rowstack/DateTimeCell/DateTimeCell.tsx";
 import CalendarDaysIcon from "./rowstack/DateTimeCell/CalendarDaysIcon.tsx"
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
@@ -20,7 +20,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import "./rowstack-styles.css";
 import EditNumberDisplayFormatPopup from "./rowstack/EditNumberDisplayFormatPopup.tsx";
 import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.tsx";
-import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
+// import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 import EditTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditTimeDisplayFormatPopup.tsx";
 import {download, generateCsv, mkConfig} from "export-to-csv";
 
@@ -39,8 +39,8 @@ type Kind =
     | "checkbox"
     | "formula"
     | "people"
-    | "documents"
-    | "button";
+    | "documents";
+    // | "button";
 
 const toType = (kind: Kind) => {
   switch (kind) {
@@ -66,8 +66,8 @@ const toType = (kind: Kind) => {
     return "people";
   case "documents":
     return "documents";
-  case "button":
-    return "button";
+  // case "button":
+  //   return "button";
   default:
     return "text";
   }
@@ -238,22 +238,22 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-}, {
-  section: "main",
-  menuItem: ({column, showPopup}) => {
-    if (column.type !== "button") {
-      return null;
-    }
-    return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
-        onClick={showPopup}
-      >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
-        Edit button
-      </div>
-    );
-  },
-  popup: (popupProps) => <EditButtonPopup {...popupProps}/>
+// }, {
+//   section: "main",
+//   menuItem: ({column, showPopup}) => {
+//     if (column.type !== "button") {
+//       return null;
+//     }
+//     return (
+//       <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+//         onClick={showPopup}
+//       >
+//         <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+//         Edit button
+//       </div>
+//     );
+//   },
+//   popup: (popupProps) => <EditButtonPopup {...popupProps}/>
 }];
 
 // we had played with three other libraries for rendering tables (aside Rowstack), you can find working PoC by following fulll git-blame on this comment line
@@ -312,11 +312,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               cell: DateTimeCell,
               icon: CalendarDaysIcon,
               name: "Date and time",
-            }, {
-              type: "button",
-              cell: ButtonCell,
-              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--bolt]"></div>,
-              name: "Button",
+            // }, {
+            //   type: "button",
+            //   cell: ButtonCell,
+            //   icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--bolt]"></div>,
+            //   name: "Button",
             }],
             extraColumnHeaderPopupActions: extraColumnHeaderPopupActions,
             extraToolbarItems: [{
