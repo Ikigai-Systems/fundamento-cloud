@@ -335,28 +335,6 @@ const ChartBlock = createReactBlockSpec(
 
         <div className="flex flex-row items-center w-full gap-8 h-8 my-3">
           <div className="flex flex-row items-center">
-            <label className="text-sm mx-2">Chart type</label>
-            {editor.isEditable && <SelectButton
-              value={chartType}
-              options={CHART_TYPES.map(type => {
-                return {
-                  value: type,
-                  label: type === "radialBar" ? "radial bar" : type === "polarArea" ? "polar area" : type
-                }
-              })}
-              onChange={(option) => {
-                editor.updateBlock(props.block, {
-                  props: {
-                    chartType: option.value,
-                  },
-                });
-              }}
-            />}
-            {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
-              {chartType}
-            </div>}
-          </div>
-          <div className="flex flex-row items-center">
             <label className="text-sm mx-2">X axis</label>
             {editor.isEditable && <SelectButton
               value={xAxisColumnNpi}
@@ -392,10 +370,32 @@ const ChartBlock = createReactBlockSpec(
               {columns.find(column => column.npi === yAxisColumnNpi)?.name || "None"}
             </div>}
           </div>
+          <div className="flex flex-row items-center">
+            <label className="text-sm mx-2">Chart type</label>
+            {editor.isEditable && <SelectButton
+              value={chartType}
+              options={CHART_TYPES.map(type => {
+                return {
+                  value: type,
+                  label: type === "radialBar" ? "radial bar" : type === "polarArea" ? "polar area" : type
+                }
+              })}
+              onChange={(option) => {
+                editor.updateBlock(props.block, {
+                  props: {
+                    chartType: option.value,
+                  },
+                });
+              }}
+            />}
+            {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
+              {chartType}
+            </div>}
+          </div>
         </div>
 
 
-        {chart !== undefined &&
+        {chart !== undefined && xAxisColumnNpi !== '' && yAxisColumnNpi !== '' &&
           <ReactApexChart
             key={chartType} // to force full rerender upon changing chart type, to avoid ApexChart fancy/broken animations when switching charts
             type={chart.type}
