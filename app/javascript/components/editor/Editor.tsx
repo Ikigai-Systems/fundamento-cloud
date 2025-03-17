@@ -129,6 +129,12 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       },
       uploadFile: uploadFile(document.id),
       resolveFileUrl: createFileUrlResolver(),
+      tables: {
+        splitCells: true,
+        cellBackgroundColor: true,
+        cellTextColor: true,
+        headers: true,
+      },
     });
     blockNoteEditor.onChange((editor) => {
       const block = editor.getTextCursorPosition().block;
