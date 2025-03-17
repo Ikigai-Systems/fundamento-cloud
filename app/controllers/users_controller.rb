@@ -2,7 +2,13 @@ class UsersController < ApplicationController
   # todo: should this be merged with admin/users_controller.rb, or separate api-like controller?
   def index
     respond_to do |format|
-      format.json { render json: current_organization.users }
+      format.json do
+        if params[:user_ids].present?
+          render json: current_organization.users.find(params[:user_ids])
+        else
+          render json: current_organization.users
+        end
+      end
       format.all { head :unprocessable_content }
     end
   end
