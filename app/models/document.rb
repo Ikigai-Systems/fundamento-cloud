@@ -19,6 +19,8 @@ class Document < ApplicationRecord
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
   has_many :comments, class_name: "ObjectComment", as: :object, dependent: :delete_all
 
+  before_destroy :nullify_space_home_document_id
+
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
   scope :with_has_versions, -> { select("documents.*, EXISTS (SELECT 1 FROM versions WHERE versions.document_id = documents.id) AS has_versions") }
@@ -51,5 +53,11 @@ class Document < ApplicationRecord
   def to_blocks
     # BlockNoteConverterRuby.to_blocks(sync)
     BlockNoteConverterNode.to_blocks(sync)
+  end
+
+  def nullify_space_home_document_id
+    return if space.home_document != self
+
+    space.update(home_document: nil)
   end
 end

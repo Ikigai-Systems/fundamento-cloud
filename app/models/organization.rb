@@ -5,7 +5,6 @@ class Organization < ApplicationRecord
   has_many :attachments, dependent: :destroy
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
-  has_many :favorites, dependent: :destroy
   has_many :invited_users, dependent: :destroy
   has_many :organization_users, class_name: :OrganizationUser, dependent: :destroy
   has_many :packs, dependent: :destroy
@@ -15,6 +14,7 @@ class Organization < ApplicationRecord
   has_many :team_memberships, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :users, through: :organization_users
+  has_many :favorites, through: :organization_users, dependent: :destroy
 
   validates_presence_of :name
 
