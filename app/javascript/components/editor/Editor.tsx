@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from "react";
-import {User} from "../../types";
+import {User, Document} from "../../types";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
@@ -34,16 +34,16 @@ const tinySimpleHash = (s: string) => {
 type EditorProps = {
   databaseId: string,
   currentUser: User,
-  documentId: number,
+  document: Document,
   editable?: boolean,
 }
 
-const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = ""}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
   useInterval(() => {
-    if (document.hidden) {
+    if (window.document.hidden) {
       return; //user is on another tab/window
     }
     //no-ts-inspect
@@ -63,7 +63,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
   }, 1000);
 
   useEffect(() => {
-    const editorConnectionIndicatorDiv = document.querySelector("#editor-connection-indicator");
+    const editorConnectionIndicatorDiv = window.document.querySelector("#editor-connection-indicator");
     if (connectionStale) {
       editorConnectionIndicatorDiv.innerHTML = '<div class="font-semibold text-slate-400">Offline</div>\n';
     } else {
@@ -85,12 +85,12 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
       acProvider = undefined;
     }
 
-    if (!documentId) {
+    if (!document.id) {
       return undefined;
     }
 
     ydoc = new Y.Doc();
-    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${documentId.toString()}`, ydoc);
+    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.id.toString()}`, ydoc);
 
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
@@ -99,7 +99,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
       ydoc,
       acConsumer,
       "DocumentChannel",
-      {documentId: documentId.toString()},
+      {documentId: document.id.toString()},
     );
 
     // hackery to determine if editor has been initialized with initial content from the action cable or not yet
@@ -127,7 +127,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
         },
         showCursorLabels: "always",
       },
-      uploadFile: uploadFile(documentId),
+      uploadFile: uploadFile(document.id),
       resolveFileUrl: createFileUrlResolver(),
     });
     blockNoteEditor.onChange((editor) => {
@@ -144,7 +144,7 @@ const Editor = ({currentUser, documentId, editable = true, databaseId = ""}: Edi
 
     window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version) + for displaying document Structure in right sidebar
     return blockNoteEditor;
-  }, [documentId]);
+  }, [document.id]);
 
   if (editor === undefined || !initialStateReceived) {
     return <LoadingContent/>

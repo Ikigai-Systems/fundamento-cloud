@@ -22,7 +22,7 @@ const EditDocumentPanel = ({document, space, currentUser, databaseId}: EditDocum
       <div className="editor-container">
         <Editor
           currentUser={currentUser}
-          documentId={document.id}
+          document={document}
           databaseId={databaseId}
         />
       </div>
