@@ -403,6 +403,12 @@ const ChartBlock = createReactBlockSpec(
             series={chart.series}
           />
         }
+        {(chart === undefined || xAxisColumnNpi === '' || yAxisColumnNpi === '') &&
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
+            Select chart axes...
+          </div>
+        }
+
       </div>);
     },
   }
