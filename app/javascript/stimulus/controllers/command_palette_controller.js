@@ -2,6 +2,7 @@ import {Controller} from "@hotwired/stimulus";
 import "ninja-keys";
 import {debounce} from "lodash";
 import DocumentsApi from "../../api/DocumentsApi.js";
+import SearchesApi from "@/api/SearchesApi.js";
 
 // Connects to data-controller="command-palette"
 export default class CommandPaletteController extends Controller {
@@ -49,7 +50,7 @@ export default class CommandPaletteController extends Controller {
       this.element.data = this.element.data.filter(command => command.id !== "documentSearch_loading");
     }
 
-    const documents = await DocumentsApi.index(); //todo: use e.detail.search as query parameter to narrow down documents in response
+    const documents = await SearchesApi.show(); //todo: use e.detail.search as query parameter to narrow down documents in response
 
     this.element.data = this.element.data.filter(command => {
       return !command.id.startsWith("documentSearch#") && command.id !== "documentSearch_loading";

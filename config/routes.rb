@@ -93,6 +93,8 @@ Rails.application.routes.draw do
     get "/public/attachments/:id" => "public#attachment"
 
     post '/formulas/eval', to: "formulas#eval"
+
+    resource :search, only: [:show]
   end
 
   resources :organizations, param: :npi do
