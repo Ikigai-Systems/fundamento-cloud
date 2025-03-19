@@ -11,10 +11,17 @@ class SearchesController < ApplicationController\
     documents = policy_scope(current_organization.documents, policy_scope_class: DocumentPolicy::Scope)
 
     @results = documents.map do |document|
+      parent_path = ""
+      parent = document.parent
+      while parent.present?
+        parent_path = "#{parent.title} › #{parent_path}"
+        parent = parent.parent
+      end
       {
         document: {
           npi: document.npi,
           title: document.title,
+          parent_path: parent_path
         },
         space: {
           name: document.space.name,

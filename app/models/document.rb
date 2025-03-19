@@ -60,4 +60,23 @@ class Document < ApplicationRecord
 
     space.update(home_document: nil)
   end
+
+  def parent
+    def get_parent_id_from_hierarchy(document_id, node)
+      node.each do |item|
+        item["children"].each do |child|
+          return item["id"] if child["id"] == document_id
+        end
+
+        parent_id = get_parent_id_from_hierarchy(document_id, item["children"])
+        return parent_id if parent_id.present?
+      end
+
+      nil
+    end
+
+    parent_id = get_parent_id_from_hierarchy(self.id, self.space.hierarchy)
+
+    Document.find_by(id: parent_id)
+  end
 end
