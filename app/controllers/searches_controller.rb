@@ -8,8 +8,22 @@ class SearchesController < ApplicationController\
   def show
     # todo: later query for other entities as well (spaces, organizations, etc) and respect 'query' param to narrow down searches
 
+    documents = policy_scope(current_organization.documents, policy_scope_class: DocumentPolicy::Scope)
+
+    @results = documents.map do |document|
+      {
+        document: {
+          npi: document.npi,
+          title: document.title,
+        },
+        space: {
+          name: document.space.name,
+        }
+      }
+    end
+
     respond_to do |format|
-      format.json { render json: policy_scope(current_organization.documents, policy_scope_class: DocumentPolicy::Scope), :except => [:sync] }
+      format.json { render json: @results }
       format.all { head :unprocessable_content }
     end
   end
