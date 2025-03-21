@@ -15,8 +15,16 @@ class Tables::TablesController < ApplicationController
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
+    @tables = @tables.select(:npi, :name) if params[:mention].to_b
+
     respond_to do |format|
-      format.json { render json: @tables }
+      format.json do
+        if params[:mention].to_b
+          render json: @tables, only: [:npi, :name]
+        else
+          render json: @tables
+        end
+      end
       format.all { head :unprocessable_content }
     end
   end
