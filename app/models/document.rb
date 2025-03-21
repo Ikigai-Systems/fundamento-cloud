@@ -39,7 +39,11 @@ class Document < ApplicationRecord
   end
 
   def as_json(options = {})
-    super(options).merge(sync: sync.nil? ? nil : Base64.encode64(sync))
+    super(options).tap do |hash|
+      if hash.key?(:sync)
+        hash[:sync] = Base64.encode64(hash[:sync])
+      end
+    end
   end
 
   def draft?
