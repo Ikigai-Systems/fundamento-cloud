@@ -10,7 +10,13 @@ class DocumentsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json { render json: policy_scope(current_organization.documents), :except => [:sync] }
+      format.json do
+        if params[:mention].to_b
+          render json: policy_scope(current_organization.documents).select(:npi, :title), only: [:npi, :title]
+        else
+          render json: policy_scope(current_organization.documents), :except => [:sync]
+        end
+      end
       format.all { head :unprocessable_content }
     end
   end
