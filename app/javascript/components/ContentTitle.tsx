@@ -29,7 +29,7 @@ export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputPro
     key={space.npi + "_" + table.npi + "_name"}
     type="text"
     placeholder={UNTITLED_CONTENT}
-    defaultValue={table.name}
+    defaultValue={table.name === UNTITLED_CONTENT ? undefined : table.name}
     className={`content-title-input${extraClasses ? ` ${extraClasses}` : ""}`}
     onKeyDown={(e) => {
       if (e.key === "Enter") {
@@ -78,7 +78,7 @@ export const DocumentTitleInput = ({document, extraClasses}: DocumentTitleInputP
       type="text"
       autoFocus={!document.title}
       placeholder={UNTITLED_CONTENT}
-      defaultValue={document.title}
+      defaultValue={document.title === UNTITLED_CONTENT ? undefined : document.title}
       className={`content-title-input${extraClasses ? ` ${extraClasses}` : ""}`}
       onKeyDown={(e) => {
         if (e.key === "Enter") {
