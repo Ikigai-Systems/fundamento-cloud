@@ -28,9 +28,9 @@ function createMentionItem(entity, entityId, title) {
 
 export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[]> => {
   const [documents, tables, users] = await Promise.all([
-    DocumentsApi.index(),
-    TablesApi.index(),
-    UsersApi.index()
+    DocumentsApi.index({query: { mention: true }}),
+    TablesApi.index({query: { mention: true }}),
+    UsersApi.index({query: { mention: true }})
   ]);
 
   const documentMenuItems = documents.map((document: Document) => createMentionItem("document", document.npi, document.title));
