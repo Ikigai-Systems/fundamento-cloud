@@ -1,4 +1,4 @@
-class SearchesController < ApplicationController\
+class SearchesController < ApplicationController
   # maybe this should go to controllers/api/v1, I dunno
 
   include Pundit::Authorization
