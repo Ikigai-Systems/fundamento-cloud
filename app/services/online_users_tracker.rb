@@ -37,13 +37,23 @@ class OnlineUsersTracker
     remove_from_online_users(for_organization, user)
   end
 
-  def self.all_online_user_ids(for_organization)
+  def self.all_online_user_ids(for_organization = nil)
     with_redis do |redis|
-      redis.smembers(redis_key(for_organization))
+      if for_organization.present?
+        redis.smembers(redis_key(for_organization))
+      else
+        all_online_users = Set.new
+
+        redis.scan_each(match: redis_key(nil) + "*", type: "set") do |redis_key|
+          all_online_users.merge(redis.smembers(redis_key))
+        end
+
+        all_online_users.to_a
+      end
     end
   end
 
-  def self.all_online_users(for_organization)
+  def self.all_online_users(for_organization = nil)
     User.where(id: all_online_user_ids(for_organization))
   end
 
@@ -61,8 +71,8 @@ class OnlineUsersTracker
     end
   end
 
-  def self.redis_key(for_organization)
-    "online_users/#{for_organization.cache_key}"
+  def self.redis_key(for_organization = nil)
+    "online_users/#{for_organization&.cache_key}"
   end
 
   def self.with_redis(&block)
