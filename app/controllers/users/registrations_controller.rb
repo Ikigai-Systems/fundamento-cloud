@@ -6,6 +6,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
   skip_before_action :ensure_organization_exists, only: %i[edit update]
   skip_before_action :select_current_organization, only: %i[edit update]
 
+  def create
+    build_resource(sign_up_params)
+
+    if !Flipper.enabled?(:recaptcha) || (resource.validate && verify_recaptcha(model: resource))
+      super
+    else
+      clean_up_passwords resource
+      set_minimum_password_length
+      respond_with resource
+    end
+  end
+
   protected
 
   def configure_permitted_parameters

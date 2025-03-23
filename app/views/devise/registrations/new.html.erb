@@ -53,6 +53,10 @@
           <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
         </div>
 
+        <% if Flipper.enabled?(:recaptcha) %>
+          <%= recaptcha_tags %>
+        <% end %>
+
         <div class="form-footer">
           <%= f.submit "Sign up", class: "form-submit" %>
         </div>
@@ -64,6 +68,7 @@
       Already have an account? <%= link_to "Sign in", new_session_path(resource_name), class: "link-button" %>
     </div>
   </div>
+
   <% if !Rails.env.standalone? %>
     <div class="md:col-start-7 md:col-span-3">
       <hr class="mt-4 md:hidden">
