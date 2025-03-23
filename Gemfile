@@ -86,6 +86,7 @@ gem "jwt"
 
 gem "flipper-active_record"
 gem "flipper-ui"
+gem "recaptcha"
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
