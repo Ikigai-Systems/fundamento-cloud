@@ -1,1 +1,329 @@
-[{"id":"ad438ce6-69d9-4000-85c5-d3edbc72ba46","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Use media in order to enrich the document with images, videos, files. As mamy says: *\"One image is worth a thousand words\" *sometimes is better just to show something rather than describe.","styles":{}}],"children":[]},{"id":"e8549e87-1fd2-49b0-856c-3fc938ca0f89","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:462","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"b0a0c637-819a-4ed4-a77d-4fbf0028dc43","type":"numberedListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add any ","styles":{}},{"type":"text","text":"image","styles":{"bold":true}},{"type":"text","text":" to show anything you need to mention","styles":{}}],"children":[]},{"id":"1d9735e9-b2d8-4217-86f5-c93345b52424","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add image","styles":{}}],"children":[]},{"id":"ba361bc7-b044-41b5-9795-5a8fb91394ff","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Upload an image or embed it (showing after clicking \"Add image\" field)","styles":{}}],"children":[]},{"id":"c48a0dc0-dc0a-4340-87b9-a4f7a7f7b7bb","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:387","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"3b6cdeec-0fe8-4497-a60b-e134c786d491","type":"numberedListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add discretionary ","styles":{}},{"type":"text","text":"video","styles":{"bold":true}},{"type":"text","text":" to present anything you need others to see","styles":{}}],"children":[]},{"id":"25cf2693-56ee-463c-9473-4def12418a85","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add video","styles":{}}],"children":[]},{"id":"bd843a09-4ff7-4c5f-8e49-b18b058735d7","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Upload an image or embed it (showing after clicking \"Add video\" field). Not every video can be embedded, we are working on this :) Upload your own file or embed from e.g. Vimeo","styles":{}}],"children":[]},{"id":"188d1ea5-e0dc-42c8-86f5-2c3af0714d4e","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:389","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"874b5801-e62c-405a-a6ca-cd7008506189","type":"numberedListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add any ","styles":{}},{"type":"text","text":"Audio","styles":{"bold":true}},{"type":"text","text":" to present others anything you need others to hear.","styles":{}}],"children":[]},{"id":"cce19f3a-0921-4fd9-bbfa-afdf0a625137","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add audio","styles":{}}],"children":[]},{"id":"e032ff59-fc62-4bcf-9638-893a81c3db19","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Upload an audio or embed it (showing after clicking \"Add audio\" field). Upload your own recording or embed from Spotify, Soundcloud etc.","styles":{}}],"children":[]},{"id":"bd5d507d-f89d-4f7c-b09a-d0f5e5b900bb","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:390","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"8d546670-d9fa-4d2a-a146-3e898603e086","type":"numberedListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add some file connected with the document somehow, e.g. to store it in a proper place","styles":{}}],"children":[]},{"id":"9fd55bf3-f91f-4c30-afa2-f78e796f78f4","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add file","styles":{}}],"children":[]},{"id":"193656ae-7377-4974-9ab5-b3c5688fcec5","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:391","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"42959af7-d324-4f9f-b5d6-b3951e7111cb","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Limits. In general you can upload file up to 20 MB (not applicable to stand-alone/on-premise version)","styles":{}}],"children":[]}]
+[
+  {
+    "id": "ad438ce6-69d9-4000-85c5-d3edbc72ba46",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Use media in order to enrich the document with images, videos, files. As mamy says: *\"One image is worth a thousand words\" *sometimes is better just to show something rather than describe.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e8549e87-1fd2-49b0-856c-3fc938ca0f89",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:462",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "b0a0c637-819a-4ed4-a77d-4fbf0028dc43",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add any ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "image",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " to show anything you need to mention",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1d9735e9-b2d8-4217-86f5-c93345b52424",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add image",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ba361bc7-b044-41b5-9795-5a8fb91394ff",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Upload an image or embed it (showing after clicking \"Add image\" field)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c48a0dc0-dc0a-4340-87b9-a4f7a7f7b7bb",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:387",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "3b6cdeec-0fe8-4497-a60b-e134c786d491",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add discretionary ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "video",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " to present anything you need others to see",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "25cf2693-56ee-463c-9473-4def12418a85",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add video",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bd843a09-4ff7-4c5f-8e49-b18b058735d7",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Upload an image or embed it (showing after clicking \"Add video\" field). Not every video can be embedded, we are working on this :) Upload your own file or embed from e.g. Vimeo",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "188d1ea5-e0dc-42c8-86f5-2c3af0714d4e",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:389",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "874b5801-e62c-405a-a6ca-cd7008506189",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add any ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Audio",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " to present others anything you need others to hear.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "cce19f3a-0921-4fd9-bbfa-afdf0a625137",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add audio",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e032ff59-fc62-4bcf-9638-893a81c3db19",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Upload an audio or embed it (showing after clicking \"Add audio\" field). Upload your own recording or embed from Spotify, Soundcloud etc.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bd5d507d-f89d-4f7c-b09a-d0f5e5b900bb",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:390",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "8d546670-d9fa-4d2a-a146-3e898603e086",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add some file connected with the document somehow, e.g. to store it in a proper place",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9fd55bf3-f91f-4c30-afa2-f78e796f78f4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add file",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "193656ae-7377-4974-9ab5-b3c5688fcec5",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:391",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "42959af7-d324-4f9f-b5d6-b3951e7111cb",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Limits. In general you can upload file up to 20 MB (not applicable to stand-alone/on-premise version)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  }
+]

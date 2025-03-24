@@ -1,1 +1,550 @@
-[{"id":"e2f44ed4-fe2f-4168-b889-33ce05fdcca5","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You can create any type of chart in order to show time dependencies and use it as a advanced method to show the important data. A chart should be based on data from one of the Advanced tables previous created.","styles":{}}],"children":[]},{"id":"76c6f53b-1b72-4300-bd40-b9c6e20629b8","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Charts are a crucial part of working with data, since they are a way to compress and summarize at the same time large amounts of data into an easy to understand format.","styles":{}}],"children":[]},{"id":"6f100e36-8c59-44a5-951d-d2d7b6584bb3","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Visualizations of data can highlight insights to someone looking at the data for the first time, as well as important findings to others who won’t see the raw data. There are countless chart types out there, each with different use cases.","styles":{}}],"children":[]},{"id":"002ea7ea-3099-4c1e-b65c-7b0041daf26d","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"What does a chart look like? When you choose \"Chart\" from the dropdown menu, you'll see a view like this:","styles":{}}],"children":[]},{"id":"2ae3bcf5-ef3c-4f73-97f9-175ae7c43061","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"New chart","styles":{}}],"children":[]},{"id":"ba9b3ba9-9085-49a1-b795-e0e337a4de11","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Data source table","styles":{}}],"children":[]},{"id":"da663230-1798-443d-80fa-22d05c3fd3ef","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Select...","styles":{}}],"children":[]},{"id":"953048fe-a066-4c77-a351-5bfab6c61c77","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"If you haven't created any table in the particular Organization yet, you'll see a view as showed below, that means that you don't have a source to use yet.","styles":{}}],"children":[]},{"id":"e9ecdb0d-f1db-481b-877a-7a47cf2b3ba6","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:463","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"84648ad8-ceb9-447c-bd1e-938463ae73cd","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Depending on data characteristics in the chosen table, you will see other type of data on X axis and Y axis.","styles":{}}],"children":[]},{"id":"296394e8-0b87-40c6-82d3-a4eb8ac7ce02","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You are able to choose data that you're interested in and a chart type.","styles":{}}],"children":[]},{"id":"18414874-b84a-4eff-a600-0d71aab9cb80","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Select values from X and Y axis' and choose Chart type (line chart is set default)","styles":{}}],"children":[]},{"id":"992c75e9-c2ec-41fd-8afa-55cb9f0baf27","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:476","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"239df52c-a116-41da-b2c1-72fc2e29e009","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you select from dropdown menu specific data from X axis and Y axis, you'll see a chart","styles":{}}],"children":[]},{"id":"046b6a01-60d6-4236-9f1f-bd1507cd2386","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:483","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"a5cd13d4-995c-484f-8ad2-d42e23cbbb31","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Other examples of generated already chart:","styles":{}}],"children":[]},{"id":"cd0e5b95-e3e1-4ae2-beaf-3b16a5a5b489","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:491","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"66a3e4a9-e9cf-4944-bde7-42851ce0780b","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you can see, on the top-right of the chart view we provide a couple of icons:","styles":{}}],"children":[]},{"id":"06392405-25fb-4436-8791-8694bba8b2a5","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:492","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"dcb5bc9e-c629-4ef9-8049-c41f69fbb6e3","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Easy to guess is that the two first (from the left) are being used to zoom in and zoom out","styles":{}}],"children":[]},{"id":"547a44b6-e3c8-49e6-9c15-23c41178fe09","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"The third icon is being supposed to use as you want to take a closer look on the particular part of chart","styles":{}}],"children":[]},{"id":"4f04f02e-44a4-4b8d-a1c1-7a1e2c358d04","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:493","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"6b550ef5-a771-4ed9-b55c-c1d12190bb32","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In order to do that, just click on that icon, and mark a designated/desirable part of a chart. (dać filmik)","styles":{}}],"children":[]},{"id":"6fe23dce-7a8d-4f26-8c1f-699ef961bf7b","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Try also this icon:","styles":{}}],"children":[]},{"id":"2b68d6ca-c867-4f75-a99b-0d3dbcb0cec8","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:494","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"6992f08a-f729-4d1c-9f30-c45c23f7c772","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"This one enables or disables panning.","styles":{}}],"children":[]},{"id":"5e71d24f-d6d0-4b6c-84fb-2a72a43e8071","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Pan the chart by holding down the left mouse button over the chart and dragging in any direction. Release the mouse button to complete the operation.","styles":{}}],"children":[]},{"id":"57959471-9bb1-4b39-a86b-a428b59918b5","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"On a trackpad, double-tap but don’t lift your finger after the second tap — or click and hold — to drag. Lift your finger to complete the operation.","styles":{}}],"children":[]},{"id":"1e6ffd73-771e-48f4-8ea9-3bfde0be233a","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In order to reset zoom, use that icon:","styles":{}}],"children":[]},{"id":"65bef117-6bca-4a37-ad02-28414deb4212","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:495","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"0f57d406-445c-49bc-bad3-e5f7023cc8b5","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In order to download a chart in available at the moment formats (.SVG, .PNG, .CSV) use this icon.","styles":{}}],"children":[]},{"id":"6161315e-1518-4711-be39-624e7b3505bc","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:496","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"f7f043d8-0d32-4da6-9469-a389fe5891f0","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You are able to show and see data from a table in a different ways: as a line, as a treemap or a radial bar.","styles":{}}],"children":[]},{"id":"9cfb8487-8860-448f-8966-af92ccff66c1","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:464","caption":"","showPreview":true,"previewWidth":512},"children":[]}]
+[
+  {
+    "id": "e2f44ed4-fe2f-4168-b889-33ce05fdcca5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can create any type of chart in order to show time dependencies and use it as a advanced method to show the important data. A chart should be based on data from one of the Advanced tables previous created.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "76c6f53b-1b72-4300-bd40-b9c6e20629b8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Charts are a crucial part of working with data, since they are a way to compress and summarize at the same time large amounts of data into an easy to understand format.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6f100e36-8c59-44a5-951d-d2d7b6584bb3",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Visualizations of data can highlight insights to someone looking at the data for the first time, as well as important findings to others who won’t see the raw data. There are countless chart types out there, each with different use cases.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "002ea7ea-3099-4c1e-b65c-7b0041daf26d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "What does a chart look like? When you choose \"Chart\" from the dropdown menu, you'll see a view like this:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2ae3bcf5-ef3c-4f73-97f9-175ae7c43061",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "New chart",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ba9b3ba9-9085-49a1-b795-e0e337a4de11",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Data source table",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "da663230-1798-443d-80fa-22d05c3fd3ef",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Select...",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "953048fe-a066-4c77-a351-5bfab6c61c77",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "If you haven't created any table in the particular Organization yet, you'll see a view as showed below, that means that you don't have a source to use yet.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e9ecdb0d-f1db-481b-877a-7a47cf2b3ba6",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:463",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "84648ad8-ceb9-447c-bd1e-938463ae73cd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Depending on data characteristics in the chosen table, you will see other type of data on X axis and Y axis.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "296394e8-0b87-40c6-82d3-a4eb8ac7ce02",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You are able to choose data that you're interested in and a chart type.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "18414874-b84a-4eff-a600-0d71aab9cb80",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Select values from X and Y axis' and choose Chart type (line chart is set default)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "992c75e9-c2ec-41fd-8afa-55cb9f0baf27",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:476",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "239df52c-a116-41da-b2c1-72fc2e29e009",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you select from dropdown menu specific data from X axis and Y axis, you'll see a chart",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "046b6a01-60d6-4236-9f1f-bd1507cd2386",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:483",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "a5cd13d4-995c-484f-8ad2-d42e23cbbb31",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Other examples of generated already chart:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "cd0e5b95-e3e1-4ae2-beaf-3b16a5a5b489",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:491",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "66a3e4a9-e9cf-4944-bde7-42851ce0780b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you can see, on the top-right of the chart view we provide a couple of icons:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "06392405-25fb-4436-8791-8694bba8b2a5",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:492",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "dcb5bc9e-c629-4ef9-8049-c41f69fbb6e3",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Easy to guess is that the two first (from the left) are being used to zoom in and zoom out",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "547a44b6-e3c8-49e6-9c15-23c41178fe09",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "The third icon is being supposed to use as you want to take a closer look on the particular part of chart",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "4f04f02e-44a4-4b8d-a1c1-7a1e2c358d04",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:493",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "6b550ef5-a771-4ed9-b55c-c1d12190bb32",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In order to do that, just click on that icon, and mark a designated/desirable part of a chart. (dać filmik)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6fe23dce-7a8d-4f26-8c1f-699ef961bf7b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Try also this icon:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2b68d6ca-c867-4f75-a99b-0d3dbcb0cec8",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:494",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "6992f08a-f729-4d1c-9f30-c45c23f7c772",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "This one enables or disables panning.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5e71d24f-d6d0-4b6c-84fb-2a72a43e8071",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Pan the chart by holding down the left mouse button over the chart and dragging in any direction. Release the mouse button to complete the operation.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "57959471-9bb1-4b39-a86b-a428b59918b5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "On a trackpad, double-tap but don’t lift your finger after the second tap — or click and hold — to drag. Lift your finger to complete the operation.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1e6ffd73-771e-48f4-8ea9-3bfde0be233a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In order to reset zoom, use that icon:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "65bef117-6bca-4a37-ad02-28414deb4212",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:495",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "0f57d406-445c-49bc-bad3-e5f7023cc8b5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In order to download a chart in available at the moment formats (.SVG, .PNG, .CSV) use this icon.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6161315e-1518-4711-be39-624e7b3505bc",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:496",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "f7f043d8-0d32-4da6-9469-a389fe5891f0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You are able to show and see data from a table in a different ways: as a line, as a treemap or a radial bar.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9cfb8487-8860-448f-8966-af92ccff66c1",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:464",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  }
+]

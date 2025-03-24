@@ -1,1 +1,64 @@
-[{"id":"cb8903c1-43e5-40ef-a432-4cdbac8a4aa8","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"On the Teams Page select the Team you want to add user to, and click \"Add\" button","styles":{}}],"children":[]},{"id":"f223b47d-503e-45d5-8e26-83ff353bfd56","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:448","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"eed46b3f-f905-4b73-9d8e-46c129e5b18c","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Similar to adding space managers, just try to find a person and after choosing them, click \"Save\"","styles":{}}],"children":[]},{"id":"62033dd0-9a96-44c5-bfc5-5d0531e13829","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:449","caption":"","showPreview":true,"previewWidth":512},"children":[]}]
+[
+  {
+    "id": "cb8903c1-43e5-40ef-a432-4cdbac8a4aa8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "On the Teams Page select the Team you want to add user to, and click \"Add\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f223b47d-503e-45d5-8e26-83ff353bfd56",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:448",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "eed46b3f-f905-4b73-9d8e-46c129e5b18c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Similar to adding space managers, just try to find a person and after choosing them, click \"Save\"",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "62033dd0-9a96-44c5-bfc5-5d0531e13829",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:449",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  }
+]

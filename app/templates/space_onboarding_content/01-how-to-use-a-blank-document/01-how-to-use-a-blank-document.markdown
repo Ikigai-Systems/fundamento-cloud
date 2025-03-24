@@ -4,6 +4,7 @@ Benefits:
 *   [ ] You can make Event plan, Product/Design/Marketing Brief, User Story, Workshop agenda, ToDo List, Meeting minutes or use case/test scenarios.
 *   [ ] You can send the result of your work to anybody i.e. work colleagues, your partner in order to ask their opinion an get their feedback, or just have it for yourself.
 
+<!---->
 
 *   **Creating a document**
 

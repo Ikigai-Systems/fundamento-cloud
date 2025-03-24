@@ -1,1 +1,463 @@
-[{"id":"2bd2f4bc-1808-4563-916d-2446c6aad0df","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In order to create an Organization - when you are logged-in, just click on your initials on the main menu (top-right in the work area)","styles":{}}],"children":[]},{"id":"547b2048-a2e1-4726-85dc-f98c80e46695","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:433","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"2b56d855-ec44-4d2e-a36d-eb79dcf906b6","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Then choose: Organizations","styles":{}}],"children":[]},{"id":"6c4b5a9a-f8e3-44eb-bafc-c605efe59a06","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:434","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"39cde839-06e7-44d8-aef5-3db67dc5ac2f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"click \"Create\" button","styles":{}}],"children":[]},{"id":"f09380c5-4d05-4b66-8cf6-ac7ecf26da27","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:435","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"6ca935e8-3bc5-44cd-9d70-9bf5977049c0","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Add a name of the Organization and click \"Create\"","styles":{}}],"children":[]},{"id":"7ea94fac-c01a-491f-87c1-b57ed7f325cb","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:436","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"0473d14b-656c-4057-8fb2-15ab96878549","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"After creating new Organization you can see current status. Here your role is being shown, you can change it in this area. You are able now to add/invite new users to this particular organization (explanations below)","styles":{}}],"children":[]},{"id":"1abbee8e-7bb1-4fe8-9db2-37ae6f3cd3d8","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Important: when you want to start work within a new Organization, click \"Switch to\" button","styles":{}}],"children":[]},{"id":"cd27fbf0-5f08-4bb5-ae20-f412c31556b4","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:437","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"476130b0-9fb0-4bac-828e-36007d1b40c1","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"then you will see \"Start view\" and you can work in that space","styles":{}}],"children":[]},{"id":"11f4794c-b6d1-4f5c-9bbd-b2765effd32a","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"https://fundamento.cloud/attachments/194","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"cd8d165f-ed44-4bc5-9d84-58825a6b14b2","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"With the intention of delete an Organization you are supposed to click on your initials on the main menu:","styles":{}}],"children":[]},{"id":"5d695560-4a28-46e2-8cfa-00444c11e3c4","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:502","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"81ea67ce-cc7d-4e4f-8af4-18c6a4a3505d","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"choose: Organizations","styles":{}}],"children":[]},{"id":"bb3ad610-a5d6-410d-873f-7bee03f7fe1a","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:503","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"97887512-54a4-4732-9f82-539b42cbb883","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"then choose: \"show\" or \"click to show\" (depending on what Organization your're logged in at the moment) to see view of details of your Organization.","styles":{}}],"children":[]},{"id":"dc727fda-bafa-4fd2-9fe6-6c6bfd76617f","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:504","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"719e2540-331b-4e85-9317-743bce00fbb4","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Use a symbol down arrow to and click on it to see the possibillity deleting the Organization","styles":{}}],"children":[]},{"id":"366af529-d33a-4abc-9aa2-506d75ab6169","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:506","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"7d9291c5-0c8a-4e53-9d6c-d8625cdc3c4f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Before permanent delete, we are going to ask you whether you are sure about this kind of action via a message: \"","styles":{}},{"type":"text","text":"Are you sure? Your organization will be immediately removed!\"","styles":{"italic":true}}],"children":[]},{"id":"cef8e910-4ba4-4b7d-8ddd-d0a7a84bb11c","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Then you have to just confirm it or abandon this action.","styles":{}}],"children":[]},{"id":"1fcccbb0-ac48-4f22-9a0c-6e734b7a4034","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Suppose that you would like only to change name of your Organization, click \"edit\" button","styles":{}}],"children":[]},{"id":"3ff582c6-925a-423f-bd8c-69143d9765da","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:509","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"b227e43a-ea07-4656-8768-125d33454ba0","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"and now you are able to change the name of the Organization, do it and click \"Save\" button","styles":{}}],"children":[]},{"id":"fc3b498f-4563-453a-ab43-38eb60525bef","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:510","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"89a0f494-24e2-4740-a951-f7e74d9a855f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"\"Switch to\" button applies also here as you want to open a workspace of this particular Organization, since you could be in the \"show Organization\" mode at the moment. Use it when you want to start or continue work in one of the Spaces of this particular Organization.","styles":{}}],"children":[]},{"id":"f2b527bb-bdb8-4964-8243-55fd1b260911","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:511","caption":"","showPreview":true,"previewWidth":512},"children":[]}]
+[
+  {
+    "id": "2bd2f4bc-1808-4563-916d-2446c6aad0df",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In order to create an Organization - when you are logged-in, just click on your initials on the main menu (top-right in the work area)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "547b2048-a2e1-4726-85dc-f98c80e46695",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:433",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "2b56d855-ec44-4d2e-a36d-eb79dcf906b6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Then choose: Organizations",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6c4b5a9a-f8e3-44eb-bafc-c605efe59a06",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:434",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "39cde839-06e7-44d8-aef5-3db67dc5ac2f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "click \"Create\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f09380c5-4d05-4b66-8cf6-ac7ecf26da27",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:435",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "6ca935e8-3bc5-44cd-9d70-9bf5977049c0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Add a name of the Organization and click \"Create\"",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "7ea94fac-c01a-491f-87c1-b57ed7f325cb",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:436",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "0473d14b-656c-4057-8fb2-15ab96878549",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "After creating new Organization you can see current status. Here your role is being shown, you can change it in this area. You are able now to add/invite new users to this particular organization (explanations below)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1abbee8e-7bb1-4fe8-9db2-37ae6f3cd3d8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Important: when you want to start work within a new Organization, click \"Switch to\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "cd27fbf0-5f08-4bb5-ae20-f412c31556b4",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:437",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "476130b0-9fb0-4bac-828e-36007d1b40c1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "then you will see \"Start view\" and you can work in that space",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "11f4794c-b6d1-4f5c-9bbd-b2765effd32a",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "https://fundamento.cloud/attachments/194",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "cd8d165f-ed44-4bc5-9d84-58825a6b14b2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "With the intention of delete an Organization you are supposed to click on your initials on the main menu:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5d695560-4a28-46e2-8cfa-00444c11e3c4",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:502",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "81ea67ce-cc7d-4e4f-8af4-18c6a4a3505d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "choose: Organizations",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bb3ad610-a5d6-410d-873f-7bee03f7fe1a",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:503",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "97887512-54a4-4732-9f82-539b42cbb883",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "then choose: \"show\" or \"click to show\" (depending on what Organization your're logged in at the moment) to see view of details of your Organization.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "dc727fda-bafa-4fd2-9fe6-6c6bfd76617f",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:504",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "719e2540-331b-4e85-9317-743bce00fbb4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Use a symbol down arrow to and click on it to see the possibillity deleting the Organization",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "366af529-d33a-4abc-9aa2-506d75ab6169",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:506",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "7d9291c5-0c8a-4e53-9d6c-d8625cdc3c4f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Before permanent delete, we are going to ask you whether you are sure about this kind of action via a message: \"",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Are you sure? Your organization will be immediately removed!\"",
+        "styles": {
+          "italic": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "cef8e910-4ba4-4b7d-8ddd-d0a7a84bb11c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Then you have to just confirm it or abandon this action.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1fcccbb0-ac48-4f22-9a0c-6e734b7a4034",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Suppose that you would like only to change name of your Organization, click \"edit\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3ff582c6-925a-423f-bd8c-69143d9765da",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:509",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "b227e43a-ea07-4656-8768-125d33454ba0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "and now you are able to change the name of the Organization, do it and click \"Save\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "fc3b498f-4563-453a-ab43-38eb60525bef",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:510",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "89a0f494-24e2-4740-a951-f7e74d9a855f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "\"Switch to\" button applies also here as you want to open a workspace of this particular Organization, since you could be in the \"show Organization\" mode at the moment. Use it when you want to start or continue work in one of the Spaces of this particular Organization.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f2b527bb-bdb8-4964-8243-55fd1b260911",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:511",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  }
+]

@@ -1,1 +1,112 @@
-[{"id":"b88b9aef-44d1-4fe5-9ea4-8b563327a097","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you have created a document (table or something else) and would like to share its content with someone","styles":{}}],"children":[]},{"id":"737f0cb1-0e8e-4232-89bf-87277facb75d","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:450","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"08cc9c87-61b0-4fa4-8746-eb9ca184e4b8","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Remember, when you click \"Share\" button, anyone with the link can view this document (however not edit or comment yet). Share button serves when you want someone outside your Team just to see your document.","styles":{}}],"children":[]},{"id":"8ea11137-00c1-499c-bde9-c367be15b940","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"https://fundamento.cloud/attachments/219","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"a82df265-5300-495f-9d73-764cca7b3b1a","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Still, you are the person who decides whom you will send this link to.","styles":{}}],"children":[]},{"id":"e75d2c8d-077c-40d8-81ff-dba91e8edab3","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:451","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"4d837c44-34cb-492e-910f-de6f815b27ac","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"So, just copy link and paste it for someone anywhere you want them to see it: in communication app, via email etc.","styles":{}}],"children":[]}]
+[
+  {
+    "id": "b88b9aef-44d1-4fe5-9ea4-8b563327a097",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you have created a document (table or something else) and would like to share its content with someone",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "737f0cb1-0e8e-4232-89bf-87277facb75d",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:450",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "08cc9c87-61b0-4fa4-8746-eb9ca184e4b8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Remember, when you click \"Share\" button, anyone with the link can view this document (however not edit or comment yet). Share button serves when you want someone outside your Team just to see your document.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8ea11137-00c1-499c-bde9-c367be15b940",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "https://fundamento.cloud/attachments/219",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "a82df265-5300-495f-9d73-764cca7b3b1a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Still, you are the person who decides whom you will send this link to.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e75d2c8d-077c-40d8-81ff-dba91e8edab3",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:451",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "4d837c44-34cb-492e-910f-de6f815b27ac",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "So, just copy link and paste it for someone anywhere you want them to see it: in communication app, via email etc.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  }
+]

@@ -1,1 +1,2102 @@
-[{"id":"26d60a91-999e-4418-8ffe-13f828b0b322","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Formulas can be described and used as a language. In general, formulas are made up of two important components: Objects (and each object consists of values) and Arguments (and its describes what you want to do to the particular object)","styles":{}}],"children":[]},{"id":"b96784fb-6699-4fd4-b3ad-8dfa8b2e00b2","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Fundamento offers you a great deal of possibilities of processing your data. You can add formulas directly to the Documents,","styles":{}}],"children":[]},{"id":"2dc03750-eecd-45d0-ac1e-3c639f5dfa5d","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Formulas can be used in following places:","styles":{}}],"children":[]},{"id":"995a2a83-8e6f-4e4a-82cc-35149df6bd13","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In Table, as a Formula ","styles":{}},{"type":"link","href":"https://docs.fundamento.it/using-tables/column-types","content":[{"type":"text","text":"column type","styles":{}}]},{"type":"text","text":".","styles":{}}],"children":[]},{"id":"4c7b4334-13c3-4168-9ebc-e5efe901a15e","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In Document, as a Button ","styles":{}},{"type":"link","href":"https://docs.fundamento.it/document-editor/block-types","content":[{"type":"text","text":"block type","styles":{}}]},{"type":"text","text":" action.","styles":{}}],"children":[]},{"id":"af945903-484b-410b-9d1e-13e71894554d","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In Table, as a Button ","styles":{}},{"type":"link","href":"https://docs.fundamento.it/using-tables/column-types","content":[{"type":"text","text":"column type","styles":{}}]},{"type":"text","text":" action.","styles":{}}],"children":[]},{"id":"8e08c8a1-8445-4e82-afbd-bf71e608b49d","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In a Webtrigger ","styles":{}},{"type":"link","href":"https://docs.fundamento.it/guide/automations","content":[{"type":"text","text":"automation","styles":{}}]},{"type":"text","text":" action.","styles":{}}],"children":[]},{"id":"b6bc67f7-c6dd-434b-918c-9712bd63a288","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Examples of the most used formulas:","styles":{}}],"children":[]},{"id":"1953ff90-acc1-4cf3-83f0-4460e05e3844","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Filter () - filter the particular set of data based on specific criteria","styles":{}}],"children":[]},{"id":"f60d7e84-7036-43ed-bd5d-1791facbb32f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You’ll use the Filter formula when you want to use at part of a Table to answer a question. The criteria for this formula can be as simple or as complex as you need.","styles":{}}],"children":[]},{"id":"a4f44e3c-6abd-46a9-be54-17bc4e19048d","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Filter(Table(\"table you want to look at\"), \"criteria matching the part you're interested in\")","styles":{}}],"children":[]},{"id":"0c064f11-fc6b-425f-874e-135ed18682a6","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"If () The If formula allows you to handle if/then logic. The basic structure of the If() formula is as follows:","styles":{}}],"children":[]},{"id":"632f906f-b9c3-45e4-a87c-16074191bcc6","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"If(Condition, \"What you want to happen if this condition is true\", \"What you want to happen if this condition is false\")","styles":{}}],"children":[]},{"id":"2671f200-6bdd-465e-a289-25b60dc474f7","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"CurrentRow","styles":{}}],"children":[]},{"id":"f4c099c5-22c8-486c-bd1c-0f134f97b258","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"In Fundamento tables are in fact databases the smallest unit is a row (unlike in the classic spreadsheets). Working with rows, you’re able to access all of the contextual details for each value (aka columns or attributes of the row).","styles":{}}],"children":[]},{"id":"82956c63-4d1f-446f-ba95-09feabe64496","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"For example, initial extractions might look like:","styles":{}}],"children":[]},{"id":"a476f4fe-8f8b-4233-8b1a-6aa6cb41c5a5","type":"codeBlock","props":{"language":"javascript"},"content":[{"type":"text","text":"First(CurrentRow(\"First Name\")) + First(CurrentRow(\"Last Name\"))","styles":{}}],"children":[]},{"id":"bc966f3d-473e-4b4a-9111-43e097d7a4a5","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Other popular formulas that can be used in Fundamento:","styles":{}}],"children":[]},{"id":"46faa012-d0a6-4ac0-b970-e9a7a1ac47a9","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Find","styles":{}}],"children":[]},{"id":"9748d5b2-619e-44d4-a35e-c92e66862785","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Sum","styles":{}}],"children":[]},{"id":"43aeb85d-f0f2-4818-8d48-b090b4051351","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"List","styles":{}}],"children":[]},{"id":"1925aa2b-b40c-4a60-a22b-25d19a7ebae4","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"First","styles":{}}],"children":[]},{"id":"2a20c875-aaf3-4c24-bd4a-bf732a9d754f","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Last","styles":{}}],"children":[]},{"id":"ebb52554-7b19-424a-9dda-2b372527cec6","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"ForEach","styles":{}}],"children":[]},{"id":"502ba06f-7e3e-49cc-b909-1a6053a5150d","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"All","styles":{}}],"children":[]},{"id":"c01c4419-c963-4f14-9887-883cd608f088","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Any","styles":{}}],"children":[]},{"id":"8b813031-a2d7-4ad1-a962-3e9f386aaccc","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"And","styles":{}}],"children":[]},{"id":"9cd3defc-503a-408e-a4fb-596b17691a4f","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Not","styles":{}}],"children":[]},{"id":"5106f331-98e9-49c7-b073-8c3f36888f3a","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Or","styles":{}}],"children":[]},{"id":"a7228d1f-69c2-42bf-81a1-d3b62c121331","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"True","styles":{}}],"children":[]},{"id":"f1f02ff1-50b7-4dc2-9bce-97062c323aae","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"False","styles":{}}],"children":[]},{"id":"0baf6f74-c840-40da-8aa2-580b634649ae","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Join","styles":{}}],"children":[]},{"id":"72b1cfa7-e736-4480-bc43-006729729b6d","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Concatenate","styles":{}}],"children":[]},{"id":"9e6549f3-59cc-4188-965d-10aa239967e6","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Substring","styles":{}}],"children":[]},{"id":"6405dfb9-c27f-4f89-8139-b6adbea21e86","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"ContainsText","styles":{}}],"children":[]},{"id":"f92b2e91-d49f-4148-9f26-9fc5badade9a","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"EndsWith","styles":{}}],"children":[]},{"id":"f0fd1487-92d1-42ef-989f-ccb47ba1eca5","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"StartsWith","styles":{}}],"children":[]},{"id":"4930168e-f28e-4d4e-8174-03d2264f7ae2","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Substitute","styles":{}}],"children":[]},{"id":"a637cb91-2d88-43d8-9391-59b83b84fad0","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Upper","styles":{}}],"children":[]},{"id":"a94dedbb-cd7c-4725-9552-9c6ac4a8b4ee","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Lower","styles":{}}],"children":[]},{"id":"3c23e534-5629-4b8e-a538-959b27f43309","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Number","styles":{}}],"children":[]},{"id":"61eb2530-81dc-4a8c-89b0-2a8f521046db","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Dig","styles":{}}],"children":[]},{"id":"daafa410-8b37-4ba0-9f76-bef809372ac2","type":"bulletListItem","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Equals","styles":{}}],"children":[]},{"id":"1c7b8db0-7623-496b-a116-d639ab909775","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"More information about what you can achieve with Formulas in Fundamento, you'll find in our Technical Documentation ","styles":{}},{"type":"link","href":"https://docs.fundamento.it/formulas/reference","content":[{"type":"text","text":"https://docs.fundamento.it/formulas/reference","styles":{}}]}],"children":[]},{"id":"3b69b3a0-989c-4be0-8e33-da8183a64296","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Formulas in the Text:","styles":{"bold":true}}],"children":[]},{"id":"258dd763-1537-4d2f-b55f-6e52db323d2f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You can also use Formulas in a text. When you want to use a formula in the document, then you are supposed to click \"+\" (on the left hand side, before this text) or type just \"/\" and choose \"Formula\" on the bottom of the list, then something like this appears:","styles":{}}],"children":[]},{"id":"bd040eab-2e2e-4f9a-bf1d-013a807a184a","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"[]","styles":{}}],"children":[]},{"id":"05413e69-6dd7-4b00-965e-f74e45717798","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you hover over this area you'll see this:","styles":{}}],"children":[]},{"id":"52d3dc85-dc24-4c3f-b339-b1389460ed9e","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:431","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"ee70e9cc-3ee7-4d72-8a2b-fc80b5e6516c","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you click on it that view will appear - now you can add a formula","styles":{}}],"children":[]},{"id":"76514f0b-d85a-403c-95c5-8290480762d2","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:432","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"e3cf752a-24ee-4dd4-8900-5da92d02724a","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"For example, as you use following formula:","styles":{}}],"children":[]},{"id":"2e563e15-8ce1-4cca-b2f0-6f4474bc1d80","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"https://fundamento.cloud/attachments/154","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"24276d51-1afb-4099-9360-5af7a5182be3","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"you will get an answer:","styles":{}}],"children":[]},{"id":"d459ce4c-9a6d-4430-8305-95a838415fec","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"100","styles":{}}],"children":[]},{"id":"34243150-d36e-4952-9043-68407dd292e4","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Formulas in a table:","styles":{"bold":true}}],"children":[]},{"id":"fd62d8cf-3ce7-4f4a-b9b8-23d8f93f123a","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"First you have to create a blank table using \"+\" (on the left hand side, before this text) or type just \"/\" and choose \"Grid table\"","styles":{}}],"children":[]},{"id":"c2798142-8778-4f79-a6c8-ec4fe7c8a21e","type":"table","props":{"textColor":"default"},"content":{"type":"tableContent","columnWidths":[null,null,null,null],"rows":[{"cells":[[],[],[],[]]},{"cells":[[],[],[],[]]},{"cells":[[],[],[],[]]}]},"children":[]},{"id":"0d4565a1-4df3-4b14-a6ea-b0dcf8084ef2","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"As you can see, when you hover a mouse over the table you can see that you can easily add rows and colums (using \"+\") in order to make the table more useful","styles":{}}],"children":[]},{"id":"32717a8d-e55d-4438-afe0-a9b33b376f3e","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Grid Table: Customer their first full month of sales","styles":{"bold":true}}],"children":[]},{"id":"401bd8a9-88fc-4a36-b703-15cd90966f46","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Example:","styles":{}}],"children":[]},{"id":"38d8246f-7da3-46d9-942a-eb4a01ed8553","type":"table","props":{"textColor":"default"},"content":{"type":"tableContent","columnWidths":[null,null,null,null,null,null],"rows":[{"cells":[[],[],[],[],[],[]]},{"cells":[[{"type":"text","text":"Customer","styles":{}}],[{"type":"text","text":"Month","styles":{}}],[{"type":"text","text":"Sales","styles":{}}],[{"type":"text","text":"CustomerSucces","styles":{}}],[{"type":"text","text":"Acquisition source","styles":{}}],[{"type":"text","text":"Sales figures","styles":{}}]]},{"cells":[[{"type":"text","text":"ABI","styles":{}}],[{"type":"text","text":"01.2024","styles":{}}],[{"type":"text","text":"Cris","styles":{}}],[{"type":"text","text":"Aga","styles":{}}],[{"type":"text","text":"Marketing Lead","styles":{}}],[{"type":"text","text":"100000","styles":{}}]]},{"cells":[[{"type":"text","text":"BEBI","styles":{}}],[{"type":"text","text":"01.2024","styles":{}}],[{"type":"text","text":"Pati","styles":{}}],[{"type":"text","text":"Phil","styles":{}}],[{"type":"text","text":"Partner reco","styles":{}}],[{"type":"text","text":"590000","styles":{}}]]},{"cells":[[{"type":"text","text":"CEBU","styles":{}}],[{"type":"text","text":"01.2024","styles":{}}],[{"type":"text","text":"Cris","styles":{}}],[{"type":"text","text":"Phil","styles":{}}],[{"type":"text","text":"Partner reco","styles":{}}],[{"type":"text","text":"59000","styles":{}}]]},{"cells":[[{"type":"text","text":"KICK","styles":{}}],[{"type":"text","text":"01.2024","styles":{}}],[{"type":"text","text":"Pati","styles":{}}],[{"type":"text","text":"Phil","styles":{}}],[{"type":"text","text":"Marketing Lead","styles":{}}],[{"type":"text","text":"123000","styles":{}}]]},{"cells":[[{"type":"text","text":"KILT","styles":{}}],[{"type":"text","text":"01.2024","styles":{}}],[{"type":"text","text":"Pati","styles":{}}],[{"type":"text","text":"Doris","styles":{}}],[{"type":"text","text":"Marketing Lead","styles":{}}],[{"type":"text","text":"45000","styles":{}}]]}]},"children":[]},{"id":"dc76ef86-9aa5-4fe2-9168-4fa5ad15f9bc","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"You can also crreate an Advanced Table","styles":{}}],"children":[]},{"id":"8402f125-6c3d-474d-8957-12ad690b114c","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Example:","styles":{}}],"children":[]},{"id":"9074ec06-cfc4-4d13-921a-d0ea3019aab5","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Advanced Table: Customer their first full month of sales","styles":{}}],"children":[]},{"id":"06d44ce6-7fb1-4f1f-a588-74877cf7e2e6","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"<todo: create advanced table in .blocknote.json file manually>","styles":{"italic":true}}],"children":[]},{"id":"646a785c-1eb3-4b12-82af-269ff53d4dcc","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Formulas in the table details:","styles":{"bold":true}}],"children":[]},{"id":"26823c9a-55a9-4d30-ae0e-c52362f44d78","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Description\n","styles":{"bold":true}},{"type":"text","text":"Outputs contents of a Fundamento Table in a form of JSON representation.","styles":{}}],"children":[]},{"id":"da7671aa-85dc-4626-b2af-c9b4e152ea80","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Rows from that Table will be converted to an array of objects, and each object consists of values of that row for the table columns.","styles":{}}],"children":[]},{"id":"50f55a59-1d24-4bbf-9a00-2d82051c9a79","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Objects will have duplicate key-value entries: one using column display name, and second using immutable identifier of the column (i.e. ","styles":{}},{"type":"text","text":"{\"First Name\": \"Cris\", \"9IJo5SGMLL\": \"Cris\"}","styles":{"code":true}},{"type":"text","text":").\n","styles":{}},{"type":"text","text":"Arguments\n","styles":{"bold":true}},{"type":"text","text":"tableId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Table in the Space. For your convenience, Table name can be used as well.\n","styles":{}},{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"Table(\"Invoices\")","styles":{"code":true}},{"type":"text","text":"→","styles":{}},{"type":"text","text":"[{\"Invoice No\": \"PITU/01/2024\", \"First Name\": \"Cris\", \"Sale Date\": \"05/01/2024\", \"IAmount\": 100000}]","styles":{"code":true}}],"children":[]},{"id":"339280e6-9c6d-42a8-b472-a93355f8125b","type":"heading","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left","level":3},"content":[{"type":"text","text":"CurrentRow (columnId)","styles":{}}],"children":[]},{"id":"9c7f7a65-44d1-4859-acef-3f215bf78e60","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Description\n","styles":{"bold":true}},{"type":"text","text":"Outputs contents of a specific cell for a current row. Use it in a Formula column types - elsewhere ","styles":{}},{"type":"text","text":"CurrentRow","styles":{"code":true}},{"type":"text","text":" will be invalid.\n","styles":{}},{"type":"text","text":"Arguments\n","styles":{"bold":true}},{"type":"text","text":"columnId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Column in the Table. For your convenience, Column name can be used as well.\n","styles":{}},{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"CurrentRow(\"First Name\"\")","styles":{"code":true}},{"type":"text","text":"→","styles":{}},{"type":"text","text":"\"Cris\"","styles":{"code":true}}],"children":[]},{"id":"538e8a56-7f06-4d56-bb4e-3b289c223725","type":"heading","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left","level":3},"content":[{"type":"text","text":"AddRow (tableId, columnId, columnValue) ","styles":{}},{"type":"text","text":"ACTION","styles":{"code":true}}],"children":[]},{"id":"5ec83f18-6480-4a1f-a85d-930408b06760","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Description\n","styles":{"bold":true}},{"type":"text","text":"Adds a new row to a Fundamento Table. Optionally can fill value(s) in specified column(s).\n","styles":{}},{"type":"text","text":"Arguments\n","styles":{"bold":true}},{"type":"text","text":"tableId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Table in the Space. For your convenience, Table name can be used as well.\n","styles":{}},{"type":"text","text":"columnId...","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Column in the Table. For your convenience, Column name can be used as well.\n","styles":{}},{"type":"text","text":"columnValue...","styles":{"code":true}},{"type":"text","text":" - value to use for specified Column when creating new Row.\n","styles":{}},{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"AddRow(\"Invoices\", \"Sale Date\", \"05/01/2024\")","styles":{"code":true}}],"children":[]},{"id":"861d59e2-4181-4c74-a614-04edc7472cf0","type":"heading","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left","level":3},"content":[{"type":"text","text":"AddOrUpdateRow (tableId, criteria, columnId, columnValue) ","styles":{}},{"type":"text","text":"ACTION","styles":{"code":true}}],"children":[]},{"id":"d45f2bf8-4332-4eb0-ae3b-6b7e999b6c05","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Description\n","styles":{"bold":true}},{"type":"text","text":"Modifies all rows in a Fundamento Table matching the criteria. If no match is found, a new row will be inserted to Table.\n","styles":{}},{"type":"text","text":"Arguments\n","styles":{"bold":true}},{"type":"text","text":"tableId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Table in the Space. Table name can be used as well.\n","styles":{}},{"type":"text","text":"criteria","styles":{"code":true}},{"type":"text","text":" - Expression to select the rows for update\n","styles":{}},{"type":"text","text":"columnId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Column in the Table. Column name can be used as well.\n","styles":{}},{"type":"text","text":"columnValue","styles":{"code":true}},{"type":"text","text":" - value to use for specified Column when creating new Row.\n","styles":{}},{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"AddOrUpdateRow(\"Invoices\", CurrentRow(\"Sale Date\") == \"05/01/2024\", \"Sale Date\", \"05/01/2024\")","styles":{"code":true}}],"children":[]},{"id":"6f7909a3-b308-48b7-9afb-6cd2c7854848","type":"heading","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left","level":3},"content":[{"type":"text","text":"DeleteRows (tableId) ","styles":{}},{"type":"text","text":"ACTION","styles":{"code":true}}],"children":[]},{"id":"409d0b8b-7f33-441b-adb1-25e93b67b813","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Description\n","styles":{"bold":true}},{"type":"text","text":"Removes all rows from a Fundamento Table, effectively clearing it.\n","styles":{}},{"type":"text","text":"Arguments\n","styles":{"bold":true}},{"type":"text","text":"tableId","styles":{"code":true}},{"type":"text","text":" - An identifier representing uniquely the Table in the Space. Table name can be used as well.\n","styles":{}},{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"RemoveRows(\"Invoices\")","styles":{"code":true}}],"children":[]},{"id":"440589da-9afd-4031-9c5b-6573ba86f577","type":"heading","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left","level":3},"content":[{"type":"text","text":"RunActions (actions…) ","styles":{}},{"type":"text","text":"ACTION","styles":{"code":true}}],"children":[]},{"id":"257652df-b4fe-4149-8e04-a79305515e21","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Examples\n","styles":{"bold":true}},{"type":"text","text":"RunActions(RemoveRows(\"Invoices\"), AddRow(\"Invoices\", \"Name\", \"Sample initial invoice\"))","styles":{"code":true}}],"children":[]}]
+[
+  {
+    "id": "26d60a91-999e-4418-8ffe-13f828b0b322",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Formulas can be described and used as a language. In general, formulas are made up of two important components: Objects (and each object consists of values) and Arguments (and its describes what you want to do to the particular object)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "b96784fb-6699-4fd4-b3ad-8dfa8b2e00b2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Fundamento offers you a great deal of possibilities of processing your data. You can add formulas directly to the Documents,",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2dc03750-eecd-45d0-ac1e-3c639f5dfa5d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Formulas can be used in following places:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "995a2a83-8e6f-4e4a-82cc-35149df6bd13",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Table, as a Formula ",
+        "styles": {}
+      },
+      {
+        "type": "link",
+        "href": "https://docs.fundamento.it/using-tables/column-types",
+        "content": [
+          {
+            "type": "text",
+            "text": "column type",
+            "styles": {}
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": ".",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "4c7b4334-13c3-4168-9ebc-e5efe901a15e",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Document, as a Button ",
+        "styles": {}
+      },
+      {
+        "type": "link",
+        "href": "https://docs.fundamento.it/document-editor/block-types",
+        "content": [
+          {
+            "type": "text",
+            "text": "block type",
+            "styles": {}
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": " action.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "af945903-484b-410b-9d1e-13e71894554d",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Table, as a Button ",
+        "styles": {}
+      },
+      {
+        "type": "link",
+        "href": "https://docs.fundamento.it/using-tables/column-types",
+        "content": [
+          {
+            "type": "text",
+            "text": "column type",
+            "styles": {}
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": " action.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8e08c8a1-8445-4e82-afbd-bf71e608b49d",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In a Webtrigger ",
+        "styles": {}
+      },
+      {
+        "type": "link",
+        "href": "https://docs.fundamento.it/guide/automations",
+        "content": [
+          {
+            "type": "text",
+            "text": "automation",
+            "styles": {}
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "text": " action.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "b6bc67f7-c6dd-434b-918c-9712bd63a288",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Examples of the most used formulas:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1953ff90-acc1-4cf3-83f0-4460e05e3844",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Filter () - filter the particular set of data based on specific criteria",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f60d7e84-7036-43ed-bd5d-1791facbb32f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You’ll use the Filter formula when you want to use at part of a Table to answer a question. The criteria for this formula can be as simple or as complex as you need.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a4f44e3c-6abd-46a9-be54-17bc4e19048d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Filter(Table(\"table you want to look at\"), \"criteria matching the part you're interested in\")",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "0c064f11-fc6b-425f-874e-135ed18682a6",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "If () The If formula allows you to handle if/then logic. The basic structure of the If() formula is as follows:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "632f906f-b9c3-45e4-a87c-16074191bcc6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "If(Condition, \"What you want to happen if this condition is true\", \"What you want to happen if this condition is false\")",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2671f200-6bdd-465e-a289-25b60dc474f7",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "CurrentRow",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f4c099c5-22c8-486c-bd1c-0f134f97b258",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Fundamento tables are in fact databases the smallest unit is a row (unlike in the classic spreadsheets). Working with rows, you’re able to access all of the contextual details for each value (aka columns or attributes of the row).",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "82956c63-4d1f-446f-ba95-09feabe64496",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "For example, initial extractions might look like:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a476f4fe-8f8b-4233-8b1a-6aa6cb41c5a5",
+    "type": "codeBlock",
+    "props": {
+      "language": "javascript"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "First(CurrentRow(\"First Name\")) + First(CurrentRow(\"Last Name\"))",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bc966f3d-473e-4b4a-9111-43e097d7a4a5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Other popular formulas that can be used in Fundamento:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "46faa012-d0a6-4ac0-b970-e9a7a1ac47a9",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Find",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9748d5b2-619e-44d4-a35e-c92e66862785",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Sum",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "43aeb85d-f0f2-4818-8d48-b090b4051351",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "List",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1925aa2b-b40c-4a60-a22b-25d19a7ebae4",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "First",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2a20c875-aaf3-4c24-bd4a-bf732a9d754f",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Last",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ebb52554-7b19-424a-9dda-2b372527cec6",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "ForEach",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "502ba06f-7e3e-49cc-b909-1a6053a5150d",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "All",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c01c4419-c963-4f14-9887-883cd608f088",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Any",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8b813031-a2d7-4ad1-a962-3e9f386aaccc",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "And",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9cd3defc-503a-408e-a4fb-596b17691a4f",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Not",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5106f331-98e9-49c7-b073-8c3f36888f3a",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Or",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a7228d1f-69c2-42bf-81a1-d3b62c121331",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "True",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f1f02ff1-50b7-4dc2-9bce-97062c323aae",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "False",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "0baf6f74-c840-40da-8aa2-580b634649ae",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Join",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "72b1cfa7-e736-4480-bc43-006729729b6d",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Concatenate",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9e6549f3-59cc-4188-965d-10aa239967e6",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Substring",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6405dfb9-c27f-4f89-8139-b6adbea21e86",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "ContainsText",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f92b2e91-d49f-4148-9f26-9fc5badade9a",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "EndsWith",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f0fd1487-92d1-42ef-989f-ccb47ba1eca5",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "StartsWith",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "4930168e-f28e-4d4e-8174-03d2264f7ae2",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Substitute",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a637cb91-2d88-43d8-9391-59b83b84fad0",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Upper",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a94dedbb-cd7c-4725-9552-9c6ac4a8b4ee",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Lower",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3c23e534-5629-4b8e-a538-959b27f43309",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Number",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "61eb2530-81dc-4a8c-89b0-2a8f521046db",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Dig",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "daafa410-8b37-4ba0-9f76-bef809372ac2",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Equals",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1c7b8db0-7623-496b-a116-d639ab909775",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "More information about what you can achieve with Formulas in Fundamento, you'll find in our Technical Documentation ",
+        "styles": {}
+      },
+      {
+        "type": "link",
+        "href": "https://docs.fundamento.it/formulas/reference",
+        "content": [
+          {
+            "type": "text",
+            "text": "https://docs.fundamento.it/formulas/reference",
+            "styles": {}
+          }
+        ]
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3b69b3a0-989c-4be0-8e33-da8183a64296",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Formulas in the Text:",
+        "styles": {
+          "bold": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "258dd763-1537-4d2f-b55f-6e52db323d2f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can also use Formulas in a text. When you want to use a formula in the document, then you are supposed to click \"+\" (on the left hand side, before this text) or type just \"/\" and choose \"Formula\" on the bottom of the list, then something like this appears:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bd040eab-2e2e-4f9a-bf1d-013a807a184a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "[]",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "05413e69-6dd7-4b00-965e-f74e45717798",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you hover over this area you'll see this:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "52d3dc85-dc24-4c3f-b339-b1389460ed9e",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:431",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "ee70e9cc-3ee7-4d72-8a2b-fc80b5e6516c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you click on it that view will appear - now you can add a formula",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "76514f0b-d85a-403c-95c5-8290480762d2",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:432",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "e3cf752a-24ee-4dd4-8900-5da92d02724a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "For example, as you use following formula:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "2e563e15-8ce1-4cca-b2f0-6f4474bc1d80",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "https://fundamento.cloud/attachments/154",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "24276d51-1afb-4099-9360-5af7a5182be3",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "you will get an answer:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "d459ce4c-9a6d-4430-8305-95a838415fec",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "100",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "34243150-d36e-4952-9043-68407dd292e4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Formulas in a table:",
+        "styles": {
+          "bold": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "fd62d8cf-3ce7-4f4a-b9b8-23d8f93f123a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "First you have to create a blank table using \"+\" (on the left hand side, before this text) or type just \"/\" and choose \"Grid table\"",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c2798142-8778-4f79-a6c8-ec4fe7c8a21e",
+    "type": "table",
+    "props": {
+      "textColor": "default"
+    },
+    "content": {
+      "type": "tableContent",
+      "columnWidths": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "rows": [
+        {
+          "cells": [
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        {
+          "cells": [
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        {
+          "cells": [
+            [],
+            [],
+            [],
+            []
+          ]
+        }
+      ]
+    },
+    "children": []
+  },
+  {
+    "id": "0d4565a1-4df3-4b14-a6ea-b0dcf8084ef2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you can see, when you hover a mouse over the table you can see that you can easily add rows and colums (using \"+\") in order to make the table more useful",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "32717a8d-e55d-4438-afe0-a9b33b376f3e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Grid Table: Customer their first full month of sales",
+        "styles": {
+          "bold": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "401bd8a9-88fc-4a36-b703-15cd90966f46",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Example:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "38d8246f-7da3-46d9-942a-eb4a01ed8553",
+    "type": "table",
+    "props": {
+      "textColor": "default"
+    },
+    "content": {
+      "type": "tableContent",
+      "columnWidths": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "rows": [
+        {
+          "cells": [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "Customer",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Month",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Sales",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "CustomerSucces",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Acquisition source",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Sales figures",
+                "styles": {}
+              }
+            ]
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "ABI",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "01.2024",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Cris",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Aga",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Marketing Lead",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "100000",
+                "styles": {}
+              }
+            ]
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "BEBI",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "01.2024",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Pati",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Phil",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Partner reco",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "590000",
+                "styles": {}
+              }
+            ]
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "CEBU",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "01.2024",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Cris",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Phil",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Partner reco",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "59000",
+                "styles": {}
+              }
+            ]
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "KICK",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "01.2024",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Pati",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Phil",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Marketing Lead",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "123000",
+                "styles": {}
+              }
+            ]
+          ]
+        },
+        {
+          "cells": [
+            [
+              {
+                "type": "text",
+                "text": "KILT",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "01.2024",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Pati",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Doris",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "Marketing Lead",
+                "styles": {}
+              }
+            ],
+            [
+              {
+                "type": "text",
+                "text": "45000",
+                "styles": {}
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    "children": []
+  },
+  {
+    "id": "dc76ef86-9aa5-4fe2-9168-4fa5ad15f9bc",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can also crreate an Advanced Table",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8402f125-6c3d-474d-8957-12ad690b114c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Example:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9074ec06-cfc4-4d13-921a-d0ea3019aab5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Advanced Table: Customer their first full month of sales",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "06d44ce6-7fb1-4f1f-a588-74877cf7e2e6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "<todo: create advanced table in .blocknote.json file manually>",
+        "styles": {
+          "italic": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "646a785c-1eb3-4b12-82af-269ff53d4dcc",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Formulas in the table details:",
+        "styles": {
+          "bold": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "26823c9a-55a9-4d30-ae0e-c52362f44d78",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Description\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Outputs contents of a Fundamento Table in a form of JSON representation.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "da7671aa-85dc-4626-b2af-c9b4e152ea80",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Rows from that Table will be converted to an array of objects, and each object consists of values of that row for the table columns.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "50f55a59-1d24-4bbf-9a00-2d82051c9a79",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Objects will have duplicate key-value entries: one using column display name, and second using immutable identifier of the column (i.e. ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "{\"First Name\": \"Cris\", \"9IJo5SGMLL\": \"Cris\"}",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": ").\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Arguments\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "tableId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Table in the Space. For your convenience, Table name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Table(\"Invoices\")",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "→",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "[{\"Invoice No\": \"PITU/01/2024\", \"First Name\": \"Cris\", \"Sale Date\": \"05/01/2024\", \"IAmount\": 100000}]",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "339280e6-9c6d-42a8-b472-a93355f8125b",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "CurrentRow (columnId)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9c7f7a65-44d1-4859-acef-3f215bf78e60",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Description\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Outputs contents of a specific cell for a current row. Use it in a Formula column types - elsewhere ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "CurrentRow",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " will be invalid.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Arguments\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "columnId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Column in the Table. For your convenience, Column name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "CurrentRow(\"First Name\"\")",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "→",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "\"Cris\"",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "538e8a56-7f06-4d56-bb4e-3b289c223725",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "AddRow (tableId, columnId, columnValue) ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "ACTION",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5ec83f18-6480-4a1f-a85d-930408b06760",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Description\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Adds a new row to a Fundamento Table. Optionally can fill value(s) in specified column(s).\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Arguments\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "tableId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Table in the Space. For your convenience, Table name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "columnId...",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Column in the Table. For your convenience, Column name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "columnValue...",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - value to use for specified Column when creating new Row.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "AddRow(\"Invoices\", \"Sale Date\", \"05/01/2024\")",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "861d59e2-4181-4c74-a614-04edc7472cf0",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "AddOrUpdateRow (tableId, criteria, columnId, columnValue) ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "ACTION",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "d45f2bf8-4332-4eb0-ae3b-6b7e999b6c05",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Description\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Modifies all rows in a Fundamento Table matching the criteria. If no match is found, a new row will be inserted to Table.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Arguments\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "tableId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Table in the Space. Table name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "criteria",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - Expression to select the rows for update\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "columnId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Column in the Table. Column name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "columnValue",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - value to use for specified Column when creating new Row.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "AddOrUpdateRow(\"Invoices\", CurrentRow(\"Sale Date\") == \"05/01/2024\", \"Sale Date\", \"05/01/2024\")",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "6f7909a3-b308-48b7-9afb-6cd2c7854848",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "DeleteRows (tableId) ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "ACTION",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "409d0b8b-7f33-441b-adb1-25e93b67b813",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Description\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "Removes all rows from a Fundamento Table, effectively clearing it.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Arguments\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "tableId",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - An identifier representing uniquely the Table in the Space. Table name can be used as well.\n",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "RemoveRows(\"Invoices\")",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "440589da-9afd-4031-9c5b-6573ba86f577",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "RunActions (actions…) ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "ACTION",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "257652df-b4fe-4149-8e04-a79305515e21",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Examples\n",
+        "styles": {
+          "bold": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "RunActions(RemoveRows(\"Invoices\"), AddRow(\"Invoices\", \"Name\", \"Sample initial invoice\"))",
+        "styles": {
+          "code": true
+        }
+      }
+    ],
+    "children": []
+  }
+]

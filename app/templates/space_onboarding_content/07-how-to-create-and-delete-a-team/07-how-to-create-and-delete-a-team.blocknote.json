@@ -1,1 +1,160 @@
-[{"id":"57ef7029-8421-4c88-a099-88b5ec2cf3ea","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"When you are logged-in, just click on your initials on the main menu (top-right in the work area)","styles":{}}],"children":[]},{"id":"7b947405-bfb4-4f20-aa11-4656cbe170a6","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:444","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"0ea9a977-b2b0-4257-ad9a-9ef204ac7fe6","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Then choose: Teams","styles":{}}],"children":[]},{"id":"b9bf0661-b372-422f-829d-ef20dd7aea35","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:445","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"b5789e0b-d58d-4577-b1c5-347b41e4f75f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Then click \"Create Team\" button","styles":{}}],"children":[]},{"id":"bc635a78-7fbf-4117-8fea-4ccc25ad24cd","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:446","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"9a0af6c1-25ea-4d45-98a5-641f621a868b","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"And you will see area where you should name your Team, create shortcut and search for users that should be in that particular Team.","styles":{}}],"children":[]},{"id":"a144efc3-71f7-4e34-8823-50ffc514de43","type":"image","props":{"backgroundColor":"default","textAlignment":"left","name":"","url":"attachment:447","caption":"","showPreview":true,"previewWidth":512},"children":[]},{"id":"a6317195-179b-4e15-80f5-ea0801ef98b0","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"Remember to fill all required fields. e.g. as a Shortcut try to use a word that you would like the document to be searched for later by our search engine.","styles":{}}],"children":[]},{"id":"98d6eac4-6322-445d-8f1e-d1b118543eb0","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"After you have named Team, created Shorcut and picked Team member just click \"Create\" button below.","styles":{}}],"children":[]}]
+[
+  {
+    "id": "57ef7029-8421-4c88-a099-88b5ec2cf3ea",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "When you are logged-in, just click on your initials on the main menu (top-right in the work area)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "7b947405-bfb4-4f20-aa11-4656cbe170a6",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:444",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "0ea9a977-b2b0-4257-ad9a-9ef204ac7fe6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Then choose: Teams",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "b9bf0661-b372-422f-829d-ef20dd7aea35",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:445",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "b5789e0b-d58d-4577-b1c5-347b41e4f75f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Then click \"Create Team\" button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "bc635a78-7fbf-4117-8fea-4ccc25ad24cd",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:446",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "9a0af6c1-25ea-4d45-98a5-641f621a868b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "And you will see area where you should name your Team, create shortcut and search for users that should be in that particular Team.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a144efc3-71f7-4e34-8823-50ffc514de43",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "attachment:447",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "a6317195-179b-4e15-80f5-ea0801ef98b0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Remember to fill all required fields. e.g. as a Shortcut try to use a word that you would like the document to be searched for later by our search engine.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "98d6eac4-6322-445d-8f1e-d1b118543eb0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "After you have named Team, created Shorcut and picked Team member just click \"Create\" button below.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  }
+]
