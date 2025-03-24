@@ -54,7 +54,7 @@
         </div>
 
         <% if Flipper.enabled?(:recaptcha) %>
-          <%= recaptcha_tags %>
+          <%= recaptcha_tags(noscript: false) %>
         <% end %>
 
         <div class="form-footer">
