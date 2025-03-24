@@ -117,6 +117,31 @@ class Space < ApplicationRecord
     { "id" => document_id, "children" => [] }
   end
 
+  def populate_with_onboarding_content!
+    def create_document(yjs_file)
+      document = self.organization.documents.create!(
+        title: File.basename(yjs_file, ".*"),
+        sync: File.read(yjs_file),
+        space: self,
+      )
+      # document.space = self
+      # document.save!
+
+      document.versions.create!(
+        content: JSON.load_file!(File.dirname(yjs_file) + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+      )
+
+      hierarchy_node = self.create_hierarchy_node(document.id)
+      self.hierarchy.append(hierarchy_node)
+      self.save!
+    end
+
+    Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.yjs") do |yjs_file|
+      create_document(yjs_file)
+    end
+
+  end
+
   private
   def traverse_hierarchy(starting_node)
     ids = []

@@ -1,0 +1,132 @@
+[
+  {
+    "id": "7db26c5b-65ad-4f9e-bb8d-5984d35b5ab1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Fundamento we provide a lot of useful key combinations as a shortcuts, however also for your convenience when it comes to e.g. search the Organization for documents, tables.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "7bedd7c2-869d-431d-9765-70b4c547d662",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Try to use ctrl+k on your keybord and plenty of possibilities will appear:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8a528a75-579a-4b1d-a68e-38674617561b",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "./search%20ctrl%20k.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "09127ecf-c939-4615-8ba6-51864fdfe397",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In the field: \"Type command or search\" you are able to search the Organization you're logged in at the moment and find all the items related to your search",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c5b314d9-f1f3-401d-9d78-6ac3f1005c45",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "./Search2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "14834504-baf9-49ed-8124-c605de5ab970",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "\"Go to Dashboard\" feature or just ctrl+h combination will lead you to a list of Spaces in your Organizations, in that way you can easily jump from one Space to another.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a77abfe9-7e8b-4334-9573-6dffe6a12d30",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Thanks to using ctrl+k combination Fundamento gives you also a couple of handy shorcuts in our tool as: View all Organizations, View all Spaces, View all Teams.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "edc7a2f3-8c6d-4098-a715-5faf329c36d0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can also go in just one click to your Account Settings oraz change the theme from light to dark (or from dark to light)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  }
+]
