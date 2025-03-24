@@ -1,6 +1,17 @@
 [
   {
-    "id": "7db26c5b-65ad-4f9e-bb8d-5984d35b5ab1",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "16418089-d795-4cdd-9cef-6121f51b672e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,18 @@
     "children": []
   },
   {
-    "id": "7bedd7c2-869d-431d-9765-70b4c547d662",
+    "id": "03b2ddd9-380e-400a-8348-5a03c43198a5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7b69a1c5-06da-4ed9-86bc-812eefbaa151",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -34,21 +56,38 @@
     "children": []
   },
   {
-    "id": "8a528a75-579a-4b1d-a68e-38674617561b",
+    "id": "1535c793-ddff-467e-9bb2-84d0ce2c133a",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "./search%20ctrl%20k.jpg",
+      "name": "search ctrl k.jpg",
+      "url": "onboardingContent:15-keyword-shortcuts/search-ctrl-k.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 507
     },
     "children": []
   },
   {
-    "id": "09127ecf-c939-4615-8ba6-51864fdfe397",
+    "id": "8a9f19ab-6c55-4226-a3d5-526d3160e7bf",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "\n",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "4596503b-1096-4382-a8d1-3f5a7631f41e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -65,13 +104,13 @@
     "children": []
   },
   {
-    "id": "c5b314d9-f1f3-401d-9d78-6ac3f1005c45",
+    "id": "5084c5f3-8855-4131-ac49-05405abba94f",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "./Search2.jpg",
+      "name": "image.png",
+      "url": "onboardingContent:15-keyword-shortcuts/search2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -79,7 +118,24 @@
     "children": []
   },
   {
-    "id": "14834504-baf9-49ed-8124-c605de5ab970",
+    "id": "e1b0a400-5590-47f0-8d74-92f8b910abea",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "\n",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e452f58f-138d-454c-8c1a-c319f27305e4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -96,7 +152,18 @@
     "children": []
   },
   {
-    "id": "a77abfe9-7e8b-4334-9573-6dffe6a12d30",
+    "id": "c037bc20-be01-4e85-97b9-820c58bd8f2d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f30b17c8-8fff-4168-ac45-f24cee5d1ea6",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -113,7 +180,18 @@
     "children": []
   },
   {
-    "id": "edc7a2f3-8c6d-4098-a715-5faf329c36d0",
+    "id": "ed30013e-3a5e-4c6e-93ac-433df3173c8c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "01ee74aa-91f3-48af-a3ef-2e7e8c598359",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -123,10 +201,21 @@
     "content": [
       {
         "type": "text",
-        "text": "You can also go in just one click to your Account Settings oraz change the theme from light to dark (or from dark to light)",
+        "text": "You can also go in just one click to your Account Settings oraz change the theme from light to dark (or from dark to light) ",
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "34b58ba0-1b19-4794-bb03-e8bcf8e5d252",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

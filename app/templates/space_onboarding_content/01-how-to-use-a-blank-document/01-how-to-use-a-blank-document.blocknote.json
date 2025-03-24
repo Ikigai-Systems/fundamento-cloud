@@ -1,6 +1,6 @@
 [
   {
-    "id": "639a546c-1cb3-4b8b-a53b-f333d728cf72",
+    "id": "3bd72499-9b8d-4b7a-a722-57e1cfbb33d7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +17,7 @@
     "children": []
   },
   {
-    "id": "c486ee21-6827-48e6-a902-201a0b486c47",
+    "id": "c341a88f-5a24-4e5f-9395-887e7ed22311",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -35,7 +35,7 @@
     "children": []
   },
   {
-    "id": "de56ed58-3789-45ae-94e4-a9110b8045d2",
+    "id": "bc2508ff-be81-48b3-be83-30e21561af56",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -53,7 +53,7 @@
     "children": []
   },
   {
-    "id": "cb5477d2-9c92-4eac-bd11-3bbfcc211b81",
+    "id": "4e799128-afa9-4bee-ac6e-5059cc5e6a52",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -71,26 +71,25 @@
     "children": []
   },
   {
-    "id": "2d82665a-1ce6-4a19-a68c-a8ded14a0707",
-    "type": "bulletListItem",
+    "id": "2c540c6f-b54e-491f-9327-7b7a405d26aa",
+    "type": "heading",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "level": 1
     },
     "content": [
       {
         "type": "text",
         "text": "Creating a document",
-        "styles": {
-          "bold": true
-        }
+        "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "de5d3a1c-017e-490b-baf0-c4b60267d0f8",
+    "id": "cc872524-a5d3-42ef-96c1-d4f3a098bbbd",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -107,7 +106,7 @@
     "children": []
   },
   {
-    "id": "46b4dab4-c543-4a82-807c-9204f5663ed4",
+    "id": "e4716091-d829-4e8e-81cc-9ce41c7e86e2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -121,7 +120,7 @@
     "children": []
   },
   {
-    "id": "36c6591f-4057-4e11-bd34-1749969ab76d",
+    "id": "581f45c5-fcb6-4b8b-96f4-1fe89dd7cdb6",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -150,7 +149,7 @@
     "children": []
   },
   {
-    "id": "00286665-e9cd-457a-9369-17f2532020d7",
+    "id": "56dea3f9-aca4-4c1f-94c8-6de0bfff56ff",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -167,7 +166,7 @@
     "children": []
   },
   {
-    "id": "9144ac54-7a2e-4162-8fc5-0051ee0a34b5",
+    "id": "8b1bdeb6-fbe6-46f7-9d4f-50e53cbf645e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -184,7 +183,7 @@
     "children": []
   },
   {
-    "id": "5cb5c94e-acb8-4bb0-bf43-1b2eb5787247",
+    "id": "511b5c70-a2e5-45c6-bd6f-4616df2eb0df",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -198,7 +197,7 @@
     "children": []
   },
   {
-    "id": "e9842964-3701-4af3-ab6f-cab7e67a1e3b",
+    "id": "9e9520cf-c564-417b-8a05-e2d66f34aa3f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -215,7 +214,7 @@
     "children": []
   },
   {
-    "id": "1922d83d-3f8b-4d91-9734-fec8ced1e294",
+    "id": "7a08b0c9-493f-4452-86af-01f4824866bf",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -232,7 +231,7 @@
     "children": []
   },
   {
-    "id": "87a7941e-fa8b-45dd-affc-daa54f4ec15e",
+    "id": "3bb31346-b109-4d66-866b-9798512693d7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -261,7 +260,7 @@
     "children": []
   },
   {
-    "id": "21753d6f-67a6-4c74-ba83-37684d897cea",
+    "id": "9752b569-7232-4c01-a025-03da60285c1e",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -275,7 +274,7 @@
     "children": []
   },
   {
-    "id": "b0678589-0443-4094-bfd0-0052be5a7169",
+    "id": "932cf4b5-722a-4050-95fd-a9a8c4e37969",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -292,7 +291,7 @@
     "children": []
   },
   {
-    "id": "a014d675-b151-491b-bc59-49b21d18a77e",
+    "id": "5755ffe0-cdf8-4912-8c6d-f550ef0c401f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -309,7 +308,7 @@
     "children": []
   },
   {
-    "id": "ee211b76-bb88-4495-9ed0-5e912a27b741",
+    "id": "11d6bccb-5405-409d-aac6-ce8a2567e030",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -326,7 +325,7 @@
     "children": []
   },
   {
-    "id": "42ccc6c3-c187-449a-abeb-cf7f351760e8",
+    "id": "57b78089-cfe7-4128-91bb-b50a334433db",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -355,7 +354,7 @@
     "children": []
   },
   {
-    "id": "e3c0ad0e-9b32-4acc-a3cc-673af20208fe",
+    "id": "f72c469e-7e00-4f60-aeaf-23d1b6d13667",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -369,7 +368,7 @@
     "children": []
   },
   {
-    "id": "4ca80113-45b8-432b-adad-b591aab043eb",
+    "id": "028db199-50a0-4a73-a310-3fba9cfdc326",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -386,7 +385,7 @@
     "children": []
   },
   {
-    "id": "4122fedb-2ead-4e1c-b319-f5b07583be68",
+    "id": "79c80f50-aa7d-4b46-b195-b4634b19d103",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -403,7 +402,7 @@
     "children": []
   },
   {
-    "id": "54bb5a63-8eb7-4d75-85e3-f271e56d3b4e",
+    "id": "2958385a-fbda-4b09-b2cc-5d3b1a6134f7",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -417,7 +416,7 @@
     "children": []
   },
   {
-    "id": "213e2cbc-c9fc-428f-8f82-15fbfd9cde01",
+    "id": "c49cb58b-f7fb-4fb7-9257-664f038b920b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -434,7 +433,7 @@
     "children": []
   },
   {
-    "id": "3f01fc44-a302-4ea7-8f85-ca66d9dbb843",
+    "id": "967965a6-c1e6-4e50-b425-43a5c838f10f",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -448,7 +447,7 @@
     "children": []
   },
   {
-    "id": "1ebe62a3-cdb9-49a0-a153-02b8479adc67",
+    "id": "782fae79-e055-4980-a431-d7a9a5b8cf0f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -465,7 +464,7 @@
     "children": []
   },
   {
-    "id": "38ff656c-c34f-4ce2-9891-9edc30261b7b",
+    "id": "461db3ab-5002-44fa-899e-685c87dc6126",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -479,7 +478,7 @@
     "children": []
   },
   {
-    "id": "e85b0ba2-9830-4bef-9517-2adee9e30ca3",
+    "id": "1bcccd4f-4316-402e-aff6-c5a7c5b29fa7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -508,7 +507,7 @@
     "children": []
   },
   {
-    "id": "7f1800bd-dfee-4287-80d4-70fa4fb8510a",
+    "id": "13f94ff9-f725-4512-a6e7-91478dad479c",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -522,7 +521,7 @@
     "children": []
   },
   {
-    "id": "1a44e229-76b6-4729-987c-edd8ac59bf54",
+    "id": "636a4900-7cdc-4723-8acf-bf672a34c7ac",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -539,7 +538,7 @@
     "children": []
   },
   {
-    "id": "174dc044-896f-43fb-a5bd-0393742af398",
+    "id": "6d2285b1-e609-4fa0-aefe-bb4e14cb7f8f",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -553,7 +552,7 @@
     "children": []
   },
   {
-    "id": "626d9338-71f7-4c15-aa74-3b27584d7a39",
+    "id": "1bfe8c86-0b53-4046-9414-b148ad480b65",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -572,7 +571,7 @@
     "children": []
   },
   {
-    "id": "216d601a-7c62-415a-8ad8-0e99a7e9c72c",
+    "id": "a5dc0213-4f9e-48c3-a31b-bf41c8501d74",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -589,7 +588,7 @@
     "children": []
   },
   {
-    "id": "3ed77315-cad4-4bb8-8c29-1695d771548c",
+    "id": "c02d93e4-987b-4e94-aa1b-6be1acf729a3",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -603,7 +602,7 @@
     "children": []
   },
   {
-    "id": "76e19053-b1c5-4ca1-b4e6-e21c881d949d",
+    "id": "73183662-597c-47d7-be2f-e15905f3f518",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -620,7 +619,7 @@
     "children": []
   },
   {
-    "id": "ea06a15c-c974-4dcb-a08c-d043f61e3462",
+    "id": "b4946f4b-4c84-484d-b0a2-d692715aacf7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -637,7 +636,7 @@
     "children": []
   },
   {
-    "id": "2cf9f18d-d764-4ff0-84ae-d7054c6febaf",
+    "id": "fe9ec5c1-7546-4224-84c8-9cb083ade7c4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -651,7 +650,7 @@
     "children": []
   },
   {
-    "id": "8e3b5517-fb6e-48b9-b4d0-e9d99149e7ae",
+    "id": "26e34b0e-3f4f-42ea-9b5d-b0074c540a18",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -668,7 +667,7 @@
     "children": []
   },
   {
-    "id": "09b2fd44-e4ad-42a5-90d1-1e6284b47daf",
+    "id": "5f53b049-788c-4299-83a0-3f52e1d92239",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -685,7 +684,7 @@
     "children": []
   },
   {
-    "id": "633a0d44-59a4-4a08-a1a9-36612b2e2ee1",
+    "id": "86e7c1c5-164a-4c45-b6c4-2ad6bab46016",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -699,7 +698,7 @@
     "children": []
   },
   {
-    "id": "260270a2-55bc-4d1d-a9a6-1ebe777aef1e",
+    "id": "a661f4d0-ef36-4ed0-a522-8e821ec82cfe",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -716,7 +715,7 @@
     "children": []
   },
   {
-    "id": "8920870e-566b-48ea-83b8-2f6659e23436",
+    "id": "4369a9c5-20dc-4ed0-8152-fb9aa8af0556",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -733,7 +732,7 @@
     "children": []
   },
   {
-    "id": "9c9a4792-3c34-4a2e-9288-de928ad1a82c",
+    "id": "6abe8148-bb6e-41ef-bb35-a157e22623cd",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -747,7 +746,7 @@
     "children": []
   },
   {
-    "id": "cb30183e-f518-4e87-91c0-17dceea587fa",
+    "id": "4d1a27fb-551d-4a87-80a0-71c78b175daa",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -764,7 +763,7 @@
     "children": []
   },
   {
-    "id": "4deb189d-2546-4f1c-96a9-50d35464e833",
+    "id": "c10e8e41-e196-4e75-9d0b-f722a6dba57c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -788,7 +787,7 @@
     "children": []
   },
   {
-    "id": "a741cb97-2c8f-4086-8f57-226a5e349552",
+    "id": "e037785d-dcaa-4197-a287-6ba893669f3d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -802,7 +801,7 @@
     "children": []
   },
   {
-    "id": "40b589c6-681a-4405-80de-477e2ecbe8be",
+    "id": "b50515ee-7899-4763-b830-863be0d5b17a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -838,7 +837,7 @@
     "children": []
   },
   {
-    "id": "22fae478-4f58-4612-bfaa-d9f566cddf72",
+    "id": "ffaf7be2-32c2-4076-8e52-4b80f0f4fa96",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -874,7 +873,7 @@
     "children": []
   },
   {
-    "id": "3124cd83-872b-4afe-8bbd-c643551799eb",
+    "id": "7812cdf9-0ad1-46a4-bd6a-cb69bc723679",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -910,7 +909,7 @@
     "children": []
   },
   {
-    "id": "9b98ca4e-f9ab-422f-bf3c-706958e13e7c",
+    "id": "d2d9db76-9acf-4fdd-b729-c32403c9a26c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -934,7 +933,7 @@
     "children": []
   },
   {
-    "id": "fa56d57c-c00c-4527-a8bf-79a6a50b6d24",
+    "id": "07a885ef-55e1-41e8-bb00-adc6e63d80fe",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -948,7 +947,7 @@
     "children": []
   },
   {
-    "id": "cde63f41-5277-4a75-b665-109072604dd8",
+    "id": "0f97ae1b-c715-4a94-9510-21e8a550014d",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -972,7 +971,7 @@
     "children": []
   },
   {
-    "id": "1073d87e-14cb-4022-a60c-a28757df80bf",
+    "id": "1a72f448-4229-4063-bc0e-aefac6d9d275",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1068,7 +1067,7 @@
     "children": []
   },
   {
-    "id": "abfb13b0-b45f-4eca-aa65-0e7dc6937556",
+    "id": "c506eeac-e14d-419d-83a0-ae042c72f0da",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1099,7 +1098,7 @@
     "children": []
   },
   {
-    "id": "4109480e-c085-4934-8398-6551f456920b",
+    "id": "0a9f24c6-a216-4c02-a984-a058ec46c3a2",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1123,7 +1122,7 @@
     "children": []
   },
   {
-    "id": "a973fdec-694a-4a3e-974d-331d6be96887",
+    "id": "7d1ec23a-89fc-4c52-8a60-4b591e3eccc2",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1147,7 +1146,7 @@
     "children": []
   },
   {
-    "id": "2a29449a-d388-494e-becd-40fa0eef9451",
+    "id": "f3e50131-5097-44ff-811f-2f624dbf602c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1164,7 +1163,7 @@
     "children": []
   },
   {
-    "id": "9312a2cb-a3b0-4b3e-b816-ca3835f1c5dd",
+    "id": "9658d337-a7c9-4aac-8619-e64da845ef72",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1181,7 +1180,7 @@
     "children": []
   },
   {
-    "id": "aaeeba67-d9db-4536-abcf-239f767f26b2",
+    "id": "3785ca24-bdf5-454a-9cd5-ecf319d6079b",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1195,7 +1194,7 @@
     "children": []
   },
   {
-    "id": "808dfa49-eb23-4303-996e-f2f238db0814",
+    "id": "16ddb552-da11-4985-86fd-af39b4abe565",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1212,7 +1211,7 @@
     "children": []
   },
   {
-    "id": "2db3acfa-795c-4293-8b23-1a0be9ff9492",
+    "id": "f01c443a-51dc-4f1b-bf24-d38fd4698d4d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1226,7 +1225,7 @@
     "children": []
   },
   {
-    "id": "aa87a12d-bce7-485c-9eb6-74b4831837d6",
+    "id": "28b6c900-e9f4-4659-889e-1dcc208a9808",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1243,7 +1242,7 @@
     "children": []
   },
   {
-    "id": "f42be54c-85f7-463d-b940-d66e776f6143",
+    "id": "489a53f7-44ba-4e74-9a6b-2ffe02c7cce2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1257,7 +1256,7 @@
     "children": []
   },
   {
-    "id": "f9ea0cda-b6e3-4b13-9e5d-f3841ec48f60",
+    "id": "7dee4e9c-c2a6-4102-bc94-2ce7961a4540",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1274,7 +1273,7 @@
     "children": []
   },
   {
-    "id": "0e5e75d1-b04f-453e-abd6-d71555f93500",
+    "id": "813f3955-35b5-4044-9161-c82ae627ec4a",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1288,7 +1287,7 @@
     "children": []
   },
   {
-    "id": "550c1da2-048d-4bf8-af65-cc1541b46faf",
+    "id": "97f9ec9f-dabd-487e-a87b-749a4fdd3353",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1305,7 +1304,7 @@
     "children": []
   },
   {
-    "id": "0899870a-8ffa-4625-9820-528efc396380",
+    "id": "586353b8-5dca-4155-b6d4-e71c37e2a828",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1319,7 +1318,7 @@
     "children": []
   },
   {
-    "id": "105f9434-de05-4d9b-99d6-c8c2bb0bb812",
+    "id": "9efdd6eb-4705-4adf-853f-1790d28dd4bd",
     "type": "codeBlock",
     "props": {
       "language": "javascript"
@@ -1328,7 +1327,7 @@
     "children": []
   },
   {
-    "id": "e4c03110-c972-44d2-ab74-b6920de15a14",
+    "id": "8636c2b1-abe2-43f6-bba7-d6718bbb7657",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1352,7 +1351,7 @@
     "children": []
   },
   {
-    "id": "21cbe191-bcba-4ae8-987a-8d756bbde42b",
+    "id": "ca10f32b-afb2-432f-918c-965fa17e02fb",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1366,7 +1365,7 @@
     "children": []
   },
   {
-    "id": "6f82a482-59c9-4726-a10d-04953d1d1045",
+    "id": "38ab726a-e6cf-4827-8ce5-59695afc01a0",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -1395,7 +1394,7 @@
     "children": []
   },
   {
-    "id": "fe3371f1-afc4-4942-b56e-78d698bc866e",
+    "id": "cd8c6ade-9e72-466d-a40d-8dd0ed4e77e2",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1412,7 +1411,7 @@
     "children": []
   },
   {
-    "id": "fb369ae5-f51b-4f24-8230-6a9121a3fa80",
+    "id": "9241fd99-4371-45db-ad9d-4bc38a167a88",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1429,7 +1428,7 @@
     "children": []
   },
   {
-    "id": "6ffd8edf-ab64-4b22-8afb-f055bc126f1c",
+    "id": "30d2bbc0-914d-4024-9ce9-c1861c831296",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1446,7 +1445,7 @@
     "children": []
   },
   {
-    "id": "59224e60-184e-4e31-9f43-b7ab421ad37e",
+    "id": "c55079fb-1bf0-437d-afa1-26cb26e81717",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1460,7 +1459,7 @@
     "children": []
   },
   {
-    "id": "a87f456e-0067-4115-8111-943dd779d1bb",
+    "id": "cbeb388d-678e-44dd-a448-cd7fb9e58723",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -1489,7 +1488,7 @@
     "children": []
   },
   {
-    "id": "32155f03-9af1-479d-b4aa-468a07d7ee09",
+    "id": "cee54039-3a27-4cbf-82a5-6f5938806865",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1506,7 +1505,7 @@
     "children": []
   },
   {
-    "id": "4ac0812b-3dfb-4f68-a74e-71a954ef7186",
+    "id": "e737c525-5c37-46c6-8140-158657fcac09",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1523,7 +1522,7 @@
     "children": []
   },
   {
-    "id": "39a63918-fa66-4fbd-a41c-b161fd2519ba",
+    "id": "24297b43-a9a9-4a38-b6c1-8bf0e7a6847f",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1537,7 +1536,7 @@
     "children": []
   },
   {
-    "id": "df5e82c2-e96c-4b94-b289-c419dc9833b7",
+    "id": "f6302db9-5a5a-455c-9ed8-beb5f130eb56",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -1566,7 +1565,7 @@
     "children": []
   },
   {
-    "id": "b07c0ead-717c-42bc-baa3-f3fa46a5572b",
+    "id": "96e307a2-697b-4241-8185-31434d23d60e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1583,7 +1582,7 @@
     "children": []
   },
   {
-    "id": "bffa0194-5ba6-4373-a7c7-06f8c6fc85e0",
+    "id": "de05d417-ee51-44a4-9f54-d317861bff95",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1600,7 +1599,7 @@
     "children": []
   },
   {
-    "id": "fabacea9-b99f-42da-a801-41765b8466f5",
+    "id": "d6b12346-bd2a-4588-82db-645b6656d9d6",
     "type": "image",
     "props": {
       "backgroundColor": "default",
@@ -1614,7 +1613,7 @@
     "children": []
   },
   {
-    "id": "c8060cf3-b88b-4af6-b5e7-e58d23758d64",
+    "id": "9225be06-9487-499b-839f-e1316452621b",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -1631,7 +1630,7 @@
     "children": []
   },
   {
-    "id": "8aaf53ec-c1e1-420c-8d8c-61e85c610332",
+    "id": "8c557280-8767-48e2-94dd-c0bf7d0b1ff5",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1648,7 +1647,7 @@
     "children": []
   },
   {
-    "id": "80f4f049-5742-4c2a-8667-33fe746a7a89",
+    "id": "5e6f3615-af84-4020-aa93-3299484ea395",
     "type": "image",
     "props": {
       "backgroundColor": "default",

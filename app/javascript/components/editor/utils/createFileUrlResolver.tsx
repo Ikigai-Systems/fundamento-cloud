@@ -6,8 +6,14 @@ export function createFileUrlResolver(showAttachmentPath = AttachmentsApi.show.p
 
     if (attachmentId) {
       return showAttachmentPath({id: attachmentId});
-    } else {
-      return fileUrl;
     }
+
+    const onboardingContent = fileUrl.match(/^onboardingContent:([a-zA-Z0-9%\-\/.]+)$/)?.[1];
+
+    if (onboardingContent) {
+      return `/onboarding_contents/${onboardingContent}`
+    }
+
+    return fileUrl;
   }
 }

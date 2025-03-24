@@ -77,6 +77,8 @@ Rails.application.routes.draw do
 
     resources :attachments, only: [:create, :destroy, :show]
 
+    get "/onboarding_contents/*path" => "onboarding_contents#show"
+
     resources :users, only: [:index, :show] do
       get :suggestions, on: :collection
 

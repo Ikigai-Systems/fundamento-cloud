@@ -1,5 +1,6 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
+import strippedSchema from "./strippedSchema";
 
 export function convertToBlocks(yjs : Buffer) {
   const doc = new Y.Doc();
@@ -15,7 +16,9 @@ export function convertToBlocks(yjs : Buffer) {
 }
 
 export function convertToYjs(blocks: any) {
-  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create({
+    schema: strippedSchema,
+  });
 
   return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
 }

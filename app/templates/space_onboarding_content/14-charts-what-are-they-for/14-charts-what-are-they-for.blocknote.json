@@ -1,6 +1,17 @@
 [
   {
-    "id": "e2f44ed4-fe2f-4168-b889-33ce05fdcca5",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "459b4b1b-3966-4666-b776-71503d896983",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,18 @@
     "children": []
   },
   {
-    "id": "76c6f53b-1b72-4300-bd40-b9c6e20629b8",
+    "id": "fc978c3d-79f8-4430-94ab-90a23c779c43",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c2e3fe18-f962-43ef-8a04-51a0e8f2cc71",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -27,14 +49,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Charts are a crucial part of working with data, since they are a way to compress and summarize at the same time large amounts of data into an easy to understand format.",
+        "text": "Charts are a crucial part of working with data, since they are a way to compress and summarize at the same time large amounts of data into an easy to understand format. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "6f100e36-8c59-44a5-951d-d2d7b6584bb3",
+    "id": "1d7b5645-f1f2-4521-b5c6-9652a792de84",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -51,7 +73,18 @@
     "children": []
   },
   {
-    "id": "002ea7ea-3099-4c1e-b65c-7b0041daf26d",
+    "id": "3826f35c-5c8d-41ee-b556-0c44b3a06d3e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "743f4849-709e-415a-afdb-a4e1a2007a0e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -68,7 +101,41 @@
     "children": []
   },
   {
-    "id": "2ae3bcf5-ef3c-4f73-97f9-175ae7c43061",
+    "id": "4804719c-6d30-4515-b661-f64bf53d06c9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3bab4525-d515-473f-bd8a-204510925bac",
+    "type": "chartBlock",
+    "props": {
+      "tableNpi": "",
+      "title": "",
+      "chartType": "line",
+      "xAxisColumnNpi": "",
+      "yAxisColumnNpi": ""
+    },
+    "children": []
+  },
+  {
+    "id": "20d58e86-7239-44c1-a037-d465affd0028",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c29ebbd6-8a10-46e3-81ab-c10b3b2ce905",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -78,71 +145,31 @@
     "content": [
       {
         "type": "text",
-        "text": "New chart",
+        "text": "If you haven't created any table in the particular Organization yet, you'll see a view as showed below, that means that you don't have a source to use yet. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "ba9b3ba9-9085-49a1-b795-e0e337a4de11",
+    "id": "8b1f1bf0-bf82-49e6-83ea-c39f106016ec",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Data source table",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "da663230-1798-443d-80fa-22d05c3fd3ef",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Select...",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "953048fe-a066-4c77-a351-5bfab6c61c77",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "If you haven't created any table in the particular Organization yet, you'll see a view as showed below, that means that you don't have a source to use yet.",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "e9ecdb0d-f1db-481b-877a-7a47cf2b3ba6",
+    "id": "f3c8fe3d-0ab7-4b63-b5ef-d4193fe883e7",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:463",
+      "name": "Chart no options.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-no-options.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -150,7 +177,18 @@
     "children": []
   },
   {
-    "id": "84648ad8-ceb9-447c-bd1e-938463ae73cd",
+    "id": "2ff3e522-07e0-4cbd-af79-4234bdfeece0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b1fc60ad-ac3f-4a75-b379-c6f6a8a7b96d",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -167,7 +205,7 @@
     "children": []
   },
   {
-    "id": "296394e8-0b87-40c6-82d3-a4eb8ac7ce02",
+    "id": "4494613f-f340-4279-b958-e103e510dc36",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -184,7 +222,7 @@
     "children": []
   },
   {
-    "id": "18414874-b84a-4eff-a600-0d71aab9cb80",
+    "id": "8964f62d-343f-4a0e-a84a-ceab2e65154b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -201,13 +239,13 @@
     "children": []
   },
   {
-    "id": "992c75e9-c2ec-41fd-8afa-55cb9f0baf27",
+    "id": "628e4d2d-9496-4daa-b74f-a76c6e0012e9",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:476",
+      "name": "charts4.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/charts4.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -215,7 +253,29 @@
     "children": []
   },
   {
-    "id": "239df52c-a116-41da-b2c1-72fc2e29e009",
+    "id": "0c09cc30-3526-4d9c-a513-e864dab0426b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d33934cc-a3bc-43dd-9535-da7bce386e0a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "95279367-b85e-40af-9e71-b81168af245e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -232,13 +292,13 @@
     "children": []
   },
   {
-    "id": "046b6a01-60d6-4236-9f1f-bd1507cd2386",
+    "id": "fdf13c18-9fe9-439f-96d4-f51a3f61f801",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:483",
+      "name": "chart select.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-select.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -246,7 +306,29 @@
     "children": []
   },
   {
-    "id": "a5cd13d4-995c-484f-8ad2-d42e23cbbb31",
+    "id": "bfc9e18e-c240-4b19-955c-2d0f501c6d88",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5f0a6d51-3f5a-4888-bc58-1748bc94955b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "13105a60-9828-428b-bf6a-8018ad634f1f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -263,13 +345,13 @@
     "children": []
   },
   {
-    "id": "cd0e5b95-e3e1-4ae2-beaf-3b16a5a5b489",
+    "id": "7f004f53-96e7-438e-be5f-0b65bd812c8d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:491",
+      "name": "charts chart example line.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/charts-chart-example-line.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -277,7 +359,18 @@
     "children": []
   },
   {
-    "id": "66a3e4a9-e9cf-4944-bde7-42851ce0780b",
+    "id": "89f773e8-b415-469a-a465-cdb9d53725c4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1fadc711-cc8d-4314-b104-be018b93dbbd",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -294,21 +387,32 @@
     "children": []
   },
   {
-    "id": "06392405-25fb-4436-8791-8694bba8b2a5",
+    "id": "a7422347-3c5e-4968-bfc5-92579e2efb2c",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:492",
+      "name": "chart icons.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-icons.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 155
     },
     "children": []
   },
   {
-    "id": "dcb5bc9e-c629-4ef9-8049-c41f69fbb6e3",
+    "id": "589ba6f4-8679-4ebb-9455-2f7de8ee7e5a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "df8182cd-9e93-43d2-8c4f-c5c3dad64b2f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -318,14 +422,25 @@
     "content": [
       {
         "type": "text",
-        "text": "Easy to guess is that the two first (from the left) are being used to zoom in and zoom out",
+        "text": "Easy to guess is that the two first (from the left) are being used to zoom in and zoom out ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "547a44b6-e3c8-49e6-9c15-23c41178fe09",
+    "id": "5133df56-aa42-46f3-a2b6-4217adb28895",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6f7af208-62ca-4767-9844-a21d2faf2a09",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -342,21 +457,32 @@
     "children": []
   },
   {
-    "id": "4f04f02e-44a4-4b8d-a1c1-7a1e2c358d04",
+    "id": "16b805c6-17cf-4661-bf74-a24bdc6d2eef",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:493",
+      "name": "chart lupa.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-lupa.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "6b550ef5-a771-4ed9-b55c-c1d12190bb32",
+    "id": "363f43fd-6873-4b60-8017-d1ae70ee911f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "099bfdc8-6d57-4cc2-9109-92d36e44e748",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -373,7 +499,18 @@
     "children": []
   },
   {
-    "id": "6fe23dce-7a8d-4f26-8c1f-699ef961bf7b",
+    "id": "af92a7f6-5613-4df1-aefb-cda6c4986179",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3d9943ef-7962-48d6-9e64-82ff3a4f432c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -390,21 +527,21 @@
     "children": []
   },
   {
-    "id": "2b68d6ca-c867-4f75-a99b-0d3dbcb0cec8",
+    "id": "0444a868-e2e5-4440-a590-69fc084253c2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:494",
+      "name": "chart panning.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-panning.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "6992f08a-f729-4d1c-9f30-c45c23f7c772",
+    "id": "37424f36-03b4-4e92-a1cf-94ddc05656b2",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -421,7 +558,7 @@
     "children": []
   },
   {
-    "id": "5e71d24f-d6d0-4b6c-84fb-2a72a43e8071",
+    "id": "6a53e839-3bdd-4f1f-9dd8-715004a3b079",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -438,7 +575,7 @@
     "children": []
   },
   {
-    "id": "57959471-9bb1-4b39-a86b-a428b59918b5",
+    "id": "337e7dc2-cf5d-4b2d-97ef-23fa08a44340",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -455,7 +592,18 @@
     "children": []
   },
   {
-    "id": "1e6ffd73-771e-48f4-8ea9-3bfde0be233a",
+    "id": "58abe420-c1a6-4c36-9207-657c6c040dd5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3c4722cc-2d92-49a8-9788-075d5de13d30",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -472,21 +620,32 @@
     "children": []
   },
   {
-    "id": "65bef117-6bca-4a37-ad02-28414deb4212",
+    "id": "f60c5cf7-021f-4c83-96f6-1e3e434a7d81",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:495",
+      "name": "chart zoom reset.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-zoom-reset.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "0f57d406-445c-49bc-bad3-e5f7023cc8b5",
+    "id": "f20bbb6f-cf45-481a-bb2b-cdd713356c3c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ead41934-9e91-460c-967e-e8197a006d65",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -503,21 +662,54 @@
     "children": []
   },
   {
-    "id": "6161315e-1518-4711-be39-624e7b3505bc",
+    "id": "578c215d-4076-4085-b64d-940960de97a8",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:496",
+      "name": "chart download.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-download.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 139
     },
     "children": []
   },
   {
-    "id": "f7f043d8-0d32-4da6-9469-a389fe5891f0",
+    "id": "8eef8ac3-f25e-4365-a164-1c66e6eafcdd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ec3fad3b-204f-42a3-8c5b-c436e71ae994",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "016f6a94-5403-4afe-9a0f-b8f02e2df2d5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "cbb3779c-9e22-460d-85d8-03de73df862c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -534,17 +726,39 @@
     "children": []
   },
   {
-    "id": "9cfb8487-8860-448f-8966-af92ccff66c1",
+    "id": "df69906c-b5a9-41c2-bc28-e20ea83124eb",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9d9d9f28-a4c3-4f2b-80e1-3b4e0c909831",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:464",
+      "name": "Chart options.jpg",
+      "url": "onboardingContent:14-charts-what-are-they-for/chart-options.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 116
     },
+    "children": []
+  },
+  {
+    "id": "dfe480dc-96b4-4dde-b138-5225ffc3fcac",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]
