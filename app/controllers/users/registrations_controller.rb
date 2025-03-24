@@ -12,6 +12,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if !Flipper.enabled?(:recaptcha) || (resource.validate && verify_recaptcha(model: resource))
       super
     else
+      logger.warn(@_recaptcha_failure_reason) if defined?(@_recaptcha_failure_reason) && @_recaptcha_failure_reason.present? && Flipper.enabled?(:recaptcha_debug)
+
       clean_up_passwords resource
       set_minimum_password_length
       respond_with resource
