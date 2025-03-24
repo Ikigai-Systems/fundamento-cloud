@@ -23,6 +23,7 @@ class Organization < ApplicationRecord
   private
 
   def create_default_space
-    self.spaces.create!(name: self.name + " Space")
+    space = self.spaces.create!(name: self.name + " Space")
+    space.populate_with_onboarding_content!
   end
 end
