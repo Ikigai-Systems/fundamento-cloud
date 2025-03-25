@@ -70,8 +70,6 @@ program
   .action((options) => {
     const inputStream = createInputStream(options.input);
 
-    const outputStream = createOutputStream(options.output);
-
     const chunks = [];
 
     inputStream.on('data', (chunk) => {
@@ -81,6 +79,7 @@ program
     inputStream.on('end', () => {
       const convertedData = convertToYjs(JSON.parse(Buffer.concat(chunks).toString("utf8")));
 
+      const outputStream = createOutputStream(options.output);
       outputStream.write(convertedData);
 
       if (!options.output) {

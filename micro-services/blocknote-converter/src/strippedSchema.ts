@@ -1,6 +1,24 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
 import {createReactBlockSpec} from "@blocknote/react";
 
+const AdvancedTable = createReactBlockSpec(
+  {
+    type: "advancedTable",
+    propSchema: {
+      tableNpi: {
+        default: "",
+      },
+      viewProps: {
+        default: JSON.stringify({columns: {}}),
+      }
+    },
+    content: "none",
+    isSelectable: false,
+  }, {
+    render: () => null
+  }
+)
+
 const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
 const ChartBlock = createReactBlockSpec(
   {
@@ -25,8 +43,7 @@ const ChartBlock = createReactBlockSpec(
     },
     content: "none",
     isSelectable: false,
-  },
-  {
+  }, {
     render: () => null
   }
 )
@@ -40,7 +57,7 @@ const strippedSchema = BlockNoteSchema.create({
   },
   blockSpecs: {
     ...defaultBlockSpecs,
-    // advancedTable: AdvancedTable,
+    advancedTable: AdvancedTable,
     chartBlock: ChartBlock,
     // procode: CodeBlock, // <-- to be deprecated and removed at some point
   }

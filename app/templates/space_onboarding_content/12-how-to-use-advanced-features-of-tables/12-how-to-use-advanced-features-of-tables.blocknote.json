@@ -1,6 +1,17 @@
 [
   {
-    "id": "2be063b4-dbf4-4580-b153-5d6718f5a2ec",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5e4cb05e-0c95-4973-8ff4-7d7059f11a47",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,18 @@
     "children": []
   },
   {
-    "id": "c90a312f-73cc-4773-bbf7-7cd5187927d4",
+    "id": "5c197fbd-fa73-4b6c-be69-ee5dbb09bd3d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b3345edd-b0c1-4863-88fe-1e967247e39e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -34,21 +56,32 @@
     "children": []
   },
   {
-    "id": "57f42d86-e1db-4276-a017-c7ed3394bdbb",
+    "id": "a6ca4ad8-a258-4065-b05e-d74a84db7337",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:457",
+      "name": "Advanced table1.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/advanced-table1.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 220
     },
     "children": []
   },
   {
-    "id": "1e9071e0-0a19-41a1-9063-a4d1a18b714b",
+    "id": "35c883b4-9a0e-4128-82d7-4cb79eb4b1a0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ef01faca-112c-427f-8cbd-082622e76bf6",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -65,75 +98,28 @@
     "children": []
   },
   {
-    "id": "cdcb91b4-3684-455c-bbbe-3aab519e1a00",
+    "id": "1752a3c0-316e-454c-bf34-cc93b2a7447c",
+    "type": "advancedTable",
+    "props": {
+      "tableId": -1,
+      "tableNpi": "",
+      "viewProps": "{\"columns\":{}}"
+    },
+    "children": []
+  },
+  {
+    "id": "1b8d5de6-b8b4-49c6-a299-69b2169e5cec",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "New table",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "775d256a-16b9-48af-91e2-a118873d2b1e",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Start blankImport data",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "e2002f4b-e4a9-433b-9ca9-5aea32b7ac7b",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Or use existing table",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "90fa8865-ace4-4885-ba8a-54377dbf2d57",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Select...",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "906f9d2d-a1b0-4aa2-87d8-f5ecadcabec8",
+    "id": "4d4420c4-f777-4b7d-9ace-16dd656f898c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -150,7 +136,7 @@
     "children": []
   },
   {
-    "id": "3fc23e9c-b4b4-4786-af09-1b759b60b272",
+    "id": "9b5f9637-ae73-4448-908c-0d40bc6f6dd4",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -167,7 +153,7 @@
     "children": []
   },
   {
-    "id": "2148e4ce-ca59-4914-ae86-42f8012f2cf7",
+    "id": "1388d2a5-4ec4-47ac-a604-0889fcd4aaaa",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -184,26 +170,27 @@
     "children": []
   },
   {
-    "id": "f73aee2e-f0f4-406e-b76f-2a0f1c790f69",
+    "id": "208d7e5a-9969-4c94-bff1-ca2b78d9fccc",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:341",
+      "name": "Import data",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/import-data.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 123
     },
     "children": []
   },
   {
-    "id": "125ae4af-3cd0-42f5-96a1-ac9fb0b2b397",
+    "id": "a1a3f927-5b8b-4b2e-85b3-b64abb38b9fa",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "start": 3
     },
     "content": [
       {
@@ -215,347 +202,39 @@
     "children": []
   },
   {
-    "id": "b50aae24-816e-4d52-be90-47dff1fbdd8a",
+    "id": "117a2c87-2c82-4b30-a437-05dc9a02b778",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Table bhMo",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "1bb35ec1-25df-4cca-879e-eae8bfbb18e9",
+    "id": "f1728536-daba-42b0-8665-bd74579d09d0",
+    "type": "advancedTable",
+    "props": {
+      "tableId": -1,
+      "tableNpi": "u34fOBpaFp",
+      "viewProps": "{\"columns\":{}}"
+    },
+    "children": []
+  },
+  {
+    "id": "7e81c9b2-c49e-4d97-908f-6279d04a08c8",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "3 rows",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "d6a6b511-b164-410f-b33f-3fefe0a697da",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "New row",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "a62e85c2-466b-4a2c-a45f-027fdedf680a",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Hide fields",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "58ce1567-f7fd-440f-abbb-2ee6d863e683",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Filter data",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "93c635bb-77f1-40cb-af26-2a7b64d151ac",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Group",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "fba252c4-f451-4e5b-bf8f-46be7d3bf807",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Sort data",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "50983de5-1696-43d8-825f-e48d101c1ee8",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "u34fOBpaFp",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "017fee69-3ae1-4b85-8185-e3875e283118",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "[ ]",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "a0a2bfac-f2f6-4c63-a314-ab5854ee5c08",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Name",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "54011ed9-76f1-484e-aad3-66cf881e04b2",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Column 2",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "bd2ca4f3-c883-4902-a7d6-84a034997b25",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Column 3",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "b81bd1be-b163-47e5-bad7-0b1678cdefd5",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Notes",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "cef00331-fdd2-48a5-b086-2e1904ed139f",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "[ ]",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "ec12e1af-b3d9-48d7-9c55-0fdf1b2fad87",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "[ ]",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "ed7d8e5e-a06e-4f84-8500-dc349e1d92b7",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "[ ]",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "67f1b2c9-d036-4038-a737-3208d3802cd2",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Summary",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "5fabafc2-3283-45a7-a0a5-5a848da5de28",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Summary",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "c2461100-fe98-484c-be82-6ca689e5027e",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Summary",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "5a3c723c-3437-4630-8c8a-151f5d3f4f95",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Summary",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "63c5224e-4db1-487b-a11d-48752d322a03",
+    "id": "2b18c5f9-2589-404e-88c4-94ccb83ea2ce",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -572,7 +251,18 @@
     "children": []
   },
   {
-    "id": "113aad59-073e-41a4-940f-faaf31d78eb0",
+    "id": "c31510b4-36ef-48d9-b450-2484723e8fb8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1e09c1aa-de3c-433d-8b73-1ef156477f27",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -589,7 +279,7 @@
     "children": []
   },
   {
-    "id": "95938fec-9bee-4e90-bfb8-a92875feac85",
+    "id": "ae92d980-a662-4e9a-9d56-1bc813824fbb",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -606,13 +296,24 @@
     "children": []
   },
   {
-    "id": "84f41fbe-7d2c-4dc1-bdfb-0d8ae7f7b072",
+    "id": "5e09c6f2-7cfe-4770-a705-a99adb3cc095",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "020eed37-52a2-4f23-9e0b-5f84b37bc6af",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:458",
+      "name": "Advanced table new row.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/advanced-table-new-row.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -620,7 +321,18 @@
     "children": []
   },
   {
-    "id": "60798685-5967-4eff-bf92-1c3d2ba43229",
+    "id": "a4b98c02-f362-492f-b311-5e151c053c58",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b4011f6e-bc45-4f73-acf2-8e9e9cfa8c93",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -637,13 +349,24 @@
     "children": []
   },
   {
-    "id": "4d53b3c3-7125-4ff6-bd0b-21ffb641830c",
+    "id": "8713a148-3e2a-47b1-b729-9da77bb58896",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0183a1c7-6918-4576-9a81-dc6547328479",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:459",
+      "name": "Advanced Table add column.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/advanced-table-add-column.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -651,7 +374,18 @@
     "children": []
   },
   {
-    "id": "0bbc6286-50ac-4319-b364-2664e36e784a",
+    "id": "6c5ba115-f445-4dc0-9d6d-1bc3bdce160b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fe142bf0-4edf-42b9-8cbd-81471af3ee67",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -668,7 +402,7 @@
     "children": []
   },
   {
-    "id": "59ca6f16-0bc4-4eee-bf9f-99aeb1600209",
+    "id": "a992227b-89f2-43a4-a029-97b058e7571a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -685,21 +419,32 @@
     "children": []
   },
   {
-    "id": "b1cb083d-af62-4eff-982f-2db056cb898a",
+    "id": "1d93bea5-65c0-461a-a05a-688af7abcc83",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:460",
+      "name": "advanced table sltext.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/advanced-table-sltext.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 205
     },
     "children": []
   },
   {
-    "id": "f7c7b03a-527d-4215-aba9-dff591653aab",
+    "id": "9bbe2341-8447-42ed-9f54-742888e1c13a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7e2e4f59-7426-4f3f-8450-bffb5ba8efe1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -716,21 +461,32 @@
     "children": []
   },
   {
-    "id": "bb4007b9-5cca-465c-9102-f51ed0cec03f",
+    "id": "020e19f3-a5a6-4df4-86a8-3cac56c14ce5",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:461",
+      "name": "PropertyType.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/property-type.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 201
     },
     "children": []
   },
   {
-    "id": "882cb79b-e93a-4805-ba34-b23adc0b4bcf",
+    "id": "ebd3fabe-d4ec-4bf2-9522-41170282439e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d045c6c5-37ac-4024-ac53-bd96cdd7414b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -747,21 +503,21 @@
     "children": []
   },
   {
-    "id": "07b18f84-ae6f-4bb9-9bed-09e8026ce283",
+    "id": "3ed9fde5-4542-4a7f-bbe6-d02f285ab2a2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:348",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/icon1.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "a01fcfe8-569a-4f4a-a7b8-6c4b6aec8e42",
+    "id": "ac604212-5e06-4cde-96c5-04852a5e74d1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -778,7 +534,7 @@
     "children": []
   },
   {
-    "id": "225d4599-7c18-4c00-b2bf-6ba5eae78de0",
+    "id": "11f51ddb-8568-4d60-a3cb-0afd5f1341d6",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -795,21 +551,21 @@
     "children": []
   },
   {
-    "id": "85c2ebd8-c600-4c35-ac92-0983ab1ae51e",
+    "id": "d7b7d0f9-b5c5-497c-b542-cca49a1284c9",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:349",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/icon2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "928cd96c-f8d6-4268-ae2d-10e67b5723f7",
+    "id": "ea49ccdc-cf38-42e9-9130-015ad946fdcd",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -826,7 +582,18 @@
     "children": []
   },
   {
-    "id": "30e81c71-c347-4936-a73b-9673412f2b57",
+    "id": "3cdf23d4-3515-4bb9-8a72-3fc1bbb7ab45",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9bd5ad1c-4b92-4e16-846d-40800cd4b2d4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -850,7 +617,18 @@
     "children": []
   },
   {
-    "id": "0e810433-8e3c-4500-8836-4ecb32e46529",
+    "id": "4d45e61b-5ff0-466d-b878-78e85a949735",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b94b4256-ed05-4f78-a6db-dbb2ae51aa36",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -874,21 +652,32 @@
     "children": []
   },
   {
-    "id": "e7d336c1-85cb-484d-81c5-e4c74ccf63c3",
+    "id": "3c5a30fd-ae09-48fe-827b-da73882126fa",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:347",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/note-adv-table.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 138
     },
     "children": []
   },
   {
-    "id": "e9e4cfef-36b6-4229-854f-52bd84af3f17",
+    "id": "1f478edd-d1ad-4c3b-bb59-58c10b235898",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a7ce2d57-7d79-4586-903d-849ecc439ff0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -912,21 +701,32 @@
     "children": []
   },
   {
-    "id": "a7345c68-2eab-4bab-ad4c-c5086cb24d6f",
+    "id": "d71e52fd-e954-4942-a22c-f8134578282d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:350",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/number.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 135
     },
     "children": []
   },
   {
-    "id": "e298fd0f-9e09-4710-b689-a7dada608838",
+    "id": "c48500f6-2a3e-495c-b722-c81770f28283",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0f4bc48b-692b-478e-9db6-9abbcd8fcec0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -943,14 +743,14 @@
       },
       {
         "type": "text",
-        "text": " - when you e.g. want to use a table as a project management tool, just type every useful statuses as \"Created\", \"In progress\", \"On hold\", \"Waiting for deployment\", \"Done\" and you are able to manage a various projects or group of tasks.",
+        "text": "  - when you e.g. want to use a table as a project management tool, just type every useful statuses as \"Created\", \"In progress\", \"On hold\", \"Waiting for deployment\", \"Done\" and you are able to manage a various projects or group of tasks.",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "3d742f04-c737-45d7-ab0c-e86577673b29",
+    "id": "219bad4d-0dec-4ee0-811d-a0712f22c1b5",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -967,7 +767,18 @@
     "children": []
   },
   {
-    "id": "7f68d2aa-5bb4-49b2-aa71-c7cbd1d68f75",
+    "id": "a22092e7-943d-4197-a805-58930204300b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "cefd3f35-5fad-4d75-b7bd-4c8d358cdb0a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -984,28 +795,28 @@
       },
       {
         "type": "text",
-        "text": " - handy option when you want to add calendar dates to to the table and e.g. sort it earliest > latest (latest > earliest)",
+        "text": "  - handy option when you want to add calendar dates to to the table and e.g. sort it earliest > latest (latest > earliest)",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "0c50dd64-1ee7-4250-99ab-a37070894586",
+    "id": "ece7c4ea-ea3c-43a0-9534-c2952ebc73e0",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:351",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/date.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 123
     },
     "children": []
   },
   {
-    "id": "4f43a382-243c-4116-9016-8d87345ded69",
+    "id": "1d1f9c6b-d3da-44f2-8e95-892929829eb1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1022,21 +833,32 @@
     "children": []
   },
   {
-    "id": "61e1d567-6c26-4308-939a-cba39f3a0a93",
+    "id": "cff79d17-0b62-4862-98ab-3d7d4131727a",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:352",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/display-date-format.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 133
     },
     "children": []
   },
   {
-    "id": "20afa885-3e67-4764-b590-34f0978acfc4",
+    "id": "c17d18fb-0262-4967-a5bf-e7f25c3d2d6e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "10e637bf-aa00-4e97-959d-698f59ea584e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1053,28 +875,39 @@
       },
       {
         "type": "text",
-        "text": " - try to use when your intention is to group similar cases/activities. For example if you have created CRM in the table, you are able to attribute a particular activity in the accurate table field.",
+        "text": "  - try to use when your intention is to group similar cases/activities. For example if you have created CRM in the table, you are able to attribute a particular activity in the accurate table field.",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "50c53792-da32-4e58-a906-ca68e507df4c",
+    "id": "f773ecb8-6ad6-474e-ab6c-93624b10d2d7",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:353",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/multiple-select.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 179
     },
     "children": []
   },
   {
-    "id": "2b4bd4d7-b76e-4286-ba65-851fed1c01d3",
+    "id": "1d53eb32-859c-4cb7-987c-28b0d06211a2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "8a1a8fe3-5769-4385-93b7-04d86bf7b85e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1098,21 +931,43 @@
     "children": []
   },
   {
-    "id": "1b085b8f-18f3-496b-8557-3b7d1d76a40f",
+    "id": "a4eb12ec-cede-43ee-91c4-5b34213084b7",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:354",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/link.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 164
     },
     "children": []
   },
   {
-    "id": "83c8e8b4-9e4e-46d3-b8eb-2d86a75be5a9",
+    "id": "9d06af4e-0c75-4bd3-947c-0ef1335ddaf4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "60fc5f3d-4d00-4138-af3c-2849b07e2f93",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "da270e5d-a740-4770-a8e7-d362b30526ae",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1136,21 +991,43 @@
     "children": []
   },
   {
-    "id": "a6665543-9cab-4e8d-89af-7d587e94afbb",
+    "id": "7167d593-5748-45cd-916f-405b86bc3f72",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:355",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/checkbox.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 146
     },
     "children": []
   },
   {
-    "id": "37be3486-fbea-4655-9fbd-27ee35f246b9",
+    "id": "4016088b-d621-405e-9061-9d555d778afc",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a2b2a440-d01b-4083-a8e3-2a4aea532ae2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3c473483-ec85-467c-9fa4-8a385c9cfeb1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1167,14 +1044,46 @@
       },
       {
         "type": "text",
-        "text": " - suitable for referencing/pointing out Fundamento users from your Organization. These users will get a notification that someone mentioned them in the table (tak??) (STE: nie)",
+        "text": " - suitable for referencing/pointing out Fundamento users from your Organization. These users will get a notification that someone mentioned them in the table ",
         "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "(tak??)",
+        "styles": {
+          "textColor": "red",
+          "backgroundColor": "red"
+        }
+      },
+      {
+        "type": "text",
+        "text": " ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "(STE: nie)",
+        "styles": {
+          "textColor": "blue",
+          "backgroundColor": "blue"
+        }
       }
     ],
     "children": []
   },
   {
-    "id": "9fb51eb9-7fe9-4533-b399-3daabe9ea76f",
+    "id": "244cfce9-3839-4a7b-9167-82a643d69671",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "41422457-3ba2-482e-b107-3dc35f3906d4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1191,28 +1100,67 @@
       },
       {
         "type": "text",
-        "text": " - suitable for referencing Fundamento documents from your Organization. As you choose Property Type \"Document\" you will be able to point out in the table every document within Organization",
+        "text": " - suitable for referencing Fundamento documents from your Organization. As you choose Property Type \"Document\" you will be able to point out in the table every document within Organization ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "3bea3f73-2d4e-4c56-9e8b-de7bcbfae431",
+    "id": "ffcb4972-64b5-47e0-89a2-c64f084d35f9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "be615e57-96f5-4e37-96f3-49b1b29db1cf",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:406",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/406.png",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 186
     },
     "children": []
   },
   {
-    "id": "f463a1af-a721-403f-8483-efaa74d68464",
+    "id": "a322ecb8-de2c-47b2-8a68-6b31f9c93cc7",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "  ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "823e0cd4-865f-4f33-a003-01017367196b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "19ce5eb9-ed34-4cf1-8104-badb944a49a4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1236,13 +1184,13 @@
     "children": []
   },
   {
-    "id": "3263ff14-7ad8-4e6f-bf8b-6b86abc26f56",
+    "id": "fb1c6f4b-f292-46e1-82aa-ea5e5fe11f65",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:468",
+      "name": "Data and Time .jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/data-and-time.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1250,7 +1198,18 @@
     "children": []
   },
   {
-    "id": "704f8365-4576-4e14-b183-4894afef74eb",
+    "id": "f5f66e36-c989-4f7e-ae3d-4517d6a7c43d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1b06b968-3c17-48e1-883b-51b15c91d9a1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1267,13 +1226,13 @@
     "children": []
   },
   {
-    "id": "17458bd1-c5ca-4e69-8307-4573b5931043",
+    "id": "1ada3475-8cad-40bb-9ae9-0c6189a1cb1b",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:469",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/data-and-time2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1281,7 +1240,51 @@
     "children": []
   },
   {
-    "id": "262af9b6-aa5d-4d6b-8457-27a912b2e7fc",
+    "id": "7f68d7e0-0781-4201-9627-491c63a2d29c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "83f19804-4397-405d-a8d9-fa17a4f30a4a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "867694c7-f8ff-4e09-bfea-ff1040843b21",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0949d134-7004-4ff1-b572-61571010ad69",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2353e39f-1526-42f4-93d6-373629503896",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1298,20 +1301,20 @@
       },
       {
         "type": "text",
-        "text": " - useful feature when you want to .....",
+        "text": " - useful feature when you want to ..... ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "f3dc7ecb-e99a-48e3-9025-b1a57bd33b17",
+    "id": "99d7d3ff-abf8-4d3d-9055-4641ea756539",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:470",
+      "name": "Button1.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/button1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1319,13 +1322,13 @@
     "children": []
   },
   {
-    "id": "8a06646c-9dd4-45e9-94bf-03e206e60077",
+    "id": "739666df-0fe1-470a-9b04-52bf940be51e",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:471",
+      "name": "Button2.jpg",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/button2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1333,7 +1336,40 @@
     "children": []
   },
   {
-    "id": "e1b33156-3297-4313-9987-c0f0a19478d9",
+    "id": "bea6243e-944f-4611-88c9-71a4989fefa5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a4eaa7a4-f6c8-45a1-b1c8-bba110dae3d6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c2a0f928-5013-4b0b-9881-6ab9bcc24a3c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "33ce4bb1-5943-471c-9ac2-41271ccf2b31",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1343,14 +1379,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Let's focus on the other possibilities of using out tables.",
+        "text": "Let's focus on the other possibilities of using out tables. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "9841934f-40c2-4813-80f8-b17d6d946769",
+    "id": "743fbf3c-6ec5-4513-90aa-68c0de9e02b9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1367,7 +1403,7 @@
     "children": []
   },
   {
-    "id": "df121865-3898-44a6-befe-e495a85ffb71",
+    "id": "e37643c3-53a0-4b7a-9b7c-ddbf77434691",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -1384,7 +1420,18 @@
     "children": []
   },
   {
-    "id": "e61eb8d1-8f7d-4e63-b72e-a860ebaf1e69",
+    "id": "68f33437-e008-4c46-bfdd-58b3d1a5d03b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "cfaf0230-2186-4e9c-ada6-6c7a1ac3a2fd",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -1394,14 +1441,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Colums - thatare a table’s vertical elements, allowing you to store more information in your rows. Columns are generally “attributes” of those things (their gender, age, address, etc.).",
+        "text": "Colums - thatare a table’s vertical elements, allowing you to store more information in your rows. Columns are generally “attributes” of those things (their gender, age, address, etc.). ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "7a5c2df4-729e-404c-bd43-2c9eadd53c70",
+    "id": "f9e7e4b3-b94b-4168-90f4-fd282b3375c9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1411,14 +1458,14 @@
     "content": [
       {
         "type": "text",
-        "text": "In Fundamento, you can change column types to add various attributes to your row data. You can also reorder columns according to your preference. change column types, AI generator, buttons, sliders, people, etc. (more about it above in the Section: Property Type)",
+        "text": "In Fundamento, you can change column types to add various attributes to your row data. You can also reorder columns according to your preference. change column types, AI generator, buttons, sliders, people, etc. (more about it above in the Section: Property Type) ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "bb4adb72-5a5a-4d77-8fef-06dd572c7847",
+    "id": "8ea08aed-f740-4e98-b909-1a3cbfd61894",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1435,7 +1482,18 @@
     "children": []
   },
   {
-    "id": "47a9edb3-7dc0-488f-a67c-e6c61267e7ef",
+    "id": "a9bb2c18-fa67-41cb-a162-9d1d15a3eb19",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "54910bb7-eda0-434a-b8b4-8751c6ad7462",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -1452,13 +1510,24 @@
     "children": []
   },
   {
-    "id": "cc16a04e-8a89-4b39-a8ca-9426a8412f6a",
+    "id": "b0cd3588-3734-4121-b2b4-2f3403a9e43f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5521215b-1ecd-44e7-bfc1-b0f5151ce395",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:395",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-use-advanced-features-of-tables/395.png",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1466,7 +1535,7 @@
     "children": []
   },
   {
-    "id": "b05d9093-78a7-4801-b31b-9c0437b74cf6",
+    "id": "5b1c642f-f162-470d-b79b-1096f01e8454",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1476,10 +1545,32 @@
     "content": [
       {
         "type": "text",
-        "text": "As you click on the Table ID, it will be copied to the clipboard. You can now paste it in any place just as refference without Table copy itself.",
+        "text": "As you click on the Table ID, it will be copied to the clipboard. You can now paste it in any place just as refference without Table copy itself. ",
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "61647ef0-521d-4a82-878e-8b4ae7fc1d43",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3051903d-da7e-45f1-99b2-354e4078ec6e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]
