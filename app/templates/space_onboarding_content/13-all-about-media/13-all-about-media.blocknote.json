@@ -1,6 +1,17 @@
 [
   {
-    "id": "ad438ce6-69d9-4000-85c5-d3edbc72ba46",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ce929fa8-950e-4587-a308-0bb049bc0226",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -10,28 +21,62 @@
     "content": [
       {
         "type": "text",
-        "text": "Use media in order to enrich the document with images, videos, files. As mamy says: *\"One image is worth a thousand words\" *sometimes is better just to show something rather than describe.",
+        "text": "Use media in order to enrich the document with images, videos, files. As mamy says: ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "\"One image is worth a thousand words\" ",
+        "styles": {
+          "italic": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "sometimes is better just to show something rather than describe.",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "e8549e87-1fd2-49b0-856c-3fc938ca0f89",
+    "id": "2543b004-2932-4b02-a02d-2e4f45e94085",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "4fcc576d-6743-451d-b81d-893aa3ce4d43",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:462",
+      "name": "Media2.jpg",
+      "url": "onboardingContent:13-all-about-media/media2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 258
     },
     "children": []
   },
   {
-    "id": "b0a0c637-819a-4ed4-a77d-4fbf0028dc43",
+    "id": "203e69b2-f195-47e5-944a-2a8f2d49ed22",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "75ca9523-53e6-4677-9c88-8a2bd05901bf",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -60,24 +105,21 @@
     "children": []
   },
   {
-    "id": "1d9735e9-b2d8-4217-86f5-c93345b52424",
-    "type": "paragraph",
+    "id": "f3b1f64d-dc97-4c64-befb-6957d922063e",
+    "type": "image",
     "props": {
-      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add image",
-        "styles": {}
-      }
-    ],
     "children": []
   },
   {
-    "id": "ba361bc7-b044-41b5-9795-5a8fb91394ff",
+    "id": "1a39f850-d7d2-41be-8e34-998637c20933",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -94,26 +136,49 @@
     "children": []
   },
   {
-    "id": "c48a0dc0-dc0a-4340-87b9-a4f7a7f7b7bb",
-    "type": "image",
-    "props": {
-      "backgroundColor": "default",
-      "textAlignment": "left",
-      "name": "",
-      "url": "attachment:387",
-      "caption": "",
-      "showPreview": true,
-      "previewWidth": 512
-    },
-    "children": []
-  },
-  {
-    "id": "3b6cdeec-0fe8-4497-a60b-e134c786d491",
-    "type": "numberedListItem",
+    "id": "70471791-a403-4c93-af54-6e792185584b",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f20687c0-88be-4ca9-a661-156ebd24dff1",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Upload Image .jpg",
+      "url": "onboardingContent:13-all-about-media/upload-image.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 422
+    },
+    "children": []
+  },
+  {
+    "id": "204af867-feed-4e85-a87b-99f17efa38c8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f933f9fb-a3e4-407f-9912-8b5e614bbee7",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 2
     },
     "content": [
       {
@@ -137,24 +202,32 @@
     "children": []
   },
   {
-    "id": "25cf2693-56ee-463c-9473-4def12418a85",
+    "id": "e8ff7c4b-32cf-450e-8930-3b8d4fd19702",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "b0a40805-30eb-4507-a95a-576f471e0619",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add video",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "bd843a09-4ff7-4c5f-8e49-b18b058735d7",
+    "id": "0783bf58-5d7e-4e8d-b785-0aa133b08074",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -171,13 +244,13 @@
     "children": []
   },
   {
-    "id": "188d1ea5-e0dc-42c8-86f5-2c3af0714d4e",
+    "id": "c3dbe906-81a1-4f47-b9f2-ad2c18808d21",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:389",
+      "name": "Upload video2.jpg",
+      "url": "onboardingContent:13-all-about-media/upload-video2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -185,12 +258,24 @@
     "children": []
   },
   {
-    "id": "874b5801-e62c-405a-a6ca-cd7008506189",
-    "type": "numberedListItem",
+    "id": "143c11f1-829d-4515-a9cd-86ca0f78044c",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0915040d-3651-4ca9-82b2-251650b64275",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 3
     },
     "content": [
       {
@@ -214,24 +299,30 @@
     "children": []
   },
   {
-    "id": "cce19f3a-0921-4fd9-bbfa-afdf0a625137",
+    "id": "a4cddaef-555d-414e-8fa0-1e076f234872",
+    "type": "audio",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true
+    },
+    "children": []
+  },
+  {
+    "id": "883b3dbc-b387-469f-91ff-54c60d8d0f6b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add audio",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "e032ff59-fc62-4bcf-9638-893a81c3db19",
+    "id": "871a7a83-c6d1-49d1-92e1-a05b08da768e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -248,13 +339,13 @@
     "children": []
   },
   {
-    "id": "bd5d507d-f89d-4f7c-b09a-d0f5e5b900bb",
+    "id": "c54c6885-695d-4e03-b7f6-985747af7759",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:390",
+      "name": "Upload audio2.jpg",
+      "url": "onboardingContent:13-all-about-media/upload-audio2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -262,12 +353,35 @@
     "children": []
   },
   {
-    "id": "8d546670-d9fa-4d2a-a146-3e898603e086",
-    "type": "numberedListItem",
+    "id": "d665134d-291d-4166-89a3-d3daad629d8e",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ad7d2b50-3baa-4f05-b978-8c76035fddca",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6f01863f-c312-44e0-acfd-6b812f8f72c0",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 4
     },
     "content": [
       {
@@ -279,30 +393,35 @@
     "children": []
   },
   {
-    "id": "9fd55bf3-f91f-4c30-afa2-f78e796f78f4",
+    "id": "85b2ab5f-9553-4f8a-ad69-d6d65fa59bf1",
+    "type": "file",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": ""
+    },
+    "children": []
+  },
+  {
+    "id": "aae92e02-da27-4c82-ae84-396e0f22dbe7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add file",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "193656ae-7377-4974-9ab5-b3c5688fcec5",
+    "id": "8222c0a0-4042-4d99-a240-0d55b4aa9e95",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:391",
+      "name": "Upload file2.jpg",
+      "url": "onboardingContent:13-all-about-media/upload-file2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -310,7 +429,18 @@
     "children": []
   },
   {
-    "id": "42959af7-d324-4f9f-b5d6-b3951e7111cb",
+    "id": "9820469a-f647-4234-bbbf-7437e65d9528",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2e39e78f-f086-4a2d-a768-2a43e2a1ef4b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -324,6 +454,17 @@
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "151d0c1c-1cf4-4639-bdd1-a25cd03e4c47",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]
