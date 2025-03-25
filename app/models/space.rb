@@ -119,7 +119,8 @@ class Space < ApplicationRecord
 
   def populate_with_onboarding_content!
     def create_document(yjs_file)
-      title_filename = File.dirname(yjs_file) + "/" + File.basename(yjs_file, ".*") + ".title.txt"
+      directory = File.dirname(yjs_file)
+      title_filename = directory + "/" + File.basename(yjs_file, ".*") + ".title.txt"
 
       document = self.organization.documents.create!(
         title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
@@ -128,12 +129,22 @@ class Space < ApplicationRecord
       )
 
       document.versions.create!(
-        content: JSON.load_file!(File.dirname(yjs_file) + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+        content: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
       )
 
       hierarchy_node = self.create_hierarchy_node(document.id)
       self.hierarchy.append(hierarchy_node)
       self.save!
+
+      Dir.glob(directory + "/**/*.csv") do |csv_file|
+        table = self.tables.create!(
+          npi: File.basename(csv_file, ".*"),
+          name: "Table " + Nanoid.generate(size: 4),
+          parent: self.home_document || self.documents.first || nil,
+          organization: self.organization,
+        )
+        table.import_from_csv(csv_file)
+      end
     end
 
     Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.yjs") do |yjs_file|
