@@ -1,6 +1,17 @@
 [
   {
-    "id": "57ef7029-8421-4c88-a099-88b5ec2cf3ea",
+    "id": "26ee4e7e-cbba-4b6b-914e-02f24166780b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "da7a82e1-57ef-4eb6-b61f-14f33516dddf",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,21 +28,21 @@
     "children": []
   },
   {
-    "id": "7b947405-bfb4-4f20-aa11-4656cbe170a6",
+    "id": "3cd63260-1f65-49f8-939d-ab03ab2272ce",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:444",
+      "name": "MC.jpg",
+      "url": "onboardingContent:07-how-to-create-and-delete-a-team/mc.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "0ea9a977-b2b0-4257-ad9a-9ef204ac7fe6",
+    "id": "5450488b-485c-45dd-a8f3-39b09732dc36",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -48,13 +59,13 @@
     "children": []
   },
   {
-    "id": "b9bf0661-b372-422f-829d-ef20dd7aea35",
+    "id": "9d3649c5-d9e0-4282-84b1-3d7b069b3418",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:445",
+      "name": "Create Team1.jpg",
+      "url": "onboardingContent:07-how-to-create-and-delete-a-team/create-team1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -62,7 +73,18 @@
     "children": []
   },
   {
-    "id": "b5789e0b-d58d-4577-b1c5-347b41e4f75f",
+    "id": "735f5359-1bd1-47d8-b35a-d5f07c216e52",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f529b6d5-36f1-4b8d-b3cb-5094c84ac78a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -79,13 +101,13 @@
     "children": []
   },
   {
-    "id": "bc635a78-7fbf-4117-8fea-4ccc25ad24cd",
+    "id": "7d74bfd9-eb73-4b62-9a6d-9e35a08f0031",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:446",
+      "name": "Create Team2.jpg",
+      "url": "onboardingContent:07-how-to-create-and-delete-a-team/create-team2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -93,7 +115,18 @@
     "children": []
   },
   {
-    "id": "9a0af6c1-25ea-4d45-98a5-641f621a868b",
+    "id": "326e030b-fb75-4270-8b0c-54fde744f6eb",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e4666087-02e6-44d9-92c9-8e53553e5843",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -110,13 +143,13 @@
     "children": []
   },
   {
-    "id": "a144efc3-71f7-4e34-8823-50ffc514de43",
+    "id": "754bc973-ab46-4a89-b383-b4b9f6227f9a",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:447",
+      "name": "Create Team3.jpg",
+      "url": "onboardingContent:07-how-to-create-and-delete-a-team/create-team3.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -124,7 +157,7 @@
     "children": []
   },
   {
-    "id": "a6317195-179b-4e15-80f5-ea0801ef98b0",
+    "id": "df7a34a8-f849-4027-b73f-4cacc601506d",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -141,7 +174,7 @@
     "children": []
   },
   {
-    "id": "98d6eac4-6322-445d-8f1e-d1b118543eb0",
+    "id": "315c349b-78b2-42b5-80e9-e4af0ab3134a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -155,6 +188,17 @@
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "34aaba3d-d2e2-410d-9ec6-b59a640c27da",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

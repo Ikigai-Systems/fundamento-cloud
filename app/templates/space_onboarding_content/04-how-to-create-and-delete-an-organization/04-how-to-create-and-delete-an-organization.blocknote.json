@@ -1,6 +1,6 @@
 [
   {
-    "id": "2bd2f4bc-1808-4563-916d-2446c6aad0df",
+    "id": "60a6ca85-a9ff-454d-a1fc-1f00b78d9fe0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,21 +17,32 @@
     "children": []
   },
   {
-    "id": "547b2048-a2e1-4726-85dc-f98c80e46695",
+    "id": "0c09f253-e101-48db-bf88-7d4c0cfdae07",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:433",
+      "name": "MC.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/mc.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "2b56d855-ec44-4d2e-a36d-eb79dcf906b6",
+    "id": "41c89a67-7add-47ef-b670-3b470bd95420",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a81f87fd-9237-4903-a85b-19bffb9a71bb",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -48,21 +59,32 @@
     "children": []
   },
   {
-    "id": "6c4b5a9a-f8e3-44eb-bafc-c605efe59a06",
+    "id": "7f57fa3e-9e12-4c91-acfb-bda398b7d9fe",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:434",
+      "name": "Choose Organizations.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/choose-organizations.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 115
     },
     "children": []
   },
   {
-    "id": "39cde839-06e7-44d8-aef5-3db67dc5ac2f",
+    "id": "6957cd8c-3646-4c4a-8199-0d338a544b3c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7cb7dba0-faed-4a48-aa62-f31f261e7525",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -79,21 +101,32 @@
     "children": []
   },
   {
-    "id": "f09380c5-4d05-4b66-8cf6-ac7ecf26da27",
+    "id": "6ac5728d-5b45-483a-b35c-22628948ed9b",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:435",
+      "name": "create.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/create.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 80
     },
     "children": []
   },
   {
-    "id": "6ca935e8-3bc5-44cd-9d70-9bf5977049c0",
+    "id": "ad7c2693-9b50-4153-9089-b23e962abc11",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a38b5446-affe-41a4-a9db-2f43659528ed",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -110,21 +143,32 @@
     "children": []
   },
   {
-    "id": "7ea94fac-c01a-491f-87c1-b57ed7f325cb",
+    "id": "f6399cb4-4aa7-46d1-a1f4-15287dcffa4b",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:436",
+      "name": "create2.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/create2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 361
     },
     "children": []
   },
   {
-    "id": "0473d14b-656c-4057-8fb2-15ab96878549",
+    "id": "95e7e2f2-f776-42c9-af34-f4309ecd3ad8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "935f573f-bd7b-4a28-9cad-de30d49f4970",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -141,7 +185,7 @@
     "children": []
   },
   {
-    "id": "1abbee8e-7bb1-4fe8-9db2-37ae6f3cd3d8",
+    "id": "326a7344-8b16-45eb-a2e5-83b8dcde3e56",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -158,13 +202,13 @@
     "children": []
   },
   {
-    "id": "cd27fbf0-5f08-4bb5-ae20-f412c31556b4",
+    "id": "3c6654db-06be-46f5-a1c3-e8d61cb7adef",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:437",
+      "name": "admin organization.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/admin-organization.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -172,7 +216,7 @@
     "children": []
   },
   {
-    "id": "476130b0-9fb0-4bac-828e-36007d1b40c1",
+    "id": "beddbcb5-1355-4408-9483-411c4760cced",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -189,13 +233,24 @@
     "children": []
   },
   {
-    "id": "11f4794c-b6d1-4f5c-9bbd-b2765effd32a",
+    "id": "b389f460-2597-47d5-b36d-310e9fd386c0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "23006d2a-b4fe-4fc1-bc92-9f14e446c32d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/194",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/194.png",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -203,7 +258,29 @@
     "children": []
   },
   {
-    "id": "cd8d165f-ed44-4bc5-9d84-58825a6b14b2",
+    "id": "f044e40b-0c4c-4675-ae38-2a667599a3ef",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "059b2f74-15f3-4dee-b7fe-e6a7facd0317",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9dabb80c-32f6-4883-8070-ea61a0f80e86",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -220,21 +297,21 @@
     "children": []
   },
   {
-    "id": "5d695560-4a28-46e2-8cfa-00444c11e3c4",
+    "id": "c25b039d-a706-407a-8af9-f76495781569",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:502",
+      "name": "MC.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/mc.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "81ea67ce-cc7d-4e4f-8af4-18c6a4a3505d",
+    "id": "977ce855-e9d4-4e84-951c-f754f544e392",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -251,21 +328,32 @@
     "children": []
   },
   {
-    "id": "bb3ad610-a5d6-410d-873f-7bee03f7fe1a",
+    "id": "c41a9bb4-db07-43ef-a50c-fcd79d703590",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:503",
+      "name": "Choose Organizations.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/choose-organizations.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 104
     },
     "children": []
   },
   {
-    "id": "97887512-54a4-4732-9f82-539b42cbb883",
+    "id": "38dadced-3866-4ec6-9953-9b1a57ae2dfc",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f46aa7cf-2ed2-4eb8-875f-35186d5f5bd0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -282,21 +370,32 @@
     "children": []
   },
   {
-    "id": "dc727fda-bafa-4fd2-9fe6-6c6bfd76617f",
+    "id": "10b6e7b6-3cf9-4057-8119-44efa6adbbf7",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:504",
+      "name": "delete Organization.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/delete-organization.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 446
     },
     "children": []
   },
   {
-    "id": "719e2540-331b-4e85-9317-743bce00fbb4",
+    "id": "998376a9-5a19-4b51-9a4c-279cef97a9c2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "347ea5fd-2128-45cd-a372-75b30d9b8b0a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -313,21 +412,32 @@
     "children": []
   },
   {
-    "id": "366af529-d33a-4abc-9aa2-506d75ab6169",
+    "id": "b00e5b0f-5351-4afd-be86-d336297db625",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5289665d-e017-44ee-89bb-cebbb8863f67",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:506",
+      "name": "Delete Org 2.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/delete-org2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 445
     },
     "children": []
   },
   {
-    "id": "7d9291c5-0c8a-4e53-9d6c-d8625cdc3c4f",
+    "id": "3fabfb96-044b-4fe1-ac1c-02f42c6ba674",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -351,7 +461,7 @@
     "children": []
   },
   {
-    "id": "cef8e910-4ba4-4b7d-8ddd-d0a7a84bb11c",
+    "id": "fcb6e3c8-2e7f-4bf9-a7fa-0a1c502c0625",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -361,14 +471,36 @@
     "content": [
       {
         "type": "text",
-        "text": "Then you have to just confirm it or abandon this action.",
+        "text": "Then you have to just confirm it or abandon this action. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "1fcccbb0-ac48-4f22-9a0c-6e734b7a4034",
+    "id": "3e2cdee4-f667-4a48-9b8e-e6a21d9a92e6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b5226f05-0a2e-4770-b94f-5383efaa4c1f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "959f801e-539c-4a13-82fb-909c706429bf",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -385,21 +517,32 @@
     "children": []
   },
   {
-    "id": "3ff582c6-925a-423f-bd8c-69143d9765da",
+    "id": "20a71a34-5713-4731-aaf8-bb6242fd9860",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:509",
+      "name": "Edit Organization1.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/edit-organization1.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 458
     },
     "children": []
   },
   {
-    "id": "b227e43a-ea07-4656-8768-125d33454ba0",
+    "id": "1ce803b4-c169-4c6b-8124-cf909e1c4d4b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "821f1ce3-1151-49c1-bb51-568f690d1320",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -416,21 +559,32 @@
     "children": []
   },
   {
-    "id": "fc3b498f-4563-453a-ab43-38eb60525bef",
+    "id": "275167ae-cdae-4d20-97a3-fcee57a6b035",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:510",
+      "name": "Edit Organization2.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/edit-organization2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 439
     },
     "children": []
   },
   {
-    "id": "89a0f494-24e2-4740-a951-f7e74d9a855f",
+    "id": "007b1829-463b-459e-a17a-3e277cd22518",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "de72a153-07a9-4b07-95ee-ff1aca852ce3",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -447,17 +601,105 @@
     "children": []
   },
   {
-    "id": "f2b527bb-bdb8-4964-8243-55fd1b260911",
+    "id": "e273a566-ee43-4ef4-abf8-7b2dd6cd652b",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:511",
+      "name": "Switch to Organization.jpg",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/switch-to-organization.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 451
     },
+    "children": []
+  },
+  {
+    "id": "2cf59552-3a66-426c-9f32-24e8f386d598",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e1213e48-78bb-4583-82e1-ac738020e094",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ed516db9-7c4e-4388-9844-01f2db0f3f94",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9a4c0e90-3125-475b-9e16-925058b704c3",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9f47a478-601b-4458-8834-6114f79acdfd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6902f4ec-f813-4f71-8d19-a237e5fb2b82",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2c533a0f-b251-462d-8046-23cbb92b708c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9e23936a-a526-4007-9842-28f4dd3b2142",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

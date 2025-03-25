@@ -1,6 +1,17 @@
 [
   {
-    "id": "490049ff-26a2-45e4-bb9b-122e9a7a8275",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "304096ff-3a6b-4508-9558-39049d06f588",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,18 @@
     "children": []
   },
   {
-    "id": "be9f2755-a945-4aa8-853f-51c14c86e8bb",
+    "id": "0ad49769-176f-45be-a852-c1ff411e403d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7df55651-960d-4284-bd7c-a9af4434c938",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -58,7 +80,7 @@
     "children": []
   },
   {
-    "id": "270bc56f-7461-4140-b6b6-6be105019bef",
+    "id": "38b21d8a-d214-4d28-a0f2-4f2a3aeb4a7c",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -87,7 +109,7 @@
     "children": []
   },
   {
-    "id": "5a2fd15c-1ca3-4604-8a11-7f3f1e6d42e5",
+    "id": "21a58830-7d99-47b2-8c1c-62eb4becfa9d",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -116,7 +138,7 @@
     "children": []
   },
   {
-    "id": "4db83722-430b-4c82-b73b-c622a277059a",
+    "id": "9ad35e31-00cb-44df-a40c-50ad66accbe1",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -145,7 +167,18 @@
     "children": []
   },
   {
-    "id": "347b0775-4a74-4ee3-9076-da35db2af690",
+    "id": "73ef7847-226e-4704-8514-575714997508",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5e139fe5-6d39-4d73-971e-96a9e07327d8",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -155,14 +188,76 @@
     "content": [
       {
         "type": "text",
-        "text": "using \"/\" you can also change Basic blocks: Numbered list, Bullet List, Check List, Paragraph, Code Block",
+        "text": "using \"/\"  you can also change Basic blocks: Numbered list, Bullet List, Check List, Paragraph, Code Block",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "1177c772-172b-429b-9546-c2bc3e2d3e6e",
+    "id": "22b58ba4-cd33-4117-8838-31bf6991cf73",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "3b86bf7b-0bd4-4dc1-866c-13e174edac47",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "73b4534a-360c-4b00-8190-ff6df7621cd6",
+    "type": "audio",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true
+    },
+    "children": []
+  },
+  {
+    "id": "6346f4d5-a4a5-4a27-9995-53ec1e30a812",
+    "type": "file",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": ""
+    },
+    "children": []
+  },
+  {
+    "id": "65767787-a783-4dae-850d-a3930872e639",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "16bbbfaf-a4d7-49e8-80c8-f30b7a66bcf3",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -172,82 +267,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Add image",
+        "text": "/you can add emoji ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "75b47e7b-bf28-4496-8c22-b11bac8ac23b",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add video",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "fe077ebc-d47a-43b9-8d92-9584ac009ad5",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add audio",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "81e5e1bb-b7b5-4e88-9116-6ca792db0358",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add file",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "2618d6bb-8a6e-45c0-b8dd-0049d4b72cc9",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "/you can add emoji",
-        "styles": {}
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "33a13653-7fd9-4b02-9640-0e564ba0927d",
+    "id": "77ec0171-b562-4daa-86f3-312065ed1473",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -261,6 +288,17 @@
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "4101cc2d-8456-42b0-8a1e-da729bf29567",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

@@ -1,6 +1,17 @@
 [
   {
-    "id": "2e277688-b064-4267-a48b-9cde8978a1c3",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "afa81101-d54d-47c5-a1fd-ae453306a2f7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,7 @@
     "children": []
   },
   {
-    "id": "ce295cf6-d61c-480f-997b-ca6f8c9b4379",
+    "id": "fe2f5134-576f-4768-963c-e490a757f4de",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -34,7 +45,18 @@
     "children": []
   },
   {
-    "id": "74c0bbae-fcfc-4fa3-a54d-ccac4ac56149",
+    "id": "4fff15b3-bcb6-44a3-b3aa-1ef5c33dbbfd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3fd8968b-9be3-4bb6-90ed-719e757bdd35",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -51,21 +73,32 @@
     "children": []
   },
   {
-    "id": "8ae92e08-54f4-4d89-8934-7d97f2722084",
+    "id": "a265dca6-b3b7-4457-982e-7e547c065c1a",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:452",
+      "name": "Notification2.jpg",
+      "url": "onboardingContent:10-how-to-mention-someone-or-something/notification2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "4b9b6655-3dd7-4e77-8de4-eed4ab9cf754",
+    "id": "d051f251-4def-4b93-b877-ba10c2988dc9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d653c53a-a6d5-490b-ae55-b720847f4045",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -82,21 +115,32 @@
     "children": []
   },
   {
-    "id": "33c5f979-dbd3-434a-8c1b-9e82febaee3d",
+    "id": "a37fee5b-c085-4ee2-aa39-798b92251be4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:453",
+      "name": "Notifications button.jpg",
+      "url": "onboardingContent:10-how-to-mention-someone-or-something/notifications-button.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "8c69002a-265e-4865-8c24-22514cc07bb3",
+    "id": "70a92691-3603-4c94-8448-c98592c32e58",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2519cce2-6262-4016-9853-7382336242af",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -113,7 +157,7 @@
     "children": []
   },
   {
-    "id": "78b35ab1-3468-4463-af89-d39340f3e8ef",
+    "id": "3fc95949-2ff0-4797-a06b-4016951aae58",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -130,13 +174,13 @@
     "children": []
   },
   {
-    "id": "5758ffae-ef8c-4b9e-af2e-500f96821a88",
+    "id": "a6f0afef-a41d-4310-af35-1578efd235e4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:454",
+      "name": "335.png",
+      "url": "onboardingContent:10-how-to-mention-someone-or-something/335.png",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -144,7 +188,18 @@
     "children": []
   },
   {
-    "id": "da8f6ffd-9e1c-4a97-aa44-f5296170f402",
+    "id": "345c6f78-cf17-4e70-a278-09627517d3bf",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "36b3c2d6-bd4b-4915-8a29-ea9cf74edde0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -161,7 +216,18 @@
     "children": []
   },
   {
-    "id": "84c331f0-8d5d-4826-9ef1-0d2b0e9e17e5",
+    "id": "be5ae0f0-9ca2-488a-a8e7-4b24ca79264a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d779b5d9-146b-4364-bc19-d9d02cb14aa0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -178,7 +244,7 @@
     "children": []
   },
   {
-    "id": "0c8bb2c1-5bc9-43ab-9d8f-af174cb2b7a5",
+    "id": "14743fd6-4a62-4f54-ba3a-6f937a3a563a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -195,21 +261,32 @@
     "children": []
   },
   {
-    "id": "75078be2-db18-41e8-a9cd-bf067f734e54",
+    "id": "9d4ead84-c239-45f3-873d-a2150e807132",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:455",
+      "name": "Headings.jpg",
+      "url": "onboardingContent:10-how-to-mention-someone-or-something/headings.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 101
     },
     "children": []
   },
   {
-    "id": "d7dedc53-63e5-4114-91bd-45cc7bd68b86",
+    "id": "ba231ae6-4c44-4467-9b27-50448a77f041",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6ae547dd-f0d5-4fb0-98ae-9b10b93e7f68",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -226,21 +303,21 @@
     "children": []
   },
   {
-    "id": "8cab8085-a558-4013-be1a-30ee289cbe95",
+    "id": "36b6021e-c30f-430e-9d20-fb13c851fde3",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:456",
+      "name": "Paragraph.jpg",
+      "url": "onboardingContent:10-how-to-mention-someone-or-something/paragraph.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 129
     },
     "children": []
   },
   {
-    "id": "bac1ebc9-26a0-4eff-acc8-88920065f9fd",
+    "id": "ace64c32-9c40-4c93-8d34-8b438db110e4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -257,7 +334,18 @@
     "children": []
   },
   {
-    "id": "3d700607-eeec-4036-81ff-c74062ce7ef4",
+    "id": "fee06b0e-c8dd-442a-8abc-b4d29f1240bf",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3c275bb8-033f-4206-853d-de75580e29bb",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -274,7 +362,7 @@
     "children": []
   },
   {
-    "id": "1bfa1e78-ee69-4e0a-80bf-d57f6015f07e",
+    "id": "9a57804b-b298-4ff7-b973-954ddb875283",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -322,7 +410,7 @@
     "children": []
   },
   {
-    "id": "9f1ddd25-5e0e-4766-a66c-35e13431c194",
+    "id": "13149192-3ff9-44fb-ae1b-3c93f0605c3f",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -370,7 +458,7 @@
     "children": []
   },
   {
-    "id": "e807a146-d48b-4aee-8ce4-29a0c77ae4f7",
+    "id": "0c9613b6-e299-4d32-abc4-080d3065c257",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -418,7 +506,7 @@
     "children": []
   },
   {
-    "id": "40edc27d-e071-4670-8798-4c5c16a65816",
+    "id": "73ee6aeb-7e8c-47bb-b2ac-6b4e0c0d474d",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -463,6 +551,182 @@
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "0384697a-a572-49e5-bf47-264c3cb96c35",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c1b56c34-c5db-4b5e-8666-8b995c10ff0d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b19f2895-0d0a-48a1-94d0-9a041e3411bd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6a084c97-62e1-46ab-9872-f880ca5a3a20",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9df176cf-32ad-4141-83a1-6e538d71f744",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2a6c4a34-1231-4e95-8f42-5f0ce1c6406f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "488664f0-3c11-457b-b936-be00612734b4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fd5c33c0-6375-452a-8d57-15d0a6a23645",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3113c02d-a0ea-403a-99d0-d43427cb591f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b312ab80-f821-4f83-8b00-d13649def8e2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ed85e325-6e74-43fb-8c48-534df3e7095f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3a944edb-8b68-4455-b70e-c5b14fd2a24f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fa586550-2aaf-4022-9dd9-b69be76fa3a5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "50ce9e33-5642-4925-9e52-741fc5b86a0b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "843326a2-6a76-4712-82c7-cf48bf22ac71",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b1be44a7-c1c5-4582-930f-6e36cea5795c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

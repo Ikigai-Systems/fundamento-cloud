@@ -1,6 +1,17 @@
 [
   {
-    "id": "cb8903c1-43e5-40ef-a432-4cdbac8a4aa8",
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fdd7bc5f-274c-407b-8283-e6b94dc6288c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,13 +28,13 @@
     "children": []
   },
   {
-    "id": "f223b47d-503e-45d5-8e26-83ff353bfd56",
+    "id": "da4239c8-82bc-4835-bb8b-97a24a7ae649",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:448",
+      "name": "Add user to a team1.jpg",
+      "url": "onboardingContent:08-how-to-add-and-delete-user-to-a-team/add-user-to-a-team1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -31,7 +42,18 @@
     "children": []
   },
   {
-    "id": "eed46b3f-f905-4b73-9d8e-46c129e5b18c",
+    "id": "da26056c-fbc8-4283-bcd3-6668d8338a13",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6258846a-cbed-483b-8544-b0dc27987f0b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -41,24 +63,35 @@
     "content": [
       {
         "type": "text",
-        "text": "Similar to adding space managers, just try to find a person and after choosing them, click \"Save\"",
+        "text": "Similar to adding space managers, just try to find a person and after choosing them, click \"Save\" ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "62033dd0-9a96-44c5-bfc5-5d0531e13829",
+    "id": "a0e44714-ac44-4bb7-992e-fb3e5c52da6d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:449",
+      "name": "Add user to a team2.jpg",
+      "url": "onboardingContent:08-how-to-add-and-delete-user-to-a-team/add-user-to-a-team2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
     },
+    "children": []
+  },
+  {
+    "id": "72998db2-eeed-4c17-afb3-439ea5420d5a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

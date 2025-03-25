@@ -1,6 +1,17 @@
 [
   {
-    "id": "3bd72499-9b8d-4b7a-a722-57e1cfbb33d7",
+    "id": "d4a360bc-161a-45b3-9750-571f404f30ae",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d88a46c1-6266-4303-aec4-6a9afe1d9872",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,7 @@
     "children": []
   },
   {
-    "id": "c341a88f-5a24-4e5f-9395-887e7ed22311",
+    "id": "2565e90d-aa22-4751-8364-289c0acc3165",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -35,7 +46,7 @@
     "children": []
   },
   {
-    "id": "bc2508ff-be81-48b3-be83-30e21561af56",
+    "id": "60a10a87-3bb3-4584-ae96-42a089f0ca85",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -53,7 +64,7 @@
     "children": []
   },
   {
-    "id": "4e799128-afa9-4bee-ac6e-5059cc5e6a52",
+    "id": "6ace8036-a704-4f1f-aab5-901b7f8669d3",
     "type": "checkListItem",
     "props": {
       "textColor": "default",
@@ -71,25 +82,38 @@
     "children": []
   },
   {
-    "id": "2c540c6f-b54e-491f-9327-7b7a405d26aa",
-    "type": "heading",
+    "id": "f297050b-9a6c-4f77-a833-6b4daded22a0",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left",
-      "level": 1
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "69d191db-757b-4ea6-969e-6788453f3c18",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
     },
     "content": [
       {
         "type": "text",
         "text": "Creating a document",
-        "styles": {}
+        "styles": {
+          "bold": true,
+          "underline": true
+        }
       }
     ],
     "children": []
   },
   {
-    "id": "cc872524-a5d3-42ef-96c1-d4f3a098bbbd",
+    "id": "689ea30e-b83f-4310-8104-f9d5f9b73c0b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -106,13 +130,13 @@
     "children": []
   },
   {
-    "id": "e4716091-d829-4e8e-81cc-9ce41c7e86e2",
+    "id": "ba48fa6f-350d-4aae-b427-0466341f45ad",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:407",
+      "name": "BlancDoc.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/blancdoc.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -120,7 +144,7 @@
     "children": []
   },
   {
-    "id": "581f45c5-fcb6-4b8b-96f4-1fe89dd7cdb6",
+    "id": "7f9cd22f-65dc-4b76-b149-75cb958db9de",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -142,14 +166,14 @@
       },
       {
         "type": "text",
-        "text": " mode.",
+        "text": " mode. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "56dea3f9-aca4-4c1f-94c8-6de0bfff56ff",
+    "id": "1511e460-e655-46ef-ac19-26fad0d504a0",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -159,14 +183,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Any edit made to it is being instantly reflected to anyone else visiting that Document.",
+        "text": "Any edit made to it is being instantly reflected to anyone else visiting that Document. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "8b1bdeb6-fbe6-46f7-9d4f-50e53cbf645e",
+    "id": "56c85946-9470-4222-a383-edc40fbe6071",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -183,13 +207,24 @@
     "children": []
   },
   {
-    "id": "511b5c70-a2e5-45c6-bd6f-4616df2eb0df",
+    "id": "ffeaaa2e-ccf0-40ff-9e5c-4573b542ed10",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5eb4aacd-7b08-4a1d-8653-be993c216f02",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:408",
+      "name": "Blanc doc.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/blanc-doc.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -197,7 +232,7 @@
     "children": []
   },
   {
-    "id": "9e9520cf-c564-417b-8a05-e2d66f34aa3f",
+    "id": "f906e210-eb6d-437e-ac24-db6c7fd025f5",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -207,14 +242,14 @@
     "content": [
       {
         "type": "text",
-        "text": "This allows rapid collaboration with other people on the initial versions of Documents.",
+        "text": "This allows rapid collaboration with other people on the initial versions of Documents. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "7a08b0c9-493f-4452-86af-01f4824866bf",
+    "id": "36b1dc82-e435-499f-b358-0fe8b56f9e22",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -231,7 +266,18 @@
     "children": []
   },
   {
-    "id": "3bb31346-b109-4d66-866b-9798512693d7",
+    "id": "113300b5-e2e3-4b74-9fe5-4cd2330bc235",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "546a537b-ecb7-42f9-8ff6-9e45b74d221a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -260,13 +306,24 @@
     "children": []
   },
   {
-    "id": "9752b569-7232-4c01-a025-03da60285c1e",
+    "id": "8e6ac0b0-ab19-4ca2-8a84-48d5aa29c61e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "95a7ed22-9e89-4fee-894a-be1a2bf353a3",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:409",
+      "name": "Document1.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/document1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -274,7 +331,7 @@
     "children": []
   },
   {
-    "id": "932cf4b5-722a-4050-95fd-a9a8c4e37969",
+    "id": "592f83f6-08ac-4451-8360-4cf5bcdd0cff",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -284,14 +341,14 @@
     "content": [
       {
         "type": "text",
-        "text": "More about \"Draft version\" of your document:",
+        "text": "More about \"Draft version\" of your document: ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "5755ffe0-cdf8-4912-8c6d-f550ef0c401f",
+    "id": "8958f3b8-96d1-4f0f-b1eb-3a85857a2ad7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -308,7 +365,7 @@
     "children": []
   },
   {
-    "id": "11d6bccb-5405-409d-aac6-ce8a2567e030",
+    "id": "f5c2c9a0-165f-4bb7-a3cc-f087aac10f5a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -318,14 +375,37 @@
     "content": [
       {
         "type": "text",
-        "text": "During typing you can also view actual/the latest version of the document using link provided: \"View current version\", don't worry, changes you have been made so far, are being stored and when you click once more \"Edit\" button you will see it (dać filmik)",
+        "text": "During typing you can also view actual/the latest version of the document using link provided: \"View current version\", don't worry, changes you have been made so far, are ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "being stored",
+        "styles": {
+          "underline": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " and when you click once more \"Edit\" button you will see it (dać filmik)",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "57b78089-cfe7-4128-91bb-b50a334433db",
+    "id": "cd4a02e4-d34f-408e-ba37-e7bdc2f67a0b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "49f86be3-115e-4b0b-b1d8-53dc9bfb26b6",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -354,13 +434,24 @@
     "children": []
   },
   {
-    "id": "f72c469e-7e00-4f60-aeaf-23d1b6d13667",
+    "id": "f75c2838-d6ff-461a-a361-95b767fcdf00",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "65c56a67-3938-4d34-8b99-cb083b3aafb2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:410",
+      "name": "Document updated.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/document-updated.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -368,7 +459,18 @@
     "children": []
   },
   {
-    "id": "028db199-50a0-4a73-a310-3fba9cfdc326",
+    "id": "cc90d2e4-6287-4e9c-a248-35ea3e541478",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1b042ee0-f10d-4f60-9602-14555595d4cb",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -385,7 +487,7 @@
     "children": []
   },
   {
-    "id": "79c80f50-aa7d-4b46-b195-b4634b19d103",
+    "id": "efaeddd0-1c74-4562-a6a8-076f84529899",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -402,13 +504,24 @@
     "children": []
   },
   {
-    "id": "2958385a-fbda-4b09-b2cc-5d3b1a6134f7",
+    "id": "2c2a8583-fd8b-48f8-bbce-b03663e09161",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "238bfdbb-6367-44de-89c5-0cb53612d0d4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:411",
+      "name": "Comment1.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/comment1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -416,7 +529,18 @@
     "children": []
   },
   {
-    "id": "c49cb58b-f7fb-4fb7-9257-664f038b920b",
+    "id": "f738ba88-ada6-457d-9828-eef54f8c0f0b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "eeae6c2f-a949-4310-9002-b493c7cee877",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -433,13 +557,24 @@
     "children": []
   },
   {
-    "id": "967965a6-c1e6-4e50-b425-43a5c838f10f",
+    "id": "5d2507bf-fab5-4714-b8e4-caa7c581ab62",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "83e3acdb-e8cb-4c15-a026-d4557f244d43",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:412",
+      "name": "Comment2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/comment2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -447,7 +582,18 @@
     "children": []
   },
   {
-    "id": "782fae79-e055-4980-a431-d7a9a5b8cf0f",
+    "id": "aab1f433-0a73-4dce-a982-ccf65eec9847",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "34ffe007-f359-4af2-af33-ffac13f1e7ae",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -464,13 +610,24 @@
     "children": []
   },
   {
-    "id": "461db3ab-5002-44fa-899e-685c87dc6126",
+    "id": "ccd19419-44c0-44b9-8420-1a9f11305ed8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d3a01ea5-ec26-4182-990a-cedfad9be507",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:413",
+      "name": "Comment3.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/comment3.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -478,7 +635,18 @@
     "children": []
   },
   {
-    "id": "1bcccd4f-4316-402e-aff6-c5a7c5b29fa7",
+    "id": "374f80b3-c40b-4659-a2ba-f7b49db0db16",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "80465761-07aa-4751-81c8-a81c29876c1d",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -488,7 +656,19 @@
     "content": [
       {
         "type": "text",
-        "text": "You can create as many document Versions as you wish. To view Historical version of the document use ",
+        "text": "You can create as many document Versions as you wish. To view ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "Historical version ",
+        "styles": {
+          "underline": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "of the document use ",
         "styles": {}
       },
       {
@@ -507,13 +687,24 @@
     "children": []
   },
   {
-    "id": "13f94ff9-f725-4512-a6e7-91478dad479c",
+    "id": "2024031d-798f-4b95-b8ba-80a4e3344343",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a60d56d7-7f6e-48cb-9efe-51cf2e28d5bc",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:414",
+      "name": "Document history1.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/document-history1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -521,7 +712,18 @@
     "children": []
   },
   {
-    "id": "636a4900-7cdc-4723-8acf-bf672a34c7ac",
+    "id": "5af035ee-5abd-4c64-b6a2-b447a3a31926",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "61b1c7db-1a67-4672-ae51-fa2799a20892",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -538,13 +740,24 @@
     "children": []
   },
   {
-    "id": "6d2285b1-e609-4fa0-aefe-bb4e14cb7f8f",
+    "id": "85f0002e-000e-4243-a3bb-3fd8761338e3",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6bfacbd8-fc83-478e-9cc4-e48917a1eb03",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:415",
+      "name": "Historical versions.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/historical-versions.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -552,7 +765,29 @@
     "children": []
   },
   {
-    "id": "1bfe8c86-0b53-4046-9414-b148ad480b65",
+    "id": "b995b6d2-a30f-44ed-92c0-ee45887d5579",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e4833eee-1146-4eff-9608-ca82619fd6d8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "6abbc621-d452-41bb-8b33-c014b6634492",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -564,14 +799,15 @@
         "type": "text",
         "text": "Formatting a document",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       }
     ],
     "children": []
   },
   {
-    "id": "a5dc0213-4f9e-48c3-a31b-bf41c8501d74",
+    "id": "1becdb86-2f66-492f-a972-7f806ebe5bde",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -588,13 +824,24 @@
     "children": []
   },
   {
-    "id": "c02d93e4-987b-4e94-aa1b-6be1acf729a3",
+    "id": "2e9bde53-ee64-469d-8e42-daa75e42fcf6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "8a0dd3d6-1392-4970-9104-658dd67f5d09",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:416",
+      "name": "Edit mode1.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/edit-mode1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -602,7 +849,18 @@
     "children": []
   },
   {
-    "id": "73183662-597c-47d7-be2f-e15905f3f518",
+    "id": "e1ed6ef3-11cc-4f5f-bd73-00b71df0a274",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1783f5ba-d9a9-4c66-bb4e-71ad0f760640",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -612,14 +870,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Let's focus on \"six dots\":",
+        "text": "Let's focus on \"six dots\": ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "b4946f4b-4c84-484d-b0a2-d692715aacf7",
+    "id": "591e8ef6-b3b4-48d6-9c77-3ba3783c9bff",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -636,21 +894,21 @@
     "children": []
   },
   {
-    "id": "fe9ec5c1-7546-4224-84c8-9cb083ade7c4",
+    "id": "0a3de501-bfdc-43eb-bd12-f16df9f96482",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/369",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/369.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "26e34b0e-3f4f-42ea-9b5d-b0074c540a18",
+    "id": "58dd51f3-70a7-4c52-b4d2-0c9f1dcb6345",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -667,7 +925,7 @@
     "children": []
   },
   {
-    "id": "5f53b049-788c-4299-83a0-3f52e1d92239",
+    "id": "417096d6-bb20-4213-8adf-a40d68e13f68",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -684,21 +942,43 @@
     "children": []
   },
   {
-    "id": "86e7c1c5-164a-4c45-b6c4-2ad6bab46016",
+    "id": "30fe9fae-81f6-4945-b955-95d5a47ffb2d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "650bfa1f-df5e-4b5e-b31e-5cfc1046063d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/370",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/turn-into1.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 189
     },
     "children": []
   },
   {
-    "id": "a661f4d0-ef36-4ed0-a522-8e821ec82cfe",
+    "id": "9ca357cc-5659-4415-a79f-a177f7ba33e4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ce6084c9-8ccd-4a77-bf0d-5e2ba48a4f3c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -715,7 +995,18 @@
     "children": []
   },
   {
-    "id": "4369a9c5-20dc-4ed0-8152-fb9aa8af0556",
+    "id": "ae652d6e-cf8c-4821-9edf-040ee9c06aab",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "904199d7-6647-44e7-af2d-7138caba06e9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -732,21 +1023,32 @@
     "children": []
   },
   {
-    "id": "6abe8148-bb6e-41ef-bb35-a157e22623cd",
+    "id": "6493b5a5-7da8-4b7b-a6e6-a58e80363a22",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:418",
+      "name": "turn into2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/turn-into2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 90
     },
     "children": []
   },
   {
-    "id": "4d1a27fb-551d-4a87-80a0-71c78b175daa",
+    "id": "2c9e91ed-6565-47f6-a649-6e25273e8a30",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "50180cfe-7289-4cfd-b73d-c33482c85d41",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -763,7 +1065,18 @@
     "children": []
   },
   {
-    "id": "c10e8e41-e196-4e75-9d0b-f722a6dba57c",
+    "id": "792bf432-d5e2-4a5a-8cf6-7d1800517f19",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f8314f9e-9196-43f4-af86-27c0212b9282",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -775,7 +1088,8 @@
         "type": "text",
         "text": "Headings",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       },
       {
@@ -787,21 +1101,43 @@
     "children": []
   },
   {
-    "id": "e037785d-dcaa-4197-a287-6ba893669f3d",
+    "id": "ba195892-8eca-4558-8e7d-41a73bca95d4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "19f29e39-9846-40d3-b3af-38094dafc634",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:419",
+      "name": "Headings2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/headings2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 313
     },
     "children": []
   },
   {
-    "id": "b50515ee-7899-4763-b830-863be0d5b17a",
+    "id": "1d37f6eb-a692-4176-a387-6c24ac57f61b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9567faac-9ad0-4dcc-9f9d-10fb8744387b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -837,7 +1173,7 @@
     "children": []
   },
   {
-    "id": "ffaf7be2-32c2-4076-8e52-4b80f0f4fa96",
+    "id": "c344f475-b48c-4094-88df-d227ba5fbcab",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -873,7 +1209,7 @@
     "children": []
   },
   {
-    "id": "7812cdf9-0ad1-46a4-bd6a-cb69bc723679",
+    "id": "3a9cc5f8-1fb2-47bc-9b06-96304c3c236e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -909,7 +1245,18 @@
     "children": []
   },
   {
-    "id": "d2d9db76-9acf-4fdd-b729-c32403c9a26c",
+    "id": "f1370d04-4304-470f-9036-594db21b11e4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5837e7fe-f0bb-441e-b839-bd11297561f4",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -921,7 +1268,8 @@
         "type": "text",
         "text": "Basic blocks",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       },
       {
@@ -933,21 +1281,43 @@
     "children": []
   },
   {
-    "id": "07a885ef-55e1-41e8-bb00-adc6e63d80fe",
+    "id": "b18634e9-d3b2-49c1-8d21-0d7214a2be5a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e8ae9e24-04db-4e8a-8710-d6550fcad98c",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:420",
+      "name": "Basic Blocks.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/basic-blocks.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 356
     },
     "children": []
   },
   {
-    "id": "0f97ae1b-c715-4a94-9510-21e8a550014d",
+    "id": "be7ab8f1-4d21-4663-9a25-e680d7ec3ca0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c4b63ec0-4180-4ffb-a2c1-77e930ea765e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -971,7 +1341,7 @@
     "children": []
   },
   {
-    "id": "1a72f448-4229-4063-bc0e-aefac6d9d275",
+    "id": "19f320f3-eb0d-4c0b-bc9a-1b91405482c9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1067,7 +1437,7 @@
     "children": []
   },
   {
-    "id": "c506eeac-e14d-419d-83a0-ae042c72f0da",
+    "id": "83df72a7-e19a-4ad2-8865-4d6af74d3092",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1098,7 +1468,7 @@
     "children": []
   },
   {
-    "id": "0a9f24c6-a216-4c02-a984-a058ec46c3a2",
+    "id": "5787e49a-cbad-4b2c-bd35-a95fe341f09a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1122,7 +1492,7 @@
     "children": []
   },
   {
-    "id": "7d1ec23a-89fc-4c52-8a60-4b591e3eccc2",
+    "id": "5b87c57a-c5ce-44b2-a1ae-14027149016e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1146,7 +1516,18 @@
     "children": []
   },
   {
-    "id": "f3e50131-5097-44ff-811f-2f624dbf602c",
+    "id": "aeffffbc-d7be-408a-952f-0cd2a73d83b1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "62655a91-5756-4f69-8124-97b1bbd550aa",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1163,7 +1544,7 @@
     "children": []
   },
   {
-    "id": "9658d337-a7c9-4aac-8619-e64da845ef72",
+    "id": "4a5505d5-4061-4a78-9b16-01c2c60a3d8f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1180,21 +1561,32 @@
     "children": []
   },
   {
-    "id": "3785ca24-bdf5-454a-9cd5-ecf319d6079b",
+    "id": "2c527b97-6d2c-4d7c-b475-2f7a06854de2",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:421",
+      "name": "Numbered list.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/numbered-list.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "16ddb552-da11-4985-86fd-af39b4abe565",
+    "id": "04c3dce5-43ef-4ed3-af1a-6c3f677983a5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fac27eba-970b-4528-8299-528b4d2220aa",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1211,21 +1603,32 @@
     "children": []
   },
   {
-    "id": "f01c443a-51dc-4f1b-bf24-d38fd4698d4d",
+    "id": "06a5a9ad-d004-4798-a4fc-f9f9cd6bfd51",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:422",
+      "name": "Bullet list.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/bullet-list.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "28b6c900-e9f4-4659-889e-1dcc208a9808",
+    "id": "1fb04fa4-9dbd-4abb-b099-21bd0b4b2b25",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "53dccc8b-7dfc-4811-9213-accd5e52ca37",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1242,21 +1645,32 @@
     "children": []
   },
   {
-    "id": "489a53f7-44ba-4e74-9a6b-2ffe02c7cce2",
+    "id": "a3f869a8-c05f-485f-94bc-43ba4bf95eeb",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:423",
+      "name": "Check List.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/check-list.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "7dee4e9c-c2a6-4102-bc94-2ce7961a4540",
+    "id": "302b25a5-983c-43ce-9b18-5f0dc3e1ad79",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e05a98e8-90d3-4a42-9d9e-35e2227b643a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1273,21 +1687,32 @@
     "children": []
   },
   {
-    "id": "813f3955-35b5-4044-9161-c82ae627ec4a",
+    "id": "2bd28f8a-5369-4b3c-b41d-d2818fc040dd",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:424",
+      "name": "Paragraph2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/paragraph2.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 194
     },
     "children": []
   },
   {
-    "id": "97f9ec9f-dabd-487e-a87b-749a4fdd3353",
+    "id": "1abaf2e7-fba1-4b8e-9907-01feeb326806",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3c465832-45ff-4011-8040-0c3cb9d86511",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1304,21 +1729,43 @@
     "children": []
   },
   {
-    "id": "586353b8-5dca-4155-b6d4-e71c37e2a828",
+    "id": "b75a16ec-b0e4-4880-a025-266a1a0330f4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/379",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/formatting-a-doc/379.png",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 102
     },
     "children": []
   },
   {
-    "id": "9efdd6eb-4705-4adf-853f-1790d28dd4bd",
+    "id": "cba4fdee-4d9d-4c07-b07e-1fa3f0e5d218",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c36c86e5-3993-4c6c-9dcf-c60a68b29751",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "afbe9d21-6655-405f-8ccd-853eee707e2c",
     "type": "codeBlock",
     "props": {
       "language": "javascript"
@@ -1327,7 +1774,29 @@
     "children": []
   },
   {
-    "id": "8636c2b1-abe2-43f6-bba7-d6718bbb7657",
+    "id": "889eeaee-f0a0-46a6-a4d6-115f78e42900",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7f341275-fcd3-4c01-8e3c-d5ef6e5cf94c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ebebb044-10a5-46a5-beb9-ebea66467768",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1339,33 +1808,57 @@
         "type": "text",
         "text": "Media",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       },
       {
         "type": "text",
-        "text": " - use it in order to enrich the document with images, videos, files. As mamy says: *\"One image is worth a thousand words\" *sometimes is better just to show something rather than describe.",
+        "text": " - use it in order to enrich the document with images, videos, files. As mamy says: ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "\"One image is worth a thousand words\" ",
+        "styles": {
+          "italic": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "sometimes is better just to show something rather than describe.",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "ca10f32b-afb2-432f-918c-965fa17e02fb",
+    "id": "b35c1448-a56c-45c3-8838-4ca5e9b9a466",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:425",
+      "name": "Media2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/425.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 303
     },
     "children": []
   },
   {
-    "id": "38ab726a-e6cf-4827-8ce5-59695afc01a0",
+    "id": "03e1d080-0dbd-4d18-bea8-9851ba7c8483",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ef158285-4a8b-44e2-9798-b15dec8fe16d",
     "type": "numberedListItem",
     "props": {
       "textColor": "default",
@@ -1394,24 +1887,21 @@
     "children": []
   },
   {
-    "id": "cd8c6ade-9e72-466d-a40d-8dd0ed4e77e2",
-    "type": "paragraph",
+    "id": "8df84b07-b092-44ae-8967-9dfb28405337",
+    "type": "image",
     "props": {
-      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add image",
-        "styles": {}
-      }
-    ],
     "children": []
   },
   {
-    "id": "9241fd99-4371-45db-ad9d-4bc38a167a88",
+    "id": "e999065d-7c37-4290-a475-cf69048e766f",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1428,30 +1918,24 @@
     "children": []
   },
   {
-    "id": "30d2bbc0-914d-4024-9ce9-c1861c831296",
+    "id": "c4c59b15-81cc-4f81-b9a0-3f32439ab504",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add image",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "c55079fb-1bf0-437d-afa1-26cb26e81717",
+    "id": "036d9cfd-4a6d-457c-a9e7-1f26c7981095",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "attachment:426",
+      "url": "",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1459,12 +1943,38 @@
     "children": []
   },
   {
-    "id": "cbeb388d-678e-44dd-a448-cd7fb9e58723",
-    "type": "numberedListItem",
+    "id": "ba9f3185-959b-4c4e-9a9f-2d1c6c8ab7b6",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Embed image2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/media/embed-image2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "7fe1e3ea-db03-48ff-b792-79ea5bafaf2e",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "15573e3d-d0b7-4c4b-a5db-13f58a4d4daa",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 2
     },
     "content": [
       {
@@ -1488,24 +1998,32 @@
     "children": []
   },
   {
-    "id": "cee54039-3a27-4cbf-82a5-6f5938806865",
+    "id": "c2a57c98-d0e1-4c5d-ba5f-9a7982b76af9",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "2a0ae138-4341-458b-a142-dfcf4546b33e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add video",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "e737c525-5c37-46c6-8140-158657fcac09",
+    "id": "1457cc45-416f-4581-add3-724fad84b10b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1522,13 +2040,13 @@
     "children": []
   },
   {
-    "id": "24297b43-a9a9-4a38-b6c1-8bf0e7a6847f",
+    "id": "023c3138-b366-49eb-9e06-22b2921f27fd",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:427",
+      "name": "Upload video2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/media/upload-video2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1536,12 +2054,24 @@
     "children": []
   },
   {
-    "id": "f6302db9-5a5a-455c-9ed8-beb5f130eb56",
-    "type": "numberedListItem",
+    "id": "141727d4-6b09-4ee5-ae28-840b3ac21f9f",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "475a26fa-363b-4b9c-beb4-3b203b629bf7",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 3
     },
     "content": [
       {
@@ -1565,24 +2095,30 @@
     "children": []
   },
   {
-    "id": "96e307a2-697b-4241-8185-31434d23d60e",
+    "id": "7f62fa1e-db94-4ccd-a39d-ed5b7306bbb2",
+    "type": "audio",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": "",
+      "showPreview": true
+    },
+    "children": []
+  },
+  {
+    "id": "43cbc888-14b6-49b0-aeb1-a264d9af7094",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add audio",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "de05d417-ee51-44a4-9f54-d317861bff95",
+    "id": "dacf73b5-49b0-48ad-a26f-1abdce20bc31",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1599,13 +2135,13 @@
     "children": []
   },
   {
-    "id": "d6b12346-bd2a-4588-82db-645b6656d9d6",
+    "id": "e1234baa-a6ef-429f-82f4-73ea6245f6cd",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:429",
+      "name": "Upload audio2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/media/upload-audio2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -1613,12 +2149,24 @@
     "children": []
   },
   {
-    "id": "9225be06-9487-499b-839f-e1316452621b",
-    "type": "numberedListItem",
+    "id": "4d695552-e654-4f95-8746-66558e2df471",
+    "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "895b34e0-d4cc-4ad4-a6d7-bd5461cb01f2",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 4
     },
     "content": [
       {
@@ -1630,34 +2178,72 @@
     "children": []
   },
   {
-    "id": "8c557280-8767-48e2-94dd-c0bf7d0b1ff5",
+    "id": "da0e5de4-175b-4258-9233-099db45dcf9c",
+    "type": "file",
+    "props": {
+      "backgroundColor": "default",
+      "name": "",
+      "url": "",
+      "caption": ""
+    },
+    "children": []
+  },
+  {
+    "id": "f27eae15-4766-44fa-b627-e673bf20c51a",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Upload file2.jpg",
+      "url": "onboardingContent:01-how-to-use-a-blank-document/media/upload-file2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "1f64cf9e-8fd5-4840-b083-5345fa56623b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Add file",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "5e6f3615-af84-4020-aa93-3299484ea395",
-    "type": "image",
+    "id": "19d18587-729b-4183-ab4f-41b25a292652",
+    "type": "paragraph",
     "props": {
+      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left",
-      "name": "",
-      "url": "attachment:430",
-      "caption": "",
-      "showPreview": true,
-      "previewWidth": 512
+      "textAlignment": "left"
     },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9d35f16f-e01e-4f1a-9244-a9347dde65cf",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3e258d63-7b9d-4c0b-bfbc-5dcf77465077",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

@@ -1,6 +1,6 @@
 [
   {
-    "id": "f0a3f438-ffa8-4ac6-a029-56a4ba0ccfab",
+    "id": "cfba23b9-7c3a-4022-b94f-a85e91fa5305",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,21 +17,32 @@
     "children": []
   },
   {
-    "id": "299b3b31-7e85-4044-b374-448b6f5f7d18",
+    "id": "f083c3dc-27c8-4abd-80ee-ce744126bf8d",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:438",
+      "name": "Add user.jpg",
+      "url": "onboardingContent:05-how-to-add-user-to-the-organization/add-user.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 393
     },
     "children": []
   },
   {
-    "id": "5adde997-bc57-4ef0-84b5-a97692158c60",
+    "id": "f09fadb4-94b9-452a-b1eb-fd2dbb1a06a2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "dc602078-ebf7-4187-91c2-ffacab873d25",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -48,13 +59,13 @@
     "children": []
   },
   {
-    "id": "eb0aa73a-7808-4bb3-81a3-68c6a6ee5871",
+    "id": "485da19e-64c2-4ed5-927d-7962c0096f0f",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/198",
+      "url": "onboardingContent:05-how-to-add-user-to-the-organization/198.png",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -62,7 +73,7 @@
     "children": []
   },
   {
-    "id": "16698632-cea6-4b1e-ad95-f15cde96494b",
+    "id": "d9d4e0a3-c22c-45a0-9f3a-cb948b07dc71",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -76,6 +87,28 @@
         "styles": {}
       }
     ],
+    "children": []
+  },
+  {
+    "id": "de9d75c8-aa7f-468c-9668-78a3aa17e046",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "289a9ab7-c665-45dc-b02a-9fde9d193be7",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

@@ -1,6 +1,17 @@
 [
   {
-    "id": "9312ccd9-cf30-4cae-82b5-a69dad88a5d7",
+    "id": "b3dc21bd-bdcb-4cb8-a346-b2927ea098a7",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fcc47fc1-be5d-4d67-937b-82e7ec7813f7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +28,18 @@
     "children": []
   },
   {
-    "id": "39cc4d7a-be8a-47e5-8458-e091af1a3eab",
+    "id": "29200d57-db5b-42ac-a090-5444e764a066",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "40f8e60f-0b3f-4050-beaa-c9853fbcb58c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -27,20 +49,20 @@
     "content": [
       {
         "type": "text",
-        "text": "In order to create a new Space choose on the left side of the page a select button next to name of your Organization and then click \"Create space\"",
+        "text": "In order to create a new Space choose on the left side of the page a select button next to name of your Organization and then click \"Create space\" ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "9e82eaf3-73c1-48de-9841-141115284f93",
+    "id": "8ab3e24b-21c3-44b8-bbdf-bbfa433370eb",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:439",
+      "name": "Create space1.jpg",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/create-space1.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -48,7 +70,18 @@
     "children": []
   },
   {
-    "id": "05158127-6ebf-4893-a254-0263187bb7e4",
+    "id": "e36a1945-3646-454c-ac5a-7dea0918c7e4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c35fee82-9fc8-4276-a30d-f692798b12bd",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -58,14 +91,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Name this space and choose a mode access to this space.",
+        "text": "Name this space and choose a mode access to this space. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "69f2ceb5-4f4f-4bb9-ab6f-967a06443247",
+    "id": "f35441b8-9fe7-43d1-8ee4-2288514dabc7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -75,14 +108,26 @@
     "content": [
       {
         "type": "text",
-        "text": "When you pick \"public\" - every person from the Organization will have an access to this space.",
+        "text": "When you pick \"",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "public",
+        "styles": {
+          "underline": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "\" - every person from the Organization will have an access to this space.",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "1a406877-68b1-467d-8827-475d91cc24c0",
+    "id": "6bba007d-1ba7-471b-a393-4163b03554f2",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -92,7 +137,19 @@
     "content": [
       {
         "type": "text",
-        "text": "As you choose \"restricted\" - every document in this particular space will be ",
+        "text": "As you choose \"",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "restricted",
+        "styles": {
+          "underline": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "\" - every document in this particular space will be ",
         "styles": {}
       },
       {
@@ -111,7 +168,7 @@
     "children": []
   },
   {
-    "id": "0861c157-b760-47ea-9ac3-2e5d9a6af2fe",
+    "id": "3dbbc3fd-a8a9-425a-bc43-50eaa9888c7d",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -121,7 +178,19 @@
     "content": [
       {
         "type": "text",
-        "text": "When you decide on \"private\" - every document in this particular space will be ",
+        "text": "When you decide on \"",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "private",
+        "styles": {
+          "underline": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "\" - every document in this particular space will be ",
         "styles": {}
       },
       {
@@ -152,13 +221,24 @@
     "children": []
   },
   {
-    "id": "2369c43e-10ce-4313-8e3f-d246de19d2dd",
+    "id": "03bc596d-51a2-40fd-8f95-d9c8b6001bd1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ba0b4994-6eb8-4e9a-899c-cb37fce2becb",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:440",
+      "name": "Create space2.jpg",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/create-space2.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -166,7 +246,18 @@
     "children": []
   },
   {
-    "id": "c6362c7b-73db-45ed-b07d-4cd725771b8f",
+    "id": "4f5659bd-ef1b-49b1-b138-6fde4860a000",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "07845787-3fbe-4408-b436-9161af2e4e14",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -183,13 +274,13 @@
     "children": []
   },
   {
-    "id": "b61bb6e3-b88c-407d-821b-e90af85c3289",
+    "id": "a30d6942-fd46-49c3-a99d-ef845e10ae95",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:441",
+      "name": "Create space3.jpg",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/create-space3.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -197,7 +288,7 @@
     "children": []
   },
   {
-    "id": "7e3661de-5307-4ffb-aae7-c7a6477fd030",
+    "id": "e823e920-b391-4167-8fc6-2fc961131f6e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -214,13 +305,24 @@
     "children": []
   },
   {
-    "id": "dee19bad-8ac4-49f8-9029-0de6ad474ffa",
+    "id": "f3bdf3b3-38ed-48a7-a6c5-6a912e86fdb8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e73f1640-97fc-4b2c-88ee-c7f3453a563c",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:442",
+      "name": "Create space4.jpg",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/create-space4.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -228,7 +330,7 @@
     "children": []
   },
   {
-    "id": "8900925e-db4b-4819-ab79-467ceb5b43db",
+    "id": "61e4e0d3-3b06-4b3e-98df-483533888aac",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -245,13 +347,24 @@
     "children": []
   },
   {
-    "id": "b033e01b-fa5e-4ac1-9da0-ff56c0564a44",
+    "id": "a212dcf2-bc35-4c97-98ac-7ddd5d7d602f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0039d50e-8e24-4224-b56c-00c9b999c274",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:443",
+      "name": "List of spaces.jpg",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/list-of-spaces.jpg",
       "caption": "",
       "showPreview": true,
       "previewWidth": 512
@@ -259,7 +372,7 @@
     "children": []
   },
   {
-    "id": "d43a1737-8c2a-463f-8aa5-7d086fdf47cc",
+    "id": "b6e57cab-3041-4a43-9ca7-193eb59a290c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -275,6 +388,17 @@
         }
       }
     ],
+    "children": []
+  },
+  {
+    "id": "bfe8d0ff-e95f-4106-ad2c-1412f4251001",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]
