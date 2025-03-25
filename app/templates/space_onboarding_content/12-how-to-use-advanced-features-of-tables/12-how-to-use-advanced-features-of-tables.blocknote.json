@@ -1044,29 +1044,8 @@
       },
       {
         "type": "text",
-        "text": " - suitable for referencing/pointing out Fundamento users from your Organization. These users will get a notification that someone mentioned them in the table ",
+        "text": " - suitable for referencing/pointing out Fundamento users from your Organization.",
         "styles": {}
-      },
-      {
-        "type": "text",
-        "text": "(tak??)",
-        "styles": {
-          "textColor": "red",
-          "backgroundColor": "red"
-        }
-      },
-      {
-        "type": "text",
-        "text": " ",
-        "styles": {}
-      },
-      {
-        "type": "text",
-        "text": "(STE: nie)",
-        "styles": {
-          "textColor": "blue",
-          "backgroundColor": "blue"
-        }
       }
     ],
     "children": []

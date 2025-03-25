@@ -137,13 +137,24 @@ class Space < ApplicationRecord
       self.save!
 
       Dir.glob(directory + "/**/*.csv") do |csv_file|
+        npi = File.basename(csv_file, ".*")
         table = self.tables.create!(
-          npi: File.basename(csv_file, ".*"),
+          npi: npi,
           name: "Table " + Nanoid.generate(size: 4),
           parent: self.home_document || self.documents.first || nil,
           organization: self.organization,
         )
         table.import_from_csv(csv_file)
+        if npi == "7hDhcL1cyv"
+          table.update(name: "Advanced Table: Customer their first full month of sales")
+          table.columns_in_order[0].update(npi: "sample_column_name")
+          table.columns_in_order[1].update(npi: "sample_column_2", kind: Tables::Column::to_kind("date"))
+          table.columns_in_order[2].update(npi: "sample_column_3", kind: Tables::Column::to_kind("number"))
+          table.columns_in_order[3].update(npi: "eXqGtIyEmPqW2pC0uwk39")
+          table.columns_in_order[4].update(npi: "I2aoi-2OSTI-BV6UbzDls")
+          table.columns_in_order[5].update(npi: "hqqVKn_9zECje3en054vE")
+          table.columns_in_order[6].update(npi: "sample_column_4")
+        end
       end
     end
 
