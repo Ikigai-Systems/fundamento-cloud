@@ -1,6 +1,6 @@
 [
   {
-    "id": "26d60a91-999e-4418-8ffe-13f828b0b322",
+    "id": "d10dd1be-52bc-4c59-86fb-8463edf3122c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -17,7 +17,7 @@
     "children": []
   },
   {
-    "id": "b96784fb-6699-4fd4-b3ad-8dfa8b2e00b2",
+    "id": "801349fc-d4d9-4349-90cc-82a85b417d8b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -34,7 +34,18 @@
     "children": []
   },
   {
-    "id": "2dc03750-eecd-45d0-ac1e-3c639f5dfa5d",
+    "id": "bea2a990-cb98-43a5-bb16-56ffd6071161",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7725b75e-1287-4ce9-9e7a-2684cef36cc9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -51,7 +62,7 @@
     "children": []
   },
   {
-    "id": "995a2a83-8e6f-4e4a-82cc-35149df6bd13",
+    "id": "e0e1715a-036b-4239-a365-ba06195050ab",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -84,7 +95,7 @@
     "children": []
   },
   {
-    "id": "4c7b4334-13c3-4168-9ebc-e5efe901a15e",
+    "id": "ba1cdd57-39d3-44a9-831c-88584ccc2fcb",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -117,7 +128,7 @@
     "children": []
   },
   {
-    "id": "af945903-484b-410b-9d1e-13e71894554d",
+    "id": "c9cdb5ae-43c1-47d7-b898-e57d38ceb579",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -150,7 +161,7 @@
     "children": []
   },
   {
-    "id": "8e08c8a1-8445-4e82-afbd-bf71e608b49d",
+    "id": "7c06c131-d396-4f4e-a41e-7424d3a76a59",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -183,7 +194,18 @@
     "children": []
   },
   {
-    "id": "b6bc67f7-c6dd-434b-918c-9712bd63a288",
+    "id": "9e2eb70d-f9c5-4f70-aaf8-86f722dc445d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e3d2f650-1beb-41cf-8f68-92ca95c2059a",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -200,7 +222,7 @@
     "children": []
   },
   {
-    "id": "1953ff90-acc1-4cf3-83f0-4460e05e3844",
+    "id": "193934f6-308c-4aa5-bf14-c16b5bad4b74",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -217,7 +239,7 @@
     "children": []
   },
   {
-    "id": "f60d7e84-7036-43ed-bd5d-1791facbb32f",
+    "id": "fbee77e8-3754-47cb-b961-ab61855e6184",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -234,7 +256,7 @@
     "children": []
   },
   {
-    "id": "a4f44e3c-6abd-46a9-be54-17bc4e19048d",
+    "id": "e0ec61cf-01ec-419e-b2ed-09f563a256cc",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -251,7 +273,18 @@
     "children": []
   },
   {
-    "id": "0c064f11-fc6b-425f-874e-135ed18682a6",
+    "id": "8f604c70-a09c-4b6e-80ac-f7071e1309be",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0d774097-cef5-435a-bd28-dcdb749e62c1",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -268,7 +301,7 @@
     "children": []
   },
   {
-    "id": "632f906f-b9c3-45e4-a87c-16074191bcc6",
+    "id": "3cb05bfc-ee8e-4c69-a575-9935af2a93bc",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -285,7 +318,18 @@
     "children": []
   },
   {
-    "id": "2671f200-6bdd-465e-a289-25b60dc474f7",
+    "id": "b229eb2a-30a6-4fd4-85e2-04cf805ba744",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "58abf07b-c8a9-4761-a453-173436429320",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -302,7 +346,7 @@
     "children": []
   },
   {
-    "id": "f4c099c5-22c8-486c-bd1c-0f134f97b258",
+    "id": "ef49676b-e5e0-4ea3-97f8-757f9a7ae3cf",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -319,7 +363,7 @@
     "children": []
   },
   {
-    "id": "82956c63-4d1f-446f-ba95-09feabe64496",
+    "id": "fc311564-0bc6-4428-a3a2-a0e75ae2e7ee",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -336,7 +380,7 @@
     "children": []
   },
   {
-    "id": "a476f4fe-8f8b-4233-8b1a-6aa6cb41c5a5",
+    "id": "4a7aad5b-7039-4a75-ab86-460ebb509dbe",
     "type": "codeBlock",
     "props": {
       "language": "javascript"
@@ -351,7 +395,18 @@
     "children": []
   },
   {
-    "id": "bc966f3d-473e-4b4a-9111-43e097d7a4a5",
+    "id": "1f84717a-5d3b-41c6-bf10-ce01c78743b1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "29ce411e-712f-40a9-8266-6a1e0133636c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -368,7 +423,7 @@
     "children": []
   },
   {
-    "id": "46faa012-d0a6-4ac0-b970-e9a7a1ac47a9",
+    "id": "48233d50-8b72-448c-93be-7b090649c57e",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -385,7 +440,7 @@
     "children": []
   },
   {
-    "id": "9748d5b2-619e-44d4-a35e-c92e66862785",
+    "id": "bceea8ba-d421-44ac-aa63-8322b182ec2c",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -402,7 +457,7 @@
     "children": []
   },
   {
-    "id": "43aeb85d-f0f2-4818-8d48-b090b4051351",
+    "id": "95d25d77-e390-4685-8e79-4743deba9e73",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -419,7 +474,7 @@
     "children": []
   },
   {
-    "id": "1925aa2b-b40c-4a60-a22b-25d19a7ebae4",
+    "id": "e453aef3-124e-4add-a8a5-2c11f8e0e51c",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -436,7 +491,7 @@
     "children": []
   },
   {
-    "id": "2a20c875-aaf3-4c24-bd4a-bf732a9d754f",
+    "id": "f5dc6517-6689-4db7-adf9-47186225d098",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -453,7 +508,7 @@
     "children": []
   },
   {
-    "id": "ebb52554-7b19-424a-9dda-2b372527cec6",
+    "id": "4396a405-956f-40cc-8f53-01a4707292ac",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -470,7 +525,7 @@
     "children": []
   },
   {
-    "id": "502ba06f-7e3e-49cc-b909-1a6053a5150d",
+    "id": "023687d8-ef0e-4fb8-8650-ce48aeb9764f",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -487,7 +542,7 @@
     "children": []
   },
   {
-    "id": "c01c4419-c963-4f14-9887-883cd608f088",
+    "id": "623b0617-09d3-4423-8492-15d7c7266de7",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -504,7 +559,7 @@
     "children": []
   },
   {
-    "id": "8b813031-a2d7-4ad1-a962-3e9f386aaccc",
+    "id": "73c88d2b-96c6-43b1-be18-1de7bae31c53",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -521,7 +576,7 @@
     "children": []
   },
   {
-    "id": "9cd3defc-503a-408e-a4fb-596b17691a4f",
+    "id": "4220d29e-d84b-492f-ad36-c7a35314d48b",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -538,7 +593,7 @@
     "children": []
   },
   {
-    "id": "5106f331-98e9-49c7-b073-8c3f36888f3a",
+    "id": "9864a779-0880-4fea-bbe6-2417d997a23c",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -555,7 +610,7 @@
     "children": []
   },
   {
-    "id": "a7228d1f-69c2-42bf-81a1-d3b62c121331",
+    "id": "ce6e7b94-7b7e-4196-951c-81366c51f832",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -572,7 +627,7 @@
     "children": []
   },
   {
-    "id": "f1f02ff1-50b7-4dc2-9bce-97062c323aae",
+    "id": "adbf26bd-0517-4c82-8d9c-c01fecf3aebd",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -589,7 +644,7 @@
     "children": []
   },
   {
-    "id": "0baf6f74-c840-40da-8aa2-580b634649ae",
+    "id": "af03e8e0-9768-4d5e-b4ac-ade45eb59488",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -606,7 +661,7 @@
     "children": []
   },
   {
-    "id": "72b1cfa7-e736-4480-bc43-006729729b6d",
+    "id": "e6bcb2d3-ba47-4609-8a36-ba76a06398a2",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -623,7 +678,7 @@
     "children": []
   },
   {
-    "id": "9e6549f3-59cc-4188-965d-10aa239967e6",
+    "id": "3a70b120-ede2-499b-ae91-81f52eae0fa6",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -640,7 +695,7 @@
     "children": []
   },
   {
-    "id": "6405dfb9-c27f-4f89-8139-b6adbea21e86",
+    "id": "78476ea7-7b20-4c07-be4c-d43499c4eb37",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -657,7 +712,7 @@
     "children": []
   },
   {
-    "id": "f92b2e91-d49f-4148-9f26-9fc5badade9a",
+    "id": "181974ef-6262-4dc4-993e-1cb83f158589",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -674,7 +729,7 @@
     "children": []
   },
   {
-    "id": "f0fd1487-92d1-42ef-989f-ccb47ba1eca5",
+    "id": "cc91f44c-0143-4741-a315-5bed59958d79",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -691,7 +746,7 @@
     "children": []
   },
   {
-    "id": "4930168e-f28e-4d4e-8174-03d2264f7ae2",
+    "id": "bb0934f3-42bc-4046-875f-d8c743e1440e",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -708,7 +763,7 @@
     "children": []
   },
   {
-    "id": "a637cb91-2d88-43d8-9391-59b83b84fad0",
+    "id": "5f11b7fb-9058-4cd6-8ea8-eeb118ef87f3",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -725,7 +780,7 @@
     "children": []
   },
   {
-    "id": "a94dedbb-cd7c-4725-9552-9c6ac4a8b4ee",
+    "id": "68043f68-e866-4da1-85b1-10c8c7f58a7b",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -742,7 +797,7 @@
     "children": []
   },
   {
-    "id": "3c23e534-5629-4b8e-a538-959b27f43309",
+    "id": "3724000f-1c5a-4465-b624-bd191605ac51",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -759,7 +814,7 @@
     "children": []
   },
   {
-    "id": "61eb2530-81dc-4a8c-89b0-2a8f521046db",
+    "id": "cd8b02af-a8ae-467c-933d-a7df23ed0511",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -776,7 +831,7 @@
     "children": []
   },
   {
-    "id": "daafa410-8b37-4ba0-9f76-bef809372ac2",
+    "id": "380124ae-dc73-42b2-925c-bfb62bf81a35",
     "type": "bulletListItem",
     "props": {
       "textColor": "default",
@@ -793,7 +848,18 @@
     "children": []
   },
   {
-    "id": "1c7b8db0-7623-496b-a116-d639ab909775",
+    "id": "527d891e-b065-495e-b198-49df8419bd86",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ba4ad146-acb1-41a7-bd72-01032d939711",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -821,7 +887,18 @@
     "children": []
   },
   {
-    "id": "3b69b3a0-989c-4be0-8e33-da8183a64296",
+    "id": "283a4f27-e8d9-4e1c-9e01-39e9e13b88ec",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a3a50a15-a78b-4db9-9456-2f2dd409c306",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -833,14 +910,15 @@
         "type": "text",
         "text": "Formulas in the Text:",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       }
     ],
     "children": []
   },
   {
-    "id": "258dd763-1537-4d2f-b55f-6e52db323d2f",
+    "id": "e9915831-6005-4ae9-95fb-c3baf6ea2877",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -857,7 +935,7 @@
     "children": []
   },
   {
-    "id": "bd040eab-2e2e-4f9a-bf1d-013a807a184a",
+    "id": "e0ea4fb9-a4c7-4a6a-859b-4b2cabb49e66",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -866,15 +944,17 @@
     },
     "content": [
       {
-        "type": "text",
-        "text": "[]",
-        "styles": {}
+        "type": "formula",
+        "props": {
+          "formula": "",
+          "id": "9bb85362-41a9-4bd8-9701-cd3876b9060a"
+        }
       }
     ],
     "children": []
   },
   {
-    "id": "05413e69-6dd7-4b00-965e-f74e45717798",
+    "id": "780bcdd9-a1db-4159-a70d-6bf137fb6a53",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -891,21 +971,21 @@
     "children": []
   },
   {
-    "id": "52d3dc85-dc24-4c3f-b339-b1389460ed9e",
+    "id": "65650b8b-b116-4245-9667-c650a66821b4",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:431",
+      "name": "1.jpg",
+      "url": "onboardingContent:03-formulas/1.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 64
     },
     "children": []
   },
   {
-    "id": "ee70e9cc-3ee7-4d72-8a2b-fc80b5e6516c",
+    "id": "56c8880f-e5a3-428d-a1e2-163f2a0e9ce5",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -922,21 +1002,21 @@
     "children": []
   },
   {
-    "id": "76514f0b-d85a-403c-95c5-8290480762d2",
+    "id": "0980cb6e-2a2d-4638-a53d-365b5594d0c0",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
-      "name": "",
-      "url": "attachment:432",
+      "name": "Add formula.jpg",
+      "url": "onboardingContent:03-formulas/add-formula.jpg",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 216
     },
     "children": []
   },
   {
-    "id": "e3cf752a-24ee-4dd4-8900-5da92d02724a",
+    "id": "1a05c2a4-a9cb-450e-ade0-c7f0235072cb",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -953,21 +1033,21 @@
     "children": []
   },
   {
-    "id": "2e563e15-8ce1-4cca-b2f0-6f4474bc1d80",
+    "id": "12b859c6-1b42-4eaf-8aab-edba8b054720",
     "type": "image",
     "props": {
       "backgroundColor": "default",
       "textAlignment": "left",
       "name": "",
-      "url": "https://fundamento.cloud/attachments/154",
+      "url": "onboardingContent:03-formulas/154.png",
       "caption": "",
       "showPreview": true,
-      "previewWidth": 512
+      "previewWidth": 218
     },
     "children": []
   },
   {
-    "id": "24276d51-1afb-4099-9360-5af7a5182be3",
+    "id": "d6d64f95-552b-44f4-a996-c163e6174ca1",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -984,7 +1064,7 @@
     "children": []
   },
   {
-    "id": "d459ce4c-9a6d-4430-8305-95a838415fec",
+    "id": "ed0c7d4e-b55d-4164-9edc-bed64c699e85",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -993,15 +1073,28 @@
     },
     "content": [
       {
-        "type": "text",
-        "text": "100",
-        "styles": {}
+        "type": "formula",
+        "props": {
+          "formula": "(`Sum(List(1,32,33,34)",
+          "id": "9c54c8f3-977c-4ce1-b5c0-b2be8461f00d"
+        }
       }
     ],
     "children": []
   },
   {
-    "id": "34243150-d36e-4952-9043-68407dd292e4",
+    "id": "4b8c5fb3-4bfa-4f38-9f73-38ea93e2373c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e88d59ed-e99f-49a3-9dc1-3616570fdfd9",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1013,14 +1106,15 @@
         "type": "text",
         "text": "Formulas in a table:",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
       }
     ],
     "children": []
   },
   {
-    "id": "fd62d8cf-3ce7-4f4a-b9b8-23d8f93f123a",
+    "id": "7859d773-0232-4ca0-8d86-02383174bcde",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1037,7 +1131,7 @@
     "children": []
   },
   {
-    "id": "c2798142-8778-4f79-a6c8-ec4fe7c8a21e",
+    "id": "181f30c2-94f9-4a56-ab25-d883d04eda68",
     "type": "table",
     "props": {
       "textColor": "default"
@@ -1053,26 +1147,98 @@
       "rows": [
         {
           "cells": [
-            [],
-            [],
-            [],
-            []
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            }
           ]
         },
         {
           "cells": [
-            [],
-            [],
-            [],
-            []
-          ]
-        },
-        {
-          "cells": [
-            [],
-            [],
-            [],
-            []
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            }
           ]
         }
       ]
@@ -1080,7 +1246,7 @@
     "children": []
   },
   {
-    "id": "0d4565a1-4df3-4b14-a6ea-b0dcf8084ef2",
+    "id": "7f675144-0b56-4fa7-8094-f42497d97f69",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1097,7 +1263,18 @@
     "children": []
   },
   {
-    "id": "32717a8d-e55d-4438-afe0-a9b33b376f3e",
+    "id": "adf70b99-6587-4e9c-a067-7386397a0ec9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "530e0717-259b-4e0b-a059-754378267263",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1116,7 +1293,7 @@
     "children": []
   },
   {
-    "id": "401bd8a9-88fc-4a36-b703-15cd90966f46",
+    "id": "7afa0124-9ef6-424c-8659-d02b0c5c74cb",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1133,7 +1310,7 @@
     "children": []
   },
   {
-    "id": "38d8246f-7da3-46d9-942a-eb4a01ed8553",
+    "id": "4b1f78b4-4e79-4cc3-947a-e0e9d0cbd55a",
     "type": "table",
     "props": {
       "textColor": "default"
@@ -1141,298 +1318,648 @@
     "content": {
       "type": "tableContent",
       "columnWidths": [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
+        98,
+        88,
+        74,
+        140,
+        155,
+        155
       ],
       "rows": [
         {
           "cells": [
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Customer",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Month",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Sales",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "CustomerSucces",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Acquisition source",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Sales figures",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
+              }
+            }
           ]
         },
         {
           "cells": [
-            [
-              {
-                "type": "text",
-                "text": "Customer",
-                "styles": {}
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "ABI",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Month",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "01.2024",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Sales",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Cris",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "CustomerSucces",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Aga",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Acquisition source",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Marketing Lead",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Sales figures",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "100000",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ]
+            }
           ]
         },
         {
           "cells": [
-            [
-              {
-                "type": "text",
-                "text": "ABI",
-                "styles": {}
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "BEBI",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "01.2024",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "01.2024",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Cris",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Pati",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Aga",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Phil",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Marketing Lead",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Partner reco",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "100000",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "590000",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ]
+            }
           ]
         },
         {
           "cells": [
-            [
-              {
-                "type": "text",
-                "text": "BEBI",
-                "styles": {}
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "CEBU",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "01.2024",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "01.2024",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Pati",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Cris",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Phil",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Phil",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Partner reco",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Partner reco",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "590000",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "59000",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ]
+            }
           ]
         },
         {
           "cells": [
-            [
-              {
-                "type": "text",
-                "text": "CEBU",
-                "styles": {}
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "KICK",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "01.2024",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "01.2024",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Cris",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Pati",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Phil",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Phil",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Partner reco",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Marketing Lead",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "59000",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "123000",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ]
+            }
           ]
         },
         {
           "cells": [
-            [
-              {
-                "type": "text",
-                "text": "KICK",
-                "styles": {}
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "KILT",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "01.2024",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "01.2024",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Pati",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Pati",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Phil",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Doris",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Marketing Lead",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Marketing Lead",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "123000",
-                "styles": {}
+            },
+            {
+              "type": "tableCell",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "45000",
+                  "styles": {}
+                }
+              ],
+              "props": {
+                "colspan": 1,
+                "rowspan": 1,
+                "backgroundColor": "default",
+                "textColor": "default",
+                "textAlignment": "left"
               }
-            ]
-          ]
-        },
-        {
-          "cells": [
-            [
-              {
-                "type": "text",
-                "text": "KILT",
-                "styles": {}
-              }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "01.2024",
-                "styles": {}
-              }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Pati",
-                "styles": {}
-              }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Doris",
-                "styles": {}
-              }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "Marketing Lead",
-                "styles": {}
-              }
-            ],
-            [
-              {
-                "type": "text",
-                "text": "45000",
-                "styles": {}
-              }
-            ]
+            }
           ]
         }
       ]
@@ -1440,7 +1967,7 @@
     "children": []
   },
   {
-    "id": "dc76ef86-9aa5-4fe2-9168-4fa5ad15f9bc",
+    "id": "ca8a30a1-99b6-486c-885b-113162be9f1e",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1457,7 +1984,7 @@
     "children": []
   },
   {
-    "id": "8402f125-6c3d-474d-8957-12ad690b114c",
+    "id": "e3fa2ec7-1e2a-4b43-bade-6bed2285ec8c",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1474,43 +2001,28 @@
     "children": []
   },
   {
-    "id": "9074ec06-cfc4-4d13-921a-d0ea3019aab5",
+    "id": "3a58b503-a14b-4b40-b840-76afabba62d2",
+    "type": "advancedTable",
+    "props": {
+      "tableId": -1,
+      "tableNpi": "7hDhcL1cyv",
+      "viewProps": "{\"columns\":{\"sample_column_3\":{\"width\":128},\"sample_column_2\":{\"width\":128},\"sample_column_name\":{\"width\":128},\"eXqGtIyEmPqW2pC0uwk39\":{\"width\":215},\"I2aoi-2OSTI-BV6UbzDls\":{\"width\":229},\"sample_column_4\":{\"width\":128},\"hqqVKn_9zECje3en054vE\":{\"width\":156}}}"
+    },
+    "children": []
+  },
+  {
+    "id": "8d13b84d-6e30-4f49-9b38-1d1848234630",
     "type": "paragraph",
     "props": {
       "textColor": "default",
       "backgroundColor": "default",
       "textAlignment": "left"
     },
-    "content": [
-      {
-        "type": "text",
-        "text": "Advanced Table: Customer their first full month of sales",
-        "styles": {}
-      }
-    ],
+    "content": [],
     "children": []
   },
   {
-    "id": "06d44ce6-7fb1-4f1f-a588-74877cf7e2e6",
-    "type": "paragraph",
-    "props": {
-      "textColor": "default",
-      "backgroundColor": "default",
-      "textAlignment": "left"
-    },
-    "content": [
-      {
-        "type": "text",
-        "text": "<todo: create advanced table in .blocknote.json file manually>",
-        "styles": {
-          "italic": true
-        }
-      }
-    ],
-    "children": []
-  },
-  {
-    "id": "646a785c-1eb3-4b12-82af-269ff53d4dcc",
+    "id": "98b30eaf-3b73-447a-80a0-78cfca7b4d7b",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1522,14 +2034,20 @@
         "type": "text",
         "text": "Formulas in the table details:",
         "styles": {
-          "bold": true
+          "bold": true,
+          "underline": true
         }
+      },
+      {
+        "type": "text",
+        "text": " ",
+        "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "26823c9a-55a9-4d30-ae0e-c52362f44d78",
+    "id": "d7e37d1a-045b-4d44-9301-81304496e254",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1546,14 +2064,14 @@
       },
       {
         "type": "text",
-        "text": "Outputs contents of a Fundamento Table in a form of JSON representation.",
+        "text": "Outputs contents of a Fundamento Table in a form of JSON representation. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "da7671aa-85dc-4626-b2af-c9b4e152ea80",
+    "id": "27ee897c-a84d-46c1-96a7-cc7deb415a95",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1563,14 +2081,14 @@
     "content": [
       {
         "type": "text",
-        "text": "Rows from that Table will be converted to an array of objects, and each object consists of values of that row for the table columns.",
+        "text": "Rows from that Table will be converted to an array of objects, and each object consists of values of that row for the table columns. ",
         "styles": {}
       }
     ],
     "children": []
   },
   {
-    "id": "50f55a59-1d24-4bbf-9a00-2d82051c9a79",
+    "id": "3aae2ff7-41a3-47a9-852b-ea29d10f2766",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1644,7 +2162,18 @@
     "children": []
   },
   {
-    "id": "339280e6-9c6d-42a8-b472-a93355f8125b",
+    "id": "224abacc-3240-4a52-a7aa-ce23527e5f2f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9a23c3f2-93c4-4e38-a528-05f9eaeffba6",
     "type": "heading",
     "props": {
       "textColor": "default",
@@ -1662,7 +2191,7 @@
     "children": []
   },
   {
-    "id": "9c7f7a65-44d1-4859-acef-3f215bf78e60",
+    "id": "a6ab13b4-ffbe-4bf5-b8dc-62b757760451",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1743,7 +2272,18 @@
     "children": []
   },
   {
-    "id": "538e8a56-7f06-4d56-bb4e-3b289c223725",
+    "id": "07c61c1f-3c77-4ca2-9d2d-36d28458504d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c63cd642-87e5-4665-9d15-5bd64e71cdd8",
     "type": "heading",
     "props": {
       "textColor": "default",
@@ -1768,7 +2308,7 @@
     "children": []
   },
   {
-    "id": "5ec83f18-6480-4a1f-a85d-930408b06760",
+    "id": "5330871c-e249-40fe-9f91-99ef26e2d8a7",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1849,7 +2389,29 @@
     "children": []
   },
   {
-    "id": "861d59e2-4181-4c74-a614-04edc7472cf0",
+    "id": "61a29167-70d3-468d-8a7c-12d8241fb364",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d32b67f8-9e1f-49d7-8985-dea68561d944",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a1bbfb31-acfd-41d2-8dfe-89dfd782e6f1",
     "type": "heading",
     "props": {
       "textColor": "default",
@@ -1874,7 +2436,7 @@
     "children": []
   },
   {
-    "id": "d45f2bf8-4332-4eb0-ae3b-6b7e999b6c05",
+    "id": "ccc5ff25-35ee-4de8-a79f-72910d607baf",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -1967,7 +2529,7 @@
     "children": []
   },
   {
-    "id": "6f7909a3-b308-48b7-9afb-6cd2c7854848",
+    "id": "a0f32f0d-416a-4397-a764-a30efcdb30e5",
     "type": "heading",
     "props": {
       "textColor": "default",
@@ -1992,7 +2554,7 @@
     "children": []
   },
   {
-    "id": "409d0b8b-7f33-441b-adb1-25e93b67b813",
+    "id": "13fca7f4-f860-4683-95ad-a7b415ecde81",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -2049,7 +2611,7 @@
     "children": []
   },
   {
-    "id": "440589da-9afd-4031-9c5b-6573ba86f577",
+    "id": "ecde08a7-c0ad-4353-9dcc-2cb74284dfdc",
     "type": "heading",
     "props": {
       "textColor": "default",
@@ -2074,7 +2636,7 @@
     "children": []
   },
   {
-    "id": "257652df-b4fe-4149-8e04-a79305515e21",
+    "id": "b3c7823b-add4-40a8-a3ba-fbb0eccd53af",
     "type": "paragraph",
     "props": {
       "textColor": "default",
@@ -2097,6 +2659,17 @@
         }
       }
     ],
+    "children": []
+  },
+  {
+    "id": "0b0aaaf2-b1b5-4965-abf0-0660b4e94e4f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
     "children": []
   }
 ]

@@ -1,5 +1,22 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
-import {createReactBlockSpec} from "@blocknote/react";
+import {createReactBlockSpec, createReactInlineContentSpec} from "@blocknote/react";
+
+const FormulaInlineContent = createReactInlineContentSpec(
+  {
+    type: "formula",
+    propSchema: {
+      formula: {
+        default: "",
+      },
+      id: {
+        default: "",
+      }
+    },
+    content: "none",
+  }, {
+    render: () => null,
+  }
+);
 
 const AdvancedTable = createReactBlockSpec(
   {
@@ -15,9 +32,9 @@ const AdvancedTable = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null
+    render: () => null,
   }
-)
+);
 
 const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
 const ChartBlock = createReactBlockSpec(
@@ -44,16 +61,16 @@ const ChartBlock = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null
+    render: () => null,
   }
-)
+);
 
 const strippedSchema = BlockNoteSchema.create({
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,
     // mention: MentionInlineContent,
     // button: ButtonInlineContent,
-    // formula: FormulaInlineContent,
+    formula: FormulaInlineContent,
   },
   blockSpecs: {
     ...defaultBlockSpecs,
