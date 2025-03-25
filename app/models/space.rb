@@ -119,13 +119,13 @@ class Space < ApplicationRecord
 
   def populate_with_onboarding_content!
     def create_document(yjs_file)
+      title_filename = File.dirname(yjs_file) + "/" + File.basename(yjs_file, ".*") + ".title.txt"
+
       document = self.organization.documents.create!(
-        title: File.basename(yjs_file, ".*"),
+        title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
         sync: File.read(yjs_file),
         space: self,
       )
-      # document.space = self
-      # document.save!
 
       document.versions.create!(
         content: JSON.load_file!(File.dirname(yjs_file) + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
