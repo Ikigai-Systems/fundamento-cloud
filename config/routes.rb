@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
   root "root#index"
   get "/recently_updated" => "root#recently_updated", as: :recently_updated
+  get "/notifications" => "root#notifications", as: :notifications
 
   # We use `defaults export: true` here to export routes to app/javascript/api,
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want

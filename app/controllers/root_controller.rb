@@ -9,4 +9,7 @@ class RootController < ApplicationController
 
   def recently_updated
   end
+
+  def notifications
+  end
 end
