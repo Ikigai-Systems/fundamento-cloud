@@ -27,11 +27,14 @@ class Document < ApplicationRecord
 
   scope :recently_updated, -> { without_archived.order(updated_at: :desc).limit(50) }
 
-  after_commit :broadcast_recently_updated_documents, on: [:create, :update, :destroy]
-
-  def broadcast_recently_updated_documents
-    broadcast_refresh_to ["recent_documents_list", self.organization]
-  end
+  after_commit -> (document) {
+    broadcast_action_to(
+      [document.organization, "recently_updated"],
+      action: :reload_turbo_frame,
+      target: "#recently_updated_frame",
+      render: false
+    )
+  }
 
   def title
     super.presence || "Untitled"

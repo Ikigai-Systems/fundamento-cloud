@@ -34,14 +34,22 @@
     <%=
       turbo_frame_tag "spaces_frame",
         data: { turbo: false },
-        src: spaces_path do
+        src: spaces_path,
+        loading: "lazy" do
     %>
       <%= render template: "application/components/loading" %>
     <% end %>
   </div>
 
   <div data-tabs-target="panel" class="hidden">
-    <%= render partial: "recently_updated_documents_tab" %>
+    <%=
+      turbo_frame_tag "recently_updated_frame",
+        data: { turbo: false },
+        src: recently_updated_path,
+        loading: "lazy" do
+    %>
+      <%= render template: "application/components/loading" %>
+    <% end %>
   </div>
 
   <div data-tabs-target="panel" class="hidden">

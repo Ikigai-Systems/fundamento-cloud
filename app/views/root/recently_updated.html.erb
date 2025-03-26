@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "recently_updated_frame" do %>
+  <%= turbo_stream_from [current_organization, "recently_updated"] %>
+
+  <%=
+    render partial: "documents/recently_updated_documents", locals: {
+      recently_updated_documents: policy_scope(current_organization.documents).recently_updated
+    }
+  %>
+<% end %>
