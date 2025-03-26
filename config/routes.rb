@@ -154,6 +154,8 @@ Rails.application.routes.draw do
       end
 
       resources :tables, only: [:show]
+
+      resources :users, only: [:show]
     end
   end
 end

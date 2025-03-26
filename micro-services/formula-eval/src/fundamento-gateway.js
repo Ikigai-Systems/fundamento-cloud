@@ -15,14 +15,7 @@ async function fetchFromFundamento(url, callback) {
         evaluationContext: evaluationContext
       }
     });
-    const {rows, columns} = response.data.data;
-    return callback && callback(null, rows.map(row => {
-      const cell_values = {};
-      columns.forEach(column => {
-        cell_values[column.name] = row[column.npi];
-      });
-      return {...cell_values, ...row}
-    }));
+    return callback && callback(null, response.data);
   } catch (e) {
     return callback && callback(e, null);
   }
@@ -36,7 +29,33 @@ export const getTable = (tableNpiOrName) => {
   if (cachedResponse !== undefined) {
     return cachedResponse;
   }
+
   const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/api/v1/tables/${tableNpiOrName}`);
+  const {rows, columns} = response.data;
+  const refinedResponse = rows.map(row => {
+    const cell_values = {};
+    columns.forEach(column => {
+      cell_values[column.name] = row[column.npi];
+    });
+    return {...cell_values, ...row}
+  });
+  requestContext.set(cacheKey, refinedResponse);
+
+  return refinedResponse;
+};
+
+export const getUser = (userId) => {
+  const cacheKey = `users/${userId}`;
+  const cachedResponse = requestContext.get(cacheKey);
+  if (cachedResponse !== undefined) {
+    return cachedResponse;
+  }
+
+  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/api/v1/users/${userId}`);
+  if (response && response.first_name && response.last_name) {
+    response.display_name = `${response.first_name} ${response.last_name}`;
+  }
   requestContext.set(cacheKey, response);
+
   return response;
 };
