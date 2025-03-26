@@ -88,7 +88,11 @@ class Table < ApplicationRecord
               additional_context: additional_context,
             }
           else
-            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id]).value
+            if column.kind == "checkbox"
+              hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
+            else
+              hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+            end
           end
         end
       else
