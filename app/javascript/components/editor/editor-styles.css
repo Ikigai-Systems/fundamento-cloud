@@ -13,6 +13,20 @@
     padding: 0 3px;
 }
 
+/* to make clicking at the right end of block put cursor at the end of it instead of beginning,
+   https://discord.com/channels/928190961455087667/1354211622695993466 */
+.bn-block-content[data-content-type="heading"] > .bn-inline-content,
+.bn-block-content[data-content-type="numberedListItem"] > .bn-inline-content,
+.bn-block-content[data-content-type="bulletListItem"] > .bn-inline-content {
+    width: 100%;
+}
+.bn-block-content[data-content-type="checkListItem"] > div
+{
+    width: 100%;
+}
+/* end-of: to make clicking at the right end of block put cursor at the end of it instead of beginning*/
+
+
 /* uncomment this to make the selected block outline hidden */
 /*
 .ProseMirror-selectednode > .bn-block-content > *,
