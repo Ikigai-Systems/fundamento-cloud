@@ -27,7 +27,7 @@ fastify.addHook("onRequest", async (request, reply) => {
 fastify.post('/formulas/eval', async function handler (request, reply) {
   return Sentry.withIsolationScope(scope => {
     scope.clearBreadcrumbs();
-    // todo: some kind of authentication for veryfing this is legitimate request from fundamento app
+    // todo: some kind of authentication for verifying this is legitimate request from fundamento app
 
     const {formula, additional_context, evaluation_context} = request.body;
     requestContext.set("evaluation_context", evaluation_context);

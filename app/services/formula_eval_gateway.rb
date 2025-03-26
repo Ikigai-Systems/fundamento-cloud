@@ -129,28 +129,25 @@ class FormulaEvalGateway
           end
 
           row_ids_to_update = []
-          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, {}).each_with_index do |evaluated_formula, index|
+          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_user).each_with_index do |evaluated_formula, index|
             if evaluated_formula["result"] == true
-              row_ids_to_update << formulas_to_evaluate[index].row_id
+              row_ids_to_update << formulas_to_evaluate[index][:row_id]
             end
           end
 
           rows_to_update = table.rows.filter { |row| row_ids_to_update.include?(row.id) }
         end
 
-        column_name = command["columnName"]
-        column_value = command["columnValue"]
-
         if rows_to_update.empty?
-          table.add_row(nil, {
-            column_name => column_value
-          })
+          table.add_row(nil, command["values"])
         else
-          unless column_name.nil? || column_value.nil?
+          unless command["values"].empty?
             rows_to_update.each do |row|
               # todo: update row logic should go to table.rb model probably
-              column_id = table.columns.find_by(name: column_name).id
-              row.cells.find_by(column_id: column_id).update(value: column_value)
+              command["values"].each do |column_name, column_value|
+                column_id = table.columns.find_by(name: column_name).id
+                row.cells.find_by(column_id: column_id).update(value: column_value)
+              end
             end
           end
         end
