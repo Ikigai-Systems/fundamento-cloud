@@ -112,7 +112,7 @@ class DocumentsController < ApplicationController
     @document.destroy
 
     @space = @document.space
-    @space.remove_single_item_from_hierarchy!(params[:id])
+    @space.remove_single_item_from_hierarchy!(@document.id)
     @space.save!
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'
