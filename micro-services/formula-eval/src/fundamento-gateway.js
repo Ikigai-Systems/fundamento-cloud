@@ -51,11 +51,18 @@ export const getUser = (userId) => {
     return cachedResponse;
   }
 
-  const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/api/v1/users/${userId}`);
-  if (response && response.first_name && response.last_name) {
-    response.display_name = `${response.first_name} ${response.last_name}`;
+  try {
+    const response = deasync(fetchFromFundamento)(`${fundamentoBaseUrl}/api/v1/users/${userId}`);
+    if (response && response.first_name && response.last_name) {
+      response.display_name = `${response.first_name} ${response.last_name}`;
+    }
+    requestContext.set(cacheKey, response);
+  } catch (e) {
+    if (e.status === 404) {
+      requestContext.set(cacheKey, e.response.data)
+    } else {
+      throw e
+    }
   }
-  requestContext.set(cacheKey, response);
-
-  return response;
+  return requestContext.get(cacheKey);
 };
