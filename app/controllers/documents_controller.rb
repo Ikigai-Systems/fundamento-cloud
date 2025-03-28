@@ -27,7 +27,7 @@ class DocumentsController < ApplicationController
     if params[:tab] == "details"
       render template: "documents/_sidebar/details"
     elsif params[:tab] == "visitors"
-      render template: "documents/_sidebar/visitors"
+      render SidebarVisitorsTab.new(object: @document)
     elsif params[:tab] == "table_of_contents"
       render template: "documents/_sidebar/table_of_contents"
     end

@@ -1,6 +1,6 @@
 <%= turbo_frame_tag :visitors_sidebar_tab do %>
   <div class="flex flex-col gap-3 p-3">
-    <% @document.visitors.order(visited_at: :desc).each do |visitor| %>
+    <% @object.visitors.order(visited_at: :desc).each do |visitor| %>
       <div class="flex flex-row gap-3 items-center">
         <%= render OrganizationUserAvatarComponent.new(organization_user: visitor.organization_user) %>
         <%= time_ago_in_words visitor.visited_at %>
