@@ -37,7 +37,7 @@ export const getTable = (tableNpiOrName) => {
     columns.forEach(column => {
       cell_values[column.name] = row[column.npi];
     });
-    return {...cell_values, ...row}
+    return {id: row.npi, ...cell_values, ...row}
   });
   requestContext.set(cacheKey, refinedResponse);
 
