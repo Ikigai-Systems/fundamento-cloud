@@ -40,6 +40,4 @@
 
 <%= turbo_frame_tag @table, :reactions, src: reactions_path(object_gid: @table.to_gid_param), loading: "lazy" %>
 
-<% if Flipper.enabled?(:comments) %>
-  <%= render partial: "comments/frames", locals: { resource: @table } %>
-<% end %>
+<%= render partial: "comments/frames", locals: { resource: @table } %>
