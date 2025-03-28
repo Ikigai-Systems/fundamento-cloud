@@ -1,0 +1,33 @@
+<%= turbo_frame_tag :content_sidebar do %>
+  <div
+    class="content-sidebar-tabs"
+    data-controller="tabs"
+    data-tabs-active-tab-class="active-tab"
+  >
+    <div class="border-b border-gray-200">
+      <nav data-tabs-target="list" aria-label="Tabs">
+        <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-memo-circle-info"></i>
+          Details
+        </button>
+
+        <button id="visitors" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-screen-users"></i>
+          Visitors
+        </button>
+      </nav>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden max-h-0">
+      <%= turbo_frame_tag "details_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @table], tab: :details) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden max-h-0">
+      <%= turbo_frame_tag "visitors_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @table], tab: :visitors) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

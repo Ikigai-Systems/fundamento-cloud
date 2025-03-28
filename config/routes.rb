@@ -74,6 +74,8 @@ Rails.application.routes.draw do
         post :preview_formula
         post :move_column_left
         post :move_column_right
+
+        get :sidebar
       end
     end
 

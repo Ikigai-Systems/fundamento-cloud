@@ -30,6 +30,18 @@ class Tables::TablesController < ApplicationController
     end
   end
 
+  def sidebar
+    authorize @table, :show?
+
+    if params[:tab] == "details"
+      render template: "tables/_sidebar/details"
+    elsif params[:tab] == "visitors"
+      render template: "tables/_sidebar/visitors"
+    else
+      render "tables/sidebar"
+    end
+  end
+
   def new
     @table = @space.tables.new
 
@@ -110,10 +122,17 @@ class Tables::TablesController < ApplicationController
 
     respond_to do |format|
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
-      format.json { render json: { table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}), data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user) } }
+      format.json do
+        render json: {
+          table: @table.attributes.except("space_id").merge({ space_npi: @table.space.npi }),
+          data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user)
+        }
+      end
+
       format.html do
         @tables = @space.tables.lexicographically
-        render "tables/show", layout: "full_width_application"
+
+        render "tables/show", layout: "content_two_sidebars"
       end
     end
   end
@@ -123,7 +142,7 @@ class Tables::TablesController < ApplicationController
 
     @tables = @space.tables.lexicographically
 
-    render "tables/edit", layout: "full_width_application"
+    render "tables/edit", layout: "content_two_sidebars"
   end
 
   def update
