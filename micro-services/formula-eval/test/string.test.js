@@ -7,6 +7,7 @@ describe('String related formulas', () => {
     testFormula(`Join("-", "This", "is", "Awesome")`, "This-is-Awesome");
     testFormula(`Join(", ", "This", "is", "Awesome")`, "This, is, Awesome");
     testFormula(`Join("| ", List("This", "is", "Awesome"))`, "This| is| Awesome");
+    testFormula(`Join("-", List("This"))`, "This");
   });
 
   describe('Concatenate', () => {
@@ -70,5 +71,7 @@ describe('String related formulas', () => {
     testFormula('Split("this-is-my-rifle", "-")', ["this", "is", "my", "rifle"]);
     testFormula('Split("abcd")', ["abcd"]);
     testFormula('Split("abcd", "")', ["a", "b", "c", "d"]);
+    testFormula('Split("abcd", ",")', ["abcd"]);
+    testFormula('Split("", ",")', [""]);
   })
 });
