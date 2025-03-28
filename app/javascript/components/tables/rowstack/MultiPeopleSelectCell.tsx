@@ -52,13 +52,13 @@ function MultiPeopleSelectCell({
       } else if (userQuery.isSuccess) {
         const initials = userQuery.data ? `${userQuery.data.firstName[0]}${userQuery.data.lastName[0]}` : undefined;
         const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : undefined;
-        return (<>
+        return (
           <div className="flex flex-row items-center" onClick={() => {}}>
             <div title={displayName} className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
               {initials}
             </div>
           </div>
-        </>);
+        );
       }
     })
   }

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Select from 'react-select'
 import {StateManagerProps} from "react-select/dist/declarations/src/useStateManager";
 
@@ -10,41 +10,23 @@ function EditButtonPopup({
   rows,
   table,
 }) {
-  const [advancedSectionExpanded, setAdvancedSectionExpanded] = useState<boolean>(false);
-
-  const StyledSelect = (props: StateManagerProps) => <Select
-    {...props}
-    styles={{
-      control: (base) => ({
-        ...base,
-        minHeight: 32,
-      }),
-      dropdownIndicator: (base) => ({
-        ...base,
-        paddingTop: 0,
-        paddingBottom: 0,
-      }),
-      clearIndicator: (base) => ({
-        ...base,
-        paddingTop: 0,
-        paddingBottom: 0,
-      }),
-      group: (base) => ({
-        ...base,
-        borderBottom: "solid #e2e8f0 1px",
-      }),
-      menu: (base) => ({
-        ...base,
-        width: "calc(100% - 16px)",
-      }),
-      input: (base) => ({
-        ...base,
-        "input:focus": {
-          boxShadow: "none",
+  const [formula, setFormula] = useState<string>(column.configuration?.buttonFormula || "");
+  const componentWillUnmount = useRef(false);
+  const saveFormulaUponClose = useRef(true);
+  useEffect(() => {
+    return () => {
+      componentWillUnmount.current = true;
+    }
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (componentWillUnmount.current && saveFormulaUponClose.current) {
+        if ((column.configuration?.buttonFormula || "") !== formula) {
+          setColumn({configuration: {...column.configuration, ...{buttonFormula: formula}}});
         }
-      }),
-    }}
-  />
+      }
+    }
+  }, [formula, setColumn, column.fundamentoFormula]);
 
   return (<>
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px] min-w-[300px]">
@@ -52,87 +34,36 @@ function EditButtonPopup({
         Button settings
       </div>
       <div className="overflow-y-auto">
-        <div className="border-b py-2">
-          <label className="px-2 text-xs">On click</label>
-          <StyledSelect
-            className="px-2 min-w-64"
-            placeholder="Select an action"
-            options={[
-              {
-                options: [
-                  {label: "Add row", value: "add_row"},
-                  {label: "Add or modify rows", value: "add_or_modify_rows"},
-                  {label: "Modify rows", value: "modify_rows"},
-                  {label: "Duplicate rows", value: "duplicate_rows"},
-                  {label: "Delete rows", value: "delete_rows"},
-                ]
-              },
-              {
-                options: [
-                  {label: "Copy to clipboard", value: "copy_to_clipboard"},
-                  {label: "Duplicate document", value: "duplicate_document"},
-                  {label: "Copy space", value: "copy_space"},
-                  {label: "Copy document to space", value: "copy_document_to_space"},
-                  {label: "Delete rows", value: "delete_rows"},
-                ]
-              },
-              {
-                options: [
-                  {label: "Open hyperlink", value: "open_hyperlink"},
-                  {label: "Open row", value: "open_row"},
-                  {label: "Send message or notify user", value: "send_message_or_notify_user"},
-                  {label: "Push buttons", value: "push_buttons"},
-                  {label: "Sign up for Fundamento", value: "sign_up_for_fundamento"},
-                ]
-              },
-            ]}
-          />
+        <div className="flex flex-col py-2 px-2">
+          <label className="mt-2 text-xs">On click</label>
+
+          <div className="py-0 border-b">
+            <textarea
+              className="focus:outline-none focus:ring rounded rounded-2 p-1 border mb-2 min-w-96 h-32"
+              value={formula}
+              onBlur={async (e) => {
+                if (e.target.value !== column.options?.formula) {
+                  console.log(`Formula blurred with value changed to ${e.target.value}, shall we do something with it?`);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  saveFormulaUponClose.current = false;
+                  close();
+                }
+              }}
+              onChange={(e) => {
+                setFormula(e.target.value);
+              }}
+            />
+          </div>
         </div>
         <div className="flex flex-col py-2 px-2 border-b">
-          <div className="font-medium text-secondary text-sm">Visual</div>
+          {/*<div className="font-medium text-secondary text-sm">Visual</div>*/}
           <label className="mt-2 text-xs">Label</label>
-          <input className="rounded border h-8 p-2"/>
-
-          <label className="mt-3 text-xs">Icon</label>
-          <input className="rounded border h-8 p-2"/>
-
-          <label className="mt-3 text-xs">Color</label>
-          <input className="rounded border h-8 p-2"/>
-        </div>
-        <div className="flex flex-col py-2 px-2">
-          <div className="flex flex-row items-center justify-between">
-            <div className="font-medium text-secondary text-sm">Advanced</div>
-            <button className="bg-neutral-200 rounded-full border hover:opacity-70 active:bg-neutral-300"
-              onClick={(e) => {
-                setAdvancedSectionExpanded(!advancedSectionExpanded);
-              }}
-            >
-              <div className="size-5 flex items-center justify-center">
-                {advancedSectionExpanded
-                  ? <span className="p-2 icon-[heroicons--chevron-up]"/>
-                  : <span className="p-2 icon-[heroicons--chevron-down]"/>
-                }
-              </div>
-            </button>
-          </div>
-          {advancedSectionExpanded && (<>
-            <label className="mt-2 text-xs">Disable if</label>
-            <input className="rounded border h-8 p-2"/>
-
-            <label className="mt-3 text-xs">Badge</label>
-            <input className="rounded border h-8 p-2 placeholder-neutral-400" placeholder="Enter formula that returns number"/>
-
-            <label className="mt-3 text-xs">Show alert</label>
-            <StyledSelect
-              className="min-w-64"
-              placeholder="Select an action"
-              options={[
-                {label: "Every time", value: "every_time"},
-                {label: "Never", value: "never"},
-                {label: "Only for errors", value: "only_for_errors"},
-              ]}
-            />
-          </>)}
+          <input className="rounded border h-8 p-2" onChange={async (e) => {
+            setColumn({configuration: {...column.configuration, ...{buttonLabel: e.target.value}}});
+          }}/>
         </div>
       </div>
     </div>
