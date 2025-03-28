@@ -7,6 +7,10 @@ defineFormula("Find", (arg1, arg2) => {
   return {result: arg2.indexOf(arg1) !== -1, commands: []};
 });
 
+defineFormula("IndexOf", (arg1, arg2) => {
+  return {result: arg2.indexOf(arg1), commands: []};
+});
+
 defineFormula("Unique", (...args) => {
   return {result: _.uniq(args[0]), commands: []};
 });

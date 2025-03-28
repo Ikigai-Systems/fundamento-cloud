@@ -8,6 +8,12 @@ describe("Collection formulas", () => {
     testFormula(`Find("world", "hello")`, false);
   });
 
+  describe('IndexOf', () => {
+    testFormula(`IndexOf("world", "hello world")`, 6);
+    testFormula(`IndexOf(1, List(3,2,1))`, 2);
+    testFormula(`IndexOf(1, List(3,2))`, -1);
+  });
+
   describe('CountUnique Function', () => {
     testFormula(`CountUnique(List(1, 2, 3, 3, 3, 4))`, 4);
     testFormula(`CountUnique(List(1, 2, 3, 4))`, 4);
