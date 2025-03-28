@@ -165,6 +165,20 @@
     "children": []
   },
   {
+    "id": "dbadc302-ad52-4d41-8087-a71617957733",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "How to share something",
+      "url": "onboardingContent:09-how-to-share-something-document-table/how-to-share-something.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
     "id": "a8d57a6b-0252-49f8-8929-6a9e38bd17cb",
     "type": "paragraph",
     "props": {

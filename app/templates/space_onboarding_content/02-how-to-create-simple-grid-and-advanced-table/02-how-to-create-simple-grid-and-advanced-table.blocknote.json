@@ -387,24 +387,30 @@
   },
   {
     "id": "9018983d-2154-4ecd-9ed5-2f1a93eddf02",
-    "type": "paragraph",
+    "type": "video",
     "props": {
-      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "name": "how-to-create-a-grid-table.mp4",
+      "url": "onboardingContent:02-how-to-create-simple-grid-and-advanced-table/how-to-create-a-grid-table.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
     },
-    "content": [],
     "children": []
   },
   {
     "id": "715b31ec-f885-48e5-804a-26abbf3a30e3",
-    "type": "paragraph",
+    "type": "video",
     "props": {
-      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "name": "how-to-create-an-advanced-table.mp4",
+      "url": "onboardingContent:02-how-to-create-simple-grid-and-advanced-table/how-to-create-an-advanced-table.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
     },
-    "content": [],
     "children": []
   },
   {

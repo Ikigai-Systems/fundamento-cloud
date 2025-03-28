@@ -191,6 +191,20 @@
     "children": []
   },
   {
+    "id": "60da5b6c-9de8-4a1c-994f-bc0e30572d99",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "create-a-team.mp4",
+      "url": "onboardingContent:07-how-to-create-and-delete-a-team/create-a-team.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
     "id": "34aaba3d-d2e2-410d-9ec6-b59a640c27da",
     "type": "paragraph",
     "props": {

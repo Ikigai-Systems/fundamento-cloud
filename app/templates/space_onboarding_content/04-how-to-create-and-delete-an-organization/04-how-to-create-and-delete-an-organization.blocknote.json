@@ -616,13 +616,16 @@
   },
   {
     "id": "2cf59552-3a66-426c-9f32-24e8f386d598",
-    "type": "paragraph",
+    "type": "video",
     "props": {
-      "textColor": "default",
       "backgroundColor": "default",
-      "textAlignment": "left"
+      "textAlignment": "left",
+      "name": "create-an-organization.mp4",
+      "url": "onboardingContent:04-how-to-create-and-delete-an-organization/create-an-organization.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
     },
-    "content": [],
     "children": []
   },
   {

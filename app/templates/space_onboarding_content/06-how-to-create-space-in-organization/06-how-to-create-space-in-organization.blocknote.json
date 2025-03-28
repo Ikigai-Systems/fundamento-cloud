@@ -391,6 +391,20 @@
     "children": []
   },
   {
+    "id": "8815e9ee-3f05-49ad-bdc7-c05734a015a5",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "create-space.mp4",
+      "url": "onboardingContent:06-how-to-create-space-in-organization/create-space.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
     "id": "bfe8d0ff-e95f-4106-ad2c-1412f4251001",
     "type": "paragraph",
     "props": {

@@ -292,6 +292,20 @@
   },
   {
     "id": "4101cc2d-8456-42b0-8a1e-da729bf29567",
+    "type": "video",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "block-menu-what-can-i-use-it-for.mp4",
+      "url": "onboardingContent:11-block-menu-what-could-i-use-it-for/block-menu-what-can-i-use-it-for.mp4",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "861c2ff7-02b8-4c7e-8fd6-a369cc920d91",
     "type": "paragraph",
     "props": {
       "textColor": "default",
