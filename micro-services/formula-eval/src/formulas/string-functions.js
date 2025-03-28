@@ -62,3 +62,7 @@ defineFormula("Lower", (text) => {
 defineFormula("Number", (text) => {
   return {result: Number(text), commands: []};
 })
+
+defineFormula("Split", (text, delimiter) => {
+  return {result: _.split(text, delimiter), commands: []};
+});

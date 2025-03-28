@@ -61,4 +61,10 @@ describe('String related formulas', () => {
   describe('Number', () => {
     testFormula(`Number(5)`, 5);
   });
+
+  describe('Split', () => {
+    testFormula('Split("this-is-my-rifle", "-")', ["this", "is", "my", "rifle"]);
+    testFormula('Split("abcd")', ["abcd"]);
+    testFormula('Split("abcd", "")', ["a", "b", "c", "d"]);
+  })
 });
