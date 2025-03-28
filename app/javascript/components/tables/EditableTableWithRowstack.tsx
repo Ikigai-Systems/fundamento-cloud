@@ -1,5 +1,5 @@
 import Rowstack from "rowstack";
-import {createContext, useContext, useMemo, useState} from "react";
+import {createContext, useContext, useState} from "react";
 import createFlash from "../createFlash.ts"
 import CurrentSpaceContext from "../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../api/Tables/TablesApi.js";
@@ -23,6 +23,7 @@ import EditNumberStoredFormatPopup from "./rowstack/EditNumberStoredFormatPopup.
 // import EditButtonPopup from "./rowstack/EditButtonPopup.tsx";
 import EditTimeDisplayFormatPopup from "./rowstack/DateTimeCell/EditTimeDisplayFormatPopup.tsx";
 import {download, generateCsv, mkConfig} from "export-to-csv";
+import MultiPeopleSelectCell from "./rowstack/MultiPeopleSelectCell.tsx";
 
 dayjs.extend(localizedFormat);
 dayjs.extend(customParseFormat);
@@ -39,6 +40,7 @@ type Kind =
     | "checkbox"
     | "formula"
     | "people"
+    | "multi_people"
     | "documents";
     // | "button";
 
@@ -62,8 +64,10 @@ const toType = (kind: Kind) => {
     return "checkbox";
   case "formula":
     return "formula";
-  case "people":
+  case "people": //todo: maybe rename it later to "person", also in the backend
     return "people";
+  case "multi_people":
+    return "multiPeople";
   case "documents":
     return "documents";
   // case "button":
@@ -301,7 +305,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               type: "people",
               cell: PeopleSelectCell,
               icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
-              name: "People",
+              name: "Single Person",
+            }, {
+              type: "multiPeople",
+              cell: MultiPeopleSelectCell,
+              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--users]"></div>,
+              name: "Multiple People",
             }, {
               type: "documents",
               cell: DocumentsSelectCell,

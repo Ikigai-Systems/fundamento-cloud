@@ -84,7 +84,11 @@ function PeopleSelectCell({
             return [{
               value: undefined, initials: "n/a", displayName: "leave empty",
             }].concat(
-              usersQuery.data.map(user => ({value: user.id, initials: user.firstName[0] + user.lastName[0], displayName: `${user.firstName} ${user.lastName}`}))
+              usersQuery.data.map(user => ({
+                value: user.id,
+                initials: user.firstName[0] + user.lastName[0],
+                displayName: `${user.firstName} ${user.lastName}`
+              }))
             );
           }}
           formatOptionLabel={({value, initials, displayName}) => {
