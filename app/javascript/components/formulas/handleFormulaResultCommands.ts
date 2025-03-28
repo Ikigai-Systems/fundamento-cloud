@@ -15,6 +15,7 @@ export default (formulaResult: {result: any, commands: Array<any>}, space: Space
         // todo: show flash message about performed actions, in this case "X rows removed" ? backend (formula_eval_gateway) could provide that number...
         break;
       case "AddOrUpdateRows":
+      case "UpdateRows":
         tableNpisToInvalidate[command.tableNpi] = true;
         break;
     }

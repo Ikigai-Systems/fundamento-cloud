@@ -80,7 +80,7 @@ class FormulaVisitorImplementation extends FormulaVisitor {
         }
       } else {
         const visitedExpressions = ctx.expression().map((expression, index) => {
-          if (formulaName === "AddOrUpdateRows" && index === 1) {
+          if ((["AddOrUpdateRows", "UpdateRows"].includes(formulaName)) && index === 1) {
             const rawText = expression.getText();
             const resultText = (rawText.indexOf("CurrentValue") !== -1)
               ? rawText.replaceAll("CurrentValue", `"${this.currentValueManager.lookupVariable("currentValue")}"`)

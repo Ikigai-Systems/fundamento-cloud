@@ -4,10 +4,15 @@ class FormulasController < ApplicationController
 
     formula = params["formula"]
 
+    additional_context = {}
+    this_row = params.fetch("additional_context", {})&.[]("this_row")
+    additional_context["ThisRow"] = this_row if this_row.present?
+
     formula_evaluation = FormulaEvalGateway.evaluate(
       formula,
       current_organization.spaces.find_by_param!(params[:space_npi] || params.dig("evaluation_context", "space_npi")),
       current_organization_user,
+      additional_context: additional_context
     )
 
     respond_to do |format|

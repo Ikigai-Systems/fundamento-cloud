@@ -31,7 +31,7 @@ class FormulaEvalGateway
 
     res_json = JSON.parse(res.body)
 
-    process_commands(res_json&.[]("commands"), space, organization_user)
+    process_commands(res_json&.[]("commands"), space, organization_user, additional_context)
 
     return res_json
   rescue Exception => e
@@ -85,7 +85,7 @@ class FormulaEvalGateway
     return evaluations.map { |evaluation| { "error" => error_message(e) } }
   end
 
-  def self.process_commands(commands, space, organization_user)
+  def self.process_commands(commands, space, organization_user, additional_context = {})
     commands&.each do |command|
       case command["type"]
       when "AddRow"
@@ -116,10 +116,11 @@ class FormulaEvalGateway
             current_row_values = table.columns.each_with_object({}) do |column, hash|
               hash[column.name] = cells[column.id]&.value
             end
+            current_row_values["id"] = row.npi
 
-            additional_context = {
+            additional_context = additional_context.merge({
               "currentRow" => current_row_values
-            }
+            })
 
             formulas_to_evaluate << {
               formula: condition_formula,
@@ -141,6 +142,57 @@ class FormulaEvalGateway
         if rows_to_update.empty?
           table.add_row(nil, command["values"])
         else
+          unless command["values"].empty?
+            rows_to_update.each do |row|
+              # todo: update row logic should go to table.rb model probably
+              command["values"].each do |column_name, column_value|
+                column_id = table.columns.find_by(name: column_name).id
+                row.cells.find_by(column_id: column_id).update(value: column_value)
+              end
+            end
+          end
+        end
+      when "UpdateRows"
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
+        command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
+        # todo: validate the user is permitted to update this table
+
+        condition_formula = command["conditionFormula"]
+
+        if condition_formula.nil?
+          rows_to_update = table.rows
+        else
+          formulas_to_evaluate = []
+
+          table.rows.each do |row|
+            cells = row.cells.index_by(&:column_id)
+            current_row_values = table.columns.each_with_object({}) do |column, hash|
+              hash[column.name] = cells[column.id]&.value
+            end
+            current_row_values["id"] = row.npi
+
+            additional_context = additional_context.merge({
+              "currentRow" => current_row_values
+            })
+
+            formulas_to_evaluate << {
+              formula: condition_formula,
+              additional_context: additional_context,
+              row_id: row.id,
+            }
+          end
+
+          row_ids_to_update = []
+          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_user).each_with_index do |evaluated_formula, index|
+            if evaluated_formula["result"] == true
+              row_ids_to_update << formulas_to_evaluate[index][:row_id]
+            end
+          end
+
+          rows_to_update = table.rows.filter { |row| row_ids_to_update.include?(row.id) }
+        end
+
+        unless rows_to_update.empty?
           unless command["values"].empty?
             rows_to_update.each do |row|
               # todo: update row logic should go to table.rb model probably

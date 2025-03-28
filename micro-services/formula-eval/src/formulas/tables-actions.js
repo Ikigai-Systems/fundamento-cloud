@@ -13,3 +13,7 @@ defineAction("DeleteRows", (...args) => {
 defineAction("AddOrUpdateRows", (tableNpi, conditionFormula, ...args) => {
   return {commands: [{type: "AddOrUpdateRows", tableNpi: tableNpi, conditionFormula, values: _.fromPairs(_.chunk(args, 2))}]};
 });
+
+defineAction("UpdateRows", (tableNpi, conditionFormula, ...args) => {
+  return {commands: [{type: "UpdateRows", tableNpi: tableNpi, conditionFormula, values: _.fromPairs(_.chunk(args, 2))}]};
+});

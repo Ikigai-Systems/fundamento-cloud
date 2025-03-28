@@ -13,6 +13,7 @@ function ButtonCell({
   isViewOnly,
   columnConfiguration,
   tableConfiguration,
+  rowId,
 }) {
   const {space} = useContext(CurrentSpaceContext);
   const [isExecuting, setIsExecuting] = useState(false);
@@ -29,6 +30,9 @@ function ButtonCell({
       const formulaResult = await FormulasApi.eval({
         data: {
           formula,
+          additionalContext: {
+            "ThisRow": rowId
+          },
           spaceNpi: space?.npi,
         }
       });
