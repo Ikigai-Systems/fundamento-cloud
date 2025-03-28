@@ -62,4 +62,12 @@ describe("Collection formulas", () => {
   describe('Sum', () => {
     testFormula(`Sum(List(1,2,3,4))`, 10);
   });
+
+  describe('Splice', () => {
+    testFormula(`Splice(List(1,2,3,4,5), 0)`, []);
+    testFormula(`Splice(List(1,2,3,4,5), 0, 0)`, [1,2,3,4,5]);
+    testFormula(`Splice(List(1,2,3,4,5), Number("-1"))`, [1,2,3,4]);
+    testFormula(`Splice(List(1,2,3,4,5), 2, 2)`, [1,2,5]);
+    testFormula(`Splice(List(1,2,3,4,5), 2, 2, 6, 7)`, [1,2,6,7,5]);
+  });
 });

@@ -63,6 +63,10 @@ defineFormula("Number", (text) => {
   return {result: Number(text), commands: []};
 })
 
+defineFormula("String", (text) => {
+  return {result: String(text), commands: []};
+})
+
 defineFormula("Split", (text, delimiter) => {
   return {result: _.split(text, delimiter), commands: []};
 });

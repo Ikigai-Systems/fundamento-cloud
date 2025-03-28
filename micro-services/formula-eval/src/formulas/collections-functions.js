@@ -78,3 +78,8 @@ defineFormula("Any", (collection, predicate) => {
   });
   return {result: processed, commands};
 }, true);
+
+defineFormula("Splice", (collection, ...args) => {
+  collection.splice(...args);
+  return {result: collection, commands: []};
+});
