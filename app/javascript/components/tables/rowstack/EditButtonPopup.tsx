@@ -61,9 +61,13 @@ function EditButtonPopup({
         <div className="flex flex-col py-2 px-2 border-b">
           {/*<div className="font-medium text-secondary text-sm">Visual</div>*/}
           <label className="mt-2 text-xs">Label</label>
-          <input className="rounded border h-8 p-2" onChange={async (e) => {
-            setColumn({configuration: {...column.configuration, ...{buttonLabel: e.target.value}}});
-          }}/>
+          <input
+            className="rounded border h-8 p-2" value={column.configuration?.buttonLabel}
+            placeholder="Click me"
+            onChange={async (e) => {
+              setColumn({configuration: {...column.configuration, ...{buttonLabel: e.target.value}}});
+            }}
+          />
         </div>
       </div>
     </div>
