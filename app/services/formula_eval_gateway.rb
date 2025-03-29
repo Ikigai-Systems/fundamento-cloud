@@ -146,8 +146,8 @@ class FormulaEvalGateway
             rows_to_update.each do |row|
               # todo: update row logic should go to table.rb model probably
               command["values"].each do |column_name, column_value|
-                column_id = table.columns.find_by(name: column_name).id
-                row.cells.find_by(column_id: column_id).update(value: column_value)
+                column = table.columns.find_by(npi: column_name) || table.columns.find_by(name: column_name)
+                row.cells.find_by(column_id: column.id).update(value: column_value) if column.present?
               end
             end
           end
@@ -197,8 +197,8 @@ class FormulaEvalGateway
             rows_to_update.each do |row|
               # todo: update row logic should go to table.rb model probably
               command["values"].each do |column_name, column_value|
-                column_id = table.columns.find_by(name: column_name).id
-                row.cells.find_by(column_id: column_id).update(value: column_value)
+                column = table.columns.find_by(npi: column_name) || table.columns.find_by(name: column_name)
+                row.cells.find_by(column_id: column.id).update(value: column_value) if column.present?
               end
             end
           end
