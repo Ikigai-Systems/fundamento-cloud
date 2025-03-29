@@ -1,8 +1,13 @@
 <div id="<%= "mention_#{mention.mention_id}" %>">
-  <div class="p-2">
-    <div class="text-base font-semibold truncate">
-      <%= link_to mention.object_title, mention.object_path %>
+  <div class="p-2 flex items-start gap-3">
+    <div>
+      <%= render ObjectIcon.new(object: Document.new) %>
     </div>
-    <div class="font-normal text-gray-500">Mentioned <%= time_ago_in_words mention.created_at %> ago</div>
+    <div>
+      <div class="text-base font-semibold truncate">
+        <%= link_to mention.object_title, mention.object_path %>
+      </div>
+      <div class="font-normal text-gray-500">Mentioned <%= time_ago_in_words mention.created_at %> ago</div>
+    </div>
   </div>
 </div>
