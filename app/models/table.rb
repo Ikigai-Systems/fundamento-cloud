@@ -31,6 +31,10 @@ class Table < ApplicationRecord
 
   validates_uniqueness_of :name, scope: [:space_id]
 
+  def title
+    name
+  end
+
   def order_linked_list(rows, method)
     return [] if rows.nil? || rows.empty?
 

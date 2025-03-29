@@ -9,6 +9,8 @@ class RootController < ApplicationController
 
   def recently_updated
     @recently_updated = policy_scope(current_organization.documents).recently_updated
+    @recently_updated += policy_scope(current_organization.tables).recently_updated
+    @recently_updated.sort_by!(&:updated_at).reverse!.slice!(51..)
   end
 
   def notifications
