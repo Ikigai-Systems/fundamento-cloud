@@ -27,6 +27,15 @@ class Table < ApplicationRecord
   scope :without_archived, -> { where(archived: false) }
   scope :recently_updated, -> { without_archived.order(updated_at: :desc).limit(50) }
 
+  after_commit -> (table) {
+    broadcast_action_to(
+      [table.organization, "recently_updated"],
+      action: :reload_turbo_frame,
+      target: "#recently_updated_frame",
+      render: false
+    )
+  }
+
   validates_presence_of :name
 
   validates_uniqueness_of :name, scope: [:space_id]
