@@ -2,7 +2,7 @@ class Tables::Column < ApplicationRecord
   self.table_name = :table_columns
 
   belongs_to :organization
-  belongs_to :table
+  belongs_to :table, touch: true
 
   belongs_to :previous_column, class_name: "Tables::Column", optional: true
   has_one :next_column, class_name: "Tables::Column", foreign_key: "previous_column_id"
