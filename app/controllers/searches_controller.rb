@@ -8,23 +8,49 @@ class SearchesController < ApplicationController
   def show
     # todo: later query for other entities as well (spaces, organizations, etc) and respect 'query' param to narrow down searches
 
-    documents = policy_scope(current_organization.documents, policy_scope_class: DocumentPolicy::Scope)
+    @results = []
 
-    @results = documents.map do |document|
+    @results += policy_scope(current_organization.documents).map do |document|
       parent_path = ""
       parent = document.parent
+
       while parent.present?
         parent_path = "#{parent.title} › #{parent_path}"
         parent = parent.parent
       end
+
       {
-        document: {
+        object: {
           npi: document.npi,
           title: document.title,
-          parent_path: parent_path
+          parent_path: parent_path,
+          type: document.class.to_s,
         },
         space: {
           name: document.space.name,
+        }
+      }
+    end
+
+    @results += policy_scope(current_organization.tables).map do |table|
+      parent_path = ""
+
+      # parent = table.parent
+      #
+      # while parent.present?
+      #   parent_path = "#{parent.title} › #{parent_path}"
+      #   parent = parent.parent
+      # end
+
+      {
+        object: {
+          npi: table.npi,
+          title: table.name,
+          parent_path: parent_path,
+          type: table.class.to_s,
+        },
+        space: {
+          name: table.space.name,
         }
       }
     end
