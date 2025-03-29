@@ -23,6 +23,10 @@ class Table < ApplicationRecord
 
   scope :lexicographically, -> { order(name: :asc) }
 
+  scope :archived, -> { where(archived: true) }
+  scope :without_archived, -> { where(archived: false) }
+  scope :recently_updated, -> { without_archived.order(updated_at: :desc).limit(50) }
+
   validates_presence_of :name
 
   validates_uniqueness_of :name, scope: [:space_id]
