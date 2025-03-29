@@ -8,6 +8,7 @@ class RootController < ApplicationController
   end
 
   def recently_updated
+    @recently_updated = policy_scope(current_organization.documents).recently_updated
   end
 
   def notifications
