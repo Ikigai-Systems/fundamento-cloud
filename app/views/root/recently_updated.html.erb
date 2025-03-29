@@ -2,7 +2,7 @@
   <%= turbo_stream_from [current_organization, "recently_updated"] %>
 
   <%=
-    render partial: "documents/recently_updated_documents", locals: {
+    render partial: "recently_updated_documents", locals: {
       recently_updated_documents: policy_scope(current_organization.documents).recently_updated
     }
   %>
