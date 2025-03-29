@@ -6,11 +6,7 @@
       <% @recently_updated.each do |object| %>
         <div id="<%= dom_id(object) %>" class="flex p-2 items-start gap-3">
           <div>
-            <% if object.class == Document %>
-              <i class="fa-regular fa-file-lines"></i>
-            <% elsif object.class == Table %>
-              <i class="fa-regular fa-table"></i>
-            <% end %>
+            <%= render ObjectIcon.new(object: object) %>
           </div>
           <div>
             <div class="text-base font-semibold truncate">
