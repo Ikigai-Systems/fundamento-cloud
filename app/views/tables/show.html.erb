@@ -9,19 +9,37 @@
     <%= render partial: "favorites/create_favorite", locals: { object: @table } %>
   <% end %>
 
-  <%= button_to "Edit",
-    edit_table_path(@table),
-    method: :get,
-    disabled: !policy(@table).update?,
-    class: "primary-button document-toolbar-button edit-table-button"
-  %>
-  <% add_palette_command id: "edit_table",
-                         title: "Edit table",
-                         section: "Actions",
-                         hotkey: "e",
-                         handler: "document.querySelector('.edit-table-button').click()",
-                         icon: '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8l.8-2.685a4.5 4.5 0 0 1 1.13-1.897zm0 0L19.5 7.125"/></svg>'
-  %>
+  <% has_permission_to_edit = policy(@table).update? %>
+
+  <div data-controller="popover" class="relative">
+    <%= button_to "Edit",
+      edit_table_path(@table),
+      method: :get,
+      disabled: !has_permission_to_edit,
+      class: "primary-button document-toolbar-button edit-table-button",
+      form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } }
+    %>
+
+    <template data-popover-target="content">
+      <div data-popover-target="card" class="popover-tooltip-card m-1">
+        <% if has_permission_to_edit %>
+          <p>Edit <code>E</code></p>
+        <% else %>
+          <p>You lack permission to edit this table</p>
+        <% end %>
+      </div>
+    </template>
+  </div>
+
+  <% if has_permission_to_edit %>
+    <% add_palette_command id: "edit_table",
+      title: "Edit table",
+      section: "Actions",
+      hotkey: "e",
+      handler: "document.querySelector('.edit-table-button').click()",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8l.8-2.685a4.5 4.5 0 0 1 1.13-1.897zm0 0L19.5 7.125"/></svg>'
+    %>
+  <% end %>
 
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
 <% end %>
