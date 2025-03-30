@@ -11,6 +11,6 @@
     @apply bg-gray-800 text-gray-50 m-1 whitespace-nowrap;
 
     code {
-        @apply border rounded py-0.5 px-1;
+        @apply font-mono bg-gray-700 rounded p-1 px-2;
     }
 }
