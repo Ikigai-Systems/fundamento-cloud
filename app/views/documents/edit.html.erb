@@ -10,10 +10,20 @@
       class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
   <% end %>
 
-  <%= button_to "Update", document_versions_path(@document), method: :create,
-    params: {blocks: ""},
-    :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
-    class: "primary-button document-toolbar-button update-button" %>
+  <div data-controller="popover" class="relative">
+    <%= button_to "Update", document_versions_path(@document), method: :create,
+      params: {blocks: ""},
+      :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
+      class: "primary-button document-toolbar-button update-button",
+      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} }
+    %>
+
+    <template data-popover-target="content">
+      <div data-popover-target="card" class="popover-tooltip-card">
+        <p>Update <code>CMD+Enter</code> or <code>CTRL+Enter</code></p>
+      </div>
+    </template>
+  </div>
 
   <% add_palette_command id: "update",
     title: "Update the document",

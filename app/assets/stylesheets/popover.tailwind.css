@@ -1,0 +1,16 @@
+.popover-card {
+    @apply absolute max-w-xs z-10 content-container border rounded p-2 text-xs;
+}
+
+.popover-reaction-card {
+    @apply popover-card;
+}
+
+.popover-tooltip-card {
+    @apply popover-card;
+    @apply bg-gray-800 text-gray-50 m-1 whitespace-nowrap;
+
+    code {
+        @apply border rounded py-0.5 px-1;
+    }
+}

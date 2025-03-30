@@ -9,6 +9,7 @@
 @import "./lozenges.tailwind.css";
 @import "./reactions.tailwind.css";
 @import "./mentions.tailwind.css";
+@import "./popover.tailwind.css";
 
 @tailwind base;
 @tailwind components;

@@ -12,29 +12,36 @@
   <% end %>
 
   <% has_permission_to_edit = policy(@document).update? %>
-  <div data-controller="popover">
+
+  <div data-controller="popover" class="relative">
     <%= button_to "Edit",
       edit_document_path(@document),
       method: :get,
       disabled: !has_permission_to_edit,
       class: "primary-button document-toolbar-button edit-document-button",
-      data: {action: "mouseenter->popover#show mouseleave->popover#hide"}
+      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} }
     %>
-    <% if has_permission_to_edit %>
-      <% add_palette_command id: "edit_document",
-                             title: "Edit document",
-                             section: "Actions",
-                             hotkey: "e",
-                             handler: "document.querySelector('.edit-document-button').click()",
-                             icon: '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8l.8-2.685a4.5 4.5 0 0 1 1.13-1.897zm0 0L19.5 7.125"/></svg>'
-      %>
-    <% end %>
+
     <template data-popover-target="content">
-      <div data-popover-target="card" class="<%= has_permission_to_edit ? "hidden " : "" %>z-10 bg-gray-800 text-gray-50 text-xs p-2 w-24 flex flex-row items-center justify-center rounded absolute top-12">
-        <p class="block">You have no permission to edit this document</p>
+      <div data-popover-target="card" class="popover-tooltip-card">
+        <% if has_permission_to_edit %>
+          <p>Edit <code>E</code></p>
+        <% else %>
+          <p>You have no permission to edit this document</p>
+        <% end %>
       </div>
     </template>
   </div>
+
+  <% if has_permission_to_edit %>
+    <% add_palette_command id: "edit_document",
+      title: "Edit document",
+      section: "Actions",
+      hotkey: "e",
+      handler: "document.querySelector('.edit-document-button').click()",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8l.8-2.685a4.5 4.5 0 0 1 1.13-1.897zm0 0L19.5 7.125"/></svg>'
+    %>
+  <% end %>
 
   <div
     data-controller="dropdown"
