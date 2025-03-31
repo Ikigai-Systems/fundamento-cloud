@@ -27,7 +27,12 @@
   <% end %>
 </head>
 <% body_class ||= nil %>
-<body data-controller="modal" data-action="click->modal#backdropClose"<% if body_class.present? %> class="<%=body_class%>"<% end %>>
+<%= tag.body data: {
+  controller: "modal",
+  action: "click->modal#backdropClose"
+}, class: {
+  body_class => body_class.present?
+} do %>
   <script>
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
@@ -60,5 +65,5 @@
 
   <%= command_palette %>
 
-</body>
+<% end %>
 </html>
