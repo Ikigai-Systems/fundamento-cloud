@@ -16,7 +16,7 @@ describe('Basic features work', function() {
     cy.get('input[name="organization[name]"]').type("E2E Tests");
     cy.get('input[type=submit]').click();
 
-    cy.contains("Organization was successfully created");
+    cy.contains("Welcome to your Fundamento organization.");
 
     cy.get("body nav").contains("PN").click();
     cy.contains("Sign out").click();

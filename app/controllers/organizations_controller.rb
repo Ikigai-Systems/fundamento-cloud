@@ -32,7 +32,7 @@ class OrganizationsController < ApplicationController
         role: :manager,
       )
 
-      if current_user.organizations.reload.count > 1
+      if current_user.organizations.count > 1
         redirect_to @organization, notice: 'Organization was successfully created.'
       else
         redirect_to @organization.spaces.first, notice: 'Welcome to your Fundamento organization.'
