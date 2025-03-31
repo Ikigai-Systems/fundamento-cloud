@@ -32,7 +32,11 @@ class OrganizationsController < ApplicationController
         role: :manager,
       )
 
-      redirect_to @organization, notice: 'Organization was successfully created.'
+      if current_user.organizations.count > 1
+        redirect_to @organization, notice: 'Organization was successfully created.'
+      else
+        redirect_to @organization.spaces.first, notice: 'Welcome to your Fundamento organization.'
+      end
     else
       render :new
     end
