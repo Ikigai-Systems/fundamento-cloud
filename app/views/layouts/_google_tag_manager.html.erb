@@ -11,5 +11,5 @@
     j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
     j.setAttribute('data-turbo-track', 'reload');
     f.parentNode.insertBefore(j, f);
-})(window, document, 'script', 'dataLayer', <%= gtm_id.to_json %>);</script>
+})(window, document, 'script', 'dataLayer', '<%= gtm_id %>');</script>
 <!-- End Google Tag Manager -->
