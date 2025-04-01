@@ -103,11 +103,11 @@ const FormulaInlineContent = createReactInlineContentSpec(
       ]);
 
       const spanClassNames = clsx(
-        "inline-flex max-w-full items-start group border shadow-sm overflow-hidden bg-gray-100 px-1",
+        "inline-flex max-w-full items-start group border shadow-sm overflow-hidden bg-gray-100 px-1 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
       );
 
       const configureButtonClassNames = clsx(
-        "flex items-center px-1 py-1 border-l -ml-[1px] -mr-1 group-hover:opacity-100 opacity-0 bg-gray-200",
+        "flex items-center px-1 py-1 border-l -ml-[1px] -mr-1 group-hover:opacity-100 opacity-0 bg-gray-200 dark:group-hover:bg-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
       );
 
       let displayResult = <span>[]</span>;

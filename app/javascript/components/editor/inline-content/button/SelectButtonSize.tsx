@@ -100,7 +100,7 @@ export default function SelectButtonSize({
       <div
         tabIndex={0}
         ref={refs.setReference}
-        className="bg-white h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
+        className="bg-white dark:!bg-gray-800 h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm"
         {...getReferenceProps()}
       >
         {selectedItemLabel || "Select..."}
@@ -111,7 +111,7 @@ export default function SelectButtonSize({
           <FloatingFocusManager context={context} modal={false}>
             <div
               ref={refs.setFloating}
-              className="shadow-xl bg-white overflow-y-auto border-solid border py-2 rounded-lg"
+              className="shadow-xl bg-white dark:!bg-gray-800 overflow-y-auto border-solid border py-2 rounded-lg"
               style={{
                 ...floatingStyles,
               }}
@@ -126,7 +126,7 @@ export default function SelectButtonSize({
                   role="option"
                   tabIndex={i === activeIndex ? 0 : -1}
                   aria-selected={i === selectedIndex && i === activeIndex}
-                  className={`p-2 h-8 flex flex-row items-center text-sm cursor-pointer${i === activeIndex ? " bg-neutral-100" : ""}`}
+                  className={`p-2 h-8 flex flex-row items-center text-sm cursor-pointer${i === activeIndex ? " bg-neutral-100 dark:bg-gray-700" : ""}`}
                   {...getItemProps({
                     // Handle pointer select.
                     onClick() {
