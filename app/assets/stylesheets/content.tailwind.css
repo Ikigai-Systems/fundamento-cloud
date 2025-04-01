@@ -14,7 +14,7 @@
     }
 
     .document {
-        @apply flex-col overflow-auto;
+        @apply flex-col overflow-auto min-h-[calc(100vh-70px)];
     }
 
     .content-container {

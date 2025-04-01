@@ -3222,7 +3222,8 @@ function oe({
         style: {
           position: d,
           top: f ?? 0,
-          left: a ?? 0
+          left: a ?? 0,
+          zIndex: 1
         },
         ...R(),
         children: w
