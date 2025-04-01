@@ -20,7 +20,18 @@
 
       <div class="form-field">
         <%= f.label :encrypted_token, "API Token" %>
-        <%= f.text_field :encrypted_token, autofocus: true, disabled: true, class: "form-input" %>
+        <div class="flex flex-row items-center gap-2">
+          <%= f.text_field :encrypted_token, autofocus: true, read_only: true, class: "form-input mt-0 h-10" %>
+          <button type="button" title="Copy to clipboard" class="secondary-button px-2 shadow-md h-10"
+                  data-controller="clipboard" data-clipboard-success-content-value="Copied!" data-clipboard-target="button"
+                  data-action="clipboard#copy">
+            <span class="icon-[heroicons--clipboard] size-6"></span>
+            <span class="hidden" data-clipboard-target="source">
+              <%= @api_token.encrypted_token %>
+            </span>
+          </button>
+        </div>
+
       </div>
     <% end %>
 

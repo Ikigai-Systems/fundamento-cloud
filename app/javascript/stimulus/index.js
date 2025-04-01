@@ -69,6 +69,9 @@ application.register("serialize-blocknote", SerializeBlockNote);
 import CommandPaletteController from "./controllers/command_palette_controller.js";
 application.register("command-palette", CommandPaletteController);
 
+import Clipboard from '@stimulus-components/clipboard';
+application.register('clipboard', Clipboard);
+
 // Configure Stimulus development experience
 application.debug = true
 window.Stimulus   = application
