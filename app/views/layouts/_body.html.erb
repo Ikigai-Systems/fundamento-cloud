@@ -69,5 +69,8 @@
 
   <%= command_palette %>
 
+  <% if Flipper.enabled?(:livechat) %>
+    <%= render partial: "layouts/livechat" %>
+  <% end %>
 <% end %>
 </html>
