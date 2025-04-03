@@ -90,6 +90,8 @@ class ReferencesExtractor
           object_npi = block.dig("props", "entityId")
           mention_id = block["props"]["id"]
 
+          next if object_npi.blank?
+
           all_references.push({
             reference_id: mention_id,
             object_type: object_type.upcase_first,
@@ -101,6 +103,8 @@ class ReferencesExtractor
           })
         elsif block.dig("type") == "advancedTable"
           object_npi = block.dig("props", "tableNpi") || block.dig("props", "tableId")
+
+          next if object_npi.blank?
 
           all_references.push({
             reference_id: block["id"],
