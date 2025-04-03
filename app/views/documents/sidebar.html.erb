@@ -33,13 +33,13 @@
     </div>
 
     <div data-tabs-target="panel" class="hidden max-h-0">
-      <%= turbo_frame_tag "details_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :details) do %>
+      <%= turbo_frame_tag "details_sidebar_tab", loading: "lazy", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :details) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
 
     <div data-tabs-target="panel" class="hidden max-h-0">
-      <%= turbo_frame_tag "visitors_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
+      <%= turbo_frame_tag "visitors_sidebar_tab", loading: "lazy", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
