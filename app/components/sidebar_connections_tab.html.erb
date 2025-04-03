@@ -6,5 +6,9 @@
         <%= time_ago_in_words reference.created_at %>
       </div>
     <% end %>
+
+    <% if @incoming.empty? %>
+      No references were found.
+    <% end %>
   </div>
 <% end %>
