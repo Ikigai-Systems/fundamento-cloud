@@ -1,4 +1,5 @@
 ObjectReference = Struct.new(:object_title, :object_path, :object_type, :object_npi, :reference_id, :referenced_by, :created_at)
+
 class ReferencesExtractor
   extend Rails.application.routes.url_helpers
 
@@ -6,8 +7,20 @@ class ReferencesExtractor
     all_references_by_id = Hash.new
 
     documents.each do |document|
+      Sentry.set_context(
+        "document", {
+          id: document.id,
+        }
+      )
+
       document_versions = document.versions.order(sequential_id: :desc).first(1)
       document_versions.each do |version|
+        Sentry.set_context(
+          "version", {
+            id: version.id,
+          }
+        )
+
         references = references_from_blocknote(version.content)
         references.each do |reference|
           unless all_references_by_id.has_key?([version, reference[:object_path]])
@@ -25,6 +38,12 @@ class ReferencesExtractor
 
       document_comments = document.comments.order(created_at: :desc)
       document_comments.each do |comment|
+        Sentry.set_context(
+          "comment", {
+            id: comment.id,
+          }
+        )
+
         references = references_from_blocknote(comment.content)
         references.each do |reference|
           unless all_references_by_id.has_key?([comment, reference[:object_path]])
@@ -61,6 +80,10 @@ class ReferencesExtractor
 
     blocknote_document.each do |block|
       each_block(block, %w[mention advancedTable]) do |block|
+        Sentry.set_context(
+          "block", block
+        )
+
         object_type = block.dig("props", "entity")
 
         if block.dig("type") == "mention" && %w[document table].include?(object_type)
