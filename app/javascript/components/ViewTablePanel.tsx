@@ -12,7 +12,7 @@ const ViewTablePanel = ({table, data, space}: ViewTablePanelProps) => {
       <ContentTitle table={table}/>
     </div>
 
-    <div className="content-editor-padding">
+    <div className="content-editor-padding min-h-72">
       <EditableTableWithRowstack table={table} data={data} isEditable={false}/>
     </div>
   </CurrentSpaceContext.Provider>
