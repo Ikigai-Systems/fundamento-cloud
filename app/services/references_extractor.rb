@@ -1,4 +1,4 @@
-ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :created_at, :object_path, :object_title)
+ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :object_path, :object_title)
 
 class ReferencesExtractor
   def self.all_references(documents)
@@ -26,7 +26,6 @@ class ReferencesExtractor
           unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
             unique_references[reference] = ObjectReference.new(
               referenced_by: document,
-              created_at: version.created_at,
               object_type: reference[:object_type],
               object_npi: reference[:object_npi],
             )
@@ -46,8 +45,7 @@ class ReferencesExtractor
         references.each do |reference|
           unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
             unique_references[reference] = ObjectReference.new(
-              referenced_by: comment,
-              created_at: comment.created_at,
+              referenced_by: document,
               object_type: reference[:object_type],
               object_npi: reference[:object_npi],
             )

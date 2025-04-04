@@ -7,7 +7,7 @@
       </div>
     <% end %>
 
-    <% @incoming.sort_by(&:created_at).reverse.each do |reference| %>
+    <% @incoming.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
         <%= link_to reference.referenced_by.title, reference.referenced_by %>
         <%= time_ago_in_words reference.created_at %>
@@ -21,7 +21,7 @@
       </div>
     <% end %>
 
-    <% @outgoing.sort_by(&:created_at).reverse.each do |reference| %>
+    <% @outgoing.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
         <%= link_to reference.object_title, reference.object_path %>
         <%= time_ago_in_words reference.created_at %>
