@@ -9,8 +9,15 @@
         <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab"
                 class="flex flex-row items-center"
         >
-          <span class="size-6 icon-[heroicons--clipboard-document-list]"></span>
-          <span>Structure</span>
+          <div data-controller="popover" class="relative">
+            <span data-action="mouseenter->popover#show mouseleave->popover#hide" class="size-6 icon-[heroicons--clipboard-document-list]"></span>
+
+            <template data-popover-target="content">
+              <div class="popover-tooltip-card m-1" data-popover-target="card">
+                <p>Structure</p>
+              </div>
+            </template>
+          </div>
         </button>
 
         <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
