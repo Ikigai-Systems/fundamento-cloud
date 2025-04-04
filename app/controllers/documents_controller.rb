@@ -29,7 +29,7 @@ class DocumentsController < ApplicationController
     elsif params[:tab] == "visitors"
       render SidebarVisitorsTab.new(object: @document)
     elsif params[:tab] == "connections"
-      render SidebarConnectionsTab.new(object: @table, pundit_user: pundit_user)
+      render SidebarConnectionsTab.new(object: @document, pundit_user: pundit_user)
     elsif params[:tab] == "table_of_contents"
       render template: "documents/_sidebar/table_of_contents"
     end
