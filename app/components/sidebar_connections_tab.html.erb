@@ -1,5 +1,12 @@
 <%= turbo_frame_tag :connections_sidebar_tab do %>
   <div class="flex flex-col gap-3 p-3">
+    <% if @incoming.present? %>
+      <div>
+          <i class="fa-regular fa-arrow-left"></i>
+          <span>Referenced in:</span>
+      </div>
+    <% end %>
+
     <% @incoming.sort_by(&:created_at).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
         <%= link_to reference.referenced_by.title, reference.referenced_by %>
@@ -7,7 +14,21 @@
       </div>
     <% end %>
 
-    <% if @incoming.empty? %>
+    <% if @outgoing.present? %>
+      <div>
+        <i class="fa-regular fa-arrow-right"></i>
+        <span>References:</span>
+      </div>
+    <% end %>
+
+    <% @outgoing.sort_by(&:created_at).reverse.each do |reference| %>
+      <div class="flex flex-row gap-3 items-center">
+        <%= link_to reference.object_title, reference.object_path %>
+        <%= time_ago_in_words reference.created_at %>
+      </div>
+    <% end %>
+
+    <% if @incoming.empty? && @outgoing.empty? %>
       No references were found.
     <% end %>
   </div>

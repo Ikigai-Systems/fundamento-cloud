@@ -9,8 +9,13 @@ class SidebarConnectionsTab < ViewComponent::Base
   def initialize(object:, pundit_user:)
     @object = object
     @references = ReferencesExtractor::all_references(Pundit.policy_scope(pundit_user, pundit_user.current_organization.documents))
+
     @incoming = @references.select do |reference|
       reference.object_type == object.class.to_s && reference.object_npi == object.npi
+    end
+
+    @outgoing = @references.select do |reference|
+      reference.referenced_by == object
     end
   end
 end
