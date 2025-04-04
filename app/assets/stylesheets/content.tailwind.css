@@ -14,7 +14,11 @@
     }
 
     .document {
-        @apply flex-col overflow-auto min-h-[calc(100vh-70px)];
+        @apply flex-col overflow-auto;
+    }
+
+    .document-editable {
+        @apply min-h-[calc(100vh-70px)]
     }
 
     .content-container {

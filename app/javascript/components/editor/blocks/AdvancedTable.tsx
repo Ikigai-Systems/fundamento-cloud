@@ -249,18 +249,21 @@ const AdvancedTable = createReactBlockSpec(
                 <ContentTitle table={tableQuery.data.table} extraClasses="text-xl font-bold min-h-0 max-h-6 p-0"/>}
         </div>
 
-        <EditableTableWithRowstack
-          isEditable={editor.isEditable}
-          table={tableQuery.data.table}
-          data={tableQuery.data.data}
-          forceRerenderUuid={tableQuery.data.forceRerenderUuid}
-          initialViewProps={JSON.parse(blockProps.viewProps)}
-          onViewPropsChange={(event) => {
-            setViewProps((prevViewProps) => {
-              return deepmerge(prevViewProps, event);
-            })
-          }}
-        />
+        <div className="min-h-72">
+          <EditableTableWithRowstack
+            isEditable={editor.isEditable}
+            table={tableQuery.data.table}
+            data={tableQuery.data.data}
+            forceRerenderUuid={tableQuery.data.forceRerenderUuid}
+            initialViewProps={JSON.parse(blockProps.viewProps)}
+            onViewPropsChange={(event) => {
+              setViewProps((prevViewProps) => {
+                return deepmerge(prevViewProps, event);
+              })
+            }}
+          />
+        </div>
+
       </div>);
     },
   }

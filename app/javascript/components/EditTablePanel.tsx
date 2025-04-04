@@ -36,7 +36,7 @@ const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
         <TableTitleInput table={table} space={space}/>
       </div>
 
-      <div className="content-editor-padding">
+      <div className="content-editor-padding min-h-72">
         {!isLoading && !isError && <EditableTableWithRowstack table={tableQuery.data.table} data={tableQuery.data.data} forceRerenderUuid={tableQuery.data.forceRerenderUuid}/>}
       </div>
     </div>

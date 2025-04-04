@@ -1,10 +1,10 @@
-ObjectReference = Struct.new(:object_title, :object_path, :object_type, :object_npi, :reference_id, :referenced_by, :created_at)
+ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :object_path, :object_title)
 
 class ReferencesExtractor
-  extend Rails.application.routes.url_helpers
-
   def self.all_references(documents)
-    all_references_by_id = Hash.new
+    # We only return single reference for every object that references it
+    # so they key is [referenced_by, object_type, object_npi]
+    unique_references = Hash.new
 
     documents.each do |document|
       Sentry.set_context(
@@ -23,14 +23,11 @@ class ReferencesExtractor
 
         references = references_from_blocknote(version.content)
         references.each do |reference|
-          unless all_references_by_id.has_key?([version, reference[:object_path]])
-            all_references_by_id[reference] = ObjectReference.new(
+          unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
+            unique_references[reference] = ObjectReference.new(
               referenced_by: document,
-              created_at: version.created_at,
               object_type: reference[:object_type],
               object_npi: reference[:object_npi],
-              object_title: reference[:object_title],
-              object_path: reference[:object_path]
             )
           end
         end
@@ -46,32 +43,21 @@ class ReferencesExtractor
 
         references = references_from_blocknote(comment.content)
         references.each do |reference|
-          unless all_references_by_id.has_key?([comment, reference[:object_path]])
-            all_references_by_id[reference] = ObjectReference.new(
-              referenced_by: comment,
-              created_at: comment.created_at,
+          unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
+            unique_references[reference] = ObjectReference.new(
+              referenced_by: document,
               object_type: reference[:object_type],
               object_npi: reference[:object_npi],
-              object_title: reference[:object_title],
-              object_path: reference[:object_path]
             )
           end
         end
       end
     end
 
-    all_references_by_id.values
+    unique_references.values
   end
 
   private
-
-  def self.url_options
-    Rails.application.config.action_mailer.default_url_options
-  end
-
-  def self.optimize_routes_generation?
-    true
-  end
 
   def self.references_from_blocknote(blocknote_document)
     assert blocknote_document.is_a?(Array), "BlockNote document should be an Array"
@@ -93,13 +79,9 @@ class ReferencesExtractor
           next if object_npi.blank?
 
           all_references.push({
-            reference_id: mention_id,
+            id: mention_id,
             object_type: object_type.upcase_first,
             object_npi: object_npi,
-            object_path:
-              object_type == "table" ?
-                table_path(object_npi) :
-                document_path(object_npi, anchor: "mention-#{mention_id}")
           })
         elsif block.dig("type") == "advancedTable"
           object_npi = block.dig("props", "tableNpi") || block.dig("props", "tableId")
@@ -107,10 +89,9 @@ class ReferencesExtractor
           next if object_npi.blank?
 
           all_references.push({
-            reference_id: block["id"],
+            id: block["id"],
             object_type: Table.to_s,
-            object_id: object_npi,
-            object_path: table_path(object_npi)
+            object_npi: object_npi,
           })
         end
       end
