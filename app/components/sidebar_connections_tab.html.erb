@@ -9,8 +9,10 @@
 
     <% @incoming.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
-        <%= link_to reference.referenced_by.title, reference.referenced_by %>
-        <%= time_ago_in_words reference.created_at %>
+        <%= render ObjectIcon.new(type: reference.object_type) %>
+        <div class="text-base truncate">
+          <%= link_to reference.referenced_by.title, reference.referenced_by %>
+        </div>
       </div>
     <% end %>
 
@@ -23,8 +25,10 @@
 
     <% @outgoing.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
-        <%= link_to reference.object_title, reference.object_path %>
-        <%= time_ago_in_words reference.created_at %>
+        <%= render ObjectIcon.new(type: reference.object_type) %>
+        <div class="text-base truncate">
+          <%= link_to reference.object_title, reference.object_path %>
+        </div>
       </div>
     <% end %>
 
