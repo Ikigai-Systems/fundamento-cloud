@@ -23,6 +23,10 @@
           Visitors
         </button>
 
+        <button id="connections" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-chart-network"></i>
+          Connections
+        </button>
       </nav>
     </div>
 
@@ -40,6 +44,12 @@
 
     <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "visitors_sidebar_tab", loading: "lazy", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :visitors) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden max-h-0">
+      <%= turbo_frame_tag "connections_sidebar_tab", loading: "lazy", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :connections) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
