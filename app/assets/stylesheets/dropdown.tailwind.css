@@ -7,8 +7,8 @@
 
     .dropdown-container [data-dropdown-target="menuItem"] {
         @apply no-underline block pl-4 py-2 whitespace-nowrap w-full text-left;
-        @apply text-gray-900 hover:bg-gray-100 focus:ring-inset focus:ring-2 focus:ring-gray-300;
-        @apply dark:text-white dark:hover:bg-gray-500 dark:focus:ring-gray-400;
+        @apply text-gray-900 hover:bg-gray-100 focus:ring-inset focus:ring-1 focus:ring-gray-300;
+        @apply dark:text-white dark:hover:bg-gray-500 dark:focus:ring-white;
     }
 
     .dropdown-container button:disabled[data-dropdown-target="menuItem"],
