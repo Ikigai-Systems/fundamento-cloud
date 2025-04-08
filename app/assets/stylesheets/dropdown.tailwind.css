@@ -2,7 +2,7 @@
     .dropdown-container {
         @apply text-sm shadow-lg rounded border overflow-hidden;
         @apply bg-white;
-        @apply dark:bg-gray-700;
+        @apply dark:bg-gray-800;
     }
 
     .dropdown-container [data-dropdown-target="menuItem"] {
@@ -15,7 +15,7 @@
     .dropdown-container span[disabled="disabled"][data-dropdown-target="menuItem"] {
         @apply text-slate-950/40;
         @apply bg-white;
-        @apply dark:bg-gray-900 dark:text-slate-500;
+        @apply dark:bg-gray-700 dark:text-slate-500;
         @apply focus-visible:outline-none;
     }
 

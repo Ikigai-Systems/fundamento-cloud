@@ -61,7 +61,7 @@
 @layer components {
     .top-nav-bar {
         @apply bg-white border-gray-200;
-        @apply dark:border-gray-500 dark:bg-gray-700;
+        @apply dark:border-gray-600 dark:bg-gray-800;
         @apply border-b-2 px-2 py-2.5;
     }
 
@@ -87,7 +87,7 @@
 
     .first-button-group {
         @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
-        @apply dark:bg-gray-700 dark:ring-gray-500 dark:text-white dark:hover:bg-gray-600 dark:hover:text-gray-50
+        @apply dark:bg-gray-800 dark:ring-gray-600 dark:text-white dark:hover:bg-gray-700 dark:hover:text-gray-50
     }
 
     .primary-button {
