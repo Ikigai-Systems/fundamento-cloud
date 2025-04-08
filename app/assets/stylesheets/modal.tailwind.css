@@ -8,11 +8,11 @@
     }
 
     .modal-subtitle {
-        @apply text-sm text-gray-500;
+        @apply text-sm text-gray-500 dark:text-gray-400;
     }
 
     .modal-icon-container {
-        @apply mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10;
+        @apply mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10;
     }
 
     .modal-main-content-container {
