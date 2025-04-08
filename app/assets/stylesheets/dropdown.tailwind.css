@@ -13,9 +13,8 @@
 
     .dropdown-container button:disabled[data-dropdown-target="menuItem"],
     .dropdown-container span[disabled="disabled"][data-dropdown-target="menuItem"] {
-        @apply text-slate-950/40;
-        @apply bg-white;
-        @apply dark:bg-gray-700 dark:text-slate-500;
+        @apply text-slate-950/40 bg-white cursor-not-allowed;
+        @apply dark:bg-gray-800 dark:text-slate-500;
         @apply focus-visible:outline-none;
     }
 
