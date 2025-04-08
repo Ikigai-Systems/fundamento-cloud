@@ -4,7 +4,7 @@
     }
 
     .modal-title {
-        @apply text-base font-semibold text-gray-900;
+        @apply text-base font-semibold text-gray-900 dark:text-gray-50;
     }
 
     .modal-subtitle {
