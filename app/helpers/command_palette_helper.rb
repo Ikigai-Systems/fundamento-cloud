@@ -1,8 +1,16 @@
 module CommandPaletteHelper
   def command_palette(**args)
-    tag("ninja-keys", data: {
+    ninja_keys_tag = tag("ninja-keys", data: {
       controller: "command-palette",
       command_palette_commands_value: palette_commands
     })
+    ninja_keys_init_theme_js = javascript_tag <<~EOF
+      window.onload = function() {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.querySelector("ninja-keys").classList.toggle("dark");
+        }
+      }
+    EOF
+    ninja_keys_tag + ninja_keys_init_theme_js
   end
 end
