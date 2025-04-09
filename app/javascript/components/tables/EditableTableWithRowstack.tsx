@@ -104,7 +104,7 @@ const extraColumnHeaderPopupActions = [{
     }
 
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
@@ -125,7 +125,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
@@ -141,7 +141,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--clock]"></div>
@@ -157,7 +157,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
@@ -173,7 +173,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
@@ -189,7 +189,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
@@ -204,7 +204,7 @@ const extraColumnHeaderPopupActions = [{
     const {space, table} = useContext(EditableTableContext);
 
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
           const spaceNpi = space.npi;
           const tableNpi = table.npi;
@@ -226,7 +226,7 @@ const extraColumnHeaderPopupActions = [{
     const {space, table} = useContext(EditableTableContext);
 
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
           const spaceNpi = space.npi;
           const tableNpi = table.npi;
@@ -249,7 +249,7 @@ const extraColumnHeaderPopupActions = [{
       return null;
     }
     return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-neutral-50 cursor-default"
+      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
@@ -297,6 +297,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
           columns={columns}
           data={rows}
           config={{
+            theme: {color: window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light"},
             addRow: {enabled: isEditable},
             addColumn: {enabled: isEditable},
             editColumns: {enabled: isEditable},

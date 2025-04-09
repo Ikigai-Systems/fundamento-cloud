@@ -80,31 +80,26 @@ function EditFormulaPopup({
           <div>
             {previewIsLoading && <Spinner size={4}/>}
             {!previewIsLoading && !previewResponse.error && '= ' + previewResponse.result}
-            {!previewIsLoading && previewResponse.error && <span className="text-red-600">{previewResponse.error}</span>}
+            {!previewIsLoading && previewResponse.error && <span className="text-red-600 dark:text-red-400">{previewResponse.error}</span>}
           </div>
         </div>
         <div className="flex flex-row items-center">
           <div className="border-l ml-2 px-2">
             Row {1 + previewRow} of {rows.length}
           </div>
-          <div className="flex items-center justify-center size-6 hover:bg-neutral-200 active:bg-neutral-300"
+          <div className="flex items-center justify-center size-6 hover:bg-neutral-200 dark:hover:bg-gray-600 active:bg-neutral-300 dark:active:bg-gray-500"
             onClick={() => {
               setPreviewRow(previewValue => (previewValue + 1) % rows.length);
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-down]"></div>
           </div>
-          <div className="flex items-center justify-center size-6 hover:bg-neutral-200 active:bg-neutral-300"
+          <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 dark:hover:bg-gray-600 active:bg-neutral-300 dark:active:bg-gray-500"
             onClick={() => {
               setPreviewRow(previewRow => (rows.length + previewRow - 1) % rows.length);
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-up]"></div>
-          </div>
-          <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 active:bg-neutral-300"
-            title="mockup, work in progress"
-          >
-            <div className="size-4 icon-[heroicons--arrows-pointing-out]"></div>
           </div>
         </div>
       </div>

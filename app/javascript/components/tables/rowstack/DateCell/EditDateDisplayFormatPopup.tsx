@@ -41,7 +41,7 @@ function EditDateDisplayFormatPopup({
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
-      <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs">
+      <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs`">
         Display format
       </div>
       <div className="h-64 overflow-y-auto">

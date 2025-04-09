@@ -16,9 +16,18 @@
     .fundamento-react-select-container .fundamento-react-select__option {
         @apply text-gray-600 dark:text-gray-200 bg-white hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-gray-700;
     }
-    /* .fundamento-react-select-container .fundamento-react-select__option--is-focused {
-      @apply bg-gray-200 dark:bg-gray-800;
-    } */
+
+    .fundamento-react-select-container .fundamento-react-select__multi-value {
+        @apply bg-white hover:bg-blue-50 dark:bg-gray-800 dark:hover:bg-gray-700 border;
+    }
+
+    .fundamento-react-select-container .fundamento-react-select__multi-value__label {
+        @apply text-gray-600 dark:text-gray-200;
+    }
+
+    .fundamento-react-select-container .fundamento-react-select__multi-value__remove {
+        @apply dark:hover:bg-red-800 dark:hover:text-red-400;
+    }
 
     .fundamento-react-select-container .fundamento-react-select__indicator {
         @apply dark:text-gray-400 dark:hover:text-gray-200;
