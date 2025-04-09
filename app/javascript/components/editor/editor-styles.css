@@ -27,3 +27,13 @@
     outline: none !important;
 }
 */
+
+
+@media (prefers-color-scheme: dark) {
+    .ProseMirror-selectednode .bn-file-name-with-icon {
+        background-color: rgb(75 85 99); /* bg-gray-400 */
+    }
+    .ProseMirror-selectednode .bn-file-name-with-icon:hover {
+        background-color: rgb(107 114 128); /* bg-gray-500 */
+    }
+}
