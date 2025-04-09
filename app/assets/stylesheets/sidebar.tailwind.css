@@ -37,7 +37,7 @@
             }
 
             .content-link-container.archived {
-                @apply text-slate-400;
+                @apply text-slate-400 dark:text-gray-600;
             }
 
             .content-link-container.selected {
