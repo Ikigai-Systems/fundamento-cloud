@@ -139,6 +139,8 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
 
         <div className="mb-48">
           <AsyncSelect
+            className="fundamento-react-select-container"
+            classNamePrefix="fundamento-react-select"
             isDisabled={isCreating || !editor.isEditable}
             cacheOptions
             defaultOptions

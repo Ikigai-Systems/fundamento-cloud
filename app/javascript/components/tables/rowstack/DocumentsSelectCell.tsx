@@ -77,6 +77,8 @@ function DocumentsSelectCell({
     return (
       <div className="-mt-1">
         <AsyncSelect
+          className="fundamento-react-select-container"
+          classNamePrefix="fundamento-react-select"
           menuIsOpen={true}
           autoFocus
           cacheOptions
@@ -100,14 +102,6 @@ function DocumentsSelectCell({
 
             setData(join(documentNpis));
             setFocus("focused");
-          }}
-          styles={{
-            input: (base) => ({
-              ...base,
-              "input:focus": {
-                boxShadow: "none",
-              },
-            }),
           }}
         />
       </div>

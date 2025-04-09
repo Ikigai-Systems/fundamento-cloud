@@ -154,7 +154,6 @@ const ButtonInlineContent = createReactInlineContentSpec(
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="bg-neutral-100"
             >
               <ButtonConfiguration
                 configuration={editedConfiguration}

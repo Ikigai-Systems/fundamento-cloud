@@ -10,6 +10,7 @@
 @import "./reactions.tailwind.css";
 @import "./mentions.tailwind.css";
 @import "./popover.tailwind.css";
+@import "./react-select.tailwind.css";
 
 @tailwind base;
 @tailwind components;

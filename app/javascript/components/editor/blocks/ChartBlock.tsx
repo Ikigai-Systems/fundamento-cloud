@@ -97,7 +97,7 @@ const ChartBlock = createReactBlockSpec(
 
       if (tableNpi === "") {
         return (
-          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+          <div className="divide-y divide-gray-200 dark:divide-gray-600 rounded-lg bg-white dark:!bg-gray-800 text-slate-800 dark:text-white shadow border dark:border-gray-600 min-w-[40rem] mx-auto">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
               <div className="font-bold">New chart</div>
               {editor.isEditable && <button
@@ -114,6 +114,8 @@ const ChartBlock = createReactBlockSpec(
 
               <div className="mb-48">
                 <AsyncSelect
+                  className="fundamento-react-select-container"
+                  classNamePrefix="fundamento-react-select"
                   isDisabled={!editor.isEditable}
                   cacheOptions
                   defaultOptions
