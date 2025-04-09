@@ -88,7 +88,7 @@ const ChartBlock = createReactBlockSpec(
 
       if (isLoading) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-slate-400 dark:text-gray-500">
             Loading data source table...
             <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
           </div>
@@ -101,7 +101,7 @@ const ChartBlock = createReactBlockSpec(
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
               <div className="font-bold">New chart</div>
               {editor.isEditable && <button
-                className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                className="flex flex-col items-center p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 onClick={() => {
                   editor.removeBlocks([props.block]);
                 }}
@@ -146,13 +146,13 @@ const ChartBlock = createReactBlockSpec(
 
       if (isError) {
         return (<>
-          <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+          <div className="divide-y divide-gray-200 dark:divide-gray-600 rounded-lg bg-white shadow border min-w-[40rem] mx-auto dark:text-white dark:!bg-gray-800">
             <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
-              <div className="text-red-800 flex items-center justify-center font-bold">
+              <div className="text-red-800 flex items-center justify-center font-bold dark:text-red-400">
                 Unable to load table with id {tableNpi}
               </div>
               <button
-                className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                className="flex flex-col items-center p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 onClick={() => {
                   editor.removeBlocks([props.block]);
                 }}
@@ -165,6 +165,8 @@ const ChartBlock = createReactBlockSpec(
 
               <div className="mb-48">
                 <AsyncSelect
+                  className="fundamento-react-select-container"
+                  classNamePrefix="fundamento-react-select"
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
@@ -401,7 +403,11 @@ const ChartBlock = createReactBlockSpec(
           <ReactApexChart
             key={chartType} // to force full rerender upon changing chart type, to avoid ApexChart fancy/broken animations when switching charts
             type={chart.type}
-            options={{...{...chart.options}, ...{id: `${props.block.id}-chart`}}}
+            options={{
+              ...{...chart.options},
+              ...{id: `${props.block.id}-chart`},
+              ...{theme: {mode: window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light"}}}
+            }
             series={chart.series}
           />
         }
