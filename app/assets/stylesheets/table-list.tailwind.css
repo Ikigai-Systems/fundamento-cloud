@@ -28,7 +28,7 @@
     }
 
     .table-list tbody tr {
-        @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600;
+        @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700;
     }
 
     .table-list thead tr th {

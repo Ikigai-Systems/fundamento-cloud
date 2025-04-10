@@ -19,6 +19,15 @@
     cursor: pointer;
 }
 
+@media (prefers-color-scheme: dark) {
+    .multiselect__container {
+        background: url("data:image/svg+xml;utf8,<svg fill='rgb(164,164,164)' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right #ddd;
+        background-color: transparent;
+        border-color: rgb(107 114 128);
+    }
+}
+
+
 .multiselect__no-result {
     color: rgb(112 112 112);
     padding: 0.75rem;
@@ -79,6 +88,14 @@
     display: flex;
 }
 
+@media (prefers-color-scheme: dark) {
+    .multiselect__pill {
+        background-color: rgb(17 24 39); /* bg-gray-900 */
+        color: rgb(249 250 251); /* text-gray-50 */
+        border-color: rgb(75 85 99); /* border-gray-600 */
+    }
+}
+
 .multiselect__pill-delete {
     padding: 0.25rem 0.5rem 0.25rem 0.5rem;
     border-top-right-radius: 0.25rem;
@@ -96,6 +113,18 @@
     fill: rgb(246, 71, 71);
 }
 
+@media (prefers-color-scheme: dark) {
+    .multiselect__pill svg {
+        fill: rgb(229 231 235); /* text-gray-200 */
+    }
+    .multiselect__pill:hover svg{
+        fill: rgb(248 113 113); /* text-red-400 */
+    }
+    .multiselect__pill-delete:hover {
+        background-color: rgb(127 29 29);
+    }
+}
+
 .multiselect__pill-text {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -110,6 +139,12 @@
 
 .multiselect__focused {
     background-color: #f4fbff;
+}
+
+@media (prefers-color-scheme: dark) {
+    .multiselect__focused {
+        background-color: rgb(55 65 81); /* bg-gray-700 */
+    }
 }
 
 .multiselect__placeholder {
@@ -139,8 +174,21 @@
     padding-left: 0.25rem;
 }
 
+@media (prefers-color-scheme: dark) {
+    .multiselect__search {
+        background-color: rgb(55, 65, 81); /* bg-gray-700 */
+        color: rgb(255,255,255); /* text-white */
+    }
+}
+
 .multiselect__search:focus::placeholder {
     color: rgb(112 112 112);
+}
+
+@media (prefers-color-scheme: dark) {
+    .multiselect__search:focus::placeholder {
+        color: rgb(243 244 246); /* text-gray-100 */
+    }
 }
 
 .multiselect__search:disabled {
@@ -148,10 +196,22 @@
     cursor: not-allowed;
 }
 
+@media (prefers-color-scheme: dark) {
+    .multiselect__search:disabled {
+        background-color: rgb(229 231 235); /* bg-gray-200*/
+    }
+}
+
 .multiselect__search::placeholder {
     font-style: italic;
     opacity: 1;
     color: rgb(174 174 174);
+}
+
+@media (prefers-color-scheme: dark) {
+    .multiselect__search::placeholder {
+        color: rgb(156 163 175); /* text-gray-400 */
+    }
 }
 
 .multiselect__list {
@@ -177,6 +237,12 @@
 
 .multiselect__list li:hover {
     background-color: rgb(244 251 255);
+}
+
+@media (prefers-color-scheme: dark) {
+    .multiselect__list li:hover {
+        background-color: rgb(55 65 81); /* bg-gray-700 */
+    }
 }
 
 .multiselect__list li label {
@@ -212,6 +278,13 @@
     margin-top: 0.5rem;
     z-index: 50;
     position: absolute;
+}
+
+@media (prefers-color-scheme: dark) {
+    .multiselect__dropdown {
+        background-color: rgb(31 41 55); /* bg-gray-800 */
+        border-color: rgb(75 85 99); /* border-gray-600 */
+    }
 }
 
 .multiselect__dropdown--open {

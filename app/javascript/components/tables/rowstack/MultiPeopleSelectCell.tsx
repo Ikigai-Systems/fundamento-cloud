@@ -81,6 +81,8 @@ function MultiPeopleSelectCell({
     return (
       <div className="-mt-1">
         <AsyncSelect
+          className="fundamento-react-select-container"
+          classNamePrefix="fundamento-react-select"
           menuIsOpen={true}
           autoFocus
           cacheOptions
@@ -114,11 +116,9 @@ function MultiPeopleSelectCell({
             setFocus("focused");
           }}
           styles={{
-            input: (base) => ({
+            indicatorSeparator: (base) => ({
               ...base,
-              "input:focus": {
-                boxShadow: "none",
-              },
+              display: "none",
             }),
             dropdownIndicator: (base) => ({
               ...base,

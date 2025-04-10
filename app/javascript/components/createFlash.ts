@@ -38,7 +38,7 @@ const createFlash = (options: FlashOptions) => {
       data-transition-leave-from="-left-8"
       data-transition-leave-to="left-96"
       class="w-full flex items-end justify-right [&:nth-child(n+2)]:mt-2 first:mt-10 justify-end z-30 pointer-events-none relative left-96">
-    <div class="max-w-sm w-full relative pointer-events-auto bg-${color}-100 border-t-4 border-${color}-500 rounded-b text-${color}-900 px-4 py-3 shadow-md">
+    <div class="max-w-sm w-full relative pointer-events-auto bg-${color}-100 dark:bg-${color}-800 border-t-4 border-${color}-500 dark:border-${color}-500 rounded-b text-${color}-900 dark:text-${color}-50 px-4 py-3 shadow-md">
       <div class="flex items-start">
         <div class="py-1">
           <svg class="fill-current h-6 w-6 text-<%= color %>-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -52,7 +52,7 @@ const createFlash = (options: FlashOptions) => {
           </p>
         </div>
         <div class="ml-4 flex-shrink-0 flex">
-          <button data-action="alert#close" class="inline-flex text-${color}-500 focus:outline-none focus:text-gray-300 transition ease-in-out duration-150">
+          <button data-action="alert#close" class="inline-flex text-${color}-500 dark:text-${color}-50 focus:outline-none focus:text-gray-300 transition ease-in-out duration-150">
             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>

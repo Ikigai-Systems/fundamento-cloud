@@ -23,7 +23,7 @@
 
     .content-container {
         @apply text-black dark:text-white;
-        @apply bg-white dark:!bg-gray-800;
+        @apply bg-white dark:bg-gray-800;
     }
 }
 

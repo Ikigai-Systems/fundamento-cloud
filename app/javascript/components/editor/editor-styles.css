@@ -6,27 +6,19 @@
 
 /* Simple `code` block */
 .bn-container .bn-editor .bn-inline-content code {
-    background-color: rgb(241 245 249);
-    border: 1px solid rgb(203 213 225);
+    background-color: rgb(241 245 249); /* bg-slate-100 */
+    border: 1px solid rgb(203 213 225); /* border-slate-300 */
     border-radius: 4px;
     color: rgb(51 65 85);
     padding: 0 3px;
 }
-
-/* to make clicking at the right end of block put cursor at the end of it instead of beginning,
-   https://discord.com/channels/928190961455087667/1354211622695993466 */
-.bn-block-content[data-content-type="paragraph"] > .bn-inline-content,
-.bn-block-content[data-content-type="heading"] > .bn-inline-content,
-.bn-block-content[data-content-type="numberedListItem"] > .bn-inline-content,
-.bn-block-content[data-content-type="bulletListItem"] > .bn-inline-content {
-    width: 100%;
+@media (prefers-color-scheme: dark) {
+    .bn-container .bn-editor .bn-inline-content code {
+        background-color: rgb(71 85 105); /* bg-slate-600 */
+        color: rgb(226 232 240); /* text-slate-200 */
+        border: 1px solid rgb(100 116 139); /* border-slate-500 */
+    }
 }
-.bn-block-content[data-content-type="checkListItem"] > div
-{
-    width: 100%;
-}
-/* end-of: to make clicking at the right end of block put cursor at the end of it instead of beginning*/
-
 
 /* uncomment this to make the selected block outline hidden */
 /*
@@ -35,3 +27,13 @@
     outline: none !important;
 }
 */
+
+
+@media (prefers-color-scheme: dark) {
+    .ProseMirror-selectednode .bn-file-name-with-icon {
+        background-color: rgb(75 85 99); /* bg-gray-400 */
+    }
+    .ProseMirror-selectednode .bn-file-name-with-icon:hover {
+        background-color: rgb(107 114 128); /* bg-gray-500 */
+    }
+}

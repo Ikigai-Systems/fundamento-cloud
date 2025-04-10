@@ -1,5 +1,5 @@
 <% content_for :focused_content do %>
-  <div class="bg-white overflow-auto">
+  <div class="bg-white dark:!bg-gray-800 overflow-auto">
     <%= react_component "PublicDocumentViewer", {
       document: document.to_react_props,
       version: version.attributes.except("id"),
