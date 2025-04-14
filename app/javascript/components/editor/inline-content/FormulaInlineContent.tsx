@@ -113,7 +113,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       let displayResult = <span>[]</span>;
 
       if (formulaResult?.error) {
-        displayResult = <span className="text-red-500">{formulaResult.error}</span>
+        displayResult = <span className="text-red-500 dark:text-red-500">{formulaResult.error}</span>
       } else if (formulaResult?.result !== undefined) {
         displayResult = <span className={clsx({"max-w-[calc(100%_-_18px)]": isEditable})}>{JSON.stringify(formulaResult.result)}</span>
       } else if (formulaResult?.commands?.length > 0) {
@@ -140,7 +140,6 @@ const FormulaInlineContent = createReactInlineContentSpec(
               ref={refs.setFloating}
               style={floatingStyles}
               {...getFloatingProps()}
-              className="bg-neutral-100"
             >
               <FormulaConfiguration
                 configuration={editedConfiguration}

@@ -16,7 +16,7 @@ export const BlockTitle = ({defaultValue, onChange, placeholder, isEditable = tr
       disabled={!isEditable}
       placeholder={placeholder || "Untitled"}
       defaultValue={defaultValue}
-      className="text-xl font-bold min-h-0 max-h-6 mt-0 p-0 mb-1 border-0 focus:[box-shadow:none]"
+      className="text-xl font-bold min-h-0 max-h-6 mt-0 p-0 mb-1 border-0 focus:[box-shadow:none] dark:bg-gray-800"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           if (e.target instanceof HTMLElement) {

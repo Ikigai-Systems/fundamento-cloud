@@ -58,6 +58,6 @@
   <% end %>
 </section>
 
-<div class="mt-10 text-center text-sm text-gray-500">
+<div class="mt-10 text-center text-sm text-gray-500 dark:text-gray-400">
   Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), form: { data: { turbo_confirm: "Are you sure? Your user account will be immediately removed and you will be signed out!" }, class: "inline-block" }, method: :delete %>
 </div>

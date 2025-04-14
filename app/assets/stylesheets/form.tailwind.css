@@ -1,6 +1,6 @@
 @layer components {
     .form-errors-summary {
-        @apply mt-3 bg-red-100 border-l-4 border-red-500 mb-4 p-4 text-red-700;
+        @apply mt-3 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 dark:border-red-600 mb-4 p-4 text-red-700 dark:text-red-50;
     }
 
     .form-section {
@@ -14,13 +14,13 @@
     .form-submit {
         @apply button;
         @apply text-white bg-gray-700 hover:enabled:bg-gray-600 focus:bg-gray-600;
-        @apply dark:bg-gray-500 dark:hover:enabled:bg-gray-400 dark:focus:bg-gray-400;
+        @apply dark:bg-gray-200 dark:hover:enabled:bg-gray-100 dark:focus:bg-gray-100 dark:text-gray-900;
         @apply transition-colors duration-200 transform focus:outline-none;
     }
 
     .form-input {
         @apply block shadow rounded-md border border-gray-200 outline-none px-3 py-2 mt-2 w-full;
-        @apply dark:bg-gray-700;
+        @apply dark:bg-gray-700 dark:border-gray-500;
     }
 
     .form-field {
@@ -33,7 +33,7 @@
 
     .default-form {
         .form-hint {
-            @apply mt-3 text-sm text-slate-500;
+            @apply mt-3 text-sm text-slate-500 dark:text-gray-300;
         }
 
         .form-field {
@@ -47,7 +47,7 @@
 
             .field_with_errors {
                 label {
-                    @apply text-red-700;
+                    @apply text-red-700 dark:text-red-500;
                 }
             }
         }

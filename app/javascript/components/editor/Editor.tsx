@@ -94,7 +94,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
     }
 
     ydoc = new Y.Doc();
-    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.id.toString()}`, ydoc);
+    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.npi}`, ydoc);
 
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";

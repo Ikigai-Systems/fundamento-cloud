@@ -51,7 +51,7 @@ function DateTimeCell({
           </div>
         )}
         {(focusState === "editing" && !isViewOnly) && (
-          <input autoFocus aria-label="Date and time" type="datetime-local" className="h-full w-full focus:ring-0"
+          <input autoFocus aria-label="Date and time" type="datetime-local" className="h-full w-full focus:ring-0 dark:bg-gray-800"
             value={dayjs(parsedDate).format("YYYY-MM-DDThh:mm")}
             onChange={(e) => {
               const storedDate = tableConfiguration.formatStoredDate(e.target.value, columnConfiguration);

@@ -75,6 +75,8 @@ function PeopleSelectCell({
     return (
       <div className="-mt-1">
         <AsyncSelect
+          className="fundamento-react-select-container"
+          classNamePrefix="fundamento-react-select"
           menuIsOpen={true}
           autoFocus
           cacheOptions
@@ -107,14 +109,6 @@ function PeopleSelectCell({
           onChange={(newOption) => {
             setData(newOption.value);
             setFocus("focused");
-          }}
-          styles={{
-            input: (base) => ({
-              ...base,
-              "input:focus": {
-                boxShadow: "none",
-              },
-            }),
           }}
         />
       </div>

@@ -28,7 +28,7 @@
 
       <%= link_to "API Tokens", user_api_tokens_path(current_user), data: {"dropdown-target" => "menuItem"} %>
 
-      <hr class="border-t" />
+      <hr class="border-t dark:border-gray-500" />
 
       <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"}  %>
     </div>

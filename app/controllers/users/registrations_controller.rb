@@ -20,6 +20,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def sign_up_with_google
+    redirect_to new_user_registration_path
+  end
+
   protected
 
   def configure_permitted_parameters

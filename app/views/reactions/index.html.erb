@@ -29,7 +29,7 @@
     %>
       <%= f.hidden_field :emoji, data: { emoji_picker_target: "emojiInput" }, onchange: "this.form.requestSubmit()" %>
 
-      <button class="create-reaction-button" data-action="click->emoji-picker#showPicker">
+      <button class="create-reaction-button dark:text-gray-300" data-action="click->emoji-picker#showPicker">
         <i class="fa-sharp fa-solid fa-face-awesome"></i>
       </button>
 

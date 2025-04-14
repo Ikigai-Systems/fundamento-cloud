@@ -21,7 +21,7 @@
       <div class="form-field">
         <%= f.label :encrypted_token, "API Token" %>
         <div class="flex flex-row items-center gap-2">
-          <%= f.text_field :encrypted_token, autofocus: true, read_only: true, class: "form-input mt-0 h-10" %>
+          <%= f.text_field :encrypted_token, autofocus: true, readonly: true, class: "form-input mt-0 h-10" %>
           <button type="button" title="Copy to clipboard" class="secondary-button px-2 shadow-md h-10"
                   data-controller="clipboard" data-clipboard-success-content-value="Copied!" data-clipboard-target="button"
                   data-action="clipboard#copy">
@@ -36,7 +36,7 @@
     <% end %>
 
     <% content_for :modal_buttons do %>
-      <button type="button" data-action="modal#close" class="modal-cancel-button">Close</button>
+      <button type="button" data-action="modal#close" class="modal-submit-button form-submit">Close</button>
     <% end %>
 
     <%= render template: "application/components/modal_content" %>

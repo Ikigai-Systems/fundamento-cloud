@@ -48,11 +48,11 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
   const [isCreating, setIsCreating] = useState(false);
 
   return (
-    <div className="divide-y divide-gray-200 rounded-lg bg-white shadow border min-w-[40rem] mx-auto">
+    <div className="divide-y divide-gray-200 dark:divide-gray-600 rounded-lg bg-white dark:!bg-gray-800 text-slate-800 dark:text-white shadow border dark:border-gray-600 min-w-[40rem] mx-auto">
       <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
         <div className="font-bold">New table</div>
         <button
-          className="flex flex-col items-center p-1 rounded-md transition-all hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          className="flex flex-col items-center p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 active:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
           onClick={() => {
             editor.removeBlocks([block]);
           }}
@@ -139,6 +139,8 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
 
         <div className="mb-48">
           <AsyncSelect
+            className="fundamento-react-select-container"
+            classNamePrefix="fundamento-react-select"
             isDisabled={isCreating || !editor.isEditable}
             cacheOptions
             defaultOptions
@@ -222,7 +224,7 @@ const AdvancedTable = createReactBlockSpec(
 
       if (isLoading) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center">
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-slate-400 dark:text-gray-500">
             Loading table...
             <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
           </div>
@@ -235,9 +237,9 @@ const AdvancedTable = createReactBlockSpec(
 
       if (isError) {
         return (
-          <div
-            className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800">Unable
-            to load table with id {tableNpi}</div>
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800 dark:text-red-400">
+            Unable to load table with id {tableNpi}
+          </div>
         )
       }
 
