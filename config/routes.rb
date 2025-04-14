@@ -36,6 +36,8 @@ Rails.application.routes.draw do
   get "/recently_updated" => "root#recently_updated", as: :recently_updated
   get "/notifications" => "root#notifications", as: :notifications
 
+  get "/sign_up_with_google" => 'users/sign_up_with_google#sign_up_with_google', as: :sign_up_with_google
+
   # We use `defaults export: true` here to export routes to app/javascript/api,
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
   defaults export: true do
