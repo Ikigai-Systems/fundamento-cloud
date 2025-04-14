@@ -99,9 +99,8 @@ class ApplicationController < ActionController::Base
       return 0.0 if current_user.email.ends_with? "@marketerhub.com"
       return 0.0 if current_user.email.include? "romantyczny"
       return 0.0 if current_user.email.include? "niewiadom"
-    else
-      return 0.0 if ["46.175.224.203", "188.124.180.235", "89.64.16.193", "78.30.66.158", "37.31.148.78", "78.30.66.0"].include? request.remote_ip
     end
+    return 0.0 if ["46.175.224.203", "188.124.180.235", "89.64.16.193", "78.30.66.158", "37.31.148.78", "78.30.66.0"].include? request.remote_ip
     1.0
   end
 end
