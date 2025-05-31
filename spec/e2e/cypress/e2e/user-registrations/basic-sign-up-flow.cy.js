@@ -7,8 +7,8 @@ describe('Basic features work', function() {
     cy.get('input[name="user[first_name]"]').type("Pawel");
     cy.get('input[name="user[last_name]"]').type("Nowak");
     cy.get('input[name="user[email]"]').type("pawel.nowak@random.pl");
-    cy.get('input[name="user[password]"]').type("password");
-    cy.get('input[name="user[password_confirmation]"]').type("password");
+    cy.get('input[name="user[password]"]').type("Password123!");
+    cy.get('input[name="user[password_confirmation]"]').type("Password123!");
     cy.get('input[type=submit]').click();
 
     cy.contains('Create organization');
@@ -28,7 +28,7 @@ describe('Basic features work', function() {
     cy.visit("/");
 
     cy.get('input[name="user[email]"]').type("pawel.nowak@random.pl");
-    cy.get('input[name="user[password]"]').type("password");
+    cy.get('input[name="user[password]"]').type("Password123!");
     cy.get('input[type=submit]').click();
   });
 
