@@ -2,12 +2,12 @@
 
 pawel:
   email: pawel@ikigai.systems
-  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password123!') %>
 
 stefan:
   email: stefan@ikigai.systems
-  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password123!') %>
 
 maria:
   email: maria@ikigai.systems
-  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'Password123!') %>

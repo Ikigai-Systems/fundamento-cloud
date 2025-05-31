@@ -8,7 +8,7 @@ RSpec.describe "DeviseSessions" do
   describe "POST /users/sign_in" do
     context "with valid credentials" do
       it "logs the user in" do
-        post user_session_path, params: { user: { email: user.email, password: "password" } }
+        post user_session_path, params: { user: { email: user.email, password: "Password123!" } }
 
         expect(response).to redirect_to(root_path)
         expect(controller.current_user).to eq(user)
