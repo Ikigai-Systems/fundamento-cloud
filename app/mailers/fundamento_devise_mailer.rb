@@ -1,10 +1,10 @@
 class FundamentoDeviseMailer < Devise::Mailer
-  before_action :add_inline_attachment!
+  before_action :add_inline_attachment!, only: [:invitation_instructions]
 
   protected
 
   def subject_for(key)
-    return super  unless key == :invitation_instructions
+    return super unless key == :invitation_instructions
 
     "#{resource.invited_by.display_name} invited you to #{resource.organization.name}, an organization on Fundamento."
   end
