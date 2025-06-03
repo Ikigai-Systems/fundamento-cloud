@@ -1,6 +1,6 @@
+import { default as default_2 } from 'react';
 import { EVALUATION_LICENSE } from '../utils/license.js';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { default as React_2 } from 'react';
 
 declare interface AddRowConfig {
     enabled: boolean;
@@ -22,8 +22,8 @@ export declare interface Column {
 
 export declare interface ColumnType {
     type: ColumnTypeKey | string;
-    cell: React_2.ElementType;
-    icon: React_2.ElementType;
+    cell: default_2.ElementType;
+    icon: default_2.ElementType;
     name: string;
 }
 
@@ -83,8 +83,8 @@ export { Option_2 as Option }
 
 export declare interface PopupAction {
     section: "main" | "actions1" | "actions2";
-    menuItem: React_2.ReactNode;
-    popup?: React_2.ReactNode;
+    menuItem: default_2.ReactNode;
+    popup?: default_2.ReactNode;
 }
 
 declare function Table({ data, columns, onChange, config, licenseKey, }: {
@@ -101,7 +101,7 @@ export declare interface ThemeConfig {
 }
 
 declare interface ToolbarItem {
-    render: React_2.ReactNode;
+    render: default_2.ReactNode;
 }
 
 export { }

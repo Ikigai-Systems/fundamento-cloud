@@ -14,4 +14,10 @@ class DeviseMailerPreview < ActionMailer::Preview
 
     FundamentoDeviseMailer.invitation_instructions(invited_user, token)
   end
+
+  def reset_password_instructions
+    token = "dummy_token"
+
+    FundamentoDeviseMailer.reset_password_instructions(User.first, token)
+  end
 end
