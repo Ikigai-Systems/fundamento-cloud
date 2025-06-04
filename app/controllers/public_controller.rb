@@ -1,7 +1,6 @@
 class PublicController < ApplicationController
   include HeadersForPublicDocuments
 
-  skip_before_action :authenticate_user!
   skip_before_action :ensure_organization_exists
   skip_before_action :select_current_organization
   skip_before_action :load_current_organization_from_cookie
