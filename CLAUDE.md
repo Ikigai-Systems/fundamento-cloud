@@ -10,9 +10,11 @@ bin/dev
 ```
 This runs the full development stack via Foreman with:
 - Rails app on port 3000
-- Vite dev server on port 3036  
-- Background job processor
 - Formula evaluation micro-service on port 3001
+- Rails API server on port 3002
+- Vite dev server on port 3036
+- Good Job to process background jobs
+
 
 ### Running Tests
 ```bash
