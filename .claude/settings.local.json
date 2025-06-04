@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(rails --help)",
+      "Bash(bundle exec rails:*)",
+      "Bash(bundle exec rspec:*)"
+    ],
+    "deny": []
+  }
+}
