@@ -2,8 +2,8 @@ Rails.application.routes.draw do
   devise_for :superintendent
 
   devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    passwords: 'users/passwords',
+    registrations: "users/registrations",
+    passwords: "users/passwords",
     sessions: "users/sessions"
   }
 
@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   }
 
   # Add in our Websocket route
-  mount ActionCable.server => '/cable'
+  mount ActionCable.server => "/cable"
 
   # Add GoodJob's dashboard - https://github.com/bensheldon/good_job?tab=readme-ov-file#dashboard
   authenticate :superintendent do
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
   get "/recently_updated" => "root#recently_updated", as: :recently_updated
   get "/notifications" => "root#notifications", as: :notifications
 
-  get "/sign_up_with_google" => 'users/sign_up_with_google#sign_up_with_google', as: :sign_up_with_google
+  get "/sign_up_with_google" => "users/sign_up_with_google#sign_up_with_google", as: :sign_up_with_google
 
   # We use `defaults export: true` here to export routes to app/javascript/api,
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
@@ -100,7 +100,7 @@ Rails.application.routes.draw do
     get "/public/:npi" => "public#show"
     get "/public/attachments/:id" => "public#attachment"
 
-    post '/formulas/eval', to: "formulas#eval"
+    post "/formulas/eval", to: "formulas#eval"
 
     resource :search, only: [:show]
   end
@@ -132,7 +132,7 @@ Rails.application.routes.draw do
   end
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
-  get '/api/v1/attachments/:id', to: 'attachments#show'
+  get "/api/v1/attachments/:id", to: "attachments#show"
 
   # TODO: remove those after some time
   get "/spaces/:space_npi/documents/:npi", to: "documents#show"
