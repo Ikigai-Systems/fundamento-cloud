@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_03_25_174054) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_04_165934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -356,6 +356,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_03_25_174054) do
     t.bigint "updated_by_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "allowed_emails", default: [], array: true
     t.index ["npi"], name: "index_public_links_on_npi", unique: true
     t.index ["object_id", "object_type", "organization_id"], name: "idx_on_object_id_object_type_organization_id_771a32f229", unique: true
     t.index ["object_type", "object_id"], name: "index_public_links_on_object"
