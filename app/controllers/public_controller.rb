@@ -1,6 +1,8 @@
 class PublicController < ApplicationController
   include HeadersForPublicDocuments
 
+  before_action :store_user_location!, if: :storable_location?
+
   skip_before_action :ensure_organization_exists
   skip_before_action :select_current_organization
   skip_before_action :load_current_organization_from_cookie
@@ -33,5 +35,17 @@ class PublicController < ApplicationController
       # Otherwise, we don't allow access to the attachment
       head :unauthorized
     end
+  end
+
+  private
+
+  # Store current location so user can be redirected back after authentication
+  def store_user_location!
+    store_location_for(:user, request.fullpath)
+  end
+
+  # Don't store location for non-GET requests or AJAX requests
+  def storable_location?
+    request.get? && is_navigational_format? && !devise_controller? && !request.xhr? && current_user.nil?
   end
 end
