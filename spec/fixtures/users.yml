@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 pawel:
+  first_name: Pawel
+  last_name: Wiadomski
   email: pawel@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
 
 stefan:
+  first_name: Stefan
+  last_name: Piotrowski
   email: stefan@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
 
 maria:
+  first_name: Maria
+  last_name: Awaria
   email: maria@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
