@@ -1,12 +1,6 @@
 Rails.application.routes.draw do
   devise_for :superintendent
 
-  devise_for :accounts, controllers: {
-    registrations: "users/registrations",
-    passwords: "users/passwords",
-    sessions: "users/sessions"
-  }
-
   devise_for :users, controllers: {
     registrations: "users/registrations",
     passwords: "users/passwords",
