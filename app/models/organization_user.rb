@@ -20,8 +20,8 @@ class OrganizationUser < ApplicationRecord
   delegate :initials, to: :user
 
   delegate :email, :email=, to: :user
-  # delegate :first_name, :first_name=, to: :user
-  # delegate :last_name, :last_name=, to: :user
+  delegate :first_name, :first_name=, to: :user
+  delegate :last_name, :last_name=, to: :user
   # delegate :password, :password=, to: :user
   # delegate :password_confirmation, :password_confirmation=, to: :user
 
