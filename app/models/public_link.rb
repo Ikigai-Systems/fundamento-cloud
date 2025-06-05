@@ -15,7 +15,7 @@ class PublicLink < ApplicationRecord
   before_validation :normalize_allowed_emails
   validate :validate_allowed_emails_format
 
-  # Return empty array when allowed_emails is nil or empty
+  # Return an empty array when allowed_emails is nil or empty
   def allowed_emails
     super&.compact&.reject(&:blank?) || []
   end
