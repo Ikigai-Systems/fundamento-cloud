@@ -34,7 +34,12 @@
 
   <% if policy(public_link.object.space).update? %>
     <div class="mt-5 inline-flex">
-      <%= button_to "Refresh", public_link_path(public_link), method: :patch, form: { data: { turbo_confirm: "Are you sure? Previous public link will stop working immediately!" } }, class: "secondary-button mr-2" %>
+      <%= button_to "Refresh",
+        public_link_path(public_link),
+        params: { refresh: true },
+        method: :patch,
+        form: { data: { turbo_confirm: "Are you sure? Previous public link will stop working immediately!" } },
+        class: "secondary-button mr-2" %>
 
       <%= button_to "Delete", public_link_path(public_link), method: :delete, form: { data: { turbo_confirm: "Are you sure? Public link will be removed immediately!" } }, class: "secondary-button" %>
     </div>
