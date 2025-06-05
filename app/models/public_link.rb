@@ -20,6 +20,10 @@ class PublicLink < ApplicationRecord
     super&.compact&.reject(&:blank?) || []
   end
 
+  def allowed_users
+    User.where(email: allowed_emails)
+  end
+
   private
 
   def normalize_allowed_emails
