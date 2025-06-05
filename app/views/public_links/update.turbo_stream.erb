@@ -1,5 +1,5 @@
 <%= turbo_stream.replace(@public_link, partial: "public_links/public_link", locals: { public_link: @public_link }) %>
 
-<%= turbo_stream.update "document_share_dropdown", partial: "public_links/share_button", locals: { public_link: @public_link } %>
+<%= turbo_stream.update "document_share_dropdown", partial: "public_links/edit_form", locals: { public_link: @public_link } %>
 
 <%= turbo_stream.replace "document_share_button", partial: "public_links/document_share_button", locals: { public_link_exists: true } %>
