@@ -9,23 +9,36 @@
         <%= url_for(controller: "public", action: "show", npi: public_link.npi, host: request.host, protocol: request.protocol) %>
       </code>
     </div>
+
     <% if Flipper.enabled?(:sharing_with_email) %>
       <div class="my-2">
         <div>External stakeholders having access:</div>
+
         <% public_link.allowed_users.each do |allowed_user| %>
           <div class="flex items-center gap-2">
             <%= render OrganizationUserAvatarComponent.new(organization_user: allowed_user) %>
             <div class="inline-block">
-             <%= render UserWithEmail.new(organization_user: allowed_user) %>
+             <%= render UserWithEmail.new(user: allowed_user) %>
             </div>
           </div>
         <% end %>
+
+        <% public_link.pending_users.each do |pending_email| %>
+          <div class="flex items-center gap-2">
+            <%= render OrganizationUserAvatarComponent.new(organization_user: pending_email) %>
+            <div class="inline-block">
+              <%= render UserWithEmail.new(user: pending_email) %>
+            </div>
+          </div>
+        <% end %>
+
         <%= form_for public_link do |f| %>
           <%= f.email_field :allowed_emails, value: "test@wp.pl", class: "form-input", placeholder: "Type email address" %>
           <%= f.submit "Share", class: "primary-button" %>
         <% end %>
       </div>
     <% end %>
+
     <p>
       You can see all documents shared publicly
       <%= link_to "here", public_links_path, class: "link-button", data: { turbo: false }, class: "default-link"  %>.
