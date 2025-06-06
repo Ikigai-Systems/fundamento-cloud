@@ -3,7 +3,7 @@
 class UserWithEmail < ViewComponent::Base
   erb_template <<-ERB
     <div>
-      <div class="text-base font-semibold"><%= @user.first_name %> <%= @user.last_name %></div>
+      <div class="text-base font-semibold"><%= @user.display_name %></div>
       <div class="font-normal text-gray-500"><%= @user.email %></div>
     </div>
   ERB
