@@ -96,6 +96,6 @@ class PublicLinksController < ApplicationController
   end
 
   def update_params
-    params.require(:public_link).permit(:allowed_emails)
+    params.permit(:public_link).permit(:allowed_emails)
   end
 end
