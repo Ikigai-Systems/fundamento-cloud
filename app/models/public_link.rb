@@ -24,6 +24,21 @@ class PublicLink < ApplicationRecord
     User.where(email: allowed_emails).sort_by(&:display_name)
   end
 
+  def pending_users
+    # Returns those allowed_emails that still don't match users
+    self.allowed_emails.sort.without(self.allowed_users.map(&:email)).map do |email|
+      User.new(email: email).tap do |user|
+        def user.display_name
+          email
+        end
+
+        def user.initials
+          email.first(2).upcase
+        end
+      end
+    end
+  end
+
   private
 
   def normalize_allowed_emails
