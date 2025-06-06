@@ -21,7 +21,7 @@ class PublicLink < ApplicationRecord
   end
 
   def allowed_users
-    User.where(email: allowed_emails)
+    User.where(email: allowed_emails).sort_by(&:display_name)
   end
 
   private
