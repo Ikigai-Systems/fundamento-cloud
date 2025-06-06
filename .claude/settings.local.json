@@ -4,7 +4,9 @@
       "Bash(find:*)",
       "Bash(rails --help)",
       "Bash(bundle exec rails:*)",
-      "Bash(bundle exec rspec:*)"
+      "Bash(bundle exec rspec:*)",
+      "Bash(grep:*)",
+      "Bash(ruby:*)"
     ],
     "deny": []
   }

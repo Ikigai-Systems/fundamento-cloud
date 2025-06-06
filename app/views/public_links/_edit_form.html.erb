@@ -12,30 +12,7 @@
 
     <% if Flipper.enabled?(:sharing_with_email) %>
       <div class="my-2">
-        <div>External stakeholders having access:</div>
-
-        <% public_link.allowed_users.each do |allowed_user| %>
-          <div class="flex items-center gap-2">
-            <%= render OrganizationUserAvatarComponent.new(organization_user: allowed_user) %>
-            <div class="inline-block">
-             <%= render UserWithEmail.new(user: allowed_user) %>
-            </div>
-          </div>
-        <% end %>
-
-        <% public_link.pending_users.each do |pending_email| %>
-          <div class="flex items-center gap-2">
-            <%= render OrganizationUserAvatarComponent.new(organization_user: pending_email) %>
-            <div class="inline-block">
-              <%= render UserWithEmail.new(user: pending_email) %>
-            </div>
-          </div>
-        <% end %>
-
-        <%= form_for public_link do |f| %>
-          <%= f.email_field :allowed_emails, value: "test@wp.pl", class: "form-input", placeholder: "Type email address" %>
-          <%= f.submit "Share", class: "primary-button" %>
-        <% end %>
+        <%= render "public_links/allowed_emails", public_link: public_link %>
       </div>
     <% end %>
 

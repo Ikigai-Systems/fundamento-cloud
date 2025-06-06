@@ -93,7 +93,10 @@ Rails.application.routes.draw do
       resources :user_properties, only: [:update], module: :users
     end
 
-    resources :public_links
+    resources :public_links do
+      resources :allowed_emails, only: [:create, :destroy], param: :email, constraints: { email: /[^\/]+/ }
+    end
+
     resources :reactions, only: [:create, :index, :show, :destroy]
     resources :comments
 

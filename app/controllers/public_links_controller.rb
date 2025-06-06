@@ -32,9 +32,6 @@ class PublicLinksController < ApplicationController
 
   def update
     @public_link = current_organization.public_links.find(params[:id])
-    if update_params[:allowed_emails].present?
-      @public_link.allowed_emails = @public_link.allowed_emails + Array(update_params[:allowed_emails])
-    end
     @public_link.generate_npi if params[:refresh].to_b
     @public_link.updated_by = current_user
 
@@ -95,7 +92,4 @@ class PublicLinksController < ApplicationController
     params.require(:public_link).permit(:object_id, :object_type)
   end
 
-  def update_params
-    params.permit(:public_link).permit(:allowed_emails)
-  end
 end

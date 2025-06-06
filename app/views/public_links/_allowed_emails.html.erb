@@ -1,0 +1,54 @@
+<div id="public_link_<%= public_link.id %>_allowed_emails">
+  <div class="mb-4">
+    <div class="text-sm font-medium text-gray-700 mb-2">External stakeholders having access:</div>
+    
+    <% if public_link.allowed_users.any? || public_link.pending_users.any? %>
+      <div class="space-y-2">
+        <!-- Existing users -->
+        <% public_link.allowed_users.each do |allowed_user| %>
+          <div class="flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-md">
+            <div class="flex items-center gap-2">
+              <%= render OrganizationUserAvatarComponent.new(organization_user: allowed_user) %>
+              <div class="inline-block">
+                <%= render UserWithEmail.new(user: allowed_user) %>
+              </div>
+            </div>
+            <%= button_to "Remove", 
+              public_link_allowed_email_path(public_link, email: allowed_user.email),
+              method: :delete,
+              class: "text-red-600 hover:text-red-800 text-sm",
+              data: { 
+                turbo_confirm: "Remove #{allowed_user.email} from access?",
+                turbo: true
+              } %>
+          </div>
+        <% end %>
+
+        <!-- Pending users (email addresses without accounts) -->
+        <% public_link.pending_users.each do |pending_email| %>
+          <div class="flex items-center justify-between gap-2 p-2 bg-yellow-50 rounded-md">
+            <div class="flex items-center gap-2">
+              <%= render OrganizationUserAvatarComponent.new(organization_user: pending_email) %>
+              <div class="inline-block">
+                <%= render UserWithEmail.new(user: pending_email) %>
+              </div>
+              <span class="text-xs text-yellow-600">(pending invite)</span>
+            </div>
+            <%= button_to "Remove", 
+              public_link_allowed_email_path(public_link, email: pending_email.email),
+              method: :delete,
+              class: "text-red-600 hover:text-red-800 text-sm",
+              data: { 
+                turbo_confirm: "Remove #{pending_email.email} from access?",
+                turbo: true
+              } %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-sm text-gray-500 italic">No external stakeholders added yet</div>
+    <% end %>
+  </div>
+
+  <%= render "public_links/allowed_emails_form", public_link: public_link %>
+</div>

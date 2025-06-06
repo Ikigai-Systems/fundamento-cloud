@@ -1,0 +1,21 @@
+<div id="public_link_<%= public_link.id %>_allowed_emails_form">
+  <%= form_with url: public_link_allowed_emails_path(public_link), 
+        method: :post,
+        data: { turbo: true },
+        class: "flex gap-2 items-start" do |f| %>
+    
+    <div class="flex-grow">
+      <%= f.email_field :email, 
+        value: "", 
+        class: "form-input w-full", 
+        placeholder: "Enter email address to share with",
+        autocomplete: "email" %>
+      
+      <% if defined?(error) && error.present? %>
+        <div class="text-red-600 text-sm mt-1"><%= error %></div>
+      <% end %>
+    </div>
+    
+    <%= f.submit "Add", class: "primary-button" %>
+  <% end %>
+</div>
