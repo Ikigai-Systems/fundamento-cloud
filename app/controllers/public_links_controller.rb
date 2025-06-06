@@ -2,7 +2,7 @@ class PublicLinksController < ApplicationController
   after_action :verify_authorized
 
   def new
-    @public_link = current_organization.public_links.new(public_link_params)
+    @public_link = current_organization.public_links.new(create_params)
 
     authorize @public_link.object.space, :show?
 
@@ -14,7 +14,7 @@ class PublicLinksController < ApplicationController
   end
 
   def create
-    @public_link = current_organization.public_links.new(public_link_params)
+    @public_link = current_organization.public_links.new(create_params)
     @public_link.updated_by = current_user
 
     authorize @public_link.object.space, :update?
@@ -89,7 +89,7 @@ class PublicLinksController < ApplicationController
 
   protected
 
-  def public_link_params
+  def create_params
     params.require(:public_link).permit(:object_id, :object_type)
   end
 end
