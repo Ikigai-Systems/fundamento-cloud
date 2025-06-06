@@ -68,4 +68,7 @@ class OrganizationUser < ApplicationRecord
       .count
   end
 
+  def online?
+    self.user.online?(self.organization)
+  end
 end
