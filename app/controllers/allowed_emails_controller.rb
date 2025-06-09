@@ -9,20 +9,20 @@ class AllowedEmailsController < ApplicationController
     email = params[:email]&.strip&.downcase
     
     if email.present? && email.match?(Devise.email_regexp)
-      unless @public_link.allowed_emails.include?(email)
+      if @public_link.allowed_emails.include?(email)
+        render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
+          partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Email already added" })
+      else
         @public_link.allowed_emails = @public_link.allowed_emails + [email]
         @public_link.updated_by = current_user
-        
+
         if @public_link.save
-          render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails", 
+          render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails",
             partial: "public_links/allowed_emails", locals: { public_link: @public_link })
         else
           render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
             partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Failed to add email" })
         end
-      else
-        render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
-          partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Email already added" })
       end
     else
       render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
