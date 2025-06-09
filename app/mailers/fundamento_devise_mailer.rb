@@ -19,8 +19,4 @@ class FundamentoDeviseMailer < Devise::Mailer
 
     headers
   end
-
-  def add_inline_attachment!
-    attachments.inline["logo.png"] = File.read(Rails.root.join("app", "assets", "images", "fundamento-logo.png"))
-  end
 end
