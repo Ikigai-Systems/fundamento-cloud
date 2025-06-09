@@ -6,7 +6,7 @@ class ApplicationMailer < ActionMailer::Base
 
   protected
 
-  def add_inline_attachment!
+  def add_logo_attachment!
     attachments.inline["logo.png"] = File.read(Rails.root.join("app", "assets", "images", "fundamento-logo.png"))
   end
 end

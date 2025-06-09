@@ -1,5 +1,5 @@
 class FundamentoDeviseMailer < Devise::Mailer
-  before_action :add_inline_attachment!, only: [:invitation_instructions]
+  before_action :add_logo_attachment!, only: [:invitation_instructions]
 
   protected
 
