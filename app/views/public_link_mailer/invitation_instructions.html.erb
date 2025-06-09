@@ -1,0 +1,109 @@
+<tr>
+  <td align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+      <tbody>
+      <tr>
+        <td style="width:398px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+            <tbody>
+            <tr>
+              <td>
+                <h1 style="margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:28px;font-weight:500;font-style:normal;font-size:24px;text-decoration:none;text-transform:none;letter-spacing:-1.2px;direction:ltr;color:#111111;text-align:center;mso-line-height-rule:exactly;mso-text-raise:1px;">
+                  <%= @pundit_user.organization_user.display_name %> invited you to <strong><%= @public_link.object.title %></strong>, an organization on Fundamento.</h1>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td>
+    <div style="mso-line-height-rule:exactly;mso-line-height-alt:17px;line-height:17px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+      <tbody>
+      <tr>
+        <td style="width:388px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+            <tbody>
+            <tr>
+              <td style="width:32px;">
+                <p style="height:32px;width:32px;background-color:#3b82f6;color:white;border-radius:100px;margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:32px;font-weight:700;font-style:normal;font-size:15px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                  <%= @pundit_user.organization_user.initials %>
+                </p>
+              </td>
+              <td>
+                <p style="margin:0;Margin:0;margin-left: 16px;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:22px;font-weight:500;font-style:normal;font-size:15px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#424040;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                  I've just added you to a Fundamento organization, where we can collaborate on our documents and our data. Let's get started!
+                </p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td>
+    <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+      <tbody>
+      <tr>
+        <td style="background-color:#fb923c;overflow:hidden;width:154px;border-radius:8px 8px 8px 8px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+            <tbody>
+            <tr>
+              <td style="text-align:center;line-height:40px;mso-line-height-rule:exactly;mso-text-raise:8px;">
+                <%= link_to "Accept invite", public_link_url(@public_link), style: 'display:block;margin:0;Margin:0;font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:40px;font-weight:700;font-style:normal;font-size:15px;text-decoration:none;letter-spacing:-0.5px;direction:ltr;color:#0f172a;text-align:center;mso-line-height-rule:exactly;mso-text-raise:8px;'%>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td>
+    <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
+      <tbody>
+      <tr>
+        <td style="width:398px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+            <tbody>
+            <tr>
+              <td>
+                <p style="margin:0;Margin:0;margin-top: 12px; font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:20px;font-weight:500;font-style:normal;font-size:13px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#aaa;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
+                  <%= t("devise.mailer.invitation_instructions.ignore") %>
+                </p>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
