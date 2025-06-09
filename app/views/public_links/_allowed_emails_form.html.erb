@@ -1,4 +1,4 @@
-<div id="public_link_<%= public_link.id %>_allowed_emails_form">
+<div id="<%= dom_id(public_link, :allowed_emails_form) %>">
   <%= form_with url: public_link_allowed_emails_path(public_link), 
         method: :post,
         data: { turbo: true },

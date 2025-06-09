@@ -1,6 +1,8 @@
 class AllowedEmailsController < ApplicationController
   after_action :verify_authorized
 
+  include ActionView::RecordIdentifier
+
   before_action :load_public_link
 
   def create
@@ -10,22 +12,22 @@ class AllowedEmailsController < ApplicationController
     
     if email.present? && email.match?(Devise.email_regexp)
       if @public_link.allowed_emails.include?(email)
-        render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
+        render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails_form),
           partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Email already added" })
       else
         @public_link.allowed_emails = @public_link.allowed_emails + [email]
         @public_link.updated_by = current_user
 
         if @public_link.save
-          render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails",
+          render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails),
             partial: "public_links/allowed_emails", locals: { public_link: @public_link })
         else
-          render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
+          render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails_form),
             partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Failed to add email" })
         end
       end
     else
-      render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails_form",
+      render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails_form),
         partial: "public_links/allowed_emails_form", locals: { public_link: @public_link, error: "Invalid email address" })
     end
   end
@@ -40,10 +42,10 @@ class AllowedEmailsController < ApplicationController
       @public_link.updated_by = current_user
       
       if @public_link.save
-        render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails", 
+        render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails),
           partial: "public_links/allowed_emails", locals: { public_link: @public_link })
       else
-        render turbo_stream: turbo_stream.replace("public_link_#{@public_link.id}_allowed_emails",
+        render turbo_stream: turbo_stream.replace(dom_id(@public_link, :allowed_emails),
           partial: "public_links/allowed_emails", locals: { public_link: @public_link, error: "Failed to remove email" })
       end
     else
