@@ -14,8 +14,12 @@ class FundamentoDeviseMailer < Devise::Mailer
 
     return headers unless action == :invitation_instructions
 
-    headers[:reply_to] = "#{resource.invited_by.display_name} <#{resource.invited_by.email}>"
-    headers[:from] = "#{resource.invited_by.display_name} via Fundamento <no-reply@mail.fundamento.cloud>"
+    headers[:reply_to] = email_address_with_name(resource.invited_by.email, resource.invited_by.display_name)
+
+    headers[:from] = email_address_with_name(
+      ApplicationMailer::FROM_ADDRESS,
+      "#{resource.invited_by.display_name} via Fundamento"
+    )
 
     headers
   end

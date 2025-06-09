@@ -1,5 +1,7 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "no-reply@mail.fundamento.cloud",
+  FROM_ADDRESS = "no-reply@mail.fundamento.cloud"
+
+  default from: FROM_ADDRESS,
           reply_to: "pawel@fundamento.it"
 
   layout "mailer"
