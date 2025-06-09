@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe PublicController, type: :request do
   fixtures :organizations, :spaces, :users, :organization_users, :documents, :versions, :public_links
 
-  let(:user) { users(:pawel) }
+  let(:pawel) { users(:pawel) }
   let(:document) { documents(:two) }
   let(:public_link) { public_links(:public_link_to_two) }
   let(:public_url) { "/public/#{public_link.npi}" }
@@ -34,7 +34,7 @@ RSpec.describe PublicController, type: :request do
         # Now sign in
         post user_session_path, params: {
           user: {
-            email: user.email,
+            email: pawel.email,
             password: "password"
           }
         }
@@ -50,24 +50,66 @@ RSpec.describe PublicController, type: :request do
     end
 
     context "when user is already authenticated" do
-      before { sign_in user }
+      before { sign_in pawel }
 
-      it "shows the public document" do
-        get public_url
+      context "and public link has no allowed_emails restriction" do
+        it "shows the public document" do
+          get public_url
 
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("document")
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("document")
+        end
+
+        it "does not store location when already authenticated" do
+          get public_url
+
+          expect(session["user_return_to"]).to be_nil
+        end
       end
 
-      it "does not store location when already authenticated" do
-        get public_url
+      context "and public link has allowed_emails restriction" do
+        context "and user email is in allowed_emails list" do
+          before do
+            public_link.update!(allowed_emails: ["pawel@ikigai.systems", "stefan@ikigai.systems"])
+          end
 
-        expect(session["user_return_to"]).to be_nil
+          it "shows the public document" do
+            get public_url
+
+            expect(response).to have_http_status(:ok)
+            expect(response.body).to include("document")
+          end
+        end
+
+        context "and user email is not in allowed_emails list" do
+          before do
+            public_link.update!(allowed_emails: ["stefan@ikigai.systems", "maria@ikigai.systems"])
+          end
+
+          it "returns forbidden status" do
+            get public_url
+
+            expect(response).to have_http_status(:forbidden)
+          end
+        end
+
+        context "and allowed_emails list is empty after normalization" do
+          before do
+            public_link.update!(allowed_emails: ["", " ", nil])
+          end
+
+          it "shows the public document (empty list means no restriction)" do
+            get public_url
+
+            expect(response).to have_http_status(:ok)
+            expect(response.body).to include("document")
+          end
+        end
       end
     end
 
     context "when accessing non-existent public link" do
-      before { sign_in user }
+      before { sign_in pawel }
 
       it "responds with not found status" do
         get "/public/nonexistent"
@@ -83,24 +125,66 @@ RSpec.describe PublicController, type: :request do
     let(:attachment) { Attachment.create!(organization: organization, parent: document, filename: "test.txt", mime_type: "text/plain", data: "test data") }
 
     context "when user is not authenticated" do
-      it "redirects to sign in page" do
-        get "/public/attachments/#{attachment.id}"
+      context "and public link has no allowed_emails restriction" do
+        it "redirects to sign in page" do
+          get "/public/attachments/#{attachment.id}"
 
-        expect(response).to redirect_to(new_user_session_path)
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
+
+      context "and public link has allowed_emails restriction" do
+        before do
+          public_link.update!(allowed_emails: ["pawel@ikigai.systems", "stefan@ikigai.systems"])
+        end
+
+        it "redirects to sign in page" do
+          get "/public/attachments/#{attachment.id}"
+
+          expect(response).to redirect_to(new_user_session_path)
+        end
       end
     end
 
     context "when user is authenticated" do
-      before { sign_in user }
+      before { sign_in pawel }
 
       context "when attachment belongs to a document with public link" do
-        it "serves the attachment" do
-          # Create a public link for the document that the attachment belongs to
-          public_link
-          
-          get "/public/attachments/#{attachment.id}"
+        context "and public link has no allowed_emails restriction" do
+          it "serves the attachment" do
+            # Create a public link for the document that the attachment belongs to
+            public_link
+            
+            get "/public/attachments/#{attachment.id}"
 
-          expect(response).to have_http_status(:ok)
+            expect(response).to have_http_status(:ok)
+          end
+        end
+
+        context "and public link has allowed_emails restriction" do
+          context "and user email is in allowed_emails list" do
+            before do
+              public_link.update!(allowed_emails: ["pawel@ikigai.systems", "stefan@ikigai.systems"])
+            end
+
+            it "serves the attachment" do
+              get "/public/attachments/#{attachment.id}"
+
+              expect(response).to have_http_status(:ok)
+            end
+          end
+
+          context "and user email is not in allowed_emails list" do
+            before do
+              public_link.update!(allowed_emails: ["stefan@ikigai.systems", "maria@ikigai.systems"])
+            end
+
+            it "returns forbidden status" do
+              get "/public/attachments/#{attachment.id}"
+
+              expect(response).to have_http_status(:forbidden)
+            end
+          end
         end
       end
 
