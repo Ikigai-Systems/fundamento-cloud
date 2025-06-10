@@ -1,123 +1,68 @@
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
-  <tbody>
-  <tr>
-    <td style="font-size:0;line-height:0;mso-line-height-rule:exactly;background-color:#F9F9F9;background-image:none;background-repeat:repeat;background-size:auto;background-position:center top;" valign="top" align="center">
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" align="center" id="innerTable">
-        <tbody>
-        <tr>
-          <td>
-            <div style="mso-line-height-rule:exactly;mso-line-height-alt:70px;line-height:70px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
-          </td>
-        </tr>
-        <tr>
-          <td align="center">
-            <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
-              <tbody>
-              <tr>
-                <td style="background-color:#FFFFFF;border:1px solid #CECECE;overflow:hidden;width:480px;border-radius:20px 20px 20px 20px;">
-                  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
-                    <tbody>
-                    <tr>
-                      <td style="padding:50px 40px 40px 40px;">
-                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100% !important;">
-                          <tbody>
-                          <tr>
-                            <td align="center">
-                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
-                                <tbody>
-                                <tr>
-                                  <td style="width:60px;">
-                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
-                                      <tbody>
-                                      <tr>
-                                        <td>
-                                          <img alt="Fundamento Logo" loading="lazy" height="64" style="color:transparent" src="<%= attachments["logo.png"].url %>">
-                                        </td>
-                                      </tr>
-                                      </tbody>
-                                    </table>
-                                  </td>
-                                </tr>
-                                </tbody>
-                              </table>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>
-                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:40px;line-height:40px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
-                            </td>
-                          </tr>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--[if !mso]><!-->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!--<![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #F9F9F9;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F9F9F9;">
+    <tr>
+      <td align="center" style="padding: 70px 20px;">
+        
+        <!-- Main Email Container -->
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" style="max-width: 480px; background-color: #FFFFFF; border: 1px solid #CECECE; border-radius: 20px;">
+          <tr>
+            <td style="padding: 50px 40px 40px 40px;">
+              
+              <!-- Logo -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom: 40px;">
+                    <img alt="Fundamento Logo" height="64" src="<%= attachments["logo.png"].url %>" style="display: block;">
+                  </td>
+                </tr>
+              </table>
 
-                          <%= yield %>
+              <!-- Email Content -->
+              <%= yield %>
 
-                          <tr>
-                            <td>
-                              <div style="mso-line-height-rule:exactly;mso-line-height-alt:30px;line-height:30px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td align="center">
-                              <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
-                                <tbody>
-                                <tr>
-                                  <td style="background-color:#F2EFF3;overflow:hidden;width:398px;border-radius:8px 8px 8px 8px;">
-                                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
-                                      <tbody>
-                                      <tr>
-                                        <td style="padding:20px 30px 20px 30px;">
-                                          <p style="margin:0;Margin:0;font-family:Albert Sans,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:18px;font-weight:500;font-style:normal;font-size:12px;text-transform:none;direction:ltr;color:#84828E;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
-                                            P.S. Need help getting started? Check out our <a target=_blank" style="color: #0e87bc; text-decoration: underline" href="https://docs.fundamento.it">help documentation</a>.
-                                          </p></td>
-                                      </tr>
-                                      </tbody>
-                                    </table>
-                                  </td>
-                                </tr>
-                                </tbody>
-                              </table>
-                            </td>
-                          </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-        <tr>
-          <table role="presentation" cellpadding="0" cellspacing="0" style="Margin-left:auto;Margin-right:auto;">
-            <tbody>
-            <tr>
-              <td style="width:398px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
-                  <tbody>
-                  <tr>
-                    <td>
-                      <p style="margin:0;Margin:0;margin-top: 40px; margin-bottom: 40px; font-family:Inter,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif;line-height:20px;font-weight:500;font-style:normal;font-size:13px;text-decoration:none;text-transform:none;letter-spacing:-0.6px;direction:ltr;color:#aaa;text-align:center;mso-line-height-rule:exactly;mso-text-raise:2px;">
-                        © 2025 <a style="color:#aaa" href="https://fundamento.it">Fundamento</a>. All Rights Reserved.
-                      </p>
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </tr>
-        <tr>
-          <td>
-            <div style="mso-line-height-rule:exactly;mso-line-height-alt:70px;line-height:70px;font-size:1px;display:block;">&nbsp;&nbsp;</div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-  </tbody>
-</table>
+              <!-- Help Section -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-top: 30px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #F2EFF3; border-radius: 8px;">
+                      <tr>
+                        <td style="padding: 20px 30px;">
+                          <p style="margin: 0; font-family: 'Albert Sans', BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 500; color: #84828E; text-align: center; line-height: 18px;">
+                            P.S. Need help getting started? Check out our <a href="https://docs.fundamento.it" style="color: #0e87bc; text-decoration: underline;">help documentation</a>.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+        <!-- Footer -->
+        <table role="presentation" width="398" cellpadding="0" cellspacing="0" border="0" style="max-width: 398px;">
+          <tr>
+            <td style="padding: 40px 0;">
+              <p style="margin: 0; font-family: Inter, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #aaa; text-align: center; line-height: 20px; letter-spacing: -0.6px;">
+                © 2025 <a href="https://fundamento.it" style="color: #aaa; text-decoration: none;">Fundamento</a>. All Rights Reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
