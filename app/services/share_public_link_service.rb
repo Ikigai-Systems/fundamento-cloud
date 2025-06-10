@@ -34,7 +34,7 @@ class SharePublicLinkService
   def send_invitation_email
     PublicLinkMailer.with(pundit_user: PolicyUserContext.new(current_user, public_link.organization))
                    .invitation_instructions(public_link, email)
-                   .deliver_now
+                   .deliver_later
     true
   rescue => e
     Rails.logger.error "Failed to send invitation email: #{e.message}"

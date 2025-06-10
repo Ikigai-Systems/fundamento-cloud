@@ -16,6 +16,9 @@ module Fundamento
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w(assets tasks))
 
+    # From https://guides.rubyonrails.org/active_job_basics.html#serializers
+    config.autoload_once_paths << "#{Rails.root}/app/serializers"
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
