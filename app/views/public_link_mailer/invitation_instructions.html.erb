@@ -3,7 +3,7 @@
   <tr>
     <td style="padding-bottom: 17px;">
       <h1 style="margin: 0; font-family: Inter, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 24px; font-weight: 500; color: #111111; text-align: center; line-height: 28px; letter-spacing: -1.2px;">
-        <%= @pundit_user.organization_user.display_name %> invited you to <strong><%= @public_link.object.title %></strong>, an organization on Fundamento.
+        <%= @pundit_user.organization_user.display_name %> invited you to review a document titled <strong><%= @public_link.object.title %></strong>.
       </h1>
     </td>
   </tr>
@@ -26,7 +26,7 @@
           </td>
           <td style="padding-left: 16px; vertical-align: top;">
             <p style="margin: 0; font-family: Inter, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 15px; font-weight: 500; color: #424040; line-height: 22px; letter-spacing: -0.6px;">
-              I've just added you to a Fundamento organization, where we can collaborate on our documents and our data. Let's get started!
+              I've just shared a document with you using Fundamento platform where we can collaborate on our documents. Let's get started!
             </p>
           </td>
         </tr>
@@ -39,7 +39,7 @@
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr>
     <td align="center" style="padding-bottom: 28px;">
-      <%= link_to "Accept invite", public_link_url(@public_link), style: 'display: inline-block; padding: 12px 24px; background-color: #fb923c; color: #0f172a; text-decoration: none; border-radius: 8px; font-family: Inter, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.5px; text-align: center;' %>
+      <%= link_to "Sign up or sign in to access the document", public_link_url(@public_link), style: 'display: inline-block; padding: 12px 24px; background-color: #fb923c; color: #0f172a; text-decoration: none; border-radius: 8px; font-family: Inter, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -0.5px; text-align: center;' %>
     </td>
   </tr>
 </table>
