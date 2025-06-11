@@ -9,7 +9,8 @@
       "Bash(ruby:*)",
       "Bash(npm run lint)",
       "Bash(bundle exec rubocop:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   },
