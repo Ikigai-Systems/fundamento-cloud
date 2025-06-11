@@ -33,7 +33,7 @@ module Fundamento
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Logstash.new
 
-    if !Rails.env.production? && !Rails.env.standalone?
+    if !Rails.env.production?
       config.lograge.keep_original_rails_log = true
       config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/#{Rails.env}-lograge.log"
     end
