@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Users::SignUpWithGoogleController < ApplicationController
-  skip_before_action :ensure_organization_exists
-  skip_before_action :select_current_organization
   skip_before_action :authenticate_user!
 
   def sign_up_with_google
