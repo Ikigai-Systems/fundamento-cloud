@@ -1,4 +1,5 @@
 class Tables::RowsController < ApplicationController
+  include EnsureOrganization
 
   before_action :load_table
 

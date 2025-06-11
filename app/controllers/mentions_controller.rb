@@ -1,4 +1,6 @@
 class MentionsController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized, except: [:index]
 
   def index

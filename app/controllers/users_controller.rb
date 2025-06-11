@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  include EnsureOrganization
+
   # todo: should this be merged with admin/users_controller.rb, or separate api-like controller?
   def index
     @users = current_organization.users

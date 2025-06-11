@@ -1,4 +1,6 @@
 class PublicLinksController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized
 
   def new

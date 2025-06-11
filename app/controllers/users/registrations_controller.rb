@@ -3,9 +3,6 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
 
-  skip_before_action :ensure_organization_exists, only: %i[edit update]
-  skip_before_action :select_current_organization, only: %i[edit update]
-
   def create
     build_resource(sign_up_params)
 

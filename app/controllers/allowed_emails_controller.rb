@@ -1,4 +1,6 @@
 class AllowedEmailsController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized
 
   include ActionView::RecordIdentifier

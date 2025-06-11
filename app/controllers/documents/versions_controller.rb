@@ -1,4 +1,6 @@
 class Documents::VersionsController < ApplicationController
+  include EnsureOrganization
+
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
   include LoadDocument.from_param(:document_npi)

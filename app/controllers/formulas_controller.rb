@@ -1,4 +1,6 @@
 class FormulasController < ApplicationController
+  include EnsureOrganization
+
   def eval
     # todo: some kind of autorization? that user is logged in?
 

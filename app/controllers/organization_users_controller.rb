@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class OrganizationUsersController < ApplicationController
-  skip_before_action :select_current_organization
+  include EnsureOrganization
 
   before_action :load_organization_user, only: [:promote, :demote, :destroy, :change_password, :update]
   before_action :ensure_turbo_request, only: [:change_password, :update]

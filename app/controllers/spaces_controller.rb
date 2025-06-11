@@ -1,4 +1,5 @@
 class SpacesController < ApplicationController
+  include EnsureOrganization
 
   after_action :verify_authorized, except: [:suggest_owners]
 

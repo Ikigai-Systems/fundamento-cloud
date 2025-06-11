@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class TeamsController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized, except: [:suggest_members]
 
   helper_method :team_memberships_to_multiselect_value

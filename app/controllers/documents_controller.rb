@@ -1,4 +1,6 @@
 class DocumentsController < ApplicationController
+  include EnsureOrganization
+
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
   after_action :verify_authorized_or_index_scoped

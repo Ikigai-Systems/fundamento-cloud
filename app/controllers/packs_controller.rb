@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PacksController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized, except: [:suggest_members]
 
   helper_method :pack_memberships_to_multiselect_value

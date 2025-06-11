@@ -1,4 +1,6 @@
 class ApiTokensController < ApplicationController
+  include EnsureOrganization
+  
   after_action :verify_authorized, except: [:index]
   before_action :ensure_turbo_request, only: [:new, :create]
 

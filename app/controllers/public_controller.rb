@@ -3,11 +3,6 @@ class PublicController < ApplicationController
 
   before_action :store_user_location!, if: :storable_location?
 
-  skip_before_action :ensure_organization_exists
-  skip_before_action :select_current_organization
-  skip_before_action :load_current_organization_from_cookie
-  skip_before_action :ensure_space_exists
-
   after_action :verify_authorized, except: [:attachment]
 
   before_action :set_cache_headers

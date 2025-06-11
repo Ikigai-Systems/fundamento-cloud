@@ -1,4 +1,6 @@
 class AutomationsController < ApplicationController
+  include EnsureOrganization
+
   before_action :load_space
 
   after_action :verify_authorized_or_index_scoped

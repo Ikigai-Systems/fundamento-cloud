@@ -1,4 +1,6 @@
 class ReactionsController < ApplicationController
+  include EnsureOrganization
+
   layout "turbo_rails/frame"
 
   after_action :verify_authorized

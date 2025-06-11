@@ -1,4 +1,5 @@
 class Tables::TablesController < ApplicationController
+  include EnsureOrganization
   include LoadTable.from_param(:npi)
 
   after_action :verify_authorized_or_index_scoped

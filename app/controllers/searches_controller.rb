@@ -1,4 +1,6 @@
 class SearchesController < ApplicationController
+  include EnsureOrganization
+
   # maybe this should go to controllers/api/v1, I dunno
 
   include Pundit::Authorization

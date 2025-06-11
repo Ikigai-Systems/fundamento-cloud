@@ -1,4 +1,6 @@
 class RootController < ApplicationController
+  include EnsureOrganization
+
   def index
     @mentions = MentionsExtractor::get_all_mentions(policy_scope(current_organization.documents), current_user)
                   .sort_by { |mention| mention.created_at }.reverse

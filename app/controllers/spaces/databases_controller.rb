@@ -1,4 +1,6 @@
 class Spaces::DatabasesController < ApplicationController
+  include EnsureOrganization
+
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "full_width_application" }
 
   def show

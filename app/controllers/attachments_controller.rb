@@ -1,4 +1,6 @@
 class AttachmentsController < ApplicationController
+  include EnsureOrganization
+
   after_action :verify_authorized
 
   def show
