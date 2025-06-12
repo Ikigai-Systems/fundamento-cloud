@@ -12,7 +12,11 @@ module EnsureOrganization
 
   def ensure_organization_exists
     if current_user.present? && current_user.organizations.size == 0
-      redirect_to new_organization_path, notice: "Awesome to have you here! Now let's create an organization for you and your team."
+      organization_name = generate_organization_name
+      
+      # Create the organization for the user
+      organization = Organization.create!(name: organization_name)
+      organization.organization_users.create!(user: current_user, role: :manager)
     end
   end
 
@@ -48,5 +52,17 @@ module EnsureOrganization
     if current_user.present? && current_organization.present? && current_organization.spaces.empty?
       current_organization.spaces.create!(name: "Default")
     end
+  end
+
+  private
+
+  def generate_organization_name
+    Thread.current[:random_word_adjs] ||= RandomWord.adjs
+    Thread.current[:random_word_nouns] ||= RandomWord.nouns
+    
+    adjective = Thread.current[:random_word_adjs].next.capitalize
+    noun = Thread.current[:random_word_nouns].next.capitalize
+
+    "#{adjective} #{noun}"
   end
 end

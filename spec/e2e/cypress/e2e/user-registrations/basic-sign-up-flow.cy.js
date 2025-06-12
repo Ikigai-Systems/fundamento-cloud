@@ -11,13 +11,6 @@ describe('Basic features work', function() {
     cy.get('input[name="user[password_confirmation]"]').type("password");
     cy.get('input[type=submit]').click();
 
-    cy.contains('Create organization');
-
-    cy.get('input[name="organization[name]"]').type("E2E Tests");
-    cy.get('input[type=submit]').click();
-
-    cy.contains("Welcome to your Fundamento organization.");
-
     cy.get("body nav").contains("PN").click();
     cy.contains("Sign out").click();
 
@@ -48,9 +41,11 @@ describe('Basic features work', function() {
   it("you can create a team", function() {
     cy.visit("/organizations");
 
-    cy.contains('tr', 'E2E Tests').contains('button', 'Switch to').click();
+    // Find the organization row (now has a random name) and switch to it
+    cy.get('tbody tr').first().contains('button', 'Switch to').click();
 
-    cy.contains("E2E Tests Space");
+    // Check for any space (now has a random organization name + " Space")
+    cy.contains("Space");
 
     cy.get("#flashes button").click();
 
