@@ -101,7 +101,7 @@ Rails.application.routes.draw do
     resources :reactions, only: [:create, :index, :show, :destroy]
     resources :comments
 
-    get "/public/:npi" => "public#show"
+    get "/public/:npi" => "public#show", as: :public
     get "/public/attachments/:id" => "public#attachment"
 
     post "/formulas/eval", to: "formulas#eval"

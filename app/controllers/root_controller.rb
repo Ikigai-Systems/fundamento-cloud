@@ -3,7 +3,7 @@ class RootController < ApplicationController
 
   def index
     @mentions = MentionsExtractor::get_all_mentions(policy_scope(current_organization.documents), current_user)
-                  .sort_by { |mention| mention.created_at }.reverse
+      .sort_by { |mention| mention.created_at }.reverse
 
     last_mention_seen_at_property = current_organization_user.organization_user_properties.find_by_key("last_mention_seen_at")
     @last_mention_seen_at = last_mention_seen_at_property&.value&.to_datetime
@@ -19,6 +19,9 @@ class RootController < ApplicationController
   end
 
   def shared
-    @shared = []
+    @shared = PublicLink
+      .where(object_type: "Document")
+      .where("? = ANY(allowed_emails)", current_user.email)
+      .includes(:object)
   end
 end
