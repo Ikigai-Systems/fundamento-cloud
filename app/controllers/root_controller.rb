@@ -17,4 +17,8 @@ class RootController < ApplicationController
 
   def notifications
   end
+
+  def shared
+    @shared = []
+  end
 end

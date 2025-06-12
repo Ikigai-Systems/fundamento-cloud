@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   root "root#index"
   get "/recently_updated" => "root#recently_updated", as: :recently_updated
   get "/notifications" => "root#notifications", as: :notifications
+  get "/shared" => "root#shared", as: :shared
 
   get "/sign_up_with_google" => "users/sign_up_with_google#sign_up_with_google", as: :sign_up_with_google
 
