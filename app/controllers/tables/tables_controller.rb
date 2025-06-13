@@ -1,12 +1,12 @@
 class Tables::TablesController < ApplicationController
   include EnsureOrganization
   include LoadTable.from_param(:npi)
+  include TrackObjectVisit.for_instance_variable(:@table)
 
   after_action :verify_authorized_or_index_scoped
 
   before_action :load_space, only: [:new, :create]
   before_action :load_table, except: [:new, :create, :index]
-  before_action :create_object_visitor, if: -> { instance_variable_defined?(:@table) }
 
   def index
     @tables = policy_scope(current_organization.tables.lexicographically)
@@ -311,9 +311,5 @@ class Tables::TablesController < ApplicationController
 
   def subtitle
     instance_variable_defined?(:@table) && @table.name
-  end
-
-  def create_object_visitor
-    current_user.visited_objects.find_or_initialize_by(object_type: @table.class.to_s, object_id: @table.id).update!(visited_at: Time.now)
   end
 end

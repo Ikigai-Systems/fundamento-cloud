@@ -42,6 +42,13 @@ class User < ApplicationRecord
     OnlineUsersTracker.change_to_offline(for_organization, self)
   end
 
+  def visit_object(object)
+    self.visited_objects.find_or_initialize_by(
+      object_type: object.class.to_s,
+      object_id: object.id
+    ).update!(visited_at: Time.now)
+  end
+
   # Do not allow user to reset its password until it accepts the invitation
   # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
   def send_reset_password_instructions
