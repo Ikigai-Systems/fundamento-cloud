@@ -10,13 +10,9 @@
       "Bash(npm run lint)",
       "Bash(bundle exec rubocop:*)",
       "Bash(rg:*)",
-      "Bash(rm:*)",
       "Bash(bundle install)",
       "Bash(npm update:*)",
-      "Bash(rails:*)",
-      "Bash(RAILS_ENV=test bundle exec rails db:prepare)",
-      "Bash(RAILS_ENV=test ruby test_object_visitor.rb)",
-      "Bash(y)"
+      "Bash(rails:*)"
     ],
     "deny": []
   },
