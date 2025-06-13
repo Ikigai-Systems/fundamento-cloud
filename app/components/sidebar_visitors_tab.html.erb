@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-3 p-3">
     <% @object.visitors.order(visited_at: :desc).each do |visitor| %>
       <div class="flex flex-row gap-3 items-center">
-        <%= render OrganizationUserAvatarComponent.new(organization_user: visitor.organization_user) %>
+        <%= render OrganizationUserAvatarComponent.new(user: visitor.user, organization: helpers.current_organization) %>
         <%= time_ago_in_words visitor.visited_at %>
       </div>
     <% end %>

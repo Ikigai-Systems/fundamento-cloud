@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_04_165934) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_13_085945) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -286,13 +286,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_04_165934) do
   end
 
   create_table "object_visitors", force: :cascade do |t|
-    t.bigint "organization_user_id"
     t.string "object_type", null: false
     t.bigint "object_id", null: false
     t.datetime "visited_at", null: false
-    t.index ["object_id", "object_type", "organization_user_id"], name: "idx_on_object_id_object_type_organization_user_id_90310b8bdb", unique: true
+    t.bigint "user_id", null: false
+    t.index ["object_id", "object_type", "user_id"], name: "idx_on_object_id_object_type_user_id", unique: true
     t.index ["object_type", "object_id"], name: "index_object_visitors_on_object"
-    t.index ["organization_user_id"], name: "index_object_visitors_on_organization_user_id"
+    t.index ["user_id"], name: "index_object_visitors_on_user_id"
   end
 
   create_table "organization_user_properties", force: :cascade do |t|

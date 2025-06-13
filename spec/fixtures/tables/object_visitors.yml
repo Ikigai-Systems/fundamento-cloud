@@ -2,6 +2,6 @@ _fixture:
   model_class: ObjectVisitor
 
 ou_is_stefan_visited_projects:
-  organization_user: :ou_is_stefan
+  user: :stefan
   object: projects (Table)
   visited_at: <%= Time.now %>>

@@ -13,6 +13,7 @@ class User < ApplicationRecord
 
   has_many :team_memberships, dependent: :destroy
   has_many :teams, through: :team_memberships, dependent: :destroy
+  has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
 
   validates_presence_of :first_name
   validates_presence_of :last_name

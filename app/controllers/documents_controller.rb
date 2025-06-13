@@ -207,6 +207,6 @@ class DocumentsController < ApplicationController
   end
 
   def create_object_visitor
-    current_organization_user.visited_objects.find_or_initialize_by(object_type: @document.class.to_s, object_id: @document.id).update!(visited_at: Time.now)
+    current_user.visited_objects.find_or_initialize_by(object_type: @document.class.to_s, object_id: @document.id).update!(visited_at: Time.now)
   end
 end
