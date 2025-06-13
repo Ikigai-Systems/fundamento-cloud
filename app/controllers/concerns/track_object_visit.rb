@@ -9,13 +9,21 @@ module TrackObjectVisit
 
       included do
         before_action TrackObjectVisit.action_name(variable_name), if: -> { instance_variable_defined?(variable_name) }
+        after_action TrackObjectVisit.action_name(variable_name), if: -> { instance_variable_defined?(variable_name) }
       end
 
       private
 
       define_method(TrackObjectVisit.action_name(variable_name)) do
-        object = instance_variable_get(variable_name)
-        current_user.visit_object(object) if object
+        unless instance_variable_defined?("#{variable_name}_tracked")
+          object = instance_variable_get(variable_name)
+
+          if object
+            current_user.visit_object(object)
+
+            instance_variable_set("#{variable_name}_tracked", true)
+          end
+        end
       end
     end
   end

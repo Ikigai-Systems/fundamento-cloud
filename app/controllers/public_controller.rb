@@ -1,5 +1,6 @@
 class PublicController < ApplicationController
   include HeadersForPublicDocuments
+  include TrackObjectVisit.for_instance_variable(:@object)
 
   before_action :store_user_location!, if: :storable_location?
 
