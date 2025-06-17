@@ -21,9 +21,13 @@
       }) do %>
         <div class="<%= @version == version ? "bg-blue-500 dark:!bg-blue-400" : "" %> w-1"></div>
         <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
-          <div title="<%= version.created_by&.display_name %>" class="w-10 h-10 <%= version.created_by.blank? ? "bg-gray-200" : "bg-blue-500 text-white" %> rounded-full flex items-center justify-center font-bold">
-            <%= version.created_by&.initials || "?" %>
-          </div>
+          <% if version.created_by.blank? %>
+            <div title="Deleted user" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center font-bold">
+              ?
+            </div>
+          <% else %>
+            <%= render UserAvatar.new(user: version.created_by, organization: current_organization) %>
+          <% end %>
         </div>
         <div class="p-2">
           <div class="font-bold">Version <%= version.sequential_id %></div>
