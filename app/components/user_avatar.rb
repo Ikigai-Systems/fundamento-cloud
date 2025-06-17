@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class UserAvatar < ViewComponent::Base
-  def initialize(organization_user: nil, user: nil, organization: nil, size: "md")
-    @size = size.to_sym
+  def initialize(organization_user: nil, user: nil, organization: nil, variant: "md")
+    @variant = variant.to_sym
 
     if organization_user.present?
       @user = organization_user.user
@@ -19,7 +19,7 @@ class UserAvatar < ViewComponent::Base
     false
   end
 
-  def size_to_dimensions
+  def variant_to_dimensions
     mapping = {
       xs: 16,
       sm: 24,
@@ -28,10 +28,10 @@ class UserAvatar < ViewComponent::Base
       xl: 128
     }
 
-    mapping[@size] || mapping[:xs]
+    mapping[@variant] || mapping[:xs]
   end
 
-  def size_to_class
-    "size-#{size_to_dimensions}"
+  def variant_to_class
+    "size-#{variant_to_dimensions}"
   end
 end

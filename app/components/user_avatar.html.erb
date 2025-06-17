@@ -1,9 +1,13 @@
 <%= tag.div id: dom_id(@user, :avatar), class: "avatar relative inline-block", title: @user.display_name do %>
   <%= tag.div class: [
-    "bg-blue-500 rounded-full flex items-center justify-center text-white font-bold",
-    size_to_class,
+    "bg-blue-500 rounded-full flex items-center justify-center text-white font-bold overflow-hidden",
+    variant_to_class,
   ] do %>
-    <%= Initials.svg(@user.display_name, size: size_to_dimensions, limit: 2) %>
+    <% if @user.respond_to?(:avatar) && @user.avatar.persisted? %>
+      <%= image_tag @user.avatar_variant(@variant), class: "object-cover" %>
+    <% else %>
+      <%= Initials.svg(@user.display_name, size: variant_to_dimensions, limit: 2) %>
+    <% end %>
   <% end %>
 
   <% if online? %>
