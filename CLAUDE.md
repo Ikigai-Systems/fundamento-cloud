@@ -132,3 +132,9 @@ SECRET_KEY_BASE=abcdef docker-compose up
 # Run only infrastructure services
 docker compose up redis postgresql
 ```
+
+## Code formatting
+
+Whenever possible, use the following rules:
+- strings should be put into double-quotes
+- don't add indentation spaces on empty lines
