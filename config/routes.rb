@@ -92,6 +92,8 @@ Rails.application.routes.draw do
       resources :api_tokens, only: [:index, :new, :create, :destroy]
 
       resources :user_properties, only: [:update], module: :users
+
+      resource :avatar, only: [:edit, :update, :destroy], module: :users
     end
 
     resources :public_links do

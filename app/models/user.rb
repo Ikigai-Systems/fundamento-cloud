@@ -15,8 +15,19 @@ class User < ApplicationRecord
   has_many :teams, through: :team_memberships, dependent: :destroy
   has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
 
+  has_one_attached :avatar do |attachable|
+    attachable.variant :xs, resize_to_fill: [16, 16]
+    attachable.variant :sm, resize_to_fill: [24, 24]
+    attachable.variant :md, resize_to_fill: [32, 32]
+    attachable.variant :lg, resize_to_fill: [64, 64]
+    attachable.variant :xl, resize_to_fill: [128, 128]
+  end
+
   validates_presence_of :first_name
   validates_presence_of :last_name
+  validate :validate_avatar_format
+
+  after_commit :process_avatar_variants, on: [:create, :update]
 
   def initials
     first_name.first(1) + last_name.first(1)
@@ -53,5 +64,49 @@ class User < ApplicationRecord
   # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
   def send_reset_password_instructions
     super if invitation_token.nil?
+  end
+
+  def avatar_variant(size = :lg)
+    return unless avatar.attached?
+    
+    # SVG files don't need variants as they're vector-based and scalable
+    if avatar.content_type == 'image/svg+xml'
+      avatar
+    else
+      avatar.variant(size)
+    end
+  end
+
+  private
+
+  def validate_avatar_format
+    return unless avatar.attached?
+    
+    # Use a more direct approach to get the uploaded file data
+    blob = avatar.blob
+    return unless blob
+    
+    unless blob.content_type.in?(%w[image/jpeg image/png image/gif image/webp image/svg+xml])
+      errors.add(:avatar, 'must be a JPEG, PNG, GIF, WebP, or SVG image')
+    end
+    
+    if blob.byte_size > 5.megabytes
+      errors.add(:avatar, 'must be less than 5MB')
+    end
+  rescue => e
+    Rails.logger.error "Avatar validation error: #{e.message}"
+    # Don't block the upload, just log the error
+  end
+
+  def process_avatar_variants
+    return unless avatar.attached?
+    return if avatar.content_type == 'image/svg+xml' # SVG doesn't need variants
+    
+    # Generate all variants to ensure they're ready when needed
+    [:xs, :sm, :md, :lg, :xl].each do |size|
+      avatar.variant(size).processed
+    end
+  rescue => e
+    Rails.logger.error "Failed to process avatar variants for user #{id}: #{e.message}"
   end
 end

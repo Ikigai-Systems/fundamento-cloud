@@ -1,0 +1,28 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= form_for(@user,
+    url: user_avatar_path(@user),
+    html: { class: "default-form" },
+    data: { controller: "prevent-double-submit" } ) do |f| %>
+    <% content_for :modal_title do %>
+      Change avatar
+    <% end %>
+
+    <% content_for :modal_main_content do %>
+      <%= render UserAvatar.new(user: @user, variant: :xl) %>
+
+      <div class="form-field">
+        <%= f.label :avatar %>
+        <%= f.file_field :avatar, class: "form-input", accept: "image/*" %>
+        <i class="form-hint">Maximum file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP, SVG</i>
+      </div>
+    <% end %>
+
+
+    <% content_for :modal_buttons do %>
+      <button type="submit" class="modal-submit-button primary-button">Save</button>
+      <button type="button" data-action="modal#close" class="modal-cancel-button secondary-button">Cancel</button>
+    <% end %>
+
+    <%= render template: "application/components/modal_content" %>
+  <% end %>
+<% end %>
