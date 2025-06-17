@@ -1,9 +1,10 @@
 <%= tag.div id: dom_id(@user, :avatar), class: "avatar relative inline-block", title: @user.display_name do %>
-  <div
-    class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold"
-  >
-    <%= Initials.svg(@user.display_name) %>
-  </div>
+  <%= tag.div class: [
+    "bg-blue-500 rounded-full flex items-center justify-center text-white font-bold",
+    size_to_class,
+  ] do %>
+    <%= Initials.svg(@user.display_name, size: size_to_dimensions, limit: 2) %>
+  <% end %>
 
   <% if online? %>
     <span class="absolute bottom-0 right-0 block size-4 rounded-full bg-green-400 ring-2 ring-white"></span>
