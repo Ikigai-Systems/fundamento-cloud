@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class OrganizationUserAvatarComponent < ViewComponent::Base
+class UserAvatar < ViewComponent::Base
   def initialize(organization_user: nil, user: nil, organization: nil)
     if organization_user.present?
       @user = organization_user.user

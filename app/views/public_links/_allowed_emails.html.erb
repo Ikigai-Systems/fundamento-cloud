@@ -8,7 +8,7 @@
         <% public_link.allowed_users.each do |allowed_user| %>
           <div class="flex items-center justify-between gap-2 p-2 bg-gray-50 rounded-md">
             <div class="flex items-center gap-2">
-              <%= render OrganizationUserAvatarComponent.new(organization_user: allowed_user) %>
+              <%= render UserAvatar.new(organization_user: allowed_user) %>
               <div class="inline-block">
                 <%= render UserWithEmail.new(user: allowed_user) %>
               </div>
@@ -28,7 +28,7 @@
         <% public_link.pending_users.each do |pending_email| %>
           <div class="flex items-center justify-between gap-2 p-2 bg-yellow-50 rounded-md">
             <div class="flex items-center gap-2">
-              <%= render OrganizationUserAvatarComponent.new(organization_user: pending_email) %>
+              <%= render UserAvatar.new(organization_user: pending_email) %>
               <div class="inline-block">
                 <%= render UserWithEmail.new(user: pending_email) %>
               </div>
