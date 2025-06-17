@@ -176,6 +176,7 @@ GEM
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
+    initials (0.4.3)
     io-console (0.7.2)
     irb (1.14.0)
       rdoc (>= 4.0.0)
@@ -433,6 +434,7 @@ DEPENDENCIES
   good_job (~> 4.4)
   hash_diff
   importmap-rails
+  initials
   js_from_routes
   jwt
   lograge (~> 0.14.0)

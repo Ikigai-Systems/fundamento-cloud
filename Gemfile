@@ -90,6 +90,8 @@ gem "recaptcha"
 
 gem "random-word"
 
+gem "initials"
+
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
