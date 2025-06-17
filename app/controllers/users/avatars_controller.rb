@@ -4,10 +4,15 @@ class Users::AvatarsController < ApplicationController
   before_action :ensure_turbo_request, only: [:edit]
   before_action { @user = current_user }
 
+  after_action :verify_authorized
+
   def edit
+    authorize @user, :update?
   end
 
   def update
+    authorize @user, :update?
+
     if @user.update(update_params)
       render turbo_stream: turbo_stream.redirect_to(edit_user_registration_path)
     else
