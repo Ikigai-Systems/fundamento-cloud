@@ -10,7 +10,8 @@ class Documents::VersionsController < ApplicationController
   before_action :load_document
 
   def create
-    blocks = JSON.parse(params["blocks"].to_s)
+    content_blocks = JSON.parse(params["content_blocks"].to_s)
+    content_html = params["content_html"]
 
     authorize @document, :update?
 
@@ -26,7 +27,8 @@ class Documents::VersionsController < ApplicationController
     end
 
     @version = @document.versions.new
-    @version.content = blocks
+    @version.content_blocks = content_blocks
+    @version.content_html = content_html
     @version.created_by = current_user
 
     if @version.save

@@ -12,8 +12,8 @@
 
   <div data-controller="popover" class="relative">
     <%= button_to "Update", document_versions_path(@document), method: :create,
-      params: {blocks: ""},
-      :onclick => "this.form.elements['blocks'].value = JSON.stringify(window.blockNoteEditor?.document);",
+      params: {content_blocks: "", content_html: ""},
+      :onclick => "this.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document); this.form.elements['content_html'].value = window.ckEditor.getData();",
       class: "primary-button document-toolbar-button update-button",
       form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} }
     %>
@@ -42,5 +42,6 @@
     space: @space.to_react_props,
     current_user: current_user,
     database_id: database_id,
+    content_html: @document.versions.latest.present? ? @document.versions.latest.content_html : "",
   } %>
 </article>

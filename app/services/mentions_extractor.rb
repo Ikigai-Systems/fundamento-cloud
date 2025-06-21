@@ -8,7 +8,7 @@ class MentionsExtractor
     documents.each do |document|
       document_versions = document.versions.order(sequential_id: :asc)
       document_versions.each do |version|
-        mentions_ids = mentions_from_blocknote(version.content, user)
+        mentions_ids = mentions_from_blocknote(version.content_blocks, user)
         mentions_ids.each do |mention_id|
           # We assume mention was created in the oldest version it was referenced ever so we skip all subsequent versions,
           # unless the mention is still present in the most recent (current) version - in that case we want to provide link

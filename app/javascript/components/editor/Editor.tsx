@@ -18,6 +18,26 @@ import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/core/comments";
 import UsersApi from "../../api/UsersApi.js";
 
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import {
+  ClassicEditor,
+  Bold,
+  Essentials,
+  Heading,
+  Indent,
+  IndentBlock,
+  Italic,
+  Link,
+  List,
+  MediaEmbed,
+  Paragraph,
+  Table,
+  Undo
+} from 'ckeditor5';
+
+import 'ckeditor5/ckeditor5.css';
+
+
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
@@ -36,9 +56,10 @@ type EditorProps = {
   currentUser: User,
   document: Document,
   editable?: boolean,
+  contentHtml: string,
 }
 
-const Editor = ({currentUser, document, editable = true, databaseId = ""}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = "", contentHtml}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
@@ -183,10 +204,42 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
   }
 
   return <>
+    <CKEditor
+      editor={ ClassicEditor }
+      onReady={ editor => {
+        window.ckEditor = editor;
+      }}
+      config={ {
+        toolbar: [
+          'undo', 'redo', '|',
+          'heading', '|', 'bold', 'italic', '|',
+          'link', 'insertTable', 'mediaEmbed', '|',
+          'bulletedList', 'numberedList', 'indent', 'outdent'
+        ],
+        plugins: [
+          Bold,
+          Essentials,
+          Heading,
+          Indent,
+          IndentBlock,
+          Italic,
+          Link,
+          List,
+          MediaEmbed,
+          Paragraph,
+          Table,
+          Undo
+        ],
+        initialData: contentHtml,
+        licenseKey: window.FundamentoConfig.ckeditor.licenseKey,
+    } }
+    />
+
     <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable}>
       {/* Replaces the default Slash Menu. */}
       <CommonSuggestionMenus editor={editor}/>
     </BlockNoteView>
+
   </>
 }
 

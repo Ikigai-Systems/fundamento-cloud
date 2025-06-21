@@ -21,7 +21,7 @@ class ReferencesExtractor
           }
         )
 
-        references = references_from_blocknote(version.content)
+        references = references_from_blocknote(version.content_blocks)
         references.each do |reference|
           unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
             unique_references[reference] = ObjectReference.new(
