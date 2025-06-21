@@ -20,7 +20,7 @@ type EditDocumentPanelProps = {
 const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
-    initialContent: version.content,
+    initialContent: version.contentBlocks,
     resolveFileUrl: createFileUrlResolver(),
   });
 

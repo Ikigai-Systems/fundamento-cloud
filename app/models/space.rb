@@ -133,7 +133,7 @@ class Space < ApplicationRecord
       )
 
       document.versions.create!(
-        content: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+        content_blocks: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
       )
 
       hierarchy_node = self.create_hierarchy_node(document.id)
@@ -192,7 +192,7 @@ class Space < ApplicationRecord
     )
 
     home_document.versions.create!(
-      content: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))
+      content_blocks: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))
     )
 
     update!(home_document: home_document)

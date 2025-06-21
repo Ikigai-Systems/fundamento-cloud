@@ -36,7 +36,8 @@ export type Table = {
 
 export type Version = {
   sequentialId: number,
-  content: unknown,
+  contentBlocks: unknown,
+  contentHtml: string,
   documentId: number,
   createdAt: string, //date
   updatedAt: string, //date
