@@ -1,4 +1,4 @@
-import {Document, Version, Space} from "../types";
+import {Document, Space, Version} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
@@ -10,22 +10,9 @@ import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
 import {ContentTitle} from "./ContentTitle.tsx";
-import {CKEditor} from "@ckeditor/ckeditor5-react";
-import {
-  Bold,
-  ClassicEditor,
-  Essentials,
-  Heading,
-  Indent,
-  IndentBlock,
-  Italic,
-  Link,
-  List,
-  MediaEmbed,
-  Paragraph, Table, Undo
-} from "ckeditor5";
 
 import 'ckeditor5/ckeditor5.css';
+import HtmlEditor from "./HtmlEditor/HtmlEditor.tsx";
 
 type EditDocumentPanelProps = {
   version: Version,
@@ -47,38 +34,7 @@ const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
       </div>
 
       <div className="html-editor-container">
-        <CKEditor
-          editor={ ClassicEditor }
-          disabled={true}
-          onReady={ editor => {
-            window.ckEditor = editor;
-          }}
-          config={ {
-            toolbar: [
-              'undo', 'redo', '|',
-              'heading', '|', 'bold', 'italic', '|',
-              'link', 'insertTable', 'mediaEmbed', '|',
-              'bulletedList', 'numberedList', 'indent', 'outdent'
-            ],
-            plugins: [
-              Bold,
-              Essentials,
-              Heading,
-              Indent,
-              IndentBlock,
-              Italic,
-              Link,
-              List,
-              MediaEmbed,
-              Paragraph,
-              Table,
-              Undo
-            ],
-            initialData: version.contentHtml,
-            licenseKey: window.FundamentoConfig.ckeditor.licenseKey,
-          } }
-        />
-
+        <HtmlEditor initialData={version.contentHtml} disabled={true}/>
       </div>
 
       <div className="editor-container">
