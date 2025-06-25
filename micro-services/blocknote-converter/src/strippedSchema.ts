@@ -18,6 +18,40 @@ const FormulaInlineContent = createReactInlineContentSpec(
   }
 );
 
+const MentionInlineContent = createReactInlineContentSpec(
+  {
+    type: "mention",
+    propSchema: {
+      formula: {
+        default: "",
+      },
+      id: {
+        default: "",
+      }
+    },
+    content: "none",
+  }, {
+    render: () => null,
+  }
+);
+
+const ButtonInlineContent = createReactInlineContentSpec(
+  {
+    type: "button",
+    propSchema: {
+      formula: {
+        default: "",
+      },
+      id: {
+        default: "",
+      }
+    },
+    content: "none",
+  }, {
+    render: () => null,
+  }
+);
+
 const AdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
@@ -68,8 +102,8 @@ const ChartBlock = createReactBlockSpec(
 const strippedSchema = BlockNoteSchema.create({
   inlineContentSpecs: {
     ...defaultInlineContentSpecs,
-    // mention: MentionInlineContent,
-    // button: ButtonInlineContent,
+    mention: MentionInlineContent,
+    button: ButtonInlineContent,
     formula: FormulaInlineContent,
   },
   blockSpecs: {
