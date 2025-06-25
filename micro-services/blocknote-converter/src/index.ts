@@ -148,31 +148,4 @@ program
     });
   });
 
-program
-  .command("convert-blocks-to-docx")
-  .description("Convert Blocknote to Docx")
-  .option("-i, --input <file>", "Input file (default: stdin)")
-  .option("-o, --output <file>", "Output file (default: stdout)")
-  .action((options) => {
-    const inputStream = createInputStream(options.input);
-
-    const outputStream = createOutputStream(options.output);
-
-    const chunks = [];
-
-    inputStream.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    inputStream.on('end', async () => {
-      const convertedData = await convertBlocksToDocx(JSON.parse(Buffer.concat(chunks).toString("utf8")));
-
-      outputStream.write(convertedData);
-
-      if (!options.output) {
-        outputStream.end();
-      }
-    });
-  });
-
 program.parse(process.argv);

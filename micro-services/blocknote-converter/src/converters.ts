@@ -1,11 +1,6 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
 import strippedSchema from "./strippedSchema";
-import {
-  DOCXExporter,
-  docxDefaultSchemaMappings,
-} from "@blocknote/xl-docx-exporter";
-import { Packer } from "docx";
 
 export function convertToBlocks(yjs : Buffer) {
   const doc = new Y.Doc();
@@ -38,14 +33,4 @@ export async function convertBlocksToMarkdown(blocks: any) {
   const serverBlockNoteEditor = ServerBlockNoteEditor.create();
 
   return await serverBlockNoteEditor.blocksToMarkdownLossy(blocks);
-}
-
-export async function convertBlocksToDocx(blocks: any) {
-  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
-
-  const exporter = new DOCXExporter(serverBlockNoteEditor.editor.schema, docxDefaultSchemaMappings);
-
-  const docxDocument = await exporter.toDocxJsDocument(serverBlockNoteEditor.editor.document);
-
-  return await Packer.toBuffer(docxDocument);
 }
