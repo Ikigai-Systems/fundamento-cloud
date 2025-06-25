@@ -24,13 +24,17 @@ export function convertToYjs(blocks: any) {
 }
 
 export async function convertMarkdownToBlocks(markdown: string) {
-  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create({
+    schema: strippedSchema,
+  });
 
   return await serverBlockNoteEditor.tryParseMarkdownToBlocks(markdown);
 }
 
 export async function convertBlocksToMarkdown(blocks: any) {
-  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create({
+    schema: strippedSchema,
+  });
 
   return await serverBlockNoteEditor.blocksToMarkdownLossy(blocks);
 }

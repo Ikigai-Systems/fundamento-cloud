@@ -56,6 +56,9 @@ const AdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
     propSchema: {
+      tableId: {
+        default: -1,
+      },
       tableNpi: {
         default: "",
       },
