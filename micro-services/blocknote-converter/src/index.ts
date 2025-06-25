@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
-import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
+import {
+  convertBlocksToDocx,
+  convertBlocksToMarkdown,
+  convertMarkdownToBlocks,
+  convertToBlocks,
+  convertToYjs
+} from "./converters";
 import {Command} from "commander";
 
 const program = new Command();
@@ -132,7 +138,7 @@ program
     });
 
     inputStream.on('end', async () => {
-      const convertedData = await convertBlocksToMarkdown(Buffer.concat(chunks).toString("utf8"));
+      const convertedData = await convertBlocksToMarkdown(JSON.parse(Buffer.concat(chunks).toString("utf8")));
 
       outputStream.write(JSON.stringify(convertedData));
 
