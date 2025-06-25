@@ -1,3 +1,4 @@
+import React from "react";
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
 import {createReactBlockSpec, createReactInlineContentSpec} from "@blocknote/react";
 
@@ -69,7 +70,9 @@ const AdvancedTable = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null,
+    render: () => {
+      return <div>Test</div>;
+    },
   }
 );
 
