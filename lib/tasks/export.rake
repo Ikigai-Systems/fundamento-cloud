@@ -33,6 +33,7 @@ namespace :fundamento do
         rescue => e
           success = false
           content += "_Content conversion failed_\n\n"
+          content += latest_version.content_blocks.to_json + "\n\n"
           content += e.message
           content += "\n\n"
           content += e.backtrace.join("\n")
