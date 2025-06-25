@@ -20,7 +20,9 @@ namespace :fundamento do
       content = "# #{document.title}\n\n"
 
       # Get latest version if available
+      success = true
       latest_version = document.versions.order(updated_at: :desc).first
+
       if latest_version&.content_blocks.present?
         begin
           # Parse content as it might be stored as string or JSON
@@ -29,8 +31,11 @@ namespace :fundamento do
           markdown_content = convert_blocks_to_markdown(content_data)
           content += markdown_content if markdown_content.present?
         rescue => e
-          puts "Warning: Failed to convert blocks to markdown for #{org_name}/#{space_name}/#{doc_title}: #{e.message}"
-          content += "_Content conversion failed_\n"
+          success = false
+          content += "_Content conversion failed_\n\n"
+          content += e.message
+          content += "\n\n"
+          content += e.backtrace.join("\n")
         end
       else
         content += "_No content available_\n"
@@ -40,7 +45,7 @@ namespace :fundamento do
       file_path = File.join(dir_path, "#{doc_title}.md")
       File.write(file_path, content)
 
-      puts "Exported: #{org_name}/#{space_name}/#{doc_title}.md"
+      puts "#{org_name}/#{space_name}/#{doc_title}.md : #{success ? "OK" : "FAILED"}"
     end
 
     puts "Export completed. #{Document.count} documents exported to #{export_path}"
