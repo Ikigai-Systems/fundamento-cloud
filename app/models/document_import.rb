@@ -1,4 +1,6 @@
 class DocumentImport < ApplicationRecord
+  include ModelWithNpiAsParam
+
   belongs_to :organization
   belongs_to :space
   belongs_to :organization_user

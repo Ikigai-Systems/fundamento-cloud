@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_26_143551) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_26_143552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -112,7 +112,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_26_143551) do
     t.bigint "document_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
+    t.index ["npi"], name: "index_document_imports_on_npi", unique: true
     t.index ["organization_id"], name: "index_document_imports_on_organization_id"
     t.index ["organization_user_id"], name: "index_document_imports_on_organization_user_id"
     t.index ["space_id"], name: "index_document_imports_on_space_id"
