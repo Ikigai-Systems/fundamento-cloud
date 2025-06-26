@@ -66,6 +66,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :imports, param: :npi
+
     resources :tables, path: "t", param: :npi, module: :tables do
       resources :columns
       resources :rows do
