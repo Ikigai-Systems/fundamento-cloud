@@ -12,6 +12,7 @@ class OrganizationUser < ApplicationRecord
   has_many :automations, inverse_of: :run_as
   has_many :automation_invocations, inverse_of: :run_as
   has_many :organization_user_properties, dependent: :delete_all
+  has_many :document_imports, dependent: :nullify
 
   enum :role, [:manager, :member], scope: false
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_20_192919) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_26_143551) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,6 +103,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_20_192919) do
     t.index ["run_as_id"], name: "index_automations_on_run_as_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
+  end
+
+  create_table "document_imports", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "space_id", null: false
+    t.bigint "organization_user_id", null: false
+    t.bigint "document_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_id"], name: "index_document_imports_on_document_id"
+    t.index ["organization_id"], name: "index_document_imports_on_organization_id"
+    t.index ["organization_user_id"], name: "index_document_imports_on_organization_user_id"
+    t.index ["space_id"], name: "index_document_imports_on_space_id"
   end
 
   create_table "documents", force: :cascade do |t|
@@ -562,6 +575,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_20_192919) do
   add_foreign_key "automations", "organization_users", column: "run_as_id"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
+  add_foreign_key "document_imports", "documents"
+  add_foreign_key "document_imports", "organization_users"
+  add_foreign_key "document_imports", "organizations"
+  add_foreign_key "document_imports", "spaces"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"

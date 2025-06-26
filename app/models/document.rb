@@ -13,6 +13,7 @@ class Document < ApplicationRecord
   belongs_to :space
 
   has_one :public_link, as: :object, dependent: :destroy
+  has_one :import, class_name: "DocumentImport", dependent: :delete_all
 
   has_many :versions, dependent: :destroy
   has_many :visitors, class_name: "ObjectVisitor", as: :object, dependent: :delete_all
