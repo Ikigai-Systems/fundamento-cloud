@@ -22,13 +22,12 @@ const CLOUD_SERVICES_TOKEN_URL =
 const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
 const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps) => {
-  const editorPresenceRef = useRef(null);
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
-  const editorOutlineRef = useRef(null);
   const editorRef = useRef(null);
   const editorAnnotationsRef = useRef(null);
+  const editorMinimapRef = useRef(null);
   const editorRevisionHistoryRef = useRef(null);
   const editorRevisionHistoryEditorRef = useRef(null);
   const editorRevisionHistorySidebarRef = useRef(null);
@@ -56,12 +55,14 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
       AutoLink,
       Autosave,
       BalloonToolbar,
+      BlockQuote,
+      BlockToolbar,
       Bold,
-      Bookmark,
       CKBox,
       CKBoxImageEdit,
       CloudServices,
       Code,
+      CodeBlock,
       Emoji,
       Essentials,
       FindAndReplace,
@@ -71,6 +72,7 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
       FontSize,
       Fullscreen,
       Heading,
+      Highlight,
       HorizontalLine,
       ImageBlock,
       ImageCaption,
@@ -92,6 +94,7 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
       List,
       ListProperties,
       Mention,
+      Minimap,
       PageBreak,
       Paragraph,
       PasteFromOffice,
@@ -111,6 +114,7 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
       TableCaption,
       TableCellProperties,
       TableColumnResize,
+      TableLayout,
       TableProperties,
       TableToolbar,
       TextTransformation,
@@ -118,32 +122,79 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
       Underline
     } = cloud.CKEditor;
     const {
-      AIAssistant,
       CaseChange,
       Comments,
-      DocumentOutline,
       ExportPdf,
       ExportWord,
       FormatPainter,
       ImportWord,
       MergeFields,
       MultiLevelList,
-      OpenAITextAdapter,
       Pagination,
       PasteFromOfficeEnhanced,
-      PresenceList,
-      RealTimeCollaborativeComments,
-      RealTimeCollaborativeEditing,
-      RealTimeCollaborativeRevisionHistory,
-      RealTimeCollaborativeTrackChanges,
       RevisionHistory,
       SlashCommand,
-      TableOfContents,
       Template,
       TrackChanges,
       TrackChangesData,
       TrackChangesPreview
     } = cloud.CKEditorPremiumFeatures;
+
+    /**
+     * The `UsersIntegration` lets you manage user data and permissions.
+     *
+     * This is an essential feature when many users work on the same document.
+     *
+     * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/users.html.
+     */
+    class UsersIntegration extends Plugin {
+      static get requires() {
+        return ['Users'];
+      }
+
+      static get pluginName() {
+        return 'UsersIntegration';
+      }
+
+      init() {
+        const usersPlugin = this.editor.plugins.get('Users');
+
+        // These are sample users for demonstration purposes.
+        // In your integration make sure to provide user data from your data source.
+        const users = [
+          { id: 'user-1', name: 'Zee Croce' },
+          { id: 'user-2', name: 'Mex Haddox' }
+        ];
+        const me = users[0];
+
+        for (const user of users) {
+          usersPlugin.addUser(user);
+        }
+
+        usersPlugin.defineMe(me.id);
+      }
+    }
+
+    /**
+     * The `CommentsIntegration` lets you synchronize comments in the document with your data source (e.g. a database).
+     *
+     * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/comments/comments-integration.html.
+     */
+    class CommentsIntegration extends Plugin {}
+
+    /**
+     * The `TrackChangesIntegration` lets you synchronize suggestions added to the document with your data source (e.g. a database).
+     *
+     * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/track-changes/track-changes-integration.html.
+     */
+    class TrackChangesIntegration extends Plugin {}
+
+    /**
+     * The `RevisionHistoryIntegration` lets you synchronize named revisions in the document with your data source (e.g. a database).
+     *
+     * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/revision-history/revision-history-integration.html.
+     */
+    class RevisionHistoryIntegration extends Plugin {}
 
     return {
       DecoupledEditor,
@@ -163,9 +214,6 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
             'insertMergeField',
             'previewMergeFields',
             '|',
-            'aiCommands',
-            'aiAssistant',
-            '|',
             'formatPainter',
             '|',
             'heading',
@@ -182,6 +230,10 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
             'link',
             'insertImage',
             'insertTable',
+            'insertTableLayout',
+            'highlight',
+            'blockQuote',
+            'codeBlock',
             '|',
             'alignment',
             '|',
@@ -195,22 +247,22 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           shouldNotGroupWhenFull: false
         },
         plugins: [
-          AIAssistant,
           Alignment,
           Autoformat,
           AutoImage,
           AutoLink,
           Autosave,
           BalloonToolbar,
+          BlockQuote,
+          BlockToolbar,
           Bold,
-          Bookmark,
           CaseChange,
           CKBox,
           CKBoxImageEdit,
           CloudServices,
           Code,
+          CodeBlock,
           Comments,
-          DocumentOutline,
           Emoji,
           Essentials,
           ExportPdf,
@@ -223,6 +275,7 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           FormatPainter,
           Fullscreen,
           Heading,
+          Highlight,
           HorizontalLine,
           ImageBlock,
           ImageCaption,
@@ -246,19 +299,14 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           ListProperties,
           Mention,
           MergeFields,
+          Minimap,
           MultiLevelList,
-          OpenAITextAdapter,
           PageBreak,
           Pagination,
           Paragraph,
           PasteFromOffice,
           PasteFromOfficeEnhanced,
           PictureEditing,
-          PresenceList,
-          RealTimeCollaborativeComments,
-          RealTimeCollaborativeEditing,
-          RealTimeCollaborativeRevisionHistory,
-          RealTimeCollaborativeTrackChanges,
           RemoveFormat,
           RevisionHistory,
           SlashCommand,
@@ -276,7 +324,7 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           TableCaption,
           TableCellProperties,
           TableColumnResize,
-          TableOfContents,
+          TableLayout,
           TableProperties,
           TableToolbar,
           Template,
@@ -287,33 +335,30 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           TrackChangesPreview,
           Underline
         ],
-        ai: {
-          openAI: {
-            requestHeaders: {
-              Authorization: 'Bearer ' + AI_API_KEY
-            }
-          }
-        },
-        balloonToolbar: [
+        extraPlugins: [UsersIntegration, CommentsIntegration, TrackChangesIntegration, RevisionHistoryIntegration],
+        balloonToolbar: ['comment', '|', 'bold', 'italic', '|', 'link', 'insertImage', '|', 'bulletedList', 'numberedList'],
+        blockToolbar: [
           'comment',
           '|',
-          'aiAssistant',
+          'fontSize',
+          'fontColor',
+          'fontBackgroundColor',
           '|',
           'bold',
           'italic',
           '|',
           'link',
           'insertImage',
+          'insertTable',
+          'insertTableLayout',
           '|',
           'bulletedList',
-          'numberedList'
+          'numberedList',
+          'outdent',
+          'indent'
         ],
         cloudServices: {
-          tokenUrl: CLOUD_SERVICES_TOKEN_URL,
-          webSocketUrl: CLOUD_SERVICES_WEBSOCKET_URL
-        },
-        collaboration: {
-          channelId: channelId
+          tokenUrl: CLOUD_SERVICES_TOKEN_URL
         },
         comments: {
           editorConfig: {
@@ -329,9 +374,6 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
               ]
             }
           }
-        },
-        documentOutline: {
-          container: editorOutlineRef.current
         },
         exportPdf: {
           stylesheets: [
@@ -387,8 +429,8 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
             container.classList.add(
               'editor-container',
               'editor-container_document-editor',
-              'editor-container_include-outline',
               'editor-container_include-annotations',
+              'editor-container_include-minimap',
               'editor-container_include-pagination',
               'editor-container_include-fullscreen',
               'main-container'
@@ -488,6 +530,10 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
         mergeFields: {
           /* Read more: https://ckeditor.com/docs/ckeditor5/latest/features/merge-fields.html#configuration */
         },
+        minimap: {
+          container: editorMinimapRef.current,
+          extraClasses: 'editor-container_include-minimap ck-minimap__iframe-content'
+        },
         pagination: {
           pageWidth: '21cm',
           pageHeight: '29.7cm',
@@ -499,9 +545,6 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
           }
         },
         placeholder: 'Type or paste your content here!',
-        presenceList: {
-          container: editorPresenceRef.current
-        },
         revisionHistory: {
           editorContainer: editorContainerRef.current,
           viewerContainer: editorRevisionHistoryRef.current,
@@ -537,35 +580,39 @@ const HtmlEditor = ({initialData, channelId, disabled = false}: HtmlEditorProps)
 
   return (
     <div className="main-container">
-      <div className="presence" ref={editorPresenceRef}></div>
       <div
-        className="editor-container editor-container_document-editor editor-container_include-outline editor-container_include-annotations editor-container_include-pagination editor-container_include-fullscreen"
+        className="editor-container editor-container_document-editor editor-container_include-annotations editor-container_include-minimap editor-container_include-pagination editor-container_include-fullscreen"
         ref={editorContainerRef}
       >
         <div className="editor-container__menu-bar" ref={editorMenuBarRef}></div>
         <div className="editor-container__toolbar" ref={editorToolbarRef}></div>
-        <div className="editor-container__editor-wrapper">
-          <div className="editor-container__sidebar" ref={editorOutlineRef}></div>
-          <div className="editor-container__editor">
-            <div ref={editorRef}>
-              {DecoupledEditor && editorConfig && (
-                <CKEditor
-                  onReady={editor => {
-                    editorToolbarRef.current.appendChild(editor.ui.view.toolbar.element);
-                    editorMenuBarRef.current.appendChild(editor.ui.view.menuBarView.element);
-                  }}
-                  onAfterDestroy={() => {
-                    Array.from(editorToolbarRef.current.children).forEach(child => child.remove());
-                    Array.from(editorMenuBarRef.current.children).forEach(child => child.remove());
-                  }}
-                  editor={DecoupledEditor}
-                  config={editorConfig}
-                  disabled={disabled}
-                />
-              )}
+        <div className="editor-container__minimap-wrapper">
+          <div className="editor-container__editor-wrapper">
+            <div className="editor-container__editor">
+              <div ref={editorRef}>
+                {DecoupledEditor && editorConfig && (
+                  <CKEditor
+                    onReady={editor => {
+                      editorToolbarRef.current.appendChild(editor.ui.view.toolbar.element);
+                      editorMenuBarRef.current.appendChild(editor.ui.view.menuBarView.element);
+
+                      //for getting editor contents when creating new Version
+                      window.ckEditor = editor;
+                    }}
+                    onAfterDestroy={() => {
+                      Array.from(editorToolbarRef.current.children).forEach(child => child.remove());
+                      Array.from(editorMenuBarRef.current.children).forEach(child => child.remove());
+                    }}
+                    editor={DecoupledEditor}
+                    config={editorConfig}
+                    disabled={disabled}
+                  />
+                )}
+              </div>
             </div>
+            <div className="editor-container__sidebar" ref={editorAnnotationsRef}></div>
           </div>
-          <div className="editor-container__sidebar" ref={editorAnnotationsRef}></div>
+          <div className="editor-container__sidebar editor-container__sidebar_minimap" ref={editorMinimapRef}></div>
         </div>
       </div>
       <div className="revision-history" ref={editorRevisionHistoryRef}>
@@ -607,16 +654,8 @@ function configUpdateAlert(config) {
     valuesToUpdate.push('LICENSE_KEY');
   }
 
-  if (!isModifiedByUser(config.ai?.openAI?.requestHeaders?.Authorization, 'Bearer <YOUR_AI_API_KEY>')) {
-    valuesToUpdate.push('AI_API_KEY');
-  }
-
   if (!isModifiedByUser(config.cloudServices?.tokenUrl, '<YOUR_CLOUD_SERVICES_TOKEN_URL>')) {
     valuesToUpdate.push('CLOUD_SERVICES_TOKEN_URL');
-  }
-
-  if (!isModifiedByUser(config.cloudServices?.webSocketUrl, '<YOUR_CLOUD_SERVICES_WEBSOCKET_URL>')) {
-    valuesToUpdate.push('CLOUD_SERVICES_WEBSOCKET_URL');
   }
 
   if (valuesToUpdate.length) {

@@ -34,6 +34,7 @@ const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
       </div>
 
       <div className="html-editor-container">
+
         <HtmlEditor initialData={version.contentHtml} channelId={document.id.toString()} disabled={true}/>
       </div>
 

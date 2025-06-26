@@ -15,10 +15,6 @@
     margin-right: auto;
 }
 
-.main-container .presence {
-    margin-bottom: 8px;
-}
-
 .ck-content {
     font-family: 'Lato';
     line-height: 1.6;
@@ -86,14 +82,6 @@
     margin-right: 72px;
 }
 
-.editor-container_include-outline .editor-container__editor .ck.ck-editor__editable {
-    margin-left: 0;
-}
-
-.editor-container_include-outline.editor-container_include-fullscreen .ck-fullscreen__document-outline-header {
-    display: none;
-}
-
 .editor-container_include-annotations .editor-container__editor .ck.ck-editor__editable {
     margin-right: 0;
 }
@@ -104,6 +92,47 @@
     margin-top: 28px;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.editor-container__minimap-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.editor-container__sidebar_minimap {
+    margin: 0;
+    flex: 0 0 auto;
+    border-left: 1px solid var(--ck-color-toolbar-border);
+    position: relative;
+    overflow: hidden;
+    max-height: 100%;
+}
+
+.editor-container_include-minimap.ck-minimap__iframe-content {
+    background: hsl(0, 0%, 100%);
+}
+
+.editor-container_include-minimap.ck-minimap__iframe-content .ck.ck-editor__editable {
+    font-family: 'Lato';
+    line-height: 1.6;
+    flex: 1 1 auto;
+    word-break: break-word;
+    box-sizing: border-box;
+    min-width: calc(210mm + 2px);
+    max-width: calc(210mm + 2px);
+    min-height: 297mm;
+    height: fit-content;
+    padding: 20mm 12mm;
+}
+
+.editor-container_include-minimap .editor-container__editor-wrapper {
+    height: 100%;
+}
+
+.editor-container_include-minimap .editor-container__sidebar_minimap {
+    max-width: calc(var(--ckeditor5-preview-sidebar-width) / 2);
+    min-width: calc(var(--ckeditor5-preview-sidebar-width) / 2);
 }
 
 .revision-history {
