@@ -1,5 +1,6 @@
 class DocumentImport < ApplicationRecord
   include ModelWithNpiAsParam
+  include Rails.application.routes.url_helpers
 
   belongs_to :organization
   belongs_to :space
@@ -12,6 +13,8 @@ class DocumentImport < ApplicationRecord
   validate :file_format_supported
 
   after_commit :schedule_document_import_job, on: :create
+
+  after_update_commit :redirect_to_document, if: :processed?
 
   scope :recent, -> { order(created_at: :desc) }
   scope :successful, -> { where.not(document: nil) }
@@ -49,6 +52,10 @@ class DocumentImport < ApplicationRecord
 
   def schedule_document_import_job
     DocumentImportProcessorJob.perform_later(self) if file.attached?
+  end
+
+  def redirect_to_document
+    broadcast_action_to(["document_import", self], action: :redirect_to, render: false, target: document_path(self.document))
   end
 
   def file_format_supported
