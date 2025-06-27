@@ -1,9 +1,12 @@
-<article class="document p-5">
-  <div class="flex justify-between items-center mb-6">
-    <h2 class="form-header">Document Imports</h2>
-    <%= link_to "Import New Document", new_import_path, class: "btn btn-primary" %>
-  </div>
+<% content_for :focused_header do %>
+  Document Imports
+<% end %>
 
+<% content_for :focused_header_buttons do %>
+  <%= link_to "Import New Document", new_import_path, class: "primary-button" %>
+<% end %>
+
+<% content_for :focused_content do %>
   <% if @document_imports.any? %>
     <div class="imports-list">
       <% @document_imports.each do |import| %>
@@ -47,4 +50,6 @@
       <%= link_to "Import Document", new_import_path, class: "btn btn-primary" %>
     </div>
   <% end %>
-</article>
+<% end %>
+
+<%= render "focused_section" %>

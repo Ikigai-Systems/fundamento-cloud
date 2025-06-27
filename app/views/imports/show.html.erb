@@ -1,6 +1,10 @@
-<article class="document p-5">
-  <h2 class="form-header">Document Import Status</h2>
+<%= turbo_stream_from ["document_import", @document_import] %>
 
+<% content_for :focused_header do %>
+  Document is being imported
+<% end %>
+
+<% content_for :focused_content do %>
   <div class="import-details">
     <div class="form-field">
       <label>File:</label>
@@ -51,4 +55,6 @@
       <%= link_to "View Document", document_path(@document_import.document), class: "btn btn-primary" %>
     <% end %>
   </div>
-</article>
+<% end %>
+
+<%= render "focused_section" %>
