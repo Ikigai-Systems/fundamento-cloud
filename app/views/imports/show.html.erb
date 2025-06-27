@@ -1,60 +1,33 @@
 <%= turbo_stream_from ["document_import", @document_import] %>
 
-<% content_for :focused_header do %>
-  Document is being imported
-<% end %>
-
 <% content_for :focused_content do %>
-  <div class="import-details">
-    <div class="form-field">
-      <label>File:</label>
-      <div><%= @document_import.filename %></div>
-    </div>
+  <% if @document_import.successful? %>
+    <div class="text-center mt-10">
+      <i class="fa-regular fa-file-lines text-gray-400 fa-3x"></i>
 
-    <div class="form-field">
-      <label>Space:</label>
-      <div><%= link_to @document_import.space.name, space_path(@document_import.space) %></div>
-    </div>
+      <h3 class="mt-2 text-sm font-semibold">Document was imported</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        <span class="border rounded p-0.5"><%= @document_import.filename %></span> was imported successfully.
+      </p>
 
-    <div class="form-field">
-      <label>Imported by:</label>
-      <div><%= @document_import.organization_user.display_name %></div>
-    </div>
-
-    <div class="form-field">
-      <label>Created:</label>
-      <div><%= @document_import.created_at.strftime("%B %d, %Y at %I:%M %p") %></div>
-    </div>
-
-    <div class="form-field">
-      <label>Status:</label>
-      <div>
-        <% if @document_import.successful? %>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            ✓ Completed
-          </span>
-        <% else %>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            ⏳ Processing...
-          </span>
-        <% end %>
+      <div class="mt-6">
+        <%= link_to "View document", document_path(@document_import.document), class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
       </div>
     </div>
+  <% else %>
+    <div class="text-center mt-10">
+      <i class="fa-regular fa-spinner fa-spin text-gray-400 fa-3x"></i>
 
-    <% if @document_import.successful? %>
-      <div class="form-field">
-        <label>Created Document:</label>
-        <div><%= link_to @document_import.document.title, document_path(@document_import.document), class: "link" %></div>
+      <h3 class="mt-2 text-sm font-semibold">Document is being imported</h3>
+      <p class="mt-1 text-sm text-gray-500">
+        Please wait while <span class="border rounded p-0.5"><%= @document_import.filename %></span> is being imported. You will be redirected to the document once it is ready.
+      </p>
+
+      <div class="mt-6">
+        <%= link_to "See other imports", imports_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" %>
       </div>
-    <% end %>
-  </div>
-
-  <div class="form-footer">
-    <%= link_to "Back to Imports", imports_path, class: "btn btn-secondary" %>
-    <% if @document_import.successful? %>
-      <%= link_to "View Document", document_path(@document_import.document), class: "btn btn-primary" %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 <% end %>
 
 <%= render "focused_section" %>
