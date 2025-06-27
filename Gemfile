@@ -77,6 +77,9 @@ gem "logstash-event", "~> 1.2"
 
 gem "aws-sdk-s3", require: false
 
+# Document processing
+gem "docx"
+
 gem "wannabe_bool"
 
 gem "good_job", "~> 4.4"

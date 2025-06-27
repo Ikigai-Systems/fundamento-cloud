@@ -11,6 +11,8 @@ class DocumentImport < ApplicationRecord
   validates :file, presence: true
   validate :file_format_supported
 
+  after_commit :schedule_document_import_job, on: :create
+
   scope :recent, -> { order(created_at: :desc) }
   scope :successful, -> { where.not(document: nil) }
   scope :failed, -> { where(document: nil) }
@@ -21,6 +23,14 @@ class DocumentImport < ApplicationRecord
 
   def failed?
     document.nil?
+  end
+
+  def processing?
+    imported_content.blank? && imported_at.blank?
+  end
+
+  def processed?
+    imported_content.present? && imported_at.present?
   end
 
   def filename
@@ -36,6 +46,10 @@ class DocumentImport < ApplicationRecord
   end
 
   private
+
+  def schedule_document_import_job
+    DocumentImportProcessorJob.perform_later(self) if file.attached?
+  end
 
   def file_format_supported
     return unless file.attached?
