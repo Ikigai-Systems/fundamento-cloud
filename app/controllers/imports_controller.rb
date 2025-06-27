@@ -19,7 +19,7 @@ class ImportsController < ApplicationController
     authorize @document_import, :create?
 
     if @document_import.save
-      redirect_to @document_import, notice: "Import started successfully. Your document will be ready shortly."
+      redirect_to import_path(@document_import), notice: "Import started successfully. Your document will be ready shortly."
     else
       @spaces = updatable_spaces
       render :new, status: :unprocessable_content
