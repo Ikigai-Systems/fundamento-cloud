@@ -6,7 +6,7 @@ namespace :fundamento do
 
     puts "Exporting documents to: #{export_path}"
 
-    Document.includes(organization: [], space: [], versions: []).find_each do |document|
+    Document.includes(organization: [], space: [], versions: [], comments: [organization_user: :user]).find_each do |document|
       # Sanitize names for filesystem
       org_name = sanitize_filename(document.organization.name)
       space_name = sanitize_filename(document.space.name)
@@ -43,6 +43,35 @@ namespace :fundamento do
         end
       else
         content += "_No content available_\n"
+      end
+
+      # Process and append comments chronologically
+      comments = document.comments.order(:created_at)
+      if comments.any?
+        content += "\n\n---\n\n# Comments\n\n"
+        
+        comments.each do |comment|
+          begin
+            content += "---\n\n"
+            content += "**Comment by #{comment.organization_user.display_name}** (#{comment.created_at.strftime('%B %d, %Y at %I:%M %p')})\n\n"
+            
+            # Process comment content (same as document content)
+            comment_content = comment.content
+            if comment_content.present?
+              # Convert comment content to markdown
+              comment_markdown = convert_blocks_to_markdown(comment_content)
+              # Process attachment links in comment content
+              comment_markdown = process_attachment_links(comment_markdown, dir_path, document.organization) if comment_markdown.present?
+              content += comment_markdown if comment_markdown.present?
+            else
+              content += "_Empty comment_\n"
+            end
+            content += "\n\n"
+          rescue => e
+            content += "_Comment processing failed_\n\n"
+            Rails.logger.error("Failed to process comment #{comment.id}: #{e.message}")
+          end
+        end
       end
 
       # Create markdown file
