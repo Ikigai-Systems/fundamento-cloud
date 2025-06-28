@@ -128,8 +128,9 @@ namespace :fundamento do
       begin
         attachment = organization.attachments.find(attachment_id)
         
-        # Create a safe filename
-        safe_filename = sanitize_filename(attachment.filename || "attachment_#{attachment_id}")
+        # Create a safe filename prefixed with attachment ID for uniqueness
+        base_filename = sanitize_filename(attachment.filename || "attachment")
+        safe_filename = "#{attachment_id}-#{base_filename}"
         
         # Ensure we have a file extension if one exists in the original filename
         if attachment.filename && !safe_filename.include?(".")
