@@ -21,7 +21,7 @@ const EditDocumentPanel = ({document, space, currentUser, databaseId, contentHtm
       </div>
 
       <div className="html-editor-container">
-        <HtmlEditor initialData={contentHtml} channelId={document.id.toString()}/>
+        <HtmlEditor initialData={contentHtml} document={document}/>
       </div>
 
       <div className="editor-container">

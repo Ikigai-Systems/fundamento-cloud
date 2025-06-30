@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_06_27_122536) do
+ActiveRecord::Schema[7.1].define(version: 2025_06_30_173942) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -252,6 +252,23 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_27_122536) do
     t.index ["priority", "scheduled_at"], name: "index_good_jobs_on_priority_scheduled_at_unfinished_unlocked", where: "((finished_at IS NULL) AND (locked_by_id IS NULL))"
     t.index ["queue_name", "scheduled_at"], name: "index_good_jobs_on_queue_name_and_scheduled_at", where: "(finished_at IS NULL)"
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
+  end
+
+  create_table "inline_comment_threads", id: :string, force: :cascade do |t|
+    t.bigint "document_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_id"], name: "index_inline_comment_threads_on_document_id"
+  end
+
+  create_table "inline_comments", id: :string, force: :cascade do |t|
+    t.string "inline_comment_thread_id"
+    t.bigint "organization_user_id", null: false
+    t.string "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["inline_comment_thread_id"], name: "index_inline_comments_on_inline_comment_thread_id"
+    t.index ["organization_user_id"], name: "index_inline_comments_on_organization_user_id"
   end
 
   create_table "invited_users", force: :cascade do |t|
@@ -587,6 +604,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_06_27_122536) do
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"
+  add_foreign_key "inline_comment_threads", "documents"
+  add_foreign_key "inline_comments", "organization_users"
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "object_comments", "organization_users"
   add_foreign_key "object_comments", "organizations"

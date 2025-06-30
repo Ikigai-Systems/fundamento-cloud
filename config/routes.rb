@@ -105,6 +105,8 @@ Rails.application.routes.draw do
     resources :reactions, only: [:create, :index, :show, :destroy]
     resources :comments
 
+    post "/inline_comments" => "inline_comments#add_comment_thread"
+
     get "/public/:npi" => "public#show", as: :public
     get "/public/attachments/:id" => "public#attachment"
 
