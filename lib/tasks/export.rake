@@ -32,6 +32,10 @@ namespace :fundamento do
 
           # Process attachment links in the markdown content
           markdown_content = process_attachment_links(markdown_content, dir_path, document.organization) if markdown_content.present?
+
+          # Process table references in the markdown content
+          markdown_content = process_table_references(markdown_content, document.organization) if markdown_content.present?
+
           content += markdown_content if markdown_content.present?
         rescue => e
           success = false
@@ -60,8 +64,13 @@ namespace :fundamento do
             if comment_content.present?
               # Convert comment content to markdown
               comment_markdown = convert_blocks_to_markdown(comment_content)
+
               # Process attachment links in comment content
               comment_markdown = process_attachment_links(comment_markdown, dir_path, document.organization) if comment_markdown.present?
+
+              # Process table references in comment content
+              comment_markdown = process_table_references(comment_markdown, document.organization) if comment_markdown.present?
+
               content += comment_markdown if comment_markdown.present?
             else
               content += "_Empty comment_\n"
@@ -163,5 +172,70 @@ namespace :fundamento do
         match
       end
     end
+  end
+
+  def process_table_references(markdown_content, organization)
+    # Replace [Table reference: (id|npi)] patterns with markdown tables
+    markdown_content.gsub(/`\[Table reference: ([^\]]+)\]`/) do |match|
+      table_identifier = $1.strip
+      
+      begin
+        # Try to find table by NPI first, then by ID
+        table = organization.tables.find_by_param!(table_identifier)
+        
+        # Get table data
+        table_data = table.data_to_json(evaluate_formulas: false)
+        
+        # Convert to markdown table
+        convert_table_data_to_markdown(table_data, table.name)
+      rescue ActiveRecord::RecordNotFound
+        # If table doesn't exist, leave the original reference unchanged
+        match
+      rescue => e
+        Rails.logger.error("Failed to process table reference #{table_identifier}: #{e.message}")
+        match
+      end
+    end
+  end
+
+  def convert_table_data_to_markdown(table_data, table_name = nil)
+    columns = table_data[:columns]
+    rows = table_data[:rows]
+    
+    return "_Empty table_" if columns.empty? || rows.empty?
+    
+    # Start with table name if provided
+    markdown = ""
+    markdown += "Table **#{table_name}**:\n\n" if table_name.present?
+    
+    # Create header row
+    headers = columns.map { |col| col.name || col.npi }
+    markdown += "| " + headers.join(" | ") + " |\n"
+    
+    # Create separator row
+    markdown += "| " + (["---"] * columns.length).join(" | ") + " |\n"
+    
+    # Create data rows
+    rows.each do |row|
+      row_values = columns.map do |col|
+        value = row[col.npi]
+        
+        # Format different column types appropriately
+        case col.kind
+        when "checkbox"
+          value ? "✓" : ""
+        when "date"
+          value.present? ? value : ""
+        else
+          # Escape pipe characters in cell content to prevent table breaking
+          value.to_s.gsub("|", "\\|")
+        end
+      end
+      
+      markdown += "| " + row_values.join(" | ") + " |\n"
+    end
+    
+    markdown += "\n"
+    markdown
   end
 end
