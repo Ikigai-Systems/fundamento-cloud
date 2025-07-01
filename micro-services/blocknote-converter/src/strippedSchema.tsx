@@ -70,8 +70,9 @@ const AdvancedTable = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => {
-      return <div>Test</div>;
+    render: ({block}) => {
+      const blockProps = block.props;
+      return <div>`[Table reference: {blockProps.tableNpi || blockProps.tableId}]`</div>;
     },
   }
 );
