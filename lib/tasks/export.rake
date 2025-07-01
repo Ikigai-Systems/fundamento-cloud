@@ -16,6 +16,10 @@ namespace :fundamento do
       dir_path = File.join(export_path, org_name, space_name)
       FileUtils.mkdir_p(dir_path)
 
+      # Create attachments subdirectory
+      attachments_dir = File.join(export_path, "attachments")
+      FileUtils.mkdir_p(attachments_dir)
+
       # Start with document title
       content = "# #{document.title}\n\n"
 
@@ -31,7 +35,7 @@ namespace :fundamento do
           markdown_content = convert_blocks_to_markdown(content_data)
 
           # Process attachment links in the markdown content
-          markdown_content = process_attachment_links(markdown_content, dir_path, document.organization) if markdown_content.present?
+          markdown_content = process_attachment_links(markdown_content, attachments_dir, document.organization) if markdown_content.present?
 
           # Process table references in the markdown content
           markdown_content = process_table_references(markdown_content, document.organization) if markdown_content.present?
@@ -66,7 +70,7 @@ namespace :fundamento do
               comment_markdown = convert_blocks_to_markdown(comment_content)
 
               # Process attachment links in comment content
-              comment_markdown = process_attachment_links(comment_markdown, dir_path, document.organization) if comment_markdown.present?
+              comment_markdown = process_attachment_links(comment_markdown, attachments_dir, document.organization) if comment_markdown.present?
 
               # Process table references in comment content
               comment_markdown = process_table_references(comment_markdown, document.organization) if comment_markdown.present?
@@ -125,11 +129,7 @@ namespace :fundamento do
     end
   end
 
-  def process_attachment_links(markdown_content, export_dir, organization)
-    # Create attachments subdirectory
-    attachments_dir = File.join(export_dir, "attachments")
-    FileUtils.mkdir_p(attachments_dir)
-
+  def process_attachment_links(markdown_content, attachments_dir, organization)
     # Replace attachment: links with file references
     markdown_content.gsub(/attachment:(\d+)/) do |match|
       attachment_id = $1.to_i
@@ -163,7 +163,7 @@ namespace :fundamento do
         File.binwrite(attachment_path, attachment.data)
         
         # Return relative path for markdown
-        "attachments/#{safe_filename}"
+        "#{ENV["ATTACHMENTS_URL"]}/attachments/#{safe_filename}"
       rescue ActiveRecord::RecordNotFound
         # If attachment doesn't exist, leave the original link unchanged
         match
