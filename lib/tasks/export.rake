@@ -6,6 +6,10 @@ namespace :fundamento do
 
     puts "Exporting documents to: #{export_path}"
 
+    # Create attachments subdirectory
+    attachments_dir = File.join(export_path, "attachments")
+    FileUtils.mkdir_p(attachments_dir)
+
     Document.includes(organization: [], space: [], versions: [], comments: [organization_user: :user]).find_each do |document|
       # Sanitize names for filesystem
       org_name = sanitize_filename(document.organization.name)
@@ -15,10 +19,6 @@ namespace :fundamento do
       # Create directory structure
       dir_path = File.join(export_path, org_name, space_name)
       FileUtils.mkdir_p(dir_path)
-
-      # Create attachments subdirectory
-      attachments_dir = File.join(export_path, "attachments")
-      FileUtils.mkdir_p(attachments_dir)
 
       # Start with document title
       content = "# #{document.title}\n\n"
@@ -159,11 +159,13 @@ namespace :fundamento do
         end
         
         # Write attachment data to file
-        attachment_path = File.join(attachments_dir, safe_filename)
+        org_name = sanitize_filename(organization.name)
+
+        attachment_path = File.join(attachments_dir, org_name, safe_filename)
         File.binwrite(attachment_path, attachment.data)
         
         # Return relative path for markdown
-        "#{ENV["ATTACHMENTS_URL"]}/attachments/#{safe_filename}"
+        "#{ENV["ATTACHMENTS_URL"]}/attachments/#{org_name}/#{safe_filename}"
       rescue ActiveRecord::RecordNotFound
         # If attachment doesn't exist, leave the original link unchanged
         match
