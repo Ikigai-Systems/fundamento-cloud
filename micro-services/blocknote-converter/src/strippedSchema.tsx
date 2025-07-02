@@ -15,7 +15,10 @@ const FormulaInlineContent = createReactInlineContentSpec(
     },
     content: "none",
   }, {
-    render: () => null,
+    render: ({inlineContent}) => {
+      const inlineProps = inlineContent.props;
+      return <div>`[Formula reference: {JSON.stringify(inlineProps)}]`</div>;
+    },
   }
 );
 
@@ -23,16 +26,25 @@ const MentionInlineContent = createReactInlineContentSpec(
   {
     type: "mention",
     propSchema: {
-      formula: {
-        default: "",
-      },
       id: {
         default: "",
-      }
+      },
+      entity: {
+        default: "document"
+      },
+      entityId: {
+        default: -1,
+      },
+      title: {
+        default: "Untitled",
+      },
     },
     content: "none",
   }, {
-    render: () => null,
+    render: ({inlineContent}) => {
+      const inlineProps = inlineContent.props;
+      return <div>`[Mention: {JSON.stringify(inlineProps)}]`</div>;
+    },
   }
 );
 
@@ -49,7 +61,10 @@ const ButtonInlineContent = createReactInlineContentSpec(
     },
     content: "none",
   }, {
-    render: () => null,
+    render: ({inlineContent}) => {
+      const inlineProps = inlineContent.props;
+      return <div>`[Button: {JSON.stringify(inlineProps)}]`</div>;
+    },
   }
 );
 
@@ -102,7 +117,10 @@ const ChartBlock = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null,
+    render: ({block}) => {
+      const blockProps = block.props;
+      return <div>`[Chart: {JSON.stringify(blockProps)}]`</div>;
+    },
   }
 );
 
