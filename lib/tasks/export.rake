@@ -1,5 +1,7 @@
+require 'set'
+
 namespace :fundamento do
-  desc "Export all documents to temporary folder with structure /[Organization]/[Space]/[Document].md"
+  desc "Export all documents to temporary folder with hierarchical structure /[Organization]/[Space]/[Document].md"
   task export: :environment do
     export_path = Rails.root.join("tmp", "document_export_#{Time.current.strftime('%Y-%m-%d_%H:%M:%S')}")
     FileUtils.mkdir_p(export_path)
@@ -10,94 +12,146 @@ namespace :fundamento do
     attachments_dir = File.join(export_path, "attachments")
     FileUtils.mkdir_p(attachments_dir)
 
-    Document.includes(organization: [], space: [], versions: [], comments: [organization_user: :user]).find_each do |document|
-      # Sanitize names for filesystem
-      org_name = sanitize_filename(document.organization.name)
-      space_name = sanitize_filename(document.space.name)
-      doc_title = sanitize_filename(document.title)
-
-      # Create directory structure
-      dir_path = File.join(export_path, org_name, space_name)
-      FileUtils.mkdir_p(dir_path)
-
-      # Start with document title
-      content = "# #{document.title}\n\n"
-
-      # Get latest version if available
-      success = true
-      latest_version = document.versions.order(updated_at: :desc).first
-
-      if latest_version&.content_blocks.present?
-        begin
-          # Parse content as it might be stored as string or JSON
-          content_data = latest_version.content_blocks.is_a?(String) ? JSON.parse(latest_version.content_blocks) : latest_version.content_blocks
-          # Convert content to markdown using blocknote-converter CLI
-          markdown_content = convert_blocks_to_markdown(content_data)
-
-          # Process attachment links in the markdown content
-          markdown_content = process_attachment_links(markdown_content, attachments_dir, document.organization) if markdown_content.present?
-
-          # Process table references in the markdown content
-          markdown_content = process_table_references(markdown_content, document.organization) if markdown_content.present?
-
-          content += markdown_content if markdown_content.present?
-        rescue => e
-          success = false
-          content += "_Content conversion failed_\n\n"
-          content += latest_version.content_blocks.to_json + "\n\n"
-          content += e.message
-          content += "\n\n"
-          content += e.backtrace.join("\n")
-        end
-      else
-        content += "_No content available_\n"
-      end
-
-      # Process and append comments chronologically
-      comments = document.comments.order(:created_at)
-      if comments.any?
-        content += "\n\n---\n\n# Comments\n\n"
+    # Process each organization
+    Organization.includes(:spaces, :documents).find_each do |organization|
+      org_name = sanitize_filename(organization.name)
+      
+      # Process each space in the organization
+      organization.spaces.includes(:documents).each do |space|
+        space_name = sanitize_filename(space.name)
+        space_dir = File.join(export_path, org_name, space_name)
+        FileUtils.mkdir_p(space_dir)
         
-        comments.each do |comment|
-          begin
-            content += "---\n\n"
-            content += "**Comment by #{comment.organization_user.display_name}** (#{comment.created_at.strftime('%B %d, %Y at %I:%M %p')})\n\n"
-            
-            # Process comment content (same as document content)
-            comment_content = comment.content
-            if comment_content.present?
-              # Convert comment content to markdown
-              comment_markdown = convert_blocks_to_markdown(comment_content)
-
-              # Process attachment links in comment content
-              comment_markdown = process_attachment_links(comment_markdown, attachments_dir, document.organization) if comment_markdown.present?
-
-              # Process table references in comment content
-              comment_markdown = process_table_references(comment_markdown, document.organization) if comment_markdown.present?
-
-              content += comment_markdown if comment_markdown.present?
-            else
-              content += "_Empty comment_\n"
-            end
-            content += "\n\n"
-          rescue => e
-            content += "_Comment processing failed_\n\n"
-            Rails.logger.error("Failed to process comment #{comment.id}: #{e.message}")
-          end
+        # Get all documents in this space
+        all_documents = space.documents.includes(:versions, :comments => [:organization_user => :user]).to_a
+        documents_by_id = all_documents.index_by(&:id)
+        
+        # Track which documents are in hierarchy
+        documents_in_hierarchy = Set.new
+        
+        # Process documents according to hierarchy
+        if space.hierarchy.present?
+          process_hierarchy_level(space.hierarchy, documents_by_id, space_dir, attachments_dir, organization, documents_in_hierarchy, 0)
         end
+        
+        # Process documents not in hierarchy (place in root of space)
+        orphaned_documents = all_documents.reject { |doc| documents_in_hierarchy.include?(doc.id) }
+        orphaned_documents.each do |document|
+          export_document(document, space_dir, attachments_dir, organization)
+        end
+        
+        puts "Space #{org_name}/#{space_name}: #{all_documents.count} documents exported"
       end
-
-      # Create markdown file
-      file_path = File.join(dir_path, "#{doc_title}.md")
-      File.write(file_path, content)
-
-      puts "#{org_name}/#{space_name}/#{doc_title}.md : #{success ? "OK" : "FAILED"}"
     end
 
     puts "Export completed. #{Document.count} documents exported to #{export_path}"
   end
 
   private
+
+  def process_hierarchy_level(hierarchy_nodes, documents_by_id, base_dir, attachments_dir, organization, documents_in_hierarchy, depth)
+    hierarchy_nodes.each do |node|
+      document_id = node["id"]
+      document = documents_by_id[document_id]
+      
+      next unless document # Skip if document doesn't exist
+      
+      documents_in_hierarchy.add(document_id)
+      
+      # Export the document
+      export_document(document, base_dir, attachments_dir, organization)
+      
+      # If document has children, create a folder and process children
+      if node["children"].present?
+        doc_title = sanitize_filename(document.title)
+        child_dir = File.join(base_dir, doc_title)
+        FileUtils.mkdir_p(child_dir)
+        
+        # Recursively process children
+        process_hierarchy_level(node["children"], documents_by_id, child_dir, attachments_dir, organization, documents_in_hierarchy, depth + 1)
+      end
+    end
+  end
+
+  def export_document(document, dir_path, attachments_dir, organization)
+    doc_title = sanitize_filename(document.title)
+    
+    # Start with document title
+    content = "# #{document.title}\n\n"
+
+    # Get latest version if available
+    success = true
+    latest_version = document.versions.order(updated_at: :desc).first
+
+    if latest_version&.content_blocks.present?
+      begin
+        # Parse content as it might be stored as string or JSON
+        content_data = latest_version.content_blocks.is_a?(String) ? JSON.parse(latest_version.content_blocks) : latest_version.content_blocks
+        # Convert content to markdown using blocknote-converter CLI
+        markdown_content = convert_blocks_to_markdown(content_data)
+
+        # Process attachment links in the markdown content
+        markdown_content = process_attachment_links(markdown_content, attachments_dir, organization) if markdown_content.present?
+
+        # Process table references in the markdown content
+        markdown_content = process_table_references(markdown_content, organization) if markdown_content.present?
+
+        content += markdown_content if markdown_content.present?
+      rescue => e
+        success = false
+        content += "_Content conversion failed_\n\n"
+        content += latest_version.content_blocks.to_json + "\n\n"
+        content += e.message
+        content += "\n\n"
+        content += e.backtrace.join("\n")
+      end
+    else
+      content += "_No content available_\n"
+    end
+
+    # Process and append comments chronologically
+    comments = document.comments.order(:created_at)
+    if comments.any?
+      content += "\n\n---\n\n# Comments\n\n"
+      
+      comments.each do |comment|
+        begin
+          content += "---\n\n"
+          content += "**Comment by #{comment.organization_user.display_name}** (#{comment.created_at.strftime('%B %d, %Y at %I:%M %p')})\n\n"
+          
+          # Process comment content (same as document content)
+          comment_content = comment.content
+          if comment_content.present?
+            # Convert comment content to markdown
+            comment_markdown = convert_blocks_to_markdown(comment_content)
+
+            # Process attachment links in comment content
+            comment_markdown = process_attachment_links(comment_markdown, attachments_dir, organization) if comment_markdown.present?
+
+            # Process table references in comment content
+            comment_markdown = process_table_references(comment_markdown, organization) if comment_markdown.present?
+
+            content += comment_markdown if comment_markdown.present?
+          else
+            content += "_Empty comment_\n"
+          end
+          content += "\n\n"
+        rescue => e
+          content += "_Comment processing failed_\n\n"
+          Rails.logger.error("Failed to process comment #{comment.id}: #{e.message}")
+        end
+      end
+    end
+
+    # Create markdown file
+    file_path = File.join(dir_path, "#{doc_title}.md")
+    File.write(file_path, content)
+
+    org_name = sanitize_filename(organization.name)
+    space_name = sanitize_filename(document.space.name)
+    relative_path = file_path.sub(Rails.root.join("tmp").to_s + "/", "")
+    puts "#{relative_path} : #{success ? "OK" : "FAILED"}"
+  end
 
   def sanitize_filename(name)
     # Remove or replace characters that are invalid in filenames
