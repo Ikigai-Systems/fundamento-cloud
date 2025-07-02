@@ -161,6 +161,8 @@ namespace :fundamento do
         # Write attachment data to file
         org_name = sanitize_filename(organization.name)
 
+        FileUtils.mkdir_p(File.join(attachments_dir, org_name))
+
         attachment_path = File.join(attachments_dir, org_name, safe_filename)
         File.binwrite(attachment_path, attachment.data)
         
