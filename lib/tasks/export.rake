@@ -6,7 +6,7 @@ namespace :fundamento do
 
     puts "Exporting documents to: #{export_path}"
 
-    Document.includes(organization: [], space: [], versions: [], comments: [organization_user: :user]).find_each do |document|
+    Document.includes(organization: [], space: [], versions: [], comments: [organization_user: :user]).order("organizations.id", "spaces.id").find_each do |document|
       # Sanitize names for filesystem
       org_name = sanitize_filename(document.organization.name)
       space_name = sanitize_filename(document.space.name)
