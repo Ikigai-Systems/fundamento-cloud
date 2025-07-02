@@ -12,7 +12,8 @@
       "Bash(rg:*)",
       "Bash(bundle install)",
       "Bash(npm update:*)",
-      "Bash(rails:*)"
+      "Bash(rails:*)",
+      "Bash(bundle exec rake:*)"
     ],
     "deny": []
   },
