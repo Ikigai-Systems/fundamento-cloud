@@ -42,6 +42,35 @@ class InlineCommentsController < ApplicationController
     head :no_content
   end
 
+  def resolve_comment_thread
+    inline_comment_thread = InlineCommentThread.find(params[:thread_id])
+
+    inline_comment_thread.update(
+      {
+        resolved_at: DateTime.now,
+        resolved_by: current_organization_user.id
+      }
+    )
+
+    respond_to do |format|
+      format.json { render json: render_comment_thread(inline_comment_thread) }
+      format.all { head :unprocessable_content }
+    end
+  end
+
+  def reopen_comment_thread
+    inline_comment_thread = InlineCommentThread.find(params[:thread_id])
+
+    inline_comment_thread.update(
+      {
+        resolved_at: nil,
+        resolved_by: nil
+      }
+    )
+
+    head :no_content
+  end
+
   def add_comment
     comment = InlineComment.create(
       {
@@ -85,7 +114,9 @@ class InlineCommentsController < ApplicationController
   def render_comment_thread(comment_thread)
     {
       thread_id: comment_thread.id,
-      comments: comment_thread.inline_comments.map { |comment| render_comment(comment) }
+      comments: comment_thread.inline_comments.map { |comment| render_comment(comment) },
+      resolved_at: comment_thread.resolved_at,
+      resolved_by: comment_thread.resolved_by
     }
   end
 

@@ -300,20 +300,21 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
           resolveCommentThread: async ({threadId, ...restOfData}) => {
             console.log('Comment thread resolved', restOfData);
 
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            return Promise.resolve({
-              resolvedAt: new Date(), // Should be set on the server side.
-              resolvedBy: usersPlugin.me.id // Should be set on the server side.
+            return await InlineCommentsApi.resolveCommentThread({
+              params: {
+                threadId,
+              }
             });
           },
 
-          reopenCommentThread(data) {
-            console.log('Comment thread reopened', data);
+          reopenCommentThread: async ({threadId, ...restOfData}) => {
+            console.log('Comment thread reopened', restOfData);
 
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            return Promise.resolve();
+            return await InlineCommentsApi.reopenCommentThread({
+              params: {
+                threadId,
+              }
+            });
           },
 
           removeCommentThread: async ({threadId, ...restOfData}) => {
