@@ -257,10 +257,16 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
 
           getCommentThread: async ({threadId, ...restOfData}) => {
             console.log('Getting comment thread', restOfData);
-
-            const response = await InlineCommentsApi.getCommentThread({
-              threadId,
-            });
+            let response = undefined;
+            try {
+              response = await InlineCommentsApi.getCommentThread({threadId});
+            } catch (e) {
+              if (e.status === 404) {
+                return null;
+              } else {
+                throw e;
+              }
+            }
 
             const usersPlugin = this.editor.plugins.get("Users");
 
@@ -291,8 +297,8 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
             return Promise.resolve();
           },
 
-          resolveCommentThread(data) {
-            console.log('Comment thread resolved', data);
+          resolveCommentThread: async ({threadId, ...restOfData}) => {
+            console.log('Comment thread resolved', restOfData);
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
@@ -310,14 +316,10 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
             return Promise.resolve();
           },
 
-          removeCommentThread(data) {
-            console.log('Comment thread removed', data);
-
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            return Promise.resolve();
+          removeCommentThread: async ({threadId, ...restOfData}) => {
+            console.log('Comment thread removed', restOfData);
+            return await InlineCommentsApi.removeCommentThread({threadId});
           }
-
         };
       }
     }

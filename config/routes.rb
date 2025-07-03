@@ -106,6 +106,8 @@ Rails.application.routes.draw do
     resources :comments
 
     post "/inline_comments/threads" => "inline_comments#add_comment_thread"
+    delete "inline_comments/threads/:thread_id" => "inline_comments#remove_comment_thread"
+
     get "/inline_comments/threads/:thread_id" => "inline_comments#get_comment_thread"
     post "/inline_comments/threads/:thread_id/comments" => "inline_comments#add_comment"
     put "/inline_comments/threads/:thread_id/comments/:comment_id" => "inline_comments#update_comment"

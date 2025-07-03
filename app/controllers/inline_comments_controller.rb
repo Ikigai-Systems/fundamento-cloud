@@ -35,6 +35,13 @@ class InlineCommentsController < ApplicationController
     end
   end
 
+  def remove_comment_thread
+    inline_comment_thread = InlineCommentThread.find(params[:thread_id])
+    inline_comment_thread.delete
+
+    head :no_content
+  end
+
   def add_comment
     comment = InlineComment.create(
       {
@@ -68,7 +75,6 @@ class InlineCommentsController < ApplicationController
 
   def remove_comment
     comment = InlineComment.find(params[:comment_id])
-
     comment.delete
 
     head :no_content
