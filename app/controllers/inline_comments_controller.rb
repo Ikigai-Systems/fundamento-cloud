@@ -28,7 +28,7 @@ class InlineCommentsController < ApplicationController
   end
 
   def get_comment_thread
-    inline_comment_thread = InlineCommentThread.find(params[:id])
+    inline_comment_thread = InlineCommentThread.find(params[:thread_id])
     respond_to do |format|
       format.json { render json: render_comment_thread(inline_comment_thread) }
       format.all { head :unprocessable_content }
@@ -39,9 +39,24 @@ class InlineCommentsController < ApplicationController
     comment = InlineComment.create(
       {
         id: params[:comment_id],
-        inline_comment_thread_id: params[:id],
+        inline_comment_thread_id: params[:thread_id],
         content: params[:content],
         organization_user: current_organization_user
+      }
+    )
+
+    respond_to do |format|
+      format.json { render json: render_comment(comment) }
+      format.all { head :unprocessable_content }
+    end
+  end
+
+  def update_comment
+    comment = InlineComment.find(params[:comment_id])
+
+    comment.update(
+      {
+        content: params[:content]
       }
     )
 

@@ -206,29 +206,30 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
         // Set the adapter on the `CommentsRepository#adapter` property.
         commentsRepositoryPlugin.adapter = {
           addComment: async ({threadId, commentId, content, ...restOfData}) => {
-            console.log( 'Comment added', restOfData );
+            console.log('Comment added', restOfData);
 
             return await InlineCommentsApi.addComment({
               data: {
                 documentId: document.id,
-                id: threadId,
+                threadId: threadId,
                 commentId,
                 content,
               }
             });
-
-
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            // When the promise resolves with the comment data object, it
-            // will update the editor comment using the provided data.
-            return Promise.resolve( {
-              createdAt: new Date()       // Should be set on the server side.
-            } );
           },
 
-          updateComment( data ) {
-            console.log( 'Comment updated', data );
+          updateComment: async ({threadId, commentId, content, ...restOfData}) => {
+            console.log('Comment updated', restOfData);
+
+            return await InlineCommentsApi.updateComment({
+              params: {
+                threadId,
+                commentId,
+              },
+              data: {
+                content
+              }
+            })
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
@@ -255,11 +256,11 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
             });
           },
 
-          getCommentThread: async (data) => {
-            console.log( 'Getting comment thread', data );
+          getCommentThread: async ({threadId, ...restOfData}) => {
+            console.log('Getting comment thread', restOfData);
 
             const response = await InlineCommentsApi.getCommentThread({
-              id: data.threadId,
+              threadId,
             });
 
             const usersPlugin = this.editor.plugins.get("Users");
