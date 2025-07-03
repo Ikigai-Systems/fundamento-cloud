@@ -4,11 +4,13 @@
  */
 
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {Document} from "../types";
+import {Document, User} from "../../types";
 import {CKEditor, useCKEditorCloud} from '@ckeditor/ckeditor5-react';
 
 import './HtmlEditor.css';
 import InlineCommentsApi from "../../api/InlineCommentsApi.js";
+import queryClient from "../../contextes/ReactQueryClient.tsx";
+import UsersApi from "../../api/UsersApi";
 
 /**
  * USE THIS INTEGRATION METHOD ONLY FOR DEVELOPMENT PURPOSES.
@@ -23,7 +25,7 @@ const CLOUD_SERVICES_TOKEN_URL =
   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, document, disabled = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, document, currentUser, disabled = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -161,19 +163,26 @@ const HtmlEditor = ({initialData, document, disabled = false}: HtmlEditorProps) 
       init() {
         const usersPlugin = this.editor.plugins.get('Users');
 
+        usersPlugin.addUser({
+          id: currentUser.id.toString(), //CKEditor requires author ids to be strings
+          name: currentUser.firstName + " " + currentUser.lastName,
+        });
+
+        usersPlugin.defineMe(currentUser.id.toString());
+
         // These are sample users for demonstration purposes.
         // In your integration make sure to provide user data from your data source.
-        const users = [
-          { id: 'user-1', name: 'Zee Croce' },
-          { id: 'user-2', name: 'Mex Haddox' }
-        ];
-        const me = users[0];
-
-        for (const user of users) {
-          usersPlugin.addUser(user);
-        }
-
-        usersPlugin.defineMe(me.id);
+        // const users = [
+        //   { id: 'user-1', name: 'Zee Croce' },
+        //   { id: 'user-2', name: 'Mex Haddox' }
+        // ];
+        // const me = users[0];
+        //
+        // for (const user of users) {
+        //   usersPlugin.addUser(user);
+        // }
+        //
+        // usersPlugin.defineMe(me.id);
       }
     }
 
@@ -196,8 +205,18 @@ const HtmlEditor = ({initialData, document, disabled = false}: HtmlEditorProps) 
 
         // Set the adapter on the `CommentsRepository#adapter` property.
         commentsRepositoryPlugin.adapter = {
-          addComment( data ) {
-            console.log( 'Comment added', data );
+          addComment: async ({threadId, commentId, content, ...restOfData}) => {
+            console.log( 'Comment added', restOfData );
+
+            return await InlineCommentsApi.addComment({
+              data: {
+                documentId: document.id,
+                id: threadId,
+                commentId,
+                content,
+              }
+            });
+
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
@@ -224,52 +243,44 @@ const HtmlEditor = ({initialData, document, disabled = false}: HtmlEditorProps) 
             return Promise.resolve();
           },
 
-          addCommentThread: async (data) => {
-            console.log( 'Comment thread added', data);
+          addCommentThread: async ({threadId, comments, ...restOfData}) => {
+            console.log( 'Comment thread added', restOfData);
 
             return await InlineCommentsApi.addCommentThread({
               data: {
                 documentId: document.id,
-                data
+                threadId,
+                comments,
               }
             });
-
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            // return Promise.resolve( {
-            //   threadId: data.threadId,
-            //   comments: data.comments.map( ( comment ) => ( { commentId: comment.commentId, createdAt: new Date() } ) ) // Should be set on the server side.
-            // } );
           },
 
-          getCommentThread( data ) {
+          getCommentThread: async (data) => {
             console.log( 'Getting comment thread', data );
 
-            // Write a request to your database here. The returned `Promise`
-            // should resolve with the comment thread data.
-            return Promise.resolve( {
-              threadId: data.threadId,
-              comments: [
-                {
-                  commentId: 'comment-1',
-                  authorId: 'user-2',
-                  content: '<p>Are we sure we want to use a made-up disorder name?</p>',
-                  createdAt: new Date(),
-                  attributes: {}
+            const response = await InlineCommentsApi.getCommentThread({
+              id: data.threadId,
+            });
+
+            const usersPlugin = this.editor.plugins.get("Users");
+
+            const missingUsersIds = [...new Set(response.comments.map(comment => comment.authorId).filter(authorId => usersPlugin.getUser(authorId) === null))];
+
+            for (const missingUserId of missingUsersIds) {
+              const user = await queryClient.ensureQueryData({
+                queryKey: ["users", parseInt(missingUsersIds[0])],
+                queryFn: async () => {
+                  // could be extracted to a separate, global file:
+                  return await UsersApi.show({id: missingUsersIds[0]});
                 }
-              ],
-              // It defines the value on which the comment has been created initially.
-              // If it is empty it will be set based on the comment marker.
-              context: {
-                type: 'text',
-                value: 'Bilingual Personality Disorder'
-              },
-              unlinkedAt: null,
-              resolvedAt: null,
-              resolvedBy: null,
-              attributes: {},
-              isFromAdapter: true
-            } );
+              })
+              usersPlugin.addUser({
+                id: missingUserId,
+                name: user.firstName + " " + user.lastName,
+              });
+            }
+
+            return response;
           },
 
           updateCommentThread( data ) {
@@ -802,6 +813,7 @@ function configUpdateAlert(config) {
 type HtmlEditorProps = {
   initialData: String,
   document: Document,
+  currentUser: User,
   disabled?: boolean,
 }
 
