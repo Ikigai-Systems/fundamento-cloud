@@ -36,7 +36,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
   const editorRevisionHistoryEditorRef = useRef(null);
   const editorRevisionHistorySidebarRef = useRef(null);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
-  const cloud = useCKEditorCloud({ version: '45.2.0', premium: true, ckbox: { version: '2.6.1' } });
+  const cloud = useCKEditorCloud({version: '45.2.0', premium: true, ckbox: {version: '2.6.1'}});
 
   useEffect(() => {
     setIsLayoutReady(true);
@@ -44,7 +44,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
     return () => setIsLayoutReady(false);
   }, []);
 
-  const { DecoupledEditor, editorConfig } = useMemo(() => {
+  const {DecoupledEditor, editorConfig} = useMemo(() => {
     if (cloud.status !== 'success' || !isLayoutReady) {
       return {};
     }
@@ -193,7 +193,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
      */
     class CommentsIntegration extends Plugin {
       static get requires() {
-        return [ 'CommentsRepository', 'UsersIntegration' ];
+        return ['CommentsRepository', 'UsersIntegration'];
       }
 
       static get pluginName() {
@@ -201,7 +201,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
       }
 
       init() {
-        const commentsRepositoryPlugin = this.editor.plugins.get( 'CommentsRepository' );
+        const commentsRepositoryPlugin = this.editor.plugins.get('CommentsRepository');
 
         // Set the adapter on the `CommentsRepository#adapter` property.
         commentsRepositoryPlugin.adapter = {
@@ -230,22 +230,21 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
                 content
               }
             })
-
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            return Promise.resolve();
           },
 
-          removeComment( data ) {
-            console.log( 'Comment removed', data );
+          removeComment: async ({threadId, commentId, ...restOfData}) => {
+            console.log('Comment removed', restOfData);
 
-            // Write a request to your database here. The returned `Promise`
-            // should be resolved when the request has finished.
-            return Promise.resolve();
+            return await InlineCommentsApi.removeComment({
+              params: {
+                threadId,
+                commentId
+              }
+            });
           },
 
           addCommentThread: async ({threadId, comments, ...restOfData}) => {
-            console.log( 'Comment thread added', restOfData);
+            console.log('Comment thread added', restOfData);
 
             return await InlineCommentsApi.addCommentThread({
               data: {
@@ -284,35 +283,35 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
             return response;
           },
 
-          updateCommentThread( data ) {
-            console.log( 'Comment thread updated', data );
+          updateCommentThread(data) {
+            console.log('Comment thread updated', data);
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
             return Promise.resolve();
           },
 
-          resolveCommentThread( data ) {
-            console.log( 'Comment thread resolved', data );
+          resolveCommentThread(data) {
+            console.log('Comment thread resolved', data);
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
-            return Promise.resolve( {
+            return Promise.resolve({
               resolvedAt: new Date(), // Should be set on the server side.
               resolvedBy: usersPlugin.me.id // Should be set on the server side.
-            } );
+            });
           },
 
-          reopenCommentThread( data ) {
-            console.log( 'Comment thread reopened', data );
+          reopenCommentThread(data) {
+            console.log('Comment thread reopened', data);
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
             return Promise.resolve();
           },
 
-          removeCommentThread( data ) {
-            console.log( 'Comment thread removed', data );
+          removeCommentThread(data) {
+            console.log('Comment thread removed', data);
 
             // Write a request to your database here. The returned `Promise`
             // should be resolved when the request has finished.
@@ -328,14 +327,16 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
      *
      * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/track-changes/track-changes-integration.html.
      */
-    class TrackChangesIntegration extends Plugin {}
+    class TrackChangesIntegration extends Plugin {
+    }
 
     /**
      * The `RevisionHistoryIntegration` lets you synchronize named revisions in the document with your data source (e.g. a database).
      *
      * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/revision-history/revision-history-integration.html.
      */
-    class RevisionHistoryIntegration extends Plugin {}
+    class RevisionHistoryIntegration extends Plugin {
+    }
 
     return {
       DecoupledEditor,

@@ -109,6 +109,7 @@ Rails.application.routes.draw do
     get "/inline_comments/threads/:thread_id" => "inline_comments#get_comment_thread"
     post "/inline_comments/threads/:thread_id/comments" => "inline_comments#add_comment"
     put "/inline_comments/threads/:thread_id/comments/:comment_id" => "inline_comments#update_comment"
+    delete "/inline_comments/threads/:thread_id/comments/:comment_id" => "inline_comments#remove_comment"
 
     get "/public/:npi" => "public#show", as: :public
     get "/public/attachments/:id" => "public#attachment"

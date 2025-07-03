@@ -66,6 +66,14 @@ class InlineCommentsController < ApplicationController
     end
   end
 
+  def remove_comment
+    comment = InlineComment.find(params[:comment_id])
+
+    comment.delete
+
+    head :no_content
+  end
+
   private
 
   def render_comment_thread(comment_thread)
