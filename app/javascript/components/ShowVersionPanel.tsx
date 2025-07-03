@@ -1,4 +1,4 @@
-import {Document, Space, Version} from "../types";
+import {Document, Space, Version, User} from "../types";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
@@ -18,9 +18,10 @@ type EditDocumentPanelProps = {
   version: Version,
   document: Document,
   space: Space,
+  currentUser: User,
 }
 
-const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) => {
+const ShowVersionPanel = ({version, document, space, currentUser}: EditDocumentPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.contentBlocks,
@@ -35,7 +36,7 @@ const ShowVersionPanel = ({version, document, space}: EditDocumentPanelProps) =>
 
       <div className="html-editor-container">
 
-        <HtmlEditor initialData={version.contentHtml} channelId={document.id.toString()} disabled={true}/>
+        <HtmlEditor initialData={version.contentHtml} channelId={document.id.toString()} currentUser={currentUser} disabled={true}/>
       </div>
 
       <div className="editor-container">

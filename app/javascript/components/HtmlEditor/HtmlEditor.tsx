@@ -280,11 +280,16 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
                   return await UsersApi.show({id: missingUsersIds[0]});
                 }
               })
-              usersPlugin.addUser({
-                id: missingUserId,
-                name: user.firstName + " " + user.lastName,
-              });
+              if (usersPlugin.getUser(missingUserId) === null) {
+                usersPlugin.addUser({
+                  id: missingUserId,
+                  name: user.firstName + " " + user.lastName,
+                });
+              }
             }
+
+            //todo: update document content
+
 
             return response;
           },
@@ -320,6 +325,8 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
           removeCommentThread: async ({threadId, ...restOfData}) => {
             console.log('Comment thread removed', restOfData);
             return await InlineCommentsApi.removeCommentThread({threadId});
+
+            //todo: update document content
           }
         };
       }
@@ -355,6 +362,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
             'revisionHistory',
             'trackChanges',
             'comment',
+            'commentsArchive',
             '|',
             'insertMergeField',
             'previewMergeFields',
