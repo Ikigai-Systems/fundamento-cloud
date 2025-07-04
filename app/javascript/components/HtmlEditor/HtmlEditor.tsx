@@ -25,7 +25,7 @@ const CLOUD_SERVICES_TOKEN_URL =
   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, document, currentUser, disabled = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -134,7 +134,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
       ImportWord,
       MergeFields,
       MultiLevelList,
-      Pagination,
+      // Pagination, //pagination available only on custom plan
       PasteFromOfficeEnhanced,
       RevisionHistory,
       SlashCommand,
@@ -170,19 +170,12 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
 
         usersPlugin.defineMe(currentUser.id.toString());
 
-        // These are sample users for demonstration purposes.
-        // In your integration make sure to provide user data from your data source.
-        // const users = [
-        //   { id: 'user-1', name: 'Zee Croce' },
-        //   { id: 'user-2', name: 'Mex Haddox' }
-        // ];
-        // const me = users[0];
-        //
-        // for (const user of users) {
-        //   usersPlugin.addUser(user);
-        // }
-        //
-        // usersPlugin.defineMe(me.id);
+        if (readOnly) {
+          const permissions = this.editor.plugins.get('Permissions');
+          permissions.setPermissions([
+            'comment:write'
+          ]);
+        }
       }
     }
 
@@ -455,7 +448,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
           Minimap,
           MultiLevelList,
           PageBreak,
-          Pagination,
+          // Pagination, // pagination available only on custom plan
           Paragraph,
           PasteFromOffice,
           PasteFromOfficeEnhanced,
@@ -584,7 +577,7 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
               'editor-container_document-editor',
               'editor-container_include-annotations',
               'editor-container_include-minimap',
-              'editor-container_include-pagination',
+              // 'editor-container_include-pagination', // pagination available only on custom plan
               'editor-container_include-fullscreen',
               'main-container'
             )
@@ -687,16 +680,16 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
           container: editorMinimapRef.current,
           extraClasses: 'editor-container_include-minimap ck-minimap__iframe-content'
         },
-        pagination: {
-          pageWidth: '21cm',
-          pageHeight: '29.7cm',
-          pageMargins: {
-            top: '20mm',
-            bottom: '20mm',
-            right: '12mm',
-            left: '12mm'
-          }
-        },
+        // pagination: { // pagination available only on custom plan
+        //   pageWidth: '21cm',
+        //   pageHeight: '29.7cm',
+        //   pageMargins: {
+        //     top: '20mm',
+        //     bottom: '20mm',
+        //     right: '12mm',
+        //     left: '12mm'
+        //   }
+        // },
         placeholder: 'Type or paste your content here!',
         revisionHistory: {
           editorContainer: editorContainerRef.current,
@@ -734,7 +727,8 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
   return (
     <div className="main-container">
       <div
-        className="editor-container editor-container_document-editor editor-container_include-annotations editor-container_include-minimap editor-container_include-pagination editor-container_include-fullscreen"
+        // className="editor-container_include-pagination" // pagination available only on custom plan
+        className="editor-container editor-container_document-editor editor-container_include-annotations editor-container_include-minimap editor-container_include-fullscreen"
         ref={editorContainerRef}
       >
         <div className="editor-container__menu-bar" ref={editorMenuBarRef}></div>
@@ -758,7 +752,6 @@ const HtmlEditor = ({initialData, document, currentUser, disabled = false}: Html
                     }}
                     editor={DecoupledEditor}
                     config={editorConfig}
-                    disabled={disabled}
                   />
                 )}
               </div>
@@ -827,7 +820,7 @@ type HtmlEditorProps = {
   initialData: String,
   document: Document,
   currentUser: User,
-  disabled?: boolean,
+  readOnly?: boolean,
 }
 
 export default HtmlEditor;

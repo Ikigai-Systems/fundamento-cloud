@@ -36,7 +36,7 @@ const ShowVersionPanel = ({version, document, space, currentUser}: EditDocumentP
 
       <div className="html-editor-container">
 
-        <HtmlEditor initialData={version.contentHtml} channelId={document.id.toString()} currentUser={currentUser} disabled={true}/>
+        <HtmlEditor initialData={version.contentHtml} document={document} currentUser={currentUser} readOnly={true}/>
       </div>
 
       <div className="editor-container">
