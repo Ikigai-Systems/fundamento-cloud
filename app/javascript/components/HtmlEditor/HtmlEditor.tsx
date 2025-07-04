@@ -36,7 +36,7 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
   const editorRevisionHistoryEditorRef = useRef(null);
   const editorRevisionHistorySidebarRef = useRef(null);
   const [isLayoutReady, setIsLayoutReady] = useState(false);
-  const cloud = useCKEditorCloud({version: '45.2.0', premium: true, ckbox: {version: '2.6.1'}});
+  const cloud = useCKEditorCloud({version: '45.2.0', premium: true});
 
   useEffect(() => {
     setIsLayoutReady(true);
@@ -62,8 +62,6 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
       BlockQuote,
       BlockToolbar,
       Bold,
-      CKBox,
-      CKBoxImageEdit,
       CloudServices,
       Code,
       CodeBlock,
@@ -403,8 +401,6 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
           BlockToolbar,
           Bold,
           CaseChange,
-          CKBox,
-          CKBoxImageEdit,
           CloudServices,
           Code,
           CodeBlock,
@@ -637,8 +633,6 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
             'imageStyle:breakText',
             '|',
             'resizeImage',
-            '|',
-            'ckboxImageEdit'
           ]
         },
         initialData: initialData,
@@ -718,12 +712,6 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
     };
   }, [cloud, isLayoutReady]);
 
-  useEffect(() => {
-    if (editorConfig) {
-      configUpdateAlert(editorConfig);
-    }
-  }, [editorConfig]);
-
   return (
     <div className="main-container">
       <div
@@ -769,51 +757,6 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
       </div>
     </div>
   );
-}
-
-/**
- * This function exists to remind you to update the config needed for premium features.
- * The function can be safely removed. Make sure to also remove call to this function when doing so.
- */
-function configUpdateAlert(config) {
-  if (configUpdateAlert.configUpdateAlertShown) {
-    return;
-  }
-
-  const isModifiedByUser = (currentValue, forbiddenValue) => {
-    if (currentValue === forbiddenValue) {
-      return false;
-    }
-
-    if (currentValue === undefined) {
-      return false;
-    }
-
-    return true;
-  };
-
-  const valuesToUpdate = [];
-
-  configUpdateAlert.configUpdateAlertShown = true;
-
-  if (!isModifiedByUser(config.licenseKey, '<YOUR_LICENSE_KEY>')) {
-    valuesToUpdate.push('LICENSE_KEY');
-  }
-
-  if (!isModifiedByUser(config.cloudServices?.tokenUrl, '<YOUR_CLOUD_SERVICES_TOKEN_URL>')) {
-    valuesToUpdate.push('CLOUD_SERVICES_TOKEN_URL');
-  }
-
-  if (valuesToUpdate.length) {
-    console.error(
-      [
-        'Please update the following values in your editor config',
-        'to receive full access to Premium Features:',
-        '',
-        ...valuesToUpdate.map(value => ` - ${value}`)
-      ].join('\n')
-    );
-  }
 }
 
 type HtmlEditorProps = {
