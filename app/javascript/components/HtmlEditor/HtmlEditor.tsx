@@ -4,13 +4,14 @@
  */
 
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {Document, User} from "../../types";
+import {Document, User, Version} from "../../types";
 import {CKEditor, useCKEditorCloud} from '@ckeditor/ckeditor5-react';
 
 import './HtmlEditor.css';
 import InlineCommentsApi from "../../api/InlineCommentsApi.js";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
-import UsersApi from "../../api/UsersApi";
+import UsersApi from "../../api/UsersApi.js";
+import VersionsApi from "../../api/Documents/VersionsApi.js";
 
 /**
  * USE THIS INTEGRATION METHOD ONLY FOR DEVELOPMENT PURPOSES.
@@ -25,7 +26,7 @@ const CLOUD_SERVICES_TOKEN_URL =
   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -237,6 +238,13 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
           addCommentThread: async ({threadId, comments, ...restOfData}) => {
             console.log('Comment thread added', restOfData);
 
+            if (version) {
+              await VersionsApi.update({
+                params: {documentNpi: document.npi, id: version.sequentialId},
+                data: {contentHtml: this.editor.getData()},
+              });
+            }
+
             return await InlineCommentsApi.addCommentThread({
               data: {
                 documentId: document.id,
@@ -315,9 +323,17 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
 
           removeCommentThread: async ({threadId, ...restOfData}) => {
             console.log('Comment thread removed', restOfData);
-            return await InlineCommentsApi.removeCommentThread({threadId});
+            const response = await InlineCommentsApi.removeCommentThread({threadId});
 
             //todo: update document content
+            if (version) {
+              await VersionsApi.update({
+                params: {documentNpi: document.npi, id: version.sequentialId},
+                data: {contentHtml: this.editor.getData()},
+              });
+            }
+
+            return response;
           }
         };
       }
@@ -762,6 +778,7 @@ const HtmlEditor = ({initialData, document, currentUser, readOnly = false}: Html
 type HtmlEditorProps = {
   initialData: String,
   document: Document,
+  version: Version,
   currentUser: User,
   readOnly?: boolean,
 }

@@ -74,4 +74,18 @@ class Documents::VersionsController < ApplicationController
 
     @versions = @document.versions.order('created_at DESC')
   end
+
+  def update
+    authorize @document, :update?
+
+    @version = @document.versions.find_by(sequential_id: params[:id])
+
+    @version.update(
+      {
+        content_html: params[:content_html]
+      }
+    )
+
+    head :no_content
+  end
 end
