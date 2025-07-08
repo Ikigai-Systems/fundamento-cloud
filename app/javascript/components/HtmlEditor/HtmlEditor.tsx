@@ -345,6 +345,11 @@ const HtmlEditor = ({initialData, version, document, currentUser, readOnly = fal
      * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/track-changes/track-changes-integration.html.
      */
     class TrackChangesIntegration extends Plugin {
+      init() {
+        if (!version) {
+          this.editor.execute('trackChanges');
+        }
+      }
     }
 
     /**
