@@ -12,6 +12,7 @@ class Documents::VersionsController < ApplicationController
   def create
     content_blocks = JSON.parse(params["content_blocks"].to_s)
     content_html = params["content_html"]
+    revisions = params["revisions"]
 
     authorize @document, :update?
 
@@ -29,6 +30,7 @@ class Documents::VersionsController < ApplicationController
     @version = @document.versions.new
     @version.content_blocks = content_blocks
     @version.content_html = content_html
+    @version.revisions = revisions
     @version.created_by = current_user
 
     if @version.save

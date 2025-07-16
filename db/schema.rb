@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_03_141730) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_16_180447) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -582,6 +582,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_03_141730) do
     t.integer "sequential_id", null: false
     t.bigint "created_by_id"
     t.text "content_html", default: ""
+    t.json "revisions", default: ""
     t.index ["created_by_id"], name: "index_versions_on_created_by_id"
     t.index ["document_id"], name: "index_versions_on_document_id"
     t.index ["sequential_id", "document_id"], name: "index_versions_on_sequential_id_and_document_id", unique: true

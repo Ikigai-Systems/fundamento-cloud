@@ -12,8 +12,8 @@
 
   <div data-controller="popover" class="relative">
     <%= button_to "Update", document_versions_path(@document), method: :create,
-      params: {content_blocks: "", content_html: ""},
-      :onclick => "this.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document); this.form.elements['content_html'].value = window.ckEditor.getData();",
+      params: {content_blocks: "", content_html: "", revisions: ""},
+      :onclick => "handleUpdateButton(event)",
       class: "primary-button document-toolbar-button update-button",
       form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} }
     %>
@@ -24,6 +24,16 @@
       </div>
     </template>
   </div>
+
+  <script type="text/javascript">
+    window.handleUpdateButton = async (e) => {
+      await window.ckEditor.plugins.get("RevisionTracker").saveRevision();
+
+      e.target.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document);
+      e.target.form.elements['content_html'].value = window.ckEditor.getData();
+      e.target.form.elements['revisions'].value = JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true}));
+    }
+  </script>
 
   <% add_palette_command id: "update",
     title: "Update the document",
