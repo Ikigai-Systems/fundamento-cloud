@@ -53,5 +53,6 @@
     current_user: current_user,
     database_id: database_id,
     content_html: @document.versions.latest.present? ? @document.versions.latest.content_html : "",
+    revisions: @document.versions.latest.present? ? @document.versions.latest.revisions : "[]",
   } %>
 </article>

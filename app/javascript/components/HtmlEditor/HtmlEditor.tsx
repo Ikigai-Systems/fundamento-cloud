@@ -26,7 +26,7 @@ const CLOUD_SERVICES_TOKEN_URL =
   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, revisions, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -352,12 +352,24 @@ const HtmlEditor = ({initialData, version, document, currentUser, readOnly = fal
       }
     }
 
-    /**
-     * The `RevisionHistoryIntegration` lets you synchronize named revisions in the document with your data source (e.g. a database).
-     *
-     * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/revision-history/revision-history-integration.html.
-     */
     class RevisionHistoryIntegration extends Plugin {
+      static get pluginName() {
+        return 'RevisionHistoryIntegration';
+      }
+
+      static get requires() {
+        return [ 'RevisionHistory' ];
+      }
+
+      init() {
+        if (revisions) {
+          const revisionHistory = this.editor.plugins.get( 'RevisionHistory' );
+
+          for (const revisionData of revisions) {
+            revisionHistory.addRevisionData(revisionData);
+          }
+        }
+      }
     }
 
     return {
@@ -783,7 +795,8 @@ const HtmlEditor = ({initialData, version, document, currentUser, readOnly = fal
 type HtmlEditorProps = {
   initialData: String,
   document: Document,
-  version: Version,
+  revisions?: object[],
+  version?: Version,
   currentUser: User,
   readOnly?: boolean,
 }
