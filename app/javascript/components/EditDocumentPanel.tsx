@@ -23,7 +23,7 @@ const EditDocumentPanel = ({document, space, currentUser, databaseId, contentHtm
       </div>
 
       <div className="html-editor-container">
-        <HtmlEditor initialData={contentHtml} revisions={JSON.parse(revisions)} document={document} currentUser={currentUser}/>
+        <HtmlEditor initialData={contentHtml} revisions={JSON.parse(revisions || "[]")} document={document} currentUser={currentUser}/>
       </div>
 
       <div className="editor-container">
