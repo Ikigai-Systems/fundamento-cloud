@@ -169,10 +169,15 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
 
         usersPlugin.defineMe(currentUser.id.toString());
 
+        const permissions = this.editor.plugins.get('Permissions');
         if (readOnly) {
-          const permissions = this.editor.plugins.get('Permissions');
           permissions.setPermissions([
-            'comment:write'
+            // no permissions, read-only
+          ]);
+        } else {
+          permissions.setPermissions([
+            'document:write',
+            'comment:write',
           ]);
         }
       }
@@ -347,7 +352,10 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
     class TrackChangesIntegration extends Plugin {
       init() {
         if (!version) {
-          this.editor.execute('trackChanges');
+          setTimeout(() => {
+            // timeout is needed here, otherwise this command disables editor toolbar buttons like 'bold' 'italic' and others. no idea why.
+            this.editor.execute('trackChanges');
+          }, 0);
         }
       }
     }
