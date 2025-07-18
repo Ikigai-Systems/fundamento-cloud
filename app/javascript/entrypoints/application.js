@@ -47,3 +47,21 @@ if (window.FundamentoConfig.sentryDsn) {
     replaysOnErrorSampleRate: 1.0,
   });
 }
+
+import Plausible from 'plausible-tracker';
+
+// Dummy plausible function so we can still call it even if Plausible was not initialized
+window.plausible = window.plausible || function () {
+  (window.plausible.q = window.plausible.q || []).push(arguments)
+};
+
+if (import.meta.env.VITE_PLAUSIBLE_DOMAIN) {
+  const {trackPageview} = Plausible({
+    domain: import.meta.env.VITE_PLAUSIBLE_DOMAIN,
+    trackLocalhost: true,
+  });
+
+  document.addEventListener("turbo:load", () => {
+    trackPageview();
+  });
+}
