@@ -55,9 +55,9 @@ window.plausible = window.plausible || function () {
   (window.plausible.q = window.plausible.q || []).push(arguments)
 };
 
-if (import.meta.env.VITE_PLAUSIBLE_DOMAIN) {
+if (window.FundamentoConfig.plausibleDomain) {
   const {trackPageview} = Plausible({
-    domain: import.meta.env.VITE_PLAUSIBLE_DOMAIN,
+    domain: window.FundamentoConfig.plausibleDomain,
     trackLocalhost: true,
   });
 
