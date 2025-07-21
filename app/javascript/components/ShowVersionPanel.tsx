@@ -14,14 +14,14 @@ import {ContentTitle} from "./ContentTitle.tsx";
 import 'ckeditor5/ckeditor5.css';
 import HtmlEditor from "./HtmlEditor/HtmlEditor.tsx";
 
-type EditDocumentPanelProps = {
+type ShowVersionPanelProps = {
   version: Version,
   document: Document,
   space: Space,
   currentUser: User,
 }
 
-const ShowVersionPanel = ({version, document, space, currentUser}: EditDocumentPanelProps) => {
+const ShowVersionPanel = ({version, document, space, currentUser}: ShowVersionPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.contentBlocks,

@@ -199,7 +199,7 @@ class DocumentsController < ApplicationController
   end
 
   def document_params
-    params.require(:document).permit(:title, :archived)
+    params.require(:document).permit(:title, :archived, :content_html, :revisions)
   end
 
   def document_move_params

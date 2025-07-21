@@ -34,6 +34,13 @@ class Documents::VersionsController < ApplicationController
     @version.created_by = current_user
 
     if @version.save
+      @document.update(
+        {
+          content_html: content_html,
+          revisions: revisions
+        }
+      )
+
       respond_to do |format|
         flash[:notice] = "Document has been updated."
         format.html { redirect_to document_path(@document) }

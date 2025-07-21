@@ -52,7 +52,7 @@
     space: @space.to_react_props,
     current_user: current_user,
     database_id: database_id,
-    content_html: @document.versions.latest.present? ? @document.versions.latest.content_html : "",
-    revisions: @document.versions.latest.present? ? @document.versions.latest.revisions : "[]",
+    content_html: @document.content_html,
+    revisions: @document.revisions,
   } %>
 </article>

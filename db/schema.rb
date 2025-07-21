@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_16_180447) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_21_130445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -132,6 +132,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_16_180447) do
     t.bigint "space_id"
     t.boolean "archived", default: false
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.text "content_html", default: ""
+    t.json "revisions", default: ""
     t.index ["npi"], name: "index_documents_on_npi", unique: true
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"

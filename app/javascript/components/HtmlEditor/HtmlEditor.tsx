@@ -12,6 +12,7 @@ import InlineCommentsApi from "../../api/InlineCommentsApi.js";
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import UsersApi from "../../api/UsersApi.js";
 import VersionsApi from "../../api/Documents/VersionsApi.js";
+import DocumentsApi from "../../api/DocumentsApi";
 
 /**
  * USE THIS INTEGRATION METHOD ONLY FOR DEVELOPMENT PURPOSES.
@@ -376,6 +377,11 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
           for (const revisionData of revisions) {
             revisionHistory.addRevisionData(revisionData);
           }
+
+          setTimeout(() => {
+            // must be after init, otherwise it breaks the editor
+            this.editor.setData(initialData);
+          },0);
         }
       }
     }
@@ -519,6 +525,19 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
           Underline
         ],
         extraPlugins: [UsersIntegration, CommentsIntegration, TrackChangesIntegration, RevisionHistoryIntegration],
+        autosave: {
+          save: async (editor)=> {
+            const data = editor.getData();
+
+            const updatedDocument = await DocumentsApi.update({
+              params: document,
+              data: {
+                contentHtml: editor.getData(),
+                revisions: JSON.stringify(editor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
+              },
+            });
+          }
+        },
         balloonToolbar: ['comment', '|', 'bold', 'italic', '|', 'link', 'insertImage', '|', 'bulletedList', 'numberedList'],
         blockToolbar: [
           'comment',
@@ -676,7 +695,7 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
             'resizeImage',
           ]
         },
-        initialData: initialData,
+        // initialData: initialData,
         licenseKey: window.FundamentoConfig.ckeditor.licenseKey,
         link: {
           addTargetToExternalLinks: true,
