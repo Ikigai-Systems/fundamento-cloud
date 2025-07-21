@@ -526,17 +526,17 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
         ],
         extraPlugins: [UsersIntegration, CommentsIntegration, TrackChangesIntegration, RevisionHistoryIntegration],
         autosave: {
-          save: async (editor)=> {
-            const data = editor.getData();
-
-            const updatedDocument = await DocumentsApi.update({
-              params: document,
-              data: {
-                contentHtml: editor.getData(),
-                revisions: JSON.stringify(editor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
-              },
-            });
-          }
+          save: async (editor) => {
+            if (!readOnly) {
+              const updatedDocument = await DocumentsApi.update({
+                params: document,
+                data: {
+                  contentHtml: window.ckEditor.getData(),
+                  revisions: JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
+                },
+              });
+            }
+          },
         },
         balloonToolbar: ['comment', '|', 'bold', 'italic', '|', 'link', 'insertImage', '|', 'bulletedList', 'numberedList'],
         blockToolbar: [
@@ -788,11 +788,23 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
                 {DecoupledEditor && editorConfig && (
                   <CKEditor
                     onReady={editor => {
+                      //for getting editor contents when creating new Version
+                      window.ckEditor = editor;
+
                       editorToolbarRef.current.appendChild(editor.ui.view.toolbar.element);
                       editorMenuBarRef.current.appendChild(editor.ui.view.menuBarView.element);
 
-                      //for getting editor contents when creating new Version
-                      window.ckEditor = editor;
+                      const statusIndicator = window.document.querySelector( '#editor-autosave-status' );
+                      if (statusIndicator) {
+                        const pendingActions = editor.plugins.get('PendingActions');
+                        pendingActions.on('change:hasAny', (evt, propertyName, newValue) => {
+                          if (newValue) {
+                            statusIndicator.innerHTML = '<div class="font-semibold text-slate-400">Saving...</div>\n';
+                          } else {
+                            statusIndicator.innerHTML = '<div class="font-semibold text-slate-400 duration-1000 opacity-0 animate-fadeout">Saved</div>\n';
+                          }
+                        });
+                      }
                     }}
                     onAfterDestroy={() => {
                       Array.from(editorToolbarRef.current.children).forEach(child => child.remove());
@@ -818,6 +830,20 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
     </div>
   );
 }
+
+function saveData(document) {
+  return new Promise(async resolve => {
+    const updatedDocument = await DocumentsApi.update({
+      params: document,
+      data: {
+        contentHtml: window.ckEditor.getData(),
+        revisions: JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
+      },
+    });
+    resolve(updatedDocument);
+  })
+}
+
 
 type HtmlEditorProps = {
   initialData: String,

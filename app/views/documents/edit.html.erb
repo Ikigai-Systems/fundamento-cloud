@@ -4,6 +4,7 @@
 
 <% content_for :content_menu do %>
   <div id="editor-connection-indicator"></div>
+  <div id="editor-autosave-status"></div>
 
   <% if @document.versions.present? %>
     <%= link_to "View current version", document_path(@document),

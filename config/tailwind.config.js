@@ -68,6 +68,16 @@ module.exports = {
           '950': '#482100',
         },
       },
+      keyframes: {
+        'fade-out': {
+          '0%': { opacity: 1 },
+          '66%': { opacity: 1 },
+          '100%': { opacity: 0 },
+        },
+      },
+      animation: {
+        fadeout: 'fade-out 1.5s ease-out',
+        }
     },
     // leaving commented out, might become useful in future iterations
     // data: {
