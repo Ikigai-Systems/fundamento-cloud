@@ -377,11 +377,6 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
           for (const revisionData of revisions) {
             revisionHistory.addRevisionData(revisionData);
           }
-
-          setTimeout(() => {
-            // must be after init, otherwise it breaks the editor
-            this.editor.setData(initialData);
-          },0);
         }
       }
     }
@@ -528,6 +523,9 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
         autosave: {
           save: async (editor) => {
             if (!readOnly) {
+              const revisionTracker = editor.plugins.get('RevisionTracker');
+              await revisionTracker.update();
+
               const updatedDocument = await DocumentsApi.update({
                 params: document,
                 data: {
@@ -695,7 +693,6 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
             'resizeImage',
           ]
         },
-        // initialData: initialData,
         licenseKey: window.FundamentoConfig.ckeditor.licenseKey,
         link: {
           addTargetToExternalLinks: true,
