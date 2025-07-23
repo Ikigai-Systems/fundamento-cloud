@@ -20,7 +20,7 @@ class InlineCommentsController < ApplicationController
         {
           id: comment[:comment_id],
           content: comment[:content],
-          organization_user: current_organization_user
+          user: current_organization_user.user
         }
       )
     end
@@ -60,7 +60,7 @@ class InlineCommentsController < ApplicationController
     inline_comment_thread.update(
       {
         resolved_at: DateTime.now,
-        resolved_by: current_organization_user.id
+        resolved_by: current_organization_user.user.id
       }
     )
 
@@ -91,7 +91,7 @@ class InlineCommentsController < ApplicationController
         id: params[:comment_id],
         inline_comment_thread_id: params[:thread_id],
         content: params[:content],
-        organization_user: current_organization_user
+        user: current_organization_user.user
       }
     )
 
@@ -147,7 +147,7 @@ class InlineCommentsController < ApplicationController
     {
       comment_id: comment.id,
       content: comment.content,
-      author_id: comment.organization_user.id.to_s, # CKEditor requires author_id to be a string
+      author_id: comment.user.id.to_s, # CKEditor requires author_id to be a string
       created_at: comment.created_at
     }
   end

@@ -23,9 +23,9 @@ import DocumentsApi from "../../api/DocumentsApi";
  */
 const AI_API_KEY = '<YOUR_AI_API_KEY>';
 
-const CLOUD_SERVICES_TOKEN_URL =
-  'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
-const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
+// const CLOUD_SERVICES_TOKEN_URL =
+//   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
+// const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
 const HtmlEditor = ({initialData, revisions, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
@@ -557,9 +557,9 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
           'outdent',
           'indent'
         ],
-        cloudServices: {
-          tokenUrl: CLOUD_SERVICES_TOKEN_URL
-        },
+        // cloudServices: {
+        //   tokenUrl: CLOUD_SERVICES_TOKEN_URL
+        // },
         comments: {
           editorConfig: {
             extraPlugins: [Autoformat, Bold, Italic, List, Mention],
