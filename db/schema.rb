@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_23_142539) do
+ActiveRecord::Schema[7.1].define(version: 2025_07_23_180032) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -610,7 +610,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_23_142539) do
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_users"
   add_foreign_key "inline_comment_threads", "documents"
-  add_foreign_key "inline_comments", "organization_users", column: "user_id"
+  add_foreign_key "inline_comments", "users"
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "object_comments", "organization_users"
   add_foreign_key "object_comments", "organizations"
