@@ -37,7 +37,8 @@ class Documents::VersionsController < ApplicationController
       @document.update(
         {
           content_html: content_html,
-          revisions: revisions
+          revisions: revisions,
+          operations: nil,
         }
       )
 

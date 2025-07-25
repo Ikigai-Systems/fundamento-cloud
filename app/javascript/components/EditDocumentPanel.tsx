@@ -13,9 +13,10 @@ type EditDocumentPanelProps = {
   databaseId: string,
   contentHtml: string,
   revisions: string,
+  operations?: string,
 }
 
-const EditDocumentPanel = ({document, space, currentUser, databaseId, contentHtml, revisions}: EditDocumentPanelProps) => {
+const EditDocumentPanel = ({document, space, currentUser, databaseId, contentHtml, revisions, operations}: EditDocumentPanelProps) => {
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
       <div className="content-editor-padding">
@@ -23,7 +24,7 @@ const EditDocumentPanel = ({document, space, currentUser, databaseId, contentHtm
       </div>
 
       <div className="html-editor-container">
-        <HtmlEditor initialData={contentHtml} revisions={JSON.parse(revisions || "[]")} document={document} currentUser={currentUser}/>
+        <HtmlEditor initialData={contentHtml} revisions={JSON.parse(revisions || "[]")} operations={JSON.parse(operations || "[]")} document={document} currentUser={currentUser}/>
       </div>
 
       <div className="editor-container">

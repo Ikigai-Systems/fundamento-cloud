@@ -27,7 +27,7 @@ const AI_API_KEY = '<YOUR_AI_API_KEY>';
 //   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 // const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, revisions, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, revisions, operations, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -378,6 +378,20 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
             revisionHistory.addRevisionData(revisionData);
           }
         }
+
+        if (operations) {
+          setTimeout(() => {
+            console.log("operations", operations);
+
+            for (const operationJson of operations) {
+              const operation = this.editor.model.createOperationFromJSON(operationJson);
+              this.editor.model.enqueueChange( writer => {
+                writer.batch.addOperation( operation );
+                this.editor.model.applyOperation( operation );
+              } );
+            }
+          }, 0);
+        }
       }
     }
 
@@ -529,8 +543,12 @@ const HtmlEditor = ({initialData, revisions, version, document, currentUser, rea
               const updatedDocument = await DocumentsApi.update({
                 params: document,
                 data: {
-                  contentHtml: window.ckEditor.getData(),
-                  revisions: JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
+                  contentHtml: editor.getData(),
+                  // revisions: JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true})),
+                  operations: JSON.stringify(
+                    editor.model.document.history.getOperations(revisionTracker.currentRevision.fromVersion)
+                      .map(operation => operation.toJSON())
+                  ),
                 },
               });
             }
@@ -846,6 +864,7 @@ type HtmlEditorProps = {
   initialData: String,
   document: Document,
   revisions?: object[],
+  operations?: object[],
   version?: Version,
   currentUser: User,
   readOnly?: boolean,
