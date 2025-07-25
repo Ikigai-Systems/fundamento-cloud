@@ -27,7 +27,7 @@ const AI_API_KEY = '<YOUR_AI_API_KEY>';
 //   'https://4iwzgvk92_bk.cke-cs.com/token/dev/53b5ba350283e49152660bde31b620df739a4dddc3f2dbc11772a89f5090?limit=10';
 // const CLOUD_SERVICES_WEBSOCKET_URL = 'wss://4iwzgvk92_bk.cke-cs.com/ws';
 
-const HtmlEditor = ({initialData, revisions, operations, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
+const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, document, currentUser, readOnly = false}: HtmlEditorProps) => {
   const editorContainerRef = useRef(null);
   const editorMenuBarRef = useRef(null);
   const editorToolbarRef = useRef(null);
@@ -123,7 +123,8 @@ const HtmlEditor = ({initialData, revisions, operations, version, document, curr
       TableToolbar,
       TextTransformation,
       TodoList,
-      Underline
+      Underline,
+      transformSets,
     } = cloud.CKEditor;
     const {
       CaseChange,
@@ -173,7 +174,7 @@ const HtmlEditor = ({initialData, revisions, operations, version, document, curr
         const permissions = this.editor.plugins.get('Permissions');
         if (readOnly) {
           permissions.setPermissions([
-            // no permissions, read-only
+            'comment:write',
           ]);
         } else {
           permissions.setPermissions([
@@ -243,11 +244,18 @@ const HtmlEditor = ({initialData, revisions, operations, version, document, curr
 
           addCommentThread: async ({threadId, comments, ...restOfData}) => {
             console.log('Comment thread added', restOfData);
+            const revisionTracker = window.ckEditor.plugins.get('RevisionTracker');
 
             if (version) {
               await VersionsApi.update({
                 params: {documentNpi: document.npi, id: version.sequentialId},
-                data: {contentHtml: this.editor.getData()},
+                data: {
+                  contentHtml: this.editor.getData(),
+                  operations: JSON.stringify(
+                    window.ckEditor.model.document.history.getOperations(revisionTracker.currentRevision.fromVersion)
+                      .map(operation => operation.toJSON())
+                  ),
+                },
               });
             }
 
@@ -351,14 +359,15 @@ const HtmlEditor = ({initialData, revisions, operations, version, document, curr
      * To read more about it, visit the CKEditor 5 documentation: https://ckeditor.com/docs/ckeditor5/latest/features/collaboration/track-changes/track-changes-integration.html.
      */
     class TrackChangesIntegration extends Plugin {
-      init() {
-        if (!version) {
-          setTimeout(() => {
-            // timeout is needed here, otherwise this command disables editor toolbar buttons like 'bold' 'italic' and others. no idea why.
-            this.editor.execute('trackChanges');
-          }, 0);
-        }
-      }
+      // 2025-07-25 commented out temporarily, until saving suggestions in backend does work
+      // init() {
+      //   if (!version) {
+      //     setTimeout(() => {
+      //       // timeout is needed here, otherwise this command disables editor toolbar buttons like 'bold' 'italic' and others. no idea why.
+      //       this.editor.execute('trackChanges');
+      //     }, 0);
+      //   }
+      // }
     }
 
     class RevisionHistoryIntegration extends Plugin {
@@ -379,16 +388,40 @@ const HtmlEditor = ({initialData, revisions, operations, version, document, curr
           }
         }
 
-        if (operations) {
+        if (operationsA && operationsB) {
           setTimeout(() => {
-            console.log("operations", operations);
+            const result = transformSets(
+              operationsA.map(o => this.editor.model.createOperationFromJSON(o)),
+              operationsB.map(o => this.editor.model.createOperationFromJSON(o)),
+              {
+                document: this.editor.model.document,
+                useRelations: false,
+                padWithNoOps: true
+              },
+            );
 
-            for (const operationJson of operations) {
+            for (const operationJson of operationsA) {
               const operation = this.editor.model.createOperationFromJSON(operationJson);
-              this.editor.model.enqueueChange( writer => {
-                writer.batch.addOperation( operation );
-                this.editor.model.applyOperation( operation );
-              } );
+              this.editor.model.enqueueChange(writer => {
+                writer.batch.addOperation(operation);
+                this.editor.model.applyOperation(operation);
+              });
+            }
+            for (const operation of result.operationsB) {
+              this.editor.model.enqueueChange(writer => {
+                writer.batch.addOperation(operation);
+                this.editor.model.applyOperation(operation);
+              });
+            }
+          }, 0);
+        } else if (operationsA) {
+          setTimeout(() => {
+            for (const operationJson of operationsA) {
+              const operation = this.editor.model.createOperationFromJSON(operationJson);
+              this.editor.model.enqueueChange(writer => {
+                writer.batch.addOperation(operation);
+                this.editor.model.applyOperation(operation);
+              });
             }
           }, 0);
         }
@@ -864,7 +897,8 @@ type HtmlEditorProps = {
   initialData: String,
   document: Document,
   revisions?: object[],
-  operations?: object[],
+  operationsA?: object[],
+  operationsB?: object[],
   version?: Version,
   currentUser: User,
   readOnly?: boolean,

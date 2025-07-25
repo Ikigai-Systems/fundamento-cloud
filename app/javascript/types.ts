@@ -41,4 +41,5 @@ export type Version = {
   documentId: number,
   createdAt: string, //date
   updatedAt: string, //date
+  operations: string, //JSON
 }

@@ -55,6 +55,7 @@
     database_id: database_id,
     content_html: @document.content_html,
     revisions: @document.revisions,
-    operations: @document.operations,
+    operationsA: @document.versions.latest.present? ? @document.versions.latest.operations : nil,
+    operationsB: @document.operations
   } %>
 </article>

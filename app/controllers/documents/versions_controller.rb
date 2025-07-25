@@ -92,7 +92,8 @@ class Documents::VersionsController < ApplicationController
 
     @version.update(
       {
-        content_html: params[:content_html]
+        content_html: params[:content_html],
+        operations: params[:operations],
       }
     )
 

@@ -36,7 +36,7 @@ const ShowVersionPanel = ({version, document, space, currentUser}: ShowVersionPa
 
       <div className="html-editor-container">
 
-        <HtmlEditor initialData={version.contentHtml} document={document} version={version} revisions={JSON.parse(version.revisions || "[]")} currentUser={currentUser} readOnly={true}/>
+        <HtmlEditor initialData={version.contentHtml} document={document} version={version} revisions={JSON.parse(version.revisions || "[]")} operationsA={JSON.parse(version.operations || "[]")} currentUser={currentUser} readOnly={true}/>
       </div>
 
       <div className="editor-container">
