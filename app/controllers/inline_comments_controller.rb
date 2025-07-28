@@ -20,7 +20,8 @@ class InlineCommentsController < ApplicationController
         {
           id: comment[:comment_id],
           content: comment[:content],
-          user: current_organization_user.user
+          user: current_organization_user.user,
+          comment_attributes: comment[:attributes],
         }
       )
     end
@@ -91,6 +92,7 @@ class InlineCommentsController < ApplicationController
         id: params[:comment_id],
         inline_comment_thread_id: params[:thread_id],
         content: params[:content],
+        comment_attributes: params[:attributes],
         user: current_organization_user.user
       }
     )
@@ -111,9 +113,10 @@ class InlineCommentsController < ApplicationController
     authorize comment, :update?
 
     comment.update(
-      {
-        content: params[:content]
-      }
+      Hash.new.tap do |attributes_to_update|
+        attributes_to_update[:content] = params[:content] if params[:content].present?
+        attributes_to_update[:comment_attributes] = params[:attributes] if params[:attributes].present?
+      end
     )
 
     respond_to do |format|
@@ -148,7 +151,8 @@ class InlineCommentsController < ApplicationController
       comment_id: comment.id,
       content: comment.content,
       author_id: comment.user.id.to_s, # CKEditor requires author_id to be a string
-      created_at: comment.created_at
+      created_at: comment.created_at,
+      attributes: comment.comment_attributes,
     }
   end
 end

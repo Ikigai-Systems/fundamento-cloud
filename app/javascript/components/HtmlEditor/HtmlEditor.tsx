@@ -129,6 +129,9 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
     const {
       CaseChange,
       Comments,
+      BaseCommentView,
+      CommentView,
+      LateFocusButtonView,
       ExportPdf,
       ExportWord,
       FormatPainter,
@@ -144,6 +147,55 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
       TrackChangesData,
       TrackChangesPreview
     } = cloud.CKEditorPremiumFeatures;
+
+    class CustomCommentView extends CommentView {
+      constructor(...args) {
+        super(...args);
+
+        this.bind('isPrivate').to(this._model, 'attributes', attributes => !!attributes.isPrivate);
+      }
+
+      getTemplate() {
+        const templateDefinition = super.getTemplate();
+
+        templateDefinition.children[ 0 ].attributes.class.push( this.bindTemplate.if( 'isPrivate', 'ck-comment--private' ) );
+
+        // Add the new button next to the other comment buttons (edit and remove).
+        templateDefinition.children[ 0 ].children[ 1 ].children[ 1 ].children.add( this._createStarButtonView(), 0 );
+
+        return templateDefinition;
+      }
+
+      _createStarButtonView() {
+        const button = new LateFocusButtonView(this.locale);
+        const starIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M15.22 18.36c.18-.02.35-.1.46-.25a.6.6 0 00.11-.5l-1.12-5.32 4.12-3.66a.6.6 0 00.18-.65.63.63 0 00-.54-.42l-5.54-.6L10.58 2a.64.64 0 00-.58-.37.64.64 0 00-.58.37l-2.3 4.94-5.55.6a.63.63 0 00-.54.43.6.6 0 00.18.65l4.12 3.66-1.12 5.32c-.05.24.04.49.25.63.2.14.47.16.68.04L10 15.59l4.86 2.69c.1.06.23.09.36.08zm-.96-1.83l-3.95-2.19a.65.65 0 00-.62 0l-3.95 2.19.91-4.33a.6.6 0 00-.2-.58L3.1 8.64l4.51-.5a.64.64 0 00.51-.36L10 3.76l1.88 4.02c.09.2.28.34.5.36l4.52.5-3.35 2.98a.6.6 0 00-.2.58l.91 4.33z"/></svg>';
+        const t = this.locale.t;
+
+        button.set({
+          icon: starIcon,
+          isToggleable: true,
+          // tooltip: t('Private'),
+          tooltip: this._model.attributes.isPrivate ? "Private comment. Click to make it visible to other participants" : "Public comment. Click to hide it from other participants",
+          withText: true
+        });
+
+        // Add a class to the button to style it.
+        button.extendTemplate({
+          attributes: {
+            class: this.bindTemplate.if( 'isPrivate', 'ck-comment--private')
+          }
+        });
+
+        button.bind('isEnabled').to(this._model, 'isReadOnly', value => !value);
+        button.bind('isVisible').to(this._model, 'isEditable');
+
+        button.on('execute', () => {
+          this._model.setAttribute('isPrivate', !this._model.attributes.isPrivate);
+        });
+
+        return button;
+      }
+    }
 
     /**
      * The `UsersIntegration` lets you manage user data and permissions.
@@ -217,7 +269,7 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
             });
           },
 
-          updateComment: async ({threadId, commentId, content, ...restOfData}) => {
+          updateComment: async ({threadId, commentId, content, attributes, ...restOfData}) => {
             console.log('Comment updated', restOfData);
 
             return await InlineCommentsApi.updateComment({
@@ -226,9 +278,10 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
                 commentId,
               },
               data: {
-                content
+                ...(content && {content}),
+                ...(attributes && {attributes}),
               }
-            })
+            });
           },
 
           removeComment: async ({threadId, commentId, ...restOfData}) => {
@@ -612,6 +665,7 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
         //   tokenUrl: CLOUD_SERVICES_TOKEN_URL
         // },
         comments: {
+          CommentView: CustomCommentView,
           editorConfig: {
             extraPlugins: [Autoformat, Bold, Italic, List, Mention],
             mention: {
