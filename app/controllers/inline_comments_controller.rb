@@ -138,9 +138,22 @@ class InlineCommentsController < ApplicationController
   private
 
   def render_comment_thread(comment_thread)
+    visible_comments = comment_thread.inline_comments.filter do |inline_comment|
+      inline_comment.comment_attributes&.[]("is_private") != true || inline_comment.user == current_user
+    end
+
+    if visible_comments.empty?
+      return {
+        thread_id: comment_thread.id,
+        comments: [],
+        resolved_at: DateTime.now,
+        resolved_by: current_user.id,
+      }
+    end
+
     {
       thread_id: comment_thread.id,
-      comments: comment_thread.inline_comments.map { |comment| render_comment(comment) },
+      comments: visible_comments.map { |comment| render_comment(comment) },
       resolved_at: comment_thread.resolved_at,
       resolved_by: comment_thread.resolved_by
     }
