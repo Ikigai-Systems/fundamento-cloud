@@ -167,3 +167,7 @@
     break-inside: avoid;
     break-after: auto;
 }
+
+.ck .ck-annotation .ck-button.ck-comment--toggle-privacy-button {
+    color: black;
+}
