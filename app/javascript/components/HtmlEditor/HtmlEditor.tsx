@@ -262,6 +262,8 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
       }
 
       init() {
+        this._avoidBackendRemovalOfThreads = {};
+
         const commentsRepositoryPlugin = this.editor.plugins.get('CommentsRepository');
 
         // Set the adapter on the `CommentsRepository#adapter` property.
@@ -344,6 +346,18 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
               }
             }
 
+            if (!response.comments.length) {
+              const threadId = response.threadId;
+              const commentsRepositoryPlugin = window.ckEditor.plugins.get('CommentsRepository');
+
+              setTimeout(() => {
+                if (commentsRepositoryPlugin.hasCommentThread(threadId)) {
+                  this._avoidBackendRemovalOfThreads[threadId] = true;
+                  commentsRepositoryPlugin._removeCommentThread({threadId});
+                }
+              }, 0);
+            }
+
             const usersPlugin = this.editor.plugins.get("Users");
 
             const missingUsersIds = [...new Set(response.comments.map(comment => comment.authorId).filter(authorId => usersPlugin.getUser(authorId) === null))];
@@ -363,9 +377,6 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
                 });
               }
             }
-
-            //todo: update document content
-
 
             return response;
           },
@@ -400,6 +411,9 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
 
           removeCommentThread: async ({threadId, ...restOfData}) => {
             console.log('Comment thread removed', restOfData);
+            if (this._avoidBackendRemovalOfThreads[threadId] === true) {
+              return;
+            }
             const response = await InlineCommentsApi.removeCommentThread({threadId});
 
             //todo: update document content
