@@ -44,6 +44,7 @@
     version: @version.attributes.except("id"),
     document: @document.to_react_props,
     space: @space.to_react_props,
-    current_user: current_user
+    current_user: current_user,
+    features: enabled_feature_names,
   } %>
 </article>

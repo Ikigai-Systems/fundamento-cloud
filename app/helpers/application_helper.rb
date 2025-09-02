@@ -10,4 +10,8 @@ module ApplicationHelper
   def database_id
     DatabaseId.get(ActiveRecord::Base.connection)
   end
+
+  def enabled_feature_names
+    Flipper.features.select { |feature| feature.enabled?(current_user) }.map(&:name)
+  end
 end
