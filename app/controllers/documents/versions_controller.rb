@@ -10,11 +10,11 @@ class Documents::VersionsController < ApplicationController
   before_action :load_document
 
   def create
+    authorize @document, :update?
+
     content_blocks = JSON.parse(params["content_blocks"].to_s)
     content_html = params["content_html"]
     revisions = params["revisions"]
-
-    authorize @document, :update?
 
     if ENV["BLOCKNOTE_DIFF"].to_bool
       blocks2 = @document.to_blocks
