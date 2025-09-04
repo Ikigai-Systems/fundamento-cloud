@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/jchsoft/fast_mcp_pubsub.git
+  revision: 2895a2c9a89412dc38ce640a670beaa44f974dbc
+  specs:
+    fast_mcp_pubsub (1.1.0)
+      concurrent-ruby (>= 1.0)
+      pg (>= 1.0)
+      rails (>= 7.0)
+
 GEM
   remote: https://dl.fontawesome.com/basic/fontawesome-pro/ruby/
   specs:
@@ -491,6 +500,7 @@ DEPENDENCIES
   docx
   dotenv-rails (~> 3.1)
   fast-mcp (~> 1.5)
+  fast_mcp_pubsub!
   flipper-active_record
   flipper-ui
   font-awesome-pro-sass!

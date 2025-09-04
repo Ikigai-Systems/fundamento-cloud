@@ -35,3 +35,7 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 plugin :tmp_restart
 
 plugin :tailwindcss if ENV.fetch("RAILS_ENV", "development") == "development"
+
+on_worker_boot do
+  FastMcpPubsub::Service.start_listener
+end

@@ -123,3 +123,4 @@ group :development, :test do
 end
 
 gem "fast-mcp", "~> 1.5"
+gem "fast_mcp_pubsub", github: "jchsoft/fast_mcp_pubsub"
