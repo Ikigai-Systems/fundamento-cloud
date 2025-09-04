@@ -121,3 +121,5 @@ end
 group :development, :test do
   gem "dotenv-rails", "~> 3.1"
 end
+
+gem "fast-mcp", "~> 1.5"
