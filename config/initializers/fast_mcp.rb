@@ -14,6 +14,22 @@
 # You can customize the options below to fit your needs.
 require "fast_mcp"
 
+class WardenAuthenticatedAuthenticatedRackTransport < FastMcp::Transports::AuthenticatedRackTransport
+  def initialize(app, server, options = {})
+    super(app, server, options.merge(auth_token: "DUMMY_TOKEN"))
+  end
+
+  def handle_mcp_request(request, env)
+    unless exempt_from_auth?(request.path)
+      user = request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
+
+      return unauthorized_response(request) unless user.present?
+    end
+
+    super
+  end
+end
+
 FastMcp.mount_in_rails(
   Rails.application,
   name: Rails.application.class.module_parent_name.underscore.dasherize,
@@ -29,6 +45,10 @@ FastMcp.mount_in_rails(
   # authenticate: true,       # Uncomment to enable authentication
   # auth_token: "your-token", # Required if authenticate: true
 ) do |server|
+  def server.transport_klass
+    WardenAuthenticatedAuthenticatedRackTransport
+  end
+
   Rails.application.config.after_initialize do
     # FastMcp will automatically discover and register:
     # - All classes that inherit from ApplicationTool (which uses ActionTool::Base)
