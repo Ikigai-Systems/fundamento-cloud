@@ -30,6 +30,14 @@ begin
 rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
+
+# Configure Active Record encryption for tests
+ActiveRecord::Encryption.configure(
+  primary_key: "test_encryption_key_32_characters_long!",
+  deterministic_key: "deterministic_key_32_chars_long!",
+  key_derivation_salt: "key_derivation_salt_32_chars_long!"
+)
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
