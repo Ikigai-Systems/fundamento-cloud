@@ -17,3 +17,9 @@ maria:
   last_name: Awaria
   email: maria@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+
+john:
+  first_name: John
+  last_name: Doe
+  email: john@gmail.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
