@@ -8,6 +8,76 @@
 #
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
+
+class JwtAuthenticatableStrategy < Devise::Strategies::Base
+  def valid?
+    jwt.present?
+  end
+
+  def store?; false; end
+
+  def authenticate!
+    jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
+
+    payload, _headers = JWT.decode(jwt, jwt_secret_key, true, algorithm: "HS256")
+
+    organization_user = GlobalID::Locator.locate(payload["sub"]) rescue nil
+    # space = GlobalID::Locator.locate payload["aud"]
+
+    if organization_user
+      RequestContext.current_organization = organization_user.organization
+
+      success!(organization_user.user)
+    else
+      fail!("User not found: #{payload["sub"]}")
+    end
+  rescue JWT::DecodeError => e
+    fail!("Invalid token: #{e.message}")
+  end
+
+  protected
+
+  def extract_bearer_token(authorization_header, token_type = "Bearer")
+    return nil unless authorization_header.present? && authorization_header.start_with?("#{token_type} ")
+
+    authorization_header.split(" ").last
+  end
+
+  private
+
+  def jwt
+    authorization_header = env["HTTP_AUTHORIZATION"]
+
+    extract_bearer_token(authorization_header, "JWT")
+  end
+end
+
+class ApiTokenAuthenticatableStrategy < JwtAuthenticatableStrategy
+  def valid?
+    api_token.present?
+  end
+
+  def authenticate!
+    if (token = ApiToken.find_by_encrypted_token(api_token))
+      token.update!(used_at: Time.now)
+
+      RequestContext.current_organization = token.organization
+
+      success!(token.organization_user.user)
+    else
+      fail!("Invalid API token")
+    end
+  end
+
+  private
+
+  def api_token
+    authorization_header = env["HTTP_AUTHORIZATION"]
+
+    extract_bearer_token(authorization_header)
+  end
+end
+
 Devise.setup do |config|
   # The secret key used by Devise. Devise uses this key to generate
   # random tokens. Changing this key will render invalid all existing
@@ -330,6 +400,11 @@ Devise.setup do |config|
   #   manager.intercept_401 = false
   #   manager.default_strategies(scope: :user).unshift :some_external_strategy
   # end
+
+  config.warden do |manager|
+    manager.strategies.add(:jwt, JwtAuthenticatableStrategy)
+    manager.strategies.add(:api_token, ApiTokenAuthenticatableStrategy)
+  end
 
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine
