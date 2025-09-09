@@ -17,6 +17,8 @@ require "fast_mcp"
 class WardenAuthenticatedAuthenticatedRackTransport < FastMcp::Transports::AuthenticatedRackTransport
   def initialize(app, server, options = {})
     super(app, server, options.merge(auth_token: "DUMMY_TOKEN"))
+
+    @auth_enabled = false # So AuthenticatedRackTransport doesn't try to authenticate on it's own
   end
 
   def handle_mcp_request(request, env)
