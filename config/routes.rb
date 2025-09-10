@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   # end
 
   root "root#index"
+
   get "/recently_updated" => "root#recently_updated", as: :recently_updated
   get "/notifications" => "root#notifications", as: :notifications
   get "/shared" => "root#shared", as: :shared
@@ -159,6 +160,8 @@ Rails.application.routes.draw do
   get "/spaces/:space_npi/tables/:npi/edit", to: "tables/tables#edit"
 
   namespace :api, defaults: { format: :json } do
+    resource :mcp, only: [:create, :show], controller: :mcp
+
     namespace :v1 do
       resources :packs, param: :npi do
         member do

@@ -95,6 +95,8 @@ gem "random-word"
 
 gem "initials"
 
+gem "mcp"
+
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
@@ -121,6 +123,3 @@ end
 group :development, :test do
   gem "dotenv-rails", "~> 3.1"
 end
-
-gem "fast-mcp", "~> 1.5"
-gem "fast_mcp_pubsub", github: "jchsoft/fast_mcp_pubsub"

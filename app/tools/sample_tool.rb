@@ -3,14 +3,32 @@
 class SampleTool < ApplicationTool
   description 'Greet a user'
 
-  arguments do
-    required(:id).filled(:integer).description('ID of the user to greet')
-    optional(:prefix).filled(:string).description('Prefix to add to the greeting')
-  end
+  input_schema(
+    properties: {
+      id: { type: :integer }
+    },
+    required: [:id]
+  )
 
-  def call(id:, prefix: 'Hey')
+  annotations(
+    read_only_hint: true,
+  )
+
+  def self.call(id: "Hey", server_context:)
     user = User.find(id)
 
-    "#{prefix} #{user.first_name} !"
+    MCP::Tool::Response.new([
+      {
+        type: "text",
+        text: "Hey #{user.first_name} #{user.last_name}!"
+      }
+    ])
+  rescue ActiveRecord::RecordNotFound
+    MCP::Tool::Response.new([
+      {
+        type: "text",
+        text: "Sorry, couldn't find that user."
+      }
+    ])
   end
 end
