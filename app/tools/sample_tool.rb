@@ -29,6 +29,6 @@ class SampleTool < ApplicationTool
         type: "text",
         text: "Sorry, couldn't find that user."
       }
-    ])
+    ], true)
   end
 end
