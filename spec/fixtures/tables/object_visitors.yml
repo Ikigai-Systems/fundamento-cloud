@@ -4,4 +4,4 @@ _fixture:
 ou_is_stefan_visited_projects:
   user: :stefan
   object: projects (Table)
-  visited_at: <%= Time.now %>>
+  visited_at: <%= Time.now %>
