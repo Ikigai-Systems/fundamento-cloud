@@ -1,9 +1,11 @@
 module BlockNoteConverterNode
   def self.to_blocks(binary_sync)
-    data = Base64.encode64(binary_sync)
-
     # Call the Node.js script and pass the JSON data as an argument
-    stdout, stderr, status = Open3.capture3('node ./micro-services/blocknote/build/blocknote_bundle.js', stdin_data: data)
+    stdout, stderr, status = Open3.capture3(
+      'node ./micro-services/blocknote-converter/build/blocknoteConverter.js convert-yjs-to-blocks',
+      binmode: true,
+      stdin_data: binary_sync
+    )
 
     if status.success?
       JSON.parse(stdout)
