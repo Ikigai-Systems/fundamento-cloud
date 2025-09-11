@@ -3,7 +3,11 @@
 one:
   organization: :is
   space: :is_default
+  npi: "X"
+  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
 
 two:
   organization: :is
   space: :is_default
+  npi: "Y"
+  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"

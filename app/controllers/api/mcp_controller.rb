@@ -5,6 +5,7 @@ class Api::McpController < Api::ApiController
       version: "1.0.0",
       tools: [
         ListSpacesTool,
+        GetDocumentTool,
         SampleTool,
       ],
       # prompts: [MyPrompt],
