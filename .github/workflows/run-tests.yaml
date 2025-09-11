@@ -45,7 +45,7 @@ jobs:
         working-directory: micro-services/blocknote-converter
       - run: npm run test --if-present
         working-directory: micro-services/blocknote-converter
-      - run: npm run build --if-present
+      - run: npm run converter:build --if-present
         working-directory: micro-services/blocknote-converter
 
       # Install dependencies
