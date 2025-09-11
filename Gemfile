@@ -96,6 +96,7 @@ gem "random-word"
 gem "initials"
 
 gem "mcp"
+gem "blueprinter", "~> 1.1"
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do

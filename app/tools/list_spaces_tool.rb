@@ -6,6 +6,7 @@ class ListSpacesTool < ApplicationTool
   )
 
   annotations(
+    title: "List Spaces",
     read_only_hint: true,
   )
 
@@ -17,7 +18,7 @@ class ListSpacesTool < ApplicationTool
     MCP::Tool::Response.new([
       {
         type: "text",
-        text: spaces.map(&:to_react_props).to_json
+        text: SpaceBlueprint.render(spaces, view: :mcp)
       }
     ])
   end
