@@ -1,0 +1,48 @@
+require "rails_helper"
+
+RSpec.describe ListSpacesTool, type: :model do
+  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :documents
+
+  let(:user) { users(:pawel) }
+  let(:organization) { organizations(:is) }
+
+  let(:server_context) do
+    {
+      user_id: user.id,
+      organization_id: organization.id
+    }
+  end
+
+  describe ".call" do
+    context "happy case - user has access to spaces" do
+      it "returns spaces in JSON format ordered by name" do
+        response = ListSpacesTool.call(server_context: server_context)
+
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.content).to be_an(Array)
+        expect(response.content.first[:type]).to eq("text")
+
+        json_response = JSON.parse(response.content.first[:text])
+        expect(json_response).to be_an(Array)
+        expect(json_response.length).to eq(2)
+        expect(json_response.first["name"]).to eq("Default IS")
+        expect(json_response.second["name"]).to eq("Stefan's Private Space")
+      end
+    end
+
+    context "user has no authorization" do
+      let(:server_context) do
+        {
+          user_id: user.id,
+          organization_id: organizations(:another).id
+        }
+      end
+
+      it "raises not found error" do
+        expect {
+          ListSpacesTool.call(server_context: server_context)
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+end
