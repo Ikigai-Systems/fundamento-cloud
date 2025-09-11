@@ -3,7 +3,10 @@ class Api::McpController < Api::ApiController
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
       version: "1.0.0",
-      tools: [ListSpacesTool, SampleTool],
+      tools: [
+        ListSpacesTool,
+        SampleTool,
+      ],
       # prompts: [MyPrompt],
       server_context: {
         user_id: current_user.id,
