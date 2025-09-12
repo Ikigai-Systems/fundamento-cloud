@@ -11,5 +11,11 @@ class DocumentBlueprint < Blueprinter::Base
         document.versions.last.content_blocks
       end
     end
+
+    field :tags do |document|
+      document.tags.map do |tag|
+        "\##{tag.name}"
+      end
+    end
   end
 end
