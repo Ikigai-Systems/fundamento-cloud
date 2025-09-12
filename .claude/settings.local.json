@@ -12,7 +12,9 @@
       "Bash(rg:*)",
       "Bash(bundle install)",
       "Bash(npm update:*)",
-      "Bash(rails:*)"
+      "Bash(rails:*)",
+      "Bash(bin/rails generate:*)",
+      "Bash(bin/rails db:migrate)"
     ],
     "deny": []
   },
