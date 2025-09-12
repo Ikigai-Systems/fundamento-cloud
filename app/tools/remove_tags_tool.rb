@@ -29,36 +29,13 @@ class RemoveTagsTool < ApplicationTool
     # Check authorization
     Pundit.authorize(pundit_user, object, :update?)
 
-    # Normalize tags (strip # prefix, downcase)
-    normalized_tags = tags.map { |tag| normalize_tag_name(tag) }
-
-    # Remove tags within a transaction
-    removed_count = 0
-    ActiveRecord::Base.transaction do
-      normalized_tags.each do |tag_name|
-        # Find the tag in the object's space
-        tag = Tag.find_by(
-          name: tag_name,
-          space: object.space,
-          organization: pundit_user.current_organization
-        )
-        
-        if tag
-          # Remove the ObjectTag association if it exists
-          object_tag = ObjectTag.find_by(
-            tag: tag,
-            object: object,
-            organization: pundit_user.current_organization
-          )
-          
-          if object_tag
-            object_tag.destroy!
-            removed_count += 1
-          end
-        end
-        # Silently ignore non-existent tags or associations
-      end
-    end
+    # Use TagsService to remove tags
+    tags_service = TagsService.new(
+      object: object,
+      organization: pundit_user.current_organization
+    )
+    
+    tags_service.remove_tags(tags)
 
     # Reload object to get updated tags and return response
     object.reload
@@ -84,10 +61,6 @@ class RemoveTagsTool < ApplicationTool
     end
   end
 
-  def self.normalize_tag_name(tag)
-    # Strip # prefix if present and normalize
-    tag.start_with?("#") ? tag[1..-1].strip.downcase : tag.strip.downcase
-  end
 
   def self.serialize_object_with_tags(object)
     case object

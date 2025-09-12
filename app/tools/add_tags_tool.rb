@@ -29,23 +29,13 @@ class AddTagsTool < ApplicationTool
     # Check authorization
     Pundit.authorize(pundit_user, object, :update?)
 
-    # Normalize tags (strip # prefix, downcase)
-    normalized_tags = tags.map { |tag| normalize_tag_name(tag) }
-
-    # Add tags within a transaction
-    ActiveRecord::Base.transaction do
-      normalized_tags.each do |tag_name|
-        # Find or create the tag in the object's space
-        tag = find_or_create_tag(tag_name, object.space, pundit_user.current_organization)
-        
-        # Create the ObjectTag association if it doesn't exist
-        ObjectTag.find_or_create_by!(
-          tag: tag,
-          object: object,
-          organization: pundit_user.current_organization
-        )
-      end
-    end
+    # Use TagsService to add tags
+    tags_service = TagsService.new(
+      object: object,
+      organization: pundit_user.current_organization
+    )
+    
+    tags_service.add_tags(tags)
 
     # Reload object to get updated tags and return response
     object.reload
@@ -69,19 +59,6 @@ class AddTagsTool < ApplicationTool
     else
       raise ArgumentError, "Unsupported object_type: #{object_type}"
     end
-  end
-
-  def self.normalize_tag_name(tag)
-    # Strip # prefix if present and normalize
-    tag.start_with?("#") ? tag[1..-1].strip.downcase : tag.strip.downcase
-  end
-
-  def self.find_or_create_tag(tag_name, space, organization)
-    Tag.find_or_create_by!(
-      name: tag_name,
-      space: space,
-      organization: organization
-    )
   end
 
   def self.serialize_object_with_tags(object)
