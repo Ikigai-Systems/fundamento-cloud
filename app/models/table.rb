@@ -20,6 +20,8 @@ class Table < ApplicationRecord
   has_many :visitors, class_name: "ObjectVisitor", as: :object, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
   has_many :comments, class_name: "ObjectComment", as: :object, dependent: :delete_all
+  has_many :object_tags, as: :object, dependent: :delete_all
+  has_many :tags, through: :object_tags
 
   scope :lexicographically, -> { order(name: :asc) }
 

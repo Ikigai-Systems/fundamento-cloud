@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_07_28_174856) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -326,6 +326,19 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_28_174856) do
     t.index ["organization_user_id"], name: "index_object_reactions_on_organization_user_id"
   end
 
+  create_table "object_tags", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "tag_id", null: false
+    t.string "object_type", null: false
+    t.bigint "object_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["object_type", "object_id"], name: "index_object_tags_on_object"
+    t.index ["organization_id"], name: "index_object_tags_on_organization_id"
+    t.index ["tag_id", "object_type", "object_id"], name: "index_object_tags_on_tag_id_and_object_type_and_object_id", unique: true
+    t.index ["tag_id"], name: "index_object_tags_on_tag_id"
+  end
+
   create_table "object_visitors", force: :cascade do |t|
     t.string "object_type", null: false
     t.bigint "object_id", null: false
@@ -521,6 +534,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_28_174856) do
     t.index ["space_id"], name: "index_tables_on_space_id"
   end
 
+  create_table "tags", force: :cascade do |t|
+    t.bigint "organization_id", null: false
+    t.bigint "space_id", null: false
+    t.string "name", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name", "space_id"], name: "index_tags_on_name_and_space_id", unique: true
+    t.index ["npi"], name: "index_tags_on_npi", unique: true
+    t.index ["organization_id"], name: "index_tags_on_organization_id"
+    t.index ["space_id"], name: "index_tags_on_space_id"
+  end
+
   create_table "team_memberships", force: :cascade do |t|
     t.bigint "organization_id", null: false
     t.bigint "team_id", null: false
@@ -619,6 +646,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_28_174856) do
   add_foreign_key "object_comments", "organizations"
   add_foreign_key "object_reactions", "organization_users"
   add_foreign_key "object_reactions", "organizations"
+  add_foreign_key "object_tags", "organizations"
+  add_foreign_key "object_tags", "tags"
   add_foreign_key "organization_user_properties", "organization_users"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
@@ -630,6 +659,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_07_28_174856) do
   add_foreign_key "table_cells", "table_rows", column: "row_id"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
+  add_foreign_key "tags", "organizations"
+  add_foreign_key "tags", "spaces"
   add_foreign_key "team_memberships", "organizations"
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "teams", "organizations"
