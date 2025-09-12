@@ -6,6 +6,9 @@ class Api::McpController < Api::ApiController
       tools: [
         ListSpacesTool,
         GetDocumentTool,
+        AddTagsTool,
+        RemoveTagsTool,
+        UpdateTagsTool,
         SampleTool,
       ],
       # prompts: [MyPrompt],
