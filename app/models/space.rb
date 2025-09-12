@@ -12,6 +12,7 @@ class Space < ApplicationRecord
   has_many :document_imports, dependent: :destroy
   has_many :space_memberships, dependent: :destroy
   has_many :tables, dependent: :destroy
+  has_many :tags, dependent: :delete_all
 
   belongs_to :home_document, class_name: "Document", optional: true
 
