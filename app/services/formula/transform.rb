@@ -15,22 +15,43 @@ class Formula::Transform < Parslet::Transform
 
   # Handle binary operations
   rule(expression: subtree(:expr)) do
-    # If it's just a single value, return it directly
-    if expr.is_a?(Numeric) || expr.is_a?(String) || expr.is_a?(Hash)
+    case expr
+    when Numeric, String
       expr
-    else
-      # Otherwise, it's an array with operators
-      if expr.is_a?(Array)
+    when Hash
+      # Single hash value (not an array of operations)
+      expr unless expr.is_a?(Array)
+    when Array
+      # Process array of operations left-to-right
+      if expr.length == 1
+        expr.first
+      else
         result = expr.first
-        (1...expr.length).step(2) do |i|
-          operator = expr[i][:operator].to_s
-          right = expr[i + 1]
+        
+        expr[1..-1].each do |element|
+          next unless element.is_a?(Hash) && element.key?(:operator)
+          
+          operator = element[:operator].to_s
+          # Find the value that's not the operator
+          right_value = element.find { |key, _| key != :operator }&.last
+          
+          # Convert string numbers to floats or apply transformations
+          right = if right_value.respond_to?(:to_s) && right_value.to_s.match?(/^\d+(\.\d+)?$/)
+                    right_value.to_s.to_f
+                  elsif right_value.respond_to?(:to_s) && element.keys.include?(:reference)
+                    # Handle variable references
+                    { type: :reference, name: right_value.to_s }
+                  else
+                    right_value
+                  end
+          
           result = { type: :binary_op, operator: operator, left: result, right: right }
         end
+        
         result
-      else
-        expr
       end
+    else
+      expr
     end
   end
 end

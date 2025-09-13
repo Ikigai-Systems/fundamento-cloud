@@ -8,7 +8,7 @@ class Formula::Parser < Parslet::Parser
   # Literals
   rule(:integer) { match('[0-9]').repeat(1) }
   rule(:decimal) { integer >> str('.') >> integer }
-  rule(:number) { decimal.as(:number) | integer.as(:number) }
+  rule(:number) { (str('-').maybe >> (decimal | integer)).as(:number) }
   
   rule(:escaped_char) { str('\\') >> match('[bfnrt\\"\']') }
   rule(:string_content) { (escaped_char | match('[^\\\\"]')).repeat }

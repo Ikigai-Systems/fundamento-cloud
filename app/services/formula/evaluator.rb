@@ -97,7 +97,11 @@ class Formula::Evaluator
       'Average' => ->(*args) { args.sum.to_f / args.length },
       'Sqrt' => ->(x) { Math.sqrt(x) },
       'Power' => ->(base, exp) { base ** exp },
-      'Log' => ->(x, base = Math::E) { Math.log(x) / Math.log(base) }
+      'Log' => ->(x, base = Math::E) { 
+        raise Math::DomainError, "Logarithm of non-positive number" if x <= 0
+        raise Math::DomainError, "Invalid logarithm base" if base <= 0 || base == 1
+        Math.log(x) / Math.log(base) 
+      }
     }
   end
 end
