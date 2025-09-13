@@ -306,7 +306,7 @@ RSpec.describe Formula::Engine, type: :model do
 
       it 'evaluates complex nested expressions' do
         result = engine.evaluate('Round(Average(Max(1, 2), Min(8, 9)), 1)')
-        expect(result).to eq(5.5)
+        expect(result).to eq(5.0)
       end
 
       it 'evaluates If with function calls in condition and values' do
