@@ -52,6 +52,12 @@ class Formula::Transform < Parslet::Transform
                   elsif right_value.respond_to?(:to_s) && element.keys.include?(:reference)
                     # Handle variable references
                     { type: :reference, name: right_value.to_s }
+                  elsif right_value.respond_to?(:to_s) && element.keys.include?(:current_value)
+                    # Handle CurrentValue
+                    { type: :current_value }
+                  elsif right_value.respond_to?(:to_s) && right_value.to_s == "CurrentValue"
+                    # Handle CurrentValue that wasn't properly transformed
+                    { type: :current_value }
                   else
                     right_value
                   end
