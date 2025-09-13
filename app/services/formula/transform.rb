@@ -4,6 +4,7 @@ require 'parslet'
 class Formula::Transform < Parslet::Transform
   rule(number: simple(:x)) { x.to_f }
   rule(string: simple(:x)) { x.to_s }
+  rule(string: subtree(:x)) { Array(x).join }
   rule(current_value: simple(:x)) { { type: :current_value } }
   rule(reference: simple(:x)) { { type: :reference, name: x.to_s } }
 
