@@ -8,7 +8,18 @@ class Formula::Transform < Parslet::Transform
   rule(reference: simple(:x)) { { type: :reference, name: x.to_s } }
 
   rule(function_name: simple(:name), arguments: subtree(:args)) do
-    { type: :function_call, name: name.to_s, arguments: Array(args) }
+    # Handle arguments properly - if args is a single item, wrap it in array
+    # If args is already an array, keep it as is
+    arguments = case args
+                when Array
+                  args
+                when Hash, Numeric, String, NilClass
+                  args.nil? ? [] : [args]
+                else
+                  [args]
+                end
+    
+    { type: :function_call, name: name.to_s, arguments: arguments }
   end
 
   rule(function_call: subtree(:call)) { call }
