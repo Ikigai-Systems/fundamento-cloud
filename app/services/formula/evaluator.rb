@@ -36,6 +36,7 @@ class Formula::Evaluator
     return false if value.nil?
     return false if value == 0
     return false if value.to_s.downcase == 'false'
+    return false if value.to_s.empty?
     true
   end
 
@@ -202,7 +203,7 @@ class Formula::Evaluator
       'Min' => ->(a, b) { [a, b].min },
       'Abs' => ->(x) { x.abs },
       'Round' => ->(x, digits = 0) { x.round(digits.to_i) },
-      'If' => ->(condition, true_val, false_val) { condition ? true_val : false_val },
+      'If' => ->(condition, true_val, false_val) { truthy_value?(condition) ? true_val : false_val },
       'Average' => ->(*args) { args.sum.to_f / args.length },
       'Sqrt' => ->(x) { Math.sqrt(x) },
       'Power' => ->(base, exp) { base ** exp },
@@ -210,6 +211,21 @@ class Formula::Evaluator
         raise Math::DomainError, "Logarithm of non-positive number" if x <= 0
         raise Math::DomainError, "Invalid logarithm base" if base <= 0 || base == 1
         Math.log(x) / Math.log(base) 
+      },
+      
+      # Logical functions
+      'And' => ->(arg1, arg2) { truthy_value?(arg1) && truthy_value?(arg2) },
+      'Or' => ->(arg1, arg2) { truthy_value?(arg1) || truthy_value?(arg2) },
+      'Not' => ->(value) { !truthy_value?(value) },
+      'True' => ->() { true },
+      'False' => ->() { false },
+      'IfBlank' => ->(text, if_blank) { 
+        text == "" ? if_blank : text 
+      },
+      
+      # File functions
+      'ParseJSON' => ->(json_string) { 
+        JSON.parse(json_string.to_s) 
       },
       
       # String functions
