@@ -2,6 +2,7 @@ class Formula::Evaluator
   def initialize(context = {})
     @context = context
     @functions = default_functions
+    @current_value_stack = []
   end
 
   def evaluate(ast, current_value = nil)
@@ -19,6 +20,18 @@ class Formula::Evaluator
 
   private
 
+  def enter_current_value_scope(value)
+    @current_value_stack.push(value)
+  end
+
+  def exit_current_value_scope
+    @current_value_stack.pop
+  end
+
+  def current_current_value
+    @current_value_stack.last || @current_value
+  end
+
   def truthy_value?(value)
     return false if value.nil?
     return false if value == 0
@@ -31,6 +44,15 @@ class Formula::Evaluator
       value.to_i.to_s
     else
       value.to_s
+    end
+  end
+
+  def evaluate_expression_with_current_value(expression_ast, current_value)
+    enter_current_value_scope(current_value)
+    begin
+      eval_node(expression_ast)
+    ensure
+      exit_current_value_scope
     end
   end
 
@@ -61,7 +83,7 @@ class Formula::Evaluator
     when Hash
       case node[:type]
       when :current_value
-        @current_value
+        current_current_value
       when :reference
         @context[node[:name]] || raise("Undefined variable: #{node[:name]}")
       when :function_call
@@ -81,12 +103,65 @@ class Formula::Evaluator
 
   def eval_function_call(node)
     function_name = node[:name]
-    arguments = (node[:arguments] || []).map { |arg| eval_node(arg) }
     
-    function = @functions[function_name]
-    raise "Undefined function: #{function_name}" unless function
+    # Check if this is an iterative function that needs special CurrentValue handling
+    if iterative_function?(function_name)
+      eval_iterative_function_call(node)
+    else
+      arguments = (node[:arguments] || []).map { |arg| eval_node(arg) }
+      
+      function = @functions[function_name]
+      raise "Undefined function: #{function_name}" unless function
+      
+      function.call(*arguments)
+    end
+  end
+
+  def iterative_function?(name)
+    %w[ForEach Filter All Any].include?(name)
+  end
+
+  def eval_iterative_function_call(node)
+    function_name = node[:name]
+    arguments = node[:arguments] || []
     
-    function.call(*arguments)
+    raise "#{function_name} requires at least 2 arguments" if arguments.length < 2
+    
+    collection_arg = arguments[0]
+    expression_arg = arguments[1]
+    
+    collection = eval_node(collection_arg)
+    
+    # If the expression argument is a string, parse it as a formula
+    if expression_arg.is_a?(String)
+      parser = Formula::Parser.new
+      transformer = Formula::Transform.new
+      parsed_expression = parser.parse(expression_arg)
+      expression_ast = transformer.apply(parsed_expression)
+    else
+      expression_ast = expression_arg
+    end
+    
+    case function_name
+    when 'ForEach'
+      Array(collection).map do |item|
+        evaluate_expression_with_current_value(expression_ast, item)
+      end
+    when 'Filter'
+      Array(collection).select do |item|
+        evaluate_expression_with_current_value(expression_ast, item)
+      end
+    when 'All'
+      Array(collection).all? do |item|
+        evaluate_expression_with_current_value(expression_ast, item)
+      end
+    when 'Any'
+      Array(collection).any? do |item|
+        evaluate_expression_with_current_value(expression_ast, item)
+      end
+    else
+      raise "Unknown iterative function: #{function_name}"
+    end
   end
 
   def eval_binary_op(node)
@@ -128,7 +203,6 @@ class Formula::Evaluator
       'Abs' => ->(x) { x.abs },
       'Round' => ->(x, digits = 0) { x.round(digits.to_i) },
       'If' => ->(condition, true_val, false_val) { condition ? true_val : false_val },
-      'Sum' => ->(*args) { args.sum },
       'Average' => ->(*args) { args.sum.to_f / args.length },
       'Sqrt' => ->(x) { Math.sqrt(x) },
       'Power' => ->(base, exp) { base ** exp },
@@ -215,7 +289,70 @@ class Formula::Evaluator
           # Match JavaScript behavior for consistency
           result.empty? && text_str.empty? ? [""] : result
         end
-      }
+      },
+
+      # Collection functions
+      'Find' => ->(search_item, collection) {
+        if collection.is_a?(String)
+          collection.include?(search_item.to_s)
+        elsif collection.is_a?(Array)
+          collection.include?(search_item)
+        else
+          false
+        end
+      },
+      'IndexOf' => ->(search_item, collection) {
+        if collection.is_a?(String)
+          collection.index(search_item.to_s) || -1
+        elsif collection.is_a?(Array)
+          collection.index(search_item) || -1
+        else
+          -1
+        end
+      },
+      'List' => ->(*args) { args },
+      'Unique' => ->(array) { 
+        Array(array).uniq 
+      },
+      'CountUnique' => ->(array) { 
+        Array(array).uniq.length 
+      },
+      'Sum' => ->(*args) { 
+        if args.length == 1 && args.first.is_a?(Array)
+          args.first.sum
+        else
+          args.sum
+        end
+      },
+      'First' => ->(array) { 
+        Array(array).first 
+      },
+      'Last' => ->(array) { 
+        Array(array).last 
+      },
+      'Nth' => ->(array, index) {
+        arr = Array(array)
+        idx = index.to_i - 1  # Convert to 0-based index
+        return nil if idx < 0 || idx >= arr.length
+        arr[idx]
+      },
+      'Splice' => ->(array, start_index, delete_count = nil, *items) {
+        arr = Array(array).dup
+        start_idx = start_index.to_i
+        
+        if delete_count.nil?
+          # If no delete_count, remove everything from start_index
+          arr.slice!(start_idx..-1) || []
+        else
+          delete_cnt = delete_count.to_i
+          arr.slice!(start_idx, delete_cnt) || []
+          # Insert new items at the same position
+          arr.insert(start_idx, *items) unless items.empty?
+        end
+        
+        arr
+      },
+
     }
   end
 end

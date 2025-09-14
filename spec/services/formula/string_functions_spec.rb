@@ -24,6 +24,16 @@ RSpec.describe Formula::Engine, type: :model do
         result = engine.evaluate('Join("-", "Number", 123)')
         expect(result).to eq("Number-123")
       end
+
+      it 'joins list with pipe delimiter' do
+        result = engine.evaluate('Join("| ", List("This", "is", "Awesome"))')
+        expect(result).to eq("This| is| Awesome")
+      end
+
+      it 'joins single item list' do
+        result = engine.evaluate('Join("-", List("This"))')
+        expect(result).to eq("This")
+      end
     end
 
     describe 'Concatenate function' do
@@ -40,6 +50,11 @@ RSpec.describe Formula::Engine, type: :model do
       it 'handles numeric values' do
         result = engine.evaluate('Concatenate("Value", 42)')
         expect(result).to eq("Value42")
+      end
+
+      it 'concatenates list of strings' do
+        result = engine.evaluate('Concatenate(List("This", "Is", "Awesome"))')
+        expect(result).to eq("ThisIsAwesome")
       end
     end
 
@@ -85,6 +100,18 @@ RSpec.describe Formula::Engine, type: :model do
         result = engine.evaluate('ContainsText("crème fraîche", "creme", 0, 1)')
         expect(result).to eq(true)
       end
+
+      # TODO: This test is pending - requires True() function
+      # it 'handles case insensitive search with True function' do
+      #   result = engine.evaluate('ContainsText("But they are not the Me myself", "me", True())')
+      #   expect(result).to eq(true)
+      # end
+
+      # TODO: This test is pending - requires True() and False() functions
+      # it 'handles accent insensitive search with function calls' do
+      #   result = engine.evaluate('ContainsText("crème fraîche", "creme", False(), True())')
+      #   expect(result).to eq(true)
+      # end
     end
 
     describe 'EndsWith function' do
@@ -107,6 +134,18 @@ RSpec.describe Formula::Engine, type: :model do
         result = engine.evaluate('EndsWith("Hej världen", "varlden", 0, 1)')
         expect(result).to eq(true)
       end
+
+      # TODO: This test is pending - requires True() function
+      # it 'handles case insensitive check with True function' do
+      #   result = engine.evaluate('EndsWith("Hello World", "world", True())')
+      #   expect(result).to eq(true)
+      # end
+
+      # TODO: This test is pending - requires True() and False() functions
+      # it 'handles accent insensitive check with function calls' do
+      #   result = engine.evaluate('EndsWith("Hej världen", "varlden", False(), True())')
+      #   expect(result).to eq(true)
+      # end
     end
 
     describe 'StartsWith function' do
@@ -129,6 +168,18 @@ RSpec.describe Formula::Engine, type: :model do
         result = engine.evaluate('StartsWith("Hej världen", "Hej var", 0, 1)')
         expect(result).to eq(true)
       end
+
+      # TODO: This test is pending - requires True() function
+      # it 'handles case insensitive check with True function' do
+      #   result = engine.evaluate('StartsWith("Hello World", "hello", True())')
+      #   expect(result).to eq(true)
+      # end
+
+      # TODO: This test is pending - requires True() and False() functions
+      # it 'handles accent insensitive check with function calls' do
+      #   result = engine.evaluate('StartsWith("Hej världen", "Hej var", False(), True())')
+      #   expect(result).to eq(true)
+      # end
     end
 
     describe 'Substitute function' do
