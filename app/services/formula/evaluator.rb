@@ -330,8 +330,8 @@ class Formula::Evaluator
       'Unique' => ->(array) { 
         Array(array).uniq 
       },
-      'CountUnique' => ->(array) { 
-        Array(array).uniq.length 
+      'CountUnique' => ->(*args) { 
+        args.uniq.length 
       },
       'Sum' => ->(*args) { 
         if args.length == 1 && args.first.is_a?(Array)
