@@ -369,6 +369,61 @@ class Formula::Evaluator
         arr
       },
 
+      # Object functions
+      'Dig' => ->(object, *path) {
+        return object if path.empty?
+        current = object
+        path.each do |key|
+          if current.respond_to?(:has_key?) && current.has_key?(key.to_s)
+            current = current[key.to_s]
+          elsif current.respond_to?(:has_key?) && current.has_key?(key.to_sym)
+            current = current[key.to_sym]
+          else
+            return nil
+          end
+        end
+        current
+      },
+      'Equals' => ->(left, right) {
+        # Deep equality check similar to lodash's isEqual
+        deep_equal(left, right)
+      },
+
     }
+  end
+
+  private
+
+  def deep_equal(a, b)
+    # Handle nil cases
+    return true if a.nil? && b.nil?
+    return false if a.nil? || b.nil?
+    
+    # Handle same object reference
+    return true if a.equal?(b)
+    
+    # Handle different types
+    return false unless a.class == b.class
+    
+    # Handle arrays
+    if a.is_a?(Array)
+      return false unless a.length == b.length
+      a.each_with_index do |element, index|
+        return false unless deep_equal(element, b[index])
+      end
+      return true
+    end
+    
+    # Handle hashes
+    if a.is_a?(Hash)
+      return false unless a.keys.sort == b.keys.sort
+      a.each do |key, value|
+        return false unless deep_equal(value, b[key])
+      end
+      return true
+    end
+    
+    # Handle primitives
+    a == b
   end
 end
