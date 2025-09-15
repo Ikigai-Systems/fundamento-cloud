@@ -104,7 +104,7 @@ class Formula::Evaluator
 
   def eval_function_call(node)
     function_name = node[:name]
-    
+
     # Check if this is an iterative function that needs special CurrentValue handling
     if iterative_function?(function_name)
       eval_iterative_function_call(node)
@@ -331,7 +331,7 @@ class Formula::Evaluator
         Array(array).uniq 
       },
       'CountUnique' => ->(*args) { 
-        args.uniq.length 
+        args[0].uniq.length
       },
       'Sum' => ->(*args) { 
         if args.length == 1 && args.first.is_a?(Array)
@@ -389,6 +389,22 @@ class Formula::Evaluator
         deep_equal(left, right)
       },
 
+      'CurrentRow' => ->(column_name = nil) {
+        current_row = @context["currentRow"]
+        raise "Current row is not available in this context" unless current_row
+
+        if column_name
+          if current_row.respond_to?(:has_key?) && current_row.has_key?(column_name.to_s)
+            current_row[column_name.to_s]
+          elsif current_row.respond_to?(:has_key?) && current_row.has_key?(column_name.to_sym)
+            current_row[column_name.to_sym]
+          else
+            nil
+          end
+        else
+          current_row
+        end
+      },
     }
   end
 
