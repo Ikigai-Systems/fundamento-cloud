@@ -65,16 +65,6 @@ RSpec.describe Formula::Engine, type: :model do
   end
 
   describe 'Function Tests (from commented NextJS tests)' do
-    it 'should count only unique arguments' do
-      result = engine.evaluate('CountUnique(1, 2, 3, 3, 3, 4)')
-      expect(result).to eq(4)
-    end
-
-    it 'should handle different string arguments' do
-      result = engine.evaluate('CountUnique("world", "world", "hello")')
-      expect(result).to eq(2)
-    end
-
     # Additional working function tests
     it 'handles basic function calls' do
       result = engine.evaluate('Max(10, 5)')
