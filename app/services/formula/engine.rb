@@ -6,8 +6,15 @@ class Formula::Engine
 
   # Parse and evaluate a formula string
   def evaluate(formula, context: {}, current_value: nil, action_tracker: nil)
-    # Create evaluator with action tracker if provided
-    evaluator = Formula::Evaluator.new(context:, action_tracker:)
+    # Get default functions
+    functions = Formula::DefaultFunctions.get_functions.dup
+
+    if context.present?
+      functions.merge!(Formula::DefaultFunctions.context_functions(context))
+    end
+    
+    # Create evaluator with functions and action tracker
+    evaluator = Formula::Evaluator.new(context:, functions:, action_tracker:)
 
     # Set context variables (avoid modifying hash during iteration)
     context.keys.each { |name| evaluator.set_variable(name, context[name]) }
