@@ -14,7 +14,7 @@ RSpec.describe Formula::Engine, type: :model do
         }
         
         formula = 'Concatenate(CurrentRow("Key"), " ", CurrentRow("Name"))'
-        result = engine.evaluate(formula, context)
+        result = engine.evaluate(formula, context:)
         
         expect(result).to eq("JIRA Jira")
       end
@@ -28,7 +28,7 @@ RSpec.describe Formula::Engine, type: :model do
         }
         
         formula = 'CurrentRow()'
-        result = engine.evaluate(formula, context)
+        result = engine.evaluate(formula, context:)
         
         expect(result).to eq({
           "Name" => "Jira",

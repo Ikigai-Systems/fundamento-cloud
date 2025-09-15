@@ -324,22 +324,22 @@ RSpec.describe Formula::Engine, type: :model do
       let(:context) { { 'X' => 10, 'Y' => 20, 'Rate' => 0.1 } }
 
       it 'uses variables in Max function' do
-        result = engine.evaluate('Max([X], [Y])', context)
+        result = engine.evaluate('Max([X], [Y])', context:)
         expect(result).to eq(20)
       end
 
       it 'uses CurrentValue in calculations' do
-        result = engine.evaluate('Sum(CurrentValue, 10)', {}, 5)
+        result = engine.evaluate('Sum(CurrentValue, 10)', current_value: 5)
         expect(result).to eq(15)
       end
 
       it 'combines variables, CurrentValue, and functions' do
-        result = engine.evaluate('If([X] > CurrentValue, Max([X], [Y]), Min([X], [Y]))', context, 15)
+        result = engine.evaluate('If([X] > CurrentValue, Max([X], [Y]), Min([X], [Y]))', context:, current_value: 15)
         expect(result).to eq(10) # X is not > CurrentValue, so Min(X, Y) = 10
       end
 
       it 'uses variables in mathematical functions' do
-        result = engine.evaluate('Round([X] * [Rate], 2)', context)
+        result = engine.evaluate('Round([X] * [Rate], 2)', context:)
         expect(result).to eq(1.0)
       end
     end

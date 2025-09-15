@@ -72,7 +72,7 @@ RSpec.describe Formula::Engine, type: :model do
     end
 
     it 'uses CurrentValue in calculations' do
-      result = engine.evaluate('CurrentValue * 2', {}, 5)
+      result = engine.evaluate('CurrentValue * 2', current_value: 5)
       expect(result).to eq(10)
     end
 

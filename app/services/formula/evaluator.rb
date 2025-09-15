@@ -1,8 +1,16 @@
 class Formula::Evaluator
-  def initialize(context = {})
+  def initialize(context: {}, action_tracker: nil)
     @context = context
     @functions = default_functions
     @current_value_stack = []
+    @action_tracker = action_tracker
+    
+    # Add action functions if action tracker is provided
+    if @action_tracker
+      @action_tracker.get_action_functions.each do |name, func|
+        @functions[name] = func
+      end
+    end
   end
 
   def evaluate(ast, current_value = nil)
@@ -404,6 +412,12 @@ class Formula::Evaluator
         else
           current_row
         end
+      },
+
+      # Table functions
+      'Table' => ->(table_npi) {
+        # Dummy implementation - returns empty table data
+        []
       },
     }
   end
