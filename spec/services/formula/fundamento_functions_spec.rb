@@ -5,9 +5,10 @@ RSpec.describe Formula::Engine, type: :model do
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }
+  let(:space) { nil }
 
   let(:engine) { Formula::Engine.new(
-    additional_functions: Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(user, organization)).functions)
+    additional_functions: Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(user, organization), space:).functions)
   }
 
   describe "User" do
@@ -27,6 +28,15 @@ RSpec.describe Formula::Engine, type: :model do
   end
 
   describe "Table" do
+    fixtures :spaces
+    fixtures "tables/tables", "tables/columns", "tables/rows", "tables/cells"
 
+    let(:space) { spaces(:is_default) }
+
+    it "returns a table" do
+      result = engine.evaluate("Table(\"#{tables_tables(:projects).npi}\")")
+
+      expect(result).to include(:data, :table)
+    end
   end
 end
