@@ -190,12 +190,6 @@ class Formula::DefaultFunctions
         # Deep equality check similar to lodash's isEqual
         Formula::DefaultFunctions.deep_equal(left, right)
       },
-
-      # Table functions
-      'Table' => ->(table_npi) {
-        # Dummy implementation - returns empty table data
-        []
-      },
     }.freeze
   end
 

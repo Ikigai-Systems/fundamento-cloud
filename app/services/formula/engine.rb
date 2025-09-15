@@ -1,13 +1,18 @@
 class Formula::Engine
-  def initialize
+  def initialize(additional_functions: nil)
     @parser = Formula::Parser.new
     @transform = Formula::Transform.new
+    @additional_functions = additional_functions
   end
 
   # Parse and evaluate a formula string
-  def evaluate(formula, context: {}, current_value: nil, action_tracker: nil)
+  def evaluate(formula, context: {}, current_value: nil, action_tracker: nil, additional_functions: @additional_functions)
     # Get default functions
     functions = Formula::DefaultFunctions.get_functions.dup
+
+    if additional_functions.present?
+      functions.merge!(additional_functions)
+    end
 
     if context.present?
       functions.merge!(Formula::DefaultFunctions.context_functions(context))
@@ -32,9 +37,9 @@ class Formula::Engine
   end
 
   # Parse a file containing formulas
-  def evaluate_file(filename, context = {}, current_value = nil, action_tracker = nil)
+  def evaluate_file(filename, context: {}, current_value: nil, action_tracker: nil, additional_functions: nil)
     formula = File.read(filename)
-    evaluate(formula, context, current_value, action_tracker)
+    evaluate(formula, context:, current_value:, action_tracker:, additional_functions:)
   end
 
   # Add custom functions
