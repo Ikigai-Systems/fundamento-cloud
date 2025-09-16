@@ -67,7 +67,7 @@ class Formula::ActionExecutor
     record_action("AddRow", tableNpi: table_npi, values: values)
     
     unless @dry_mode
-      execute_add_row({ type: "AddRow", tableNpi: table_npi, values: values })
+      execute_add_row(table_npi, values:)
     end
     
     true
@@ -77,7 +77,7 @@ class Formula::ActionExecutor
     record_action("DeleteRows", tableNpi: table_npi)
     
     unless @dry_mode
-      execute_delete_rows({ type: "DeleteRows", tableNpi: table_npi })
+      execute_delete_rows(table_npi)
     end
     
     true
@@ -87,7 +87,7 @@ class Formula::ActionExecutor
     record_action("UpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_update_rows({ type: "UpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values })
+      execute_update_rows(table_npi, condition_formula:, values:)
     end
     
     true
@@ -97,7 +97,7 @@ class Formula::ActionExecutor
     record_action("AddOrUpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_add_or_update_rows({ type: "AddOrUpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values })
+      execute_add_or_update_rows(table_npi, condition_formula:, values:)
     end
     
     true
@@ -111,14 +111,14 @@ class Formula::ActionExecutor
   private
 
   # Execution methods (copied from ExecuteActionsService)
-  def execute_add_row(action)
-    table = find_table(action[:tableNpi])
+  def execute_add_row(table_npi, values:)
+    table = find_table(table_npi)
 
     Pundit.authorize(@pundit_user, table, :update?)
 
     row = table.rows.create!(organization: @organization_user.organization)
     
-    action[:values].each do |column_identifier, value|
+    values.each do |column_identifier, value|
       # Try to find column by NPI first, then by name
       column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
       next unless column
@@ -135,8 +135,8 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_delete_rows(action)
-    table = find_table(action[:tableNpi])
+  def execute_delete_rows(table_npi)
+    table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
     
     # Handle foreign key constraints by clearing previous_row_id references first
@@ -144,17 +144,15 @@ class Formula::ActionExecutor
     table.rows.destroy_all
   end
 
-  def execute_update_rows(action)
-    table = find_table(action[:tableNpi])
+  def execute_update_rows(table_npi, condition_formula:, values:)
+    table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
 
-    condition_formula = action[:conditionFormula]
-    
     table.rows.each do |row|
       context = build_context(row)
       
       if evaluate_condition(condition_formula, context)
-        action[:values].each do |column_identifier, value|
+        values.each do |column_identifier, value|
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
@@ -170,11 +168,10 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_add_or_update_rows(action)
-    table = find_table(action[:tableNpi])
+  def execute_add_or_update_rows(table_npi, condition_formula:, values:)
+    table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
 
-    condition_formula = action[:conditionFormula]
     matching_rows = []
     
     table.rows.each do |row|
@@ -189,7 +186,7 @@ class Formula::ActionExecutor
       # Add new row
       row = table.rows.create!(organization: @organization_user.organization)
       
-      action[:values].each do |column_identifier, value|
+      values.each do |column_identifier, value|
         column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
@@ -208,7 +205,7 @@ class Formula::ActionExecutor
       matching_rows.each do |row|
         context = build_context(row)
         
-        action[:values].each do |column_identifier, value|
+        values.each do |column_identifier, value|
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
