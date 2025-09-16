@@ -130,7 +130,7 @@ class Table < ApplicationRecord
         { formula: e[:formula], additional_context: e[:additional_context] }
       end
 
-      results = FormulaEvalGateway.batch_evaluate(evaluations, space, evaluate_as)
+      results = FormulaService.batch_evaluate(evaluations, space, evaluate_as)
 
       results.each_with_index do |formula_result, index|
         formula_evaluation = formulas_to_evaluate[index]

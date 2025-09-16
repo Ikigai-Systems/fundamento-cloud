@@ -15,7 +15,7 @@ class AutomationInvocation < ApplicationRecord
 
     additional_context = { "WebhookBody" => self.webhook }
 
-    result = FormulaEvalGateway.evaluate(
+    result = FormulaService.evaluate(
       self.formula,
       self.space,
       self.run_as,

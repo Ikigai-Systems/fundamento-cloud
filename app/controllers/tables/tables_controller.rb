@@ -270,7 +270,7 @@ class Tables::TablesController < ApplicationController
       "currentRow" => current_row_values
     }
 
-    formula_evaluation = FormulaEvalGateway.evaluate(
+    formula_evaluation = FormulaService.evaluate(
       formula,
       @table.space,
       current_organization_user,
