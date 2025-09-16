@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Formula::ActionExecutor, type: :model do
+RSpec.describe Formula::ActionExecutor, type: :service do
   let(:action_executor) { Formula::ActionExecutor.new(dry_mode: true) }
   let(:engine) { Formula::Engine.new }
 
