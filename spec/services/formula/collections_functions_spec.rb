@@ -209,6 +209,16 @@ RSpec.describe Formula::Engine, type: :model do
         result = engine.evaluate('Filter(List(1, 2, 3, 3, 3, 4), "CurrentValue >= 3")')
         expect(result).to eq([3.0, 3.0, 3.0, 4.0])
       end
+
+      it 'filters elements based on not equals condition' do
+        result = engine.evaluate('Filter(List(1, 2, 3, 3, 3, 4), "CurrentValue != 3")')
+        expect(result).to eq([1.0, 2.0, 4.0])
+      end
+
+      it 'filters elements with variable reference' do
+        result = engine.evaluate('Filter(List(1, 2, 3, 3, 3, 4), "CurrentValue != [ThisValue]")', context: {ThisValue: 3})
+        expect(result).to eq([1.0, 2.0, 4.0])
+      end
     end
 
     describe 'ForEach function' do
