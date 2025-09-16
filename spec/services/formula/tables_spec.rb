@@ -45,13 +45,28 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
 
-    xdescribe 'Table function' do
+    describe 'Table function' do
+      fixtures :users
+      fixtures :organizations
+      fixtures :organization_users
+      fixtures :spaces
+      fixtures "tables/tables"
+      fixtures "tables/columns"
+      fixtures "tables/rows"
+      fixtures "tables/cells"
+
+      let(:space) { spaces(:is_default) }
+      let(:organization_user) { organization_users(:ou_is_pawel) }
+      let(:pundit_user) { PolicyUserContext.new(organization_user) }
+      let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user:, space:) }
+
+      let(:engine) { Formula::Engine.new(additional_functions: fundamento_functions.functions) }
+
       it 'returns empty table data as dummy implementation' do
-        formula = 'Table("some_table_npi")'
+        formula = "Table(\"#{tables_tables(:projects).npi}\")"
         result = engine.evaluate(formula)
 
-        expect(result[:result]).to eq([])
-        expect(result[:commands]).to eq([])
+        expect(result).to include(:data, :table)
       end
     end
   end
