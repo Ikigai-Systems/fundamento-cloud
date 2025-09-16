@@ -1,13 +1,13 @@
 class Formula::Evaluator
-  def initialize(context: {}, functions: {}, action_tracker: nil)
+  def initialize(context: {}, functions: {}, action_executor: nil)
     @context = context
     @functions = functions.dup
     @current_value_stack = []
-    @action_tracker = action_tracker
+    @action_executor = action_executor
     
-    # Add action functions if action tracker is provided
-    if @action_tracker
-      @action_tracker.get_action_functions.each do |name, func|
+    # Add action functions if action executor is provided
+    if @action_executor
+      @action_executor.get_action_functions.each do |name, func|
         @functions[name] = func
       end
     end

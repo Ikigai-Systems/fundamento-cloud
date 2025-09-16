@@ -6,7 +6,7 @@ class Formula::Engine
   end
 
   # Parse and evaluate a formula string
-  def evaluate(formula, context: {}, current_value: nil, action_tracker: nil, additional_functions: @additional_functions)
+  def evaluate(formula, context: {}, current_value: nil, action_executor: nil, additional_functions: @additional_functions)
     # Get default functions
     functions = Formula::DefaultFunctions.get_functions.dup
 
@@ -18,8 +18,8 @@ class Formula::Engine
       functions.merge!(Formula::DefaultFunctions.context_functions(context))
     end
     
-    # Create evaluator with functions and action tracker
-    evaluator = Formula::Evaluator.new(context:, functions:, action_tracker:)
+    # Create evaluator with functions and action executor
+    evaluator = Formula::Evaluator.new(context:, functions:, action_executor:)
 
     # Set context variables (avoid modifying hash during iteration)
     context.keys.each { |name| evaluator.set_variable(name, context[name]) }
@@ -37,9 +37,9 @@ class Formula::Engine
   end
 
   # Parse a file containing formulas
-  def evaluate_file(filename, context: {}, current_value: nil, action_tracker: nil, additional_functions: nil)
+  def evaluate_file(filename, context: {}, current_value: nil, action_executor: nil, additional_functions: nil)
     formula = File.read(filename)
-    evaluate(formula, context:, current_value:, action_tracker:, additional_functions:)
+    evaluate(formula, context:, current_value:, action_executor:, additional_functions:)
   end
 
   # Add custom functions

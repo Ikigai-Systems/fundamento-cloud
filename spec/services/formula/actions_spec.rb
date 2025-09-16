@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Formula::Engine, type: :model do
   let(:engine) { Formula::Engine.new }
-  let(:action_tracker) { Formula::ActionTracker.new }
+  let(:action_executor) { Formula::ActionExecutor.new }
 
   describe 'Actions' do
     describe 'RunActions' do
@@ -22,7 +22,7 @@ RSpec.describe Formula::Engine, type: :model do
           )
         )'
 
-        result = engine.evaluate(formula, context:, action_tracker:)
+        result = engine.evaluate(formula, context:, action_executor:)
 
         expected_actions = [
           {
@@ -46,7 +46,7 @@ RSpec.describe Formula::Engine, type: :model do
         ]
 
         expect(result).to eq(true)
-        expect(action_tracker.get_actions).to eq(expected_actions)
+        expect(action_executor.get_actions).to eq(expected_actions)
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe Formula::Engine, type: :model do
         }
 
         formula = 'AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
-        result = engine.evaluate(formula, context:, action_tracker:)
+        result = engine.evaluate(formula, context:, action_executor:)
 
         expected_actions = [
           {
@@ -73,7 +73,7 @@ RSpec.describe Formula::Engine, type: :model do
         ]
 
         expect(result).to eq(true)
-        expect(action_tracker.get_actions).to eq(expected_actions)
+        expect(action_executor.get_actions).to eq(expected_actions)
       end
 
       context 'with positional arguments' do
@@ -86,7 +86,7 @@ RSpec.describe Formula::Engine, type: :model do
           }
 
           formula = 'AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
-          result = engine.evaluate(formula, context:, action_tracker:)
+          result = engine.evaluate(formula, context:, action_executor:)
 
           expected_actions = [
             {
@@ -99,7 +99,7 @@ RSpec.describe Formula::Engine, type: :model do
           ]
 
           expect(result).to eq(true)
-          expect(action_tracker.get_actions).to eq(expected_actions)
+          expect(action_executor.get_actions).to eq(expected_actions)
         end
       end
 
@@ -112,10 +112,10 @@ RSpec.describe Formula::Engine, type: :model do
           }
 
           formula = 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("npi", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))'
-          result = engine.evaluate(formula, context:, action_tracker:)
+          result = engine.evaluate(formula, context:, action_executor:)
 
           expect(result).to eq([true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true])
-          expect(action_tracker.get_actions).to eq([
+          expect(action_executor.get_actions).to eq([
             {
               type: "AddRow",
               tableNpi: "npi",
@@ -205,7 +205,7 @@ RSpec.describe Formula::Engine, type: :model do
     describe 'DeleteRows' do
       it 'creates DeleteRows command' do
         formula = 'DeleteRows("table_npi")'
-        result = engine.evaluate(formula, action_tracker:)
+        result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
@@ -215,14 +215,14 @@ RSpec.describe Formula::Engine, type: :model do
         ]
 
         expect(result).to eq(true)
-        expect(action_tracker.get_actions).to eq(expected_actions)
+        expect(action_executor.get_actions).to eq(expected_actions)
       end
     end
 
     describe 'UpdateRows' do
       it 'creates UpdateRows command with condition and values' do
         formula = 'UpdateRows("table_npi", "condition_formula", "col1", "value1", "col2", "value2")'
-        result = engine.evaluate(formula, action_tracker:)
+        result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
@@ -237,14 +237,14 @@ RSpec.describe Formula::Engine, type: :model do
         ]
 
         expect(result).to eq(true)
-        expect(action_tracker.get_actions).to eq(expected_actions)
+        expect(action_executor.get_actions).to eq(expected_actions)
       end
     end
 
     describe 'AddOrUpdateRows' do
       it 'creates AddOrUpdateRows command with condition and values' do
         formula = 'AddOrUpdateRows("table_npi", "condition_formula", "col1", "value1", "col2", "value2")'
-        result = engine.evaluate(formula, action_tracker:)
+        result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
@@ -259,7 +259,7 @@ RSpec.describe Formula::Engine, type: :model do
         ]
 
         expect(result).to eq(true)
-        expect(action_tracker.get_actions).to eq(expected_actions)
+        expect(action_executor.get_actions).to eq(expected_actions)
       end
     end
   end
