@@ -30,6 +30,29 @@ RSpec.describe Formula::Engine, type: :model do
 
       result = engine.evaluate('Number("5") == [ThisRow]', context: {ThisRow: 5})
       expect(result).to eq(true)
+
+      result = engine.evaluate('CurrentValue == 5', current_value: 5)
+      expect(result).to eq(true)
+    end
+
+    it 'evaluates not equals correctly' do
+      result = engine.evaluate('3 != 5')
+      expect(result).to eq(true)
+
+      result = engine.evaluate('5 != 5')
+      expect(result).to eq(false)
+
+      result = engine.evaluate('Number(3) != Number(5)')
+      expect(result).to eq(true)
+
+      result = engine.evaluate('Number("5") != Number(5)')
+      expect(result).to eq(false)
+
+      result = engine.evaluate('Number("5") != [ThisRow]', context: {ThisRow: 5})
+      expect(result).to eq(false)
+
+      result = engine.evaluate('CurrentValue != 5', current_value: 5)
+      expect(result).to eq(false)
     end
 
     it 'evaluates subtraction without spaces' do
