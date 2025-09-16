@@ -227,12 +227,6 @@ RSpec.describe Formula::ActionExecutor, type: :service do
     end
 
     describe 'error handling' do
-      it 'logs warning for unrecognized action type' do
-        # This test is no longer applicable since we removed execute_all
-        # and now call methods directly
-        skip "No longer applicable with direct method calls"
-      end
-
       it 'raises error for nonexistent table' do
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
 
