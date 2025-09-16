@@ -15,6 +15,20 @@ RSpec.describe Formula::Engine, type: :model do
       expect(result).to eq(-2)
     end
 
+    it 'evaluates equals correctly' do
+      result = engine.evaluate('3 == 5')
+      expect(result).to eq(false)
+
+      result = engine.evaluate('5 == 5')
+      expect(result).to eq(true)
+
+      result = engine.evaluate('Number(3) == Number(5)')
+      expect(result).to eq(false)
+
+      result = engine.evaluate('Number("5") == Number(5)')
+      expect(result).to eq(true)
+    end
+
     it 'evaluates subtraction without spaces' do
       result = engine.evaluate('3-5')
       expect(result).to eq(-2)

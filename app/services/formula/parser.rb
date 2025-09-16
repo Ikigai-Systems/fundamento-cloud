@@ -69,10 +69,7 @@ class Formula::Parser < Parslet::Parser
 
   # Top-level statement
   rule(:statement) do
-    space? >> (
-      function_call.as(:function_call) | 
-      expression
-    ) >> space?
+    space? >> expression >> space?
   end
 
   root(:statement)
