@@ -66,7 +66,8 @@ RSpec.describe Formula::Engine, type: :model do
         formula = "Table(\"#{tables_tables(:projects).npi}\")"
         result = engine.evaluate(formula)
 
-        expect(result).to include(:data, :table)
+        expect(result).to be_a(Array)
+        expect(result[0]).to include("Description", "Key", "Name", "Value")
       end
     end
   end
