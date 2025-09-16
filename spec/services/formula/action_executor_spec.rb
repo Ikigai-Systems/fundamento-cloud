@@ -242,7 +242,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
           action_executor.update_rows(table.npi, 'InvalidFormula(', {
             "Description" => "Should not update"
           })
-        }.to raise_error
+        }.to raise_error(RuntimeError)
       end
     end
 
