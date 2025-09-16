@@ -27,6 +27,9 @@ RSpec.describe Formula::Engine, type: :model do
 
       result = engine.evaluate('Number("5") == Number(5)')
       expect(result).to eq(true)
+
+      result = engine.evaluate('Number("5") == [ThisRow]', context: {ThisRow: 5})
+      expect(result).to eq(true)
     end
 
     it 'evaluates subtraction without spaces' do
