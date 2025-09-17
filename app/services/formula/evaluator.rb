@@ -87,6 +87,8 @@ class Formula::Evaluator
 
   def eval_node(node)
     case node
+    when nil
+      nil
     when Numeric, String
       node
     when Hash
@@ -116,6 +118,9 @@ class Formula::Evaluator
     # Check if this is an iterative function that needs special CurrentValue handling
     if iterative_function?(function_name)
       eval_iterative_function_call(node)
+    # Check if this is an action function that needs special condition formula handling
+    elsif action_function?(function_name)
+      eval_action_function_call(node)
     else
       arguments = (node[:arguments] || []).map { |arg| eval_node(arg) }
       
@@ -128,6 +133,31 @@ class Formula::Evaluator
 
   def iterative_function?(name)
     %w[ForEach Filter All Any].include?(name)
+  end
+
+  def action_function?(name)
+    %w[AddRow DeleteRows UpdateRows AddOrUpdateRows RunActions].include?(name)
+  end
+
+  def eval_action_function_call(node)
+    function_name = node[:name]
+    arguments = node[:arguments] || []
+    
+    evaluated_args = arguments.map.with_index do |arg, index|
+      # For UpdateRows and AddOrUpdateRows, the second argument (index 1) is the condition formula
+      # Don't evaluate it immediately - pass it as AST for later evaluation
+      if (function_name == 'UpdateRows' || function_name == 'AddOrUpdateRows') && index == 1
+        arg  # Pass the raw AST node
+      else
+        eval_node(arg)  # Evaluate normally
+      end
+    end
+    
+    function = @functions[function_name]
+    raise "Undefined function: #{function_name}" unless function
+    
+    # Pass the current evaluation context as the first argument to action functions
+    function.call(@context, *evaluated_args)
   end
 
   def eval_iterative_function_call(node)

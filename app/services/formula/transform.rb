@@ -77,6 +77,9 @@ class Formula::Transform < Parslet::Transform
           # Find the value that's not the operator
           right_value = element.find { |key, _| key != :operator }&.last
           
+          # Skip if we can't find a right value
+          next if right_value.nil?
+          
           # Convert string numbers to floats or apply transformations
           right = if right_value.respond_to?(:to_s) && right_value.to_s.match?(/^\d+(\.\d+)?$/)
                     right_value.to_s.to_f
@@ -99,20 +102,25 @@ class Formula::Transform < Parslet::Transform
                       else
                         nested_result = right_value.first
                         
-                        right_value[1..-1].each do |nested_element|
-                          next unless nested_element.is_a?(Hash) && nested_element.key?(:operator)
-                          
-                          nested_operator = nested_element[:operator].to_s
-                          nested_right_value = nested_element.find { |key, _| key != :operator }&.last
-                          
-                          # Convert nested values
-                          nested_right = if nested_right_value.respond_to?(:to_s) && nested_right_value.to_s.match?(/^\d+(\.\d+)?$/)
-                                           nested_right_value.to_s.to_f
-                                         else
-                                           nested_right_value
-                                         end
-                          
-                          nested_result = { type: :binary_op, operator: nested_operator, left: nested_result, right: nested_right }
+                        # Safely handle array slicing
+                        rest_elements = right_value[1..-1]
+                        
+                        if rest_elements && rest_elements.any?
+                          rest_elements.each do |nested_element|
+                            next unless nested_element.is_a?(Hash) && nested_element.key?(:operator)
+                            
+                            nested_operator = nested_element[:operator].to_s
+                            nested_right_value = nested_element.find { |key, _| key != :operator }&.last
+                            
+                            # Convert nested values
+                            nested_right = if nested_right_value.respond_to?(:to_s) && nested_right_value.to_s.match?(/^\d+(\.\d+)?$/)
+                                             nested_right_value.to_s.to_f
+                                           else
+                                             nested_right_value
+                                           end
+                            
+                            nested_result = { type: :binary_op, operator: nested_operator, left: nested_result, right: nested_right }
+                          end
                         end
                         
                         nested_result

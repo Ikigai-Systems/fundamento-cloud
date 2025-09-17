@@ -41,69 +41,69 @@ class Formula::ActionExecutor
   # Get available action functions for the evaluator
   def get_action_functions
     {
-      'AddRow' => ->(table_npi, *args) {
+      'AddRow' => ->(function_context, table_npi, *args) {
         values = Hash[*args]
-        add_row(table_npi, values)
+        add_row(function_context, table_npi, values)
       },
-      'DeleteRows' => ->(table_npi) {
-        delete_rows(table_npi)
+      'DeleteRows' => ->(function_context, table_npi) {
+        delete_rows(function_context, table_npi)
       },
-      'UpdateRows' => ->(table_npi, condition_formula, *args) {
+      'UpdateRows' => ->(function_context, table_npi, condition_formula, *args) {
         values = Hash[*args]
-        update_rows(table_npi, condition_formula, values)
+        update_rows(function_context, table_npi, condition_formula, values)
       },
-      'AddOrUpdateRows' => ->(table_npi, condition_formula, *args) {
+      'AddOrUpdateRows' => ->(function_context, table_npi, condition_formula, *args) {
         values = Hash[*args]
-        add_or_update_rows(table_npi, condition_formula, values)
+        add_or_update_rows(function_context, table_npi, condition_formula, values)
       },
-      'RunActions' => ->(*args) {
-        run_actions(*args)
+      'RunActions' => ->(function_context, *args) {
+        run_actions(function_context, *args)
       }
     }
   end
 
   # Public action methods for direct use in tests
-  def add_row(table_npi, values = {})
+  def add_row(function_context, table_npi, values = {})
     record_action("AddRow", tableNpi: table_npi, values: values)
     
     unless @dry_mode
-      execute_add_row(table_npi, values:)
+      execute_add_row(function_context, table_npi, values:)
     end
     
     true
   end
 
-  def delete_rows(table_npi)
+  def delete_rows(function_context, table_npi)
     record_action("DeleteRows", tableNpi: table_npi)
     
     unless @dry_mode
-      execute_delete_rows(table_npi)
+      execute_delete_rows(function_context, table_npi)
     end
     
     true
   end
 
-  def update_rows(table_npi, condition_formula, values = {})
+  def update_rows(function_context, table_npi, condition_formula, values = {})
     record_action("UpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_update_rows(table_npi, condition_formula:, values:)
+      execute_update_rows(function_context, table_npi, condition_formula:, values:)
     end
     
     true
   end
 
-  def add_or_update_rows(table_npi, condition_formula, values = {})
+  def add_or_update_rows(function_context, table_npi, condition_formula, values = {})
     record_action("AddOrUpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_add_or_update_rows(table_npi, condition_formula:, values:)
+      execute_add_or_update_rows(function_context, table_npi, condition_formula:, values:)
     end
     
     true
   end
 
-  def run_actions(*args)
+  def run_actions(function_context, *args)
     # RunActions doesn't record its own action, just passes through
     true
   end
@@ -111,7 +111,7 @@ class Formula::ActionExecutor
   private
 
   # Execution methods (copied from ExecuteActionsService)
-  def execute_add_row(table_npi, values:)
+  def execute_add_row(function_context, table_npi, values:)
     table = find_table(table_npi)
 
     Pundit.authorize(@pundit_user, table, :update?)
@@ -123,7 +123,7 @@ class Formula::ActionExecutor
       column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
       next unless column
 
-      context = build_row_context(row)
+      context = build_row_context(function_context, row)
       evaluated_value = evaluate_if_formula(value, context)
       
       row.cells.create!(
@@ -135,7 +135,7 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_delete_rows(table_npi)
+  def execute_delete_rows(function_context, table_npi)
     table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
     
@@ -144,12 +144,12 @@ class Formula::ActionExecutor
     table.rows.destroy_all
   end
 
-  def execute_update_rows(table_npi, condition_formula:, values:)
+  def execute_update_rows(function_context, table_npi, condition_formula:, values:)
     table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
 
     table.rows.each do |row|
-      context = build_row_context(row)
+      context = build_row_context(function_context, row)
       
       if evaluate_condition(condition_formula, context)
         values.each do |column_identifier, value|
@@ -168,14 +168,14 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_add_or_update_rows(table_npi, condition_formula:, values:)
+  def execute_add_or_update_rows(function_context, table_npi, condition_formula:, values:)
     table = find_table(table_npi)
     Pundit.authorize(@pundit_user, table, :update?)
 
     matching_rows = []
     
     table.rows.each do |row|
-      context = build_row_context(row)
+      context = build_row_context(function_context, row)
       
       if evaluate_condition(condition_formula, context)
         matching_rows << row
@@ -190,7 +190,7 @@ class Formula::ActionExecutor
         column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
-        context = build_row_context(row)
+        context = build_row_context(function_context, row)
         evaluated_value = evaluate_if_formula(value, context)
         
         row.cells.create!(
@@ -203,7 +203,7 @@ class Formula::ActionExecutor
     else
       # Update existing rows
       matching_rows.each do |row|
-        context = build_row_context(row)
+        context = build_row_context(function_context, row)
         
         values.each do |column_identifier, value|
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
@@ -231,9 +231,9 @@ class Formula::ActionExecutor
     table
   end
 
-  def build_context(row)
-    context = @additional_context.dup
-  def build_row_context(row)
+  def build_row_context(function_context, row)
+    # Start with the function context if available, otherwise use additional_context
+    context = (function_context || @additional_context).dup
     
     current_row = {}
 
@@ -247,10 +247,45 @@ class Formula::ActionExecutor
 
   def evaluate_condition(formula, context)
     # If no condition provided, return true (apply to all rows)
-    return true if formula.nil? || formula.empty?
+    return true if formula.nil? || (formula.is_a?(String) && formula.empty?)
     
-    engine = Formula::Engine.new
-    result = engine.evaluate(formula, context: context)
+    # Get default functions
+    functions = Formula::DefaultFunctions.get_functions.dup
+    
+    # Add fundamento functions if available
+    if @space && @organization_user
+      pundit_user = PolicyUserContext.new(@organization_user)
+      fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
+      functions.merge!(fundamento_functions.functions)
+    end
+
+    # Add context functions (including CurrentRow)
+    if context.present?
+      functions.merge!(Formula::DefaultFunctions.context_functions(context))
+    end
+    
+    # Create evaluator directly to handle AST nodes
+    evaluator = Formula::Evaluator.new(context:, functions:)
+    
+    # Set context variables
+    context.keys.each { |name| evaluator.set_variable(name, context[name]) }
+    
+    # Handle both string formulas and AST nodes
+    result = if formula.is_a?(String)
+      # Parse and evaluate string formula
+      begin
+        parser = Formula::Parser.new
+        transform = Formula::Transform.new
+        parse_tree = parser.parse(formula)
+        ast = transform.apply(parse_tree)
+        evaluator.evaluate(ast)
+      rescue Parslet::ParseFailed => e
+        raise "Parse error: #{e.parse_failure_cause.ascii_tree}"
+      end
+    else
+      # Evaluate AST node directly
+      evaluator.evaluate(formula)
+    end
     
     # Convert result to boolean
     case result
@@ -265,7 +300,17 @@ class Formula::ActionExecutor
 
   def evaluate_if_formula(value, context)
     if value.is_a?(String) && value.match?(/^[A-Za-z_][A-Za-z0-9_]*\(/)
-      engine = Formula::Engine.new
+      # Create engine with only fundamento functions (no action functions to avoid recursion)
+      additional_functions = {}
+      
+      # Add fundamento functions if available
+      if @space && @organization_user
+        pundit_user = PolicyUserContext.new(@organization_user)
+        fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
+        additional_functions.merge!(fundamento_functions.functions)
+      end
+      
+      engine = Formula::Engine.new(additional_functions: additional_functions)
       engine.evaluate(value, context: context)
     else
       value
