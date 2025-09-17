@@ -48,10 +48,12 @@ EOF
       context = {
         "ThisRow" => tables_rows(:orders_row_1).attributes,
       }
-      
+
       result = engine.evaluate(formula, context: context, action_executor: executor)
 
       expect(result).to eq(true)
+
+      expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii"))
     end
   end
 end

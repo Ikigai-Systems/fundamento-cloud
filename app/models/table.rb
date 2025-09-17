@@ -146,6 +146,21 @@ class Table < ApplicationRecord
     }
   end
 
+  def data_to_hash(evaluate_formulas: false, evaluate_as: nil)
+    response_data = self.data_to_json(evaluate_formulas:, evaluate_as:)
+    rows = response_data[:rows]
+    columns = response_data[:columns]
+
+    # Convert JS code: const refinedResponse = rows.map(row => { ... })
+    rows.map do |row|
+      cell_values = {}
+      columns.each do |column|
+        cell_values[column.name] = row[column.npi]
+      end
+      { id: row["npi"] }.merge(cell_values).merge(row)
+    end
+  end
+
   def import_from_csv(csv_file, file_encoding = "utf-8")
     # First ensure table is empty as this code assumes that
     assert self.cells.count.zero?
