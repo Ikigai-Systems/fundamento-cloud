@@ -12,3 +12,9 @@ projects:
   organization: :is
   space: :is_default
   parent: is_default (Space)
+
+orders:
+  name: "Orders"
+  organization: :is
+  space: :is_default
+  parent: is_default (Space)

@@ -24,3 +24,16 @@ project_value:
   table: :projects
   kind: :string
   previous_column: :project_description
+
+orders_pizza:
+  name: Pizza
+  organization: :is
+  table: :orders
+  kind: :string
+
+orders_who:
+  name: Who
+  organization: :is
+  table: :orders
+  kind: :string
+  previous_column: :orders_pizza

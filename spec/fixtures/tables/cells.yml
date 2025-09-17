@@ -81,3 +81,10 @@ projects_monday_value:
   column: :project_value
   row: :projects_row_3
   value: 0-1
+
+orders_pizza_hawaii:
+  organization: :is
+  table: :orders
+  column: :orders_pizza
+  row: :orders_row_1
+  value: Hawaii
