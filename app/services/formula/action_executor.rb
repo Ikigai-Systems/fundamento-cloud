@@ -123,7 +123,7 @@ class Formula::ActionExecutor
       column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
       next unless column
 
-      context = build_context(row)
+      context = build_row_context(row)
       evaluated_value = evaluate_if_formula(value, context)
       
       row.cells.create!(
@@ -149,7 +149,7 @@ class Formula::ActionExecutor
     Pundit.authorize(@pundit_user, table, :update?)
 
     table.rows.each do |row|
-      context = build_context(row)
+      context = build_row_context(row)
       
       if evaluate_condition(condition_formula, context)
         values.each do |column_identifier, value|
@@ -175,7 +175,7 @@ class Formula::ActionExecutor
     matching_rows = []
     
     table.rows.each do |row|
-      context = build_context(row)
+      context = build_row_context(row)
       
       if evaluate_condition(condition_formula, context)
         matching_rows << row
@@ -190,7 +190,7 @@ class Formula::ActionExecutor
         column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
-        context = build_context(row)
+        context = build_row_context(row)
         evaluated_value = evaluate_if_formula(value, context)
         
         row.cells.create!(
@@ -203,7 +203,7 @@ class Formula::ActionExecutor
     else
       # Update existing rows
       matching_rows.each do |row|
-        context = build_context(row)
+        context = build_row_context(row)
         
         values.each do |column_identifier, value|
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
@@ -233,8 +233,10 @@ class Formula::ActionExecutor
 
   def build_context(row)
     context = @additional_context.dup
+  def build_row_context(row)
     
     current_row = {}
+
     row.cells.includes(:column).each do |cell|
       current_row[cell.column.name] = cell.value
     end
