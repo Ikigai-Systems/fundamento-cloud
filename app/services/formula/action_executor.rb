@@ -124,7 +124,7 @@ class Formula::ActionExecutor
       next unless column
 
       context = build_row_context(function_context, row)
-      evaluated_value = evaluate_if_formula(value, context)
+      evaluated_value = evaluate_new_value_formula(value, context)
       
       row.cells.create!(
         column: column,
@@ -156,7 +156,7 @@ class Formula::ActionExecutor
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
-          evaluated_value = evaluate_if_formula(value, context)
+          evaluated_value = evaluate_new_value_formula(value, context)
           
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
             new_cell.organization = @organization_user.organization
@@ -191,7 +191,7 @@ class Formula::ActionExecutor
         next unless column
 
         context = build_row_context(function_context, row)
-        evaluated_value = evaluate_if_formula(value, context)
+        evaluated_value = evaluate_new_value_formula(value, context)
         
         row.cells.create!(
           column: column,
@@ -209,7 +209,7 @@ class Formula::ActionExecutor
           column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
-          evaluated_value = evaluate_if_formula(value, context)
+          evaluated_value = evaluate_new_value_formula(value, context)
           
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
             new_cell.organization = @organization_user.organization
@@ -298,7 +298,7 @@ class Formula::ActionExecutor
     end
   end
 
-  def evaluate_if_formula(value, context)
+  def evaluate_new_value_formula(value, context)
     if value.is_a?(String) && value.match?(/^[A-Za-z_][A-Za-z0-9_]*\(/)
       # Create engine with only fundamento functions (no action functions to avoid recursion)
       additional_functions = {}
