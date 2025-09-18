@@ -237,6 +237,10 @@ class Formula::ActionExecutor
     
     current_row = {}
 
+    # Include row identifiers
+    current_row["id"] = row.npi
+    current_row["npi"] = row.npi
+
     row.cells.includes(:column).each do |cell|
       current_row[cell.column.name] = cell.value
     end
@@ -312,6 +316,29 @@ class Formula::ActionExecutor
       
       engine = Formula::Engine.new(additional_functions: additional_functions)
       engine.evaluate(value, context: context)
+    elsif value.respond_to?(:type) || value.is_a?(Hash) 
+      # This might be an AST node - evaluate it directly
+      # Create evaluator with all functions
+      functions = Formula::DefaultFunctions.get_functions.dup
+      
+      # Add fundamento functions if available
+      if @space && @organization_user
+        pundit_user = PolicyUserContext.new(@organization_user)
+        fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
+        functions.merge!(fundamento_functions.functions)
+      end
+      
+      # Add context functions
+      if context.present?
+        functions.merge!(Formula::DefaultFunctions.context_functions(context))
+      end
+      
+      evaluator = Formula::Evaluator.new(context: context, functions: functions)
+      
+      # Set context variables
+      context.keys.each { |name| evaluator.set_variable(name, context[name]) }
+      
+      evaluator.evaluate(value, context["currentRow"])
     else
       value
     end

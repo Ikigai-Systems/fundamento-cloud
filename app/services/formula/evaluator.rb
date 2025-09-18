@@ -146,7 +146,7 @@ class Formula::Evaluator
     evaluated_args = arguments.map.with_index do |arg, index|
       # For UpdateRows and AddOrUpdateRows, the second argument (index 1) is the condition formula
       # Don't evaluate it immediately - pass it as AST for later evaluation
-      if (function_name == 'UpdateRows' || function_name == 'AddOrUpdateRows') && index == 1
+      if (function_name == 'UpdateRows' || function_name == 'AddOrUpdateRows') && index >= 1
         arg  # Pass the raw AST node
       else
         eval_node(arg)  # Evaluate normally
