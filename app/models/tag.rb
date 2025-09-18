@@ -14,7 +14,7 @@ class Tag < ApplicationRecord
   before_validation :normalize_name
 
   validates :name, format: { 
-    with: /\A[a-z0-9\p{L}\-_\/]+\z/, 
+    with: /\A[0-9\p{L}\-_\/]+\z/, 
     message: "can only contain lowercase letters, numbers, localized characters, hyphens, underscores, and forward slashes for hierarchy"
   }
 
