@@ -110,6 +110,10 @@ class Tag < ApplicationRecord
     name.split("/")
   end
 
+  def hashtag
+    "##{name}"
+  end
+
   private
 
   def normalize_name
