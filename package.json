@@ -49,6 +49,7 @@
   "devDependencies": {
     "@iconify-json/heroicons": "^1.1.22",
     "@iconify/tailwind": "^1.1.1",
+    "@stimulus-components/auto-submit": "^6.0.0",
     "@stimulus-components/popover": "^7.0.0",
     "@stylistic/eslint-plugin-js": "^2.1.0",
     "@tanstack/eslint-plugin-query": "^5.50.1",

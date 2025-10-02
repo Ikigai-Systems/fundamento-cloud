@@ -17,6 +17,7 @@ import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controlle
 import SerializeBlockNote from "@/stimulus/controllers/serialize_blocknote_controller.js";
 import CommandPaletteController from "./controllers/command_palette_controller.js";
 import Clipboard from '@stimulus-components/clipboard';
+import AutoSubmit from '@stimulus-components/auto-submit';
 import Multiselect from "@/stimulus/controllers/multiselect.js";
 
 const application = Application.start()
@@ -40,6 +41,8 @@ class FixedPopover extends Popover {
 }
 
 application.register('popover', FixedPopover);
+
+application.register('auto-submit', AutoSubmit);
 
 application.register('multiselect', Multiselect);
 
