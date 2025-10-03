@@ -3,6 +3,8 @@ class SpacesController < ApplicationController
 
   after_action :verify_authorized, except: [:suggest_owners]
 
+  include LoadSpace.from_param(:npi)
+
   before_action :load_space, except: [:new, :index, :create, :suggest_owners]
   before_action :ensure_turbo_request, only: [:sidebar]
 
@@ -145,10 +147,6 @@ class SpacesController < ApplicationController
 
   def space_params
     params.require(:space).permit(:name, :access_mode, :home_document_id, :home_document_type, space_memberships: [])
-  end
-
-  def load_space
-    @space = current_organization.spaces.find_by_npi!(params[:npi])
   end
 
   def ensure_turbo_request
