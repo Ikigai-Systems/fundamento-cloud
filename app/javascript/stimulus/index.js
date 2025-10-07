@@ -18,7 +18,8 @@ import SerializeBlockNote from "@/stimulus/controllers/serialize_blocknote_contr
 import CommandPaletteController from "./controllers/command_palette_controller.js";
 import Clipboard from '@stimulus-components/clipboard';
 import AutoSubmit from '@stimulus-components/auto-submit';
-import Multiselect from "@/stimulus/controllers/multiselect.js";
+import {Multiselect} from "@wizardhealth/stimulus-multiselect";
+import MultiselectNoopAddableController from "./controllers/multiselect-noop-addable-controller.js";
 
 const application = Application.start()
 
@@ -45,6 +46,7 @@ application.register('popover', FixedPopover);
 application.register('auto-submit', AutoSubmit);
 
 application.register('multiselect', Multiselect);
+application.register('multiselect-noop-addable', MultiselectNoopAddableController);
 
 application.register("react-loader", ReactLoader)
 
