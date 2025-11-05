@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+exec kubectl run psql-client --rm -it --restart=Never \
+    --image=postgres:16-alpine \
+    --namespace=fundamento-cloud \
+    --overrides='
+  {
+    "spec": {
+      "containers": [{
+        "name": "psql-client",
+        "image": "postgres:16-alpine",
+        "stdin": true,
+        "tty": true,
+        "command": ["sh", "-c", "psql \"$DATABASE_URL\""],
+        "env": [{
+          "name": "DATABASE_URL",
+          "valueFrom": {
+            "secretKeyRef": {
+              "name": "app-secrets",
+              "key": "DATABASE_URL"
+            }
+          }
+        }]
+      }]
+    }
+  }'
+
