@@ -4,9 +4,11 @@
       <div class="flex-auto min-w-0 gap-x-4">
         <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Created at</p>
       </div>
-      <div class="shrink-0 flex flex-col sm:items-end">
+      <div class="flex flex-col sm:items-end">
         <p class="text-sm/6 text-gray-900 dark:text-gray-100"><%= time_ago_in_words @document.created_at %></p>
-        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400"><time datetime="<%= @document.created_at.to_s %>"><%= @document.created_at %></time></p>
+        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
+          <time datetime="<%= @document.created_at.to_s %>"><%= @document.created_at %></time>
+        </p>
       </div>
     </li>
 
@@ -14,9 +16,11 @@
       <div class="flex-auto min-w-0 gap-x-4">
         <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Updated at</p>
       </div>
-      <div class="shrink-0 flex flex-col sm:items-end">
+      <div class="flex flex-col sm:items-end">
         <p class="text-sm/6 text-gray-900 dark:text-gray-100"><%= time_ago_in_words @document.updated_at %></p>
-        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400"><time datetime="<%= @document.updated_at.to_s %>"><%= @document.updated_at %></time></p>
+        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
+          <time datetime="<%= @document.updated_at.to_s %>"><%= @document.updated_at %></time>
+        </p>
       </div>
     </li>
 
@@ -26,7 +30,7 @@
       <div class="flex-auto min-w-0 gap-x-4">
         <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Published at</p>
       </div>
-      <div class="shrink-0 flex flex-col sm:items-end">
+      <div class="flex flex-col sm:items-end">
         <p class="text-sm/6 text-gray-900 dark:text-gray-100">
           <% if published_at %>
             <%= time_ago_in_words published_at.updated_at %>
@@ -41,5 +45,16 @@
         </p>
       </div>
     </li>
+
+    <% if Flipper.enabled?(:tags) %>
+      <li class="flex justify-between gap-x-6 py-5">
+        <div class="flex-auto min-w-0 gap-x-4">
+          <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Tagged</p>
+        </div>
+        <div class="flex flex-col sm:items-end">
+          <%= render SidebarTags.new(object: @document) %>
+        </div>
+      </li>
+    <% end %>
   </ul>
 <% end %>

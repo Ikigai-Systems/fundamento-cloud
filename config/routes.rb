@@ -53,10 +53,14 @@ Rails.application.routes.draw do
       end
 
       resources :automations, param: :npi
+      resources :tags, only: [] do
+        get :suggest, on: :collection
+      end
     end
 
     resources :documents, path: "d", param: :npi do
       resources :versions, module: :documents, only: [:create, :index, :show, :update]
+      resources :tags, module: :objects, only: [:create, :index]
 
       member do
         get :select_destination
@@ -83,6 +87,11 @@ Rails.application.routes.draw do
 
         get :sidebar
       end
+    end
+
+    # Workaround to use Objects::TagsController, instead of Tables::Objects::TagsController
+    resources :tables, path: "t", param: :npi, only: [] do
+      resources :tags, module: :objects, only: [:create, :index]
     end
 
     resources :attachments, only: [:create, :destroy, :show]

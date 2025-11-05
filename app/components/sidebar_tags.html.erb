@@ -1,0 +1,25 @@
+<%= turbo_frame_tag @object, :tags do %>
+  <%= form_with url: polymorphic_path([@object, :tags]),
+    local: false,
+    data: {
+      controller: "auto-submit",
+      turbo_frame: helpers.dom_id(@object, :tags)
+    },
+    class: "tag-form" do |f|
+  %>
+    <div
+      data-controller="multiselect multiselect-noop-addable"
+      data-action="multiselect:item-addable->multiselect-noop-addable#addable multiselect:item-added->auto-submit#submit multiselect:item-removed->auto-submit#submit"
+      data-multiselect-selected-value="<%= object_tags_as_multiselect_value %>"
+      data-multiselect-preload-url-value="<%= suggest_space_tags_path(@object.space, format: :json) %>"
+      data-multiselect-search-url-value="<%= suggest_space_tags_path(@object.space, format: :json) %>"
+      data-multiselect-addable-url-value="<%= polymorphic_path([@object, :tags]) %>"
+      data-multiselect-disabled-value="<%= !helpers.policy(@object).update? %>"
+      data-multiselect-noop-addable-target="multiselect"
+      data-placeholder="Search for tags..."
+      data-addable-placeholder="Create a new tag">
+
+      <%= f.select :tags, [], { multiple: true }, { class: "multiselect__hidden", data: { multiselect_target: "hidden" } } %>
+    </div>
+  <% end %>
+<% end %>
