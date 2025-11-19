@@ -27,6 +27,7 @@ module SopsCredentials
 
       if $?.success?
         @secrets = YAML.safe_load(decrypted_content, aliases: true) || {}
+        @secrets = @secrets.with_indifferent_access
         log_message("Successfully loaded SOPS secrets for #{env} environment", :info)
       else
         log_message("Failed to decrypt SOPS secrets: #{decrypted_content}", :error)
@@ -65,7 +66,7 @@ module SopsCredentials
     # Get credentials nested under the credentials key
     # This maintains compatibility with Rails.application.credentials
     def credentials
-      @credentials ||= (dig("credentials") || {}).with_indifferent_access
+      @credentials ||= (dig("credentials") || {})
     end
 
     private
