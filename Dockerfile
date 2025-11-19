@@ -74,9 +74,10 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install --no-install-recommends -y libvips gettext nodejs age && \
-    curl -LO https://github.com/getsops/sops/releases/download/v3.9.3/sops_3.9.3_amd64.deb && \
-    dpkg -i sops_3.9.3_amd64.deb && \
-    rm sops_3.9.3_amd64.deb
+    SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
+    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
+    dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
+    rm sops_${SOPS_VERSION}_amd64.deb
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash
