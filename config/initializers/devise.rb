@@ -17,7 +17,7 @@ class JwtAuthenticatableStrategy < Devise::Strategies::Base
   def store?; false; end
 
   def authenticate!
-    jwt_secret_key = Rails.application.config.sops.credentials.dig(:formula_eval, :jwt_secret_key)
+    jwt_secret_key = Rails.application.sops.credentials.dig(:formula_eval, :jwt_secret_key)
 
     payload, _headers = JWT.decode(jwt, jwt_secret_key, true, algorithm: "HS256")
 

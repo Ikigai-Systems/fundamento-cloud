@@ -115,7 +115,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       let(:organization_user) { organization_users(:ou_is_pawel) }
       
       before do
-        allow(Rails.application.config.sops).to receive_message_chain(:credentials, :dig).with(:formula_eval, :jwt_secret_key).and_return(jwt_secret_key)
+        allow(Rails.application.sops).to receive_message_chain(:credentials, :dig).with(:formula_eval, :jwt_secret_key).and_return(jwt_secret_key)
       end
 
       context "with valid JWT token" do
@@ -229,7 +229,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       let(:jwt_token) { JWT.encode(payload, jwt_secret_key, "HS256") }
 
       before do
-        allow(Rails.application.config.sops).to receive_message_chain(:credentials, :dig).with(:formula_eval, :jwt_secret_key).and_return(jwt_secret_key)
+        allow(Rails.application.sops).to receive_message_chain(:credentials, :dig).with(:formula_eval, :jwt_secret_key).and_return(jwt_secret_key)
       end
 
       it "uses API token when Bearer token is provided and valid" do

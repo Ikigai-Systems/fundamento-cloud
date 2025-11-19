@@ -103,9 +103,9 @@ SOPS will:
 
 4. Access in your application:
    ```ruby
-   Rails.application.config.sops.dig("new_service", "api_key")
+   Rails.application.sops.dig("new_service", "api_key")
    # or using credentials helper
-   Rails.application.config.sops.credentials[:new_service][:api_key]
+   Rails.application.sops.credentials[:new_service][:api_key]
    ```
 
 ### Secret Structure
@@ -221,11 +221,11 @@ sops -d config/secrets/development.sops.yaml
 bin/rails c
 
 # Check if SOPS is loaded
-Rails.application.config.sops
+Rails.application.sops
 # Should return the SopsCredentials module
 
 # Check secrets are loaded
-Rails.application.config.sops.secrets
+Rails.application.sops.secrets
 # Should return a hash of your secrets
 ```
 

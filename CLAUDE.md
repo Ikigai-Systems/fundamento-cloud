@@ -156,14 +156,14 @@ Access secrets via the SOPS initializer:
 
 ```ruby
 # Access via config
-Rails.application.config.sops.dig("fontawesome", "auth_token")
+Rails.application.sops.dig("fontawesome", "auth_token")
 
 # Access credentials (compatible with old Rails.application.credentials)
-Rails.application.config.sops.credentials[:mailtrap][:username]
+Rails.application.sops.credentials[:mailtrap][:username]
 
 # Helper methods
-Rails.application.config.sops.fontawesome_token
-Rails.application.config.sops.minio_access_key
+Rails.application.sops.fontawesome_token
+Rails.application.sops.minio_access_key
 ```
 
 **See [SECRETS.md](SECRETS.md) for complete documentation.**

@@ -1,4 +1,4 @@
-sentry_dsn = ENV.fetch("SENTRY_DSN", Rails.application.config.sops.credentials[:sentry_dsn])
+sentry_dsn = ENV.fetch("SENTRY_DSN", Rails.application.sops.credentials[:sentry_dsn])
 
 if sentry_dsn.present?
   Sentry.init do |config|
