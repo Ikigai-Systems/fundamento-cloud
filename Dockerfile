@@ -27,6 +27,8 @@ FROM base AS build
 
 # Accept SOPS_AGE_KEY as build argument for secrets decryption during asset precompilation
 ARG SOPS_AGE_KEY
+# Set as environment variable so SOPS can read it
+ENV SOPS_AGE_KEY=${SOPS_AGE_KEY}
 
 # Install packages needed to build gems (including age and sops for secrets management during asset precompilation)
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
@@ -62,13 +64,6 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
 
 # Copy application code
 COPY . .
-
-# Setup SOPS age key for secrets decryption during asset precompilation
-RUN if [ -n "$SOPS_AGE_KEY" ]; then \
-      mkdir -p ~/.config/sops/age && \
-      echo "$SOPS_AGE_KEY" > ~/.config/sops/age/keys.txt && \
-      chmod 600 ~/.config/sops/age/keys.txt; \
-    fi
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
