@@ -40,8 +40,10 @@ jobs:
           mkdir -p ~/.config/sops/age
           echo "${{ secrets.SOPS_AGE_KEY }}" > ~/.config/sops/age/keys.txt
           chmod 600 ~/.config/sops/age/keys.txt
-          # Export SOPS_AGE_KEY for Docker build
-          echo "SOPS_AGE_KEY=${{ secrets.SOPS_AGE_KEY }}" >> $GITHUB_ENV
+          # Export SOPS_AGE_KEY for Docker build (using heredoc for multi-line)
+          echo "SOPS_AGE_KEY<<EOF" >> $GITHUB_ENV
+          echo "${{ secrets.SOPS_AGE_KEY }}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Decrypt secrets for Docker build
         run: |
