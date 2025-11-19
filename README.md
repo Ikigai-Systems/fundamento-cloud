@@ -1,3 +1,30 @@
+# Fundamento Cloud
+
+## Prerequisites
+
+### Secrets Management
+
+This project uses SOPS (Secrets OPerationS) with age encryption for managing secrets. You need to:
+
+1. Install age and sops:
+   ```bash
+   # macOS
+   brew install age sops
+
+   # Linux
+   sudo apt-get install age
+   # For sops, see SECRETS.md for installation instructions
+   ```
+
+2. Obtain the age private key from the project owner and save it to:
+   ```bash
+   mkdir -p ~/.config/sops/age
+   # Save the private key to ~/.config/sops/age/keys.txt
+   chmod 600 ~/.config/sops/age/keys.txt
+   ```
+
+**For detailed secrets management documentation, see [SECRETS.md](SECRETS.md)**
+
 # Running
 
 ```

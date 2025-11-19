@@ -216,7 +216,7 @@ class FormulaEvalGateway
   end
 
   def self.prepare_jwt_token(space, organization_user)
-    jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
+    jwt_secret_key = Rails.application.config.sops.credentials.dig(:formula_eval, :jwt_secret_key)
     jwt_payload = {
       exp: Time.now.to_i + 60,
       sub: organization_user.to_global_id.to_s,

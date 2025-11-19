@@ -22,8 +22,8 @@
   <%= vite_react_refresh_tag %>
   <%= vite_javascript_tag 'application' %>
 
-  <% if Rails.application.credentials.google_tag_manager_id.present? %>
-    <%= render partial: "layouts/google_tag_manager", locals: { gtm_id: Rails.application.credentials.google_tag_manager_id } %>
+  <% if Rails.application.config.sops.credentials[:google_tag_manager_id].present? %>
+    <%= render partial: "layouts/google_tag_manager", locals: { gtm_id: Rails.application.config.sops.credentials[:google_tag_manager_id] } %>
   <% end %>
 
   <% if content_for?(:head) %>
@@ -39,10 +39,10 @@
 } do %>
   <script>
     window.FundamentoConfig = {
-      sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
+      sentryDsn: <%= Rails.application.config.sops.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
       replaysSessionSampleRate: <%= replays_session_sample_rate %>,
       ckeditor: {
-        licenseKey: <%= Rails.application.credentials.dig(:ckeditor, :license_key).to_json.html_safe %>
+        licenseKey: <%= Rails.application.config.sops.credentials.dig(:ckeditor, :license_key).to_json.html_safe %>
       },
       plausibleDomain: <%= ENV["PLAUSIBLE_DOMAIN"].to_json.html_safe %>
     };

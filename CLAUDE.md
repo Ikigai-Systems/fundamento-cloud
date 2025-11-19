@@ -139,6 +139,35 @@ Whenever possible, use the following rules:
 - strings should be put into double-quotes
 - don't add indentation spaces on empty lines
 
+## Secrets Management
+
+This project uses SOPS (Secrets OPerationS) with age encryption instead of git-crypt.
+
+### Quick Reference
+
+- **Secret files**: `config/secrets/*.sops.yaml` (encrypted in git)
+- **View secrets**: `sops -d config/secrets/development.sops.yaml`
+- **Edit secrets**: `sops config/secrets/development.sops.yaml`
+- **Extract value**: `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml`
+
+### In Application Code
+
+Access secrets via the SOPS initializer:
+
+```ruby
+# Access via config
+Rails.application.config.sops.dig("fontawesome", "auth_token")
+
+# Access credentials (compatible with old Rails.application.credentials)
+Rails.application.config.sops.credentials[:mailtrap][:username]
+
+# Helper methods
+Rails.application.config.sops.fontawesome_token
+Rails.application.config.sops.minio_access_key
+```
+
+**See [SECRETS.md](SECRETS.md) for complete documentation.**
+
 ## Task Master AI Instructions
 **Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
 @./.taskmaster/CLAUDE.md

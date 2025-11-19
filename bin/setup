@@ -16,7 +16,13 @@ FileUtils.chdir APP_ROOT do
   puts "== Installing and configuring bundler =="
   system! "gem install bundler --conservative"
 
-  system!("bundle config https://dl.fontawesome.com/basic/fontawesome-pro/ruby/ $(cat dockerfiles/fontawesome-auth.secret)")
+  # Extract FontAwesome token from SOPS secrets
+  fontawesome_token = `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml 2>/dev/null`.strip
+  if fontawesome_token.empty?
+    puts "WARNING: Could not extract FontAwesome token from SOPS. Bundle install may fail."
+  else
+    system!("bundle config https://dl.fontawesome.com/basic/fontawesome-pro/ruby/ #{fontawesome_token}")
+  end
 
   puts "== Installing dependencies =="
   system("bundle check") || system!("bundle install")

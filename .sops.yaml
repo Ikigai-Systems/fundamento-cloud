@@ -1,0 +1,28 @@
+# SOPS configuration for fundamento-cloud
+# This file defines encryption rules for secrets in this repository
+
+creation_rules:
+  # Encrypt all files in config/secrets/ directory with .sops.yaml extension
+  # Multiple age keys allow both local developers and CI to decrypt
+  - path_regex: config/secrets/.*\.sops\.yaml$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+
+  # Encrypt environment files with sops in the name
+  - path_regex: .*\.sops\.env$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+
+  # Encrypt any YAML file with .sops in the name
+  - path_regex: .*\.sops\.ya?ml$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+
+  # Encrypt JSON files with .sops in the name
+  - path_regex: .*\.sops\.json$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s

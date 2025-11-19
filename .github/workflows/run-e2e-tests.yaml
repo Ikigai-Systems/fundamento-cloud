@@ -21,12 +21,31 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:password@localhost/postgres
-      BUNDLE_DL__FONTAWESOME__COM: ${{ secrets.FONTAWESOME_AUTH }}
-      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install age and sops
+        run: |
+          sudo apt-get update && sudo apt-get install -y age
+          wget -qO- https://github.com/getsops/sops/releases/download/v3.9.3/sops-v3.9.3.linux.amd64 | sudo tee /usr/local/bin/sops > /dev/null
+          sudo chmod +x /usr/local/bin/sops
+
+      - name: Setup SOPS age key
+        run: |
+          mkdir -p ~/.config/sops/age
+          echo "${{ secrets.SOPS_AGE_KEY }}" > ~/.config/sops/age/keys.txt
+          chmod 600 ~/.config/sops/age/keys.txt
+
+      - name: Decrypt and export secrets
+        run: |
+          # Extract FontAwesome token and create secret file for Docker
+          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/test.sops.yaml > dockerfiles/fontawesome-auth.secret
+          chmod 600 dockerfiles/*.secret
+
+          # Export FontAwesome token for bundle install
+          echo "BUNDLE_DL__FONTAWESOME__COM=$(cat dockerfiles/fontawesome-auth.secret)" >> $GITHUB_ENV
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
@@ -42,11 +61,6 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-
-      - name: Create secrets for docker compose
-        run: |
-          echo -n "${{ secrets.FONTAWESOME_AUTH }}" > dockerfiles/fontawesome-auth.secret
-          chmod 600 dockerfiles/*.secret
 
       - uses: hoverkraft-tech/compose-action@v2.0.1
 

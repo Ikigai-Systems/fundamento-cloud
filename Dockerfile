@@ -69,11 +69,14 @@ RUN cd micro-services/blocknote && npm run build
 # Final stage for app image
 FROM base AS packaged
 
-# Install packages needed for deployment
+# Install packages needed for deployment (including age and sops for secrets management)
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install --no-install-recommends -y libvips gettext nodejs
+    apt-get install --no-install-recommends -y libvips gettext nodejs age && \
+    curl -LO https://github.com/getsops/sops/releases/download/v3.9.3/sops_3.9.3_amd64.deb && \
+    dpkg -i sops_3.9.3_amd64.deb && \
+    rm sops_3.9.3_amd64.deb
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash

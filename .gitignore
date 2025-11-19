@@ -45,6 +45,21 @@ repo.key
 
 .env*
 
+# SOPS decrypted files (should never be committed)
+*.dec.yaml
+*.dec.yml
+*.dec.json
+*.dec.env
+config/secrets/*.dec.*
+
+# Old git-crypt encrypted files (migration artifacts)
+config/credentials/*.key
+dockerfiles/*.secret
+
+# Age private keys (never commit!)
+config/secrets/ci-age-key.txt
+config/secrets/*-key.txt
+
 spec/examples.txt
 
 config/database.yml
