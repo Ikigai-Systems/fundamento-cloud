@@ -16,7 +16,12 @@
       "Bash(bin/rails generate:*)",
       "Bash(bin/rails db:migrate)",
       "Bash(age:*)",
-      "Bash(sops:*)"
+      "Bash(sops:*)",
+      "mcp__github__get_me",
+      "mcp__github__search_repositories",
+      "mcp__github__list_commits",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)"
     ],
     "deny": []
   },
