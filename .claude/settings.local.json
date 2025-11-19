@@ -14,7 +14,9 @@
       "Bash(npm update:*)",
       "Bash(rails:*)",
       "Bash(bin/rails generate:*)",
-      "Bash(bin/rails db:migrate)"
+      "Bash(bin/rails db:migrate)",
+      "Bash(age:*)",
+      "Bash(sops:*)"
     ],
     "deny": []
   },
