@@ -26,22 +26,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install age and sops
-        run: |
-          sudo apt-get update && sudo apt-get install -y age
-          SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-          wget -qO- https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64 | sudo tee /usr/local/bin/sops > /dev/null
-          sudo chmod +x /usr/local/bin/sops
-
-      - name: Setup SOPS age key
-        run: |
-          mkdir -p ~/.config/sops/age
-          echo "${{ secrets.SOPS_AGE_KEY }}" > ~/.config/sops/age/keys.txt
-          chmod 600 ~/.config/sops/age/keys.txt
-          # Export SOPS_AGE_KEY for Docker build (using heredoc for multi-line)
-          echo "SOPS_AGE_KEY<<EOF" >> $GITHUB_ENV
-          echo "${{ secrets.SOPS_AGE_KEY }}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+      - name: Setup SOPS with age
+        uses: ./.github/actions/setup-sops
+        with:
+          age-key: ${{ secrets.SOPS_AGE_KEY }}
+          export-for-docker: 'true'
 
       - name: Decrypt and export secrets
         run: |

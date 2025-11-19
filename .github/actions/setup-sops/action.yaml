@@ -1,0 +1,36 @@
+name: 'Setup SOPS with age'
+description: 'Install age and SOPS, and configure age key for secrets decryption'
+inputs:
+  age-key:
+    description: 'Age private key for SOPS decryption'
+    required: true
+  export-for-docker:
+    description: 'Export SOPS_AGE_KEY as environment variable for Docker builds'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - name: Install age and sops
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y age
+        SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+        wget -qO- https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64 | sudo tee /usr/local/bin/sops > /dev/null
+        sudo chmod +x /usr/local/bin/sops
+
+    - name: Setup SOPS age key
+      shell: bash
+      run: |
+        mkdir -p ~/.config/sops/age
+        echo "${{ inputs.age-key }}" > ~/.config/sops/age/keys.txt
+        chmod 600 ~/.config/sops/age/keys.txt
+
+    - name: Export SOPS_AGE_KEY for Docker
+      if: inputs.export-for-docker == 'true'
+      shell: bash
+      run: |
+        # Export SOPS_AGE_KEY for Docker build (using heredoc for multi-line)
+        echo "SOPS_AGE_KEY<<EOF" >> $GITHUB_ENV
+        echo "${{ inputs.age-key }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
