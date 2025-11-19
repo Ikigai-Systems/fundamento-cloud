@@ -8,7 +8,7 @@ Bundler.require(*Rails.groups)
 
 # Load SOPS secrets before application configuration
 # This needs to happen before environment files load
-require_relative "initializers/sops_credentials"
+require_relative "sops_credentials"
 
 # Load secrets now with explicit root path
 SopsCredentials.load!(File.expand_path("..", __dir__))

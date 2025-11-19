@@ -9,7 +9,7 @@ All secrets are stored encrypted in the repository under `config/secrets/` direc
 - `test.sops.yaml` - Test environment secrets
 - `production.sops.yaml` - Production environment secrets
 
-The secrets are automatically decrypted at Rails boot time via the SOPS loader initializer (`config/initializers/sops_credentials.rb`).
+The secrets are automatically decrypted at Rails boot time via the SOPS loader initializer (`config/sops_credentials.rb`).
 
 ## Prerequisites
 
@@ -95,7 +95,7 @@ SOPS will:
 
 3. Update the Rails initializer if you need a helper method:
    ```ruby
-   # config/initializers/sops_credentials.rb
+   # config/sops_credentials.rb
    def new_service_api_key
      dig("new_service", "api_key")
    end
