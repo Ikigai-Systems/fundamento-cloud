@@ -8,6 +8,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+dev-debug.log*
 
 node_modules
 dist
@@ -49,3 +50,9 @@ spec/examples.txt
 config/database.yml
 
 .bundle/
+
+
+# Task files
+tasks.json
+tasks/
+

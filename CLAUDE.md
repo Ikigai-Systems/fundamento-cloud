@@ -138,3 +138,7 @@ docker compose up redis postgresql
 Whenever possible, use the following rules:
 - strings should be put into double-quotes
 - don't add indentation spaces on empty lines
+
+## Task Master AI Instructions
+**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
+@./.taskmaster/CLAUDE.md
