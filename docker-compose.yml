@@ -103,22 +103,6 @@ services:
         condition: service_healthy
       minio-initialization:
         condition: service_completed_successfully
-  formula:
-    build:
-      context: ./micro-services/formula-eval
-    environment:
-      FUNDAMENTO_BASE_URL: http://rails:3000
-    ports:
-      - '3001:3001'
-    depends_on:
-      postgresql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-      minio-initialization:
-        condition: service_completed_successfully
 
 volumes:
   postgres:
