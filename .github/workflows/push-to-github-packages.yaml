@@ -32,13 +32,17 @@ jobs:
         uses: ./.github/actions/setup-sops
         with:
           age-key: ${{ secrets.SOPS_AGE_KEY }}
-          export-for-docker: 'true'
 
       - name: Decrypt secrets for Docker build
         run: |
           # Extract FontAwesome token for Docker BuildKit secret
           sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/production.sops.yaml > /tmp/fontawesome-auth.secret
           echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
+
+          # Write SOPS age key to file for Docker BuildKit secret
+          echo "${{ secrets.SOPS_AGE_KEY }}" > /tmp/sops-age-key.secret
+          chmod 600 /tmp/sops-age-key.secret
+          echo "SOPS_AGE_KEY_FILE=/tmp/sops-age-key.secret" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -80,10 +84,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            SOPS_AGE_KEY=${{ secrets.SOPS_AGE_KEY }}
           secret-files: |
             "fontawesome-auth=${{ env.FONTAWESOME_SECRET_FILE }}"
+            "sops-age-key=${{ env.SOPS_AGE_KEY_FILE }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

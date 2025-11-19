@@ -25,11 +25,6 @@ ENV RAILS_ENV=${RAILS_ENV} \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Accept SOPS_AGE_KEY as build argument for secrets decryption during asset precompilation
-ARG SOPS_AGE_KEY
-# Set as environment variable so SOPS can read it
-ENV SOPS_AGE_KEY=${SOPS_AGE_KEY}
-
 # Install packages needed to build gems (including age and sops for secrets management during asset precompilation)
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
@@ -69,7 +64,9 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Ikigai-specific: precompile assets
-RUN SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
+# Mount SOPS age key as secret and set it as environment variable for SOPS to use
+RUN --mount=type=secret,id=sops-age-key,env=SOPS_AGE_KEY \
+    SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
 
 # Transpile blocknote server side utils for document-to-blocks conversion

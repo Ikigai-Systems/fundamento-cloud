@@ -30,12 +30,15 @@ jobs:
         uses: ./.github/actions/setup-sops
         with:
           age-key: ${{ secrets.SOPS_AGE_KEY }}
-          export-for-docker: 'true'
 
       - name: Decrypt and export secrets
         run: |
           # Extract FontAwesome token and create secret file for Docker
           sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/test.sops.yaml > dockerfiles/fontawesome-auth.secret
+
+          # Create SOPS age key secret file for Docker build
+          echo "${{ secrets.SOPS_AGE_KEY }}" > dockerfiles/sops-age-key.secret
+
           chmod 600 dockerfiles/*.secret
 
           # Export FontAwesome token for bundle install

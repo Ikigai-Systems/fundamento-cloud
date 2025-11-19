@@ -62,9 +62,9 @@ services:
       target: ${RAILS_ENV:-production}
       args:
         - RAILS_ENV=${RAILS_ENV:-production}
-        - SOPS_AGE_KEY=${SOPS_AGE_KEY}
       secrets:
         - fontawesome-auth
+        - sops-age-key
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
@@ -86,9 +86,9 @@ services:
       target: ${RAILS_ENV:-production}
       args:
         - RAILS_ENV=${RAILS_ENV:-production}
-        - SOPS_AGE_KEY=${SOPS_AGE_KEY}
       secrets:
         - fontawesome-auth
+        - sops-age-key
     command: bundle exec good_job start
     environment:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
@@ -127,3 +127,5 @@ volumes:
 secrets:
   fontawesome-auth:
     file: dockerfiles/fontawesome-auth.secret
+  sops-age-key:
+    file: dockerfiles/sops-age-key.secret
