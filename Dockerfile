@@ -25,12 +25,19 @@ ENV RAILS_ENV=${RAILS_ENV} \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Accept SOPS_AGE_KEY as build argument for secrets decryption during asset precompilation
+ARG SOPS_AGE_KEY
+
+# Install packages needed to build gems (including age and sops for secrets management during asset precompilation)
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config nodejs && \
-    npm install -g npm@latest
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config nodejs age && \
+    npm install -g npm@latest && \
+    SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && \
+    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
+    dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
+    rm sops_${SOPS_VERSION}_amd64.deb
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -55,6 +62,13 @@ RUN --mount=type=cache,sharing=locked,target=/var/cache/npm \
 
 # Copy application code
 COPY . .
+
+# Setup SOPS age key for secrets decryption during asset precompilation
+RUN if [ -n "$SOPS_AGE_KEY" ]; then \
+      mkdir -p ~/.config/sops/age && \
+      echo "$SOPS_AGE_KEY" > ~/.config/sops/age/keys.txt && \
+      chmod 600 ~/.config/sops/age/keys.txt; \
+    fi
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/

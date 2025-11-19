@@ -1,0 +1,1556 @@
+[
+  {
+    "id": "initialBlockId",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5e4cb05e-0c95-4973-8ff4-7d7059f11a47",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Advanced tables can be used to store and organise a greater amount of data.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5c197fbd-fa73-4b6c-be69-ee5dbb09bd3d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b3345edd-b0c1-4863-88fe-1e967247e39e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you click \"Advanced table\" on the menu hidden under \"+\" you'll see dropdown list",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a6ca4ad8-a258-4065-b05e-d74a84db7337",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Advanced table1.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/advanced-table1.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 220
+    },
+    "children": []
+  },
+  {
+    "id": "35c883b4-9a0e-4128-82d7-4cb79eb4b1a0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "ef01faca-112c-427f-8cbd-082622e76bf6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Choose Advanced table and at first you'll see will this view:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1752a3c0-316e-454c-bf34-cc93b2a7447c",
+    "type": "advancedTable",
+    "props": {
+      "tableId": -1,
+      "tableNpi": "",
+      "viewProps": "{\"columns\":{}}"
+    },
+    "children": []
+  },
+  {
+    "id": "1b8d5de6-b8b4-49c6-a299-69b2169e5cec",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "4d4420c4-f777-4b7d-9ace-16dd656f898c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Now, you have in fact three options:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "9b5f9637-ae73-4448-908c-0d40bc6f6dd4",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You ale able to insert already existing table in the meaning that you want to duplicate another table that has been created in Fundamento and work on that particular table, change whatever you need in it. As you click \"Select..\" a dropdown list will appear showing a list of possible tables to include",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1388d2a5-4ec4-47ac-a604-0889fcd4aaaa",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can also Import data from external source: your computer or other file inventory using button",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "208d7e5a-9969-4c94-bff1-ca2b78d9fccc",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Import data",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/import-data.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 123
+    },
+    "children": []
+  },
+  {
+    "id": "a1a3f927-5b8b-4b2e-85b3-b64abb38b9fa",
+    "type": "numberedListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "start": 3
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you click \"Start blank\" a table where you can insert various data will appear:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "117a2c87-2c82-4b30-a437-05dc9a02b778",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "f1728536-daba-42b0-8665-bd74579d09d0",
+    "type": "advancedTable",
+    "props": {
+      "tableId": -1,
+      "tableNpi": "u34fOBpaFp",
+      "viewProps": "{\"columns\":{}}"
+    },
+    "children": []
+  },
+  {
+    "id": "7e81c9b2-c49e-4d97-908f-6279d04a08c8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2b18c5f9-2589-404e-88c4-94ccb83ea2ce",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "rom this very moment you are able to create whatever you need: a CRM, a database, sales figures, HR table etc.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c31510b4-36ef-48d9-b450-2484723e8fb8",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1e09c1aa-de3c-433d-8b73-1ef156477f27",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As we want everything to be clear for you, below you'll find a detailed description of how it works:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ae92d980-a662-4e9a-9d56-1bc813824fbb",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You can add as many rows in the table as you wish using \"+\" or \"+ New row\". Each new appeared row will be marked in blue frame",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "5e09c6f2-7cfe-4770-a705-a99adb3cc095",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "020eed37-52a2-4f23-9e0b-5f84b37bc6af",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Advanced table new row.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/advanced-table-new-row.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "a4b98c02-f362-492f-b311-5e151c053c58",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b4011f6e-bc45-4f73-acf2-8e9e9cfa8c93",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Adding a new column is also very simple, you have to only scroll the bar at the bottom of the table and use \"+\" and a new column will show. Now you can add a name for this new created column. Of course, also all default column names you can change for whatever you want.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8713a148-3e2a-47b1-b729-9da77bb58896",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0183a1c7-6918-4576-9a81-dc6547328479",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Advanced Table add column.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/advanced-table-add-column.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "6c5ba115-f445-4dc0-9d6d-1bc3bdce160b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "fe142bf0-4edf-42b9-8cbd-81471af3ee67",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Let's take a closer look at Property Type, since it is very important in our tables and can show you a plenty of possibilities what could you use tables for.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a992227b-89f2-43a4-a029-97b058e7571a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you click on the first (defalt) name of the Property Type: Single-Line Text",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1d93bea5-65c0-461a-a05a-688af7abcc83",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "advanced table sltext.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/advanced-table-sltext.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 205
+    },
+    "children": []
+  },
+  {
+    "id": "9bbe2341-8447-42ed-9f54-742888e1c13a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "7e2e4f59-7426-4f3f-8450-bffb5ba8efe1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "You will see all the possibilities to change nature of using column in our tables",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "020e19f3-a5a6-4df4-86a8-3cac56c14ce5",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "PropertyType.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/property-type.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 201
+    },
+    "children": []
+  },
+  {
+    "id": "ebd3fabe-d4ec-4bf2-9522-41170282439e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "d045c6c5-37ac-4024-ac53-bd96cdd7414b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In another words: in the Property Type you are able to define in fact nature and method of action in the particular column. Have in mind that all Property Types have its own icon describing way of its usage, e.g:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3ed9fde5-4542-4a7f-bbe6-d02f285ab2a2",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/icon1.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 64
+    },
+    "children": []
+  },
+  {
+    "id": "ac604212-5e06-4cde-96c5-04852a5e74d1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "for Long Text",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "11f51ddb-8568-4d60-a3cb-0afd5f1341d6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "or:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "d7b7d0f9-b5c5-497c-b542-cca49a1284c9",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/icon2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 64
+    },
+    "children": []
+  },
+  {
+    "id": "ea49ccdc-cf38-42e9-9130-015ad946fdcd",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "for Date and Time",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3cdf23d4-3515-4bb9-8a72-3fc1bbb7ab45",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "9bd5ad1c-4b92-4e16-846d-40800cd4b2d4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Single-line Text",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - default setting, it's free form text with no fancy functionality, used just as a column name",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "4d45e61b-5ff0-466d-b878-78e85a949735",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "b94b4256-ed05-4f78-a6db-dbb2ae51aa36",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Long Text",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - suitable for storing multi-line notes, as you can see you are able to write or insert a lot of text there.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3c5a30fd-ae09-48fe-827b-da73882126fa",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/note-adv-table.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 138
+    },
+    "children": []
+  },
+  {
+    "id": "1f478edd-d1ad-4c3b-bb59-58c10b235898",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a7ce2d57-7d79-4586-903d-849ecc439ff0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Number",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - intended to apply a number (very useful in CRM's, sales or financial figures databases), you can not type a letter there since only numbers can be used.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "d71e52fd-e954-4942-a22c-f8134578282d",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/number.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 135
+    },
+    "children": []
+  },
+  {
+    "id": "c48500f6-2a3e-495c-b722-c81770f28283",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0f4bc48b-692b-478e-9db6-9abbcd8fcec0",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Select",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "  - when you e.g. want to use a table as a project management tool, just type every useful statuses as \"Created\", \"In progress\", \"On hold\", \"Waiting for deployment\", \"Done\" and you are able to manage a various projects or group of tasks.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "219bad4d-0dec-4ee0-811d-a0712f22c1b5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "(screen)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a22092e7-943d-4197-a805-58930204300b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "cefd3f35-5fad-4d75-b7bd-4c8d358cdb0a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Date",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "  - handy option when you want to add calendar dates to to the table and e.g. sort it earliest \u003e latest (latest \u003e earliest)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ece7c4ea-ea3c-43a0-9534-c2952ebc73e0",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/date.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 123
+    },
+    "children": []
+  },
+  {
+    "id": "1d1f9c6b-d3da-44f2-8e95-892929829eb1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Of course, you can also display different date format, depending of what effect you want to achieve",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "cff79d17-0b62-4862-98ab-3d7d4131727a",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/display-date-format.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 133
+    },
+    "children": []
+  },
+  {
+    "id": "c17d18fb-0262-4967-a5bf-e7f25c3d2d6e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "10e637bf-aa00-4e97-959d-698f59ea584e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Multiple Select",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": "  - try to use when your intention is to group similar cases/activities. For example if you have created CRM in the table, you are able to attribute a particular activity in the accurate table field.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f773ecb8-6ad6-474e-ab6c-93624b10d2d7",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/multiple-select.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 179
+    },
+    "children": []
+  },
+  {
+    "id": "1d53eb32-859c-4cb7-987c-28b0d06211a2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "8a1a8fe3-5769-4385-93b7-04d86bf7b85e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "URL",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - you can add a link to a webpage, documentation or whatever you need to point out other team members (or yourself), therefore a part of our table can be used also as a some kinf of a link gathering space.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a4eb12ec-cede-43ee-91c4-5b34213084b7",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/link.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 164
+    },
+    "children": []
+  },
+  {
+    "id": "9d06af4e-0c75-4bd3-947c-0ef1335ddaf4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "60fc5f3d-4d00-4138-af3c-2849b07e2f93",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "da270e5d-a740-4770-a8e7-d362b30526ae",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Checkbox",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - very handy and common using tool when it comes to mark (or unmark) a task as done or to be done, thanks to that feature in our table you can use one of the column as a \"work-checker\" (znaleźć lepsze słowo)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "7167d593-5748-45cd-916f-405b86bc3f72",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/checkbox.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 146
+    },
+    "children": []
+  },
+  {
+    "id": "4016088b-d621-405e-9061-9d555d778afc",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a2b2a440-d01b-4083-a8e3-2a4aea532ae2",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3c473483-ec85-467c-9fa4-8a385c9cfeb1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "People",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - suitable for referencing/pointing out Fundamento users from your Organization.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "244cfce9-3839-4a7b-9167-82a643d69671",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "41422457-3ba2-482e-b107-3dc35f3906d4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Documents",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - suitable for referencing Fundamento documents from your Organization. As you choose Property Type \"Document\" you will be able to point out in the table every document within Organization ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "ffcb4972-64b5-47e0-89a2-c64f084d35f9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "be615e57-96f5-4e37-96f3-49b1b29db1cf",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/406.png",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 186
+    },
+    "children": []
+  },
+  {
+    "id": "a322ecb8-de2c-47b2-8a68-6b31f9c93cc7",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "  ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "823e0cd4-865f-4f33-a003-01017367196b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "19ce5eb9-ed34-4cf1-8104-badb944a49a4",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Date and time",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - use it as you want to fill the table with the exact time also with an hour",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "fb1c6f4b-f292-46e1-82aa-ea5e5fe11f65",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Data and Time .jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/data-and-time.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "f5f66e36-c989-4f7e-ae3d-4517d6a7c43d",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "1b06b968-3c17-48e1-883b-51b15c91d9a1",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Now, you can write in the exact date and time or use an icon to choose it from the calendar view",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "1ada3475-8cad-40bb-9ae9-0c6189a1cb1b",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/data-and-time2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "7f68d7e0-0781-4201-9627-491c63a2d29c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "83f19804-4397-405d-a8d9-fa17a4f30a4a",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "867694c7-f8ff-4e09-bfea-ff1040843b21",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "0949d134-7004-4ff1-b572-61571010ad69",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "2353e39f-1526-42f4-93d6-373629503896",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Button",
+        "styles": {
+          "code": true
+        }
+      },
+      {
+        "type": "text",
+        "text": " - useful feature when you want to ..... ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "99d7d3ff-abf8-4d3d-9055-4641ea756539",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Button1.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/button1.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "739666df-0fe1-470a-9b04-52bf940be51e",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "Button2.jpg",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/button2.jpg",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "bea6243e-944f-4611-88c9-71a4989fefa5",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "a4eaa7a4-f6c8-45a1-b1c8-bba110dae3d6",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "c2a0f928-5013-4b0b-9881-6ab9bcc24a3c",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "33ce4bb1-5943-471c-9ac2-41271ccf2b31",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Let's focus on the other possibilities of using out tables. ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "743fbf3c-6ec5-4513-90aa-68c0de9e02b9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In order to better understand what you can transform a table for, you need to know that table consists of:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e37643c3-53a0-4b7a-9b7c-ddbf77434691",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Rows - compose the horizontal elements of a table. Rows generally represent “things” (people names, tasks, inventory items, places to visit, etc.)",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "68f33437-e008-4c46-bfdd-58b3d1a5d03b",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "cfaf0230-2186-4e9c-ada6-6c7a1ac3a2fd",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Colums - thatare a table’s vertical elements, allowing you to store more information in your rows. Columns are generally “attributes” of those things (their gender, age, address, etc.). ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "f9e7e4b3-b94b-4168-90f4-fd282b3375c9",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "In Fundamento, you can change column types to add various attributes to your row data. You can also reorder columns according to your preference. change column types, AI generator, buttons, sliders, people, etc. (more about it above in the Section: Property Type) ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "8ea08aed-f740-4e98-b909-1a3cbfd61894",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "What is very important - each Column has immutable ID unique within the Table. It can be used as a reference in formulas you create.",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "a9bb2c18-fa67-41cb-a162-9d1d15a3eb19",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "54910bb7-eda0-434a-b8b4-8751c6ad7462",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Table ID - Every Table has immutable ID unique within Space. This ID can be used in formulas you create. You can review the ID value (or copy it to clipboard) in the top-right corner of the Table:",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "b0cd3588-3734-4121-b2b4-2f3403a9e43f",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "5521215b-1ecd-44e7-bfc1-b0f5151ce395",
+    "type": "image",
+    "props": {
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "name": "image.png",
+      "url": "onboardingContent:12-how-to-use-advanced-features-of-tables/395.png",
+      "caption": "",
+      "showPreview": true,
+      "previewWidth": 512
+    },
+    "children": []
+  },
+  {
+    "id": "5b1c642f-f162-470d-b79b-1096f01e8454",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "As you click on the Table ID, it will be copied to the clipboard. You can now paste it in any place just as refference without Table copy itself. ",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "61647ef0-521d-4a82-878e-8b4ae7fc1d43",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "3051903d-da7e-45f1-99b2-354e4078ec6e",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  }
+]
+
