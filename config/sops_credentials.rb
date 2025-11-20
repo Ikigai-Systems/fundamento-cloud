@@ -39,16 +39,34 @@ module SopsCredentials
     end
 
     # Delegate any other method to the underlying hash
+    # Handle both hash methods and key access (e.g., credentials.recaptcha)
     def method_missing(method, *args, &block)
+      method_name = method.to_s.chomp("!")
+
+      # Check if it's a key in the data
+      if @data.key?(method_name)
+        value = @data[method_name]
+        # Wrap nested hashes in CredentialsWrapper
+        return value.is_a?(Hash) ? CredentialsWrapper.new(value) : value
+      end
+
+      # If method ends with !, raise if key doesn't exist (Rails credentials behavior)
+      if method.to_s.end_with?("!")
+        raise KeyError, "key not found: #{method_name.inspect}"
+      end
+
+      # Delegate to the hash if it responds to this method
       if @data.respond_to?(method)
         @data.send(method, *args, &block)
       else
-        super
+        # Return nil for missing keys (Rails credentials behavior)
+        nil
       end
     end
 
     def respond_to_missing?(method, include_private = false)
-      @data.respond_to?(method) || super
+      method_name = method.to_s.chomp("!")
+      @data.key?(method_name) || @data.respond_to?(method) || super
     end
   end
 end
