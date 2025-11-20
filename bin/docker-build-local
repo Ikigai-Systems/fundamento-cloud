@@ -1,0 +1,66 @@
+#!/bin/bash
+# Local Docker build matching CI workflow
+# This script replicates the docker/build-push-action@v6 behavior from GitHub Actions
+
+set -e
+
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Default values
+RAILS_ENV="${RAILS_ENV:-development}"
+TARGET="${1:-production}"
+
+echo -e "${GREEN}Building Docker image for target: ${TARGET}${NC}"
+echo "Using RAILS_ENV: ${RAILS_ENV}"
+echo ""
+
+# Check if SOPS age key exists
+if [ ! -f ~/.config/sops/age/keys.txt ]; then
+  echo -e "${RED}Error: SOPS age key not found at ~/.config/sops/age/keys.txt${NC}"
+  echo "Run 'sops updatekeys config/secrets/${RAILS_ENV}.sops.yaml' to set up your key"
+  exit 1
+fi
+
+# Create secret files directory
+mkdir -p dockerfiles
+
+# Extract FontAwesome token using SOPS
+echo -e "${YELLOW}Extracting secrets...${NC}"
+if ! sops -d --extract '["fontawesome"]["auth_token"]' "config/secrets/${RAILS_ENV}.sops.yaml" > dockerfiles/fontawesome-auth.secret 2>/dev/null; then
+  echo -e "${RED}Error: Failed to decrypt FontAwesome token${NC}"
+  echo "Make sure your age key is configured correctly"
+  exit 1
+fi
+
+# Copy SOPS age key to secret file
+cat ~/.config/sops/age/keys.txt > dockerfiles/sops-age-key.secret
+
+# Set permissions
+chmod 600 dockerfiles/*.secret
+
+# Build using docker buildx with secrets (matching CI)
+echo -e "${YELLOW}Building with docker buildx...${NC}"
+docker buildx build \
+  --file Dockerfile \
+  --target "${TARGET}" \
+  --build-arg RAILS_ENV="${RAILS_ENV}" \
+  --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
+  --secret id=sops-age-key,src=dockerfiles/sops-age-key.secret \
+  --tag "fundamento-cloud:${TARGET}" \
+  --load \
+  .
+
+echo ""
+echo -e "${GREEN}✓ Build complete!${NC}"
+echo "Image: fundamento-cloud:${TARGET}"
+echo ""
+echo "To run with docker-compose (includes secrets at runtime):"
+echo "  export SOPS_AGE_KEY_FILE=\$(pwd)/dockerfiles/sops-age-key.secret"
+echo "  docker-compose up"
+echo ""
+echo "Or run standalone:"
+echo "  docker run -p 3000:3000 -e SOPS_AGE_KEY=\"\$(cat ~/.config/sops/age/keys.txt)\" fundamento-cloud:${TARGET}"
