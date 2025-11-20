@@ -60,6 +60,8 @@ jobs:
       - run: npm ci
 
       - uses: hoverkraft-tech/compose-action@v2.0.1
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
