@@ -71,7 +71,7 @@ services:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
       - REDIS_URL=redis://redis
-      - SOPS_AGE_KEY_FILE=/run/secrets/sops-age-key
+      - SOPS_AGE_KEY=${SOPS_AGE_KEY}
     ports:
       - '3000:3000'
     depends_on:
@@ -99,7 +99,7 @@ services:
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-abcdef}
       - DATABASE_URL=postgres://postgres:password@postgresql/postgres
       - REDIS_URL=redis://redis
-      - SOPS_AGE_KEY_FILE=/run/secrets/sops-age-key
+      - SOPS_AGE_KEY=${SOPS_AGE_KEY}
     depends_on:
       postgresql:
         condition: service_healthy
