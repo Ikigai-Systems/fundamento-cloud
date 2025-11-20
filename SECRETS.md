@@ -103,9 +103,14 @@ SOPS will:
 
 4. Access in your application:
    ```ruby
+   # Direct SOPS access
    Rails.application.sops.dig("new_service", "api_key")
-   # or using credentials helper
+
+   # Via credentials (backward compatible with Rails.application.credentials)
    Rails.application.sops.credentials[:new_service][:api_key]
+
+   # For gems expecting Rails.application.credentials (automatically redirected to SOPS)
+   Rails.application.credentials[:new_service][:api_key]
    ```
 
 ### Secret Structure
@@ -137,6 +142,19 @@ credentials:
     site_key: xxx
     secret_key: xxx
 ```
+
+## Backward Compatibility with Rails.application.credentials
+
+For gems and code that expect `Rails.application.credentials`, we've overridden the `credentials` method in `config/application.rb` to return SOPS credentials transparently.
+
+This means:
+- **Old code**: `Rails.application.credentials[:mailtrap][:username]` → Works automatically with SOPS
+- **New code**: `Rails.application.sops.credentials[:mailtrap][:username]` → More explicit
+- **Direct access**: `Rails.application.sops.dig("mailtrap", "username")` → Direct SOPS access
+
+All three approaches access the same data from the `credentials:` section in your SOPS YAML files.
+
+**Why this matters**: Many gems (like Flipper, Devise, etc.) expect secrets to be at `Rails.application.credentials`. This override ensures they work without modification.
 
 ## CI/CD Configuration
 

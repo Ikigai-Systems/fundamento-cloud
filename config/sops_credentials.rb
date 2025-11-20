@@ -5,6 +5,55 @@
 # and makes them available throughout the Rails application.
 
 module SopsCredentials
+  # Wrapper class that mimics Rails ActiveSupport::EncryptedConfiguration
+  # This ensures compatibility with gems that expect Rails.application.credentials behavior
+  class CredentialsWrapper
+    def initialize(hash)
+      @data = hash.is_a?(Hash) ? hash.with_indifferent_access : {}
+    end
+
+    # Delegate hash-like methods to the underlying data
+    def [](key)
+      @data[key]
+    end
+
+    def dig(*keys)
+      @data.dig(*keys)
+    end
+
+    def fetch(key, *args)
+      @data.fetch(key, *args)
+    end
+
+    def key?(key)
+      @data.key?(key)
+    end
+
+    # Methods that gems like Devise expect
+    def secret_key_base
+      @data[:secret_key_base] || ENV["SECRET_KEY_BASE"]
+    end
+
+    def present?
+      @data.present?
+    end
+
+    # Delegate any other method to the underlying hash
+    def method_missing(method, *args, &block)
+      if @data.respond_to?(method)
+        @data.send(method, *args, &block)
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method, include_private = false)
+      @data.respond_to?(method) || super
+    end
+  end
+end
+
+module SopsCredentials
   class << self
     attr_accessor :secrets
 
@@ -66,7 +115,7 @@ module SopsCredentials
     # Get credentials nested under the credentials key
     # This maintains compatibility with Rails.application.credentials
     def credentials
-      @credentials ||= (dig("credentials") || {})
+      @credentials ||= CredentialsWrapper.new(dig("credentials") || {})
     end
 
     private

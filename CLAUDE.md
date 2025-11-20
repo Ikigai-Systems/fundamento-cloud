@@ -155,16 +155,21 @@ This project uses SOPS (Secrets OPerationS) with age encryption instead of git-c
 Access secrets via the SOPS initializer:
 
 ```ruby
-# Access via config
+# Direct SOPS access
 Rails.application.sops.dig("fontawesome", "auth_token")
 
-# Access credentials (compatible with old Rails.application.credentials)
+# Access via credentials namespace
 Rails.application.sops.credentials[:mailtrap][:username]
+
+# Backward compatible - Rails.application.credentials is overridden to use SOPS
+Rails.application.credentials[:mailtrap][:username]  # Works automatically!
 
 # Helper methods
 Rails.application.sops.fontawesome_token
 Rails.application.sops.minio_access_key
 ```
+
+**Note**: `Rails.application.credentials` is overridden to return SOPS credentials, ensuring gems that expect Rails credentials work without modification.
 
 **See [SECRETS.md](SECRETS.md) for complete documentation.**
 

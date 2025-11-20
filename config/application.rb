@@ -23,6 +23,12 @@ module Fundamento
       SopsCredentials
     end
 
+    # Override credentials to return SOPS credentials for backward compatibility with gems
+    # This allows gems that call Rails.application.credentials to transparently use SOPS
+    def credentials
+      SopsCredentials.credentials
+    end
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
