@@ -26,5 +26,5 @@
     "mocha": "^10.8.2",
     "nodemon": "^3.1.7"
   },
-  "packageManager": "npm@10.8.3"
+  "packageManager": "npm@11.6.2"
 }
