@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.3.2"
+ruby "3.4.7"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.3", ">= 7.1.3.4"
@@ -47,6 +47,9 @@ gem "rack-cors", "~> 2.0"
 gem "pg"
 
 gem "rails-static-router"
+
+# Ruby 3.4+ extracted standard libraries (must be explicitly included)
+gem "csv"
 
 #gem "y-rb", git: "https://github.com/stefan-iki/yrb", branch: "add-support-for-xmltext-diff"
 gem "y-rb"
