@@ -17,11 +17,14 @@
       "Bash(bin/rails db:migrate)",
       "Bash(age:*)",
       "Bash(sops:*)",
-      "mcp__github__get_me",
-      "mcp__github__search_repositories",
-      "mcp__github__list_commits",
+      "mcp__github__*",
       "Bash(gh run list:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(task-master *)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(npm run *)",
+      "mcp__task_master_ai__*"
     ],
     "deny": []
   },
