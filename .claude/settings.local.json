@@ -20,16 +20,17 @@
       "mcp__github__*",
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
-      "Bash(task-master *)",
+      "Bash(task-master:*)",
       "Bash(git commit:*)",
       "Bash(git add:*)",
-      "Bash(npm run *)",
+      "Bash(npm run:*)",
       "mcp__task_master_ai__*"
     ],
     "deny": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "task-master-ai"
+    "task-master-ai",
+    "github"
   ]
 }
