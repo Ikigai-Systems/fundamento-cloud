@@ -16,7 +16,7 @@ SopsCredentials.load!(File.expand_path("..", __dir__))
 module Fundamento
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 8.1
 
     # Make SOPS credentials available via Rails.application.sops (parallel to Rails.application.credentials)
     def sops
@@ -32,7 +32,7 @@ module Fundamento
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w(assets tasks))
+    config.autoload_lib(ignore: %w[assets tasks])
 
     # From https://guides.rubyonrails.org/active_job_basics.html#serializers
     config.autoload_once_paths << "#{Rails.root}/app/serializers"
