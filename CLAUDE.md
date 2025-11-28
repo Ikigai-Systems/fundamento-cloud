@@ -58,7 +58,7 @@ rails db:reset
 
 ### Core Application Structure
 Fundamento is a collaborative workspace platform (similar to Notion/Airtable) built with:
-- **Ruby on Rails 7.1** backend with PostgreSQL
+- **Ruby on Rails 8.1** backend with PostgreSQL
 - **React 18 + TypeScript** frontend via Vite
 - **Real-time collaboration** using Y.js CRDTs and ActionCable WebSockets
 - **Multi-tenant architecture** with Organizations as the root entity
@@ -131,7 +131,21 @@ SECRET_KEY_BASE=abcdef docker-compose up
 
 # Run only infrastructure services
 docker compose up redis postgresql
+
+# Build Docker images for testing/deployment
+docker build -t fundamento-rails:8.1.1 --target test --build-arg RAILS_ENV=test \
+  --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
+  --secret id=sops-age-key,src=dockerfiles/sops-age-key.secret .
+
+# Build production image
+docker build -t fundamento-rails:8.1.1 --target production \
+  --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
+  --secret id=sops-age-key,src=dockerfiles/sops-age-key.secret .
 ```
+
+**Important**: Docker builds require secret files in `dockerfiles/`:
+- `dockerfiles/fontawesome-auth.secret` - FontAwesome Pro auth token
+- `dockerfiles/sops-age-key.secret` - SOPS/age encryption key
 
 ## Code formatting
 
