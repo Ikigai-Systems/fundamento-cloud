@@ -71,9 +71,9 @@
     "mocha": "^10.7.3",
     "plausible-tracker": "^0.3.9",
     "typescript": "^5.2.2",
-    "vite": "^6.2.5",
+    "vite": "^5.4.21",
     "vite-plugin-full-reload": "^1.2.0",
-    "vite-plugin-ruby": "^5.0.0"
+    "vite-plugin-ruby": "^5.1.1"
   },
   "packageManager": "npm@11.6.2"
 }
