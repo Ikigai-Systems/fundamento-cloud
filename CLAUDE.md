@@ -58,7 +58,7 @@ rails db:reset
 
 ### Core Application Structure
 Fundamento is a collaborative workspace platform (similar to Notion/Airtable) built with:
-- **Ruby on Rails 7.1** backend with PostgreSQL
+- **Ruby on Rails 8.1** backend with PostgreSQL
 - **React 18 + TypeScript** frontend via Vite
 - **Real-time collaboration** using Y.js CRDTs and ActionCable WebSockets
 - **Multi-tenant architecture** with Organizations as the root entity
