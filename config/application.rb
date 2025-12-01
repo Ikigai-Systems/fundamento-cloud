@@ -16,7 +16,7 @@ SopsCredentials.load!(File.expand_path("..", __dir__))
 module Fundamento
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.1
+    config.load_defaults 8.1
 
     # Make SOPS credentials available via Rails.application.sops (parallel to Rails.application.credentials)
     def sops
@@ -51,7 +51,7 @@ module Fundamento
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Logstash.new
 
-    if !Rails.env.production?
+    unless Rails.env.production?
       config.lograge.keep_original_rails_log = true
       config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/#{Rails.env}-lograge.log"
     end

@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.7"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.3", ">= 7.1.3.4"
+gem "rails", "~> 8.1.1"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -55,7 +55,7 @@ gem "csv"
 gem "y-rb"
 gem "y-rb_actioncable"
 
-gem "devise", "~> 4.9"
+gem "devise", github: "heartcombo/devise", branch: "main"
 gem "devise_invitable"
 
 gem "tailwindcss-rails", "~> 3.0"

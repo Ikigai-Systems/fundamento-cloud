@@ -10,29 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_01_141134) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -43,43 +43,43 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "api_tokens", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "encrypted_token", null: false
     t.bigint "organization_id"
     t.bigint "organization_user_id"
     t.string "title", default: "", null: false
-    t.string "encrypted_token", null: false
-    t.datetime "used_at"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "used_at"
     t.index ["encrypted_token"], name: "index_api_tokens_on_encrypted_token", unique: true
     t.index ["organization_id"], name: "index_api_tokens_on_organization_id"
     t.index ["organization_user_id"], name: "index_api_tokens_on_organization_user_id"
   end
 
   create_table "attachments", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.binary "data"
     t.string "filename"
     t.string "mime_type"
-    t.binary "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "organization_id"
-    t.string "parent_type", null: false
     t.bigint "parent_id", null: false
+    t.string "parent_type", null: false
+    t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_attachments_on_parent"
   end
 
   create_table "automation_invocations", force: :cascade do |t|
-    t.bigint "organization_id"
-    t.bigint "space_id"
     t.bigint "automation_id"
-    t.integer "kind", limit: 2, null: false
-    t.string "formula"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "webhook"
+    t.string "formula"
     t.datetime "invoked_at"
+    t.integer "kind", limit: 2, null: false
+    t.bigint "organization_id"
     t.string "result"
     t.bigint "run_as_id", null: false
+    t.bigint "space_id"
+    t.datetime "updated_at", null: false
+    t.string "webhook"
     t.index ["automation_id"], name: "index_automation_invocations_on_automation_id"
     t.index ["organization_id"], name: "index_automation_invocations_on_organization_id"
     t.index ["run_as_id"], name: "index_automation_invocations_on_run_as_id"
@@ -87,18 +87,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "automations", force: :cascade do |t|
-    t.bigint "organization_id"
-    t.bigint "space_id"
-    t.string "title", null: false
-    t.integer "kind", limit: 2, null: false
-    t.string "formula"
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "debug_at"
     t.datetime "disabled_at"
+    t.string "formula"
     t.integer "invocations_limit", limit: 2
+    t.integer "kind", limit: 2, null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id"
     t.bigint "run_as_id"
+    t.bigint "space_id"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_automations_on_organization_id"
     t.index ["run_as_id"], name: "index_automations_on_run_as_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
@@ -106,15 +106,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "document_imports", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "space_id", null: false
-    t.bigint "organization_user_id", null: false
-    t.bigint "document_id"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "document_id"
     t.datetime "imported_at"
     t.text "imported_content"
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "organization_user_id", null: false
+    t.bigint "space_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
     t.index ["imported_at"], name: "index_document_imports_on_imported_at"
     t.index ["npi"], name: "index_document_imports_on_npi", unique: true
@@ -124,28 +124,28 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "documents", force: :cascade do |t|
+    t.boolean "archived", default: false
+    t.text "content_html", default: ""
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.json "operations", default: ""
+    t.bigint "organization_id"
+    t.json "revisions", default: ""
+    t.bigint "space_id"
     t.binary "sync"
     t.string "title"
-    t.bigint "organization_id"
-    t.bigint "space_id"
-    t.boolean "archived", default: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
-    t.text "content_html", default: ""
-    t.json "revisions", default: ""
-    t.json "operations", default: ""
+    t.datetime "updated_at", null: false
     t.index ["npi"], name: "index_documents_on_npi", unique: true
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"
   end
 
   create_table "favorites", force: :cascade do |t|
-    t.bigint "organization_user_id", null: false
-    t.string "object_type", null: false
-    t.bigint "object_id", null: false
-    t.string "npi", null: false
     t.datetime "created_at", null: false
+    t.string "npi", null: false
+    t.bigint "object_id", null: false
+    t.string "object_type", null: false
+    t.bigint "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_id", "object_type", "organization_user_id"], name: "idx_on_object_id_object_type_organization_user_id_de4b921bd4", unique: true
     t.index ["object_type", "object_id"], name: "index_favorites_on_object"
@@ -153,94 +153,94 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "flipper_features", force: :cascade do |t|
-    t.string "key", null: false
     t.datetime "created_at", null: false
+    t.string "key", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_flipper_features_on_key", unique: true
   end
 
   create_table "flipper_gates", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "feature_key", null: false
     t.string "key", null: false
-    t.text "value"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "value"
     t.index ["feature_key", "key", "value"], name: "index_flipper_gates_on_feature_key_and_key_and_value", unique: true
   end
 
   create_table "good_job_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "description"
-    t.jsonb "serialized_properties"
-    t.text "on_finish"
-    t.text "on_success"
-    t.text "on_discard"
-    t.text "callback_queue_name"
     t.integer "callback_priority"
-    t.datetime "enqueued_at"
+    t.text "callback_queue_name"
+    t.datetime "created_at", null: false
+    t.text "description"
     t.datetime "discarded_at"
+    t.datetime "enqueued_at"
     t.datetime "finished_at"
     t.datetime "jobs_finished_at"
+    t.text "on_discard"
+    t.text "on_finish"
+    t.text "on_success"
+    t.jsonb "serialized_properties"
+    t.datetime "updated_at", null: false
   end
 
   create_table "good_job_executions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.uuid "active_job_id", null: false
-    t.text "job_class"
-    t.text "queue_name"
-    t.jsonb "serialized_params"
-    t.datetime "scheduled_at"
-    t.datetime "finished_at"
-    t.text "error"
-    t.integer "error_event", limit: 2
-    t.text "error_backtrace", array: true
-    t.uuid "process_id"
+    t.datetime "created_at", null: false
     t.interval "duration"
+    t.text "error"
+    t.text "error_backtrace", array: true
+    t.integer "error_event", limit: 2
+    t.datetime "finished_at"
+    t.text "job_class"
+    t.uuid "process_id"
+    t.text "queue_name"
+    t.datetime "scheduled_at"
+    t.jsonb "serialized_params"
+    t.datetime "updated_at", null: false
     t.index ["active_job_id", "created_at"], name: "index_good_job_executions_on_active_job_id_and_created_at"
     t.index ["process_id", "created_at"], name: "index_good_job_executions_on_process_id_and_created_at"
   end
 
   create_table "good_job_processes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.jsonb "state"
     t.integer "lock_type", limit: 2
+    t.jsonb "state"
+    t.datetime "updated_at", null: false
   end
 
   create_table "good_job_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.text "key"
+    t.datetime "updated_at", null: false
     t.jsonb "value"
     t.index ["key"], name: "index_good_job_settings_on_key", unique: true
   end
 
   create_table "good_jobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.text "queue_name"
-    t.integer "priority"
-    t.jsonb "serialized_params"
-    t.datetime "scheduled_at"
-    t.datetime "performed_at"
-    t.datetime "finished_at"
-    t.text "error"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.uuid "active_job_id"
-    t.text "concurrency_key"
-    t.text "cron_key"
-    t.uuid "retried_good_job_id"
-    t.datetime "cron_at"
-    t.uuid "batch_id"
     t.uuid "batch_callback_id"
-    t.boolean "is_discrete"
-    t.integer "executions_count"
-    t.text "job_class"
+    t.uuid "batch_id"
+    t.text "concurrency_key"
+    t.datetime "created_at", null: false
+    t.datetime "cron_at"
+    t.text "cron_key"
+    t.text "error"
     t.integer "error_event", limit: 2
+    t.integer "executions_count"
+    t.datetime "finished_at"
+    t.boolean "is_discrete"
+    t.text "job_class"
     t.text "labels", array: true
-    t.uuid "locked_by_id"
     t.datetime "locked_at"
+    t.uuid "locked_by_id"
+    t.datetime "performed_at"
+    t.integer "priority"
+    t.text "queue_name"
+    t.uuid "retried_good_job_id"
+    t.datetime "scheduled_at"
+    t.jsonb "serialized_params"
+    t.datetime "updated_at", null: false
     t.index ["active_job_id", "created_at"], name: "index_good_jobs_on_active_job_id_and_created_at"
     t.index ["batch_callback_id"], name: "index_good_jobs_on_batch_callback_id", where: "(batch_callback_id IS NOT NULL)"
     t.index ["batch_id"], name: "index_good_jobs_on_batch_id", where: "(batch_id IS NOT NULL)"
@@ -258,41 +258,41 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "inline_comment_threads", id: :string, force: :cascade do |t|
-    t.bigint "document_id", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "document_id", null: false
     t.datetime "resolved_at"
     t.bigint "resolved_by"
+    t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_inline_comment_threads_on_document_id"
   end
 
   create_table "inline_comments", id: :string, force: :cascade do |t|
-    t.string "inline_comment_thread_id"
-    t.bigint "user_id", null: false
+    t.json "comment_attributes", default: ""
     t.string "content"
     t.datetime "created_at", null: false
+    t.string "inline_comment_thread_id"
     t.datetime "updated_at", null: false
-    t.json "comment_attributes", default: ""
+    t.bigint "user_id", null: false
     t.index ["inline_comment_thread_id"], name: "index_inline_comments_on_inline_comment_thread_id"
     t.index ["user_id"], name: "index_inline_comments_on_user_id"
   end
 
   create_table "invited_users", force: :cascade do |t|
-    t.bigint "organization_id"
+    t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "invitation_token"
-    t.datetime "invitation_created_at"
-    t.datetime "invitation_sent_at"
-    t.datetime "invitation_accepted_at"
-    t.integer "invitation_limit"
-    t.string "invited_by_type"
-    t.bigint "invited_by_id"
-    t.integer "invitations_count", default: 0
     t.text "first_name", default: "", null: false
+    t.datetime "invitation_accepted_at"
+    t.datetime "invitation_created_at"
+    t.integer "invitation_limit"
+    t.datetime "invitation_sent_at"
+    t.string "invitation_token"
+    t.integer "invitations_count", default: 0
+    t.bigint "invited_by_id"
+    t.string "invited_by_type"
     t.text "last_name", default: "", null: false
+    t.bigint "organization_id"
+    t.datetime "updated_at", null: false
     t.index ["email", "organization_id"], name: "index_invited_users_on_email_and_organization_id", unique: true
     t.index ["invitation_token"], name: "index_invited_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
@@ -301,12 +301,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "object_comments", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "organization_user_id", null: false
-    t.string "object_type", null: false
-    t.bigint "object_id", null: false
     t.json "content", null: false
     t.datetime "created_at", null: false
+    t.bigint "object_id", null: false
+    t.string "object_type", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
     t.index ["organization_id"], name: "index_object_comments_on_organization_id"
@@ -314,12 +314,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "object_reactions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "emoji", null: false
+    t.bigint "object_id", null: false
+    t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.bigint "organization_user_id", null: false
-    t.string "object_type", null: false
-    t.bigint "object_id", null: false
-    t.string "emoji", null: false
-    t.datetime "created_at", null: false
     t.index ["emoji", "object_id", "object_type", "organization_user_id"], name: "idx_on_emoji_object_id_object_type_organization_use_9a84494fac", unique: true
     t.index ["object_type", "object_id"], name: "index_object_reactions_on_object"
     t.index ["organization_id"], name: "index_object_reactions_on_organization_id"
@@ -327,11 +327,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "object_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "object_id", null: false
+    t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.bigint "tag_id", null: false
-    t.string "object_type", null: false
-    t.bigint "object_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_tags_on_object"
     t.index ["organization_id"], name: "index_object_tags_on_organization_id"
@@ -340,77 +340,77 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "object_visitors", force: :cascade do |t|
-    t.string "object_type", null: false
     t.bigint "object_id", null: false
-    t.datetime "visited_at", null: false
+    t.string "object_type", null: false
     t.bigint "user_id", null: false
+    t.datetime "visited_at", null: false
     t.index ["object_id", "object_type", "user_id"], name: "idx_on_object_id_object_type_user_id", unique: true
     t.index ["object_type", "object_id"], name: "index_object_visitors_on_object"
     t.index ["user_id"], name: "index_object_visitors_on_user_id"
   end
 
   create_table "organization_user_properties", force: :cascade do |t|
-    t.bigint "organization_user_id", null: false
-    t.string "key", null: false
-    t.jsonb "value", null: false
     t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.bigint "organization_user_id", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "value", null: false
     t.index ["key", "organization_user_id"], name: "idx_on_key_organization_user_id_f0a3f857a8", unique: true
     t.index ["organization_user_id"], name: "index_organization_user_properties_on_organization_user_id"
   end
 
   create_table "organization_users", force: :cascade do |t|
-    t.bigint "organization_id"
-    t.bigint "user_id"
-    t.integer "role", limit: 2, default: 0, null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "created_at", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id"
+    t.integer "role", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
     t.index ["npi"], name: "index_organization_users_on_npi", unique: true
     t.index ["organization_id"], name: "index_organization_users_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_organization_users_on_user_id_and_organization_id", unique: true
   end
 
   create_table "organizations", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "updated_at", null: false
     t.index ["npi"], name: "index_organizations_on_npi", unique: true
   end
 
   create_table "pack_versions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description", default: "", null: false
     t.bigint "organization_id", null: false
     t.bigint "pack_id", null: false
-    t.string "description", default: "", null: false
-    t.integer "version", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "version", null: false
     t.index ["organization_id"], name: "index_pack_versions_on_organization_id"
     t.index ["pack_id"], name: "index_pack_versions_on_pack_id"
   end
 
   create_table "packs", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.string "name", null: false
-    t.string "description", default: "", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.bigint "active_version_id"
+    t.datetime "created_at", null: false
+    t.string "description", default: "", null: false
+    t.string "name", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["npi"], name: "index_packs_on_npi", unique: true
     t.index ["organization_id"], name: "index_packs_on_organization_id"
   end
 
   create_table "public_links", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.string "object_type", null: false
-    t.bigint "object_id", null: false
-    t.string "npi", null: false
-    t.bigint "updated_by_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.text "allowed_emails", default: [], array: true
+    t.datetime "created_at", null: false
+    t.string "npi", null: false
+    t.bigint "object_id", null: false
+    t.string "object_type", null: false
+    t.bigint "organization_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "updated_by_id", null: false
     t.index ["npi"], name: "index_public_links_on_npi", unique: true
     t.index ["object_id", "object_type", "organization_id"], name: "idx_on_object_id_object_type_organization_id_771a32f229", unique: true
     t.index ["object_type", "object_id"], name: "index_public_links_on_object"
@@ -419,11 +419,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "space_memberships", force: :cascade do |t|
-    t.bigint "space_id"
-    t.string "member_type"
     t.bigint "member_id"
-    t.integer "role", limit: 2, default: 0, null: false
+    t.string "member_type"
     t.bigint "organization_id", null: false
+    t.integer "role", limit: 2, default: 0, null: false
+    t.bigint "space_id"
     t.index ["member_id", "member_type", "space_id"], name: "idx_on_member_id_member_type_space_id_e2ffbf3808", unique: true
     t.index ["member_type", "member_id"], name: "index_space_managers_on_manager"
     t.index ["organization_id"], name: "index_space_memberships_on_organization_id"
@@ -431,41 +431,41 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "spaces", force: :cascade do |t|
-    t.json "hierarchy", default: [], null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "organization_id"
-    t.string "name"
-    t.bigint "home_document_id"
     t.integer "access_mode", limit: 2, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.json "hierarchy", default: [], null: false
+    t.bigint "home_document_id"
+    t.string "name"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id"
+    t.datetime "updated_at", null: false
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["npi"], name: "index_spaces_on_npi", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
   create_table "superintendents", force: :cascade do |t|
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
-    t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string "unconfirmed_email"
-    t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "approved_at"
     t.bigint "approved_by_id"
+    t.datetime "confirmation_sent_at"
+    t.string "confirmation_token"
+    t.datetime "confirmed_at"
+    t.datetime "created_at", null: false
+    t.datetime "current_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.integer "failed_attempts", default: 0, null: false
+    t.datetime "last_sign_in_at"
+    t.string "last_sign_in_ip"
+    t.datetime "locked_at"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.integer "sign_in_count", default: 0, null: false
+    t.string "unconfirmed_email"
+    t.string "unlock_token"
+    t.datetime "updated_at", null: false
     t.index ["approved_by_id"], name: "index_superintendents_on_approved_by_id"
     t.index ["confirmation_token"], name: "index_superintendents_on_confirmation_token", unique: true
     t.index ["email"], name: "index_superintendents_on_email", unique: true
@@ -474,13 +474,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "table_cells", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "table_id", null: false
     t.bigint "column_id", null: false
-    t.bigint "row_id", null: false
-    t.string "value"
     t.datetime "created_at", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "row_id", null: false
+    t.bigint "table_id", null: false
     t.datetime "updated_at", null: false
+    t.string "value"
     t.index ["column_id"], name: "index_table_cells_on_column_id"
     t.index ["organization_id"], name: "index_table_cells_on_organization_id"
     t.index ["row_id"], name: "index_table_cells_on_row_id"
@@ -488,17 +488,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "table_columns", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "table_id", null: false
-    t.string "name", null: false
-    t.integer "kind", limit: 2, null: false
-    t.bigint "previous_column_id"
+    t.json "configuration"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.text "formula"
+    t.integer "kind", limit: 2, null: false
+    t.string "name", null: false
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.json "options"
-    t.json "configuration"
+    t.bigint "organization_id", null: false
+    t.bigint "previous_column_id"
+    t.bigint "table_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
     t.index ["npi", "table_id"], name: "index_table_columns_on_npi_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_columns_on_organization_id"
@@ -507,10 +507,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "table_rows", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "table_id", null: false
-    t.bigint "previous_row_id"
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "previous_row_id"
+    t.bigint "table_id", null: false
     t.index ["npi", "table_id"], name: "index_table_rows_on_npi_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_rows_on_organization_id"
     t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
@@ -518,15 +518,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "tables", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "space_id", null: false
-    t.string "parent_type", null: false
-    t.bigint "parent_id", null: false
-    t.string "name", null: false
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name", null: false
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "parent_id", null: false
+    t.string "parent_type", null: false
+    t.bigint "space_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true
     t.index ["npi", "organization_id"], name: "index_tables_on_npi_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_tables_on_organization_id"
@@ -535,12 +535,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "tags", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.bigint "space_id", null: false
-    t.string "name", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.string "color"
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "space_id"], name: "index_tags_on_name_and_space_id", unique: true
     t.index ["npi"], name: "index_tags_on_npi", unique: true
@@ -549,12 +549,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "team_memberships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "member_id", null: false
+    t.string "member_type", null: false
     t.bigint "organization_id", null: false
     t.bigint "team_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "member_type", null: false
-    t.bigint "member_id", null: false
     t.index ["member_id", "member_type", "team_id"], name: "idx_on_member_id_member_type_team_id_fa57caa5d8", unique: true
     t.index ["member_type", "member_id"], name: "index_team_memberships_on_member"
     t.index ["organization_id"], name: "index_team_memberships_on_organization_id"
@@ -562,12 +562,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "teams", force: :cascade do |t|
-    t.bigint "organization_id", null: false
-    t.string "name", null: false
-    t.string "shortcut", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string "name", null: false
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "organization_id", null: false
+    t.string "shortcut", null: false
+    t.datetime "updated_at", null: false
     t.index ["name", "organization_id"], name: "index_teams_on_name_and_organization_id", unique: true
     t.index ["npi"], name: "index_teams_on_npi", unique: true
     t.index ["organization_id"], name: "index_teams_on_organization_id"
@@ -575,29 +575,29 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "current_sign_in_at"
+    t.string "current_sign_in_ip"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
+    t.text "first_name"
+    t.datetime "invitation_accepted_at"
+    t.datetime "invitation_created_at"
+    t.integer "invitation_limit"
+    t.datetime "invitation_sent_at"
+    t.string "invitation_token"
+    t.integer "invitations_count", default: 0
+    t.bigint "invited_by_id"
+    t.string "invited_by_type"
+    t.text "last_name"
     t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.integer "organization_role", limit: 2, default: 0, null: false
-    t.datetime "created_at", null: false
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.integer "sign_in_count", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.text "first_name"
-    t.text "last_name"
-    t.string "invitation_token"
-    t.datetime "invitation_created_at"
-    t.datetime "invitation_sent_at"
-    t.datetime "invitation_accepted_at"
-    t.integer "invitation_limit"
-    t.string "invited_by_type"
-    t.bigint "invited_by_id"
-    t.integer "invitations_count", default: 0
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
@@ -607,14 +607,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_12_114924) do
 
   create_table "versions", force: :cascade do |t|
     t.json "content_blocks"
-    t.bigint "document_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "sequential_id", null: false
-    t.bigint "created_by_id"
     t.text "content_html", default: ""
-    t.json "revisions", default: ""
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id"
+    t.bigint "document_id", null: false
     t.json "operations", default: ""
+    t.json "revisions", default: ""
+    t.integer "sequential_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_versions_on_created_by_id"
     t.index ["document_id"], name: "index_versions_on_document_id"
     t.index ["sequential_id", "document_id"], name: "index_versions_on_sequential_id_and_document_id", unique: true
