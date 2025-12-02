@@ -77,16 +77,12 @@ The application uses **Nanoid Public Identifiers (NPIs)** instead of sequential 
 - Spaces: `/s/def456`
 
 ### Micro-Services Architecture
-Three Node.js services handle specialized processing:
+Node.js services handle specialized processing:
 
-1. **Formula Evaluation** (`micro-services/formula-eval/`, port 3001)
-   - ANTLR4-based formula parser
-   - Supports complex calculations with date, string, logical, and table operations
-
-2. **BlockNote Converter** (`micro-services/blocknote-converter/`)
+1. **BlockNote Converter** (`micro-services/blocknote-converter/`)
    - Document format conversions
 
-3. **BlockNote Service** (`micro-services/blocknote/`)
+2. **BlockNote Service** (`micro-services/blocknote/`)
    - Document block manipulation
 
 ### Real-Time Collaboration

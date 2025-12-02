@@ -40,14 +40,6 @@ jobs:
         with:
           cache: "npm"
 
-      # Test the formula-eval package
-      - run: npm ci
-        working-directory: micro-services/formula-eval
-      - run: npm run test --if-present
-        working-directory: micro-services/formula-eval
-      - run: npm run build --if-present
-        working-directory: micro-services/formula-eval
-
       # Test the blocknote-converter package
       - run: npm ci
         working-directory: micro-services/blocknote-converter
