@@ -1,6 +1,6 @@
 BLOCKNOTE_FILES := $(wildcard *.blocknote.json) $(wildcard */*.blocknote.json)
 YJS_FILES := $(BLOCKNOTE_FILES:.blocknote.json=.yjs)
-BLOCKNOTE_CONVERTER := node ../../../micro-services/blocknote-converter/build/blocknoteConverter.js
+BLOCKNOTE_CONVERTER := node ../../../micro-services/blocknote-converter/build/blocknoteConverter.cjs
 
 all: $(BLOCKNOTE_FILES) $(YJS_FILES)
 
