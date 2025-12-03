@@ -1,5 +1,7 @@
 # Running Tests
 
+## Command Line
+
 ```bash
 # Run all tests
 npm test
@@ -13,6 +15,10 @@ npm run test:coverage
 # Run specific test file
 npm test tests/convertToYjs.test.ts
 ```
+
+## RubyMine IDE
+
+This project uses **Vitest 3.x** for better RubyMine compatibility. You can update to **Vitest 4.x** once RubyMine 2025.3 is released according to this [bug report](https://youtrack.jetbrains.com/issue/WEB-75191/No-tests-found-when-running-Vitest-4-tests).
 
 ## Test Fixtures
 
@@ -29,4 +35,4 @@ We migrated from Jest to Vitest to solve ESM compatibility issues with BlockNote
 - **Faster test execution** - Built on Vite for speed
 - **Better TypeScript support** - Works seamlessly with TypeScript
 - **Jest-compatible API** - Same test syntax as Jest
-- **No complex configuration** - Works out of the box with ESM modules
+- **IDE integration** - Version 3.x works well with RubyMine's built-in test runner
