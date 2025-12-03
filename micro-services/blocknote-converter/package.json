@@ -1,6 +1,7 @@
 {
   "name": "blocknote-converter",
   "version": "1.0.0",
+  "type": "module",
   "main": "src/blocknoteServer.mjs",
   "scripts": {
     "converter:build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknoteConverter.js --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
@@ -8,11 +9,15 @@
     "server:build:watch": "node build.mjs --watch",
     "server:run": "node build/blocknoteServer.js",
     "server:run:watch": "nodemon build/blocknoteServer.js",
-    "dev": "concurrently -k -n esbuild,server -c yellow.bold,cyan.bold \"npm run server:build:watch\" \"npm run server:run:watch\""
+    "dev": "concurrently -k -n esbuild,server -c yellow.bold,cyan.bold \"npm run server:build:watch\" \"npm run server:run:watch\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@esbuild-plugins/tsconfig-paths": "^0.1.2bn",
     "@fastify/formbody": "^8.0.1",
+    "@vitest/ui": "^4.0.15",
     "commander": "^13.0.0",
     "concurrently": "^9.1.0",
     "esbuild": "^0.23.1",
@@ -20,7 +25,8 @@
     "nodemon": "^3.1.7",
     "react-select": "^5.8.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "vitest": "^4.0.15"
   },
   "dependencies": {
     "@blocknote/server-util": "^0.27.0",
