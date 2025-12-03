@@ -17,7 +17,7 @@ RSpec.describe GetDocumentTool, type: :model do
     context "happy case - user has access to document" do
       let(:document) { documents(:one) }
 
-      it "returns document content in JSON format" do
+      it "returns document content as Markdown" do
         response = GetDocumentTool.call(
           npi: document.npi,
           server_context: server_context
@@ -31,7 +31,7 @@ RSpec.describe GetDocumentTool, type: :model do
         expect(json_response["npi"]).to eq(document.npi)
         expect(json_response["title"]).to eq(document.title)
         expect(json_response["content"]).to eq(
-          JSON.parse(File.read("app/templates/space.blocknote.json")))
+          File.read("app/templates/space.markdown"))
       end
     end
 

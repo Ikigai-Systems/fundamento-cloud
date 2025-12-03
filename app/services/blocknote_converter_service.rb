@@ -15,4 +15,21 @@ module BlocknoteConverterService
     end
 
   end
+
+  def self.to_markdown(blocknote)
+    # Call the Node.js script and pass the JSON data as an argument
+    stdout, stderr, status = Open3.capture3(
+      'node ./micro-services/blocknote-converter/build/blocknoteConverter.cjs convert-blocks-to-markdown',
+      binmode: true,
+      stdin_data: blocknote.to_json
+    )
+
+    if status.success?
+      stdout
+    else
+      puts stderr  # Handle any errors from Node.js
+      raise StandardError.new "Unable to convert document to markdown"
+    end
+
+  end
 end

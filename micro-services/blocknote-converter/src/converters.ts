@@ -28,3 +28,9 @@ export async function convertMarkdownToBlocks(markdown: string) {
 
   return await serverBlockNoteEditor.tryParseMarkdownToBlocks(markdown);
 }
+
+export async function convertBlocksToMarkdown(blocks: any) {
+  const serverBlockNoteEditor = ServerBlockNoteEditor.create();
+
+  return await serverBlockNoteEditor.blocksToMarkdownLossy(blocks);
+}

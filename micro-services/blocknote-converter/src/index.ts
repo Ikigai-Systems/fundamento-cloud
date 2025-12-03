@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
+import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
 
 const program = new Command();
@@ -108,6 +108,33 @@ program
       const convertedData = await convertMarkdownToBlocks(Buffer.concat(chunks).toString("utf8"));
 
       outputStream.write(JSON.stringify(convertedData));
+
+      if (!options.output) {
+        outputStream.end();
+      }
+    });
+  });
+
+program
+  .command("convert-blocks-to-markdown")
+  .description("Convert Blocknote to Markdown")
+  .option("-i, --input <file>", "Input file (default: stdin)")
+  .option("-o, --output <file>", "Output file (default: stdout)")
+  .action((options) => {
+    const inputStream = createInputStream(options.input);
+
+    const outputStream = createOutputStream(options.output);
+
+    const chunks = [];
+
+    inputStream.on('data', (chunk) => {
+      chunks.push(chunk);
+    });
+
+    inputStream.on('end', async () => {
+      const convertedData = await convertBlocksToMarkdown(JSON.parse(Buffer.concat(chunks).toString("utf8")));
+
+      outputStream.write(convertedData);
 
       if (!options.output) {
         outputStream.end();
