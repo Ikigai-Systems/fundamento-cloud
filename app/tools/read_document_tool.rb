@@ -1,5 +1,5 @@
-class GetDocumentTool < ApplicationTool
-  description "This tool retrieves a document content."
+class ReadDocumentTool < ApplicationTool
+  description "Use this tool to read a document as Markdown."
 
   input_schema(
     properties: {
@@ -9,7 +9,7 @@ class GetDocumentTool < ApplicationTool
   )
 
   annotations(
-    title: "Get Document",
+    title: "Read Document",
     read_only_hint: true,
   )
 

@@ -5,7 +5,7 @@ class Api::McpController < Api::ApiController
       version: "1.0.0",
       tools: [
         ListSpacesTool,
-        GetDocumentTool,
+        ReadDocumentTool,
         ListObjectsByTagsTool,
         AddTagsTool,
         RemoveTagsTool,

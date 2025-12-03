@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe GetDocumentTool, type: :model do
+RSpec.describe ReadDocumentTool, type: :model do
   fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :documents
 
   let(:user) { users(:pawel) }
@@ -18,7 +18,7 @@ RSpec.describe GetDocumentTool, type: :model do
       let(:document) { documents(:one) }
 
       it "returns document content as Markdown" do
-        response = GetDocumentTool.call(
+        response = ReadDocumentTool.call(
           npi: document.npi,
           server_context: server_context
         )
@@ -38,7 +38,7 @@ RSpec.describe GetDocumentTool, type: :model do
     context "document not found" do
       it "raises RecordNotFound error" do
         expect {
-          GetDocumentTool.call(
+          ReadDocumentTool.call(
             npi: "nonexistent",
             server_context: server_context
           )
@@ -56,7 +56,7 @@ RSpec.describe GetDocumentTool, type: :model do
 
       it "raises RecordNotFound error when document belongs to different organization" do
         expect {
-          GetDocumentTool.call(
+          ReadDocumentTool.call(
             npi: documents(:one).npi,
             server_context: unauthorized_context
           )
