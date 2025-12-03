@@ -62,8 +62,7 @@ class Document < ApplicationRecord
   end
 
   def to_blocks
-    # BlockNoteConverterRuby.to_blocks(sync)
-    BlockNoteConverterNode.to_blocks(sync)
+    BlocknoteConverterService.to_blocks(sync)
   end
 
   def nullify_space_home_document_id

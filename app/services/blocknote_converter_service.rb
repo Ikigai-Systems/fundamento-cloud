@@ -1,4 +1,4 @@
-module BlockNoteConverterNode
+module BlocknoteConverterService
   def self.to_blocks(binary_sync)
     # Call the Node.js script and pass the JSON data as an argument
     stdout, stderr, status = Open3.capture3(
