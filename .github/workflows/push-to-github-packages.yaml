@@ -95,6 +95,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          secret-files: ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"\n"sops-age-key={1}"', env.FONTAWESOME_SECRET_FILE, env.SOPS_AGE_KEY_FILE) || '' }}
+          secret-files: |
+            ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"', env.FONTAWESOME_SECRET_FILE) || '' }}
+            ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
