@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknoteConverter.cjs --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
     "build:watch": "npm run build -- --watch",
-    "server": "nodemon build/blocknoteConverter.cjs server",
+    "server": "nodemon -w build build/blocknoteConverter.cjs server",
     "server:watch": "concurrently -k -n build,server -c yellow.bold,cyan.bold \"npm run build:watch\" \"npm run server\"",
     "test": "vitest run",
     "test:watch": "vitest",
