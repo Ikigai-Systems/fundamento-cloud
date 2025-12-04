@@ -23,8 +23,6 @@ class PolicyUserContextSerializer < ActiveJob::Serializers::ObjectSerializer
     end
   end
 
-  private
-
   def klass
     PolicyUserContext
   end
