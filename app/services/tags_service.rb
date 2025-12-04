@@ -131,7 +131,7 @@ class TagsService
     return false if normalized.blank?
     
     # Use the same validation as the Tag model
-    !!/\A[a-z0-9\p{L}\-_\/]+\z/.match(normalized)
+    !!/\A[\p{L}\p{N}\-_\/]+\z/.match(normalized)
   end
 
   private
