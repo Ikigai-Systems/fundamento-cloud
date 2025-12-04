@@ -109,6 +109,11 @@ services:
         condition: service_healthy
       minio-initialization:
         condition: service_completed_successfully
+  blocknote-converter:
+    build:
+      context: ./micro-services/blocknote-converter
+    ports:
+      - '3002:3002'
 
 volumes:
   postgres:
