@@ -152,7 +152,7 @@ program
     const port = options.port
       ? parseInt(options.port)
       : (process.env.PORT ? parseInt(process.env.PORT) : 3002);
-    const host = options.host || "127.0.0.1";
+    const host = options.host || process.env.HTTP_HOST || "127.0.0.1";
     startServer(port, host);
   });
 
