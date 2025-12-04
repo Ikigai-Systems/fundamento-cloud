@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
+import {startServer} from "./server";
 
 const program = new Command();
 
@@ -140,6 +141,19 @@ program
         outputStream.end();
       }
     });
+  });
+
+program
+  .command("server")
+  .description("Start HTTP server for conversions")
+  .option("-p, --port <number>", "Port number")
+  .option("-h, --host <address>", "Host address")
+  .action((options) => {
+    const port = options.port
+      ? parseInt(options.port)
+      : (process.env.PORT ? parseInt(process.env.PORT) : 3002);
+    const host = options.host || "127.0.0.1";
+    startServer(port, host);
   });
 
 program.parse(process.argv);
