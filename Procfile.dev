@@ -1,3 +1,4 @@
 website: bundle exec bin/rails server --port 3000 --pid tmp/pids/website.pid
 vite: bin/vite dev
 jobs: bundle exec good_job start
+blocknote-converter: unset PORT && unset HTTP_HOST && npm run server:watch --prefix micro-services/blocknote-converter
