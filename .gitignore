@@ -67,7 +67,7 @@ config/database.yml
 .bundle/
 
 
-# Task files
+# Task Master files
 tasks.json
-tasks/
+.taskmaster/tasks/
 
