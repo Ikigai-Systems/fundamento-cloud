@@ -265,6 +265,7 @@ GEM
     nokogiri (1.18.10-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    ostruct (0.6.3)
     parslet (2.0.0)
     pg (1.6.2)
     pg (1.6.2-aarch64-linux)
@@ -504,6 +505,7 @@ DEPENDENCIES
   mcp
   nanoid
   net-http2
+  ostruct
   parslet (~> 2.0)
   pg
   puma (>= 5.0)

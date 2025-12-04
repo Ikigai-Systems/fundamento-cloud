@@ -50,6 +50,7 @@ gem "rails-static-router"
 
 # Ruby 3.4+ extracted standard libraries (must be explicitly included)
 gem "csv"
+gem "ostruct"
 
 #gem "y-rb", git: "https://github.com/stefan-iki/yrb", branch: "add-support-for-xmltext-diff"
 gem "y-rb"
