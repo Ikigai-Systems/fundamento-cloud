@@ -2,7 +2,6 @@
   "name": "blocknote-converter",
   "version": "1.0.0",
   "type": "module",
-  "main": "src/blocknoteServer.mjs",
   "scripts": {
     "build": "npx esbuild --bundle --external:canvas --external:jsdom --loader:.css=empty --platform=node src/index.ts --outfile=build/blocknoteConverter.cjs --format=cjs --alias:rowstack=../../vendor/javascript/rowstack/main.js",
     "build:watch": "npm run build -- --watch",
@@ -15,6 +14,8 @@
   "devDependencies": {
     "@esbuild-plugins/tsconfig-paths": "^0.1.2",
     "@fastify/formbody": "^8.0.1",
+    "@fastify/request-context": "^6.2.1",
+    "@sentry/node": "^10.28.0",
     "@vitest/ui": "^3.2.4",
     "commander": "^13.0.0",
     "concurrently": "^9.1.0",
