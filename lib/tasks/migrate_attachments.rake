@@ -24,7 +24,7 @@ namespace :attachments do
     skipped_count = 0
     failed_ids = []
 
-    attachments_to_migrate.each_slice(50).with_index do |batch, batch_index|
+    attachments_to_migrate.each_slice(ENV.fetch("BATCH_SIZE", 1).to_i).with_index do |batch, batch_index|
       batch_number = batch_index + 1
       puts "Processing batch #{batch_number} (#{batch.size} attachments)..."
 
