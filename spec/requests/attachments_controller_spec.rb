@@ -55,6 +55,39 @@ RSpec.describe AttachmentsController, type: :request do
       end
     end
 
+    context "with Active Storage attachment" do
+      let(:attachment) do
+        att = Attachment.create!(
+          organization: organization,
+          parent: document,
+          filename: "test.txt",
+          mime_type: "text/plain"
+        )
+        att.file.attach(
+          io: StringIO.new("Hello from Active Storage"),
+          filename: "test.txt",
+          content_type: "text/plain"
+        )
+        att
+      end
+
+      it "redirects to Active Storage blob URL" do
+        get attachment_path(attachment)
+
+        expect(response).to have_http_status(:redirect)
+        expect(response.location).to include("rails/active_storage/blobs")
+      end
+
+      it "prioritizes Active Storage over database (dual-read)" do
+        # This attachment has Active Storage file (will be read from there)
+        get attachment_path(attachment)
+
+        expect(response).to have_http_status(:redirect)
+        expect(response.location).to include("rails/active_storage/blobs")
+        # Should not use send_data for database content
+      end
+    end
+
     context "without permission (attachment from another organization)" do
       let(:other_org) { Organization.create!(name: "Other Org") }
       let(:other_space) { Space.create!(organization: other_org, name: "Other Space") }
@@ -131,7 +164,7 @@ RSpec.describe AttachmentsController, type: :request do
       expect(json).to have_key("mime_type")
     end
 
-    it "stores file data in database" do
+    it "stores file in both database and Active Storage (dual-write)" do
       post attachments_path, params: {
         attachment: {
           parent_id: document.id,
@@ -142,7 +175,20 @@ RSpec.describe AttachmentsController, type: :request do
 
       attachment = Attachment.last
       expect(attachment.stored_in_database?).to be true
-      expect(attachment.stored_in_active_storage?).to be false
+      expect(attachment.stored_in_active_storage?).to be true
+    end
+
+    it "stores identical content in both storage locations" do
+      post attachments_path, params: {
+        attachment: {
+          parent_id: document.id,
+          parent_type: "Document"
+        },
+        file: file
+      }
+
+      attachment = Attachment.last
+      expect(attachment.file.download).to eq(attachment.data)
     end
 
     context "without permission (parent from another organization)" do

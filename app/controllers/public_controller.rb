@@ -32,9 +32,13 @@ class PublicController < ApplicationController
     if @attachment.parent.present? && @attachment.parent.respond_to?(:public_link) && @attachment.parent.public_link.present?
       # Check authorization based on allowed_emails for the public link
       authorize @attachment.parent.public_link, :show?
-      
-      # If authorized, serve the attachment
-      send_data @attachment.data, :type => @attachment.mime_type, :disposition => 'inline'
+
+      # Dual-read: Read from Active Storage if available, fallback to database
+      if @attachment.file.attached?
+        redirect_to rails_blob_path(@attachment.file, disposition: "inline"), allow_other_host: true
+      else
+        send_data @attachment.data, type: @attachment.mime_type, disposition: "inline"
+      end
     else
       # Otherwise, we don't allow access to the attachment
       head :unauthorized
