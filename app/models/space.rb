@@ -124,53 +124,53 @@ class Space < ApplicationRecord
   end
 
   def populate_with_onboarding_content!
-    def create_document(yjs_file)
-      directory = File.dirname(yjs_file)
-      title_filename = directory + "/" + File.basename(yjs_file, ".*") + ".title.txt"
-
-      document = self.organization.documents.create!(
-        title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
-        sync: File.read(yjs_file),
-        space: self,
-      )
-
-      document.versions.create!(
-        content_blocks: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
-      )
-
-      hierarchy_node = self.create_hierarchy_node(document.id)
-      self.hierarchy.append(hierarchy_node)
-      self.save!
-
-      Dir.glob(directory + "/**/*.csv") do |csv_file|
-        npi = File.basename(csv_file, ".*")
-        table = self.tables.create!(
-          npi: npi,
-          name: "Table " + Nanoid.generate(size: 4),
-          parent: self.home_document || self.documents.first || nil,
-          organization: self.organization,
-        )
-        table.import_from_csv(csv_file)
-        if npi == "7hDhcL1cyv"
-          table.update(name: "Advanced Table: Customer their first full month of sales")
-          table.columns_in_order[0].update(npi: "sample_column_name")
-          table.columns_in_order[1].update(npi: "sample_column_2", kind: Tables::Column::to_kind("date"))
-          table.columns_in_order[2].update(npi: "sample_column_3", kind: Tables::Column::to_kind("number"))
-          table.columns_in_order[3].update(npi: "eXqGtIyEmPqW2pC0uwk39")
-          table.columns_in_order[4].update(npi: "I2aoi-2OSTI-BV6UbzDls")
-          table.columns_in_order[5].update(npi: "hqqVKn_9zECje3en054vE")
-          table.columns_in_order[6].update(npi: "sample_column_4")
-        end
-      end
-    end
-
     Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.yjs") do |yjs_file|
-      create_document(yjs_file)
+      create_onboarding_document(yjs_file)
     end
-
   end
 
   private
+
+  def create_onboarding_document(yjs_file)
+    directory = File.dirname(yjs_file)
+    title_filename = directory + "/" + File.basename(yjs_file, ".*") + ".title.txt"
+
+    document = self.organization.documents.create!(
+      title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
+      sync: File.read(yjs_file),
+      space: self,
+    )
+
+    document.versions.create!(
+      content_blocks: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+    )
+
+    hierarchy_node = self.create_hierarchy_node(document.id)
+    self.hierarchy.append(hierarchy_node)
+    self.save!
+
+    Dir.glob(directory + "/**/*.csv") do |csv_file|
+      npi = File.basename(csv_file, ".*")
+      table = self.tables.create!(
+        npi: npi,
+        name: "Table " + Nanoid.generate(size: 4),
+        parent: self.home_document || self.documents.first || nil,
+        organization: self.organization,
+      )
+      table.import_from_csv(csv_file)
+      if npi == "7hDhcL1cyv"
+        table.update(name: "Advanced Table: Customer their first full month of sales")
+        table.columns_in_order[0].update(npi: "sample_column_name")
+        table.columns_in_order[1].update(npi: "sample_column_2", kind: Tables::Column::to_kind("date"))
+        table.columns_in_order[2].update(npi: "sample_column_3", kind: Tables::Column::to_kind("number"))
+        table.columns_in_order[3].update(npi: "eXqGtIyEmPqW2pC0uwk39")
+        table.columns_in_order[4].update(npi: "I2aoi-2OSTI-BV6UbzDls")
+        table.columns_in_order[5].update(npi: "hqqVKn_9zECje3en054vE")
+        table.columns_in_order[6].update(npi: "sample_column_4")
+      end
+    end
+  end
+
   def traverse_hierarchy(starting_node)
     ids = []
     starting_node.each do |item|
