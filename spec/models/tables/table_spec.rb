@@ -90,12 +90,6 @@ RSpec.describe Table, type: :model do
       end
 
       it "returns the same calculated value for all rows" do
-        expect(FormulaEvalGateway).to receive(:batch_evaluate).exactly(1).times.and_return([
-          {"result" => 15},
-          {"result" => 15},
-          {"result" => 15},
-        ])
-
         table_data = tables_tables(:projects).data_to_json(
           evaluate_formulas: true,
           evaluate_as: organization_users(:ou_is_pawel)
@@ -123,12 +117,6 @@ RSpec.describe Table, type: :model do
     fixtures "tables/advanced_formulas/cells"
 
     it "returns data" do
-      expect(FormulaEvalGateway).to receive(:batch_evaluate).exactly(1).times.and_return([
-        {"result" => "JIRA Jira"},
-        {"result" => "CONFLUENCE Confluence"},
-        {"result" => "MON Monday"}
-      ])
-
       table_data = tables_tables(:projects).data_to_json(
         evaluate_formulas: true,
         evaluate_as: organization_users(:ou_is_stefan)

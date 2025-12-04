@@ -1,32 +1,9 @@
 class FormulaService
-  # Proxy service that conditionally calls either FormulaEvalGateway or Formula::Engine
-  # based on the ruby_formulas feature flag
+  # Service that uses Formula::Engine for formula evaluation
 
   def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {})
-    if Flipper.enabled?(:ruby_formulas, organization_user&.user)
-      # Use the new Ruby Formula::Engine
-      evaluate_with_ruby_engine(formula, space, organization_user, additional_context)
-    else
-      # Use the existing microservice FormulaEvalGateway
-      FormulaEvalGateway.evaluate(formula, space, organization_user, additional_context: additional_context)
-    end
-  end
-
-  def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
-    if Flipper.enabled?(:ruby_formulas, organization_user&.user)
-      # Use the new Ruby Formula::Engine for batch evaluation
-      batch_evaluate_with_ruby_engine(evaluations, space, organization_user)
-    else
-      # Use the existing microservice FormulaEvalGateway
-      FormulaEvalGateway.batch_evaluate(evaluations, space, organization_user)
-    end
-  end
-
-  private
-
-  def self.evaluate_with_ruby_engine(formula, space, organization_user, additional_context)
     begin
-      # Prepare context similar to FormulaEvalGateway
+      # Prepare context
       context = additional_context.dup
 
       pundit_user = PolicyUserContext.new(organization_user)
@@ -48,7 +25,6 @@ class FormulaService
       # Get executed actions from action_executor
       commands = action_executor.get_actions
 
-      # Return format compatible with FormulaEvalGateway
       {
         "result" => result,
         "commands" => commands
@@ -63,13 +39,13 @@ class FormulaService
     end
   end
 
-  def self.batch_evaluate_with_ruby_engine(evaluations, space, organization_user)
+  def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
     evaluations.map do |evaluation|
-      evaluate_with_ruby_engine(
-        evaluation[:formula], 
-        space, 
-        organization_user, 
-        {}
+      evaluate(
+        evaluation[:formula],
+        space,
+        organization_user,
+        additional_context: evaluation[:additional_context],
       )
     end
   end
