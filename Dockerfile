@@ -5,6 +5,9 @@ ARG RUBY_VERSION=3.4.7
 ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
 
+# Node.js source stage for copying binaries
+FROM registry.docker.com/library/node:${NODE_MAJOR}-slim AS node-source
+
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
 
 ARG RAILS_ENV="production"
@@ -31,12 +34,19 @@ FROM base AS build
 ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
 
+# Copy Node.js from node-source stage
+COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
+COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 # Install packages needed to build gems (including age and sops for secrets management during asset precompilation)
 # Ruby 3.4+ requires libyaml-dev for psych gem native extension
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    curl -sL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config nodejs age libyaml-dev && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config age libyaml-dev && \
     npm install -g npm@latest && \
     curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
     dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
@@ -85,11 +95,18 @@ FROM base AS packaged
 ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
 
+# Copy Node.js from node-source stage
+COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
+COPY --from=node-source /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 # Install packages needed for deployment (including age and sops for secrets management)
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
-    curl -sL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - && \
-    apt-get install --no-install-recommends -y libvips gettext nodejs age && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y libvips gettext age && \
     curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
     dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
     rm sops_${SOPS_VERSION}_amd64.deb
