@@ -48,6 +48,8 @@ docker buildx build \
   --file Dockerfile \
   --target "${TARGET}" \
   --build-arg RAILS_ENV="${RAILS_ENV}" \
+  --build-arg SOPS_VERSION=3.11.0 \
+  --build-arg NODE_MAJOR=24 \
   --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
   --secret id=sops-age-key,src=dockerfiles/sops-age-key.secret \
   --tag "fundamento-cloud:${TARGET}" \

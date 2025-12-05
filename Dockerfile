@@ -72,7 +72,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Ikigai-specific: precompile assets
 # Mount SOPS age key as secret and set it as environment variable for SOPS to use
 RUN --mount=type=secret,id=sops-age-key,env=SOPS_AGE_KEY \
-    SECRET_KEY_BASE=`bin/rails secret` DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
+    SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
 
 # Transpile blocknote-converter server side utils for document-to-blocks conversion
