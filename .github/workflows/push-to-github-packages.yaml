@@ -106,5 +106,5 @@ jobs:
             ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}
           cache-from: |
             type=gha
-            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}:latest
+            type=registry,ref=${{ env.REGISTRY }}/${{ steps.meta.outputs.image }}:latest
           cache-to: type=gha,mode=max
