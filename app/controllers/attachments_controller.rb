@@ -21,16 +21,14 @@ class AttachmentsController < ApplicationController
     @attachment = current_organization.attachments.new(attachment_params) do |t|
       if params[:file]
         uploaded_file = params[:file]
-        file_data = uploaded_file.read
 
-        # DUAL WRITE: Store in both locations during migration
-        t.data = file_data  # Database storage (existing)
+        # Store metadata only (not file data in database)
         t.filename = uploaded_file.original_filename
         t.mime_type = uploaded_file.content_type
 
-        # Active Storage (new)
+        # Active Storage only (no database write)
         t.file.attach(
-          io: StringIO.new(file_data),
+          io: uploaded_file,
           filename: uploaded_file.original_filename,
           content_type: uploaded_file.content_type
         )

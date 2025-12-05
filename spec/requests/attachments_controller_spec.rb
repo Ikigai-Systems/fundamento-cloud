@@ -113,7 +113,7 @@ RSpec.describe AttachmentsController, type: :request do
   describe "POST /attachments" do
     let(:file) { fixture_file_upload("spec/fixtures/attachments.yml", "text/plain") }
 
-    it "creates an attachment with database storage" do
+    it "creates an attachment with Active Storage only" do
       expect {
         post attachments_path, params: {
           attachment: {
@@ -127,7 +127,8 @@ RSpec.describe AttachmentsController, type: :request do
       expect(response).to have_http_status(:created)
 
       attachment = Attachment.last
-      expect(attachment.data).to be_present
+      expect(attachment.data).to be_nil  # No database storage
+      expect(attachment.file.attached?).to be true  # Active Storage only
       expect(attachment.filename).to eq("attachments.yml")
       expect(attachment.mime_type).to eq("text/plain")
       expect(attachment.organization).to eq(organization)
@@ -164,7 +165,7 @@ RSpec.describe AttachmentsController, type: :request do
       expect(json).to have_key("mime_type")
     end
 
-    it "stores file in both database and Active Storage (dual-write)" do
+    it "stores file in Active Storage only (no database storage)" do
       post attachments_path, params: {
         attachment: {
           parent_id: document.id,
@@ -174,11 +175,11 @@ RSpec.describe AttachmentsController, type: :request do
       }
 
       attachment = Attachment.last
-      expect(attachment.stored_in_database?).to be true
+      expect(attachment.stored_in_database?).to be false
       expect(attachment.stored_in_active_storage?).to be true
     end
 
-    it "stores identical content in both storage locations" do
+    it "stores file content accessible via Active Storage" do
       post attachments_path, params: {
         attachment: {
           parent_id: document.id,
@@ -188,7 +189,9 @@ RSpec.describe AttachmentsController, type: :request do
       }
 
       attachment = Attachment.last
-      expect(attachment.file.download).to eq(attachment.data)
+      downloaded_content = attachment.file.download
+      expect(downloaded_content).to be_present
+      expect(downloaded_content.size).to be > 0
     end
 
     context "without permission (parent from another organization)" do
