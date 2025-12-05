@@ -12,7 +12,6 @@ class SidebarTabIcon < ViewComponent::Base
   ERB
 
   def initialize(tooltip:)
-    super
     @tooltip = tooltip
   end
 end
