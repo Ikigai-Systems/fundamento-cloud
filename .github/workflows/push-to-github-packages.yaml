@@ -73,6 +73,14 @@ jobs:
         id: current-time
         uses: josStorer/get-current-time@v2
 
+      - name: Set lowercase repository owner
+        id: lowercase_repository_owner
+        uses: actions/github-script@v7
+        with:
+          script: |
+            return context.repo.owner.toLowerCase()
+          result-encoding: string
+
       # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -106,5 +114,5 @@ jobs:
             ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}
           cache-from: |
             type=gha
-            type=registry,ref=${{ env.REGISTRY }}/${{ toLower(github.repository_owner) }}/${{ matrix.image-name }}:latest
+            type=registry,ref=${{ env.REGISTRY }}/${{ steps.lowercase_repository_owner.outputs.result }}/${{ matrix.image-name }}:latest
           cache-to: type=gha,mode=max
