@@ -114,5 +114,5 @@ jobs:
             ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}
           cache-from: |
             type=gha
-            type=registry,ref=${{ env.REGISTRY }}/${{ steps.lowercase_repository_owner.outputs.result }}/${{ matrix.image-name }}:latest
+            type=registry,ref=${{ env.REGISTRY }}/${{ steps.lowercase_repository_owner.outputs.result }}/${{ matrix.image-name }}:master
           cache-to: type=gha,mode=max
