@@ -15,6 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   SOPS_VERSION: 3.11.0
+  NODE_MAJOR: 24
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
@@ -99,6 +100,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             SOPS_VERSION=${{ env.SOPS_VERSION }}
+            NODE_MAJOR=${{ env.NODE_MAJOR }}
           secret-files: |
             ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"', env.FONTAWESOME_SECRET_FILE) || '' }}
             ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}
