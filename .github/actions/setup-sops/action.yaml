@@ -8,16 +8,22 @@ inputs:
     description: 'Export SOPS_AGE_KEY as environment variable for Docker builds'
     required: false
     default: 'false'
+  sops-version:
+    description: 'SOPS version to install'
+    required: false
+    default: '3.11.0'
 runs:
   using: "composite"
   steps:
-    - name: Install age and sops
+    - name: Setup SOPS
+      uses: nhedger/setup-sops@v2
+      with:
+        version: ${{ inputs.sops-version }}
+
+    - name: Install age
       shell: bash
       run: |
         sudo apt-get update && sudo apt-get install -y age
-        SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
-        wget -qO- https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops-v${SOPS_VERSION}.linux.amd64 | sudo tee /usr/local/bin/sops > /dev/null
-        sudo chmod +x /usr/local/bin/sops
 
     - name: Setup SOPS age key
       shell: bash
