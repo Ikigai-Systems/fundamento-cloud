@@ -1,5 +1,7 @@
 module Api
   class ApiController < ActionController::Base
+    include Pundit::Authorization
+
     skip_before_action :verify_authenticity_token
 
     before_action :authenticate_user_from_headers!
