@@ -21,20 +21,28 @@ module Api
         document = current_organization.documents.find_by_param!(params[:npi])
         authorize document
 
-        content = if document.versions.empty?
-          BlocknoteConverterService.to_markdown(document.to_blocks)
+        blocks = if document.versions.empty?
+          document.to_blocks
         else
-          BlocknoteConverterService.to_markdown(document.versions.last.content_blocks)
+          document.versions.last.content_blocks
         end
 
-        render json: {
-          npi: document.npi,
-          title: document.title,
-          created_at: document.created_at,
-          updated_at: document.updated_at,
-          content: content,
-          tags: document.tags.map { |tag| "##{tag.name}" }
-        }
+        respond_to do |format|
+          format.json do
+            render json: {
+              npi: document.npi,
+              title: document.title,
+              created_at: document.created_at,
+              updated_at: document.updated_at,
+              content: blocks,
+              tags: document.tags.map { |tag| "##{tag.name}" }
+            }
+          end
+
+          format.md do
+            render locals: { content: BlocknoteConverterService.to_markdown(blocks) }
+          end
+        end
       end
     end
   end
