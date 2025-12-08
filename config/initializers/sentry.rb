@@ -16,7 +16,10 @@ if sentry_dsn.present?
     # for Rails 6+
     config.before_send = lambda do |event, _hint|
       filter = ActiveSupport::ParameterFilter.new(Rails.application.config.filter_parameters)
-      filter.filter(event.to_hash)
+      event.extra = filter.filter(event.extra) if event.extra
+      event.user = filter.filter(event.user) if event.user
+      event.contexts = filter.filter(event.contexts) if event.contexts
+      event
     end
 
     # Set traces_sample_rate to 1.0 to capture 100%
