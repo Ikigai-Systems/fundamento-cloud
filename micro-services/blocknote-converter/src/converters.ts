@@ -1,6 +1,10 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
 import strippedSchema from "./strippedSchema";
+import {setupDOM} from "./setupDOM";
+
+// Initialize DOM environment for React server-side rendering
+setupDOM();
 
 export function convertToBlocks(yjs : Buffer) {
   const doc = new Y.Doc();

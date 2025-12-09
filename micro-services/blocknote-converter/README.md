@@ -1,3 +1,7 @@
+# Additional documentation
+
+[Server side rendering](./docs/SERVER_SIDE_REACT.md)
+
 # Running Tests
 
 ## Command Line
