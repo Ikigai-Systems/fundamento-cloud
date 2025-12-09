@@ -3,6 +3,37 @@ import path from "path";
 import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
 import {startServer} from "./server";
+import * as Sentry from "@sentry/node";
+
+// Initialize Sentry if DSN is provided
+const sentryDsn = process.env.SENTRY_DSN;
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production.
+    tracesSampleRate: 1.0,
+    // Set profilesSampleRate to profile 100%
+    // of sampled transactions.
+    // We recommend adjusting this value in production.
+    profilesSampleRate: 1.0,
+  });
+}
+
+// Global error handlers for uncaught exceptions and unhandled rejections
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught exception:", error);
+  Sentry.captureException(error);
+  Sentry.close(2000).then(() => {
+    process.exit(1);
+  });
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled rejection:", reason);
+  Sentry.captureException(reason);
+});
 
 const program = new Command();
 
@@ -17,6 +48,7 @@ function createInputStream(input) {
 
   inputStream.on('error', (err) => {
     console.error(`Error reading input: ${err.message}`);
+    Sentry.captureException(err);
     process.exit(1);
   });
 
@@ -30,10 +62,43 @@ function createOutputStream(output) {
 
   outputStream.on('error', (err) => {
     console.error(`Error writing output: ${err.message}`);
+    Sentry.captureException(err);
     process.exit(1);
   });
-  
+
   return outputStream;
+}
+
+// Generic handler for processing stream data with error handling
+function handleStreamConversion(options, converterFn: (data: Buffer) => any | Promise<any>, outputIsJson: boolean = true) {
+  const inputStream = createInputStream(options.input);
+  const outputStream = createOutputStream(options.output);
+  const chunks = [];
+
+  inputStream.on('data', (chunk) => {
+    chunks.push(chunk);
+  });
+
+  inputStream.on('end', async () => {
+    try {
+      const inputData = Buffer.concat(chunks);
+      const convertedData = await converterFn(inputData);
+
+      if (outputIsJson) {
+        outputStream.write(JSON.stringify(convertedData));
+      } else {
+        outputStream.write(convertedData);
+      }
+
+      if (!options.output) {
+        outputStream.end();
+      }
+    } catch (error) {
+      console.error(`Conversion error: ${error.message}`);
+      Sentry.captureException(error);
+      process.exit(1);
+    }
+  });
 }
 
 program
@@ -42,25 +107,7 @@ program
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
   .action((options) => {
-    const inputStream = createInputStream(options.input);
-
-    const outputStream = createOutputStream(options.output);
-
-    const chunks = [];
-
-    inputStream.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    inputStream.on('end', () => {
-      const convertedData = convertToBlocks(Buffer.concat(chunks));
-
-      outputStream.write(JSON.stringify(convertedData));
-
-      if (!options.output) {
-        outputStream.end();
-      }
-    });
+    handleStreamConversion(options, convertToBlocks, true);
   });
 
 program
@@ -69,24 +116,11 @@ program
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
   .action((options) => {
-    const inputStream = createInputStream(options.input);
-
-    const chunks = [];
-
-    inputStream.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    inputStream.on('end', () => {
-      const convertedData = convertToYjs(JSON.parse(Buffer.concat(chunks).toString("utf8")));
-
-      const outputStream = createOutputStream(options.output);
-      outputStream.write(convertedData);
-
-      if (!options.output) {
-        outputStream.end();
-      }
-    });
+    handleStreamConversion(
+      options,
+      (data) => convertToYjs(JSON.parse(data.toString("utf8"))),
+      false
+    );
   });
 
 program
@@ -95,25 +129,11 @@ program
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
   .action((options) => {
-    const inputStream = createInputStream(options.input);
-
-    const outputStream = createOutputStream(options.output);
-
-    const chunks = [];
-
-    inputStream.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    inputStream.on('end', async () => {
-      const convertedData = await convertMarkdownToBlocks(Buffer.concat(chunks).toString("utf8"));
-
-      outputStream.write(JSON.stringify(convertedData));
-
-      if (!options.output) {
-        outputStream.end();
-      }
-    });
+    handleStreamConversion(
+      options,
+      (data) => convertMarkdownToBlocks(data.toString("utf8")),
+      true
+    );
   });
 
 program
@@ -122,25 +142,11 @@ program
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
   .action((options) => {
-    const inputStream = createInputStream(options.input);
-
-    const outputStream = createOutputStream(options.output);
-
-    const chunks = [];
-
-    inputStream.on('data', (chunk) => {
-      chunks.push(chunk);
-    });
-
-    inputStream.on('end', async () => {
-      const convertedData = await convertBlocksToMarkdown(JSON.parse(Buffer.concat(chunks).toString("utf8")));
-
-      outputStream.write(convertedData);
-
-      if (!options.output) {
-        outputStream.end();
-      }
-    });
+    handleStreamConversion(
+      options,
+      (data) => convertBlocksToMarkdown(JSON.parse(data.toString("utf8"))),
+      false
+    );
   });
 
 program
