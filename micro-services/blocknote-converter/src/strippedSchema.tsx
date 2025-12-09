@@ -14,7 +14,9 @@ const FormulaInlineContent = createReactInlineContentSpec(
     },
     content: "none",
   }, {
-    render: () => null,
+    render: () => {
+      return <p>Formula</p>;
+    },
   }
 );
 
@@ -32,7 +34,9 @@ const AdvancedTable = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null,
+    render: () => {
+      return <p>Table</p>;
+    },
   }
 );
 
@@ -61,7 +65,9 @@ const ChartBlock = createReactBlockSpec(
     content: "none",
     isSelectable: false,
   }, {
-    render: () => null,
+    render: () => {
+      return <p>Chart</p>;
+    },
   }
 );
 

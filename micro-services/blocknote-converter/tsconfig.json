@@ -55,10 +55,11 @@
 
 {
   "compilerOptions": {
-        "paths": {
-          "rowstack": ["../../vendor/javascript/rowstack/main.js"]
-        },
-
+    "paths": {
+      "rowstack": [
+        "../../vendor/javascript/rowstack/main.js"
+      ]
+    },
     // Treat files as modules even if it doesn't use import/export
     "moduleDetection": "force",
 
@@ -70,6 +71,8 @@
 
     // Allow JS files to be imported from TS and vice versa
     "allowJs": true,
+
+    "jsx": "react-jsx",
 
     // Use correct ESM import behavior
     "esModuleInterop": true,
