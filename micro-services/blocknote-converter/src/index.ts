@@ -49,7 +49,9 @@ function createInputStream(input) {
   inputStream.on('error', (err) => {
     console.error(`Error reading input: ${err.message}`);
     Sentry.captureException(err);
-    process.exit(1);
+    Sentry.close(2000).then(() => {
+      process.exit(1);
+    });
   });
 
   return inputStream;
@@ -63,7 +65,9 @@ function createOutputStream(output) {
   outputStream.on('error', (err) => {
     console.error(`Error writing output: ${err.message}`);
     Sentry.captureException(err);
-    process.exit(1);
+    Sentry.close(2000).then(() => {
+      process.exit(1);
+    });
   });
 
   return outputStream;
@@ -96,7 +100,9 @@ function handleStreamConversion(options, converterFn: (data: Buffer) => any | Pr
     } catch (error) {
       console.error(`Conversion error: ${error.message}`);
       Sentry.captureException(error);
-      process.exit(1);
+      Sentry.close(2000).then(() => {
+        process.exit(1);
+      });
     }
   });
 }
