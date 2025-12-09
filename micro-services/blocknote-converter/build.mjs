@@ -9,7 +9,7 @@ const buildOptions = {
   sourcemap: true,
   format: "cjs",
   platform: 'node',
-  target: ['node18'],
+  target: ['node24'],
   outfile: 'build/blocknoteServer.js',
   loader: {
     ".css": "empty",
