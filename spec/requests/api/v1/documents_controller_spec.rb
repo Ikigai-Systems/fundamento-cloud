@@ -17,10 +17,10 @@ RSpec.describe "Api::V1::Documents", type: :request do
     )
   end
 
-  describe "GET /api/v1/spaces/:space_npi/documents" do
+  describe "GET /api/v1/documents" do
     context "with valid API token" do
       it "returns list of documents in the space" do
-        get "/api/v1/spaces/#{is_default_space.npi}/documents",
+        get api_v1_documents_path(space_npi: is_default_space.npi),
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
@@ -38,7 +38,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid API token" do
       it "returns unauthorized" do
-        get "/api/v1/spaces/#{is_default_space.npi}/documents",
+        get api_v1_documents_path(space_npi: is_default_space.npi),
           headers: { "Authorization" => "Bearer invalid_token" }
 
         expect(response).to have_http_status(:unauthorized)
@@ -215,6 +215,249 @@ RSpec.describe "Api::V1::Documents", type: :request do
           headers: { "Authorization" => "Bearer #{other_org_token.encrypted_token}" }
 
         expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "POST /api/v1/documents" do
+    context "with valid API token" do
+      it "creates a document with title only" do
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "New Test Document"
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        expect(json_response["npi"]).to be_present
+        expect(json_response["title"]).to eq("New Test Document")
+        expect(json_response["created_at"]).to be_present
+        expect(json_response["updated_at"]).to be_present
+
+        # Verify document is in space hierarchy
+        is_default_space.reload
+        created_doc = Document.find_by(npi: json_response["npi"])
+        expect(is_default_space.hierarchy).to include(
+          hash_including("id" => created_doc.id)
+        )
+      end
+
+      it "creates a document without title (defaults to 'Untitled')" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              markdown: "Test Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        expect(json_response["title"]).to eq("Untitled")
+      end
+
+      it "creates a document with markdown content" do
+        markdown_content = "# Hello World\n\nThis is a test document."
+
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "Document with Content",
+                markdown: markdown_content
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+         .and change(Version, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        created_doc = Document.find_by(npi: json_response["npi"])
+        expect(created_doc.versions.count).to eq(1)
+     end
+
+      it "creates a nested document under a parent" do
+        parent_doc = is_default_space.documents.create!(
+          title: "Parent Document",
+          organization: ikigai_systems
+        )
+
+        # Add parent to hierarchy
+        hierarchy_node = is_default_space.create_hierarchy_node(parent_doc.id)
+        is_default_space.hierarchy.append(hierarchy_node)
+        is_default_space.save!
+
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "Child Document",
+                parent_document_npi: parent_doc.npi
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        # Verify child is nested under parent in hierarchy
+        is_default_space.reload
+        created_doc = Document.find_by(npi: json_response["npi"])
+
+        # Find parent node in hierarchy
+        parent_node = is_default_space.hierarchy.find { |node| node["id"] == parent_doc.id }
+        expect(parent_node).to be_present
+        expect(parent_node["children"]).to include(
+          hash_including("id" => created_doc.id)
+        )
+      end
+
+      it "creates document at space root when parent doesn't exist in hierarchy" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Root Document"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+
+        # Verify document is at root level of hierarchy
+        is_default_space.reload
+        json_response = JSON.parse(response.body)
+        created_doc = Document.find_by(npi: json_response["npi"])
+
+        expect(is_default_space.hierarchy).to include(
+          hash_including("id" => created_doc.id)
+        )
+      end
+
+      it "sets created_by on version when creating with content" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Document with Author",
+              markdown: "Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        created_doc = Document.find_by(npi: json_response["npi"])
+        expect(created_doc.versions.last.created_by).to eq(pawel)
+      end
+    end
+
+    context "with invalid API token" do
+      it "returns unauthorized" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Test Document"
+            }
+          },
+          headers: { "Authorization" => "Bearer invalid_token" }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "without authentication" do
+      it "returns unauthorized" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Test Document"
+            }
+          }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "authorization" do
+      let(:other_org) { organizations(:hc) }
+      let(:other_org_user) { organization_users(:ou_hc_pawel) }
+      let!(:other_org_token) do
+        ApiToken.create!(
+          organization: other_org,
+          organization_user: other_org_user,
+          title: "Test API Token for Other Org"
+        )
+      end
+
+      it "returns not found when trying to create in space from different organization" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Test Document"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{other_org_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with invalid space npi" do
+      it "returns not found" do
+        post api_v1_documents_path(space_npi: "invalid-npi"),
+          params: {
+            document: {
+              title: "Test Document"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with invalid parent document npi" do
+      it "returns not found" do
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Test Document",
+              parent_document_npi: "invalid-npi"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when BlocknoteConverterService fails" do
+      it "returns internal server error" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
+          .and_raise(StandardError.new("Conversion failed"))
+
+        post api_v1_documents_path(space_npi: is_default_space.npi),
+          params: {
+            document: {
+              title: "Test Document",
+              markdown: "Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
