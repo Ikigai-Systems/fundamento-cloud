@@ -58,7 +58,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
           }
         ]
 
-        allow(BlocknoteConverterService).to receive(:to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
 
         get "/api/v1/documents/#{document_one.npi}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -92,8 +92,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
         ]
         sample_markdown = "# Hello World\n\nThis is markdown content."
 
-        allow(BlocknoteConverterService).to receive(:to_blocks).and_return(sample_blocks)
-        allow(BlocknoteConverterService).to receive(:to_markdown).and_return(sample_markdown)
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(sample_markdown)
 
         get "/api/v1/documents/#{document_one.npi}.markdown",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -106,7 +106,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         # expect(json_response["tags"]).to be_an(Array)
 
         # Verify to_markdown was called with the blocks
-        expect(BlocknoteConverterService).to have_received(:to_markdown).with(sample_blocks)
+        expect(BlocknoteConverterService).to have_received(:blocks_to_markdown).with(sample_blocks)
       end
     end
 
@@ -124,7 +124,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         )
 
         # Stub the service to verify it's not called
-        allow(BlocknoteConverterService).to receive(:to_blocks)
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks)
 
         get "/api/v1/documents/#{document_one.npi}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -134,7 +134,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
         # Verify it uses version content, not document.to_blocks
         expect(json_response["content"]).to eq(version.content_blocks)
-        expect(BlocknoteConverterService).not_to have_received(:to_blocks)
+        expect(BlocknoteConverterService).not_to have_received(:yjs_to_blocks)
       end
 
       it "converts versioned content to markdown when format is markdown" do
@@ -149,14 +149,14 @@ RSpec.describe "Api::V1::Documents", type: :request do
         )
 
         sample_markdown = "# Versioned Content"
-        allow(BlocknoteConverterService).to receive(:to_markdown).and_return(sample_markdown)
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(sample_markdown)
 
         get "/api/v1/documents/#{document_one.npi}.markdown",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to eq(sample_markdown)
-        expect(BlocknoteConverterService).to have_received(:to_markdown).with(version.content_blocks)
+        expect(BlocknoteConverterService).to have_received(:blocks_to_markdown).with(version.content_blocks)
       end
     end
 
@@ -170,7 +170,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         document_one.object_tags.create!(tag: tag2, organization: ikigai_systems)
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
-        allow(BlocknoteConverterService).to receive(:to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
 
         get "/api/v1/documents/#{document_one.npi}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }

@@ -62,7 +62,7 @@ class Document < ApplicationRecord
   end
 
   def to_blocks
-    BlocknoteConverterService.to_blocks(sync)
+    BlocknoteConverterService.yjs_to_blocks(sync)
   end
 
   def nullify_space_home_document_id
