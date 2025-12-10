@@ -6,6 +6,10 @@ module Api
 
     before_action :authenticate_user_from_headers!
 
+    rescue_from Pundit::NotAuthorizedError do |_exception|
+      head :forbidden
+    end
+
     protected
 
     def authenticate_user_from_headers!

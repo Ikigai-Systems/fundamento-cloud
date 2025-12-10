@@ -188,7 +188,7 @@ Rails.application.routes.draw do
         resources :invocations, controller: "automation_invocations", only: [:create]
       end
 
-      resources :spaces, param: :npi, only: [:index, :show]
+      resources :spaces, param: :npi, only: [:index, :show, :create]
 
       resources :documents, param: :npi, only: [:index, :show, :create]
 

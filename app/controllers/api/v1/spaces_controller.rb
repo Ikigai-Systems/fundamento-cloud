@@ -30,7 +30,29 @@ module Api
         }
       end
 
+      def create
+        space = current_organization.spaces.new(space_params)
+
+        authorize space, :create?
+
+        if space.save
+          render json: {
+            npi: space.npi,
+            name: space.name,
+            access_mode: space.access_mode,
+            created_at: space.created_at,
+            updated_at: space.updated_at
+          }, status: :created
+        else
+          render json: { errors: space.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       private
+
+      def space_params
+        params.require(:space).permit(:name, :access_mode)
+      end
 
       def build_document_hierarchy(doc, space)
         node = {
