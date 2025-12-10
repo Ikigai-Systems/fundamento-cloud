@@ -13,6 +13,10 @@ on:
         required: false
         default: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-e2e-tests:
     runs-on: ubuntu-latest
