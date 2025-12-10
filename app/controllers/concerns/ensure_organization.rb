@@ -57,11 +57,11 @@ module EnsureOrganization
   private
 
   def generate_organization_name
-    Thread.current[:random_word_adjs] ||= RandomWord.adjs
-    Thread.current[:random_word_nouns] ||= RandomWord.nouns
-    
-    adjective = Thread.current[:random_word_adjs].next.capitalize
-    noun = Thread.current[:random_word_nouns].next.capitalize
+    # Take a sample of words and pick randomly to avoid fiber threading issues
+    # Using Thread.current to store enumerators causes "fiber called across threads" error
+    # in multi-threaded environments (like production with Puma)
+    adjective = RandomWord.adjs.take(100).sample.capitalize
+    noun = RandomWord.nouns.take(100).sample.capitalize
 
     "#{adjective} #{noun}"
   end
