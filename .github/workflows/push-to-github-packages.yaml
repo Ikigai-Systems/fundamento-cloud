@@ -21,7 +21,7 @@ env:
 jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped' }}
+    if: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
     strategy:
       matrix:
         include:
