@@ -9,7 +9,6 @@ import queryClient from "../contextes/ReactQueryClient.tsx";
 import {Document, Space, Version} from "../types.ts";
 import {useCreateBlockNote} from "@blocknote/react";
 import {ContentTitle} from "./ContentTitle.tsx";
-import "./editor/editor-styles.css";
 
 type PublicDocumentViewerProps = {
   document: Document,

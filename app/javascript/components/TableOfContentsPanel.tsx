@@ -1,5 +1,4 @@
 import '@blocknote/mantine/style.css';
-import "./editor/editor-styles.css";
 import {useEffect, useState} from "react";
 import useInterval from "../hooks/useInterval.ts";
 

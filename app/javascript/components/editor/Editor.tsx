@@ -10,7 +10,6 @@ import useInterval from "../../hooks/useInterval"
 import schema from "./schema";
 import {IndexeddbPersistence} from "y-indexeddb";
 import createFlash from "../createFlash.ts"
-import "./editor-styles.css";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";

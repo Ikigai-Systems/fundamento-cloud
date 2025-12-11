@@ -5,7 +5,6 @@ import queryClient from ".././contextes/ReactQueryClient.tsx";
 import {useCreateBlockNote} from "@blocknote/react";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
-import "./editor/editor-styles.css";
 import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
