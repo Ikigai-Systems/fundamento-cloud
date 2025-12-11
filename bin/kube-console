@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Default values
+NAMESPACE="fundamento-cloud"
+DEPLOYMENT="website"
+MEMORY="${MEMORY:-2048Mi}"
+CPU="${CPU:-1000m}"
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --memory)
+      MEMORY="$2"
+      shift 2
+      ;;
+    --cpu)
+      CPU="$2"
+      shift 2
+      ;;
+    --help|-h)
+      echo "Usage: $0 [OPTIONS]"
+      echo ""
+      echo "Launch a temporary Rails console container in Kubernetes with custom resource limits."
+      echo ""
+      echo "Options:"
+      echo "  --memory MEMORY    Set memory limit (default: 2048Mi)"
+      echo "  --cpu CPU          Set CPU limit (default: 1000m)"
+      echo "  --help, -h         Show this help message"
+      echo ""
+      echo "Environment variables:"
+      echo "  MEMORY             Alternative way to set memory limit"
+      echo "  CPU                Alternative way to set CPU limit"
+      echo ""
+      echo "Examples:"
+      echo "  $0                           # Use default resources (2048Mi memory, 1000m CPU)"
+      echo "  $0 --memory 4096Mi --cpu 2000m"
+      echo "  MEMORY=4096Mi CPU=2000m $0"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Use --help for usage information"
+      exit 1
+      ;;
+  esac
+done
+
+echo "Launching Rails console in Kubernetes..."
+echo "Namespace: $NAMESPACE"
+echo "Deployment: $DEPLOYMENT"
+echo "Memory limit: $MEMORY"
+echo "CPU limit: $CPU"
+echo ""
+
+# Get the current image from the deployment
+IMAGE=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.containers[0].image}')
+echo "Using image: $IMAGE"
+
+# Extract environment variables from the deployment
+ENV_JSON=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o json | \
+  jq -r '.spec.template.spec.containers[0].env')
+
+# Get service account
+SERVICE_ACCOUNT=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o jsonpath='{.spec.template.spec.serviceAccountName}')
+
+# Get image pull secrets
+IMAGE_PULL_SECRETS=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o json | \
+  jq -r '.spec.template.spec.imagePullSecrets // []')
+
+# Create pod spec with overrides
+POD_SPEC=$(cat <<EOF
+{
+  "apiVersion": "v1",
+  "spec": {
+    "serviceAccountName": "$SERVICE_ACCOUNT",
+    "imagePullSecrets": $IMAGE_PULL_SECRETS,
+    "containers": [
+      {
+        "name": "console",
+        "image": "$IMAGE",
+        "command": ["bin/rails", "console"],
+        "stdin": true,
+        "tty": true,
+        "resources": {
+          "limits": {
+            "memory": "$MEMORY",
+            "cpu": "$CPU"
+          },
+          "requests": {
+            "memory": "$MEMORY",
+            "cpu": "$CPU"
+          }
+        },
+        "env": $ENV_JSON
+      }
+    ],
+    "restartPolicy": "Never"
+  }
+}
+EOF
+)
+
+echo ""
+echo "Starting temporary console pod..."
+echo "The pod will be automatically removed when you exit the console."
+echo ""
+
+# Run the temporary pod
+kubectl run "console-$(date +%s)" \
+  -n "$NAMESPACE" \
+  --rm \
+  -it \
+  --image="$IMAGE" \
+  --restart=Never \
+  --overrides="$POD_SPEC"
