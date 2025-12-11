@@ -285,6 +285,138 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(created_doc.versions.count).to eq(1)
      end
 
+      it "creates a document with tags from frontmatter" do
+        markdown_with_frontmatter = <<~MARKDOWN
+          ---
+          tags:
+            - rok/2024/05
+            - osobiste/refleksje
+            - osobiste/rozwój
+          ---
+
+          # Hello World
+
+          This is a test document with tags from frontmatter.
+        MARKDOWN
+
+        sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Hello World" }] }]
+        sample_sync = { "data" => "yjs_sync_data" }
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "Document with Frontmatter Tags",
+                markdown: markdown_with_frontmatter
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+         .and change(Tag, :count).by(3)
+         .and change(ObjectTag, :count).by(3)
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        created_doc = Document.find_by(npi: json_response["npi"])
+        expect(created_doc.tags.count).to eq(3)
+        expect(created_doc.tags.pluck(:name)).to contain_exactly(
+          "rok/2024/05",
+          "osobiste/refleksje",
+          "osobiste/rozwój"
+        )
+
+        # Verify tags belong to the correct space
+        created_doc.tags.each do |tag|
+          expect(tag.space).to eq(is_default_space)
+          expect(tag.organization).to eq(ikigai_systems)
+        end
+
+        # Verify markdown content was processed without frontmatter
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks) do |markdown|
+          expect(markdown).not_to include("---")
+          expect(markdown).not_to include("tags:")
+          expect(markdown).to include("# Hello World")
+        end
+      end
+
+      it "creates a document when frontmatter has no tags" do
+        markdown_with_frontmatter = <<~MARKDOWN
+          ---
+          title: Some Title
+          author: John Doe
+          ---
+
+          # Content
+        MARKDOWN
+
+        sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
+        sample_sync = { "data" => "yjs_sync_data" }
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "Document with Non-Tag Frontmatter",
+                markdown: markdown_with_frontmatter
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+         .and change(Tag, :count).by(0)
+
+        expect(response).to have_http_status(:created)
+      end
+
+      it "reuses existing tags when creating document with frontmatter" do
+        # Create existing tags
+        existing_tag = is_default_space.tags.create!(
+          name: "existing/tag",
+          organization: ikigai_systems
+        )
+
+        markdown_with_frontmatter = <<~MARKDOWN
+          ---
+          tags:
+            - existing/tag
+            - new/tag
+          ---
+
+          # Content
+        MARKDOWN
+
+        sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
+        sample_sync = { "data" => "yjs_sync_data" }
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        expect {
+          post api_v1_documents_path(space_npi: is_default_space.npi),
+            params: {
+              document: {
+                title: "Document Reusing Tags",
+                markdown: markdown_with_frontmatter
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+         .and change(Tag, :count).by(1) # Only 1 new tag created
+
+        expect(response).to have_http_status(:created)
+        json_response = JSON.parse(response.body)
+
+        created_doc = Document.find_by(npi: json_response["npi"])
+        expect(created_doc.tags.count).to eq(2)
+        expect(created_doc.tags).to include(existing_tag)
+      end
+
       it "creates a nested document under a parent" do
         parent_doc = is_default_space.documents.create!(
           title: "Parent Document",

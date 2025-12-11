@@ -19,49 +19,15 @@ module Api
 
       def create
         space = current_organization.spaces.find_by_param!(params[:space_npi])
-        authorize space, :show?
+        authorize space, :update?
 
-        document = current_organization.documents.new(
-          title: document_params[:title] || "Untitled",
-          space: space
-        )
+        parent_document_npi = document_params[:parent_document_npi]
+        parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
 
-        authorize document, :create?
+        authorize parent_document, :show? if parent_document
 
-        if document.save
-          # Add to hierarchy
-          hierarchy_node = space.create_hierarchy_node(document.id)
-          parent_document_npi = document_params[:parent_document_npi]
-
-          if parent_document_npi.present?
-            parent_document = space.documents.find_by_param!(parent_document_npi)
-
-            if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
-              space.hierarchy.append(hierarchy_node)
-            end
-          else
-            space.hierarchy.append(hierarchy_node)
-          end
-
-          space.save!
-
-          # Create initial version with content if provided
-          if document_params[:markdown].present?
-            begin
-              blocks = BlocknoteConverterService.markdown_to_blocks(document_params[:markdown])
-              sync = BlocknoteConverterService.blocks_to_yjs(blocks)
-
-              document.versions.create!(
-                content_blocks: blocks,
-                # content_html: html,
-                created_by: current_user
-              )
-
-              document.update!(sync: sync)
-            rescue StandardError => e
-              return render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
-            end
-          end
+        begin
+          document = CreateDocumentService.new(pundit_user: pundit_user).create!(space, title: document_params[:title], parent_document:, markdown: document_params[:markdown])
 
           render json: {
             npi: document.npi,
@@ -69,8 +35,10 @@ module Api
             created_at: document.created_at,
             updated_at: document.updated_at
           }, status: :created
-        else
-          render json: { errors: document.errors.full_messages }, status: :unprocessable_entity
+        rescue StandardError
+          render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
+        rescue ActiveRecord::RecordInvalid => invalid
+          render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
         end
       end
 
