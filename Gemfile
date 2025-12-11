@@ -101,6 +101,7 @@ gem "initials"
 
 gem "mcp"
 gem "blueprinter", "~> 1.1"
+gem "parslet", "~> 2.0"
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
@@ -128,4 +129,3 @@ end
 group :development, :test do
   gem "dotenv-rails", "~> 3.1"
 end
-gem "parslet", "~> 2.0"
