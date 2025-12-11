@@ -578,7 +578,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
     context "when BlocknoteConverterService fails" do
       it "returns internal server error" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
-          .and_raise(StandardError.new("Conversion failed"))
+          .and_raise(BlocknoteConversionError.new("Conversion failed"))
 
         post api_v1_documents_path(space_npi: is_default_space.npi),
           params: {

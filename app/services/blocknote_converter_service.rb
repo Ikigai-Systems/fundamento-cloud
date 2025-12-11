@@ -1,3 +1,5 @@
+class BlocknoteConversionError < StandardError; end
+
 module BlocknoteConverterService
   def self.build_env
     env = {}
@@ -19,7 +21,7 @@ module BlocknoteConverterService
       JSON.parse(stdout)
     else
       puts stderr  # Handle any errors from Node.js
-      raise StandardError.new "Unable to convert document to blocknote blocks"
+      raise BlocknoteConversionError.new "Unable to convert document to blocknote blocks"
     end
   end
 
@@ -36,7 +38,7 @@ module BlocknoteConverterService
       stdout
     else
       puts stderr  # Handle any errors from Node.js
-      raise StandardError.new "Unable to convert document to  YJS"
+      raise BlocknoteConversionError.new "Unable to convert document to  YJS"
     end
   end
 
@@ -53,7 +55,7 @@ module BlocknoteConverterService
       stdout
     else
       puts stderr  # Handle any errors from Node.js
-      raise StandardError.new "Unable to convert document to markdown"
+      raise BlocknoteConversionError.new "Unable to convert document to markdown"
     end
 
   end
@@ -71,7 +73,7 @@ module BlocknoteConverterService
       JSON.parse(stdout)
     else
       puts stderr
-      raise StandardError.new "Unable to convert markdown to blocks"
+      raise BlocknoteConversionError.new "Unable to convert markdown to blocks"
     end
   end
 end

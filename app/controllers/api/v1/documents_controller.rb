@@ -18,16 +18,14 @@ module Api
       end
 
       def create
-        space = current_organization.spaces.find_by_param!(params[:space_npi])
-        authorize space, :update?
-
-        parent_document_npi = document_params[:parent_document_npi]
-        parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
-
-        authorize parent_document, :show? if parent_document
-
         begin
-          document = CreateDocumentService.new(pundit_user: pundit_user).create!(space, title: document_params[:title], parent_document:, markdown: document_params[:markdown])
+          document = CreateDocumentService.new(pundit_user: pundit_user).
+            create!(
+              space_npi: params[:space_npi],
+              title: document_params[:title],
+              parent_document_npi: document_params[:parent_document_npi],
+              markdown: document_params[:markdown]
+            )
 
           render json: {
             npi: document.npi,
@@ -35,7 +33,7 @@ module Api
             created_at: document.created_at,
             updated_at: document.updated_at
           }, status: :created
-        rescue StandardError
+        rescue ::BlocknoteConversionError
           render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
         rescue ActiveRecord::RecordInvalid => invalid
           render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity

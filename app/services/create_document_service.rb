@@ -8,33 +8,39 @@ class CreateDocumentService
     @pundit_user = pundit_user
   end
 
-  def create!(space, parent_document: nil, title:, markdown:)
-    document = space.documents.new(
-      title: title || "Untitled",
-      space: space,
-      organization: space.organization,
-    )
+  def create!(space_npi:, parent_document_npi: nil, title:, markdown:)
+    ActiveRecord::Base.transaction do
+      space = pundit_user.current_organization.spaces.find_by_param!(space_npi)
+      authorize space, :update?
 
-    authorize document, :create?
+      parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
+      authorize parent_document, :show? if parent_document
 
-    document.save!
+      document = space.documents.new(
+        title: title || "Untitled",
+        space: space,
+        organization: space.organization,
+      )
 
-    # Add to hierarchy
-    hierarchy_node = space.create_hierarchy_node(document.id)
+      authorize document, :create?
 
-    if parent_document.present?
-      if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
+      document.save!
+
+      # Add to hierarchy
+      hierarchy_node = space.create_hierarchy_node(document.id)
+
+      if parent_document.present?
+        if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
+          space.hierarchy.append(hierarchy_node)
+        end
+      else
         space.hierarchy.append(hierarchy_node)
       end
-    else
-      space.hierarchy.append(hierarchy_node)
-    end
 
-    space.save!
+      space.save!
 
-    # Create initial version with content if provided
-    if markdown.present?
-      begin
+      # Create initial version with content if provided
+      if markdown.present?
         markdown, frontmatter_data = extract_frontmatter(markdown)
 
         blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
@@ -52,12 +58,10 @@ class CreateDocumentService
         if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
           TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
         end
-      rescue StandardError
-        return render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
       end
-    end
 
-    document
+      document
+    end
   end
 
   def extract_frontmatter(markdown)

@@ -2,10 +2,11 @@ class Api::McpController < Api::ApiController
   def create
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
-      version: "1.0.0",
+      version: "1.0.1",
       tools: [
         ListSpacesTool,
         ReadDocumentTool,
+        CreateDocumentTool,
         ListObjectsByTagsTool,
         AddTagsTool,
         RemoveTagsTool,
