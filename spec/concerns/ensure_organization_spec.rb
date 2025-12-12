@@ -33,8 +33,8 @@ RSpec.describe EnsureOrganization do
     context "when called from multiple threads concurrently" do
       it "does not raise FiberError" do
         threads = []
-        errors = []
-        results = []
+        errors_queue = Queue.new
+        results_queue = Queue.new
 
         # Simulate concurrent requests in a multi-threaded environment
         10.times do
@@ -43,9 +43,9 @@ RSpec.describe EnsureOrganization do
               # Each thread creates its own instance (simulating different requests)
               instance = test_class.new
               result = instance.generate_organization_name
-              results << result
+              results_queue << result
             rescue => e
-              errors << e
+              errors_queue << e
             end
           end
         end
@@ -53,19 +53,21 @@ RSpec.describe EnsureOrganization do
         threads.each(&:join)
 
         # Should not have any FiberErrors
-        fiber_errors = errors.select { |e| e.is_a?(FiberError) }
+        errors_array = errors_queue.size.times.map { errors_queue.pop }
+        fiber_errors = errors_array.select { |e| e.is_a?(FiberError) }
         expect(fiber_errors).to be_empty, "Expected no FiberErrors, but got: #{fiber_errors.map(&:message)}"
 
         # Should have successfully generated names in all threads
-        expect(results.size).to eq(10)
-        expect(results).to all(be_a(String))
+        expect(results_queue.size).to eq(10)
+        results_array = results_queue.size.times.map { results_queue.pop }
+        expect(results_array).to all(be_a(String))
       end
 
       it "does not cause fiber called across threads error when reusing Thread.current storage" do
         # This specifically tests the original bug where Thread.current[:random_word_adjs]
         # stored an Enumerator that couldn't be used across threads
 
-        errors = []
+        errors = Queue.new
 
         # First thread creates and uses the enumerator
         thread1 = Thread.new do
@@ -90,7 +92,7 @@ RSpec.describe EnsureOrganization do
         end
         thread2.join
 
-        expect(errors).to be_empty
+        expect(errors.size).to eq(0)
       end
     end
   end
