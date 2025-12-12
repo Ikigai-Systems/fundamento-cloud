@@ -33,8 +33,17 @@ sudo dnf install age sops
 
 ### Age Key Setup
 
-The project owner should provide you with the age private key. Save it to:
+The project owner should provide you with the age private key. Save it to the platform-specific location:
 
+**macOS:**
+```bash
+mkdir -p ~/Library/Application\ Support/sops/age
+# Paste the private key into this file:
+nano ~/Library/Application\ Support/sops/age/keys.txt
+chmod 600 ~/Library/Application\ Support/sops/age/keys.txt
+```
+
+**Linux:**
 ```bash
 mkdir -p ~/.config/sops/age
 # Paste the private key into this file:
