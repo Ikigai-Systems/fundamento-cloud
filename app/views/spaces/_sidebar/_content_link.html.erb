@@ -28,6 +28,8 @@
       } ) %>
 
       <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
+        <%= render ObjectIcon.new(object: content) %>
+
         <span class="truncate">
           <%= content.try(:title) || content.try(:name) %>
         </span>
