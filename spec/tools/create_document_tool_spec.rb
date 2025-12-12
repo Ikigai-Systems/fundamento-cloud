@@ -251,7 +251,7 @@ RSpec.describe CreateDocumentTool, type: :model do
     context "when BlocknoteConverterService fails" do
       it "raises BlocknoteConversionError" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
-          .and_raise(BlocknoteConversionError.new("Conversion failed"))
+          .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
 
         expect {
           CreateDocumentTool.call(
@@ -261,7 +261,7 @@ RSpec.describe CreateDocumentTool, type: :model do
             markdown: "# Content",
             server_context: server_context
           )
-        }.to raise_error(BlocknoteConversionError, "Conversion failed")
+        }.to raise_error(BlocknoteConverterService::ConversionError, "Conversion failed")
       end
     end
   end

@@ -19,7 +19,7 @@ module Api
 
       def create
         begin
-          document = CreateDocumentService.new(pundit_user: pundit_user).
+          document = DocumentService.new(pundit_user: pundit_user).
             create!(
               space_npi: params[:space_npi],
               title: document_params[:title],
@@ -33,7 +33,7 @@ module Api
             created_at: document.created_at,
             updated_at: document.updated_at
           }, status: :created
-        rescue ::BlocknoteConversionError
+        rescue BlocknoteConverterService::ConversionError
           render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
         rescue ActiveRecord::RecordInvalid => invalid
           render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
@@ -65,6 +65,27 @@ module Api
           format.md do
             render locals: { content: BlocknoteConverterService.blocks_to_markdown(blocks) }
           end
+        end
+      end
+
+      def update
+        begin
+          document = DocumentService.new(pundit_user: pundit_user).
+            update!(
+              document_npi: params[:npi],
+              markdown: document_params[:markdown]
+            )
+
+          render json: {
+            npi: document.npi,
+            title: document.title,
+            created_at: document.created_at,
+            updated_at: document.updated_at
+          }
+        rescue BlocknoteConverterService::ConversionError
+          render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
+        rescue ActiveRecord::RecordInvalid => invalid
+          render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
         end
       end
 

@@ -578,7 +578,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
     context "when BlocknoteConverterService fails" do
       it "returns internal server error" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
-          .and_raise(BlocknoteConversionError.new("Conversion failed"))
+          .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
 
         post api_v1_documents_path(space_npi: is_default_space.npi),
           params: {
@@ -590,6 +590,237 @@ RSpec.describe "Api::V1::Documents", type: :request do
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+  end
+
+  describe "PATCH/PUT /api/v1/documents/:npi" do
+    context "with valid API token" do
+      it "updates document with new markdown content" do
+        markdown_content = "# Updated Content\n\nThis is updated text."
+
+        expect {
+          patch api_v1_document_path(npi: document_one.npi),
+            params: {
+              document: {
+                markdown: markdown_content
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Version, :count).by(1)
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+
+        expect(json_response["npi"]).to eq(document_one.npi)
+        expect(json_response["title"]).to eq(document_one.title)
+        expect(json_response["updated_at"]).to be_present
+
+        # Verify new version was created
+        document_one.reload
+        expect(document_one.versions.count).to eq(1)
+      end
+
+      it "updates document with tags from frontmatter" do
+        markdown_with_frontmatter = <<~MARKDOWN
+          ---
+          tags:
+            - updated/tag1
+            - updated/tag2
+          ---
+
+          # Updated Content
+        MARKDOWN
+
+        sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Updated Content" }] }]
+        sample_sync = { "data" => "yjs_sync_data" }
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        expect {
+          patch api_v1_document_path(npi: document_one.npi),
+            params: {
+              document: {
+                markdown: markdown_with_frontmatter
+              }
+            },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Tag, :count).by(2)
+         .and change(ObjectTag, :count).by(2)
+
+        expect(response).to have_http_status(:ok)
+
+        document_one.reload
+        expect(document_one.tags.count).to eq(2)
+        expect(document_one.tags.pluck(:name)).to contain_exactly("updated/tag1", "updated/tag2")
+
+        # Verify markdown content was processed without frontmatter
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks) do |markdown|
+          expect(markdown).not_to include("---")
+          expect(markdown).not_to include("tags:")
+          expect(markdown).to include("# Updated Content")
+        end
+      end
+
+      it "replaces existing tags when updating with new frontmatter tags" do
+        # Create initial tags
+        initial_tag = is_default_space.tags.create!(name: "initial/tag", organization: ikigai_systems)
+        document_one.object_tags.create!(tag: initial_tag, organization: ikigai_systems)
+
+        markdown_with_frontmatter = <<~MARKDOWN
+          ---
+          tags:
+            - new/tag1
+            - new/tag2
+          ---
+
+          # Updated Content
+        MARKDOWN
+
+        sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
+        sample_sync = { "data" => "yjs_sync_data" }
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: markdown_with_frontmatter
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+
+        document_one.reload
+        expect(document_one.tags.count).to eq(2)
+        expect(document_one.tags).not_to include(initial_tag)
+        expect(document_one.tags.pluck(:name)).to contain_exactly("new/tag1", "new/tag2")
+      end
+
+      it "sets created_by on new version" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return({})
+
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+
+        document_one.reload
+        expect(document_one.versions.last.created_by).to eq(pawel)
+      end
+
+      it "updates document sync field" do
+        sample_blocks = file_fixture("blocknote/colored_texts.json").read
+        sample_sync = file_fixture("blocknote/colored_texts.sync").binread
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "# Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+
+        document_one.reload
+        expect(document_one.sync).to eq(sample_sync)
+      end
+    end
+
+    context "with invalid API token" do
+      it "returns unauthorized" do
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer invalid_token" }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "without authentication" do
+      it "returns unauthorized" do
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "authorization" do
+      let(:other_org) { organizations(:hc) }
+      let(:other_org_user) { organization_users(:ou_hc_pawel) }
+      let!(:other_org_token) do
+        ApiToken.create!(
+          organization: other_org,
+          organization_user: other_org_user,
+          title: "Test API Token for Other Org"
+        )
+      end
+
+      it "returns not found when updating document from different organization" do
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{other_org_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "with invalid document npi" do
+      it "returns not found" do
+        patch api_v1_document_path(npi: "invalid-npi"),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "when BlocknoteConverterService fails" do
+      it "returns unprocessable entity" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
+          .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
+
+        patch api_v1_document_path(npi: document_one.npi),
+          params: {
+            document: {
+              markdown: "Updated Content"
+            }
+          },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        json_response = JSON.parse(response.body)
+        expect(json_response["errors"]["markdown"]).to eq("Conversion failed")
       end
     end
   end

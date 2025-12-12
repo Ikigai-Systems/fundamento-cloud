@@ -1,4 +1,4 @@
-class CreateDocumentService
+class DocumentService
 
   include Pundit::Authorization
 
@@ -58,6 +58,36 @@ class CreateDocumentService
         if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
           TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
         end
+      end
+
+      document
+    end
+  end
+
+  def update!(document_npi:, markdown:)
+    ActiveRecord::Base.transaction do
+      document = pundit_user.current_organization.documents.find_by_param!(document_npi)
+      authorize document, :update?
+
+      # Extract and process frontmatter
+      markdown, frontmatter_data = extract_frontmatter(markdown)
+
+      # Convert markdown to blocks and sync
+      blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
+      sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+
+      # Create new version with updated content
+      document.versions.create!(
+        content_blocks: blocks,
+        created_by: pundit_user.user
+      )
+
+      # Update document sync
+      document.update!(sync: sync)
+
+      # Process tags from frontmatter
+      if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
+        TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
       end
 
       document

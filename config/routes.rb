@@ -190,7 +190,7 @@ Rails.application.routes.draw do
 
       resources :spaces, param: :npi, only: [:index, :show, :create]
 
-      resources :documents, param: :npi, only: [:index, :show, :create]
+      resources :documents, param: :npi, only: [:index, :show, :create, :update]
 
       resources :tables, only: [:show]
 

@@ -1,6 +1,6 @@
-class BlocknoteConversionError < StandardError; end
-
 module BlocknoteConverterService
+  class ConversionError < StandardError; end
+
   def self.build_env
     env = {}
     sentry_dsn = Rails.application.credentials.dig(:sentry, :blocknote_converter_dsn)
@@ -21,7 +21,7 @@ module BlocknoteConverterService
       JSON.parse(stdout)
     else
       puts stderr  # Handle any errors from Node.js
-      raise BlocknoteConversionError.new "Unable to convert document to blocknote blocks"
+      raise ConversionError.new "Unable to convert document to blocknote blocks"
     end
   end
 
@@ -38,7 +38,7 @@ module BlocknoteConverterService
       stdout
     else
       puts stderr  # Handle any errors from Node.js
-      raise BlocknoteConversionError.new "Unable to convert document to  YJS"
+      raise ConversionError.new "Unable to convert document to  YJS"
     end
   end
 
@@ -55,7 +55,7 @@ module BlocknoteConverterService
       stdout
     else
       puts stderr  # Handle any errors from Node.js
-      raise BlocknoteConversionError.new "Unable to convert document to markdown"
+      raise ConversionError.new "Unable to convert document to markdown"
     end
 
   end
@@ -73,7 +73,7 @@ module BlocknoteConverterService
       JSON.parse(stdout)
     else
       puts stderr
-      raise BlocknoteConversionError.new "Unable to convert markdown to blocks"
+      raise ConversionError.new "Unable to convert markdown to blocks"
     end
   end
 end
