@@ -102,18 +102,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
     context "creates a document with tags from frontmatter" do
       it "creates a document and associates tags from frontmatter" do
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - rok/2024/05
-            - osobiste/refleksje
-            - osobiste/rozwój
-          ---
-
-          # Hello World
-
-          This is a test document with tags from frontmatter.
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/with_tags_frontmatter.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -160,15 +149,7 @@ RSpec.describe CreateDocumentTool, type: :model do
           organization: organization
         )
 
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - existing/tag
-            - new/tag
-          ---
-
-          # Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/reuse_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }

@@ -18,7 +18,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
   describe ".call" do
     context "happy case - updates document with markdown content" do
       it "updates document and creates new version" do
-        markdown_content = "# Updated Content\n\nThis is updated text."
+        markdown_content = file_fixture("documents/updated_content.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Updated Content" }] }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -53,15 +53,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
     context "updates document with tags from frontmatter" do
       it "updates document and associates tags from frontmatter" do
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - updated/tag1
-            - updated/tag2
-          ---
-
-          # Updated Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/updated_with_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -101,15 +93,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         initial_tag = space.tags.create!(name: "initial/tag", organization: organization)
         document.object_tags.create!(tag: initial_tag, organization: organization)
 
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - new/tag1
-            - new/tag2
-          ---
-
-          # Updated Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/replace_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }

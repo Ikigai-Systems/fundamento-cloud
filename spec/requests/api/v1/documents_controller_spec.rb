@@ -286,18 +286,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
      end
 
       it "creates a document with tags from frontmatter" do
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - rok/2024/05
-            - osobiste/refleksje
-            - osobiste/rozwój
-          ---
-
-          # Hello World
-
-          This is a test document with tags from frontmatter.
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/with_tags_frontmatter.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Hello World" }] }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -344,14 +333,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "creates a document when frontmatter has no tags" do
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          title: Some Title
-          author: John Doe
-          ---
-
-          # Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/no_tags_frontmatter.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -381,15 +363,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
           organization: ikigai_systems
         )
 
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - existing/tag
-            - new/tag
-          ---
-
-          # Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/reuse_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -597,7 +571,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
   describe "PATCH/PUT /api/v1/documents/:npi" do
     context "with valid API token" do
       it "updates document with new markdown content" do
-        markdown_content = "# Updated Content\n\nThis is updated text."
+        markdown_content = file_fixture("documents/updated_content.md").read
 
         expect {
           patch api_v1_document_path(npi: document_one.npi),
@@ -622,15 +596,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "updates document with tags from frontmatter" do
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - updated/tag1
-            - updated/tag2
-          ---
-
-          # Updated Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/updated_with_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Updated Content" }] }]
         sample_sync = { "data" => "yjs_sync_data" }
@@ -668,15 +634,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         initial_tag = is_default_space.tags.create!(name: "initial/tag", organization: ikigai_systems)
         document_one.object_tags.create!(tag: initial_tag, organization: ikigai_systems)
 
-        markdown_with_frontmatter = <<~MARKDOWN
-          ---
-          tags:
-            - new/tag1
-            - new/tag2
-          ---
-
-          # Updated Content
-        MARKDOWN
+        markdown_with_frontmatter = file_fixture("documents/replace_tags.md").read
 
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         sample_sync = { "data" => "yjs_sync_data" }
