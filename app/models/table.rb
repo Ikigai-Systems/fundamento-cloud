@@ -9,6 +9,9 @@ class Table < ApplicationRecord
   include ToReactProps
   set_react_props :id, :npi, :name, :organization_id, :parent_id, :parent_type, :space_id, :created_at, :updated_at, :archived
 
+  include EmojiExtractable
+  extracts_emoji_from :name
+
   belongs_to :organization
   belongs_to :space
 

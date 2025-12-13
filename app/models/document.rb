@@ -9,6 +9,9 @@ class Document < ApplicationRecord
   include ToReactProps
   set_react_props :id, :npi, :title
 
+  include EmojiExtractable
+  extracts_emoji_from :title
+
   belongs_to :organization
   belongs_to :space
 
