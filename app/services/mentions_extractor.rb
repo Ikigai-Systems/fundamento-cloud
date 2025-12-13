@@ -1,4 +1,8 @@
-Mention = Struct.new(:mention_id, :object_title, :object_path, :created_at)
+Mention = Struct.new(:mention_id, :object_title, :object_path, :created_at) do
+  include EmojiExtractable
+  extracts_emoji_from :object_title
+end
+
 class MentionsExtractor
   extend Rails.application.routes.url_helpers
 

@@ -9,9 +9,10 @@
 
     <% @incoming.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
-        <%= render ObjectIcon.new(type: reference.object_type) %>
+        <%= render ObjectIcon.new(object: reference.referenced_by) %>
+
         <div class="text-base truncate">
-          <%= link_to reference.referenced_by.title, reference.referenced_by %>
+          <%= link_to reference.referenced_by.try(:title_emojiless) || reference.referenced_by.try(:title), reference.referenced_by %>
         </div>
       </div>
     <% end %>
@@ -25,9 +26,10 @@
 
     <% @outgoing.sort_by(&:object_title).reverse.each do |reference| %>
       <div class="flex flex-row gap-3 items-center">
-        <%= render ObjectIcon.new(type: reference.object_type) %>
+        <%= render ObjectIcon.new(type: reference.object_type, emoji: reference.try(:object_title_emoji)) %>
+
         <div class="text-base truncate">
-          <%= link_to reference.object_title, reference.object_path %>
+          <%= link_to reference.try(:object_title_emojiless) || reference.try(:object_title), reference.object_path %>
         </div>
       </div>
     <% end %>

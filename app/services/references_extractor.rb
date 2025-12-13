@@ -1,4 +1,7 @@
-ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :object_path, :object_title)
+ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :object_path, :object_title) do
+  include EmojiExtractable
+  extracts_emoji_from :object_title
+end
 
 class ReferencesExtractor
   def self.all_references(documents)
