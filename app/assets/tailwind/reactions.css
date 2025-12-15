@@ -1,0 +1,33 @@
+@utility object-reactions-container {
+  @apply flex p-3 gap-1;
+}
+
+@utility object-current-reactions-container {
+  @apply flex gap-1;
+}
+
+@utility reaction-button {
+  @apply border rounded-full h-6 px-2;
+  @apply content-container;
+  @apply whitespace-nowrap;
+}
+
+@utility destroy-reaction-button {
+  @apply reaction-button;
+
+  &:disabled {
+    @apply reaction-button;
+  }
+
+  &:not(:disabled) {
+    @apply border-blue-600;
+  }
+}
+
+@utility create-reaction-button {
+  @apply reaction-button;
+  @apply px-3;
+
+  @apply border-transparent;
+  @apply hover:border-inherit;
+}

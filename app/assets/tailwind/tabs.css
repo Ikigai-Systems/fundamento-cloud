@@ -1,16 +1,28 @@
+@utility active-tab {
+  div[data-controller='tabs'] nav[data-tabs-target='list'] &button {
+    @apply text-indigo-500 dark:text-indigo-500 border-indigo-500;
+    @apply hover:text-indigo-400 hover:border-indigo-400;
+  }
+
+  div[data-controller='tabs'] nav[data-tabs-target='list'] &button div span {
+    @apply bg-indigo-500 hover:bg-indigo-300;
+    @apply hover:bg-indigo-400;
+  }
+}
+
+@utility content-sidebar-tabs {
+  &div[data-controller='tabs'] nav[data-tabs-target='list'] {
+    @apply -mb-px flex space-x-0;
+  }
+
+  &div[data-controller='tabs'] nav[data-tabs-target='list'] button {
+    @apply py-2 px-3;
+  }
+}
+
 @layer components {
     div[data-controller="tabs"] {
         @apply w-full;
-    }
-
-    div[data-controller="tabs"] nav[data-tabs-target="list"] button.active-tab {
-        @apply text-indigo-500 dark:text-indigo-500 border-indigo-500;
-        @apply hover:text-indigo-400 hover:border-indigo-400;
-    }
-
-    div[data-controller="tabs"] nav[data-tabs-target="list"] button.active-tab div span {
-        @apply bg-indigo-500 hover:bg-indigo-300;
-        @apply hover:bg-indigo-400;
     }
 
     div[data-controller="tabs"] nav[data-tabs-target="list"] button div span {
@@ -31,13 +43,5 @@
     /* Tab content container */
     div[data-controller="tabs"] div[data-tabs-target="panel"] {
         @apply py-4;
-    }
-
-    div.content-sidebar-tabs[data-controller="tabs"] nav[data-tabs-target="list"] {
-        @apply -mb-px flex space-x-0;
-    }
-
-    div.content-sidebar-tabs[data-controller="tabs"] nav[data-tabs-target="list"] button {
-        @apply py-2 px-3;
     }
 }

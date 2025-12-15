@@ -1,0 +1,48 @@
+@utility content-editor-padding {
+  /* This class is used to match BlockNote's content padding so all editors look similarly, see .bn-editor for current value of the padding */
+  padding-inline: 54px;
+}
+
+@utility content-title {
+  @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
+}
+
+@utility content-title-input {
+  @apply content-title h-12 p-0;
+  @apply bg-transparent;
+}
+
+@utility document-toolbar-button {
+  /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
+  /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
+  @apply secondary-button ml-2 text-sm;
+}
+
+@utility content-container {
+    @apply text-black dark:text-white;
+    @apply bg-white dark:bg-gray-800;
+}
+
+@layer base {
+    .editor-container a {
+        text-decoration: underline;
+        cursor: pointer;
+
+        @apply text-primary-blue-500
+    }
+
+    .editor-container .read-only {
+        .bn-editor {
+            padding-inline: 0;
+            @apply px-5;
+        }
+    }
+
+    .document {
+        @apply flex-col overflow-auto;
+    }
+
+    .document-editable {
+        @apply min-h-[calc(100vh-70px)]
+    }
+}

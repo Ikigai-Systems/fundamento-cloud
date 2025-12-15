@@ -1,0 +1,142 @@
+@import './table-list.css';
+@import './tabs.css';
+@import './dropdown.css';
+@import './sidebar.css';
+@import './content.css';
+@import './form.css';
+@import './automation.css';
+@import './modal.css';
+@import './lozenges.css';
+@import './reactions.css';
+@import './mentions.css';
+@import './popover.css';
+@import './react-select.css';
+
+@import 'tailwindcss';
+
+@config '../../../config/tailwind.config.js';
+
+@utility disabled-button {
+    @apply bg-slate-950/5 text-slate-950/40;
+    @apply dark:text-gray-500;
+    @apply focus-visible:outline-hidden;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility top-nav-bar {
+  @apply bg-white border-gray-200;
+  @apply dark:border-gray-600 dark:bg-gray-800;
+  @apply border-b-2 px-2 py-2.5;
+}
+
+@utility button {
+  @apply px-6 py-2 leading-5 rounded-md font-semibold inline-flex items-center text-sm;
+}
+
+@utility focused-section {
+  @apply form-section;
+  @apply relative overflow-x-auto;
+}
+
+@utility secondary-button {
+  @apply button;
+  @apply bg-white text-gray-900 hover:bg-gray-100 active:bg-gray-200;
+  @apply dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50 dark:active:bg-gray-600;
+  @apply shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600;
+}
+
+@utility danger-button {
+  @apply bg-red-600 text-white hover:bg-red-500;
+  @apply dark:bg-red-900 dark:hover:bg-red-800;
+}
+
+@utility first-button-group {
+  @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
+  @apply dark:bg-gray-800 dark:ring-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-gray-50;
+}
+
+@utility primary-button {
+  @apply secondary-button;
+  @apply bg-primary-orange-400 text-slate-900 hover:bg-primary-orange-300 hover:text-slate-800;
+  @apply dark:bg-primary-orange-400 dark:text-slate-900 dark:hover:bg-primary-orange-300 dark:hover:text-slate-800;
+
+  &button:disabled:not(.link-button) {
+    @apply bg-primary-orange-400/40 text-slate-950/40;
+  }
+}
+
+@utility link-button {
+  @apply font-medium text-primary-blue-500 dark:text-secondary-blue-500;
+
+  &:not(:disabled) {
+    @apply hover:underline;
+  }
+
+  &:disabled {
+    @apply text-neutral-400;
+    @apply bg-transparent;
+  }
+
+  &:disabled:active {
+    @apply text-neutral-400;
+    @apply bg-transparent;
+  }
+}
+
+@layer base {
+    /*
+     * Do not add any additional selectors in base section like button:disabled:not(.link-button) otherwise
+     * it will be very difficult to override those styles in other layers.
+     */
+
+    body {
+        @apply content-container;
+        @apply md:bg-gray-100;
+        @apply dark:md:bg-gray-900;
+        @apply antialiased;
+    }
+
+    a.default-link {
+        @apply text-primary-blue-500 hover:underline;
+    }
+
+    label {
+        @apply dark:text-white;
+    }
+
+    button:disabled,
+    input:disabled {
+        @apply cursor-not-allowed;
+    }
+
+    input:disabled {
+        @apply bg-slate-950/5 text-slate-950/40;
+        @apply dark:bg-slate-300/5 dark:text-slate-300/40;
+    }
+
+    button:disabled,
+    button:disabled:active {
+        @apply disabled-button;
+    }
+
+    *,:after,:before {
+        @apply dark:border-gray-600;
+    }
+}

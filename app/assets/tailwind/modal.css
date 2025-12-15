@@ -1,0 +1,31 @@
+@utility modal-content-container {
+  @apply sm:flex sm:items-start;
+}
+
+@utility modal-title {
+  @apply text-base font-semibold text-gray-900 dark:text-gray-50;
+}
+
+@utility modal-subtitle {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+@utility modal-icon-container {
+  @apply mx-auto flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10;
+}
+
+@utility modal-main-content-container {
+  @apply mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full;
+}
+
+@utility modal-buttons-container {
+  @apply mt-5 sm:mt-4 sm:flex sm:flex-row-reverse;
+}
+
+@utility modal-submit-button {
+  @apply inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-xs sm:ml-3 sm:w-auto;
+}
+
+@utility modal-cancel-button {
+  @apply mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto;
+}

@@ -1,0 +1,57 @@
+@utility form-errors-summary {
+  @apply mt-3 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 dark:border-red-600 mb-4 p-4 text-red-700 dark:text-red-50;
+}
+
+@utility form-section {
+  @apply dark:bg-gray-800 bg-white max-w-4xl p-6 md:mt-8 md:rounded-md md:shadow-md md:w-2/3 md:mx-auto lg:w-1/2;
+}
+
+@utility form-footer {
+  @apply flex justify-end mt-6 gap-2;
+}
+
+@utility form-submit {
+  @apply button;
+  @apply text-white bg-gray-700 hover:enabled:bg-gray-600 focus:bg-gray-600;
+  @apply dark:bg-gray-200 dark:hover:enabled:bg-gray-100 dark:focus:bg-gray-100 dark:text-gray-900;
+  @apply transition-colors duration-200 transform focus:outline-hidden;
+}
+
+@utility form-input {
+  @apply block shadow-sm rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full;
+  @apply dark:bg-gray-700 dark:border-gray-500;
+}
+
+@utility form-field {
+  @apply my-5;
+}
+
+@utility form-header {
+  @apply text-lg font-semibold text-gray-700 capitalize dark:text-white;
+}
+
+@utility form-legend {
+  @apply mt-3 text-gray-700 dark:text-white flex flex-col gap-2;
+}
+
+@utility default-form {
+  .form-hint {
+    @apply mt-3 text-sm text-slate-500 dark:text-gray-300;
+  }
+
+  .form-field {
+    label {
+      @apply block text-sm/6 font-medium;
+    }
+
+    em {
+      @apply mt-1;
+    }
+
+    .field_with_errors {
+      label {
+        @apply text-red-700 dark:text-red-500;
+      }
+    }
+  }
+}

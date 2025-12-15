@@ -1,5 +1,5 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
-const {addDynamicIconSelectors} = require('@iconify/tailwind');
+// // // // const defaultTheme = require('tailwindcss/defaultTheme')
+// const {addDynamicIconSelectors} = require('@iconify/tailwind');
 
 module.exports = {
   content: [
@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+// // // //         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         'primary-blue': {
@@ -85,9 +85,9 @@ module.exports = {
     // },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/container-queries'),
-    addDynamicIconSelectors(),
+    // require('@tailwindcss/forms'),
+    // require('@tailwindcss/typography'),
+    // require('@tailwindcss/container-queries'),
+    // addDynamicIconSelectors(),
   ]
 }

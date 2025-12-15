@@ -1,0 +1,85 @@
+@utility table-legend {
+  @apply sm:flex sm:items-center p-5;
+
+  & .table-legend-description {
+    @apply sm:flex-auto;
+  }
+
+  & .table-legend-description h1 {
+    @apply text-base font-semibold leading-6;
+  }
+
+  & .table-legend-description p {
+    @apply mt-2 text-sm text-gray-700 dark:text-gray-300;
+  }
+
+  & .table-legend-buttons-container {
+    @apply mt-4 sm:ml-16 sm:mt-0 sm:flex-none;
+  }
+}
+
+@utility table-legend-description {
+  .table-legend & {
+    @apply sm:flex-auto;
+  }
+
+  .table-legend & h1 {
+    @apply text-base font-semibold leading-6;
+  }
+
+  .table-legend & p {
+    @apply mt-2 text-sm text-gray-700 dark:text-gray-300;
+  }
+}
+
+@utility table-legend-buttons-container {
+  .table-legend & {
+    @apply mt-4 sm:ml-16 sm:mt-0 sm:flex-none;
+  }
+}
+
+@utility table-list {
+  @apply w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400;
+
+  & thead {
+    @apply text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+  }
+
+  & tbody tr {
+    @apply bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700;
+  }
+
+  & thead tr th {
+    @apply px-6 py-3;
+  }
+
+  & tbody tr td {
+    @apply px-6 py-4 align-top;
+  }
+
+  & tbody tr th {
+    @apply flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white;
+  }
+
+  & tbody tr th > div {
+    @apply max-w-xs xl:max-w-md;
+  }
+
+  & form.button_to {
+    @apply inline-block;
+
+    button {
+      text-align: left;
+    }
+  }
+}
+
+@utility button_to {
+  .table-list &form {
+    @apply inline-block;
+
+    button {
+      text-align: left;
+    }
+  }
+}
