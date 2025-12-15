@@ -51,13 +51,13 @@ function EditFormulaPopup({
   }, [formula, previewRow, rows, space.npi, table.npi]);
 
   return (
-    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
+    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-100">
       <div className="p-2 font-bold">
         Column formula
       </div>
       <div className="px-2 py-0 border-b">
         <textarea
-          className="focus:outline-none focus:ring rounded rounded-2 p-1 border mb-2 min-w-96 h-32"
+          className="focus:outline-hidden focus:ring rounded rounded-2 p-1 border mb-2 min-w-96 h-32"
           value={formula}
           onBlur={async (e) => {
             if (e.target.value !== column.options?.formula) {
@@ -76,7 +76,7 @@ function EditFormulaPopup({
         />
       </div>
       <div className="flex flex-row items-center pl-2 py-1 border-b">
-        <div className="flex-grow">
+        <div className="grow">
           <div>
             {previewIsLoading && <Spinner size={4}/>}
             {!previewIsLoading && !previewResponse.error && '= ' + previewResponse.result}

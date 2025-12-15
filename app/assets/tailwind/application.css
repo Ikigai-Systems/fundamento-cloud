@@ -1,3 +1,8 @@
+@import 'tailwindcss';
+
+@plugin "@iconify/tailwind4";
+/*@plugin "@tailwindcss/forms";*/
+
 @import './table-list.css';
 @import './tabs.css';
 @import './dropdown.css';
@@ -11,15 +16,73 @@
 @import './mentions.css';
 @import './popover.css';
 @import './react-select.css';
+@import './buttons.css';
 
-@import 'tailwindcss';
+@theme {
+    /* Font Family */
+    --font-sans: "Inter var", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
-@config '../../../config/tailwind.config.js';
+    /* Custom Colors - Primary Blue */
+    --color-primary-blue-50: #eff8ff;
+    --color-primary-blue-100: #def0ff;
+    --color-primary-blue-200: #b6e3ff;
+    --color-primary-blue-300: #75cfff;
+    --color-primary-blue-400: #2cb7ff;
+    --color-primary-blue-500: #00a2ff;
+    --color-primary-blue-600: #007dd4;
+    --color-primary-blue-700: #0063ab;
+    --color-primary-blue-800: #00538d;
+    --color-primary-blue-900: #064674;
+    --color-primary-blue-950: #042c4d;
 
-@utility disabled-button {
-    @apply bg-slate-950/5 text-slate-950/40;
-    @apply dark:text-gray-500;
-    @apply focus-visible:outline-hidden;
+    /* Custom Colors - Secondary Blue */
+    --color-secondary-blue-50: #f0f7ff;
+    --color-secondary-blue-100: #e0effe;
+    --color-secondary-blue-200: #b9defe;
+    --color-secondary-blue-300: #7cc5fd;
+    --color-secondary-blue-400: #36a8fa;
+    --color-secondary-blue-500: #0c8deb;
+    --color-secondary-blue-600: #0066ba;
+    --color-secondary-blue-700: #0157a3;
+    --color-secondary-blue-800: #064b86;
+    --color-secondary-blue-900: #0b3f6f;
+    --color-secondary-blue-950: #07284a;
+
+    /* Custom Colors - Primary Orange */
+    --color-primary-orange-50: #fff9ec;
+    --color-primary-orange-100: #fff1d2;
+    --color-primary-orange-200: #ffdea4;
+    --color-primary-orange-300: #ffc66b;
+    --color-primary-orange-400: #ffa22f;
+    --color-primary-orange-500: #ff8407;
+    --color-primary-orange-600: #f96700;
+    --color-primary-orange-700: #d95100;
+    --color-primary-orange-800: #a33d09;
+    --color-primary-orange-900: #83340b;
+    --color-primary-orange-950: #471803;
+
+    /* Custom Colors - Secondary Orange */
+    --color-secondary-orange-50: #fffeea;
+    --color-secondary-orange-100: #fffac5;
+    --color-secondary-orange-200: #fff685;
+    --color-secondary-orange-300: #ffea46;
+    --color-secondary-orange-400: #ffdb1b;
+    --color-secondary-orange-500: #ffbb00;
+    --color-secondary-orange-600: #e29000;
+    --color-secondary-orange-700: #bb6502;
+    --color-secondary-orange-800: #984e08;
+    --color-secondary-orange-900: #7c400b;
+    --color-secondary-orange-950: #482100;
+
+    /* Animations */
+    --animate-fadeout: fade-out 1.5s ease-out;
+
+    /* Keyframes */
+    @keyframes fade-out {
+        0% { opacity: 1; }
+        66% { opacity: 1; }
+        100% { opacity: 0; }
+    }
 }
 
 /*
@@ -46,58 +109,9 @@
   @apply border-b-2 px-2 py-2.5;
 }
 
-@utility button {
-  @apply px-6 py-2 leading-5 rounded-md font-semibold inline-flex items-center text-sm;
-}
-
 @utility focused-section {
   @apply form-section;
   @apply relative overflow-x-auto;
-}
-
-@utility secondary-button {
-  @apply button;
-  @apply bg-white text-gray-900 hover:bg-gray-100 active:bg-gray-200;
-  @apply dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-50 dark:active:bg-gray-600;
-  @apply shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600;
-}
-
-@utility danger-button {
-  @apply bg-red-600 text-white hover:bg-red-500;
-  @apply dark:bg-red-900 dark:hover:bg-red-800;
-}
-
-@utility first-button-group {
-  @apply relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10;
-  @apply dark:bg-gray-800 dark:ring-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-gray-50;
-}
-
-@utility primary-button {
-  @apply secondary-button;
-  @apply bg-primary-orange-400 text-slate-900 hover:bg-primary-orange-300 hover:text-slate-800;
-  @apply dark:bg-primary-orange-400 dark:text-slate-900 dark:hover:bg-primary-orange-300 dark:hover:text-slate-800;
-
-  &button:disabled:not(.link-button) {
-    @apply bg-primary-orange-400/40 text-slate-950/40;
-  }
-}
-
-@utility link-button {
-  @apply font-medium text-primary-blue-500 dark:text-secondary-blue-500;
-
-  &:not(:disabled) {
-    @apply hover:underline;
-  }
-
-  &:disabled {
-    @apply text-neutral-400;
-    @apply bg-transparent;
-  }
-
-  &:disabled:active {
-    @apply text-neutral-400;
-    @apply bg-transparent;
-  }
 }
 
 @layer base {

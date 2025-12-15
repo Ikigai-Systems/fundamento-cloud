@@ -10,7 +10,7 @@
   }
 
   .section-header-title {
-    @apply mx-2 py-2 font-bold text-slate-600 uppercase flex flex-grow gap-2 items-center;
+    @apply mx-2 py-2 font-bold text-slate-600 uppercase flex grow gap-2 items-center;
     @apply dark:text-gray-400;
   }
 
@@ -44,7 +44,7 @@
     }
 
     .content-link {
-      @apply flex flex-row items-center flex-grow;
+      @apply flex flex-row items-center grow;
     }
 
     .content-link-buttons-container {

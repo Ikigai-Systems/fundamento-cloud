@@ -18,7 +18,7 @@
 }
 
 @utility form-input {
-  @apply block shadow-sm rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full;
+  @apply block shadow-xs rounded-md border border-gray-200 outline-hidden px-3 py-2 mt-2 w-full;
   @apply dark:bg-gray-700 dark:border-gray-500;
 }
 

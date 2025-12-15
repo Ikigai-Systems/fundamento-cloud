@@ -103,7 +103,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       ]);
 
       const spanClassNames = clsx(
-        "inline-flex max-w-full items-start group border shadow-sm overflow-hidden bg-gray-100 px-1 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
+        "inline-flex max-w-full items-start group border shadow-xs overflow-hidden bg-gray-100 px-1 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
       );
 
       const configureButtonClassNames = clsx(
@@ -115,7 +115,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       if (formulaResult?.error) {
         displayResult = <span className="text-red-500 dark:text-red-500">{formulaResult.error}</span>
       } else if (formulaResult?.result !== undefined) {
-        displayResult = <span className={clsx({"max-w-[calc(100%_-_18px)]": isEditable})}>{JSON.stringify(formulaResult.result)}</span>
+        displayResult = <span className={clsx({"max-w-[calc(100%-18px)]": isEditable})}>{JSON.stringify(formulaResult.result)}</span>
       } else if (formulaResult?.commands?.length > 0) {
         displayResult = <div className=""><span className="relative top-0.5 size-4 icon-[heroicons--bolt]"></span>Action</div>
       }

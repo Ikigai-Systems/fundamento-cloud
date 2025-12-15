@@ -114,7 +114,7 @@ export default function SelectButton({
           <FloatingFocusManager context={context} modal={false}>
             <div
               ref={refs.setFloating}
-              className="shadow-xl bg-white dark:!bg-gray-800 overflow-y-auto border-solid border py-2 rounded-lg z-20 focus:outline-none"
+              className="shadow-xl bg-white dark:!bg-gray-800 overflow-y-auto border-solid border py-2 rounded-lg z-20 focus:outline-hidden"
               style={{
                 ...floatingStyles,
               }}
@@ -129,7 +129,7 @@ export default function SelectButton({
                   role="option"
                   tabIndex={i === activeIndex ? 0 : -1}
                   aria-selected={i === selectedIndex && i === activeIndex}
-                  className={`p-2 h-8 flex flex-row items-center text-sm cursor-pointer${i === activeIndex ? " bg-neutral-100 dark:bg-gray-700 dark:focus:bg-gray-600 focus:outline-none" : ""}`}
+                  className={`p-2 h-8 flex flex-row items-center text-sm cursor-pointer${i === activeIndex ? " bg-neutral-100 dark:bg-gray-700 dark:focus:bg-gray-600 focus:outline-hidden" : ""}`}
                   {...getItemProps({
                     // Handle pointer select.
                     onClick() {

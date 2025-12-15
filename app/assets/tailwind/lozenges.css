@@ -1,5 +1,5 @@
 @utility draft-lozenge {
-  @apply uppercase bg-gray-100 group-hover:bg-gray-200 active:group-hover:bg-gray-300 text-gray-800 text-xs font-bold font-medium px-2 py-0 h-4 rounded-sm;
+  @apply uppercase bg-gray-100 group-hover:bg-gray-200 active:group-hover:bg-gray-300 text-gray-800 text-xs font-medium px-2 py-0 h-4 rounded-xs;
   @apply dark:bg-gray-700 dark:group-hover:bg-gray-600 dark:active:group-hover:bg-gray-500 dark:text-gray-300;
 }
 

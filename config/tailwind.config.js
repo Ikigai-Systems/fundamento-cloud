@@ -1,5 +1,5 @@
-// // // // const defaultTheme = require('tailwindcss/defaultTheme')
-// const {addDynamicIconSelectors} = require('@iconify/tailwind');
+const defaultTheme = require('tailwindcss/defaultTheme')
+const {addDynamicIconSelectors} = require('@iconify/tailwind');
 
 module.exports = {
   content: [
@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-// // // //         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         'primary-blue': {
@@ -70,14 +70,14 @@ module.exports = {
       },
       keyframes: {
         'fade-out': {
-          '0%': { opacity: 1 },
-          '66%': { opacity: 1 },
-          '100%': { opacity: 0 },
+          '0%': {opacity: 1},
+          '66%': {opacity: 1},
+          '100%': {opacity: 0},
         },
       },
       animation: {
         fadeout: 'fade-out 1.5s ease-out',
-        }
+      }
     },
     // leaving commented out, might become useful in future iterations
     // data: {
@@ -85,9 +85,9 @@ module.exports = {
     // },
   },
   plugins: [
-    // require('@tailwindcss/forms'),
-    // require('@tailwindcss/typography'),
-    // require('@tailwindcss/container-queries'),
-    // addDynamicIconSelectors(),
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/container-queries'),
+    addDynamicIconSelectors(),
   ]
 }

@@ -75,7 +75,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
           : {height: "h-6", wrapper: "rounded-lg", button: "text-sm px-6", cog: "size-4"}
 
       const spanClassNames = clsx(
-        "inline-flex items-center group border shadow-sm overflow-hidden",
+        "inline-flex items-center group border shadow-xs overflow-hidden",
         colorNameToClass(color),
         sizeClassNames.wrapper,
       );

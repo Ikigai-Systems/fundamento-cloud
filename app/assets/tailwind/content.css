@@ -4,7 +4,7 @@
 }
 
 @utility content-title {
-  @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
+  @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] w-full resize-none text-4xl;
 }
 
 @utility content-title-input {

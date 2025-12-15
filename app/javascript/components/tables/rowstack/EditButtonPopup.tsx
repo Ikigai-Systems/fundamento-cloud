@@ -29,7 +29,7 @@ function EditButtonPopup({
   }, [formula, setColumn, column.fundamentoFormula]);
 
   return (<>
-    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px] min-w-[300px]">
+    <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-100 min-w-[300px]">
       <div className="p-2 pt-4 uppercase font-medium text-secondary text-xs">
         Button settings
       </div>
@@ -39,7 +39,7 @@ function EditButtonPopup({
 
           <div className="py-0 border-b">
             <textarea
-              className="focus:outline-none focus:ring rounded rounded-2 p-1 border mb-2 min-w-96 h-32"
+              className="focus:outline-hidden focus:ring rounded rounded-2 p-1 border mb-2 min-w-96 h-32"
               value={formula}
               onBlur={async (e) => {
                 if (e.target.value !== column.options?.formula) {
