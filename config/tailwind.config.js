@@ -13,6 +13,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        'ia-writer-quattro': ['iA Writer Quattro', ...defaultTheme.fontFamily.sans],
       },
       colors: {
         'primary-blue': {
@@ -70,14 +71,14 @@ module.exports = {
       },
       keyframes: {
         'fade-out': {
-          '0%': { opacity: 1 },
-          '66%': { opacity: 1 },
-          '100%': { opacity: 0 },
+          '0%': {opacity: 1},
+          '66%': {opacity: 1},
+          '100%': {opacity: 0},
         },
       },
       animation: {
         fadeout: 'fade-out 1.5s ease-out',
-        }
+      }
     },
     // leaving commented out, might become useful in future iterations
     // data: {

@@ -16,6 +16,11 @@
   --bn-colors-editor-background: transparent;
 }
 
+/* Ensure BlockNote editor inherits the correct font */
+.bn-container .bn-inline-content {
+  @apply font-ia-writer-quattro;
+}
+
 /* Simple `code` block */
 .bn-container .bn-editor .bn-inline-content code {
   background-color: rgb(241 245 249); /* bg-slate-100 */
@@ -24,6 +29,7 @@
   color: rgb(51 65 85);
   padding: 0 3px;
 }
+
 @media (prefers-color-scheme: dark) {
   .bn-container .bn-editor .bn-inline-content code {
     background-color: rgb(71 85 105); /* bg-slate-600 */
@@ -39,7 +45,6 @@
     outline: none !important;
 }
 */
-
 
 @media (prefers-color-scheme: dark) {
   .ProseMirror-selectednode .bn-file-name-with-icon {
