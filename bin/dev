@@ -5,6 +5,42 @@ if ! gem list foreman -i --silent; then
   gem install foreman
 fi
 
+# Extract app services from Procfile.dev (first word on each line)
+DEVELOPMENT_SERVICES=$(awk -F: '{print $1}' Procfile.dev | tr '\n' ' ')
+
+# Get all docker compose services
+ALL_DOCKER_SERVICES=$(docker compose config --services)
+
+# Filter out app services to get infrastructure services
+DOCKER_SERVICES_TO_RUN=""
+for service in $ALL_DOCKER_SERVICES; do
+  # Check if this service is NOT in DEVELOPMENT_SERVICES
+  if ! echo "$DEVELOPMENT_SERVICES" | grep -wq "$service"; then
+    DOCKER_SERVICES_TO_RUN="$DOCKER_SERVICES_TO_RUN $service"
+  fi
+done
+
+# Check if any infrastructure services need to be started
+SERVICES_NEEDED=false
+for service in $DOCKER_SERVICES_TO_RUN; do
+  if ! docker compose ps --status running --format json | grep -q "\"Service\":\"$service\""; then
+    SERVICES_NEEDED=true
+    break
+  fi
+done
+
+# Start infrastructure services if needed
+if [ "$SERVICES_NEEDED" = true ]; then
+  echo "Starting infrastructure services:$DOCKER_SERVICES_TO_RUN"
+  docker compose up -d $DOCKER_SERVICES_TO_RUN
+
+  echo "Waiting for services to be healthy..."
+  docker compose up --wait $DOCKER_SERVICES_TO_RUN
+  echo "Infrastructure services are ready!"
+else
+  echo "Infrastructure services already running, skipping docker compose..."
+fi
+
 # Default to port 3000 if not specified
 export PORT="${PORT:-3000}"
 
