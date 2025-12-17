@@ -58,6 +58,7 @@ gem "y-rb_actioncable"
 
 gem "devise", github: "heartcombo/devise", branch: "main"
 gem "devise_invitable"
+gem "devise-passwordless"
 
 gem "tailwindcss-rails", "~> 3.0"
 # pin to tailwindcss version:
@@ -111,6 +112,7 @@ end
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem "letter_opener"
 end
 
 group :development, :test do
