@@ -126,6 +126,6 @@ group :development, :test do
   gem 'cypress-on-rails'
 end
 
-group :development, :test do
+group :development, :test, :standalone do
   gem "dotenv-rails", "~> 3.1"
 end
