@@ -51,11 +51,7 @@ module Fundamento
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Logstash.new
 
-<<<<<<< HEAD
-    unless Rails.env.production?
-=======
     if !Rails.env.production? && !Rails.env.standalone?
->>>>>>> parent of 0d05b530 (Removed standalone environment and code conditional on Rails.env.standalone)
       config.lograge.keep_original_rails_log = true
       config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/#{Rails.env}-lograge.log"
     end
