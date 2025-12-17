@@ -36,15 +36,20 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    :user_name => Rails.application.credentials.dig(:mailtrap, :username),
-    :password => Rails.application.credentials.dig(:mailtrap, :password),
-    :address => 'sandbox.smtp.mailtrap.io',
-    :host => 'sandbox.smtp.mailtrap.io',
-    :port => '2525',
-    :authentication => :login
-  }
+  if ENV.fetch("LETTER_OPENER").to_b
+    config.action_mailer.delivery_method = :letter_opener
+    config.action_mailer.perform_deliveries = true
+  else
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      :user_name => Rails.application.credentials.dig(:mailtrap, :username),
+      :password => Rails.application.credentials.dig(:mailtrap, :password),
+      :address => 'sandbox.smtp.mailtrap.io',
+      :host => 'sandbox.smtp.mailtrap.io',
+      :port => '2525',
+      :authentication => :login
+    }
+  end
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
