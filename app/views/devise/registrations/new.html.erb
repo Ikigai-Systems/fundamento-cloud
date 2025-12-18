@@ -88,11 +88,13 @@
     <% end %>
   <% end %>
 
+  <%= render 'spacer' %>
+
+  <div class="md:my-4 mb-4">
+    Already have an account? <%= link_to "Sign in ->", new_session_path(resource_name), class: "link-button" %>
+  </div>
 </section>
 
-<div class="md:my-4 mb-4 px-6">
-  Already have an account? <%= link_to "Sign in", new_session_path(resource_name), class: "link-button" %>
-</div>
 </div>
 
 <% if !Rails.env.standalone? %>
