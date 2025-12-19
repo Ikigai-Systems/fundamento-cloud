@@ -1,4 +1,5 @@
 require_relative "../../lib/flipper/adapters/static_feature"
+require "flipper/adapters/failover"
 
 # Configure Flipper adapter based on environment
 if Rails.env.test?
