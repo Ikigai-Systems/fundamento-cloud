@@ -14,6 +14,8 @@ class User < ApplicationRecord
     :confirmable
 
 
+  before_create :skip_confirmation_if_not_required
+
   scope :query, ->(query) { where("(first_name || ' ' || last_name) ILIKE ?", "%#{query}%") }
 
   has_many :organizations_users, class_name: :OrganizationUser, dependent: :destroy
@@ -77,7 +79,7 @@ class User < ApplicationRecord
 
   def avatar_variant(size = :lg)
     return unless avatar.attached?
-    
+
     # SVG files don't need variants as they're vector-based and scalable
     if avatar.content_type == 'image/svg+xml'
       avatar
@@ -87,6 +89,11 @@ class User < ApplicationRecord
   end
 
   private
+
+  def skip_confirmation_if_not_required
+    # Auto-confirm user if in standalone mode
+    skip_confirmation! if Flipper.enabled?(:standalone)
+  end
 
   def validate_avatar_format
     return unless avatar.attached?
