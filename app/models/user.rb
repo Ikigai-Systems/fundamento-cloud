@@ -2,8 +2,6 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
 
-  devise :invitable, :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :validatable, :trackable
   devise :invitable,
     :database_authenticatable,
     :registerable,
@@ -13,6 +11,9 @@ class User < ApplicationRecord
     :trackable,
     :confirmable
 
+  unless Rails.env.standalone?
+    devise :magic_link_authenticatable
+  end
 
   before_create :skip_confirmation_if_not_required
 
