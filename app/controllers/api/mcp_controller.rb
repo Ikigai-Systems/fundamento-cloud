@@ -12,7 +12,7 @@ class Api::McpController < Api::ApiController
         AddTagsTool,
         RemoveTagsTool,
         UpdateTagsTool,
-        SampleTool,
+        RunFormulaTool,
       ],
       # prompts: [MyPrompt],
       server_context: {
