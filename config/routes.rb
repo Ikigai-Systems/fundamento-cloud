@@ -25,6 +25,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :superintendent do
+    mount Flipper::Api.app(Flipper) => "/construction/flipper/api"
     mount Flipper::UI.app(Flipper) => "/construction/flipper"
   end
 

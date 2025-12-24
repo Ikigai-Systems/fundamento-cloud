@@ -94,6 +94,7 @@ gem "jwt"
 
 gem "flipper-active_record"
 gem "flipper-ui"
+gem "flipper-api"
 gem "recaptcha"
 
 gem "random-word"
