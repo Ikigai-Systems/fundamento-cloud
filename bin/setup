@@ -12,12 +12,15 @@ FileUtils.chdir APP_ROOT do
   # This script is a way to set up or update your development environment automatically.
   # This script is idempotent, so that you can run it at any time and get an expectable outcome.
   # Add necessary setup steps to this file.
+  puts "== Getting secrets ready =="
+  system!("op document get --account my.1password.com 57od4h7zivbd6pfr2yvapqttwm --out-file dockerfiles/sops-age-key.secret")
+  system!("SOPS_AGE_KEY_FILE=dockerfiles/sops-age-key.secret sops -d --extract '[\"fontawesome\"][\"auth_token\"]' --output dockerfiles/fontawesome-auth.secret config/secrets/development.sops.yaml")
 
   puts "== Installing and configuring bundler =="
   system! "gem install bundler --conservative"
 
   # Extract FontAwesome token from SOPS secrets
-  fontawesome_token = `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml 2>/dev/null`.strip
+  fontawesome_token = File.read("dockerfiles/fontawesome-auth.secret").strip
   if fontawesome_token.empty?
     puts "WARNING: Could not extract FontAwesome token from SOPS. Bundle install may fail."
   else
