@@ -1,6 +1,7 @@
 describe('Basic features work', function() {
   before(() => {
     cy.app('clean') // have a look at e2e/app_commands/clean.rb
+    cy.appFlipper({flags: ["standalone"]})
 
     cy.visit("/");
     cy.contains("Sign up").click();
