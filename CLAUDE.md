@@ -24,13 +24,8 @@ bundle exec rspec
 # Run specific test file
 bundle exec rspec spec/models/space_spec.rb
 
-# E2E tests (requires Docker setup)
-RAILS_ENV=test docker compose -p e2e-tests up
-npx cypress run --project spec/e2e
-npx cypress open --project spec/e2e
-
-# Clean up E2E containers
-docker compose -p e2e-tests down --remove-orphans --rmi local
+# Go the the next failed test
+bundle exec rspec --next
 ```
 
 ### Code Quality
@@ -134,6 +129,70 @@ docker compose up redis postgresql
 Whenever possible, use the following rules:
 - strings should be put into double-quotes
 - don't add indentation spaces on empty lines
+
+## E2E Testing (Simultaneous with Development)
+
+E2E tests use the same `docker-compose.yml` but with environment variables to offset ports (+1000) and the `-p e2e-tests` flag for container/volume isolation.
+
+### Port Mapping
+
+| Service | Development | E2E Tests | Offset |
+|---------|-------------|-----------|--------|
+| Rails Website | 3000 | 4000 | +1000 |
+| Vite Dev Server | 3036 | 3037 | test env |
+| BlockNote Converter | 3002 | 4002 | +1000 |
+| PostgreSQL | 5432 | 6432 | +1000 |
+| Redis | 6379 | 7379 | +1000 |
+| MinIO API | 9000 | 10000 | +1000 |
+| MinIO Console | 9001 | 10001 | +1000 |
+
+### Running Both Environments Simultaneously
+
+```bash
+# Terminal 1: Start local development (normal ports)
+bin/dev
+
+# Terminal 2: Start E2E environment (offset ports)
+bin/dev-e2e
+
+# Terminal 3: Run Cypress tests
+npx cypress run --project spec/e2e
+npx cypress open --project spec/e2e
+```
+
+### E2E Environment Management
+
+```bash
+# Start E2E environment
+bin/dev-e2e
+
+# Start with rebuild (after Dockerfile changes)
+bin/dev-e2e --build
+
+# Stop E2E environment
+docker compose -p e2e-tests down
+
+# Full cleanup (including volumes)
+docker compose -p e2e-tests down --volumes
+
+# Aggressive cleanup
+docker compose -p e2e-tests down --volumes --remove-orphans --rmi local 
+
+# View logs
+docker compose -p e2e-tests logs -f
+
+# Rebuild containers manually
+docker compose -p e2e-tests build
+```
+
+### Key Features
+
+- **Single Config File**: Uses main `docker-compose.yml` with environment variables for ports
+- **Project Isolation**: `-p e2e-tests` flag isolates containers and volumes
+- **Independent Data**: E2E tests use separate volumes via project flag
+- **Fully Containerized**: All services run in Docker for consistency with CI/CD
+- **Fast Iteration**: Docker build layers are cached, only code changes trigger rebuilds
+- **No Conflicts**: Can run local development and E2E tests at the same time
 
 ## Secrets Management
 
