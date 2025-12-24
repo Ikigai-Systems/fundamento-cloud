@@ -103,7 +103,7 @@ RSpec.describe "Users::Registrations" do
       with_feature_both_states(:standalone) do
         it "does not create a user" do
 
-          invalid_params = Rails.env.standalone? ? user_params_standalone.merge(email: "invalid") : user_params_cloud.merge(email: "invalid")
+          invalid_params = Flipper.enabled?(:standalone) ? user_params_standalone.merge(email: "invalid") : user_params_cloud.merge(email: "invalid")
 
           expect {
             post user_registration_path, params: { user: invalid_params }
