@@ -35,8 +35,8 @@ class User < ApplicationRecord
     attachable.variant :xl, resize_to_fill: [128, 128]
   end
 
-  validates_presence_of :first_name, if: -> { Rails.env.standalone? }
-  validates_presence_of :last_name, if: -> { Rails.env.standalone? }
+  validates_presence_of :first_name, if: -> { Flipper.enabled?(:standalone) }
+  validates_presence_of :last_name, if: -> { Flipper.enabled?(:standalone) }
   validate :validate_avatar_format
 
   after_commit :process_avatar_variants, on: [:create, :update]

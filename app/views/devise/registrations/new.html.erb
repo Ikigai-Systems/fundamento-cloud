@@ -1,4 +1,4 @@
-<% if !Rails.env.standalone? %>
+<% if !Flipper.enabled?(:standalone) %>
   <div class="w-full grid grid-cols-1 md:grid-cols-10 md:gap-8 md:px-8">
     <div class="max-w-screen-md md:col-start-2 md:col-span-5">
 <% else %>
@@ -7,7 +7,7 @@
 <% end %>
 
 <section class="form-section w-full">
-  <% if !Rails.env.standalone? %>
+  <% if !Flipper.enabled?(:standalone) %>
     <h1 class="mt-0 max-w-75">
       <span class="text-4xl font-semibold block mt-3">Fundamento</span>
       <span class="text-lg font-normal">Sign up for a free account</span>
@@ -28,7 +28,7 @@
       <%= f.email_field :email, class: "form-input" %>
     </div>
 
-    <% if Rails.env.standalone? %>
+    <% if Flipper.enabled?(:standalone) %>
       <% if resource.respond_to?(:first_name) %>
         <div class="form-field">
           <%= f.label :first_name %>
@@ -93,7 +93,7 @@
 
 </div>
 
-<% if !Rails.env.standalone? %>
+<% if !Flipper.enabled?(:standalone) %>
   <div class="md:col-start-7 md:col-span-3">
     <hr class="mt-4 md:hidden">
     <section class="form-section w-full p-0">
