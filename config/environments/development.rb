@@ -36,7 +36,7 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  if ENV.fetch("LETTER_OPENER").to_b
+  if ENV.fetch("LETTER_OPENER", true).to_b
     config.action_mailer.delivery_method = :letter_opener
     config.action_mailer.perform_deliveries = true
   else

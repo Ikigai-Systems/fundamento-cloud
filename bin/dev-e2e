@@ -1,0 +1,74 @@
+#!/usr/bin/env sh
+
+# Parse command line arguments
+BUILD_FLAG=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --build)
+      BUILD_FLAG="--build"
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Usage: bin/dev-e2e [--build]"
+      echo ""
+      echo "Options:"
+      echo "  --build    Force rebuild of Docker images"
+      exit 1
+      ;;
+  esac
+done
+
+# Load SOPS_AGE_KEY from dockerfiles/sops-age-key.secret if not already set
+if [ -z "$SOPS_AGE_KEY" ]; then
+  if [ -f dockerfiles/sops-age-key.secret ]; then
+    echo "Loading SOPS_AGE_KEY from dockerfiles/sops-age-key.secret..."
+    echo ""
+    export SOPS_AGE_KEY=$(grep -v '^#' dockerfiles/sops-age-key.secret | grep -v '^$' | head -n 1)
+  else
+    echo "❌ Error: SOPS_AGE_KEY is not set and dockerfiles/sops-age-key.secret not found!"
+    echo ""
+    echo "SOPS_AGE_KEY is required to decrypt secrets for the E2E environment."
+    echo ""
+    echo "Options:"
+    echo "  1. Run bin/setup to import it from 1password vault"
+    echo "  2. Export it in your shell: export SOPS_AGE_KEY='your-key-here'"
+    echo "  3. Pass it inline: SOPS_AGE_KEY='your-key' bin/dev-e2e"
+    echo ""
+    exit 1
+  fi
+fi
+
+# Set E2E environment variables (offset ports by +1000)
+export RAILS_ENV=test
+export RAILS_PORT=4000
+export POSTGRES_PORT=6432
+export REDIS_PORT=7379
+export MINIO_PORT=10000
+export MINIO_CONSOLE_PORT=10001
+export BLOCKNOTE_PORT=4002
+
+echo "Starting E2E test environment with offset ports..."
+echo "  Rails: http://localhost:${RAILS_PORT}"
+echo "  MinIO Console: http://localhost:${MINIO_CONSOLE_PORT}"
+echo "  PostgreSQL: localhost:${POSTGRES_PORT}"
+echo "  Redis: localhost:${REDIS_PORT}"
+echo ""
+
+if [ -n "$BUILD_FLAG" ]; then
+  echo "Rebuilding Docker images..."
+else
+  echo "Starting Docker Compose services..."
+fi
+
+# Start all E2E services with -p flag for isolation and wait for them to be healthy
+docker compose -p e2e-tests up $BUILD_FLAG --wait
+
+echo ""
+echo "✓ E2E environment is ready!"
+echo ""
+echo "Next steps:"
+echo "  Run tests:  npx cypress run --project spec/e2e"
+echo "  Open UI:    npx cypress open --project spec/e2e"
+echo "  Stop:       docker compose -p e2e-tests down"
+echo "  Cleanup:    docker compose -p e2e-tests down --volumes"

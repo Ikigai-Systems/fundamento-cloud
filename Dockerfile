@@ -33,6 +33,7 @@ FROM base AS build
 # Re-declare build args for this stage
 ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
+ARG TARGETARCH
 
 # Copy Node.js from node-source stage
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
@@ -48,9 +49,9 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libvips pkg-config age libyaml-dev && \
     npm install -g npm@latest && \
-    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
-    dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
-    rm sops_${SOPS_VERSION}_amd64.deb
+    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
+    dpkg -i sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
+    rm sops_${SOPS_VERSION}_${TARGETARCH}.deb
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -94,6 +95,7 @@ FROM base AS packaged
 # Re-declare build args for this stage
 ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
+ARG TARGETARCH
 
 # Copy Node.js from node-source stage
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
@@ -107,9 +109,9 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y libvips gettext age && \
-    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_amd64.deb && \
-    dpkg -i sops_${SOPS_VERSION}_amd64.deb && \
-    rm sops_${SOPS_VERSION}_amd64.deb
+    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
+    dpkg -i sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
+    rm sops_${SOPS_VERSION}_${TARGETARCH}.deb
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash

@@ -1,0 +1,51 @@
+# See https://docs.docker.com/engine/reference/builder/#dockerignore-file for more about ignoring files.
+
+/Dockerfile*
+
+# Ignore git directory.
+/.git/
+/.github/
+/.gitignore
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all environment files (except templates).
+/.env*
+!/.env*.erb
+
+# Ignore all default key files.
+/config/master.key
+/config/credentials/*.key
+
+# Ignore npm modules as they will be installed (cleanly)
+/node_modules/
+
+# Ignore bundler packages
+/vendor/bundle/
+
+# Ignore any assets
+/public/*
+!/public/.keep
+
+# Ignore any tests files (as we're not running tests in docker)
+/test/
+/spec/
+!/spec/e2e
+
+# Ignore all logfiles and tempfiles.
+/log/*
+/tmp/*
+!/log/.keep
+!/log/cypress/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory.
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development and any SQLite databases).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep

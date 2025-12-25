@@ -70,19 +70,57 @@ docker compose -p e2e-tests up
 
 ## E2E
 
-Tests run against an app running locally with `RAILS_ENV=test`, they are built with docker and have the same environment as production. 
+E2E tests use the same `docker-compose.yml` with environment variables for port offsetting (+1000) and the `-p e2e-tests` flag for isolation.
 
-Prepare docker containers:
+### Quick Start
 
-`RAILS_ENV=test docker compose -p e2e-tests up`
+```bash
+# Start E2E environment (offset ports: Rails on 4000, DB on 6432, etc.)
+bin/dev-e2e
 
-`-p e2e-tests` will name containers starting with `e2e-tests` so there's no collision with regular `docker-compose.yml`, but they still use the same ports so it's not possible to run the app from docker or locally at the same time (to be fixed in the future)
+# In another terminal, run tests
+npx cypress run --project spec/e2e          # Headless
+npx cypress open --project spec/e2e         # Interactive
+```
 
-Run tests:
+### Running Development and E2E Simultaneously
 
-- headless: `npx cypress run --project spec/e2e`
-- with a desktop app: `npx cypress open --project spec/e2e`
+```bash
+# Terminal 1: Local development (ports 3000, 5432, 6379, 9000/9001)
+bin/dev
 
-Clean containers and images afterwards:
+# Terminal 2: E2E environment (ports 4000, 6432, 7379, 10000/10001)
+bin/dev-e2e
 
-`docker compose -p e2e-tests down --remove-orphans --rmi local`
+# Terminal 3: Run Cypress tests
+npx cypress open --project spec/e2e
+```
+
+### Port Mapping
+
+| Service | Development | E2E | Offset |
+|---------|-------------|-----|--------|
+| Rails | 3000 | 4000 | +1000 |
+| PostgreSQL | 5432 | 6432 | +1000 |
+| Redis | 6379 | 7379 | +1000 |
+| MinIO | 9000/9001 | 10000/10001 | +1000 |
+
+### Management
+
+```bash
+# Rebuild after Dockerfile changes
+bin/dev-e2e --build
+
+# Stop E2E environment
+docker compose -p e2e-tests down
+
+# Full cleanup (including volumes)
+docker compose -p e2e-tests down --volumes
+```
+
+**Features:**
+- ✅ Single config file with environment variable port overrides
+- ✅ Run dev and E2E simultaneously (no port conflicts)
+- ✅ Independent data (Docker project isolation via `-p` flag)
+- ✅ Fast iteration (Docker build cache)
+- ✅ Consistent with CI/CD environment

@@ -5,21 +5,25 @@ pawel:
   last_name: Wiadomski
   email: pawel@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.now %>
 
 stefan:
   first_name: Stefan
   last_name: Piotrowski
   email: stefan@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.now %>
 
 maria:
   first_name: Maria
   last_name: Awaria
   email: maria@ikigai.systems
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.now %>
 
 john:
   first_name: John
   last_name: Doe
   email: john@gmail.com
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  confirmed_at: <%= Time.now %>

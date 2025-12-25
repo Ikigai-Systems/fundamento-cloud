@@ -2,8 +2,20 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
 
-  devise :invitable, :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :validatable, :trackable
+  devise :invitable,
+    :database_authenticatable,
+    :registerable,
+    :recoverable,
+    :rememberable,
+    :validatable,
+    :trackable,
+    :confirmable
+
+  unless Rails.env.standalone?
+    devise :magic_link_authenticatable
+  end
+
+  before_create :skip_confirmation_if_not_required
 
   scope :query, ->(query) { where("(first_name || ' ' || last_name) ILIKE ?", "%#{query}%") }
 
@@ -23,8 +35,8 @@ class User < ApplicationRecord
     attachable.variant :xl, resize_to_fill: [128, 128]
   end
 
-  validates_presence_of :first_name
-  validates_presence_of :last_name
+  validates_presence_of :first_name, if: -> { Flipper.enabled?(:standalone) }
+  validates_presence_of :last_name, if: -> { Flipper.enabled?(:standalone) }
   validate :validate_avatar_format
 
   after_commit :process_avatar_variants, on: [:create, :update]
@@ -68,7 +80,7 @@ class User < ApplicationRecord
 
   def avatar_variant(size = :lg)
     return unless avatar.attached?
-    
+
     # SVG files don't need variants as they're vector-based and scalable
     if avatar.content_type == 'image/svg+xml'
       avatar
@@ -78,6 +90,11 @@ class User < ApplicationRecord
   end
 
   private
+
+  def skip_confirmation_if_not_required
+    # Auto-confirm user if in standalone mode
+    skip_confirmation! if Flipper.enabled?(:standalone)
+  end
 
   def validate_avatar_format
     return unless avatar.attached?

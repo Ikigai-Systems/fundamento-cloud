@@ -45,7 +45,7 @@ module Fundamento
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.action_mailer.default_url_options = { :host => ENV["HTTP_HOST"] }
+    config.action_mailer.default_url_options = { :host => ENV.fetch("HTTP_HOST", "localhost:3000") }
 
     # Enable lograge, but make it the default only on production
     config.lograge.enabled = true

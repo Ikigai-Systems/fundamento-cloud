@@ -3,9 +3,14 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: {
     registrations: "users/registrations",
+    confirmations: "users/confirmations",
     passwords: "users/passwords",
     sessions: "users/sessions"
   }
+
+  devise_scope :user do
+    get "/users/confirmation/pending" => "users/confirmations#pending", as: :users_confirmation_pending
+  end
 
   devise_for :invited_users, controllers: {
     invitations: "invited_users/invitations"
@@ -20,6 +25,7 @@ Rails.application.routes.draw do
   end
 
   authenticate :superintendent do
+    mount Flipper::Api.app(Flipper) => "/construction/flipper/api"
     mount Flipper::UI.app(Flipper) => "/construction/flipper"
   end
 

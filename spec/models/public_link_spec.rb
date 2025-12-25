@@ -4,7 +4,7 @@ RSpec.describe PublicLink, type: :model do
   let(:organization) { Organization.create!(name: "Test Org") }
   let(:space) { Space.create!(organization: organization, name: "Test Space") }
   let(:document) { Document.create!(organization: organization, space: space) }
-  let(:user) { User.create!(email: "test@example.com", password: "password", first_name: "Test", last_name: "User") }
+  let(:user) { User.create!(email: "test@example.com", password: "password", first_name: "Test", last_name: "User", confirmed_at: Time.now) }
 
   describe "allowed_emails field" do
     context "when allowed_emails is nil" do
@@ -125,7 +125,8 @@ RSpec.describe PublicLink, type: :model do
           email: user_email,
           password: "password",
           first_name: "Test",
-          last_name: "User"
+          last_name: "User",
+          confirmed_at: Time.now,
         )
 
         public_link = PublicLink.create!(

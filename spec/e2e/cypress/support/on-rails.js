@@ -42,6 +42,14 @@ Cypress.Commands.add('appFactories', function (options) {
 Cypress.Commands.add('appFixtures', function (options) {
   cy.app('activerecord_fixtures', options)
 });
+
+Cypress.Commands.add('appFlipper', function (options) {
+  return cy.app('flipper', options)
+});
+
+Cypress.Commands.add('appUserConfirmationUrl', function (options) {
+  return cy.app('user_confirmation_url', options)
+});
 // CypressOnRails: end
 
 // The next is optional
