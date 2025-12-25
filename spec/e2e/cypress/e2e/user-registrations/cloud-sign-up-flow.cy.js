@@ -23,6 +23,13 @@ describe('Cloud sign up flow', function() {
     cy.get('input[type=submit]').click();
 
     cy.contains("Check your email");
+
+    // Get the confirmation URL and visit it
+    cy.appUserConfirmationUrl({email: "pawel.nowak@random.pl"}).then((confirmationUrl) => {
+      cy.visit(confirmationUrl);
+      // Add assertion for successful confirmation
+      cy.contains("Switch to");
+    });
   })
 })
 
