@@ -31,7 +31,7 @@ const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerPr
         </div>
 
         <div className="editor-container">
-          <BlockNoteView editor={editor} editable={false} className={"read-only"}/>
+          <BlockNoteView editor={editor} editable={false} className={"read-only"} data-document-editor/>
         </div>
       </CurrentSpaceContext.Provider>
     </QueryClientProvider>

@@ -48,7 +48,7 @@ function ShowVersionComponent(props: {
     }
 
     <div className="editor-container">
-      <BlockNoteView editor={props.editor} editable={false}/>
+      <BlockNoteView editor={props.editor} editable={false} data-document-editor/>
     </div>
   </>;
 }

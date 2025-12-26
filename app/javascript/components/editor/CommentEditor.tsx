@@ -35,7 +35,7 @@ const CommentEditor = ({objectId, comment, editable = true}: CommentEditorProps)
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable}>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable} data-comment-editor>
       {/* Replaces the default Slash Menu. */}
       <CommonSuggestionMenus editor={editor}/>
     </BlockNoteView>

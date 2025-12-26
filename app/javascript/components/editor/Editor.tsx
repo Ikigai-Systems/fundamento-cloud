@@ -184,7 +184,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", conten
   }
 
   return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable}>
+    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable} data-document-editor>
       {/* Replaces the default Slash Menu. */}
       <CommonSuggestionMenus editor={editor}/>
     </BlockNoteView>

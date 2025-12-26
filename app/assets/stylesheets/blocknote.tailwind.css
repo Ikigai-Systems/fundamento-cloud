@@ -17,7 +17,7 @@
 }
 
 /* Ensure BlockNote editor inherits the correct font */
-.bn-container .bn-inline-content {
+.bn-container[data-document-editor] .bn-inline-content {
   @apply font-ia-writer-quattro;
 }
 
