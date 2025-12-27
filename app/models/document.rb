@@ -25,6 +25,7 @@ class Document < ApplicationRecord
   has_many :object_tags, as: :object, dependent: :delete_all
   has_many :tags, through: :object_tags
   has_many :inline_comment_threads, dependent: :destroy
+  has_many :attachments, as: :parent, dependent: :destroy
 
   before_destroy :nullify_space_home_document_id
 

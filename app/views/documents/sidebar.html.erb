@@ -31,6 +31,12 @@
             <i class="fa-regular fa-chart-network"></i>
           <% end %>
         </button>
+
+        <button id="attachments" data-action="click->tabs#change" data-tabs-target="tab">
+          <%= render SidebarTabIcon.new(tooltip: "Attachments") do %>
+            <i class="fa-regular fa-paperclip"></i>
+          <% end %>
+        </button>
       </nav>
     </div>
 
@@ -54,6 +60,12 @@
 
     <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "connections_sidebar_tab", loading: "lazy", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :connections) do %>
+        <%= render SidebarLoadingComponent.new %>
+      <% end %>
+    </div>
+
+    <div data-tabs-target="panel" class="hidden max-h-0">
+      <%= turbo_frame_tag "attachments_sidebar_tab", loading: "lazy", data: { turbo: true }, src: polymorphic_path([:sidebar, @document], tab: :attachments) do %>
         <%= render SidebarLoadingComponent.new %>
       <% end %>
     </div>
