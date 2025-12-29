@@ -1,22 +1,27 @@
-import type {DragHandleMenuProps} from '@blocknote/react'
+import {BlockTypeSelectItem, useExtensionState} from '@blocknote/react'
 import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, useDictionary} from '@blocknote/react'
-import {useMemo} from "react";
+import {ReactNode, useMemo} from "react";
+import {SideMenuExtension} from "@blocknote/core/extensions";
 
-const TurnIntoItem = (props: DragHandleMenuProps) => {
-  const editor = useBlockNoteEditor();
+const TurnIntoItem = (props: { children: ReactNode }) => {
+  const editor = useBlockNoteEditor<any, any, any>();
   const Components = useComponentsContext();
-  const Block = Components.Generic.Menu;
-  const dict = useDictionary();
+  const dictionary = useDictionary();
 
-  const filteredItems: BlockTypeSelectItem[] = useMemo(() => {
-    return blockTypeSelectItems(dict).filter(
+  const block = useExtensionState(SideMenuExtension, {
+    editor,
+    selector: (state) => state?.block,
+  });
+
+  const availableItems: BlockTypeSelectItem[] = useMemo(() => {
+    return blockTypeSelectItems(dictionary).filter(
       (item) => item.type in editor.schema.blockSchema
     );
-  }, [editor, dict]);
+  }, [editor, dictionary]);
 
   const shouldShow: boolean = useMemo(
-    () => filteredItems.find((item) => item.type === props.block.type) !== undefined,
-    [props.block.type, filteredItems]
+    () => block !== undefined && availableItems.find((item) => item.type === block.type) !== undefined,
+    [block, availableItems]
   );
 
   if (!shouldShow) {
@@ -24,39 +29,46 @@ const TurnIntoItem = (props: DragHandleMenuProps) => {
   }
 
   return (
-    <Block.Root sub position='right'>
-      <Block.Trigger>
-        <Block.Item subTrigger icon={<span>dupa</span>}>
+    <Components.Generic.Menu.Root sub position='right'>
+      <Components.Generic.Menu.Trigger>
+        <Components.Generic.Menu.Item
+          subTrigger={true}
+          className={"bn-menu-item"}
+        >
           <div className='flex items-center'>
-            Turn Into
+            {props.children}
           </div>
-        </Block.Item>
-      </Block.Trigger>
-      <Block.Dropdown>
-        {blockTypeSelectItems(dict).map(item => {
+        </Components.Generic.Menu.Item>
+      </Components.Generic.Menu.Trigger>
+
+      <Components.Generic.Menu.Dropdown
+        sub={true}
+        className={"bn-menu-dropdown"}
+      >
+        {availableItems.map(item => {
           const Icon = item.icon;
+          const isSelected = block.type === item.type
+              && (item.type !== "heading" || (block.props?.level === item.props.level && block.props?.isToggleable === item.props.isToggleable));
+
           return (
             <Components.Generic.Menu.Item
               key={item.name}
-              checked={item.isSelected(props.block)}
+              checked={isSelected}
+              icon={<Icon size={16}/>}
               onClick={() => {
-                editor.focus();
-                editor.updateBlock(props.block, {
+                editor.updateBlock(block, {
                   type: item.type as any,
                   props: item.props as any,
                 });
               }}
             >
-              <div className="flex flex-row">
-                <Icon size={16}/>
-                <div className="ml-2">{item.name}</div>
-              </div>
+              {item.name}
             </Components.Generic.Menu.Item>
           )}
         )}
 
-      </Block.Dropdown>
-    </Block.Root>
+      </Components.Generic.Menu.Dropdown>
+    </Components.Generic.Menu.Root>
   )
 }
 
