@@ -1,12 +1,12 @@
-import {insertOrUpdateBlock} from "@blocknote/core";
-
 const CodeBlockMenuItem = () => ({
   title: "Code",
   subtext: "Section containing multi-line code",
   onItemClick: (editor) => {
-    insertOrUpdateBlock(editor, {
+    const currentBlock = editor.getTextCursorPosition().block;
+    editor.insertBlocks([{
       type: "procode",
-    });
+    }], currentBlock, "after");
+    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
   },
   aliases: [
     "code",

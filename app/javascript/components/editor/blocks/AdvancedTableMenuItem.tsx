@@ -1,13 +1,14 @@
-// Slash menu item to insert an Alert block
-import {insertOrUpdateBlock} from "@blocknote/core";
+// Slash menu item to insert an Advanced table block
 
 const AdvancedTableMenuItem = () => ({
   title: "Advanced table",
   subtext: "Store and reference data in a structured way",
   onItemClick: (editor) => {
-    insertOrUpdateBlock(editor, {
+    const currentBlock = editor.getTextCursorPosition().block;
+    editor.insertBlocks([{
       type: "advancedTable",
-    });
+    }], currentBlock, "after");
+    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
   },
   aliases: [
     "database",

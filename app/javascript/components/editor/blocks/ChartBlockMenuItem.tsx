@@ -1,13 +1,14 @@
-// Slash menu item to insert an Alert block
-import {insertOrUpdateBlock} from "@blocknote/core";
+// Slash menu item to insert a Chart block
 
 const ChartBlockMenuItem = () => ({
   title: "Chart",
   subtext: "Visualize your data in a combination of different charts",
   onItemClick: (editor) => {
-    insertOrUpdateBlock(editor, {
+    const currentBlock = editor.getTextCursorPosition().block;
+    editor.insertBlocks([{
       type: "chartBlock",
-    });
+    }], currentBlock, "after");
+    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
   },
   aliases: [
     "piechart",
