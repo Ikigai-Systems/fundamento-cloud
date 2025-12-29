@@ -972,7 +972,7 @@ function saveData(document) {
 
 
 type HtmlEditorProps = {
-  initialData: String,
+  initialData: string,
   document: Document,
   revisions?: object[],
   operationsA?: object[],

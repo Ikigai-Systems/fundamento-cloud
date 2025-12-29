@@ -10,9 +10,10 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@blocknote/core": "^0.27.0",
-    "@blocknote/mantine": "^0.27.0",
-    "@blocknote/react": "^0.27.0",
+    "@blocknote/core": "^0.45.0",
+    "@blocknote/mantine": "^0.45.0",
+    "@blocknote/react": "^0.45.0",
+    "@mantine/core": "^8.3.4",
     "@ckeditor/ckeditor5-react": "^9.5.0",
     "@floating-ui/react": "^0.26.28",
     "@github/hotkey": "^3.1.1",

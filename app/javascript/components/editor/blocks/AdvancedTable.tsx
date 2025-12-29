@@ -167,7 +167,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
   );
 };
 
-const AdvancedTable = createReactBlockSpec(
+export const createAdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
     propSchema: {
@@ -270,5 +270,3 @@ const AdvancedTable = createReactBlockSpec(
     },
   }
 );
-
-export default AdvancedTable;

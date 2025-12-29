@@ -16,7 +16,7 @@ import useAsyncEffect from "use-async-effect";
 const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
 
 
-const ChartBlock = createReactBlockSpec(
+export const createChartBlock = createReactBlockSpec(
   {
     type: "chartBlock",
     propSchema: {
@@ -210,121 +210,121 @@ const ChartBlock = createReactBlockSpec(
       let chart: any = undefined;
       if (chartType !== "" && xAxisDataset !== undefined && yAxisDataset !== undefined) {
         switch (chartType) {
-          case "line":
-          case "area":
-          case "bar":
-          case "radar":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType
-              },
-              xaxis: {
-                categories: xAxisDataset.map((data: any) => data === null ? "" : data),
-              }
-            };
-            chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
-              data: yAxisDataset.map(valueToSeriesPoint())
-            }];
-            break;
-          case "funnel":
-            chart = {};
-            chart.type = "bar";
-            chart.options = {
-              chart: {
-                dropShadow: {
-                  enabled: true,
-                },
-              },
-              plotOptions: {
-                bar: {
-                  borderRadius: 0,
-                  horizontal: true,
-                  barHeight: '80%',
-                  isFunnel: true,
-                },
-              },
-              dataLabels: {
+        case "line":
+        case "area":
+        case "bar":
+        case "radar":
+          chart = {};
+          chart.type = chartType;
+          chart.options = {
+            chart: {
+              type: chartType
+            },
+            xaxis: {
+              categories: xAxisDataset.map((data: any) => data === null ? "" : data),
+            }
+          };
+          chart.series = [{
+            name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+            data: yAxisDataset.map(valueToSeriesPoint())
+          }];
+          break;
+        case "funnel":
+          chart = {};
+          chart.type = "bar";
+          chart.options = {
+            chart: {
+              dropShadow: {
                 enabled: true,
-                formatter: function (val, opt) {
-                  return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
-                },
-                dropShadow: {
-                  enabled: true,
-                },
               },
-              xaxis: {
-                categories: xAxisDataset.map((data: any) => data === null ? "" : data),
+            },
+            plotOptions: {
+              bar: {
+                borderRadius: 0,
+                horizontal: true,
+                barHeight: '80%',
+                isFunnel: true,
               },
-              legend: {
-                show: false,
+            },
+            dataLabels: {
+              enabled: true,
+              formatter: function (val, opt) {
+                return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
               },
-            };
-            chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
-              data: yAxisDataset.map(valueToSeriesPoint())
-            }];
-            break;
-          case "pie":
-          case "donut":
-          case "radialBar":
-          case "polarArea":
-            chart = {};
-            chart.type = chartType;
-            chart.series = yAxisDataset.map(valueToSeriesPoint(chartType === "polarArea" ? "" : null));
-            chart.options = {
-              chart: {
-                type: chartType,
+              dropShadow: {
+                enabled: true,
               },
-              labels: xAxisDataset.map((data: any) => data === null ? "" : data),
-            };
-            break;
-          case "scatter":
-          case "heatmap":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType,
-              },
-              xaxis: {
-                labels: {
-                  formatter: function(val) {
-                    return parseFloat(val).toFixed(1)
-                  }
+            },
+            xaxis: {
+              categories: xAxisDataset.map((data: any) => data === null ? "" : data),
+            },
+            legend: {
+              show: false,
+            },
+          };
+          chart.series = [{
+            name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+            data: yAxisDataset.map(valueToSeriesPoint())
+          }];
+          break;
+        case "pie":
+        case "donut":
+        case "radialBar":
+        case "polarArea":
+          chart = {};
+          chart.type = chartType;
+          chart.series = yAxisDataset.map(valueToSeriesPoint(chartType === "polarArea" ? "" : null));
+          chart.options = {
+            chart: {
+              type: chartType,
+            },
+            labels: xAxisDataset.map((data: any) => data === null ? "" : data),
+          };
+          break;
+        case "scatter":
+        case "heatmap":
+          chart = {};
+          chart.type = chartType;
+          chart.options = {
+            chart: {
+              type: chartType,
+            },
+            xaxis: {
+              labels: {
+                formatter: function(val) {
+                  return parseFloat(val).toFixed(1)
                 }
-              },
-              yaxis: {
-                labels: {
-                  formatter: function(val) {
-                    return parseFloat(val).toFixed(1)
-                  }
-                }
-              },
-            };
-            chart.series = [{
-              name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
-              data: yAxisDataset.map((yValue, index) => {
-                return [valueToSeriesPoint()(yValue), valueToSeriesPoint()(xAxisDataset[index])];
-              }),
-            }];
-            break;
-          case "treemap":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType,
               }
-            };
-            chart.series = [{
-              data: yAxisDataset.map((yValue, index) => {
-                return {x: xAxisDataset[index] !== null ? xAxisDataset[index] : "", y: valueToSeriesPoint()(yValue)}
-              }),
-            }];
-            break;
+            },
+            yaxis: {
+              labels: {
+                formatter: function(val) {
+                  return parseFloat(val).toFixed(1)
+                }
+              }
+            },
+          };
+          chart.series = [{
+            name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
+            data: yAxisDataset.map((yValue, index) => {
+              return [valueToSeriesPoint()(yValue), valueToSeriesPoint()(xAxisDataset[index])];
+            }),
+          }];
+          break;
+        case "treemap":
+          chart = {};
+          chart.type = chartType;
+          chart.options = {
+            chart: {
+              type: chartType,
+            }
+          };
+          chart.series = [{
+            data: yAxisDataset.map((yValue, index) => {
+              return {x: xAxisDataset[index] !== null ? xAxisDataset[index] : "", y: valueToSeriesPoint()(yValue)}
+            }),
+          }];
+          break;
         }
       }
 
@@ -421,5 +421,3 @@ const ChartBlock = createReactBlockSpec(
     },
   }
 );
-
-export default ChartBlock;

@@ -1,15 +1,15 @@
 import {BlockNoteSchema, defaultBlockSpecs, defaultInlineContentSpecs} from "@blocknote/core";
 import MentionInlineContent from "./inline-content/MentionInlineContent.tsx";
-import AdvancedTable from "./blocks/AdvancedTable.tsx";
-import CodeBlock from "./blocks/CodeBlock.tsx";
+import {createAdvancedTable} from "./blocks/AdvancedTable.tsx";
+import {createCodeBlock} from "./blocks/CodeBlock.tsx";
 import ButtonInlineContent from "./inline-content/ButtonInlineContent.tsx";
 import FormulaInlineContent from "./inline-content/FormulaInlineContent.tsx";
-import ChartBlock from "./blocks/ChartBlock.tsx";
+import {createChartBlock} from "./blocks/ChartBlock.tsx";
 
 // Our schema with inline content specs, which contain the configs and
 // implementations for inline content that we want our editor to use.
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 // const {codeBlock, ...remainingBlockSpecs} = defaultBlockSpecs
 const {...remainingBlockSpecs} = defaultBlockSpecs
 
@@ -22,9 +22,9 @@ const schema = BlockNoteSchema.create({
   },
   blockSpecs: {
     ...remainingBlockSpecs,
-    advancedTable: AdvancedTable,
-    chartBlock: ChartBlock,
-    procode: CodeBlock, // <-- to be deprecated and removed at some point
+    advancedTable: createAdvancedTable(),
+    chartBlock: createChartBlock(),
+    procode: createCodeBlock(), // <-- to be deprecated and removed at some point
   }
 });
 

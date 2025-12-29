@@ -58,8 +58,8 @@ function ButtonCell({
   return (<>
     <div className="h-8 ml-1 flex flex-row items-center">
       <button className="secondary-button relative items-center block py-1 px-2"
-              disabled={isExecuting}
-              onClick={executeButtonFormula}
+        disabled={isExecuting}
+        onClick={executeButtonFormula}
       >
         <span className={isExecuting ? "invisible" : "visible"}>{columnConfiguration?.buttonLabel || "Click me"}</span>
         <div role="status" className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">

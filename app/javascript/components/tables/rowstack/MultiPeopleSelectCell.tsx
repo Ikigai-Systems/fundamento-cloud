@@ -15,8 +15,8 @@ function MultiPeopleSelectCell({
   isViewOnly,
 }) {
   const usersQuery = useQuery<User>({queryKey: ["users"], queryFn: async () => {
-      return (await UsersApi.index());
-    }}, queryClient);
+    return (await UsersApi.index());
+  }}, queryClient);
 
   const userIds: number[] = data ? data.split(",") : [];
 

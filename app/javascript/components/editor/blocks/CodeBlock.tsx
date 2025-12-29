@@ -1,7 +1,7 @@
 import {createReactBlockSpec} from "@blocknote/react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 
-const CodeBlock = createReactBlockSpec({
+export const createCodeBlock = createReactBlockSpec({
   type: "procode",
   propSchema: {
     data: {
@@ -27,5 +27,3 @@ const CodeBlock = createReactBlockSpec({
     />
   }
 });
-
-export default CodeBlock;

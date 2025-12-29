@@ -20,7 +20,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
   }
 );
 
-const AdvancedTable = createReactBlockSpec(
+const createAdvancedTable = createReactBlockSpec(
   {
     type: "advancedTable",
     propSchema: {
@@ -48,7 +48,7 @@ const AdvancedTable = createReactBlockSpec(
 );
 
 const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
-const ChartBlock = createReactBlockSpec(
+const createChartBlock = createReactBlockSpec(
   {
     type: "chartBlock",
     propSchema: {
@@ -125,8 +125,8 @@ const strippedSchema = BlockNoteSchema.create({
   },
   blockSpecs: {
     ...defaultBlockSpecs,
-    advancedTable: AdvancedTable,
-    chartBlock: ChartBlock,
+    advancedTable: createAdvancedTable(),
+    chartBlock: createChartBlock(),
     // procode: CodeBlock, // <-- to be deprecated and removed at some point
   }
 });
