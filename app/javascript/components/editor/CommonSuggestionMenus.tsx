@@ -1,12 +1,13 @@
 import {
   BlockColorsItem,
   DragHandleMenu,
-  getDefaultReactSlashMenuItems, RemoveBlockItem,
+  getDefaultReactSlashMenuItems,
+  RemoveBlockItem,
   SideMenu,
   SideMenuController,
   SuggestionMenuController
 } from "@blocknote/react";
-import {filterSuggestionItems} from "@blocknote/core";
+import {filterSuggestionItems} from "@blocknote/core/extensions";
 import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import ChartBlockMenuItem from "./blocks/ChartBlockMenuItem.tsx";
 import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
