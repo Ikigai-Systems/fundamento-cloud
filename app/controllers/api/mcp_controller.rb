@@ -8,6 +8,7 @@ class Api::McpController < Api::ApiController
         ReadDocumentTool,
         CreateDocumentTool,
         UpdateDocumentTool,
+        ImportDocumentTool,
         ListObjectsByTagsTool,
         AddTagsTool,
         RemoveTagsTool,
