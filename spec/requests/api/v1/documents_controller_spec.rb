@@ -226,7 +226,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
           post api_v1_documents_path(space_npi: is_default_space.npi),
             params: {
               document: {
-                title: "New Test Document"
+                title: "New Test Document",
+                markdown: "Test Content"
               }
             },
             headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -407,6 +408,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
             params: {
               document: {
                 title: "Child Document",
+                markdown: "Test Content",
                 parent_document_npi: parent_doc.npi
               }
             },
@@ -432,7 +434,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
         post api_v1_documents_path(space_npi: is_default_space.npi),
           params: {
             document: {
-              title: "Root Document"
+              title: "Root Document",
+              markdown: "Test Content"
             }
           },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -511,7 +514,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
         post api_v1_documents_path(space_npi: is_default_space.npi),
           params: {
             document: {
-              title: "Test Document"
+              title: "Test Document",
+              markdown: "Test Content"
             }
           },
           headers: { "Authorization" => "Bearer #{other_org_token.encrypted_token}" }
@@ -525,7 +529,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
         post api_v1_documents_path(space_npi: "invalid-npi"),
           params: {
             document: {
-              title: "Test Document"
+              title: "Test Document",
+              markdown: "Test Content"
             }
           },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -540,6 +545,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
           params: {
             document: {
               title: "Test Document",
+              markdown: "Test Content",
               parent_document_npi: "invalid-npi"
             }
           },
