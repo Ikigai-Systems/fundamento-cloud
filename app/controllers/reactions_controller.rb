@@ -62,11 +62,11 @@ class ReactionsController < ApplicationController
       @resource = GlobalID::Locator.locate(params[:object_gid], only: ObjectReaction::ALLOWED_OBJECT_TYPES.map(&:constantize))
 
       if @resource.nil? || @resource.organization != current_organization
-        return head :unprocessable_entity
+        return head :unprocessable_content
       end
     else
       unless ObjectReaction::ALLOWED_OBJECT_TYPES.include?(params[:object_type])
-        return head :unprocessable_entity
+        return head :unprocessable_content
       end
 
       @resource = params[:object_type].constantize.
