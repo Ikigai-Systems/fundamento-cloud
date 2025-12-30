@@ -16,6 +16,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     permissions:
+      contents: read
       checks: write
 
     env:
