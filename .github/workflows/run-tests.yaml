@@ -75,4 +75,28 @@ jobs:
         run: bin/rails test:prepare
 
       - name: Run specs
-        run: bin/rspec
+        run: |
+          bin/rspec \
+            --format progress \
+            --format RspecJunitFormatter \
+            --out tmp/rspec-results.xml
+        continue-on-error: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec-results
+          path: tmp/rspec-results.xml
+          retention-days: 30
+
+      - name: Publish test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: tmp/rspec-results.xml
+          check_name: RSpec Test Results
+          summary: true
+          detailed_summary: true
+          annotate_only: false
+          fail_on_failure: true

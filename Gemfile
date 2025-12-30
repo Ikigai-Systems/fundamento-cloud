@@ -124,6 +124,7 @@ group :development, :test do
 
   gem "rspec", "~> 3.13"
   gem "rspec-rails"
+  gem "rspec_junit_formatter"
   gem "rails-controller-testing"
   gem "database_cleaner-active_record"
   gem 'cypress-on-rails'
