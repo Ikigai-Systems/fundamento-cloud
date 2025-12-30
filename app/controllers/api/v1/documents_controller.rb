@@ -18,26 +18,41 @@ module Api
       end
 
       def create
-        begin
-          document = DocumentService.new(pundit_user: pundit_user).
+        if document_params[:file].nil? && document_params[:markdown].nil?
+          render json: { errors: { base: "Either file or markdown must be present" } }, status: :unprocessable_entity
+          return
+        end
+
+        document = if document_params[:file].present?
+          DocumentService.new(pundit_user: pundit_user).
+            create_from_file!(
+              space_npi: params[:space_npi],
+              title: document_params[:title],
+              parent_document_npi: document_params[:parent_document_npi],
+              file: document_params[:file],
+            )
+        else
+          DocumentService.new(pundit_user: pundit_user).
             create!(
               space_npi: params[:space_npi],
               title: document_params[:title],
               parent_document_npi: document_params[:parent_document_npi],
-              markdown: document_params[:markdown]
+              markdown: document_params[:markdown],
             )
-
-          render json: {
-            npi: document.npi,
-            title: document.title,
-            created_at: document.created_at,
-            updated_at: document.updated_at
-          }, status: :created
-        rescue BlocknoteConverterService::ConversionError
-          render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
-        rescue ActiveRecord::RecordInvalid => invalid
-          render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
         end
+
+        render json: {
+          npi: document.npi,
+          title: document.title,
+          created_at: document.created_at,
+          updated_at: document.updated_at
+        }, status: :created
+      rescue BlocknoteConverterService::ConversionError
+        render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
+      rescue PandocConverterService::ConversionError => e
+        render json: { errors: { file: e.message } }, status: :unprocessable_entity
+      rescue ActiveRecord::RecordInvalid => invalid
+        render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
       end
 
       def show
@@ -92,7 +107,7 @@ module Api
       private
 
       def document_params
-        params.require(:document).permit(:title, :markdown, :parent_document_npi)
+        params.require(:document).permit(:title, :markdown, :parent_document_npi, :file)
       end
     end
   end

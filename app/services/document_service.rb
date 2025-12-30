@@ -94,6 +94,66 @@ class DocumentService
     end
   end
 
+  def create_from_file!(space_npi:, file:, parent_document_npi: nil, title: nil)
+    ActiveRecord::Base.transaction do
+      space = pundit_user.current_organization.spaces.find_by_param!(space_npi)
+      authorize space, :update?
+
+      parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
+      authorize parent_document, :show? if parent_document
+
+      # Convert file to markdown
+      conversion_result = PandocConverterService.convert_upload(file)
+
+      # Use provided title or extracted title or "Untitled"
+      document_title = title.presence || conversion_result[:title] || "Untitled"
+
+      # Extract frontmatter from converted markdown
+      markdown, frontmatter_data = extract_frontmatter(conversion_result[:markdown])
+
+      # Create document
+      document = space.documents.new(
+        title: document_title,
+        space: space,
+        organization: space.organization,
+      )
+
+      authorize document, :create?
+      document.save!
+
+      # Add to hierarchy
+      hierarchy_node = space.create_hierarchy_node(document.id)
+
+      if parent_document.present?
+        if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
+          space.hierarchy.append(hierarchy_node)
+        end
+      else
+        space.hierarchy.append(hierarchy_node)
+      end
+
+      space.save!
+
+      # Create initial version with content
+      blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
+      sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+
+      document.versions.create!(
+        content_blocks: blocks,
+        created_by: pundit_user.user
+      )
+
+      document.update!(sync: sync)
+
+      # Process tags from frontmatter
+      if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
+        TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
+      end
+
+      document
+    end
+  end
+
   def extract_frontmatter(markdown)
     frontmatter_data = nil
 
