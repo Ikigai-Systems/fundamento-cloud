@@ -19,7 +19,7 @@ type PublicDocumentViewerProps = {
 const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerProps) => {
   const editor = useCreateBlockNote({
     schema,
-    initialContent: version.content,
+    initialContent: version.contentBlocks,
     resolveFileUrl: createFileUrlResolver(PublicApi.attachment.path)
   });
 
