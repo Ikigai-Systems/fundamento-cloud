@@ -34,7 +34,7 @@ class TeamsController < ApplicationController
   end
 
   def update
-    @team = current_organization.teams.find_by_npi!(params[:npi])
+    @team = current_organization.teams.find(params[:id])
 
     authorize @team, :update?
 
@@ -48,19 +48,19 @@ class TeamsController < ApplicationController
   end
 
   def show
-    @team = current_organization.teams.find_by_npi!(params[:npi])
+    @team = current_organization.teams.find(params[:id])
 
     authorize @team, :show?
   end
 
   def edit
-    @team = current_organization.teams.find_by_npi!(params[:npi])
+    @team = current_organization.teams.find(params[:id])
 
     authorize @team, :update?
   end
 
   def destroy
-    @team = current_organization.teams.find_by_npi(params[:npi])
+    @team = current_organization.teams.find(params[:id])
 
     authorize @team, :destroy?
 

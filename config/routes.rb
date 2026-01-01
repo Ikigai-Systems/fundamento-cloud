@@ -157,7 +157,7 @@ Rails.application.routes.draw do
 
   resources :mentions, param: :npi, only: [:index]
 
-  resources :teams, param: :npi do
+  resources :teams do
     get :suggest_members, on: :collection
   end
 

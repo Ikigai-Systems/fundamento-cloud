@@ -1,8 +1,6 @@
 class Team < ApplicationRecord
   belongs_to :organization
 
-  include ModelWithNpiAsParam
-
   scope :query, ->(query) { where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%") }
 
   has_many :team_memberships, dependent: :destroy

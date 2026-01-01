@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_173100) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_193001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -418,7 +418,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_173100) do
   end
 
   create_table "space_memberships", force: :cascade do |t|
-    t.bigint "member_id"
+    t.string "member_id"
     t.string "member_type"
     t.bigint "organization_id", null: false
     t.integer "role", limit: 2, default: 0, null: false
@@ -551,7 +551,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_173100) do
     t.bigint "member_id", null: false
     t.string "member_type", null: false
     t.bigint "organization_id", null: false
-    t.bigint "team_id", null: false
+    t.string "team_id", null: false
     t.datetime "updated_at", null: false
     t.index ["member_id", "member_type", "team_id"], name: "idx_on_member_id_member_type_team_id_fa57caa5d8", unique: true
     t.index ["member_type", "member_id"], name: "index_team_memberships_on_member"
@@ -559,15 +559,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_173100) do
     t.index ["team_id"], name: "index_team_memberships_on_team_id"
   end
 
-  create_table "teams", force: :cascade do |t|
+  create_table "teams", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id", null: false
     t.string "shortcut", null: false
     t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_teams_on_id", unique: true
     t.index ["name", "organization_id"], name: "index_teams_on_name_and_organization_id", unique: true
-    t.index ["npi"], name: "index_teams_on_npi", unique: true
     t.index ["organization_id"], name: "index_teams_on_organization_id"
     t.index ["shortcut", "organization_id"], name: "index_teams_on_shortcut_and_organization_id", unique: true
   end
