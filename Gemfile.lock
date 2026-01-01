@@ -410,9 +410,6 @@ GEM
     sentry-ruby (6.2.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
-    sequenced (4.0.0)
-      activerecord (>= 3.0)
-      activesupport (>= 3.0)
     solid_assert (1.1.0)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
@@ -541,7 +538,6 @@ DEPENDENCIES
   rspec_junit_formatter
   sentry-rails
   sentry-ruby
-  sequenced
   solid_assert
   sprockets-rails
   stackprof

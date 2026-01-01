@@ -74,7 +74,6 @@ gem "solid_assert"
 gem "hash_diff"
 gem "nanoid"
 gem "pundit"
-gem "sequenced"
 gem "activerecord-like"
 
 gem "lograge", "~> 0.14.0"
