@@ -14,7 +14,7 @@
     </div>
   </th>
   <td>
-    <%= link_to "Public Link", "/public/#{public_link.npi}" %>
+    <%= link_to "Public Link", "/public/#{public_link.id}" %>
   </td>
   <td>
     <% if policy(public_link.object.space).update? %>

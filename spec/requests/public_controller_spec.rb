@@ -6,7 +6,7 @@ RSpec.describe PublicController, type: :request do
   let(:pawel) { users(:pawel) }
   let(:document) { documents(:two) }
   let(:public_link) { public_links(:public_link_to_two) }
-  let(:public_url) { "/public/#{public_link.npi}" }
+  let(:public_url) { "/public/#{public_link.id}" }
 
   describe "GET #show" do
     context "when user is not authenticated" do

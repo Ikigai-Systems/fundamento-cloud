@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_163327) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_173100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -402,16 +402,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_163327) do
     t.index ["organization_id"], name: "index_packs_on_organization_id"
   end
 
-  create_table "public_links", force: :cascade do |t|
+  create_table "public_links", id: :string, force: :cascade do |t|
     t.text "allowed_emails", default: [], array: true
     t.datetime "created_at", null: false
-    t.string "npi", null: false
     t.bigint "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "updated_by_id", null: false
-    t.index ["npi"], name: "index_public_links_on_npi", unique: true
+    t.index ["id"], name: "index_public_links_on_id", unique: true
     t.index ["object_id", "object_type", "organization_id"], name: "idx_on_object_id_object_type_organization_id_771a32f229", unique: true
     t.index ["object_type", "object_id"], name: "index_public_links_on_object"
     t.index ["organization_id"], name: "index_public_links_on_organization_id"

@@ -3,8 +3,6 @@ class PublicLink < ApplicationRecord
   belongs_to :object, polymorphic: true
   belongs_to :updated_by, class_name: "User", optional: true
 
-  include ModelWithNpi
-
   validates_presence_of :object
 
   validates :object_type, inclusion: { in: %w[Document] }
@@ -37,6 +35,10 @@ class PublicLink < ApplicationRecord
         end
       end
     end
+  end
+
+  def generate_npi
+    self.id = Nanoid.generate(size: 10)
   end
 
   private

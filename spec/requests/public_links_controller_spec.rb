@@ -43,6 +43,7 @@ RSpec.describe PublicLinksController, type: :request do
   end
 
   describe "PATCH /public_links/:id" do
+    let(:document) { documents(:two) }
     let(:public_link) { public_links(:public_link_to_two) }
 
     it "refreshes the non predictable id" do
@@ -50,7 +51,7 @@ RSpec.describe PublicLinksController, type: :request do
         patch public_link_path(public_link, params: { public_link: {}, refresh: true }, format: :json)
 
         expect(response).to have_http_status(:ok)
-      end.to change { public_link.reload.npi }.from(public_link.npi).to(be_present)
+      end.to change { document.reload.public_link.id }.from(public_link.id).to(be_present)
     end
   end
 
