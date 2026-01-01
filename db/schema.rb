@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_163329) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_163327) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -331,7 +331,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_163329) do
     t.bigint "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
-    t.bigint "tag_id", null: false
+    t.string "tag_id", limit: 10, null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_tags_on_object"
     t.index ["organization_id"], name: "index_object_tags_on_organization_id"
@@ -534,16 +534,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_163329) do
     t.index ["space_id"], name: "index_tables_on_space_id"
   end
 
-  create_table "tags", force: :cascade do |t|
+  create_table "tags", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "color"
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id", null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_tags_on_id", unique: true
     t.index ["name", "space_id"], name: "index_tags_on_name_and_space_id", unique: true
-    t.index ["npi"], name: "index_tags_on_npi", unique: true
     t.index ["organization_id"], name: "index_tags_on_organization_id"
     t.index ["space_id"], name: "index_tags_on_space_id"
   end

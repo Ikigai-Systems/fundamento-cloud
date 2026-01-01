@@ -1,6 +1,4 @@
 class Tag < ApplicationRecord
-  include ModelWithNpiAsParam
-
   belongs_to :organization
   belongs_to :space
   
