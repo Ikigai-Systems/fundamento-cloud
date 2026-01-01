@@ -165,6 +165,7 @@ ENV DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
 ENV VITE_RUBY_AUTO_BUILD=false
 
 COPY --from=build /rails/spec/e2e ./spec/e2e
+COPY --from=build /rails/spec/fixtures ./spec/fixtures
 
 RUN echo "RAILS_ENV is $RAILS_ENV"
 

@@ -32,6 +32,7 @@
 /test/
 /spec/
 !/spec/e2e
+!/spec/fixtures
 
 # Ignore all logfiles and tempfiles.
 /log/*
