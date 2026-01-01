@@ -5,8 +5,8 @@ class MigrateTagToNpiPk < ActiveRecord::Migration[8.1]
       remove_foreign_key :object_tags, :tags
     end
 
-    # Step 2: Update object_tags.tag_id to string type
-    change_column :object_tags, :tag_id, :string, limit: 10
+    # Step 2: Update object_tags.tag_id to string type (no limit to match PK)
+    change_column :object_tags, :tag_id, :string
 
     # Step 3: Copy NPI values to FK column
     execute <<-SQL

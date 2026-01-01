@@ -331,7 +331,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_163327) do
     t.bigint "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
-    t.string "tag_id", limit: 10, null: false
+    t.string "tag_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_tags_on_object"
     t.index ["organization_id"], name: "index_object_tags_on_organization_id"
