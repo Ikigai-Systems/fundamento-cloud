@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_193001) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_203248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,7 +69,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_193001) do
   end
 
   create_table "automation_invocations", force: :cascade do |t|
-    t.bigint "automation_id"
+    t.string "automation_id"
     t.datetime "created_at", null: false
     t.string "formula"
     t.datetime "invoked_at"
@@ -86,14 +86,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_193001) do
     t.index ["space_id"], name: "index_automation_invocations_on_space_id"
   end
 
-  create_table "automations", force: :cascade do |t|
+  create_table "automations", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "debug_at"
     t.datetime "disabled_at"
     t.string "formula"
     t.integer "invocations_limit", limit: 2
     t.integer "kind", limit: 2, null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id"
     t.bigint "run_as_id"
     t.bigint "space_id"

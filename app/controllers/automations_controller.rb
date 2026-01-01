@@ -30,19 +30,19 @@ class AutomationsController < ApplicationController
   end
 
   def show
-    @automation = @space.automations.find_by_npi!(params[:npi])
+    @automation = @space.automations.find(params[:npi])
 
     authorize @automation, :show?
   end
 
   def edit
-    @automation = @space.automations.find_by_npi!(params[:npi])
+    @automation = @space.automations.find(params[:npi])
 
     authorize @automation, :update?
   end
 
   def update
-    @automation = @space.automations.find_by_npi!(params[:npi])
+    @automation = @space.automations.find(params[:npi])
 
     authorize @automation, :update?
 
@@ -54,7 +54,7 @@ class AutomationsController < ApplicationController
   end
 
   def destroy
-    @automation = @space.automations.find_by_npi!(params[:npi])
+    @automation = @space.automations.find(params[:npi])
 
     authorize @automation, :destroy?
 
