@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 
+# Trap to ensure terminal state is restored on exit (Ctrl+C, errors, etc.)
+cleanup() {
+  # Restore terminal to sane state without clearing screen
+  stty sane 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
 # Parse command line arguments
 BUILD_FLAG=""
 while [ $# -gt 0 ]; do
@@ -58,7 +65,7 @@ echo ""
 # Fix local file permissions before Docker build
 # Docker COPY preserves source permissions, so restrictive local perms (600) cause access issues
 echo "Checking file permissions..."
-FIXED_FILES=$(find . -type f \( -name "*.rb" -o -name "*.rake" -o -name "*.js" -o -name "*.ts" -o -name "*.yml" \) \
+FIXED_FILES=$(find . -type f \( -name "*.rb" -o -name "*.erb" -o -name "*.rake" -o -name "*.js" -o -name "*.ts" -o -name "*.yml" \) \
   ! -path "*/node_modules/*" \
   ! -path "*/vendor/*" \
   ! -path "*/.git/*" \
