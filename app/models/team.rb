@@ -1,4 +1,6 @@
 class Team < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization
 
   scope :query, ->(query) { where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%") }

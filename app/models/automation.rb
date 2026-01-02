@@ -1,4 +1,6 @@
 class Automation < ApplicationRecord
+  include NpiOrdering
+
   DEFAULT_INVOCATIONS_LIMIT = 5
 
   belongs_to :organization
