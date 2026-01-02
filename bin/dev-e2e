@@ -55,6 +55,7 @@ export REDIS_PORT=7379
 export MINIO_PORT=10000
 export MINIO_CONSOLE_PORT=10001
 export BLOCKNOTE_PORT=4002
+export HTTP_HOST=localhost:4000
 
 echo "Starting E2E test environment with offset ports..."
 echo "  Rails: http://localhost:${RAILS_PORT}"
