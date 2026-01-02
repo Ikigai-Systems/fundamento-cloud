@@ -1,0 +1,9 @@
+hc_favorite_1:
+  id: "hcfavorit1"
+  organization_user: :ou_hc_pawel
+  object: one (Document)
+
+is_favorite_1:
+  id: "isfavorit1"
+  organization_user: :ou_is_pawel
+  object: one (Document)

@@ -1,9 +1,9 @@
 class Favorite < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization_user
 
   belongs_to :object, polymorphic: true
-
-  include ModelWithNpiAsParam
 
   validates_presence_of :object
 
