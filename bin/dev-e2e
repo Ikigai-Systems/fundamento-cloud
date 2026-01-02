@@ -1,12 +1,5 @@
 #!/usr/bin/env sh
 
-# Trap to ensure terminal state is restored on exit (Ctrl+C, errors, etc.)
-cleanup() {
-  # Restore terminal to sane state without clearing screen
-  stty sane 2>/dev/null || true
-}
-trap cleanup EXIT INT TERM
-
 # Parse command line arguments
 BUILD_FLAG=""
 while [ $# -gt 0 ]; do
