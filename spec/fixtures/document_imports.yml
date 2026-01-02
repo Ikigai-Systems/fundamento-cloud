@@ -1,0 +1,23 @@
+hc_import_1:
+  id: "hcimport01"
+  organization: :hc
+  space: :hc_default
+  organization_user: :ou_hc_pawel
+  imported_at: <%= 1.hour.ago %>
+  imported_content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Imported document"}]}]}'
+
+hc_import_pending:
+  id: "hcimport02"
+  organization: :hc
+  space: :hc_default
+  organization_user: :ou_hc_pawel
+  imported_at: null
+  imported_content: null
+
+is_import_1:
+  id: "isimport01"
+  organization: :is
+  space: :is_default
+  organization_user: :ou_is_pawel
+  imported_at: <%= 2.hours.ago %>
+  imported_content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Another import"}]}]}'

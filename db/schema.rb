@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_01_203248) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_01_214209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -104,19 +104,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_01_203248) do
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
   end
 
-  create_table "document_imports", force: :cascade do |t|
+  create_table "document_imports", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "document_id"
     t.datetime "imported_at"
     t.text "imported_content"
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id", null: false
     t.bigint "organization_user_id", null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
+    t.index ["id"], name: "index_document_imports_on_id", unique: true
     t.index ["imported_at"], name: "index_document_imports_on_imported_at"
-    t.index ["npi"], name: "index_document_imports_on_npi", unique: true
     t.index ["organization_id"], name: "index_document_imports_on_organization_id"
     t.index ["organization_user_id"], name: "index_document_imports_on_organization_user_id"
     t.index ["space_id"], name: "index_document_imports_on_space_id"

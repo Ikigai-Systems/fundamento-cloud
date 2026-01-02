@@ -1,5 +1,5 @@
 class DocumentImport < ApplicationRecord
-  include ModelWithNpiAsParam
+  include NpiOrdering
   include Rails.application.routes.url_helpers
 
   belongs_to :organization
