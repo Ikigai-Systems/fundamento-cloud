@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 
+# Trap to restore cursor visibility on exit (Docker Compose can hide it)
+cleanup() {
+  # Restore cursor visibility and terminal state
+  tput cnorm 2>/dev/null || printf '\033[?25h' || true
+  stty echo 2>/dev/null || true
+}
+trap cleanup EXIT INT TERM
+
 # Parse command line arguments
 BUILD_FLAG=""
 while [ $# -gt 0 ]; do
@@ -86,7 +94,8 @@ else
 fi
 
 # Start all E2E services with -p flag for isolation and wait for them to be healthy
-docker compose -p e2e-tests up $BUILD_FLAG --wait
+# Use --ansi never to prevent terminal escape sequences that can corrupt terminal state
+docker compose --ansi never -p e2e-tests up $BUILD_FLAG --wait
 
 echo ""
 echo "✓ E2E environment is ready!"
