@@ -90,7 +90,7 @@ class Tables::TablesController < ApplicationController
           last_row = @table.rows.create!(
             previous_row: last_row,
             organization_id: @table.organization_id,
-            npi: row["id"]
+            id: row["id"]
           )
           @table.columns.each do |column|
             last_row.cells.create!(
@@ -191,13 +191,13 @@ class Tables::TablesController < ApplicationController
 
     case event_type
     when "update_row"
-      row = @table.rows.find_by(npi: event["rowId"])
+      row = @table.rows.find_by(id: event["rowId"])
       event["update"].each do |column_npi, new_cell_value|
         @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
       end
     when "update_rows"
       event["rows"].each do |event_row|
-        row = @table.rows.find_by(npi: event_row["rowId"])
+        row = @table.rows.find_by(id: event_row["rowId"])
         event_row["update"].each do |column_npi, new_cell_value|
           @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
         end
@@ -207,7 +207,7 @@ class Tables::TablesController < ApplicationController
       @table.add_row(row_npi)
     when "delete_rows"
       event["rows"][0].each do |row_npi|
-        row = @table.rows.find_by(npi: row_npi)
+        row = @table.rows.find_by(id: row_npi)
         next_row = row.next_row
         next_row.update(previous_row: row.previous_row) unless next_row.nil?
         row.destroy
@@ -258,7 +258,7 @@ class Tables::TablesController < ApplicationController
   def preview_formula
     authorize @table, :show?
 
-    row = @table.rows.find_by(npi: params["row_id"])
+    row = @table.rows.find_by(id: params["row_id"])
     formula = params["formula"]
 
     cells = row.cells.index_by(&:column_id)

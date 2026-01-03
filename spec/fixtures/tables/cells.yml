@@ -2,96 +2,96 @@ projects_jira_key:
   organization: :is
   table: :projects
   column_id: "project_key"
-  row: :projects_row_1
+  row_id: "projects_row_1"
   value: JIRA
 
 projects_jira_name:
   organization: :is
   table: :projects
   column_id: "project_name"
-  row: :projects_row_1
+  row_id: "projects_row_1"
   value: Jira
 
 projects_jira_description:
   organization: :is
   table: :projects
   column_id: "project_description"
-  row: :projects_row_1
+  row_id: "projects_row_1"
   value: Some project tracking tool
 
 projects_jira_value:
   organization: :is
   table: :projects
   column_id: "project_value"
-  row: :projects_row_1
+  row_id: "projects_row_1"
   value: 3*5
 
 projects_confluence_key:
   organization: :is
   table: :projects
   column_id: "project_key"
-  row: :projects_row_2
+  row_id: "projects_row_2"
   value: CONFLUENCE
 
 projects_confluence_name:
   organization: :is
   table: :projects
   column_id: "project_name"
-  row: :projects_row_2
+  row_id: "projects_row_2"
   value: Confluence
 
 projects_confluence_description:
   organization: :is
   table: :projects
   column_id: "project_description"
-  row: :projects_row_2
+  row_id: "projects_row_2"
   value: Some knowledge sharing tool
 
 projects_confluence_value:
   organization: :is
   table: :projects
   column_id: "project_value"
-  row: :projects_row_2
+  row_id: "projects_row_2"
   value: 5 - 2
 
 projects_monday_key:
   organization: :is
   table: :projects
   column_id: "project_key"
-  row: :projects_row_3
+  row_id: "projects_row_3"
   value: MON
 
 projects_monday_name:
   organization: :is
   table: :projects
   column_id: "project_name"
-  row: :projects_row_3
+  row_id: "projects_row_3"
   value: Monday
 
 projects_monday_description:
   organization: :is
   table: :projects
   column_id: "project_description"
-  row: :projects_row_3
+  row_id: "projects_row_3"
   value: Hardest day of the week
 
 projects_monday_value:
   organization: :is
   table: :projects
   column_id: "project_value"
-  row: :projects_row_3
+  row_id: "projects_row_3"
   value: 0-1
 
 orders_hawaii_pizza:
   organization: :is
   table: :orders
   column_id: "orders_pizza"
-  row: :orders_row_1
+  row_id: "orders_row_1"
   value: Hawaii
 
 orders_hawaii_pizza_who:
   organization: :is
   table: :orders
   column_id: "orders_who"
-  row: :orders_row_1
+  row_id: "orders_row_1"
   value: <%= ActiveRecord::FixtureSet.identify(:stefan) %>

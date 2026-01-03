@@ -116,7 +116,10 @@ class Formula::ActionExecutor
 
     Pundit.authorize(@pundit_user, table, :update?)
 
-    row = table.rows.create!(organization: @organization_user.organization)
+    row = table.rows.create!(
+      organization: @organization_user.organization,
+      previous_row: table.rows_in_order.last
+    )
     
     values.each do |column_identifier, value|
       # Try to find column by NPI first, then by name
@@ -174,7 +177,7 @@ class Formula::ActionExecutor
 
     matching_rows = []
     
-    table.rows.each do |row|
+    table.rows_in_order.each do |row|
       context = build_row_context(function_context, row)
       
       if evaluate_condition(condition_formula, context)
@@ -184,7 +187,10 @@ class Formula::ActionExecutor
     
     if matching_rows.empty?
       # Add new row
-      row = table.rows.create!(organization: @organization_user.organization)
+      row = table.rows.create!(
+        organization: @organization_user.organization,
+        previous_row: table.rows_in_order.last
+      )
       
       values.each do |column_identifier, value|
         column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
@@ -238,8 +244,8 @@ class Formula::ActionExecutor
     current_row = {}
 
     # Include row identifiers
-    current_row["id"] = row.npi
-    current_row["npi"] = row.npi
+    current_row["id"] = row.id
+    current_row["npi"] = row.id
 
     row.cells.includes(:column).each do |cell|
       current_row[cell.column.name] = cell.value

@@ -26,7 +26,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
     # CurrentRow requires context - provide a context with currentRow
     let(:context) do
       {
-        "ThisRow" => tables_rows(:orders_row_1).npi,
+        "ThisRow" => tables_rows(:orders_row_1).id,
       }
     end
 

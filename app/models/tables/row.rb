@@ -1,7 +1,7 @@
 class Tables::Row < ApplicationRecord
-  self.table_name = :table_rows
+  include NpiOrdering
 
-  include ModelWithNpi # todo: determine if ModelWithNpiAsParam is needed here or not
+  self.table_name = :table_rows
 
   belongs_to :organization
   belongs_to :table, touch: true

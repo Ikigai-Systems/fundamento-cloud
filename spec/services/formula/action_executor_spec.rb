@@ -28,7 +28,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
           })
         }.to change { table.reload.rows.count }.by(1)
 
-        new_row = table.rows.last
+        new_row = table.rows_in_order.last
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Key")).value).to eq("NEW")
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Name")).value).to eq("New Project")
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Description")).value).to eq("A new project")
@@ -45,7 +45,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
           })
         }.to change { table.reload.rows.count }.by(1)
 
-        new_row = table.rows.last
+        new_row = table.rows_in_order.last
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Key")).value).to eq("BY_NAME")
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Name")).value).to eq("Added by name")
       end
@@ -130,7 +130,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         })
 
         expect(table.reload.rows.count).to eq(original_count + 1)
-        new_row = table.rows.last
+        new_row = table.rows_in_order.last
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Key")).value).to eq("ADDED")
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Name")).value).to eq("Added Row")
       end
@@ -164,7 +164,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         })
 
         expect(table.reload.rows.count).to eq(1)
-        new_row = table.rows.first
+        new_row = table.rows_in_order.first
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Key")).value).to eq("FIRST")
         expect(new_row.cells.find_by(column: table.columns.find_by(name: "Name")).value).to eq("First Row")
       end

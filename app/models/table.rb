@@ -101,7 +101,7 @@ class Table < ApplicationRecord
         columns_in_order.each_with_object({}) do |column, hash|
           if column.formula?
             formulas_to_evaluate << {
-              row_npi: row.npi,
+              row_npi: row.id,
               column_npi: column.id,
               formula: column.formula,
               additional_context: additional_context,
@@ -122,7 +122,7 @@ class Table < ApplicationRecord
             hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
           end
         end
-      end.merge({ "npi" => row.npi }) # this is for Rowstack convenience
+      end.merge({ "npi" => row.id, "id" => row.id }) # this is for Rowstack convenience
     end
 
     unless formulas_to_evaluate.empty?
@@ -211,7 +211,7 @@ class Table < ApplicationRecord
     new_row = self.rows.create!(
       previous_row: last_row,
       organization_id: self.organization_id,
-      npi: row_npi,
+      id: row_npi,
     )
 
     self.columns.each do |column|
