@@ -123,6 +123,14 @@ class Space < ApplicationRecord
     { "id" => document_id, "children" => [] }
   end
 
+  # Mapping of old hardcoded NPIs to descriptive CSV filenames
+  # This allows BlockNote JSON files to continue using old NPIs as placeholders
+  TABLE_NPI_PLACEHOLDERS = {
+    "7enpoTncq9" => "simple-grid-example",
+    "7hDhcL1cyv" => "customer-sales-data",
+    "u34fOBpaFp" => "advanced-features-example"
+  }.freeze
+
   def populate_with_onboarding_content!
     Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.yjs") do |yjs_file|
       create_onboarding_document(yjs_file)
@@ -141,33 +149,72 @@ class Space < ApplicationRecord
       space: self,
     )
 
+    # Load BlockNote JSON
+    content_blocks = JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+
+    # Create tables and build NPI mapping
+    table_npi_mapping = {}
+    Dir.glob(directory + "/**/*.csv") do |csv_file|
+      csv_filename = File.basename(csv_file, ".*")
+
+      # Determine table name based on CSV filename
+      table_name = if csv_filename == "customer-sales-data"
+        "Advanced Table: Customer their first full month of sales"
+      else
+        "Table " + Nanoid.generate(size: 4)
+      end
+
+      table = self.tables.create!(
+        name: table_name,
+        parent: self.home_document || self.documents.first || nil,
+        organization: self.organization,
+      )
+      table.import_from_csv(csv_file)
+
+      # Store mapping from CSV filename to generated NPI
+      table_npi_mapping[csv_filename] = table.npi
+    end
+
+    # Replace placeholder NPIs in BlockNote JSON with actual generated NPIs
+    updated_content_blocks = replace_table_npi_placeholders(content_blocks, table_npi_mapping)
+
     document.versions.create!(
-      content_blocks: JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
+      content_blocks: updated_content_blocks
     )
 
     hierarchy_node = self.create_hierarchy_node(document.id)
     self.hierarchy.append(hierarchy_node)
     self.save!
+  end
 
-    Dir.glob(directory + "/**/*.csv") do |csv_file|
-      npi = File.basename(csv_file, ".*")
-      table = self.tables.create!(
-        npi: npi,
-        name: "Table " + Nanoid.generate(size: 4),
-        parent: self.home_document || self.documents.first || nil,
-        organization: self.organization,
-      )
-      table.import_from_csv(csv_file)
-      if npi == "7hDhcL1cyv"
-        table.update(name: "Advanced Table: Customer their first full month of sales")
-        table.columns_in_order[0].update(npi: "sample_column_name")
-        table.columns_in_order[1].update(npi: "sample_column_2", kind: Tables::Column::to_kind("date"))
-        table.columns_in_order[2].update(npi: "sample_column_3", kind: Tables::Column::to_kind("number"))
-        table.columns_in_order[3].update(npi: "eXqGtIyEmPqW2pC0uwk39")
-        table.columns_in_order[4].update(npi: "I2aoi-2OSTI-BV6UbzDls")
-        table.columns_in_order[5].update(npi: "hqqVKn_9zECje3en054vE")
-        table.columns_in_order[6].update(npi: "sample_column_4")
+  def replace_table_npi_placeholders(content_blocks, table_npi_mapping)
+    # Build reverse mapping from old hardcoded NPIs to actual generated NPIs
+    npi_replacements = {}
+    TABLE_NPI_PLACEHOLDERS.each do |old_npi, csv_filename|
+      if table_npi_mapping[csv_filename]
+        npi_replacements[old_npi] = table_npi_mapping[csv_filename]
       end
+    end
+
+    # Deep traverse and replace NPIs in content blocks
+    content_blocks.deep_dup.tap do |blocks|
+      traverse_and_replace_npis(blocks, npi_replacements)
+    end
+  end
+
+  def traverse_and_replace_npis(obj, npi_replacements)
+    case obj
+    when Hash
+      obj.each do |key, value|
+        # Replace tableNpi values
+        if key == "tableNpi" && value.is_a?(String) && npi_replacements[value]
+          obj[key] = npi_replacements[value]
+        elsif value.is_a?(Hash) || value.is_a?(Array)
+          traverse_and_replace_npis(value, npi_replacements)
+        end
+      end
+    when Array
+      obj.each { |item| traverse_and_replace_npis(item, npi_replacements) }
     end
   end
 
