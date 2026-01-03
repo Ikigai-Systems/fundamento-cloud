@@ -138,7 +138,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "removes tags from a table" do
         response = RemoveTagsTool.call(
-          object_npi: table.npi,
+          object_npi: table.id,
           object_type: "Table",
           tags: ["#data"],
           server_context: server_context

@@ -26,7 +26,7 @@ type TableTitleInputProps = {
 
 export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputProps) => {
   return <input
-    key={space.npi + "_" + table.npi + "_name"}
+    key={space.npi + "_" + table.id + "_name"}
     type="text"
     placeholder={UNTITLED_CONTENT}
     defaultValue={table.name === UNTITLED_CONTENT ? undefined : table.name}
@@ -48,7 +48,7 @@ export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputPro
       if (newName !== table.name) {
         try {
           await TablesApi.update({
-            params: {npi: table.npi},
+            params: {npi: table.id},
             data: {name: e.target.value},
           });
         } catch (e) {

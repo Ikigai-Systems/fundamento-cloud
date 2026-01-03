@@ -63,7 +63,7 @@ RSpec.describe Formula::Engine, type: :model do
       let(:engine) { Formula::Engine.new(additional_functions: fundamento_functions.functions) }
 
       it 'returns empty table data as dummy implementation' do
-        formula = "Table(\"#{tables_tables(:projects).npi}\")"
+        formula = "Table(\"#{tables_tables(:projects).id}\")"
         result = engine.evaluate(formula)
 
         expect(result).to be_a(Array)

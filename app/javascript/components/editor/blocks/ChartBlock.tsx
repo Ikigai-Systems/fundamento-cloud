@@ -126,12 +126,13 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.npi, label: table.name}));
+                    return tables.map(table => ({value: table.id, label: table.name}));
                   }}
                   onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
                         tableNpi: newOption.value,
+                        tableId: newOption.value,
                         title: `Chart for ${newOption.label}`,
                         chartType: "line",
                       },
@@ -176,12 +177,13 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.npi, label: table.name}));
+                    return tables.map(table => ({value: table.id, label: table.name}));
                   }}
                   onChange={(newOption : {value: string, label : string}) => {
                     editor.updateBlock(props.block, {
                       props: {
                         tableNpi: newOption.value,
+                        tableId: newOption.value,
                       },
                     });
                   }}

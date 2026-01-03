@@ -190,7 +190,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "updates tags on a table" do
         response = UpdateTagsTool.call(
-          object_npi: table.npi,
+          object_npi: table.id,
           object_type: "Table",
           tags: ["#data", "#analytics", "#reporting"],
           server_context: server_context

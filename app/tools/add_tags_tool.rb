@@ -55,7 +55,7 @@ class AddTagsTool < ApplicationTool
     when "Document"
       organization.documents.find_by_param!(npi)
     when "Table"
-      organization.tables.find_by_param!(npi)
+      organization.tables.find(npi)
     else
       raise ArgumentError, "Unsupported object_type: #{object_type}"
     end
@@ -68,7 +68,7 @@ class AddTagsTool < ApplicationTool
     when Table
       # For now, just return basic info since TableBlueprint might not have MCP view
       {
-        npi: object.npi,
+        id: object.id,
         name: object.name,
         tags: object.tags.map { |tag| "##{tag.name}" }
       }.to_json

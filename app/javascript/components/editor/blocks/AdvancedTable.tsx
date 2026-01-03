@@ -83,7 +83,8 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
                 });
                 editor.updateBlock(block, {
                   props: {
-                    tableNpi: table.npi,
+                    tableNpi: table.id,
+                    tableId: table.id,
                   },
                 });
               } finally {
@@ -116,7 +117,8 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
 
               editor.updateBlock(block, {
                 props: {
-                  tableNpi: table.npi,
+                  tableNpi: table.id,
+                  tableId: table.id,
                 },
               });
             } finally {
@@ -151,12 +153,13 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
                   query,
                 }
               });
-              return tables.map(table => ({value: table.npi, label: table.name}));
+              return tables.map(table => ({value: table.id, label: table.name}));
             }}
             onChange={(newOption) => {
               editor.updateBlock(block, {
                 props: {
                   tableNpi: (newOption as { value: any }).value,
+                  tableId: (newOption as { value: any }).value,
                 },
               });
             }}

@@ -4,7 +4,7 @@ module LoadTable
       extend ActiveSupport::Concern
 
       define_method(:load_table) do
-        @table = current_organization.tables.find_by_param!(params[param_name])
+        @table = current_organization.tables.find(params[param_name])
         @space = @table.space
       end
     end

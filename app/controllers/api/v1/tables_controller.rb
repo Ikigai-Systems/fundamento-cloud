@@ -22,7 +22,7 @@ class Api::V1::TablesController < Api::ApiController
     # Will throw if unauthorized
     Pundit.authorize(pundit_user, space, for_update ? :update? : :show?)
 
-    table = space.tables.find_by_npi(npi_or_name)
+    table = space.tables.find_by(id: npi_or_name)
 
     if table.nil? # maybe it was table Name provided instead of id?
       table = space.tables.find_by_name!(npi_or_name)

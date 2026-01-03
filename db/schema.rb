@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_03_141124) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -140,7 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
 
   create_table "favorites", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_user_id", null: false
     t.datetime "updated_at", null: false
@@ -300,7 +300,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
   create_table "object_comments", force: :cascade do |t|
     t.json "content", null: false
     t.datetime "created_at", null: false
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.bigint "organization_user_id", null: false
@@ -313,7 +313,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
   create_table "object_reactions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "emoji", null: false
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.bigint "organization_user_id", null: false
@@ -325,7 +325,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
 
   create_table "object_tags", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.string "tag_id", null: false
@@ -337,7 +337,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
   end
 
   create_table "object_visitors", force: :cascade do |t|
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "user_id", null: false
     t.datetime "visited_at", null: false
@@ -402,7 +402,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
   create_table "public_links", id: :string, force: :cascade do |t|
     t.text "allowed_emails", default: [], array: true
     t.datetime "created_at", null: false
-    t.bigint "object_id", null: false
+    t.string "object_id", null: false
     t.string "object_type", null: false
     t.bigint "organization_id", null: false
     t.datetime "updated_at", null: false
@@ -474,7 +474,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
     t.datetime "created_at", null: false
     t.bigint "organization_id", null: false
     t.bigint "row_id", null: false
-    t.bigint "table_id", null: false
+    t.string "table_id", null: false
     t.datetime "updated_at", null: false
     t.string "value"
     t.index ["column_id"], name: "index_table_cells_on_column_id"
@@ -493,7 +493,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
     t.json "options"
     t.bigint "organization_id", null: false
     t.bigint "previous_column_id"
-    t.bigint "table_id", null: false
+    t.string "table_id", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
     t.index ["npi", "table_id"], name: "index_table_columns_on_npi_and_table_id", unique: true
@@ -506,25 +506,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_02_073826) do
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id", null: false
     t.bigint "previous_row_id"
-    t.bigint "table_id", null: false
+    t.string "table_id", null: false
     t.index ["npi", "table_id"], name: "index_table_rows_on_npi_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_rows_on_organization_id"
     t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
     t.index ["table_id"], name: "index_table_rows_on_table_id"
   end
 
-  create_table "tables", force: :cascade do |t|
+  create_table "tables", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id", null: false
     t.bigint "parent_id", null: false
     t.string "parent_type", null: false
     t.bigint "space_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
     t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true
-    t.index ["npi", "organization_id"], name: "index_tables_on_npi_and_organization_id", unique: true
     t.index ["organization_id"], name: "index_tables_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_tables_on_parent"
     t.index ["space_id"], name: "index_tables_on_space_id"

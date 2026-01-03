@@ -22,7 +22,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
     space.tables.create!(
       organization: organization,
       name: "Test Table",
-      npi: "npi",
+      id: "npi",
       parent: space,
     )
   end

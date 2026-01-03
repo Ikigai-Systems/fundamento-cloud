@@ -34,8 +34,8 @@ describe("Table CRUD Operations", function() {
 
   it("displays a table in view mode correctly", function() {
     // Get the table NPI and visit it using the cy.appEval command
-    cy.appEval("Table.find_by(name: 'projects').npi").then((tableNpi) => {
-      cy.visit(`/t/${tableNpi}`);
+    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.visit(`/t/${tableId}`);
 
       // Verify the page loads successfully
       cy.contains("projects").should("exist");
@@ -57,8 +57,8 @@ describe("Table CRUD Operations", function() {
   });
 
   it("allows editing a table and updating cell values", function() {
-    cy.appEval("Table.find_by(name: 'projects').npi").then((tableNpi) => {
-      cy.visit(`/t/${tableNpi}`);
+    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.visit(`/t/${tableId}`);
 
       // Click the Edit button
       cy.get(".edit-table-button").click();
@@ -86,8 +86,8 @@ describe("Table CRUD Operations", function() {
   });
 
   it("allows adding a new row to the table", function() {
-    cy.appEval("Table.find_by(name: 'projects').npi").then((tableNpi) => {
-      cy.visit(`/t/${tableNpi}/edit`);
+    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.visit(`/t/${tableId}/edit`);
 
       // Wait for table to load by checking for the Rowstack container and autosave message
       cy.get(".ikigai-rowstack-overrides").should("exist");
@@ -115,8 +115,8 @@ describe("Table CRUD Operations", function() {
   });
 
   it("persists changes after navigating away and back", function() {
-    cy.appEval("Table.find_by(name: 'projects').npi").then((tableNpi) => {
-      cy.visit(`/t/${tableNpi}/edit`);
+    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.visit(`/t/${tableId}/edit`);
 
       // Wait for table to load
       cy.get(".ikigai-rowstack-overrides").should("exist");
@@ -139,7 +139,7 @@ describe("Table CRUD Operations", function() {
       cy.contains("MON-UPDATED").should("exist");
 
       // Navigate to view mode
-      cy.visit(`/t/${tableNpi}`);
+      cy.visit(`/t/${tableId}`);
 
       // Wait for view mode to load
       cy.get(".ikigai-rowstack-overrides").should("exist");
@@ -148,7 +148,7 @@ describe("Table CRUD Operations", function() {
       cy.contains("MON-UPDATED").should("exist");
 
       // Navigate back to edit mode
-      cy.visit(`/t/${tableNpi}/edit`);
+      cy.visit(`/t/${tableId}/edit`);
 
       // Wait for edit mode to load
       cy.contains("Each change is saved automatically").should("be.visible");
@@ -159,8 +159,8 @@ describe("Table CRUD Operations", function() {
   });
 
   it("displays correct table data structure", function() {
-    cy.appEval("Table.find_by(name: 'projects').npi").then((tableNpi) => {
-      cy.visit(`/t/${tableNpi}`);
+    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.visit(`/t/${tableId}`);
 
       // Verify the ViewTablePanel is rendered
       cy.get("article.document").should("exist");
@@ -171,7 +171,7 @@ describe("Table CRUD Operations", function() {
 
       // Request the table data via API to verify structure
       cy.request({
-        url: `/t/${tableNpi}.json`,
+        url: `/t/${tableId}.json`,
         headers: {
           "Accept": "application/json"
         }
@@ -182,7 +182,7 @@ describe("Table CRUD Operations", function() {
 
         // Verify table structure
         const {table, data} = response.body;
-        expect(table).to.have.property("npi");
+        expect(table).to.have.property("id");
         expect(table.name).to.eq("projects");
 
         // Verify data structure

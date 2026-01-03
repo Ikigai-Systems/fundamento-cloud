@@ -19,10 +19,10 @@ RSpec.describe "Space onboarding content", type: :model do
       end
 
       it "has no duplicate table NPIs within the space" do
-        table_npis = space.tables.pluck(:npi)
+        table_ids = space.tables.pluck(:id)
 
-        expect(table_npis.uniq.count).to eq(table_npis.count),
-          "Found duplicate table NPIs within one space: #{table_npis.select { |npi| table_npis.count(npi) > 1 }.uniq}"
+        expect(table_ids.uniq.count).to eq(table_ids.count),
+          "Found duplicate table NPIs within one space: #{table_ids.select { |id| table_ids.count(id) > 1 }.uniq}"
       end
 
       it "has no duplicate column NPIs within each table" do
@@ -30,7 +30,7 @@ RSpec.describe "Space onboarding content", type: :model do
           column_npis = table.columns.pluck(:npi)
 
           expect(column_npis.uniq.count).to eq(column_npis.count),
-            "Found duplicate column NPIs in table #{table.npi}: #{column_npis.select { |npi| column_npis.count(npi) > 1 }.uniq}"
+            "Found duplicate column NPIs in table #{table.id}: #{column_npis.select { |npi| column_npis.count(npi) > 1 }.uniq}"
         end
       end
 
@@ -39,8 +39,8 @@ RSpec.describe "Space onboarding content", type: :model do
 
         expect(advanced_table).to be_present
         expect(advanced_table.name).to eq("Advanced Table: Customer their first full month of sales")
-        expect(advanced_table.npi).to be_present
-        expect(advanced_table.npi).not_to eq("7hDhcL1cyv") # Should NOT be hardcoded NPI
+        expect(advanced_table.id).to be_present
+        expect(advanced_table.id).not_to eq("7hDhcL1cyv") # Should NOT be hardcoded NPI
       end
 
       it "generates unique column NPIs for advanced table columns" do
@@ -67,10 +67,10 @@ RSpec.describe "Space onboarding content", type: :model do
       let(:space2) { organization2.spaces.first }
 
       it "creates unique table NPIs across organizations (BUG FIXED)" do
-        space1_npis = space1.tables.pluck(:npi)
-        space2_npis = space2.tables.pluck(:npi)
+        space1_ids = space1.tables.pluck(:id)
+        space2_ids = space2.tables.pluck(:id)
 
-        duplicates = space1_npis & space2_npis
+        duplicates = space1_ids & space2_ids
 
         # After refactoring, NPIs should be globally unique
         expect(duplicates).to be_empty,
@@ -105,9 +105,9 @@ RSpec.describe "Space onboarding content", type: :model do
         }.not_to raise_error
 
         # Verify both spaces have unique table NPIs
-        space1_npis = space1.tables.pluck(:npi)
-        space2_npis = second_space.tables.pluck(:npi)
-        duplicates = space1_npis & space2_npis
+        space1_ids = space1.tables.pluck(:id)
+        space2_ids = second_space.tables.pluck(:id)
+        duplicates = space1_ids & space2_ids
 
         expect(duplicates).to be_empty,
           "Expected unique table NPIs between spaces in same org but found duplicates: #{duplicates.join(', ')}"
@@ -139,7 +139,7 @@ RSpec.describe "Space onboarding content", type: :model do
           table_npi = block["props"]["tableNpi"]
 
           expect(table_npi).to be_present
-          expect(space.tables.where(npi: table_npi)).to exist,
+          expect(space.tables.where(id: table_npi)).to exist,
             "BlockNote document references table NPI '#{table_npi}' but no such table exists in space"
         end
       end
@@ -156,11 +156,11 @@ RSpec.describe "Space onboarding content", type: :model do
         content_blocks = formula_doc.versions.last.content_blocks
         advanced_table_block = content_blocks.find { |block|
           block["type"] == "advancedTable" &&
-          block["props"]["tableNpi"] == advanced_table.npi
+          block["props"]["tableNpi"] == advanced_table.id
         }
 
         expect(advanced_table_block).to be_present
-        expect(advanced_table_block["props"]["tableNpi"]).to eq(advanced_table.npi)
+        expect(advanced_table_block["props"]["tableNpi"]).to eq(advanced_table.id)
         expect(advanced_table_block["props"]["tableNpi"]).not_to eq("7hDhcL1cyv") # Should NOT be hardcoded
       end
 
@@ -179,7 +179,7 @@ RSpec.describe "Space onboarding content", type: :model do
           advanced_table_blocks.each do |block|
             table_npi = block["props"]["tableNpi"]
 
-            expect(space.tables.where(npi: table_npi)).to exist,
+            expect(space.tables.where(id: table_npi)).to exist,
               "Document '#{doc.title}' references table NPI '#{table_npi}' but no such table exists"
           end
         end

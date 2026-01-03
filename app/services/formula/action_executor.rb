@@ -223,7 +223,7 @@ class Formula::ActionExecutor
 
   def find_table(table_identifier)
     # Try to find by NPI first, then by name
-    table = @space.tables.find_by(npi: table_identifier) || @space.tables.find_by(name: table_identifier)
+    table = @space.tables.find_by(id: table_identifier) || @space.tables.find_by(name: table_identifier)
     
     # Raise exception if table not found to match expected behavior
     raise ActiveRecord::RecordNotFound, "Table not found: #{table_identifier}" unless table

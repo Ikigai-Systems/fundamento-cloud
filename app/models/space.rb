@@ -125,7 +125,7 @@ class Space < ApplicationRecord
 
   # Mapping of old hardcoded NPIs to descriptive CSV filenames
   # This allows BlockNote JSON files to continue using old NPIs as placeholders
-  TABLE_NPI_PLACEHOLDERS = {
+  TABLE_ID_PLACEHOLDERS = {
     "7enpoTncq9" => "simple-grid-example",
     "7hDhcL1cyv" => "customer-sales-data",
     "u34fOBpaFp" => "advanced-features-example"
@@ -153,7 +153,7 @@ class Space < ApplicationRecord
     content_blocks = JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
 
     # Create tables and build NPI mapping
-    table_npi_mapping = {}
+    table_id_mapping = {}
     Dir.glob(directory + "/**/*.csv") do |csv_file|
       csv_filename = File.basename(csv_file, ".*")
 
@@ -169,14 +169,15 @@ class Space < ApplicationRecord
         parent: self.home_document || self.documents.first || nil,
         organization: self.organization,
       )
+
       table.import_from_csv(csv_file)
 
       # Store mapping from CSV filename to generated NPI
-      table_npi_mapping[csv_filename] = table.npi
+      table_id_mapping[csv_filename] = table.id
     end
 
     # Replace placeholder NPIs in BlockNote JSON with actual generated NPIs
-    updated_content_blocks = replace_table_npi_placeholders(content_blocks, table_npi_mapping)
+    updated_content_blocks = replace_table_id_placeholders(content_blocks, table_id_mapping)
 
     document.versions.create!(
       content_blocks: updated_content_blocks
@@ -187,34 +188,35 @@ class Space < ApplicationRecord
     self.save!
   end
 
-  def replace_table_npi_placeholders(content_blocks, table_npi_mapping)
+  def replace_table_id_placeholders(content_blocks, table_id_mapping)
     # Build reverse mapping from old hardcoded NPIs to actual generated NPIs
-    npi_replacements = {}
-    TABLE_NPI_PLACEHOLDERS.each do |old_npi, csv_filename|
-      if table_npi_mapping[csv_filename]
-        npi_replacements[old_npi] = table_npi_mapping[csv_filename]
+    id_replacements = {}
+
+    TABLE_ID_PLACEHOLDERS.each do |old_id, csv_filename|
+      if table_id_mapping[csv_filename]
+        id_replacements[old_id] = table_id_mapping[csv_filename]
       end
     end
 
     # Deep traverse and replace NPIs in content blocks
     content_blocks.deep_dup.tap do |blocks|
-      traverse_and_replace_npis(blocks, npi_replacements)
+      traverse_and_replace_ids(blocks, id_replacements)
     end
   end
 
-  def traverse_and_replace_npis(obj, npi_replacements)
+  def traverse_and_replace_ids(obj, id_replacements)
     case obj
     when Hash
       obj.each do |key, value|
         # Replace tableNpi values
-        if key == "tableNpi" && value.is_a?(String) && npi_replacements[value]
-          obj[key] = npi_replacements[value]
+        if key == "tableNpi" && value.is_a?(String) && id_replacements[value]
+          obj[key] = id_replacements[value]
         elsif value.is_a?(Hash) || value.is_a?(Array)
-          traverse_and_replace_npis(value, npi_replacements)
+          traverse_and_replace_ids(value, id_replacements)
         end
       end
     when Array
-      obj.each { |item| traverse_and_replace_npis(item, npi_replacements) }
+      obj.each { |item| traverse_and_replace_ids(item, id_replacements) }
     end
   end
 

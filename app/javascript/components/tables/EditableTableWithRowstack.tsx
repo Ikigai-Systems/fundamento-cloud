@@ -207,7 +207,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
           const spaceNpi = space.npi;
-          const tableNpi = table.npi;
+          const tableNpi = table.id;
           await TablesApi.moveColumnLeft({
             params: {npi: tableNpi},
             data: {colId: column.id}
@@ -229,7 +229,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
           const spaceNpi = space.npi;
-          const tableNpi = table.npi;
+          const tableNpi = table.id;
           await TablesApi.moveColumnRight({
             params: {npi: tableNpi},
             data: {colId: column.id}
@@ -341,7 +341,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                       try {
                         const currentDataDeserializer = Config.deserializeData;
                         Config.deserializeData = (val => val);
-                        const promiseData = TablesApi.show({npi: table.npi});
+                        const promiseData = TablesApi.show({npi: table.id});
                         Config.deserializeData = currentDataDeserializer;
                         const tableData = await promiseData;
 
@@ -369,17 +369,17 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               render: () => {
                 return (<>
                   {table && <div
-                    title={`Click to copy this table ID (${table.npi}) to clipboard - you can use it in formulas`}
+                    title={`Click to copy this table ID (${table.id}) to clipboard - you can use it in formulas`}
                     className="text-slate-400 text-sm truncate max-w-24 cursor-pointer"
                     onClick={() => {
-                      navigator.clipboard.writeText(table.npi);
+                      navigator.clipboard.writeText(table.id);
                       createFlash({
                         type: "info",
-                        message: `Table ID (${table.npi}) copied to clipboard.`
+                        message: `Table ID (${table.id}) copied to clipboard.`
                       })
                     }}
                   >
-                    {table.npi}
+                    {table.id}
                   </div>}
                 </>)
               }
@@ -533,13 +533,13 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               const currentDataSerializer = Config.serializeData;
               Config.serializeData = (val => val);
               const promise = TablesApi.updateByRowstack({
-                params: {npi: table.npi},
+                params: {npi: table.id},
                 data: {event}
               });
               Config.serializeData = currentDataSerializer;
               await promise;
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-                queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.npi]});
+                queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
               }
             } catch (e) {
               //todo: Sentry.capture(e)

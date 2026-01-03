@@ -20,7 +20,7 @@ class Tables::CellsController < ApplicationController
   protected
 
   def load_table_row
-    @row = self.current_organization.tables.find_by_param!(params[:table_npi]).rows.find(params[:row_id])
+    @row = self.current_organization.tables.find(params[:table_npi]).rows.find(params[:row_id])
   end
 
   def update_params

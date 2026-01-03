@@ -34,7 +34,7 @@ RSpec.describe Formula::Engine, type: :model do
     let(:space) { spaces(:is_default) }
 
     it "returns a table" do
-      result = engine.evaluate("Table(\"#{tables_tables(:projects).npi}\")")
+      result = engine.evaluate("Table(\"#{tables_tables(:projects).id}\")")
 
       expect(result).to be_a(Array)
       expect(result[0]).to include("Description", "Key", "Name", "Value")

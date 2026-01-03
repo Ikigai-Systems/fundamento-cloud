@@ -20,7 +20,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
         
         expect {
-          action_executor.add_row({}, table.npi, {
+          action_executor.add_row({}, table.id, {
             "Key" => "NEW",
             "Name" => "New Project",
             "Description" => "A new project",
@@ -57,7 +57,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(original_count).to be > 0
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.delete_rows({}, table.npi)
+        action_executor.delete_rows({}, table.id)
 
         expect(table.reload.rows.count).to eq(0)
       end
@@ -66,7 +66,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
     describe 'UpdateRows action' do
       it 'updates rows without condition (all rows)' do
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.update_rows({}, table.npi, nil, {
+        action_executor.update_rows({}, table.id, nil, {
           "Description" => "Updated description"
         })
 
@@ -79,7 +79,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       it 'updates rows with condition formula' do
         # Update only the row where Key equals "JIRA"
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.update_rows({}, table.npi, 'Equals(CurrentRow("Key"), "JIRA")', {
+        action_executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), "JIRA")', {
           "Description" => "Updated JIRA description"
         })
 
@@ -108,7 +108,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         end
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.update_rows({}, table.npi, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
+        action_executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
           "Description" => "Should not be updated"
         })
 
@@ -124,7 +124,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         original_count = table.rows.count
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.add_or_update_rows({}, table.npi, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
+        action_executor.add_or_update_rows({}, table.id, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
           "Key" => "ADDED",
           "Name" => "Added Row"
         })
@@ -139,7 +139,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         original_count = table.rows.count
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.add_or_update_rows({}, table.npi, 'Equals(CurrentRow("Key"), "JIRA")', {
+        action_executor.add_or_update_rows({}, table.id, 'Equals(CurrentRow("Key"), "JIRA")', {
           "Description" => "Updated via AddOrUpdate"
         })
 
@@ -158,7 +158,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         Tables::DeleteRowsService.new(table).call
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.add_or_update_rows({}, table.npi, nil, {
+        action_executor.add_or_update_rows({}, table.id, nil, {
           "Key" => "FIRST",
           "Name" => "First Row"
         })
@@ -174,7 +174,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(original_count).to be > 0
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
-        action_executor.add_or_update_rows({}, table.npi, nil, {
+        action_executor.add_or_update_rows({}, table.id, nil, {
           "Description" => "Updated all via AddOrUpdate"
         })
 
@@ -194,21 +194,21 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         original_count = table.rows.count
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
         
-        action_executor.add_row({}, table.npi, {
+        action_executor.add_row({}, table.id, {
           "Key" => "FIRST",
           "Name" => "First Added",
           "Description" => "First description",
           "Value" => "10"
         })
         
-        action_executor.add_row({}, table.npi, {
+        action_executor.add_row({}, table.id, {
           "Key" => "SECOND",
           "Name" => "Second Added",
           "Description" => "Second description",
           "Value" => "20"
         })
         
-        action_executor.update_rows({}, table.npi, 'Equals(CurrentRow("Key"), "FIRST")', {
+        action_executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), "FIRST")', {
           "Description" => "Updated first row"
         })
 
@@ -239,7 +239,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user)
 
         expect {
-          action_executor.update_rows({}, table.npi, 'InvalidFormula(', {
+          action_executor.update_rows({}, table.id, 'InvalidFormula(', {
             "Description" => "Should not update"
           })
         }.to raise_error(RuntimeError)
@@ -253,7 +253,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         }
 
         action_executor = described_class.new(dry_mode: false, space: space, organization_user: organization_user, additional_context: additional_context)
-        action_executor.update_rows(additional_context, table.npi, 'Equals([CustomVariable], "test_value")', {
+        action_executor.update_rows(additional_context, table.id, 'Equals([CustomVariable], "test_value")', {
           "Description" => "Updated with context"
         })
 

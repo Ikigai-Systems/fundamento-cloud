@@ -31,8 +31,8 @@ describe("Space Onboarding NPI Uniqueness", function() {
         org2_id: org2.id,
         space1_npi: space1.npi,
         space2_npi: space2.npi,
-        space1_table_npis: space1.tables.pluck(:npi).sort,
-        space2_table_npis: space2.tables.pluck(:npi).sort
+        space1_table_ids: space1.tables.pluck(:id).sort,
+        space2_table_ids: space2.tables.pluck(:id).sort
       }
     `).then((data) => {
       // Check that organizations are different
@@ -42,8 +42,8 @@ describe("Space Onboarding NPI Uniqueness", function() {
       expect(data.space1_npi).to.not.equal(data.space2_npi);
 
       // Check that table NPIs are different (BUG FIXED - should now pass)
-      const duplicates = data.space1_table_npis.filter(npi =>
-        data.space2_table_npis.includes(npi)
+      const duplicates = data.space1_table_ids.filter(id =>
+        data.space2_table_ids.includes(id)
       );
 
       expect(duplicates).to.have.length(0,
@@ -73,7 +73,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
         user_email: user.email,
         org_name: org.name,
         space_npi: space.npi,
-        advanced_table_npi: advanced_table.npi
+        advanced_table_id: advanced_table.id
       }
     `).then((data) => {
       // Log in
@@ -86,7 +86,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       // No need to select organization manually
 
       // Visit the advanced table with dynamically generated NPI
-      cy.visit(`/t/${data.advanced_table_npi}`);
+      cy.visit(`/t/${data.advanced_table_id}`);
 
       // Verify table renders
       cy.contains("Advanced Table: Customer their first full month of sales").should("exist");
@@ -107,15 +107,15 @@ describe("Space Onboarding NPI Uniqueness", function() {
       org = Organization.create!(name: "E2E Test Tables #{Time.now.to_i}")
       space = org.spaces.first
 
-      space.tables.pluck(:npi, :name).map { |npi, name|
-        { npi: npi, name: name }
+      space.tables.pluck(:id, :name).map { |id, name|
+        { id: id, name: name }
       }
     `).then((tables) => {
       // Verify all 3 expected tables exist
       expect(tables).to.have.length(3);
 
       // Verify all NPIs are unique (not hardcoded)
-      const tableNpis = tables.map(t => t.npi);
+      const tableNpis = tables.map(t => t.id);
       expect(tableNpis).to.have.length(3);
       expect(new Set(tableNpis).size).to.equal(3); // All NPIs should be unique
 

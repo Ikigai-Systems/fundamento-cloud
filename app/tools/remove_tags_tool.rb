@@ -69,7 +69,7 @@ class RemoveTagsTool < ApplicationTool
     when Table
       # For now, just return basic info since TableBlueprint might not have MCP view
       {
-        npi: object.npi,
+        id: object.id,
         name: object.name,
         tags: object.tags.map { |tag| "##{tag.name}" }
       }.to_json

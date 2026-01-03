@@ -117,7 +117,7 @@ RSpec.describe AddTagsTool, type: :model do
 
       it "adds tags to a table" do
         response = AddTagsTool.call(
-          object_npi: table.npi,
+          object_npi: table.id,
           object_type: "Table",
           tags: ["#data", "#analytics"],
           server_context: server_context
