@@ -7,6 +7,48 @@ RSpec.describe Tables::Column, type: :model do
   fixtures "tables/tables"
   fixtures "tables/columns"
 
+  describe "NPI primary key migration" do
+    it "uses string ID as primary key" do
+      column = tables_columns(:project_name)
+      expect(column.id).to eq("project_name")
+    end
+
+    it "has string column_id in child cells" do
+      organization = organizations(:is)
+      space = spaces(:is_default)
+
+      table = Table.create!(
+        id: "testcol001",
+        name: "Test Table",
+        organization: organization,
+        space: space,
+        parent: space
+      )
+
+      column = table.columns.create!(
+        id: "testcolumn",
+        name: "Test Column",
+        organization: organization,
+        kind: :string
+      )
+
+      row = table.rows.create!(
+        organization: organization
+      )
+
+      cell = column.cells.create!(
+        table: table,
+        row: row,
+        organization: organization,
+        value: "test"
+      )
+
+      expect(cell.column_id).to be_a(String)
+      expect(cell.column_id).to eq(column.id)
+      expect(cell.column_id).to eq("testcolumn")
+    end
+  end
+
   it 'should save with valid attributes' do
     column = tables_columns(:project_name)
     expect(column.save).to be_truthy

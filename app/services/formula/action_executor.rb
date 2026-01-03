@@ -120,7 +120,7 @@ class Formula::ActionExecutor
     
     values.each do |column_identifier, value|
       # Try to find column by NPI first, then by name
-      column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
+      column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
       next unless column
 
       context = build_row_context(function_context, row)
@@ -153,7 +153,7 @@ class Formula::ActionExecutor
       
       if evaluate_condition(condition_formula, context)
         values.each do |column_identifier, value|
-          column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
+          column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
           evaluated_value = evaluate_new_value_formula(value, context)
@@ -187,7 +187,7 @@ class Formula::ActionExecutor
       row = table.rows.create!(organization: @organization_user.organization)
       
       values.each do |column_identifier, value|
-        column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
+        column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
         context = build_row_context(function_context, row)
@@ -206,7 +206,7 @@ class Formula::ActionExecutor
         context = build_row_context(function_context, row)
         
         values.each do |column_identifier, value|
-          column = table.columns.find_by(npi: column_identifier) || table.columns.find_by(name: column_identifier)
+          column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
           evaluated_value = evaluate_new_value_formula(value, context)

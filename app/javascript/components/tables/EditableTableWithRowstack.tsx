@@ -265,15 +265,15 @@ const extraColumnHeaderPopupActions = [{
 const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerenderUuid, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({npi, name, kind, options, formula, configuration}) => ({
+  const columns = data.columns.map(({id, name, kind, options, formula, configuration}) => ({
     isViewOnly: !isEditable,
-    id: npi,
+    id,
     name,
     type: toType(kind),
     options,
     fundamentoFormula: formula,
     configuration,
-    ...initialViewProps?.columns[npi]
+    ...initialViewProps?.columns[id]
   }));
 
   const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
@@ -347,7 +347,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
 
                         const {columns, rows} = tableData.data;
                         const csvConfig = mkConfig({
-                          columnHeaders: columns.map((column: any) => ({key: column.npi, displayLabel: column.name})),
+                          columnHeaders: columns.map((column: any) => ({key: column.id, displayLabel: column.name})),
                           filename: `${tableData.table.name}_${dayjs().toISOString()}`,
                           useBom: false,
                         });
@@ -564,7 +564,6 @@ type Row = {
 type Column = {
   id: string,
   name: string,
-  npi: string,
   kind: Kind,
   formula: string,
   configuration: any,

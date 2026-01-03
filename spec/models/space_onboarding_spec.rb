@@ -27,10 +27,10 @@ RSpec.describe "Space onboarding content", type: :model do
 
       it "has no duplicate column NPIs within each table" do
         space.tables.each do |table|
-          column_npis = table.columns.pluck(:npi)
+          column_ids = table.columns.pluck(:id)
 
-          expect(column_npis.uniq.count).to eq(column_npis.count),
-            "Found duplicate column NPIs in table #{table.id}: #{column_npis.select { |npi| column_npis.count(npi) > 1 }.uniq}"
+          expect(column_ids.uniq.count).to eq(column_ids.count),
+            "Found duplicate column NPIs in table #{table.id}: #{column_ids.select { |id| column_ids.count(id) > 1 }.uniq}"
         end
       end
 
@@ -45,16 +45,16 @@ RSpec.describe "Space onboarding content", type: :model do
 
       it "generates unique column NPIs for advanced table columns" do
         advanced_table = space.tables.find_by(name: "Advanced Table: Customer their first full month of sales")
-        column_npis = advanced_table.columns_in_order.map(&:npi)
+        column_ids = advanced_table.columns_in_order.map(&:id)
 
         # Verify columns exist with dynamically generated NPIs
-        expect(column_npis.length).to eq(7)
-        expect(column_npis.uniq.length).to eq(7) # All NPIs should be unique
+        expect(column_ids.length).to eq(7)
+        expect(column_ids.uniq.length).to eq(7) # All NPIs should be unique
 
         # Verify none use the old hardcoded NPIs
-        expect(column_npis).not_to include("sample_column_name")
-        expect(column_npis).not_to include("sample_column_2")
-        expect(column_npis).not_to include("eXqGtIyEmPqW2pC0uwk39")
+        expect(column_ids).not_to include("sample_column_name")
+        expect(column_ids).not_to include("sample_column_2")
+        expect(column_ids).not_to include("eXqGtIyEmPqW2pC0uwk39")
       end
     end
 
@@ -84,10 +84,10 @@ RSpec.describe "Space onboarding content", type: :model do
         expect(table1).to be_present, "Advanced table not found in space1"
         expect(table2).to be_present, "Advanced table not found in space2"
 
-        column_npis_1 = table1.columns.pluck(:npi)
-        column_npis_2 = table2.columns.pluck(:npi)
+        column_ids_1 = table1.columns.pluck(:id)
+        column_ids_2 = table2.columns.pluck(:id)
 
-        duplicates = column_npis_1 & column_npis_2
+        duplicates = column_ids_1 & column_ids_2
 
         # After refactoring, column NPIs should also be globally unique
         expect(duplicates).to be_empty,

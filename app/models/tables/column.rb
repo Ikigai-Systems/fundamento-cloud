@@ -1,4 +1,6 @@
 class Tables::Column < ApplicationRecord
+  include NpiOrdering
+
   self.table_name = :table_columns
 
   belongs_to :organization

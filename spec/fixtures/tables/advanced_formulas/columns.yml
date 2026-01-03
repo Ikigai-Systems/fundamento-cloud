@@ -2,29 +2,33 @@ _fixture:
   model_class: Tables::Column
 
 project_key:
+  id: "project_key"
   name: "Key"
   organization: :is
   table: :projects
   kind: 0
 
 project_name:
+  id: "project_name"
   name: "Name"
   organization: :is
   table: :projects
   kind: 0
-  previous_column: :project_key
+  previous_column_id: "project_key"
 
 project_description:
+  id: "project_description"
   name: "Description"
   organization: :is
   table: :projects
   kind: 0
-  previous_column: :project_name
+  previous_column_id: "project_name"
 
 project_title:
+  id: "project_title"
   name: Title
   organization: :is
   table: :projects
   kind: :formula
   formula: Concatenate(CurrentRow("Key"), " ", CurrentRow("Name"))
-  previous_column: :project_description
+  previous_column_id: "project_description"

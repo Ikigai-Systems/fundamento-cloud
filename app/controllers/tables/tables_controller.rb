@@ -17,12 +17,12 @@ class Tables::TablesController < ApplicationController
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
-    @tables = @tables.select(:npi, :name) if params[:mention].to_b
+    @tables = @tables.select(:id, :name) if params[:mention].to_b
 
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: @tables, only: [:npi, :name]
+          render json: @tables, only: [:id, :name]
         else
           render json: @tables
         end
@@ -80,7 +80,7 @@ class Tables::TablesController < ApplicationController
           last_column = @table.columns.create!(
             previous_column: last_column,
             organization_id: @table.organization_id,
-            npi: column["id"],
+            id: column["id"],
             name: column["name"],
             kind: Tables::Column::to_kind(column["type"])
           )
@@ -193,13 +193,13 @@ class Tables::TablesController < ApplicationController
     when "update_row"
       row = @table.rows.find_by(npi: event["rowId"])
       event["update"].each do |column_npi, new_cell_value|
-        @table.columns.find_by(npi: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
+        @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
       end
     when "update_rows"
       event["rows"].each do |event_row|
         row = @table.rows.find_by(npi: event_row["rowId"])
         event_row["update"].each do |column_npi, new_cell_value|
-          @table.columns.find_by(npi: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
+          @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
         end
       end
     when "add_row"
@@ -218,7 +218,7 @@ class Tables::TablesController < ApplicationController
       new_column = @table.columns.create!(
         previous_column: last_column,
         organization_id: @table.organization_id,
-        npi: event["colId"],
+        id: event["colId"],
         name: update["name"],
         kind: Tables::Column::to_kind(update["type"])
       )
@@ -231,7 +231,7 @@ class Tables::TablesController < ApplicationController
         )
       end
     when "update_column"
-      column = @table.columns.find_by(npi: event["colId"])
+      column = @table.columns.find_by(id: event["colId"])
       update = event["update"]
 
       column.name = update["name"] if update.has_key?("name")
@@ -241,7 +241,7 @@ class Tables::TablesController < ApplicationController
       column.configuration = update["configuration"] if update.has_key?("configuration")
       column.save! if column.changed?
     when "delete_column"
-      column = @table.columns.find_by(npi: event["colId"])
+      column = @table.columns.find_by(id: event["colId"])
       next_column = column.next_column
       next_column.update(previous_column: column.previous_column) unless next_column.nil?
       column.destroy
@@ -286,7 +286,7 @@ class Tables::TablesController < ApplicationController
   def move_column_left
     authorize @table, :update?
 
-    column = @table.columns.find_by(npi: params["col_id"])
+    column = @table.columns.find_by(id: params["col_id"])
 
     column.move_left
   end
@@ -294,7 +294,7 @@ class Tables::TablesController < ApplicationController
   def move_column_right
     authorize @table, :update?
 
-    column = @table.columns.find_by(npi: params["col_id"])
+    column = @table.columns.find_by(id: params["col_id"])
 
     column.move_right
   end

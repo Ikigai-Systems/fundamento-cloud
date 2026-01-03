@@ -91,7 +91,7 @@ class Table < ApplicationRecord
         current_row_values = columns_in_order.each_with_object({}) do |column, hash|
           cell_value = cells_by_rows_and_columns.dig([row.id, column.id])&.value
           hash[column.name] = cell_value
-          hash[column.npi] = cell_value
+          hash[column.id] = cell_value
         end
 
         additional_context = {
@@ -102,24 +102,24 @@ class Table < ApplicationRecord
           if column.formula?
             formulas_to_evaluate << {
               row_npi: row.npi,
-              column_npi: column.npi,
+              column_npi: column.id,
               formula: column.formula,
               additional_context: additional_context,
             }
           else
             if column.kind == "checkbox"
-              hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
+              hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
             else
-              hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+              hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
             end
           end
         end
       else
         columns_in_order.each_with_object({}) do |column, hash|
           if column.kind == "checkbox"
-            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
+            hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
           else
-            hash[column.npi] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+            hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
           end
         end
       end.merge({ "npi" => row.npi }) # this is for Rowstack convenience
@@ -155,7 +155,7 @@ class Table < ApplicationRecord
     rows.map do |row|
       cell_values = {}
       columns.each do |column|
-        cell_values[column.name] = row[column.npi]
+        cell_values[column.name] = row[column.id]
       end
       { id: row["npi"] }.merge(cell_values).merge(row)
     end

@@ -31,7 +31,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
     table.columns.create!(
       organization: organization,
       name: "column_npi",
-      npi: "column_npi",
+      id: "column_npi",
       kind: 0,
       previous_column: nil,
     )
@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
     table.columns.create!(
       organization: organization,
       name: "another_npi",
-      npi: "another_npi",
+      id: "another_npi",
       kind: 0,
       previous_column: column_npi_column,
     )

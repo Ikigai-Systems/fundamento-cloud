@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_03_141124) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_03_201335) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -470,7 +470,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_03_141124) do
   end
 
   create_table "table_cells", force: :cascade do |t|
-    t.bigint "column_id", null: false
+    t.string "column_id", null: false
     t.datetime "created_at", null: false
     t.bigint "organization_id", null: false
     t.bigint "row_id", null: false
@@ -483,20 +483,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_03_141124) do
     t.index ["table_id"], name: "index_table_cells_on_table_id"
   end
 
-  create_table "table_columns", force: :cascade do |t|
+  create_table "table_columns", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.json "configuration"
     t.datetime "created_at", null: false
     t.text "formula"
     t.integer "kind", limit: 2, null: false
     t.string "name", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.json "options"
     t.bigint "organization_id", null: false
-    t.bigint "previous_column_id"
+    t.string "previous_column_id"
     t.string "table_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["id", "table_id"], name: "index_table_columns_on_id_and_table_id", unique: true
     t.index ["name", "table_id"], name: "index_table_columns_on_name_and_table_id", unique: true
-    t.index ["npi", "table_id"], name: "index_table_columns_on_npi_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_columns_on_organization_id"
     t.index ["previous_column_id"], name: "index_table_columns_on_previous_column_id"
     t.index ["table_id"], name: "index_table_columns_on_table_id"
