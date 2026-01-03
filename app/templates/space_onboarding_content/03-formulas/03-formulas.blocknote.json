@@ -1075,7 +1075,7 @@
       {
         "type": "formula",
         "props": {
-          "formula": "(`Sum(List(1,32,33,34)",
+          "formula": "Sum(List(1,32,33,34))",
           "id": "9c54c8f3-977c-4ce1-b5c0-b2be8461f00d"
         }
       }
