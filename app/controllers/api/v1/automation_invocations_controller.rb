@@ -2,7 +2,7 @@ class Api::V1::AutomationInvocationsController < Api::ApiController
   before_action :load_automation
 
   def create
-    logger.tagged(@automation.npi) do
+    logger.tagged(@automation.id) do
       unless @automation.webhook?
         render json: nil, status: :precondition_failed
         return
