@@ -4,7 +4,7 @@ module LoadDocument
       extend ActiveSupport::Concern
 
       define_method(:load_document) do
-        @document = current_organization.documents.find_by_param!(params[param_name])
+        @document = current_organization.documents.find(params[param_name])
         @space = @document.space
       end
     end

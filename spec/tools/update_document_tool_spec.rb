@@ -29,7 +29,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           @response = UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: markdown_content,
             server_context: server_context
           )
@@ -40,7 +40,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         expect(@response.content.first[:type]).to eq("text")
 
         json_response = JSON.parse(@response.content.first[:text])
-        expect(json_response["npi"]).to eq(document.npi)
+        expect(json_response["id"]).to eq(document.id)
         expect(json_response["title"]).to eq(document.title)
         expect(json_response["content"]).to eq(markdown_content)
 
@@ -64,7 +64,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           @response = UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: markdown_with_frontmatter,
             server_context: server_context
           )
@@ -103,7 +103,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated Content")
 
         @response = UpdateDocumentTool.call(
-          npi: document.npi,
+          id: document.id,
           markdown: markdown_with_frontmatter,
           server_context: server_context
         )
@@ -125,7 +125,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 
         UpdateDocumentTool.call(
-          npi: document.npi,
+          id: document.id,
           markdown: "# Updated",
           server_context: server_context
         )
@@ -145,7 +145,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 
         UpdateDocumentTool.call(
-          npi: document.npi,
+          id: document.id,
           markdown: "# Updated Content",
           server_context: server_context
         )
@@ -155,11 +155,11 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
     end
 
-    context "with invalid document npi" do
+    context "with invalid document id" do
       it "raises RecordNotFound error" do
         expect {
           UpdateDocumentTool.call(
-            npi: "invalid-npi",
+            id: "invalid-id",
             markdown: "# Content",
             server_context: server_context
           )
@@ -180,7 +180,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
       it "raises RecordNotFound when accessing document from different organization" do
         expect {
           UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: "# Updated Content",
             server_context: unauthorized_context
           )
@@ -195,7 +195,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: "# Content",
             server_context: server_context
           )
@@ -215,7 +215,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: "# First update",
             server_context: server_context
           )
@@ -223,7 +223,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            npi: document.npi,
+            id: document.id,
             markdown: "# Second update",
             server_context: server_context
           )

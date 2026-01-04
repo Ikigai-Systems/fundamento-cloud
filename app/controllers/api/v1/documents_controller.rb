@@ -9,7 +9,7 @@ module Api
 
         render json: documents.map { |doc|
           {
-            npi: doc.npi,
+            id: doc.id,
             title: doc.title,
             created_at: doc.created_at,
             updated_at: doc.updated_at
@@ -26,23 +26,23 @@ module Api
         document = if document_params[:file].present?
           DocumentService.new(pundit_user: pundit_user).
             create_from_file!(
-              space_npi: params[:space_npi],
+              space_id: params[:space_npi],
               title: document_params[:title],
-              parent_document_npi: document_params[:parent_document_npi],
+              parent_document_id: document_params[:parent_document_npi],
               file: document_params[:file],
             )
         else
           DocumentService.new(pundit_user: pundit_user).
             create!(
-              space_npi: params[:space_npi],
+              space_id: params[:space_npi],
               title: document_params[:title],
-              parent_document_npi: document_params[:parent_document_npi],
+              parent_document_id: document_params[:parent_document_npi],
               markdown: document_params[:markdown],
             )
         end
 
         render json: {
-          npi: document.npi,
+          id: document.id,
           title: document.title,
           created_at: document.created_at,
           updated_at: document.updated_at
@@ -56,7 +56,7 @@ module Api
       end
 
       def show
-        document = current_organization.documents.find_by_param!(params[:npi])
+        document = current_organization.documents.find(params[:npi])
         authorize document
 
         blocks = if document.versions.empty?
@@ -68,7 +68,7 @@ module Api
         respond_to do |format|
           format.json do
             render json: {
-              npi: document.npi,
+              id: document.id,
               title: document.title,
               created_at: document.created_at,
               updated_at: document.updated_at,
@@ -87,12 +87,12 @@ module Api
         begin
           document = DocumentService.new(pundit_user: pundit_user).
             update!(
-              document_npi: params[:npi],
+              document_id: params[:npi],
               markdown: document_params[:markdown]
             )
 
           render json: {
-            npi: document.npi,
+            id: document.id,
             title: document.title,
             created_at: document.created_at,
             updated_at: document.updated_at

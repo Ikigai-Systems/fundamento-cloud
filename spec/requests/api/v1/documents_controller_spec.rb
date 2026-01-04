@@ -29,7 +29,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(json_response.length).to eq(2)
 
         first_doc = json_response.first
-        expect(first_doc).to have_key("npi")
+        expect(first_doc).to have_key("id")
         expect(first_doc).to have_key("title")
         expect(first_doc).to have_key("created_at")
         expect(first_doc).to have_key("updated_at")
@@ -60,13 +60,13 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
         allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
 
-        get "/api/v1/documents/#{document_one.npi}.json",
+        get "/api/v1/documents/#{document_one.id}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to eq(document_one.npi)
+        expect(json_response["id"]).to eq(document_one.id)
         expect(json_response["title"]).to be_present
         expect(json_response["created_at"]).to be_present
         expect(json_response["updated_at"]).to be_present
@@ -95,12 +95,12 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(sample_markdown)
 
-        get "/api/v1/documents/#{document_one.npi}.markdown",
+        get "/api/v1/documents/#{document_one.id}.markdown",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
 
-        # expect(json_response["npi"]).to eq(document_one.npi)
+        # expect(json_response["id"]).to eq(document_one.id)
         # expect(json_response["title"]).to be_present
         expect(response.body).to eq(sample_markdown)
         # expect(json_response["tags"]).to be_an(Array)
@@ -126,7 +126,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         # Stub the service to verify it's not called
         allow(BlocknoteConverterService).to receive(:yjs_to_blocks)
 
-        get "/api/v1/documents/#{document_one.npi}.json",
+        get "/api/v1/documents/#{document_one.id}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
@@ -151,7 +151,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         sample_markdown = "# Versioned Content"
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(sample_markdown)
 
-        get "/api/v1/documents/#{document_one.npi}.markdown",
+        get "/api/v1/documents/#{document_one.id}.markdown",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
@@ -172,7 +172,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         sample_blocks = [{ "id" => "1", "type" => "paragraph" }]
         allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(sample_blocks)
 
-        get "/api/v1/documents/#{document_one.npi}.json",
+        get "/api/v1/documents/#{document_one.id}.json",
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
@@ -193,7 +193,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "without authentication" do
       it "returns unauthorized" do
-        get "/api/v1/documents/#{document_one.npi}"
+        get "/api/v1/documents/#{document_one.id}"
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -211,7 +211,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "returns not found when accessing document from different organization" do
-        get "/api/v1/documents/#{document_one.npi}",
+        get "/api/v1/documents/#{document_one.id}",
           headers: { "Authorization" => "Bearer #{other_org_token.encrypted_token}" }
 
         expect(response).to have_http_status(:not_found)
@@ -236,14 +236,14 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to be_present
+        expect(json_response["id"]).to be_present
         expect(json_response["title"]).to eq("New Test Document")
         expect(json_response["created_at"]).to be_present
         expect(json_response["updated_at"]).to be_present
 
         # Verify document is in space hierarchy
         is_default_space.reload
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(is_default_space.hierarchy).to include(
           hash_including("id" => created_doc.id)
         )
@@ -282,7 +282,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(created_doc.versions.count).to eq(1)
      end
 
@@ -311,7 +311,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(created_doc.tags.count).to eq(3)
         expect(created_doc.tags.pluck(:name)).to contain_exactly(
           "rok/2024/05",
@@ -387,7 +387,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(created_doc.tags.count).to eq(2)
         expect(created_doc.tags).to include(existing_tag)
       end
@@ -409,7 +409,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
               document: {
                 title: "Child Document",
                 markdown: "Test Content",
-                parent_document_npi: parent_doc.npi
+                parent_document_npi: parent_doc.id
               }
             },
             headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -420,7 +420,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
         # Verify child is nested under parent in hierarchy
         is_default_space.reload
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         # Find parent node in hierarchy
         parent_node = is_default_space.hierarchy.find { |node| node["id"] == parent_doc.id }
@@ -445,7 +445,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         # Verify document is at root level of hierarchy
         is_default_space.reload
         json_response = JSON.parse(response.body)
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         expect(is_default_space.hierarchy).to include(
           hash_including("id" => created_doc.id)
@@ -467,7 +467,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(created_doc.versions.last.created_by).to eq(pawel)
       end
     end
@@ -580,7 +580,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         markdown_content = file_fixture("documents/updated_content.md").read
 
         expect {
-          patch api_v1_document_path(npi: document_one.npi),
+          patch api_v1_document_path(npi: document_one.id),
             params: {
               document: {
                 markdown: markdown_content
@@ -592,7 +592,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to eq(document_one.npi)
+        expect(json_response["id"]).to eq(document_one.id)
         expect(json_response["title"]).to eq(document_one.title)
         expect(json_response["updated_at"]).to be_present
 
@@ -611,7 +611,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
         expect {
-          patch api_v1_document_path(npi: document_one.npi),
+          patch api_v1_document_path(npi: document_one.id),
             params: {
               document: {
                 markdown: markdown_with_frontmatter
@@ -648,7 +648,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: markdown_with_frontmatter
@@ -668,7 +668,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return({})
 
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -689,7 +689,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "# Updated Content"
@@ -706,7 +706,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid API token" do
       it "returns unauthorized" do
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -720,7 +720,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "without authentication" do
       it "returns unauthorized" do
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -743,7 +743,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "returns not found when updating document from different organization" do
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -774,7 +774,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
           .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
 
-        patch api_v1_document_path(npi: document_one.npi),
+        patch api_v1_document_path(npi: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"

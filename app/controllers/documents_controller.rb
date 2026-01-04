@@ -188,7 +188,7 @@ class DocumentsController < ApplicationController
   end
 
   def load_document
-    @document = current_organization.documents.find_by_param!(params[:npi])
+    @document = current_organization.documents.find(params[:npi])
     @space = @document.space
   end
 

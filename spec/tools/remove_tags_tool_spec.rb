@@ -30,7 +30,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "removes specified tags with # prefix" do
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#biznes", "#marketing"],
           server_context: server_context
@@ -46,7 +46,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "removes tags without # prefix" do
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["biznes", "strategia"],
           server_context: server_context
@@ -61,7 +61,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "handles case-insensitive tag removal" do
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#BIZNES", "#Marketing"],
           server_context: server_context
@@ -78,7 +78,7 @@ RSpec.describe RemoveTagsTool, type: :model do
         expect {
           expect {
             RemoveTagsTool.call(
-              object_npi: document.npi,
+              object_id: document.id,
               object_type: "Document",
               tags: ["#biznes", "#marketing"],
               server_context: server_context
@@ -93,7 +93,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "gracefully handles removing non-existent tags" do
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#biznes", "#nonexistent", "#marketing"],
           server_context: server_context
@@ -112,7 +112,7 @@ RSpec.describe RemoveTagsTool, type: :model do
         unassociated_tag = Tag.create!(name: "unassociated", space: space, organization: organization)
 
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#biznes", "#unassociated"],
           server_context: server_context
@@ -138,7 +138,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
       it "removes tags from a table" do
         response = RemoveTagsTool.call(
-          object_npi: table.id,
+          object_id: table.id,
           object_type: "Table",
           tags: ["#data"],
           server_context: server_context
@@ -156,7 +156,7 @@ RSpec.describe RemoveTagsTool, type: :model do
     context "removing tags from object with no existing tags" do
       it "handles gracefully when object has no tags" do
         response = RemoveTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#nonexistent"],
           server_context: server_context
@@ -180,7 +180,7 @@ RSpec.describe RemoveTagsTool, type: :model do
       it "raises RecordNotFound when document doesn't exist" do
         expect {
           RemoveTagsTool.call(
-            object_npi: "nonexistent",
+            object_id: "nonexistent",
             object_type: "Document",
             tags: ["#test"],
             server_context: server_context
@@ -196,7 +196,7 @@ RSpec.describe RemoveTagsTool, type: :model do
 
         expect {
           RemoveTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#test"],
             server_context: unauthorized_context
@@ -207,7 +207,7 @@ RSpec.describe RemoveTagsTool, type: :model do
       it "raises ArgumentError for unsupported object type" do
         expect {
           RemoveTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "UnsupportedType",
             tags: ["#test"],
             server_context: server_context
@@ -227,7 +227,7 @@ RSpec.describe RemoveTagsTool, type: :model do
       it "processes all tag removals in a transaction" do
         expect {
           RemoveTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#tag1", "#tag2", "#nonexistent"],
             server_context: server_context

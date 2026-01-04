@@ -8,12 +8,12 @@ class DocumentService
     @pundit_user = pundit_user
   end
 
-  def create!(space_npi:, parent_document_npi: nil, title:, markdown:)
+  def create!(space_id:, parent_document_id: nil, title:, markdown:)
     ActiveRecord::Base.transaction do
-      space = pundit_user.current_organization.spaces.find_by_param!(space_npi)
+      space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
 
-      parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
+      parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
       document = space.documents.new(
@@ -64,9 +64,9 @@ class DocumentService
     end
   end
 
-  def update!(document_npi:, markdown:)
+  def update!(document_id:, markdown:)
     ActiveRecord::Base.transaction do
-      document = pundit_user.current_organization.documents.find_by_param!(document_npi)
+      document = pundit_user.current_organization.documents.find(document_id)
       authorize document, :update?
 
       # Extract and process frontmatter
@@ -94,12 +94,12 @@ class DocumentService
     end
   end
 
-  def create_from_file!(space_npi:, file:, parent_document_npi: nil, title: nil)
+  def create_from_file!(space_id:, file:, parent_document_id: nil, title: nil)
     ActiveRecord::Base.transaction do
-      space = pundit_user.current_organization.spaces.find_by_param!(space_npi)
+      space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
 
-      parent_document = space.documents.find_by_param!(parent_document_npi) if parent_document_npi.present?
+      parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
       # Convert file to markdown

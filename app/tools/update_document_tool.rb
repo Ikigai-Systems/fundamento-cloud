@@ -3,21 +3,21 @@ class UpdateDocumentTool < ApplicationTool
 
   input_schema(
     properties: {
-      npi: { type: :string },
+      id: { type: :string },
       markdown: { type: :string },
     },
-    required: [:npi, :markdown]
+    required: [:id, :markdown]
   )
 
   annotations(
     title: "Update Document",
   )
 
-  def self.call(npi:, markdown:, server_context:)
+  def self.call(id:, markdown:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     document = DocumentService.new(pundit_user: pundit_user).update!(
-      document_npi: npi,
+      document_id: id,
       markdown: markdown
     )
 

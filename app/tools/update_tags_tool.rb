@@ -3,7 +3,7 @@ class UpdateTagsTool < ApplicationTool
 
   input_schema(
     properties: {
-      object_npi: { type: :string, description: "NPI of the object to update tags for" },
+      object_id: { type: :string, description: "ID of the object to update tags for" },
       object_type: { type: :string, enum: ["Document", "Table"], description: "Type of object to update" },
       tags: { 
         type: :array, 
@@ -11,7 +11,7 @@ class UpdateTagsTool < ApplicationTool
         description: "Complete new set of tags with # prefix (e.g., ['#biznes', '#marketing']). Use empty array to remove all tags."
       }
     },
-    required: [:object_npi, :object_type, :tags]
+    required: [:object_id, :object_type, :tags]
   )
 
   annotations(
@@ -19,11 +19,11 @@ class UpdateTagsTool < ApplicationTool
     read_only_hint: false,
   )
 
-  def self.call(object_npi:, object_type:, tags:, server_context:)
+  def self.call(object_id:, object_type:, tags:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     # Resolve the object polymorphically
-    object = resolve_object(object_npi, object_type, pundit_user.current_organization)
+    object = resolve_object(object_id, object_type, pundit_user.current_organization)
     
     # Check authorization
     Pundit.authorize(pundit_user, object, :update?)

@@ -22,7 +22,7 @@ RSpec.describe AddTagsTool, type: :model do
 
         expect {
           response = AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: tags_to_add,
             server_context: server_context
@@ -48,7 +48,7 @@ RSpec.describe AddTagsTool, type: :model do
 
       it "handles tags without # prefix" do
         response = AddTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["projekt", "urgent"],
           server_context: server_context
@@ -60,7 +60,7 @@ RSpec.describe AddTagsTool, type: :model do
 
       it "normalizes tag names to lowercase" do
         response = AddTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#BIZNES", "#Marketing", "#BIZNES/Zarządzanie"],
           server_context: server_context
@@ -81,7 +81,7 @@ RSpec.describe AddTagsTool, type: :model do
 
         expect {
           AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#existing", "#new"],
             server_context: server_context
@@ -98,7 +98,7 @@ RSpec.describe AddTagsTool, type: :model do
 
         expect {
           AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#reusable", "#new"],
             server_context: server_context
@@ -117,7 +117,7 @@ RSpec.describe AddTagsTool, type: :model do
 
       it "adds tags to a table" do
         response = AddTagsTool.call(
-          object_npi: table.id,
+          object_id: table.id,
           object_type: "Table",
           tags: ["#data", "#analytics"],
           server_context: server_context
@@ -136,7 +136,7 @@ RSpec.describe AddTagsTool, type: :model do
       it "raises RecordNotFound when document doesn't exist" do
         expect {
           AddTagsTool.call(
-            object_npi: "nonexistent",
+            object_id: "nonexistent",
             object_type: "Document",
             tags: ["#test"],
             server_context: server_context
@@ -152,7 +152,7 @@ RSpec.describe AddTagsTool, type: :model do
 
         expect {
           AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#test"],
             server_context: unauthorized_context
@@ -163,7 +163,7 @@ RSpec.describe AddTagsTool, type: :model do
       it "raises ArgumentError for unsupported object type" do
         expect {
           AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "UnsupportedType",
             tags: ["#test"],
             server_context: server_context
@@ -174,7 +174,7 @@ RSpec.describe AddTagsTool, type: :model do
       it "validates tag format and raises validation error for invalid tags" do
         expect {
           AddTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#valid", "#invalid@tag", "#another&bad"],
             server_context: server_context
@@ -189,7 +189,7 @@ RSpec.describe AddTagsTool, type: :model do
           expect {
             expect {
               AddTagsTool.call(
-                object_npi: document.npi,
+                object_id: document.id,
                 object_type: "Document",
                 tags: ["#good", "#bad@tag"],
                 server_context: server_context

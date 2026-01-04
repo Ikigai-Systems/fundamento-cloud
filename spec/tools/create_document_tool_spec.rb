@@ -26,8 +26,8 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: nil,
+            space_id: space.id,
+            parent_document_id: nil,
             title: "New Document",
             markdown: "# Hello World\n\nThis is a test.",
             server_context: server_context
@@ -40,14 +40,14 @@ RSpec.describe CreateDocumentTool, type: :model do
         expect(@response.content.first[:type]).to eq("text")
 
         json_response = JSON.parse(@response.content.first[:text])
-        expect(json_response["npi"]).to be_present
+        expect(json_response["id"]).to be_present
         expect(json_response["title"]).to eq("New Document")
         expect(json_response["content"]).to eq("# Hello World")
         expect(json_response["tags"]).to eq([])
 
         # Verify document is in hierarchy
         space.reload
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
         expect(space.hierarchy).to include(
           hash_including("id" => created_doc.id)
         )
@@ -79,8 +79,8 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: parent_doc.npi,
+            space_id: space.id,
+            parent_document_id: parent_doc.id,
             title: "Child Document",
             markdown: "# Child",
             server_context: server_context
@@ -88,7 +88,7 @@ RSpec.describe CreateDocumentTool, type: :model do
         }.to change(Document, :count).by(1)
 
         json_response = JSON.parse(@response.content.first[:text])
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         # Verify child is nested under parent in hierarchy
         space.reload
@@ -113,8 +113,8 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: nil,
+            space_id: space.id,
+            parent_document_id: nil,
             title: "Document with Tags",
             markdown: markdown_with_frontmatter,
             server_context: server_context
@@ -124,7 +124,7 @@ RSpec.describe CreateDocumentTool, type: :model do
          .and change(ObjectTag, :count).by(3)
 
         json_response = JSON.parse(@response.content.first[:text])
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         expect(created_doc.tags.count).to eq(3)
         expect(created_doc.tags.pluck(:name)).to contain_exactly(
@@ -160,8 +160,8 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: nil,
+            space_id: space.id,
+            parent_document_id: nil,
             title: "Document Reusing Tags",
             markdown: markdown_with_frontmatter,
             server_context: server_context
@@ -170,7 +170,7 @@ RSpec.describe CreateDocumentTool, type: :model do
          .and change(Tag, :count).by(1) # Only 1 new tag created
 
         json_response = JSON.parse(@response.content.first[:text])
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         expect(created_doc.tags.count).to eq(2)
         expect(created_doc.tags).to include(existing_tag)
@@ -182,8 +182,8 @@ RSpec.describe CreateDocumentTool, type: :model do
       it "raises RecordNotFound error" do
         expect {
           CreateDocumentTool.call(
-            space_npi: "invalid-npi",
-            parent_document_npi: nil,
+            space_id: "invalid-npi",
+            parent_document_id: nil,
             title: "Test Document",
             markdown: "# Content",
             server_context: server_context
@@ -196,8 +196,8 @@ RSpec.describe CreateDocumentTool, type: :model do
       it "raises RecordNotFound error" do
         expect {
           CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: "invalid-parent-npi",
+            space_id: space.id,
+            parent_document_id: "invalid-parent-npi",
             title: "Test Document",
             markdown: "# Content",
             server_context: server_context
@@ -219,8 +219,8 @@ RSpec.describe CreateDocumentTool, type: :model do
       it "raises RecordNotFound when accessing space from different organization" do
         expect {
           CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: nil,
+            space_id: space.id,
+            parent_document_id: nil,
             title: "Unauthorized Document",
             markdown: "# Content",
             server_context: unauthorized_context
@@ -236,8 +236,8 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           CreateDocumentTool.call(
-            space_npi: space.id,
-            parent_document_npi: nil,
+            space_id: space.id,
+            parent_document_id: nil,
             title: "Test Document",
             markdown: "# Content",
             server_context: server_context

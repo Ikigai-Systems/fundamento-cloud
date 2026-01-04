@@ -41,7 +41,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to be_present
+        expect(json_response["id"]).to be_present
         expect(json_response["title"]).to eq("Imported DOCX Document")
       end
 
@@ -120,7 +120,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
           params: {
             document: {
               file: docx_file,
-              parent_document_npi: parent_doc.npi
+              parent_document_npi: parent_doc.id
             }
           },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -130,7 +130,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
         # Verify hierarchy
         is_default_space.reload
         json_response = JSON.parse(response.body)
-        created_doc = Document.find_by(npi: json_response["npi"])
+        created_doc = Document.find_by(id: json_response["id"])
 
         parent_node = is_default_space.hierarchy.find { |node| node["id"] == parent_doc.id }
         expect(parent_node["children"]).to include(

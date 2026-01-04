@@ -3,9 +3,9 @@ class ReadDocumentTool < ApplicationTool
 
   input_schema(
     properties: {
-      npi: { type: :string },
+      id: { type: :string },
     },
-    required: [:npi]
+    required: [:id]
   )
 
   annotations(
@@ -13,10 +13,10 @@ class ReadDocumentTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(npi:, server_context:)
+  def self.call(id:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
-    document  = pundit_user.current_organization.documents.find_by_param!(npi)
+    document  = pundit_user.current_organization.documents.find(id)
 
     Pundit.authorize(pundit_user, document, :show?)
 

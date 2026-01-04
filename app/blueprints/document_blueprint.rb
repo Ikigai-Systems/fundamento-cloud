@@ -1,5 +1,5 @@
 class DocumentBlueprint < Blueprinter::Base
-  identifier :npi
+  identifier :id
 
   fields :title, :created_at, :updated_at
 

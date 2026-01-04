@@ -1,5 +1,6 @@
 public_link_to_two:
   id: r2fPRJxuTX
   organization: :is
-  object: two (Document)
+  object_id: two
+  object_type: Document
   updated_by: :stefan

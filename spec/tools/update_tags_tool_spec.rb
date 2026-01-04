@@ -28,7 +28,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "replaces all existing tags with new ones" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#new1", "#new2", "#new3"],
           server_context: server_context
@@ -45,7 +45,7 @@ RSpec.describe UpdateTagsTool, type: :model do
       it "creates new tags if they don't exist" do
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#brand_new", "#another_new"],
             server_context: server_context
@@ -63,7 +63,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#reusable", "#new_tag"],
             server_context: server_context
@@ -77,7 +77,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "removes all tags when empty array is provided" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: [],
           server_context: server_context
@@ -94,7 +94,7 @@ RSpec.describe UpdateTagsTool, type: :model do
         original_tag_count = Tag.count
 
         UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#completely_different"],
           server_context: server_context
@@ -110,7 +110,7 @@ RSpec.describe UpdateTagsTool, type: :model do
     context "updating tags on a document with no existing tags" do
       it "adds new tags to an object with no existing tags" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#first", "#second"],
           server_context: server_context
@@ -125,7 +125,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "handles empty tag array on object with no existing tags" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: [],
           server_context: server_context
@@ -142,7 +142,7 @@ RSpec.describe UpdateTagsTool, type: :model do
     context "tag normalization" do
       it "normalizes tags without # prefix" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["business", "marketing"],
           server_context: server_context
@@ -154,7 +154,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "normalizes tag names to lowercase" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#BUSINESS", "#Marketing", "#BUSINESS/Strategy"],
           server_context: server_context
@@ -169,7 +169,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "skips empty tag names" do
         response = UpdateTagsTool.call(
-          object_npi: document.npi,
+          object_id: document.id,
           object_type: "Document",
           tags: ["#valid", "", "#", "#another_valid"],
           server_context: server_context
@@ -190,7 +190,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
       it "updates tags on a table" do
         response = UpdateTagsTool.call(
-          object_npi: table.id,
+          object_id: table.id,
           object_type: "Table",
           tags: ["#data", "#analytics", "#reporting"],
           server_context: server_context
@@ -209,7 +209,7 @@ RSpec.describe UpdateTagsTool, type: :model do
       it "raises RecordNotFound when document doesn't exist" do
         expect {
           UpdateTagsTool.call(
-            object_npi: "nonexistent",
+            object_id: "nonexistent",
             object_type: "Document",
             tags: ["#test"],
             server_context: server_context
@@ -225,7 +225,7 @@ RSpec.describe UpdateTagsTool, type: :model do
 
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#test"],
             server_context: unauthorized_context
@@ -236,7 +236,7 @@ RSpec.describe UpdateTagsTool, type: :model do
       it "raises ArgumentError for unsupported object type" do
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "UnsupportedType",
             tags: ["#test"],
             server_context: server_context
@@ -247,7 +247,7 @@ RSpec.describe UpdateTagsTool, type: :model do
       it "validates tag format and raises validation error for invalid tags" do
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#valid", "#invalid@tag"],
             server_context: server_context
@@ -269,7 +269,7 @@ RSpec.describe UpdateTagsTool, type: :model do
         expect {
           expect {
             UpdateTagsTool.call(
-              object_npi: document.npi,
+              object_id: document.id,
               object_type: "Document",
               tags: ["#good", "#bad@tag"],
               server_context: server_context
@@ -287,7 +287,7 @@ RSpec.describe UpdateTagsTool, type: :model do
       it "completely replaces tags in a single transaction" do
         expect {
           UpdateTagsTool.call(
-            object_npi: document.npi,
+            object_id: document.id,
             object_type: "Document",
             tags: ["#new1", "#new2"],
             server_context: server_context

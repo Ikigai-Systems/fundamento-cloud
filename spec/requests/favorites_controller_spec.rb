@@ -105,7 +105,6 @@ RSpec.describe FavoritesController, type: :request do
       it "uses NPI in URL (string ID)" do
         favorite_id = favorite.id
         expect(favorite_id).to be_a(String)
-        expect(favorite_id.length).to eq(10)
 
         # Just verify the route works with string ID (don't actually delete fixture)
         allow_any_instance_of(Favorite).to receive(:destroy!).and_return(true)

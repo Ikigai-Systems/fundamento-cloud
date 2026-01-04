@@ -3,24 +3,24 @@ class CreateDocumentTool < ApplicationTool
 
   input_schema(
     properties: {
-      space_npi: { type: :string },
-      parent_document_npi: { type: :string },
+      space_id: { type: :string },
+      parent_document_id: { type: :string },
       title: { type: :string },
       markdown: { type: :string },
     },
-    required: [:space_npi, :title, :markdown]
+    required: [:space_id, :title, :markdown]
   )
 
   annotations(
     title: "Create Document",
   )
 
-  def self.call(space_npi:, parent_document_npi:, title:, markdown:, server_context:)
+  def self.call(space_id:, parent_document_id:, title:, markdown:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     document = DocumentService.new(pundit_user: pundit_user).create!(
-      space_npi:,
-      parent_document_npi:,
+      space_id:,
+      parent_document_id:,
       title:,
       markdown:
     )

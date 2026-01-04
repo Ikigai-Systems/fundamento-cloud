@@ -1,9 +1,11 @@
 hc_favorite_1:
-  id: "hcfavorit1"
+  id: "hc_favorite_1"
   organization_user: :ou_hc_pawel
-  object: one (Document)
+  object_id: one
+  object_type: Document
 
 is_favorite_1:
-  id: "isfavorit1"
+  id: "is_favorite_1"
   organization_user: :ou_is_pawel
-  object: one (Document)
+  object_id: one
+  object_type: Document

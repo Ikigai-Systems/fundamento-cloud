@@ -152,7 +152,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       {
         user_email: user.email,
         org_name: org.name,
-        doc_npi: formula_doc&.npi,
+        doc_id: formula_doc&.id,
         doc_title: formula_doc&.title,
         has_formula_doc: formula_doc.present?
       }
@@ -170,7 +170,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       // No need to select organization manually
 
       // Visit the document containing the advancedTable block
-      cy.visit(`/d/${data.doc_npi}`);
+      cy.visit(`/d/${data.doc_id}`);
 
       // Wait for document to load
       cy.contains(data.doc_title).should("be.visible");

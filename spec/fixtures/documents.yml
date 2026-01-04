@@ -1,13 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+_fixture:
+  model_class: Document
+
 one:
+  id: one
   organization: :is
-  space_id: is_default
-  npi: "X"
+  space_id: "is_default"
   sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
 
 two:
+  id: two
   organization: :is
-  space_id: is_default
-  npi: "Y"
+  space_id: "is_default"
   sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"

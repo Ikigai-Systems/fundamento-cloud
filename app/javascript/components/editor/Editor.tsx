@@ -95,7 +95,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", conten
     }
 
     ydoc = new Y.Doc();
-    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.npi}`, ydoc);
+    new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.id}`, ydoc);
 
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
@@ -104,7 +104,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", conten
       ydoc,
       acConsumer,
       "DocumentChannel",
-      {documentId: document.id.toString()},
+      {documentId: document.id},
     );
 
     // hackery to determine if editor has been initialized with initial content from the action cable or not yet

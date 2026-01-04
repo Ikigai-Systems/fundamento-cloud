@@ -313,7 +313,7 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
 
             if (version) {
               await VersionsApi.update({
-                params: {documentNpi: document.npi, id: version.sequentialId},
+                params: {documentNpi: document.id, id: version.sequentialId},
                 data: {
                   contentHtml: this.editor.getData(),
                   operations: JSON.stringify(
@@ -419,7 +419,7 @@ const HtmlEditor = ({initialData, revisions, operationsA, operationsB, version, 
             //todo: update document content
             if (version) {
               await VersionsApi.update({
-                params: {documentNpi: document.npi, id: version.sequentialId},
+                params: {documentNpi: document.id, id: version.sequentialId},
                 data: {contentHtml: this.editor.getData()},
               });
             }

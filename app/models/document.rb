@@ -1,13 +1,10 @@
 require 'open3'
 
 class Document < ApplicationRecord
-  include ModelWithNpiAsParam
-
-  set_allow_fallback_to_id true
-  set_attach_to_param :title
+  include NpiOrdering
 
   include ToReactProps
-  set_react_props :id, :npi, :title
+  set_react_props :id, :title
 
   include EmojiExtractable
   extracts_emoji_from :title

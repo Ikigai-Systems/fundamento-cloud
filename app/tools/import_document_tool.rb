@@ -3,8 +3,8 @@ class ImportDocumentTool < ApplicationTool
 
   input_schema(
     properties: {
-      space_npi: { type: :string },
-      parent_document_npi: { type: :string },
+      space_id: { type: :string },
+      parent_document_id: { type: :string },
       title: { type: :string },
       file_content: {
         type: :string,
@@ -15,14 +15,14 @@ class ImportDocumentTool < ApplicationTool
         description: "Original filename with extension (e.g., 'document.docx')"
       },
     },
-    required: [:space_npi, :file_content, :filename]
+    required: [:space_id, :file_content, :filename]
   )
 
   annotations(
     title: "Import Document from File",
   )
 
-  def self.call(space_npi:, file_content:, filename:, title: nil, parent_document_npi: nil, server_context:)
+  def self.call(space_id:, file_content:, filename:, title: nil, parent_document_id: nil, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     # Decode Base64 file content
@@ -39,15 +39,15 @@ class ImportDocumentTool < ApplicationTool
       # Create an ActionDispatch::Http::UploadedFile-like object
       uploaded_file = ActionDispatch::Http::UploadedFile.new(
         tempfile: temp_file,
-        filename: filename,
+        filename:,
         type: mime_type_from_filename(filename)
       )
 
       document = DocumentService.new(pundit_user: pundit_user).create_from_file!(
-        space_npi: space_npi,
+        space_id:,
         file: uploaded_file,
         title: title,
-        parent_document_npi: parent_document_npi
+        parent_document_id:
       )
 
       MCP::Tool::Response.new([

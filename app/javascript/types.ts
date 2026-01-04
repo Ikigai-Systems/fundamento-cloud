@@ -1,6 +1,5 @@
 export type Document = {
-  id: number,
-  npi: string,
+  id: string,
   title: string,
 }
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,7 +61,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.string "filename"
     t.string "mime_type"
     t.bigint "organization_id"
-    t.bigint "parent_id", null: false
+    t.string "parent_id", null: false
     t.string "parent_type", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
@@ -106,7 +106,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
 
   create_table "document_imports", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "document_id"
+    t.string "document_id"
     t.datetime "imported_at"
     t.text "imported_content"
     t.bigint "organization_id", null: false
@@ -121,11 +121,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.index ["space_id"], name: "index_document_imports_on_space_id"
   end
 
-  create_table "documents", force: :cascade do |t|
+  create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false
     t.text "content_html", default: ""
     t.datetime "created_at", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.json "operations", default: ""
     t.bigint "organization_id"
     t.json "revisions", default: ""
@@ -133,7 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.binary "sync"
     t.string "title"
     t.datetime "updated_at", null: false
-    t.index ["npi"], name: "index_documents_on_npi", unique: true
+    t.index ["id"], name: "index_documents_on_id", unique: true
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"
   end
@@ -256,7 +255,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
 
   create_table "inline_comment_threads", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "document_id", null: false
+    t.string "document_id", null: false
     t.datetime "resolved_at"
     t.bigint "resolved_by"
     t.datetime "updated_at", null: false
@@ -430,7 +429,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.integer "access_mode", limit: 2, default: 0, null: false
     t.datetime "created_at", null: false
     t.json "hierarchy", default: [], null: false
-    t.bigint "home_document_id"
+    t.string "home_document_id"
     t.string "name"
     t.bigint "organization_id"
     t.datetime "updated_at", null: false
@@ -515,7 +514,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.bigint "organization_id", null: false
-    t.bigint "parent_id", null: false
+    t.string "parent_id", null: false
     t.string "parent_type", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
@@ -605,7 +604,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
     t.text "content_html", default: ""
     t.datetime "created_at", null: false
     t.bigint "created_by_id"
-    t.bigint "document_id", null: false
+    t.string "document_id", null: false
     t.json "operations", default: ""
     t.json "revisions", default: ""
     t.integer "sequential_id", null: false
