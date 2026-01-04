@@ -49,7 +49,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "ThisRow.name",
-            space_npi: space.id
+            space_npi: space.id,
             additional_context: {
               this_row: { "name" => "Test Name" }
             }
