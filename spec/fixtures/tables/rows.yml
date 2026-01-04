@@ -4,21 +4,21 @@ _fixture:
 projects_row_1:
   id: "projects_row_1"
   organization: :is
-  table: :projects
+  table_id: "projects"
 
 projects_row_2:
   id: "projects_row_2"
   organization: :is
-  table: :projects
+  table_id: "projects"
   previous_row_id: "projects_row_1"
 
 projects_row_3:
   id: "projects_row_3"
   organization: :is
-  table: :projects
+  table_id: "projects"
   previous_row_id: "projects_row_2"
 
 orders_row_1:
   id: "orders_row_1"
   organization: :is
-  table: :orders
+  table_id: "orders"

@@ -26,7 +26,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: nil,
             title: "New Document",
             markdown: "# Hello World\n\nThis is a test.",
@@ -79,7 +79,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: parent_doc.npi,
             title: "Child Document",
             markdown: "# Child",
@@ -113,7 +113,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: nil,
             title: "Document with Tags",
             markdown: markdown_with_frontmatter,
@@ -160,7 +160,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           @response = CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: nil,
             title: "Document Reusing Tags",
             markdown: markdown_with_frontmatter,
@@ -196,7 +196,7 @@ RSpec.describe CreateDocumentTool, type: :model do
       it "raises RecordNotFound error" do
         expect {
           CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: "invalid-parent-npi",
             title: "Test Document",
             markdown: "# Content",
@@ -219,7 +219,7 @@ RSpec.describe CreateDocumentTool, type: :model do
       it "raises RecordNotFound when accessing space from different organization" do
         expect {
           CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: nil,
             title: "Unauthorized Document",
             markdown: "# Content",
@@ -236,7 +236,7 @@ RSpec.describe CreateDocumentTool, type: :model do
 
         expect {
           CreateDocumentTool.call(
-            space_npi: space.npi,
+            space_npi: space.id,
             parent_document_npi: nil,
             title: "Test Document",
             markdown: "# Content",

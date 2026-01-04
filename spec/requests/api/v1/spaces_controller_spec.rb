@@ -28,7 +28,7 @@ RSpec.describe "Api::V1::Spaces", type: :request do
         expect(json_response.length).to be >= 1
 
         first_space = json_response.first
-        expect(first_space).to have_key("npi")
+        expect(first_space).to have_key("id")
         expect(first_space).to have_key("name")
         expect(first_space).to have_key("created_at")
         expect(first_space).to have_key("updated_at")
@@ -48,13 +48,13 @@ RSpec.describe "Api::V1::Spaces", type: :request do
   describe "GET /api/v1/spaces/:npi" do
     context "with valid API token" do
       it "returns space details with documents" do
-        get api_v1_space_path(is_default_space.npi),
+        get api_v1_space_path(is_default_space.id),
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to eq(is_default_space.npi)
+        expect(json_response["id"]).to eq(is_default_space.id)
         expect(json_response["name"]).to eq(is_default_space.name)
         expect(json_response).to have_key("documents")
         expect(json_response).to have_key("created_at")
@@ -93,14 +93,14 @@ RSpec.describe "Api::V1::Spaces", type: :request do
         expect(response).to have_http_status(:created)
         json_response = JSON.parse(response.body)
 
-        expect(json_response["npi"]).to be_present
+        expect(json_response["id"]).to be_present
         expect(json_response["name"]).to eq("New Test Space")
         expect(json_response["access_mode"]).to eq("public")
         expect(json_response["created_at"]).to be_present
         expect(json_response["updated_at"]).to be_present
 
         # Verify home document was created
-        created_space = Space.find_by(npi: json_response["npi"])
+        created_space = Space.find_by(id: json_response["id"])
         expect(created_space.home_document).to be_present
       end
 

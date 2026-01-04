@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_074442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -77,7 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.bigint "organization_id"
     t.string "result"
     t.bigint "run_as_id", null: false
-    t.bigint "space_id"
+    t.string "space_id"
     t.datetime "updated_at", null: false
     t.string "webhook"
     t.index ["automation_id"], name: "index_automation_invocations_on_automation_id"
@@ -95,7 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.integer "kind", limit: 2, null: false
     t.bigint "organization_id"
     t.bigint "run_as_id"
-    t.bigint "space_id"
+    t.string "space_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_automations_on_organization_id"
@@ -111,7 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.text "imported_content"
     t.bigint "organization_id", null: false
     t.bigint "organization_user_id", null: false
-    t.bigint "space_id", null: false
+    t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
     t.index ["id"], name: "index_document_imports_on_id", unique: true
@@ -129,7 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.json "operations", default: ""
     t.bigint "organization_id"
     t.json "revisions", default: ""
-    t.bigint "space_id"
+    t.string "space_id"
     t.binary "sync"
     t.string "title"
     t.datetime "updated_at", null: false
@@ -413,29 +413,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.index ["updated_by_id"], name: "index_public_links_on_updated_by_id"
   end
 
-  create_table "space_memberships", force: :cascade do |t|
-    t.string "member_id"
-    t.string "member_type"
+  create_table "space_memberships", primary_key: ["space_id", "member_id", "member_type"], force: :cascade do |t|
+    t.bigserial "id", null: false
+    t.string "member_id", null: false
+    t.string "member_type", null: false
     t.bigint "organization_id", null: false
     t.integer "role", limit: 2, default: 0, null: false
-    t.bigint "space_id"
+    t.string "space_id", null: false
     t.index ["member_id", "member_type", "space_id"], name: "idx_on_member_id_member_type_space_id_e2ffbf3808", unique: true
     t.index ["member_type", "member_id"], name: "index_space_managers_on_manager"
     t.index ["organization_id"], name: "index_space_memberships_on_organization_id"
     t.index ["space_id"], name: "index_space_memberships_on_space_id"
   end
 
-  create_table "spaces", force: :cascade do |t|
+  create_table "spaces", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "access_mode", limit: 2, default: 0, null: false
     t.datetime "created_at", null: false
     t.json "hierarchy", default: [], null: false
     t.bigint "home_document_id"
     t.string "name"
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "organization_id"
     t.datetime "updated_at", null: false
+    t.index ["id"], name: "index_spaces_on_id", unique: true
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
-    t.index ["npi"], name: "index_spaces_on_npi", unique: true
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
@@ -517,7 +517,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.bigint "organization_id", null: false
     t.bigint "parent_id", null: false
     t.string "parent_type", null: false
-    t.bigint "space_id", null: false
+    t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
     t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true
@@ -531,7 +531,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.bigint "organization_id", null: false
-    t.bigint "space_id", null: false
+    t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tags_on_id", unique: true
     t.index ["name", "space_id"], name: "index_tags_on_name_and_space_id", unique: true
@@ -654,6 +654,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_072326) do
   add_foreign_key "table_cells", "table_rows", column: "row_id"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
+  add_foreign_key "tables", "spaces"
   add_foreign_key "tags", "organizations"
   add_foreign_key "tags", "spaces"
   add_foreign_key "team_memberships", "organizations"

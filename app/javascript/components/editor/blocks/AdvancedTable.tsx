@@ -149,7 +149,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
             loadOptions={async (query) => {
               const tables = await TablesApi.index({
                 query: {
-                  space_npi: space.npi,
+                  space_npi: space.id,
                   query,
                 }
               });
@@ -211,7 +211,7 @@ export const createAdvancedTable = createReactBlockSpec(
       const {space} = useContext(CurrentSpaceContext);
       const tableNpi = blockProps.tableNpi;
       const tableQuery = useQuery({
-        queryKey: ["tables", space.npi, tableNpi], queryFn: async () => {
+        queryKey: ["tables", space.id, tableNpi], queryFn: async () => {
           if (tableNpi === "") {
             return null;
           }

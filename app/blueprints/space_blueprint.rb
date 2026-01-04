@@ -1,5 +1,5 @@
 class SpaceBlueprint < Blueprinter::Base
-  identifier :npi
+  identifier :id
 
   fields :name
 

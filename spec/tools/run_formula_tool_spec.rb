@@ -19,7 +19,7 @@ RSpec.describe RunFormulaTool, type: :model do
       it "evaluates the formula successfully" do
         response = RunFormulaTool.call(
           formula: "1 + 1",
-          space_npi: space.npi,
+          space_npi: space.id,
           server_context: server_context
         )
 
@@ -33,7 +33,7 @@ RSpec.describe RunFormulaTool, type: :model do
       it "evaluates string concatenation" do
         response = RunFormulaTool.call(
           formula: "Concatenate(\"Hello\", \" \", \"World\")",
-          space_npi: space.npi,
+          space_npi: space.id,
           server_context: server_context
         )
 
@@ -44,7 +44,7 @@ RSpec.describe RunFormulaTool, type: :model do
       it "evaluates mathematical functions" do
         response = RunFormulaTool.call(
           formula: "Round(3.14159, 2)",
-          space_npi: space.npi,
+          space_npi: space.id,
           server_context: server_context
         )
 
@@ -83,7 +83,7 @@ RSpec.describe RunFormulaTool, type: :model do
       it "returns error in response" do
         response = RunFormulaTool.call(
           formula: "InvalidFunction()",
-          space_npi: space.npi,
+          space_npi: space.id,
           server_context: server_context
         )
 
@@ -117,7 +117,7 @@ RSpec.describe RunFormulaTool, type: :model do
         expect {
           RunFormulaTool.call(
             formula: "1 + 1",
-            space_npi: space.npi,
+            space_npi: space.id,
             server_context: server_context
           )
         }.to raise_error(ActiveRecord::RecordNotFound)

@@ -206,7 +206,7 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
-          const spaceNpi = space.npi;
+          const spaceNpi = space.id;
           const tableNpi = table.id;
           await TablesApi.moveColumnLeft({
             params: {npi: tableNpi},
@@ -228,7 +228,7 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
-          const spaceNpi = space.npi;
+          const spaceNpi = space.id;
           const tableNpi = table.id;
           await TablesApi.moveColumnRight({
             params: {npi: tableNpi},
@@ -539,7 +539,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               Config.serializeData = currentDataSerializer;
               await promise;
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
-                queryClient.invalidateQueries({queryKey: ["tables", space.npi, table.id]});
+                queryClient.invalidateQueries({queryKey: ["tables", space.id, table.id]});
               }
             } catch (e) {
               //todo: Sentry.capture(e)

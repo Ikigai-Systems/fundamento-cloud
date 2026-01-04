@@ -4,7 +4,7 @@ module LoadSpace
       extend ActiveSupport::Concern
 
       define_method(:load_space) do
-        @space = current_organization.spaces.find_by_param!(params[param_name])
+        @space = current_organization.spaces.find(params[param_name])
       end
     end
   end

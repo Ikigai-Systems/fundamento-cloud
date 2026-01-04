@@ -27,7 +27,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
 
       it "creates document from DOCX file" do
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.npi),
+          post api_v1_documents_path(space_npi: is_default_space.id),
             params: {
               document: {
                 file: docx_file,
@@ -46,7 +46,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
       end
 
       it "uses filename as title when title not provided" do
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: { document: { file: docx_file } },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
@@ -66,7 +66,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
       end
 
       it "rejects PDF file as unsupported" do
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: { document: { file: pdf_file } },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
@@ -86,7 +86,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
 
       it "creates document from ODT file" do
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.npi),
+          post api_v1_documents_path(space_npi: is_default_space.id),
             params: { document: { file: odt_file } },
             headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
         }.to change(Document, :count).by(1)
@@ -116,7 +116,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
         is_default_space.hierarchy.append(hierarchy_node)
         is_default_space.save!
 
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: {
             document: {
               file: docx_file,
@@ -141,7 +141,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
 
     context "with missing file" do
       it "returns validation error" do
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: { document: { title: "No File" } },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
@@ -160,7 +160,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
       end
 
       it "returns validation error" do
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: { document: { file: exe_file } },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
@@ -177,7 +177,7 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
 
-        post api_v1_documents_path(space_npi: is_default_space.npi),
+        post api_v1_documents_path(space_npi: is_default_space.id),
           params: { document: { file: docx_file } }
 
         expect(response).to have_http_status(:unauthorized)

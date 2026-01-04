@@ -48,7 +48,7 @@ function EditFormulaPopup({
     }
 
     fetchPreview();
-  }, [formula, previewRow, rows, space.npi, table.id]);
+  }, [formula, previewRow, rows, space.id, table.id]);
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">

@@ -2,19 +2,22 @@ _fixture:
   model_class: Table
 
 users:
+  id: "users"
   name: users
   organization: :is
-  space: :is_default
+  space_id: "is_default"
   parent: is_default (Space)
 
 projects:
+  id: "projects"
   name: projects
   organization: :is
-  space: :is_default
+  space_id: "is_default"
   parent: is_default (Space)
 
 orders:
+  id: "orders"
   name: "Orders"
   organization: :is
-  space: :is_default
+  space_id: "is_default"
   parent: is_default (Space)

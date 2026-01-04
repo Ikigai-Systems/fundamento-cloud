@@ -102,7 +102,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
           const formulaResult = await FormulasApi.eval({
             data: {
               formula,
-              spaceNpi: space?.npi,
+              spaceNpi: space?.id,
             }
           });
 

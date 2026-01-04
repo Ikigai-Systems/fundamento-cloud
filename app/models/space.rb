@@ -1,11 +1,12 @@
 class Space < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization
 
-  include ModelWithNpiAsParam
   include ToReactProps
 
   # Keep it in sync with app/javascript/types.ts
-  set_react_props :npi, :name, :hierarchy
+  set_react_props :id, :name, :hierarchy
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy

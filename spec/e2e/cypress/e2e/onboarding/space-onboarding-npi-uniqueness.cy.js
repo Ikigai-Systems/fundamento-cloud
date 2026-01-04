@@ -29,8 +29,8 @@ describe("Space Onboarding NPI Uniqueness", function() {
       {
         org1_id: org1.id,
         org2_id: org2.id,
-        space1_npi: space1.npi,
-        space2_npi: space2.npi,
+        space1_id: space1.id,
+        space2_id: space2.id,
         space1_table_ids: space1.tables.pluck(:id).sort,
         space2_table_ids: space2.tables.pluck(:id).sort
       }
@@ -39,7 +39,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       expect(data.org1_id).to.not.equal(data.org2_id);
 
       // Check that space NPIs are different
-      expect(data.space1_npi).to.not.equal(data.space2_npi);
+      expect(data.space1_id).to.not.equal(data.space2_id);
 
       // Check that table NPIs are different (BUG FIXED - should now pass)
       const duplicates = data.space1_table_ids.filter(id =>
@@ -72,7 +72,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       {
         user_email: user.email,
         org_name: org.name,
-        space_npi: space.npi,
+        space_id: space.id,
         advanced_table_id: advanced_table.id
       }
     `).then((data) => {

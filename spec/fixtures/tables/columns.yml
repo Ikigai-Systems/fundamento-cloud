@@ -5,14 +5,14 @@ project_key:
   id: "project_key"
   name: "Key"
   organization: :is
-  table: :projects
+  table_id: "projects"
   kind: :string
 
 project_name:
   id: "project_name"
   name: "Name"
   organization: :is
-  table: :projects
+  table_id: "projects"
   kind: :string
   previous_column_id: "project_key"
 
@@ -20,7 +20,7 @@ project_description:
   id: "project_description"
   name: "Description"
   organization: :is
-  table: :projects
+  table_id: "projects"
   kind: :string
   previous_column_id: "project_name"
 
@@ -28,7 +28,7 @@ project_value:
   id: "project_value"
   name: Value
   organization: :is
-  table: :projects
+  table_id: "projects"
   kind: :string
   previous_column_id: "project_description"
 
@@ -36,13 +36,13 @@ orders_pizza:
   id: "orders_pizza"
   name: Pizza
   organization: :is
-  table: :orders
+  table_id: "orders"
   kind: :string
 
 orders_who:
   id: "orders_who"
   name: Who
   organization: :is
-  table: :orders
+  table_id: "orders"
   kind: :string
   previous_column_id: "orders_pizza"

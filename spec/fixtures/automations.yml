@@ -1,7 +1,7 @@
 hc_webhook_automation:
   id: "hcwebhook1"
   organization: :hc
-  space: :hc_default
+  space_id: "hc_default"
   run_as: :ou_hc_pawel
   title: "Webhook Automation"
   kind: webhook
@@ -10,7 +10,7 @@ hc_webhook_automation:
 hc_restricted_automation:
   id: "hcrestr1"
   organization: :hc
-  space: :hc_restricted
+  space_id: "hc_restricted"
   run_as: :ou_hc_pawel
   title: "Restricted Automation"
   kind: webhook
@@ -19,7 +19,7 @@ hc_restricted_automation:
 is_webhook_automation:
   id: "iswebhook1"
   organization: :is
-  space: :is_default
+  space_id: "is_default"
   run_as: :ou_is_pawel
   title: "Test Webhook"
   kind: webhook

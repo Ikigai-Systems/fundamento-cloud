@@ -18,7 +18,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "1 + 1",
-            space_npi: space.npi
+            space_npi: space.id
           },
           headers: { "Accept" => "application/json" }
 
@@ -34,7 +34,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "Concatenate(\"Hello\", \" \", \"World\")",
-            space_npi: space.npi
+            space_npi: space.id
           },
           headers: { "Accept" => "application/json" }
 
@@ -49,7 +49,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "ThisRow.name",
-            space_npi: space.npi,
+            space_npi: space.id
             additional_context: {
               this_row: { "name" => "Test Name" }
             }
@@ -68,7 +68,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "InvalidFunction()",
-            space_npi: space.npi
+            space_npi: space.id
           },
           headers: { "Accept" => "application/json" }
 
@@ -85,7 +85,7 @@ RSpec.describe FormulasController, type: :request do
           params: {
             formula: "1 + 1",
             evaluation_context: {
-              space_npi: space.npi
+              space_npi: space.id
             }
           },
           headers: { "Accept" => "application/json" }
@@ -121,7 +121,7 @@ RSpec.describe FormulasController, type: :request do
         post "/formulas/eval",
           params: {
             formula: "1 + 1",
-            space_npi: space.npi
+            space_npi: space.id
           },
           headers: { "Accept" => "text/html" }
 

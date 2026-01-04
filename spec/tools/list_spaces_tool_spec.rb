@@ -26,7 +26,9 @@ RSpec.describe ListSpacesTool, type: :model do
         expect(json_response).to be_an(Array)
         expect(json_response.length).to eq(2)
         expect(json_response.first["name"]).to eq("Default IS")
+        expect(json_response.first["id"]).to eq(spaces(:is_default).id)
         expect(json_response.second["name"]).to eq("Stefan's Private Space")
+        expect(json_response.second["id"]).to eq(spaces(:is_stefans).id)
       end
     end
 

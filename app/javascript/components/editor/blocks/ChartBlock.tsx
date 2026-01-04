@@ -49,7 +49,7 @@ export const createChartBlock = createReactBlockSpec(
       const {tableNpi, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
       const [xAxisDataset, setXAxisDataset] = useState<any>(undefined);
       const [yAxisDataset, setYAxisDataset] = useState<any>(undefined);
-      const tableQuery = useQuery({queryKey: ["tables", space?.npi, tableNpi], queryFn: async () => {
+      const tableQuery = useQuery({queryKey: ["tables", space?.id, tableNpi], queryFn: async () => {
         if (tableNpi === "") {
           return null;
         }
@@ -122,7 +122,7 @@ export const createChartBlock = createReactBlockSpec(
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
                       query: {
-                        space_npi: space?.npi,
+                        space_npi: space?.id,
                         query,
                       }
                     });
@@ -173,7 +173,7 @@ export const createChartBlock = createReactBlockSpec(
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
                       params: {
-                        space_npi: space?.npi,
+                        space_npi: space?.id,
                         query,
                       }
                     });

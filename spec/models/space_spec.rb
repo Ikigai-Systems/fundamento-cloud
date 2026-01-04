@@ -1,6 +1,56 @@
 require 'rails_helper'
 
 RSpec.describe Space, type: :model do
+  fixtures :organizations, :spaces
+
+  describe "NPI primary key migration" do
+    it "uses string ID as primary key" do
+      space = spaces(:is_default)
+      expect(space.id).to be_a(String)
+      expect(space.id.length).to be >= 10
+    end
+
+    it "has string space_id in child documents" do
+      space = Space.create!(
+        id: "testspace1",
+        name: "Test Space",
+        organization: organizations(:is)
+      )
+
+      document = space.documents.create!(
+        title: "Test Document",
+        organization: organizations(:is)
+      )
+
+      expect(document.space_id).to be_a(String)
+      expect(document.space_id).to eq(space.id)
+      expect(document.space_id).to eq("testspace1")
+    end
+
+    it "has string space_id in child tables" do
+      space = Space.create!(
+        id: "testspace2",
+        name: "Test Space 2",
+        organization: organizations(:is)
+      )
+
+      document = space.documents.create!(
+        title: "Parent Document",
+        organization: organizations(:is)
+      )
+
+      table = space.tables.create!(
+        name: "Test Table",
+        organization: organizations(:is),
+        parent: document
+      )
+
+      expect(table.space_id).to be_a(String)
+      expect(table.space_id).to eq(space.id)
+      expect(table.space_id).to eq("testspace2")
+    end
+  end
+
   let(:hierarchy) do
     [
       { "id" => 16, "children" => [] },

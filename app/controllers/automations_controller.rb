@@ -66,7 +66,7 @@ class AutomationsController < ApplicationController
   protected
 
   def load_space
-    @space = current_organization.spaces.find_by_npi!(params[:space_npi])
+    @space = current_organization.spaces.find(params[:space_npi])
   end
 
   def automation_params

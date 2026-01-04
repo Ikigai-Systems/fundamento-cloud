@@ -21,5 +21,5 @@ export default (formulaResult: {result: any, commands: Array<any>}, space: Space
     }
   });
 
-  Object.keys(tableNpisToInvalidate).forEach(tableNpi => queryClient.invalidateQueries({queryKey: ["tables", space?.npi, tableNpi]}));
+  Object.keys(tableNpisToInvalidate).forEach(tableNpi => queryClient.invalidateQueries({queryKey: ["tables", space?.id, tableNpi]}));
 };

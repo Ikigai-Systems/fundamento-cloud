@@ -125,20 +125,20 @@ class ListObjectsByTagsTool < ApplicationTool
     case object
     when Document
       {
-        npi: object.npi,
+        id: object.try(:npi) || object.id,
         title: object.title,
         object_type: "Document",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,
-        space_npi: object.space.npi,
+        space_id: object.space.id,
         updated_at: object.updated_at
       }
     when Table
       {
-        npi: object.npi,
+        id: object.try(:npi) || object.id,
         name: object.name,
         object_type: "Table",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,
-        space_npi: object.space.npi,
+        space_id: object.space.id,
         updated_at: object.updated_at
       }
     else

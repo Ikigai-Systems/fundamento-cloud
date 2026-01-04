@@ -1,23 +1,23 @@
 hc_table_one:
-  id: "hctable001"
+  id: "hc_table_one"
   name: "Sample Table"
   organization: :hc
-  space: :hc_default
+  space_id: hc_default
   parent: hc_default (Space)
   archived: false
 
 hc_table_two:
-  id: "hctable002"
+  id: "hc_table_two"
   name: "Another Table"
   organization: :hc
-  space: :hc_default
+  space_id: hc_default
   parent: hc_default (Space)
   archived: false
 
 is_table_one:
-  id: "istable001"
+  id: "is_table_one"
   name: "IS Table"
   organization: :is
-  space: :is_default
+  space_id: is_default
   parent: is_default (Space)
   archived: false

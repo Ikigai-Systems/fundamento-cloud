@@ -26,7 +26,7 @@ type TableTitleInputProps = {
 
 export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputProps) => {
   return <input
-    key={space.npi + "_" + table.id + "_name"}
+    key={space.id + "_" + table.id + "_name"}
     type="text"
     placeholder={UNTITLED_CONTENT}
     defaultValue={table.name === UNTITLED_CONTENT ? undefined : table.name}

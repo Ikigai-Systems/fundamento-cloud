@@ -22,7 +22,7 @@ RSpec.describe ImportDocumentTool do
 
       expect {
         described_class.call(
-          space_npi: is_default_space.npi,
+          space_npi: is_default_space.id,
           file_content: base64_content,
           filename: "Volume-2-Terms-of-Reference.docx",
           title: "MCP Imported Document",
@@ -41,7 +41,7 @@ RSpec.describe ImportDocumentTool do
 
       expect {
         described_class.call(
-          space_npi: is_default_space.npi,
+          space_npi: is_default_space.id,
           file_content: base64_content,
           filename: "Volume-2-Terms-of-Reference.odt",
           server_context: server_context
@@ -57,7 +57,7 @@ RSpec.describe ImportDocumentTool do
       base64_content = Base64.strict_encode64(file_content)
 
       described_class.call(
-        space_npi: is_default_space.npi,
+        space_npi: is_default_space.id,
         file_content: base64_content,
         filename: "my-document.docx",
         server_context: server_context
@@ -82,7 +82,7 @@ RSpec.describe ImportDocumentTool do
       base64_content = Base64.strict_encode64(file_content)
 
       described_class.call(
-        space_npi: is_default_space.npi,
+        space_npi: is_default_space.id,
         file_content: base64_content,
         filename: "child.docx",
         parent_document_npi: parent_doc.npi,
@@ -103,7 +103,7 @@ RSpec.describe ImportDocumentTool do
 
       expect {
         described_class.call(
-          space_npi: is_default_space.npi,
+          space_npi: is_default_space.id,
           file_content: base64_content,
           filename: "malware.exe",
           server_context: server_context
@@ -116,7 +116,7 @@ RSpec.describe ImportDocumentTool do
       base64_content = Base64.strict_encode64(file_content)
 
       response = described_class.call(
-        space_npi: is_default_space.npi,
+        space_npi: is_default_space.id,
         file_content: base64_content,
         filename: "Volume-2-Terms-of-Reference.docx",
         title: "Test Document",

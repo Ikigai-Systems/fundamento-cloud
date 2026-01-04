@@ -3,19 +3,19 @@ class Api::V1::TablesController < Api::ApiController
   def show
     @table = self.class.find_relevant_table(
       params[:id],
-      params.dig("evaluationContext", "space_npi"),
+      params.dig("evaluationContext", "space_id"),
       current_organization_user,
       for_update: false
     )
 
     render json: {
-      table: @table.attributes.except("space_id").merge({space_npi: @table.space.npi}),
+      table: @table.attributes,
       data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user)
     }
   end
 
-  def self.find_relevant_table(npi_or_name, space_npi, organization_user, for_update: true)
-    space = Space.find_by_npi!(space_npi)
+  def self.find_relevant_table(npi_or_name, space_id, organization_user, for_update: true)
+    space = Space.find(space_id)
 
     pundit_user = PolicyUserContext.new(organization_user.user, organization_user.organization)
 

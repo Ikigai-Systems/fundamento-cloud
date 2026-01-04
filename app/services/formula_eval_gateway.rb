@@ -89,18 +89,18 @@ class FormulaEvalGateway
     commands&.each do |command|
       case command["type"]
       when "AddRow"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         table.add_row(nil, command["values"])
       when "DeleteRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
 
         Tables::DeleteRowsService.new(table).call
       when "AddOrUpdateRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -153,7 +153,7 @@ class FormulaEvalGateway
           end
         end
       when "UpdateRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.npi, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -230,7 +230,8 @@ class FormulaEvalGateway
 
   def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
     if space
-      evaluation_context[:space_npi] = space.npi
+      evaluation_context[:space_npi] = space.id
+      evaluation_context[:space_id] = space.id
     end
 
     if organization_user

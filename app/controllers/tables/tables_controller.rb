@@ -127,7 +127,7 @@ class Tables::TablesController < ApplicationController
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
       format.json do
         render json: {
-          table: @table.attributes.except("space_id").merge({ space_npi: @table.space.npi }),
+          table: @table.attributes,
           data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user)
         }
       end

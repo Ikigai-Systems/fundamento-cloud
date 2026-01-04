@@ -5,7 +5,7 @@ module Api
         spaces = policy_scope(current_organization.spaces).order(:name)
         render json: spaces.map { |space|
           {
-            npi: space.npi,
+            id: space.id,
             name: space.name,
             created_at: space.created_at,
             updated_at: space.updated_at
@@ -14,7 +14,7 @@ module Api
       end
 
       def show
-        space = current_organization.spaces.find_by_param!(params[:npi])
+        space = current_organization.spaces.find(params[:npi])
         authorize space
 
         documents = space.documents_from_hierarchy.map { |doc|
@@ -22,7 +22,7 @@ module Api
         }
 
         render json: {
-          npi: space.npi,
+          id: space.id,
           name: space.name,
           created_at: space.created_at,
           updated_at: space.updated_at,
@@ -37,7 +37,7 @@ module Api
 
         if space.save
           render json: {
-            npi: space.npi,
+            id: space.id,
             name: space.name,
             access_mode: space.access_mode,
             created_at: space.created_at,

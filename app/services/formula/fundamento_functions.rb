@@ -25,7 +25,7 @@ class Formula::FundamentoFunctions
   end
 
   def table_function(*args)
-    table = Api::V1::TablesController::find_relevant_table(args[0], @space.npi, @pundit_user.organization_user, for_update: false)
+    table = Api::V1::TablesController::find_relevant_table(args[0], @space.id, @pundit_user.organization_user, for_update: false)
     table.data_to_hash(evaluate_formulas: true, evaluate_as: @pundit_user.organization_user)
   end
 end
