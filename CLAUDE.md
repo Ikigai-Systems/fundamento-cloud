@@ -71,14 +71,13 @@ The application uses **Nanoid Public Identifiers (NPIs)** instead of sequential 
 - Tables: `/t/xyz789`
 - Spaces: `/s/def456`
 
+All Rails models should follow the NPI pattern for consistent URL generation - primary keys should be strings (id field), not integers. Database default should be set to UUID, but models should override it to use a shorter unique identifier for cleaner URLs.
+
 ### Micro-Services Architecture
 Node.js services handle specialized processing:
 
 1. **BlockNote Converter** (`micro-services/blocknote-converter/`)
    - Document format conversions
-
-2. **BlockNote Service** (`micro-services/blocknote/`)
-   - Document block manipulation
 
 ### Real-Time Collaboration
 - **Y.js (Yjs)** for conflict-free document editing
