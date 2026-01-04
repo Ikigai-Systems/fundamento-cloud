@@ -4,9 +4,9 @@ _fixture:
 test_pack_1:
   id: "test_pack_1"
   name: "Test Pack 1"
-  organization: :is
+  organization_id: "is"
 
 test_pack_2:
   id: "test_pack_2"
   name: "Test Pack 2"
-  organization: :is
+  organization_id: "is"

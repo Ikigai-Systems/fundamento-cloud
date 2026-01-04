@@ -4,14 +4,14 @@ _fixture:
 project_key:
   id: "project_key"
   name: "Key"
-  organization: :is
+  organization_id: "is"
   table_id: projects
   kind: 0
 
 project_name:
   id: "project_name"
   name: "Name"
-  organization: :is
+  organization_id: "is"
   table_id: projects
   kind: 0
   previous_column_id: "project_key"
@@ -19,7 +19,7 @@ project_name:
 project_description:
   id: "project_description"
   name: "Description"
-  organization: :is
+  organization_id: "is"
   table_id: projects
   kind: 0
   previous_column_id: "project_name"
@@ -27,7 +27,7 @@ project_description:
 project_title:
   id: "project_title"
   name: Title
-  organization: :is
+  organization_id: "is"
   table_id: projects
   kind: :formula
   formula: Concatenate(CurrentRow("Key"), " ", CurrentRow("Name"))

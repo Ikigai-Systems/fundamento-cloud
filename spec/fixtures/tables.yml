@@ -1,7 +1,7 @@
 hc_table_one:
   id: "hc_table_one"
   name: "Sample Table"
-  organization: :hc
+  organization_id: "hc"
   space_id: hc_default
   parent: hc_default (Space)
   archived: false
@@ -9,7 +9,7 @@ hc_table_one:
 hc_table_two:
   id: "hc_table_two"
   name: "Another Table"
-  organization: :hc
+  organization_id: "hc"
   space_id: hc_default
   parent: hc_default (Space)
   archived: false
@@ -17,7 +17,7 @@ hc_table_two:
 is_table_one:
   id: "is_table_one"
   name: "IS Table"
-  organization: :is
+  organization_id: "is"
   space_id: is_default
   parent: is_default (Space)
   archived: false

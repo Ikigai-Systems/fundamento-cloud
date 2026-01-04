@@ -4,20 +4,20 @@ _fixture:
 users:
   id: "users"
   name: users
-  organization: :is
+  organization_id: "is"
   space_id: "is_default"
   parent: is_default (Space)
 
 projects:
   id: "projects"
   name: projects
-  organization: :is
+  organization_id: "is"
   space_id: "is_default"
   parent: is_default (Space)
 
 orders:
   id: "orders"
   name: "Orders"
-  organization: :is
+  organization_id: "is"
   space_id: "is_default"
   parent: is_default (Space)

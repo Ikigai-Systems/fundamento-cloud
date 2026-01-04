@@ -5,12 +5,12 @@ _fixture:
 
 one:
   id: one
-  organization: :is
+  organization_id: "is"
   space_id: "is_default"
   sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
 
 two:
   id: two
-  organization: :is
+  organization_id: "is"
   space_id: "is_default"
   sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"

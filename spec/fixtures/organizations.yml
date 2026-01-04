@@ -1,10 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+_fixture:
+  model_class: Organization
+
 is:
+  id: is
   name: Ikigai Systems
 
 hc:
+  id: hc
   name: HeroCoders
 
 another:
+  id: another
   name: Another

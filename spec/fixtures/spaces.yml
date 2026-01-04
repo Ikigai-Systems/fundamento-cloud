@@ -5,42 +5,42 @@ _fixture:
 
 is_default:
   id: "is_default"
-  organization: :is
+  organization_id: "is"
   name: "Default IS"
   access_mode: :public
   hierarchy: []
 
 is_stefans:
   id: "is_stefans"
-  organization: :is
+  organization_id: "is"
   name: "Stefan's Private Space"
   access_mode: :private
   hierarchy: []
 
 hc_default:
   id: "hc_default"
-  organization: :hc
+  organization_id: "hc"
   name: "Default HC"
   access_mode: :public
   hierarchy: []
 
 hc_restricted:
   id: "hc_restricted"
-  organization: :hc
+  organization_id: "hc"
   name: "Restricted HC"
   access_mode: :restricted
   hierarchy: []
 
 hc_pawels:
   id: "hc_pawels"
-  organization: :hc
+  organization_id: "hc"
   name: "Pawel's Private Space"
   access_mode: :private
   hierarchy: []
 
 hc_administrators:
   id: "hc_administrators"
-  organization: :hc
+  organization_id: "hc"
   name: "Administrators Space"
   access_mode: :private
   hierarchy: []

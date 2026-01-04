@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,7 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   create_table "api_tokens", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "encrypted_token", null: false
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.bigint "organization_user_id"
     t.string "title", default: "", null: false
     t.datetime "updated_at", null: false
@@ -60,7 +60,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.binary "data"
     t.string "filename"
     t.string "mime_type"
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.string "parent_id", null: false
     t.string "parent_type", null: false
     t.datetime "updated_at", null: false
@@ -74,7 +74,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.string "formula"
     t.datetime "invoked_at"
     t.integer "kind", limit: 2, null: false
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.string "result"
     t.bigint "run_as_id", null: false
     t.string "space_id"
@@ -93,7 +93,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.string "formula"
     t.integer "invocations_limit", limit: 2
     t.integer "kind", limit: 2, null: false
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.bigint "run_as_id"
     t.string "space_id"
     t.string "title", null: false
@@ -109,7 +109,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.string "document_id"
     t.datetime "imported_at"
     t.text "imported_content"
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.bigint "organization_user_id", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
@@ -126,7 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.text "content_html", default: ""
     t.datetime "created_at", null: false
     t.json "operations", default: ""
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.json "revisions", default: ""
     t.string "space_id"
     t.binary "sync"
@@ -287,7 +287,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.bigint "invited_by_id"
     t.string "invited_by_type"
     t.text "last_name", default: "", null: false
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.datetime "updated_at", null: false
     t.index ["email", "organization_id"], name: "index_invited_users_on_email_and_organization_id", unique: true
     t.index ["invitation_token"], name: "index_invited_users_on_invitation_token", unique: true
@@ -301,7 +301,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.datetime "created_at", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.bigint "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
@@ -314,7 +314,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.string "emoji", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.bigint "organization_user_id", null: false
     t.index ["emoji", "object_id", "object_type", "organization_user_id"], name: "idx_on_emoji_object_id_object_type_organization_use_9a84494fac", unique: true
     t.index ["object_type", "object_id"], name: "index_object_reactions_on_object"
@@ -326,7 +326,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.datetime "created_at", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "tag_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_tags_on_object"
@@ -358,7 +358,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   create_table "organization_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "npi", default: -> { "gen_random_uuid()" }, null: false
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.integer "role", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
@@ -367,18 +367,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.index ["user_id", "organization_id"], name: "index_organization_users_on_user_id_and_organization_id", unique: true
   end
 
-  create_table "organizations", force: :cascade do |t|
+  create_table "organizations", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "updated_at", null: false
-    t.index ["npi"], name: "index_organizations_on_npi", unique: true
+    t.index ["id"], name: "index_organizations_on_id", unique: true
   end
 
   create_table "pack_versions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "pack_id", null: false
     t.datetime "updated_at", null: false
     t.integer "version", null: false
@@ -391,7 +390,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.string "name", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_packs_on_id", unique: true
     t.index ["organization_id"], name: "index_packs_on_organization_id"
@@ -402,7 +401,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.datetime "created_at", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "updated_by_id", null: false
     t.index ["id"], name: "index_public_links_on_id", unique: true
@@ -416,7 +415,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.bigserial "id", null: false
     t.string "member_id", null: false
     t.string "member_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.integer "role", limit: 2, default: 0, null: false
     t.string "space_id", null: false
     t.index ["member_id", "member_type", "space_id"], name: "idx_on_member_id_member_type_space_id_e2ffbf3808", unique: true
@@ -431,7 +430,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.json "hierarchy", default: [], null: false
     t.string "home_document_id"
     t.string "name"
-    t.bigint "organization_id"
+    t.string "organization_id"
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_spaces_on_id", unique: true
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
@@ -470,7 +469,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   create_table "table_cells", force: :cascade do |t|
     t.string "column_id", null: false
     t.datetime "created_at", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "row_id", null: false
     t.string "table_id", null: false
     t.datetime "updated_at", null: false
@@ -488,7 +487,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.integer "kind", limit: 2, null: false
     t.string "name", null: false
     t.json "options"
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "previous_column_id"
     t.string "table_id", null: false
     t.datetime "updated_at", null: false
@@ -500,7 +499,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   end
 
   create_table "table_rows", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "previous_row_id"
     t.string "table_id", null: false
     t.index ["id", "table_id"], name: "index_table_rows_on_id_and_table_id", unique: true
@@ -513,7 +512,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "parent_id", null: false
     t.string "parent_type", null: false
     t.string "space_id", null: false
@@ -529,7 +528,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.string "color"
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_tags_on_id", unique: true
@@ -542,7 +541,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
     t.datetime "created_at", null: false
     t.bigint "member_id", null: false
     t.string "member_type", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "team_id", null: false
     t.datetime "updated_at", null: false
     t.index ["member_id", "member_type", "team_id"], name: "idx_on_member_id_member_type_team_id_fa57caa5d8", unique: true
@@ -554,7 +553,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   create_table "teams", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.bigint "organization_id", null: false
+    t.string "organization_id", null: false
     t.string "shortcut", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_teams_on_id", unique: true
@@ -643,16 +642,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_084358) do
   add_foreign_key "object_tags", "organizations"
   add_foreign_key "object_tags", "tags"
   add_foreign_key "organization_user_properties", "organization_users"
+  add_foreign_key "organization_users", "organizations"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"
   add_foreign_key "packs", "pack_versions", column: "active_version_id"
+  add_foreign_key "public_links", "organizations"
+  add_foreign_key "space_memberships", "organizations"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
+  add_foreign_key "table_cells", "organizations"
   add_foreign_key "table_cells", "table_columns", column: "column_id"
   add_foreign_key "table_cells", "table_rows", column: "row_id"
+  add_foreign_key "table_columns", "organizations"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
+  add_foreign_key "table_rows", "organizations"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
+  add_foreign_key "tables", "organizations"
   add_foreign_key "tables", "spaces"
   add_foreign_key "tags", "organizations"
   add_foreign_key "tags", "spaces"

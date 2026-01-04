@@ -85,7 +85,7 @@ class OrganizationsController < ApplicationController
   end
 
   def load_organization
-    @organization = current_user.organizations.find_by_npi!(params[:npi])
+    @organization = current_user.organizations.find(params[:npi])
   end
 
   def pundit_user

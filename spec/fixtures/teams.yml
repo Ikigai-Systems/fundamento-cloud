@@ -1,4 +1,4 @@
 hc_administrators:
-  organization: :hc
+  organization_id: "hc"
   name: "Administrators"
   shortcut: "@admins"

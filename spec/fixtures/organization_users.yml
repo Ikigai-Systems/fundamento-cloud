@@ -1,24 +1,24 @@
 ou_is_pawel:
-  organization: :is
+  organization_id: "is"
   user: :pawel
   role: :manager
 
 ou_is_stefan:
-  organization: :is
+  organization_id: "is"
   user: :stefan
   role: :member
 
 ou_hc_pawel:
-  organization: :hc
+  organization_id: "hc"
   user: :pawel
   role: :manager
 
 ou_hc_stefan:
-  organization: :hc
+  organization_id: "hc"
   user: :stefan
   role: :member
 
 ou_hc_maria:
-  organization: :hc
+  organization_id: "hc"
   user: :maria
   role: :member

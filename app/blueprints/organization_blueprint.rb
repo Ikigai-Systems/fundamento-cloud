@@ -1,5 +1,5 @@
 class OrganizationBlueprint < Blueprinter::Base
-  identifier :npi
+  identifier :id
 
   fields :name, :created_at, :updated_at
 

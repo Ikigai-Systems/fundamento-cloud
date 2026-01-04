@@ -4,12 +4,12 @@ one:
   filename: MyString
   mime_type: MyString
   data: 
-  organization: :is
+  organization_id: "is"
   parent: two (Document)
 
 two:
   filename: MyString
   mime_type: MyString
   data: 
-  organization: :is
+  organization_id: "is"
   parent: one (Document) 

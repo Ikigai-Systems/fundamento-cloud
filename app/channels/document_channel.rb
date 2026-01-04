@@ -36,6 +36,6 @@ class DocumentChannel < ApplicationCable::Channel
   def save_doc(document_id, update)
     current_organization.documents.find(document_id).update(sync: update.pack("C*"))
   rescue
-    logger.error "Document sync #{document_id} could not be saved. Update: #{update.pack("C*")}"
+    logger.error "Document sync #{document_id} could not be saved"
   end
 end

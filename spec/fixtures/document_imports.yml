@@ -1,6 +1,6 @@
 hc_import_1:
   id: "hcimport01"
-  organization: :hc
+  organization_id: "hc"
   space_id: hc_default
   organization_user: :ou_hc_pawel
   imported_at: <%= 1.hour.ago %>
@@ -8,7 +8,7 @@ hc_import_1:
 
 hc_import_pending:
   id: "hcimport02"
-  organization: :hc
+  organization_id: "hc"
   space_id: hc_default
   organization_user: :ou_hc_pawel
   imported_at: null
@@ -16,7 +16,7 @@ hc_import_pending:
 
 is_import_1:
   id: "isimport01"
-  organization: :is
+  organization_id: "is"
   space_id: is_default
   organization_user: :ou_is_pawel
   imported_at: <%= 2.hours.ago %>
