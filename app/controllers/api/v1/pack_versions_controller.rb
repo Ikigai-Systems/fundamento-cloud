@@ -52,7 +52,7 @@ module Api::V1
     private
 
     def load_pack
-      @pack = Pack.find_by_npi!(params[:pack_npi])
+      @pack = Pack.find(params[:pack_npi])
     end
   end
 end
