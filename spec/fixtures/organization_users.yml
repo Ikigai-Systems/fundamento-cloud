@@ -1,24 +1,32 @@
+_fixture:
+  model_class: OrganizationUser
+
 ou_is_pawel:
+  id: ou_is_pawel
   organization_id: "is"
   user: :pawel
   role: :manager
 
 ou_is_stefan:
+  id: ou_is_stefan
   organization_id: "is"
   user: :stefan
   role: :member
 
 ou_hc_pawel:
+  id: ou_hc_pawel
   organization_id: "hc"
   user: :pawel
   role: :manager
 
 ou_hc_stefan:
+  id: ou_hc_stefan
   organization_id: "hc"
   user: :stefan
   role: :member
 
 ou_hc_maria:
+  id: ou_hc_maria
   organization_id: "hc"
   user: :maria
   role: :member

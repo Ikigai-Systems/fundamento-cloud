@@ -1,7 +1,7 @@
 class OrganizationUser < ApplicationRecord
-  scope :query, ->(query) { joins(:user).where("(users.first_name || ' ' || users.last_name) ILIKE ?", "%#{query}%") }
+  include NpiOrdering
 
-  include ModelWithNpiAsParam
+  scope :query, ->(query) { joins(:user).where("(users.first_name || ' ' || users.last_name) ILIKE ?", "%#{query}%") }
 
   belongs_to :organization
   belongs_to :user

@@ -23,7 +23,8 @@ class SearchesController < ApplicationController
 
       {
         object: {
-          npi: document.npi,
+          npi: document.id,
+          id: document.id,
           title: document.title,
           parent_path: parent_path,
           type: document.class.to_s,
@@ -46,7 +47,8 @@ class SearchesController < ApplicationController
 
       {
         object: {
-          npi: table.npi,
+          npi: table.id,
+          id: table.id,
           title: table.name,
           parent_path: parent_path,
           type: table.class.to_s,

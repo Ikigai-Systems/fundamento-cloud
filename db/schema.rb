@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,7 +46,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.datetime "created_at", null: false
     t.string "encrypted_token", null: false
     t.string "organization_id"
-    t.bigint "organization_user_id"
+    t.string "organization_user_id"
     t.string "title", default: "", null: false
     t.datetime "updated_at", null: false
     t.datetime "used_at"
@@ -76,7 +76,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.integer "kind", limit: 2, null: false
     t.string "organization_id"
     t.string "result"
-    t.bigint "run_as_id", null: false
+    t.string "run_as_id", null: false
     t.string "space_id"
     t.datetime "updated_at", null: false
     t.string "webhook"
@@ -94,7 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.integer "invocations_limit", limit: 2
     t.integer "kind", limit: 2, null: false
     t.string "organization_id"
-    t.bigint "run_as_id"
+    t.string "run_as_id"
     t.string "space_id"
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -110,7 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.datetime "imported_at"
     t.text "imported_content"
     t.string "organization_id", null: false
-    t.bigint "organization_user_id", null: false
+    t.string "organization_user_id", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
@@ -141,7 +141,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.datetime "created_at", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "organization_user_id", null: false
+    t.string "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_id", "object_type", "organization_user_id"], name: "idx_on_object_id_object_type_organization_user_id_de4b921bd4", unique: true
     t.index ["object_type", "object_id"], name: "index_favorites_on_object"
@@ -302,7 +302,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.string "object_id", null: false
     t.string "object_type", null: false
     t.string "organization_id", null: false
-    t.bigint "organization_user_id", null: false
+    t.string "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
     t.index ["organization_id"], name: "index_object_comments_on_organization_id"
@@ -315,7 +315,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
     t.string "object_id", null: false
     t.string "object_type", null: false
     t.string "organization_id", null: false
-    t.bigint "organization_user_id", null: false
+    t.string "organization_user_id", null: false
     t.index ["emoji", "object_id", "object_type", "organization_user_id"], name: "idx_on_emoji_object_id_object_type_organization_use_9a84494fac", unique: true
     t.index ["object_type", "object_id"], name: "index_object_reactions_on_object"
     t.index ["organization_id"], name: "index_object_reactions_on_organization_id"
@@ -348,21 +348,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
   create_table "organization_user_properties", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
-    t.bigint "organization_user_id", null: false
+    t.string "organization_user_id", null: false
     t.datetime "updated_at", null: false
     t.jsonb "value", null: false
     t.index ["key", "organization_user_id"], name: "idx_on_key_organization_user_id_f0a3f857a8", unique: true
     t.index ["organization_user_id"], name: "index_organization_user_properties_on_organization_user_id"
   end
 
-  create_table "organization_users", force: :cascade do |t|
+  create_table "organization_users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "npi", default: -> { "gen_random_uuid()" }, null: false
     t.string "organization_id"
     t.integer "role", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
-    t.index ["npi"], name: "index_organization_users_on_npi", unique: true
+    t.index ["id"], name: "index_organization_users_on_id", unique: true
     t.index ["organization_id"], name: "index_organization_users_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_organization_users_on_user_id_and_organization_id", unique: true
   end
@@ -539,7 +538,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_101249) do
 
   create_table "team_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "member_id", null: false
+    t.string "member_id", null: false
     t.string "member_type", null: false
     t.string "organization_id", null: false
     t.string "team_id", null: false

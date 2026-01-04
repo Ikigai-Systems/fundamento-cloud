@@ -1,9 +1,11 @@
 hc_administrators_membership_1:
   organization_id: "hc"
   team: :hc_administrators
-  member: ou_hc_stefan (OrganizationUser)
+  member_id: ou_hc_stefan
+  member_type: OrganizationUser
 
 hc_administrators_membership_2:
   organization_id: "hc"
   team: :hc_administrators
-  member: ou_hc_pawel (OrganizationUser)
+  member_id: ou_hc_pawel
+  member_type: OrganizationUser

@@ -1,19 +1,22 @@
 is_stefans_membership_1:
   organization_id: "is"
   space_id: is_stefans
-  member: ou_is_stefan (OrganizationUser)
+  member_id: ou_is_stefan
+  member_type: OrganizationUser
   role: :manager
 
 hc_pawels_membership_1:
   organization_id: "hc"
   space_id: hc_pawels
-  member: ou_is_pawel (OrganizationUser)
+  member_id: ou_is_pawel
+  member_type: OrganizationUser
   role: :manager
 
 hc_secret_membership_1:
   organization_id: "hc"
   space_id: hc_secret
-  member: ou_hc_stefan (OrganizationUser)
+  member_id: ou_hc_stefan
+  member_type: OrganizationUser
   role: :manager
 
 hc_administrators_membership_1:

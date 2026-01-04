@@ -93,7 +93,7 @@ class OrganizationUsersController < ApplicationController
   private
 
   def load_organization_user
-    @organization_user = OrganizationUser.find_by_param!(params[:npi])
+    @organization_user = OrganizationUser.find(params[:npi])
   end
 
   def create_params
