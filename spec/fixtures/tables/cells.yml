@@ -94,4 +94,4 @@ orders_hawaii_pizza_who:
   table_id: "orders"
   column_id: "orders_who"
   row_id: "orders_row_1"
-  value: <%= ActiveRecord::FixtureSet.identify(:stefan) %>
+  value: user_stefan

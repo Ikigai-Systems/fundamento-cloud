@@ -1,6 +1,10 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+_fixture:
+  model_class: User
+
 pawel:
+  id: user_pawel
   first_name: Pawel
   last_name: Wiadomski
   email: pawel@ikigai.systems
@@ -8,6 +12,7 @@ pawel:
   confirmed_at: <%= Time.now %>
 
 stefan:
+  id: user_stefan
   first_name: Stefan
   last_name: Piotrowski
   email: stefan@ikigai.systems
@@ -15,6 +20,7 @@ stefan:
   confirmed_at: <%= Time.now %>
 
 maria:
+  id: user_maria
   first_name: Maria
   last_name: Awaria
   email: maria@ikigai.systems
@@ -22,6 +28,7 @@ maria:
   confirmed_at: <%= Time.now %>
 
 john:
+  id: user_john
   first_name: John
   last_name: Doe
   email: john@gmail.com

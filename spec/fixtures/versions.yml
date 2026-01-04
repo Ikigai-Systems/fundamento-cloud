@@ -1,6 +1,6 @@
 two_version_1:
   sequential_id: 1
-  created_by: :pawel
+  created_by_id: "user_pawel"
   document_id: two
   content_blocks:
     [{"id":"initialBlockId","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"This is a new update.","styles":{}}],"children":[]},{"id":"82bfe141-5ba1-4a74-b102-bf7fc7c64869","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[],"children":[]},{"id":"db948229-12cb-4357-92dc-94494df434ef","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[{"type":"text","text":"This document will be edited via public link.","styles":{}}],"children":[]},{"id":"60d83d6f-9946-4443-838b-1667abc11e4f","type":"paragraph","props":{"textColor":"default","backgroundColor":"default","textAlignment":"left"},"content":[],"children":[]}]

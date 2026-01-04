@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_04_110300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -268,12 +268,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.datetime "created_at", null: false
     t.string "inline_comment_thread_id"
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.string "user_id", null: false
     t.index ["inline_comment_thread_id"], name: "index_inline_comments_on_inline_comment_thread_id"
     t.index ["user_id"], name: "index_inline_comments_on_user_id"
   end
 
-  create_table "invited_users", force: :cascade do |t|
+  create_table "invited_users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -290,6 +290,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.string "organization_id"
     t.datetime "updated_at", null: false
     t.index ["email", "organization_id"], name: "index_invited_users_on_email_and_organization_id", unique: true
+    t.index ["id"], name: "index_invited_users_on_id", unique: true
     t.index ["invitation_token"], name: "index_invited_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_invited_users_on_invited_by"
@@ -338,7 +339,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
   create_table "object_visitors", force: :cascade do |t|
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.bigint "user_id", null: false
+    t.string "user_id", null: false
     t.datetime "visited_at", null: false
     t.index ["object_id", "object_type", "user_id"], name: "idx_on_object_id_object_type_user_id", unique: true
     t.index ["object_type", "object_id"], name: "index_object_visitors_on_object"
@@ -360,7 +361,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.string "organization_id"
     t.integer "role", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id"
+    t.string "user_id"
     t.index ["id"], name: "index_organization_users_on_id", unique: true
     t.index ["organization_id"], name: "index_organization_users_on_organization_id"
     t.index ["user_id", "organization_id"], name: "index_organization_users_on_user_id_and_organization_id", unique: true
@@ -561,7 +562,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.index ["shortcut", "organization_id"], name: "index_teams_on_shortcut_and_organization_id", unique: true
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
@@ -591,6 +592,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["id"], name: "index_users_on_id", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_organization_users_on_invited_by"
@@ -601,7 +603,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
     t.json "content_blocks"
     t.text "content_html", default: ""
     t.datetime "created_at", null: false
-    t.bigint "created_by_id"
+    t.string "created_by_id"
     t.string "document_id", null: false
     t.json "operations", default: ""
     t.json "revisions", default: ""
@@ -640,8 +642,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_103000) do
   add_foreign_key "object_reactions", "organizations"
   add_foreign_key "object_tags", "organizations"
   add_foreign_key "object_tags", "tags"
+  add_foreign_key "object_visitors", "users"
   add_foreign_key "organization_user_properties", "organization_users"
   add_foreign_key "organization_users", "organizations"
+  add_foreign_key "organization_users", "users"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"

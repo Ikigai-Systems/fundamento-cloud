@@ -1,4 +1,6 @@
 class InvitedUser < ApplicationRecord
+  include NpiOrdering
+
   devise :invitable, :database_authenticatable
 
   belongs_to :organization

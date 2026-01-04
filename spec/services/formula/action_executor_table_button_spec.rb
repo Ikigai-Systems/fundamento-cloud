@@ -32,7 +32,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
     it "sanity checks" do
       result = engine.evaluate('Table("Orders")', context:, action_executor:)
-      expect(result).to include(hash_including("Pizza" => "Hawaii", "Who" => "644366043"))
+      expect(result).to include(hash_including("Pizza" => "Hawaii", "Who" => users(:stefan).id))
 
       result = engine.evaluate('Dig(First(Filter(Table("Orders"), Dig(CurrentValue, "id") == [ThisRow])), "Who")', context:, action_executor:)
       expect(result).to eq(users(:stefan).id.to_s)
