@@ -9,15 +9,8 @@ describe("User Edit", function() {
   });
 
   beforeEach(() => {
-    cy.session("user-session", () => {
-      // Log in as a user
-      cy.visit("/users/sign_in");
-      cy.get('input[name="user[email]"]').type("pawel@ikigai.systems");
-      cy.get('input[name="user[password]"]').type("password");
-      cy.get('input[type=submit]').click();
-      // Wait for redirect after login
-      cy.url().should("not.include", "/users/sign_in");
-    });
+    // Login with session caching and validation
+    cy.loginAsUser();
 
     // Visit edit page after session is restored
     cy.visit("/users/edit");

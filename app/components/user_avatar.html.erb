@@ -4,7 +4,7 @@
     variant_to_class,
   ] do %>
     <% if @user.respond_to?(:avatar) && @user.avatar.persisted? %>
-      <%= image_tag @user.avatar_variant(@variant), class: "object-cover" %>
+      <%= image_tag @user.avatar_variant(@variant), class: "object-cover", alt: "#{@user.display_name} avatar" %>
     <% else %>
       <%= Initials.svg(@user.display_name, size: variant_to_dimensions, limit: 2) %>
     <% end %>
