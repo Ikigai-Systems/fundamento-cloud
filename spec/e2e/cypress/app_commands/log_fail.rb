@@ -6,16 +6,16 @@ filename = command_options.fetch('runnable_full_title', 'no title').gsub(/[^[:pr
 # Alternative command if the above does not work
 system "tail -n 10000 log/#{Rails.env}.log | tac | sed \"/APPCLEANED/ q\" | sed 'x;1!H;$!d;x' > 'log/cypress/#{filename}.log'"
 
-# Helper method to recursively encode all strings to UTF-8
-def encode_to_utf8(obj)
+# Helper lambda to recursively encode all strings to UTF-8
+encode_to_utf8 = ->(obj) do
   case obj
   when String
     # Convert to UTF-8, replacing invalid sequences
     obj.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
   when Hash
-    obj.transform_values { |v| encode_to_utf8(v) }
+    obj.transform_values { |v| encode_to_utf8.call(v) }
   when Array
-    obj.map { |v| encode_to_utf8(v) }
+    obj.map { |v| encode_to_utf8.call(v) }
   else
     obj
   end
@@ -36,7 +36,7 @@ if defined?(ActiveRecord::Base)
 end
 
 # Ensure all strings are properly encoded to UTF-8
-json_result = encode_to_utf8(json_result)
+json_result = encode_to_utf8.call(json_result)
 
 filename = command_options.fetch('runnable_full_title', 'no title').gsub(/[^[:print:]]/, '')
 File.open("#{Rails.root}/log/cypress/#{filename}.json", "w+") do |file|
