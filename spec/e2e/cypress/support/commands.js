@@ -9,30 +9,55 @@
 // ***********************************************
 
 /**
- * Login as a user with session caching
- * @param {string} email - User email (default: pawel@ikigai.systems)
- * @param {string} password - User password (default: password)
- * @param {string} sessionName - Session cache name (default: user-session)
+ * Login action (pure command without session management)
+ * Use this inside cy.session() for cached authentication
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @example
+ *   // With session caching
+ *   cy.session("user", () => cy.login("user@test.com", "password"));
+ *
+ *   // Without session caching
+ *   cy.login("user@test.com", "password");
  */
-Cypress.Commands.add("loginAsUser", (email = "pawel@ikigai.systems", password = "password", sessionName = "user-session") => {
+Cypress.Commands.add("login", (email, password) => {
+  cy.visit("/users/sign_in");
+  cy.get('input[name="user[email]"]').type(email);
+  cy.get('input[name="user[password]"]').type(password);
+  cy.get('input[type=submit]').click();
+  cy.url().should("not.include", "/users/sign_in");
+});
+
+/**
+ * Validate user session (use with cy.session validate option)
+ * Checks if user is authenticated by requesting edit page
+ */
+Cypress.Commands.add("validateUserSession", () => {
+  cy.request("/users/edit").then((response) => {
+    expect(response.status).to.eq(200);
+    expect(response.body).to.include("current_password");
+    expect(response.body).to.not.include("Sign in");
+  });
+});
+
+/**
+ * Helper: Setup authenticated session with validation
+ * This is a convenience wrapper that combines session + login + validation
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @param {string} sessionName - Unique session identifier
+ * @example
+ *   beforeEach(() => {
+ *     cy.loginWithSession("user@test.com", "password", "user-session");
+ *     cy.visit("/");
+ *   });
+ */
+Cypress.Commands.add("loginWithSession", (email = "pawel@ikigai.systems", password = "password", sessionName = "user-session") => {
   cy.session(sessionName, () => {
-    // Log in as a user
-    cy.visit("/users/sign_in");
-    cy.get('input[name="user[email]"]').type(email);
-    cy.get('input[name="user[password]"]').type(password);
-    cy.get('input[type=submit]').click();
-    // Wait for redirect after login
-    cy.url().should("not.include", "/users/sign_in");
+    cy.login(email, password);
   }, {
-    validate() {
-      // Check if session is still valid before reusing
-      // If this fails, cy.session will re-run the login
-      cy.request("/users/edit").then((response) => {
-        expect(response.status).to.eq(200);
-        // Verify we got the edit page, not the sign-in page
-        expect(response.body).to.include('current_password');
-        expect(response.body).to.not.include('Sign in');
-      });
+    validate: () => {
+      cy.validateUserSession();
     }
   });
 });
