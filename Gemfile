@@ -103,23 +103,25 @@ gem "initials"
 gem "mcp"
 gem "blueprinter", "~> 1.1"
 gem "parslet", "~> 2.0"
+gem "dotenv-rails", "~> 3.1"
 
 # Pawel's font-awesome token
 source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
   gem "font-awesome-pro-sass"
 end
 
+# Dockerfile excludes everything in the development group (also if it's in multiple groups)
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
   gem "letter_opener"
+  gem "js_from_routes"
 end
 
+# This will also be excluded because it's a combined group
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
-
-  gem "js_from_routes"
 
   gem "rspec", "~> 3.13"
   gem "rspec-rails"
@@ -129,6 +131,8 @@ group :development, :test do
   gem 'cypress-on-rails'
 end
 
-group :development, :test, :standalone do
-  gem "dotenv-rails", "~> 3.1"
+# This will be installed into the docker image (those are needed to run E2E tests)
+group :e2e do
+  gem "database_cleaner-active_record"
+  gem 'cypress-on-rails'
 end

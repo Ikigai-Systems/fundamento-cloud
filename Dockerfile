@@ -21,7 +21,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 # Rails app lives here
 WORKDIR /rails
 
-# Set production environment
+# Set environment variables
 ENV RAILS_ENV=${RAILS_ENV} \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/rails/vendor/bundle" \
@@ -159,7 +159,7 @@ EXPOSE 3000
 
 CMD ["./bin/rails", "server"]
 
-FROM packaged AS test
+FROM packaged AS e2e
 
 ENV DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
 ENV VITE_RUBY_AUTO_BUILD=false

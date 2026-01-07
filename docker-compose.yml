@@ -10,6 +10,7 @@ x-rails-environment: &rails-environment
   REDIS_URL: redis://redis
   SOPS_AGE_KEY: ${SOPS_AGE_KEY}
   HTTP_HOST: ${HTTP_HOST:-localhost:3000}
+  RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
 
 services:
   postgresql:

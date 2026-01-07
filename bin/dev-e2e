@@ -48,8 +48,9 @@ if [ -z "$SOPS_AGE_KEY" ]; then
 fi
 
 # Set E2E environment variables (offset ports by +1000)
-export RAILS_ENV=test
+export RAILS_ENV=e2e
 export RAILS_PORT=4000
+export RAILS_LOG_LEVEL=debug
 export POSTGRES_PORT=6432
 export REDIS_PORT=7379
 export MINIO_PORT=10000
