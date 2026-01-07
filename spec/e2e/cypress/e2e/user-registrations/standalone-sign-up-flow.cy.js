@@ -19,11 +19,7 @@ describe('Basic features work', function() {
   });
 
   beforeEach(() => {
-    cy.visit("/");
-
-    cy.get('input[name="user[email]"]').type("pawel.nowak@random.pl");
-    cy.get('input[name="user[password]"]').type("password");
-    cy.get('input[type=submit]').click();
+    cy.login("pawel.nowak@random.pl", "password");
   });
 
   it("create new organization", function() {

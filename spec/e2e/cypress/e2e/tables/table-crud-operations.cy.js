@@ -1,9 +1,7 @@
 describe("Table CRUD Operations", function() {
-  before(() => {
-    cy.app("clean");
-  });
-
   beforeEach(() => {
+    cy.app("clean");
+
     // Load fixtures with tables, columns, rows, and cells
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
@@ -20,11 +18,7 @@ describe("Table CRUD Operations", function() {
       ]
     });
 
-    // Log in as the test user
-    cy.visit("/");
-    cy.get('input[name="user[email]"]').type("pawel@ikigai.systems");
-    cy.get('input[name="user[password]"]').type("password");
-    cy.get('input[type=submit]').click();
+    cy.login("pawel@ikigai.systems", "password");
 
     // Select an organization (Ikigai Systems)
     cy.contains("tr", "Ikigai Systems").within(() => {

@@ -9,8 +9,14 @@ describe("User Avatar", function() {
   });
 
   beforeEach(() => {
-    // Login with session caching and validation
-    cy.loginAsUser();
+    // Best practice: Manage session in test, use pure command
+    cy.session("pawel-user", () => {
+      cy.login("pawel@ikigai.systems", "password");
+    }, {
+      validate: () => {
+        cy.validateUserSession();
+      }
+    });
 
     // Visit edit page after session is restored
     cy.visit("/users/edit");

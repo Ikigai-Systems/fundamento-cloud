@@ -76,11 +76,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
         advanced_table_id: advanced_table.id
       }
     `).then((data) => {
-      // Log in
-      cy.visit("/");
-      cy.get('input[name="user[email]"]').type(data.user_email);
-      cy.get('input[name="user[password]"]').type("password");
-      cy.get('input[type=submit]').click();
+      cy.login(data.user_email, "password");
 
       // User has only one organization, so it's automatically selected
       // No need to select organization manually
@@ -160,11 +156,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       // Verify a document with table reference exists
       expect(data.has_formula_doc).to.be.true;
 
-      // Log in
-      cy.visit("/");
-      cy.get('input[name="user[email]"]').type(data.user_email);
-      cy.get('input[name="user[password]"]').type("password");
-      cy.get('input[type=submit]').click();
+      cy.login(data.user_email, "password");
 
       // User has only one organization, so it's automatically selected
       // No need to select organization manually

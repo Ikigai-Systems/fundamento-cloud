@@ -1,21 +1,19 @@
 describe("Public Document", function() {
   before(() => {
     cy.app("clean");
-  });
 
-  beforeEach(() => {
     // Load fixtures with public links, documents, and versions
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
       fixtures: ["organizations", "users", "spaces", "documents", "versions", "public_links"]
     });
+  });
+
+  beforeEach(() => {
+    cy.loginWithSession("pawel@ikigai.systems", "password")
 
     // Visit the public link for document "two" via public_link_to_two fixture (ID: r2fPRJxuTX)
     cy.visit("/public/r2fPRJxuTX");
-
-    cy.get('input[name="user[email]"]').type("pawel@ikigai.systems");
-    cy.get('input[name="user[password]"]').type("password");
-    cy.get('input[type=submit]').click();
   });
 
   it("displays document content correctly using contentBlocks property", function() {
