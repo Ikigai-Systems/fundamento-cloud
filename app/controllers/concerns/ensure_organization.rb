@@ -32,7 +32,7 @@ module EnsureOrganization
   end
 
   def select_current_organization
-    if current_user.organizations.size == 1
+    if current_user.organizations.reload.size == 1
       first_organization = current_user.organizations.first
 
       self.current_organization = first_organization
