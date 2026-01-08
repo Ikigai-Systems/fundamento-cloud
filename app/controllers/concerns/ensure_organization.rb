@@ -2,16 +2,27 @@ module EnsureOrganization
   extend ActiveSupport::Concern
 
   included do
-    before_action :ensure_organization_exists
-    before_action :select_current_organization
-    before_action :load_current_organization_from_cookie
-    before_action :ensure_space_exists
+    before_action :load_current_organization_from_cookie, if: -> { current_user.present? }
+    before_action :ensure_organization_exists, if: -> { current_user.present? && current_organization.nil? }
+    before_action :select_current_organization, if: -> { current_user.present? && current_organization.nil? }
+    before_action :ensure_space_exists, if: -> { current_user.present? && current_organization.present? }
   end
 
   protected
 
+  def load_current_organization_from_cookie
+    return if cookies.encrypted[:organization_id].nil?
+
+    self.current_organization =  current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
+
+    if self.current_organization.nil?
+      # Cookie has invalid value, so let's retry selecting it
+      cookies.encrypted[:organization_id] = nil
+    end
+  end
+
   def ensure_organization_exists
-    if current_user.present? && current_user.organizations.size == 0
+    if current_user.organizations.size == 0
       organization_name = generate_organization_name
       
       # Create the organization for the user
@@ -21,35 +32,18 @@ module EnsureOrganization
   end
 
   def select_current_organization
-    return if cookies.encrypted[:organization_id].present?
-
-    return if current_user.nil?
-
     if current_user.organizations.size == 1
-      cookies.encrypted[:organization_id] = current_user.organizations.first.id
+      first_organization = current_user.organizations.first
+
+      self.current_organization = first_organization
+      cookies.encrypted[:organization_id] = first_organization.id
     else
       redirect_to organizations_path, notice: "Please select an organization you want to switch to."
     end
   end
 
-  def load_current_organization_from_cookie
-    return if cookies.encrypted[:organization_id].nil?
-
-    return if current_user.nil?
-
-    RequestContext.current_organization =
-      current_user.organizations.find_by_id(cookies.encrypted[:organization_id])
-
-    if RequestContext.current_organization.nil?
-      # Cookie has invalid value, so let's retry selecting it
-      cookies.encrypted[:organization_id] = nil
-
-      select_current_organization
-    end
-  end
-
   def ensure_space_exists
-    if current_user.present? && current_organization.present? && current_organization.spaces.empty?
+    if current_organization.spaces.empty?
       current_organization.spaces.create!(name: "Default")
     end
   end

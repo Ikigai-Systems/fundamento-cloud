@@ -25,6 +25,10 @@ class ApplicationController < ActionController::Base
     RequestContext.current_organization
   end
 
+  def current_organization=(organization)
+    RequestContext.current_organization = organization
+  end
+
   def pundit_user
     PolicyUserContext.new(current_user, current_organization)
   end
