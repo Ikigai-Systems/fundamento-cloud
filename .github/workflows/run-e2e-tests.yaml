@@ -23,7 +23,7 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     env:
-      RAILS_ENV: test
+      RAILS_ENV: e2e
       DATABASE_URL: postgres://postgres:password@localhost/postgres
 
     steps:
