@@ -4,7 +4,8 @@ class OrganizationPolicy < ApplicationPolicy
   end
 
   def show?
-    # Everyone can show an organization it belongs to
+    # Everyone can show an organization it belongs to, and we make sure access is enforced
+    # in EnsureOrganization and OrganizationController
     true
   end
 
