@@ -23,9 +23,9 @@ class User < ApplicationRecord
 
   has_many :organizations_users, class_name: :OrganizationUser, dependent: :destroy
   has_many :organizations, through: :organizations_users
-  has_many :public_links, as: :updated_by, dependent: :nullify
+  has_many :public_links, foreign_key: :updated_by_id, dependent: :nullify
 
-  has_many :team_memberships, dependent: :destroy
+  has_many :team_memberships, through: :organizations_users
   has_many :teams, through: :team_memberships, dependent: :destroy
   has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
 
