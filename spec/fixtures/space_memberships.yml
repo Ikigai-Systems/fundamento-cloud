@@ -8,14 +8,7 @@ is_stefans_membership_1:
 hc_pawels_membership_1:
   organization_id: "hc"
   space_id: hc_pawels
-  member_id: ou_is_pawel
-  member_type: OrganizationUser
-  role: :manager
-
-hc_secret_membership_1:
-  organization_id: "hc"
-  space_id: hc_secret
-  member_id: ou_hc_stefan
+  member_id: ou_hc_pawel
   member_type: OrganizationUser
   role: :manager
 
