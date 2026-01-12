@@ -10,7 +10,7 @@ class OrganizationUserPolicy < ApplicationPolicy
 
   def destroy?
     # Only managers can remove users from the organization
-    OrganizationUser.find_by({ organization: record.organization, user: user })&.manager?
+    current_organization == record.organization && OrganizationUser.find_by({ organization: record.organization, user: user })&.manager?
   end
 
   def demote?
