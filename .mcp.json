@@ -19,6 +19,18 @@
         "OLLAMA_API_KEY": "YOUR_OLLAMA_API_KEY_HERE"
       }
     },
+    "Fundamento": {
+      "type": "stdio",
+      "command": "mcp-proxy",
+      "args": [
+        "--headers",
+        "Authorization",
+        "Bearer ${FUNDAMENTO_API_KEY}",
+        "--transport",
+        "streamablehttp",
+        "https://fundamento.cloud/api/mcp"
+      ]
+    },
     "github": {
       "type": "http",
       "url": "https://api.githubcopilot.com/mcp",
