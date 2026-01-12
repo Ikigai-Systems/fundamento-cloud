@@ -270,10 +270,29 @@ RSpec.describe OrganizationUser, type: :model do
         )
       end
 
-      # NOTE: There's a bug - model says dependent: :nullify, but schema has NOT NULL constraint
-      # This test documents the actual behavior (fails with NOT NULL violation)
-      it "prevents destroying organization_user with document_imports (schema bug)" do
+      it "nullifies organization_user_id when organization_user is destroyed" do
         import = organization_user.document_imports.create!(
+          organization: organization,
+          space: space,
+          file: test_file
+        )
+
+        import_id = import.id
+
+        organization_user.destroy
+
+        import.reload
+        expect(import.organization_user_id).to be_nil
+        expect(DocumentImport.exists?(import_id)).to be true
+      end
+
+      it "document_imports remain after organization_user is destroyed" do
+        import1 = organization_user.document_imports.create!(
+          organization: organization,
+          space: space,
+          file: test_file
+        )
+        import2 = organization_user.document_imports.create!(
           organization: organization,
           space: space,
           file: test_file
@@ -281,10 +300,13 @@ RSpec.describe OrganizationUser, type: :model do
 
         expect {
           organization_user.destroy
-        }.to raise_error(ActiveRecord::NotNullViolation)
+        }.not_to change(DocumentImport, :count)
 
-        expect(DocumentImport.exists?(import.id)).to be true
-        expect(OrganizationUser.exists?(organization_user.id)).to be true
+        import1.reload
+        import2.reload
+
+        expect(import1.organization_user_id).to be_nil
+        expect(import2.organization_user_id).to be_nil
       end
 
       it "can create document_imports through organization_user" do

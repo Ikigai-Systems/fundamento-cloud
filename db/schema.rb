@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_04_205731) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_213919) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -110,7 +110,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_04_205731) do
     t.datetime "imported_at"
     t.text "imported_content"
     t.string "organization_id", null: false
-    t.string "organization_user_id", null: false
+    t.string "organization_user_id"
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
