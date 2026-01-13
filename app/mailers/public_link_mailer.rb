@@ -10,7 +10,7 @@ class PublicLinkMailer < ApplicationMailer
   def invitation_instructions(public_link, invited_email)
     @public_link = public_link
     @pundit_user = params[:pundit_user]
-    @accept_invitation_url = url_for(controller: "public", action: "show", npi: public_link.npi)
+    @accept_invitation_url = url_for(controller: "public", action: "show", npi: public_link.id)
 
     mail(to: invited_email, subject: subject_for(:invitation_instructions))
   end
