@@ -39,6 +39,26 @@ module FlipperHelpers
       instance_eval(&block)
     end
   end
+
+  def with_feature_enabled(feature_name, &block)
+    context "when #{feature_name} is enabled" do
+      around do |example|
+        with_feature(feature_name, enabled: true) { example.run }
+      end
+
+      instance_eval(&block)
+    end
+  end
+
+  def with_feature_disabled(feature_name, &block)
+    context "when #{feature_name} is disabled" do
+      around do |example|
+        with_feature(feature_name, enabled: false) { example.run }
+      end
+
+      instance_eval(&block)
+    end
+  end
 end
 
 RSpec.configure do |config|
