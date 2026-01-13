@@ -4,7 +4,7 @@ set -euo pipefail
 # Default values
 NAMESPACE="fundamento-cloud"
 DEPLOYMENT="website"
-MEMORY="${MEMORY:-2048Mi}"
+MEMORY="${MEMORY:-512Mi}"
 CPU="${CPU:-1000m}"
 
 # Parse command line arguments
@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
       echo "Launch a temporary Rails console container in Kubernetes with custom resource limits."
       echo ""
       echo "Options:"
-      echo "  --memory MEMORY    Set memory limit (default: 2048Mi)"
+      echo "  --memory MEMORY    Set memory limit (default: 512Mi)"
       echo "  --cpu CPU          Set CPU limit (default: 1000m)"
       echo "  --help, -h         Show this help message"
       echo ""
@@ -33,7 +33,7 @@ while [[ $# -gt 0 ]]; do
       echo "  CPU                Alternative way to set CPU limit"
       echo ""
       echo "Examples:"
-      echo "  $0                           # Use default resources (2048Mi memory, 1000m CPU)"
+      echo "  $0                           # Use default resources (512Mi memory, 1000m CPU)"
       echo "  $0 --memory 4096Mi --cpu 2000m"
       echo "  MEMORY=4096Mi CPU=2000m $0"
       exit 0
