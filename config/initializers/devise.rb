@@ -440,7 +440,8 @@ Devise.setup do |config|
   # Need to use a custom Devise mailer in order to send magic links.
   # If you're already using a custom mailer just have it inherit from
   # Devise::Passwordless::Mailer instead of Devise::Mailer
-  config.mailer = "Devise::Passwordless::Mailer"
+  # FIXME: that should be handled in FundamentoDeviseMailer
+  # config.mailer = "Devise::Passwordless::Mailer"
 
   # Which algorithm to use for tokenizing magic links. See README for descriptions
   config.passwordless_tokenizer = "SignedGlobalIDTokenizer"
