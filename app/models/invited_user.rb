@@ -10,6 +10,6 @@ class InvitedUser < ApplicationRecord
 
   # Tells devise_invitable that each pair (email, organization_id) is a separate invitation
   def self.invite_key
-    { email: Devise.email_regexp, organization_id: Integer }
+    { email: Devise.email_regexp, organization_id: String }
   end
 end
