@@ -50,6 +50,10 @@ Cypress.Commands.add('appFlipper', function (options) {
 Cypress.Commands.add('appUserConfirmationUrl', function (options) {
   return cy.app('user_confirmation_url', options)
 });
+
+Cypress.Commands.add('appInvitationAcceptanceUrl', function (options) {
+  return cy.app('invitation_acceptance_url', options)
+});
 // CypressOnRails: end
 
 // The next is optional
