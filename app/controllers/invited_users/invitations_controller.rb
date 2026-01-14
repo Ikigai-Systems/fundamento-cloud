@@ -24,44 +24,14 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   end
 
   def edit
-    @organization = resource.organization
-    @invited_email = resource.email
-    @existing_user = User.find_by(email: @invited_email)
-
-    # State 1: User is logged in but email doesn't match
-    if current_user.present? && current_user.email != @invited_email
-      @state = :wrong_user_logged_in
-      @current_user_email = current_user.email
-      return
-    end
-
-    # State 2: User already in the organization
-    if @existing_user.present? && @organization.users.include?(@existing_user)
-      @state = :already_member
-      return
-    end
-
-    # State 3: User logged in with correct email (ready to accept)
-    if current_user.present? && current_user.email == @invited_email
-      @state = :logged_in_ready
-      @user = current_user
-      return
-    end
-
-    # State 4: User exists but not logged in
-    if @existing_user.present?
-      @state = :existing_user_not_logged_in
-      return
-    end
-
-    # State 5: New user (doesn't exist)
-    @state = :new_user
-
+    set_form_state_from_resource
     super
   end
 
   def update
     super do |resource|
+      set_form_state_from_resource
+
       # Verify current user email matches invitation
       if current_user.present? && current_user.email != resource.email
         flash[:alert] = "You must be signed in as #{resource.email} to accept this invitation" if is_flashing_format?
@@ -126,5 +96,40 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
     else
       super
     end
+  end
+
+  def set_form_state_from_resource
+    @organization = resource.organization
+    @invited_email = resource.email
+    @existing_user = User.find_by(email: @invited_email)
+
+    # State 1: User is logged in but email doesn't match
+    if current_user.present? && current_user.email != @invited_email
+      @state = :wrong_user_logged_in
+      @current_user_email = current_user.email
+      return
+    end
+
+    # State 2: User already in the organization
+    if @existing_user.present? && @organization.users.include?(@existing_user)
+      @state = :already_member
+      return
+    end
+
+    # State 3: User logged in with correct email (ready to accept)
+    if current_user.present? && current_user.email == @invited_email
+      @state = :logged_in_ready
+      @user = current_user
+      return
+    end
+
+    # State 4: User exists but not logged in
+    if @existing_user.present?
+      @state = :existing_user_not_logged_in
+      return
+    end
+
+    # State 5: New user (doesn't exist)
+    @state = :new_user
   end
 end
