@@ -49,7 +49,7 @@
     };
   </script>
 
-  <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user %>
+  <%= turbo_stream_from ["online_users", current_organization], channel: OnlineUsersChannel if current_user && current_organization %>
 
   <%= yield %>
 
