@@ -7,6 +7,17 @@ module.exports = defineConfig({
     supportFile: "cypress/support/index.js",
     excludeSpecPattern: "**/rails_examples/**/*",
   },
+  // JUnit reporter configuration for GitHub Actions integration
+  reporter: "junit",
+  reporterOptions: {
+    mochaFile: "../../tmp/cypress-results-[hash].xml",
+    toConsole: false,
+    outputs: true,
+    testCaseSwitchClassnameAndName: false,
+    suiteTitleSeparatedBy: " > ",
+    useFullSuiteTitle: true,
+    jenkinsMode: false,
+  },
   trashAssetsBeforeRuns: true,
   downloadsFolder: "../../log/cypress/downloads",
   screenshotsFolder: "../../log/cypress/screenshots",

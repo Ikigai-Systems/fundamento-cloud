@@ -22,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
+    permissions:
+      contents: read
+      checks: write  # Required for mikepenz/action-junit-report
+
     env:
       RAILS_ENV: e2e
       DATABASE_URL: postgres://postgres:password@localhost/postgres
@@ -76,17 +80,42 @@ jobs:
           config: baseUrl=http://localhost:3000
         env:
           DEBUG: "@cypress/github-action"
+        continue-on-error: true  # Allow workflow to continue to publish results
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-results
+          path: tmp/cypress-results-*.xml
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Publish E2E test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: 'tmp/cypress-results-*.xml'
+          check_name: Cypress E2E Test Results
+          summary: true
+          detailed_summary: true
+          annotate_only: false
+          fail_on_failure: true
+
+      - name: Upload screenshots on failure
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-screenshots
           path: log/cypress/screenshots
-          if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
+          retention-days: 7  # Shorter retention for debug artifacts
+          if-no-files-found: warn
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload videos on failure
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: cypress-videos
           path: log/cypress/videos
-          if-no-files-found: warn # 'warn' or 'error' are also available, defaults to `warn`
+          retention-days: 7  # Shorter retention for debug artifacts
+          if-no-files-found: warn
