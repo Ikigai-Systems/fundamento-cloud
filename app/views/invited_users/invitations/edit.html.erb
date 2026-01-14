@@ -47,12 +47,19 @@
     <%# State 4: User exists but is not logged in %>
     <h2 class="form-header">Join <%= @organization.name %></h2>
     <div class="form-text">
-      <p>You've been invited to join <strong><%= @organization.name %></strong>.</p>
+      <p><% if resource.invited_by.present? %><%= resource.invited_by.display_name %> invited you<% else %>You've been invited<% end %> to join <strong><%= @organization.name %></strong>.</p>
       <p class="mt-2">You already have a Fundamento account with this email address.</p>
     </div>
-    <div class="form-footer">
-      <%= link_to "Sign in to accept invitation", new_user_session_path(return_to: accept_invited_user_invitation_path(invitation_token: resource.invitation_token)), class: "form-submit" %>
-    </div>
+    <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
+      html: { method: :put, class: "default-form", data: { turbo: false } }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <%= f.hidden_field :invitation_token, readonly: true %>
+
+      <div class="form-footer">
+        <%= f.submit "Accept invitation & sign in", class: "form-submit" %>
+      </div>
+    <% end %>
 
   <% when :new_user %>
     <%# State 5: New user (doesn't have an account) - Passwordless flow %>
@@ -85,6 +92,7 @@
       html: { method: :put, class: "default-form" }) do |f|
     %>
       <%= render "devise/shared/error_messages", resource: resource %>
+
       <%= f.hidden_field :invitation_token, readonly: true %>
 
       <div class="form-footer">

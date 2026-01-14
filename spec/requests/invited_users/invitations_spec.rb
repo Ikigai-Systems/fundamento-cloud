@@ -119,7 +119,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("Join #{is_org.name}")
-        expect(response.body).to include("Sign in to accept invitation")
+        expect(response.body).to include("Accept invitation &amp; sign in")
         expect(response.body).to include("already have a Fundamento account")
       end
     end
