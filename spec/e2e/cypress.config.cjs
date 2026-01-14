@@ -13,7 +13,7 @@ module.exports = defineConfig({
     mochaFile: "../../tmp/cypress-results-[hash].xml",
     toConsole: false,
     outputs: true,
-    testCaseSwitchClassnameAndName: false,
+    testCaseSwitchClassnameAndName: true,
     suiteTitleSeparatedBy: " > ",
     useFullSuiteTitle: true,
     jenkinsMode: false,
