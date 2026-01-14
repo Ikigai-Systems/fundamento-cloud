@@ -13,6 +13,20 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     ActionMailer::Base.deliveries.clear
   end
 
+  describe "POST /invited_users/invitation (create)" do
+    before do
+      sign_in(pawel)
+      post select_organization_path(is_org)
+    end
+
+    it "sets invited_by correctly" do
+      post invited_user_invitation_path, params: { invited_user: { email: john.email, organization_id: is_org.id } }
+
+      expect(response).to redirect_to(organization_path(is_org))
+      expect(InvitedUser.last.invited_by).to eq(pawel)
+    end
+  end
+
   describe "GET /invited_users/invitation/accept (edit)" do
     context "when user is already a member of the organization" do
       let!(:invited_user) do
