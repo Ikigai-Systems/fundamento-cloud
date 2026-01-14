@@ -18,6 +18,7 @@ class User < ApplicationRecord
   end
 
   before_create :skip_confirmation_if_not_required
+  before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
 
   scope :query, ->(query) { where("(first_name || ' ' || last_name) ILIKE ?", "%#{query}%") }
 
@@ -44,11 +45,15 @@ class User < ApplicationRecord
   after_commit :process_avatar_variants, on: [:create, :update]
 
   def initials
-    first_name.first(1) + last_name.first(1)
+    return "" if first_name.blank?
+    first_initial = first_name.first(1)
+    last_initial = last_name.present? ? last_name.first(1) : ""
+    first_initial + last_initial
   end
 
   def display_name
-    "#{first_name} #{last_name}"
+    return email if first_name.blank? && last_name.blank?
+    [first_name, last_name].compact.join(" ")
   end
 
   def online?(for_organization)
@@ -92,6 +97,24 @@ class User < ApplicationRecord
   end
 
   private
+
+  def derive_name_from_email
+    # Extract username part before @
+    username = email.split('@').first
+    return if username.blank?
+
+    # Split by common separators (., _, -)
+    parts = username.split(/[._-]/).map(&:capitalize)
+
+    if parts.length >= 2
+      self.first_name = parts.first
+      self.last_name = parts[1..-1].join(' ')
+    elsif parts.length == 1
+      # Single word - use as first name, leave last name nil
+      self.first_name = parts.first
+      self.last_name = nil
+    end
+  end
 
   def skip_confirmation_if_not_required
     # Auto-confirm user if in standalone mode

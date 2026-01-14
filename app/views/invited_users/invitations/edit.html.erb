@@ -1,37 +1,95 @@
 <section class="form-section">
-  <h2 class="form-header">Accept invitation to <%= resource.organization.name %></h2>
-
-  <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
-    html: { method: :put, class: "default-form" }) do |f|
-  %>
-    <%= render "devise/shared/error_messages", resource: resource %>
-
-    <%= f.hidden_field :invitation_token, readonly: true %>
-
-    <div class="form-field">
-      <%= f.label :first_name %>
-      <%= f.text_field :first_name, class: "form-input"  %>
+  <% case @state %>
+  <% when :wrong_user_logged_in %>
+    <%# State 1: User is logged in but with wrong email %>
+    <h2 class="form-header">Account Mismatch</h2>
+    <div class="form-text">
+      <p>You're signed in as <strong><%= @current_user_email %></strong>, but this invitation is for <strong><%= @invited_email %></strong>.</p>
+      <p>To accept this invitation, you need to sign out and sign in with the invited email address.</p>
+    </div>
+    <div class="form-footer">
+      <%= button_to "Sign out", destroy_user_session_path, method: :delete,
+          params: { return_to: accept_invited_user_invitation_path(invitation_token: resource.invitation_token) },
+          class: "form-submit" %>
     </div>
 
-    <div class="form-field">
-      <%= f.label :last_name %>
-      <%= f.text_field :last_name, class: "form-input"  %>
+  <% when :already_member %>
+    <%# State 2: User is already a member of the organization %>
+    <h2 class="form-header">You're already a member</h2>
+    <div class="form-text">
+      <p>You're already a member of <strong><%= @organization.name %></strong>.</p>
+    </div>
+    <div class="form-footer">
+      <%= link_to "Go to #{@organization.name}", organization_path(@organization), class: "form-submit" %>
     </div>
 
-    <% if f.object.class.require_password_on_accepting %>
-      <div class="form-field">
-        <%= f.label :password %>
-        <%= f.password_field :password, class: "form-input" %>
+  <% when :logged_in_ready %>
+    <%# State 3: User is logged in with correct email, ready to accept %>
+    <h2 class="form-header">Join <%= @organization.name %></h2>
+    <div class="form-text">
+      <p><% if resource.invited_by.present? %><%= resource.invited_by.display_name %> invited you<% else %>You've been invited<% end %> to join <strong><%= @organization.name %></strong>.</p>
+      <p class="text-sm text-gray-600 mt-2">Continuing as <%= @user.display_name %> (<%= @user.email %>)</p>
+    </div>
+    <%= form_for(resource, as: resource_name, url: invitation_path(resource),
+      html: { method: :put, class: "default-form" }) do |f| %>
+      <%= f.hidden_field :invitation_token, value: resource.invitation_token %>
+      <div class="form-footer">
+        <%= f.submit "Accept invitation", class: "form-submit" %>
+      </div>
+    <% end %>
+    <div class="text-center mt-4">
+      <%= link_to "Not you? Sign out", destroy_user_session_path, method: :delete,
+          data: { turbo_method: :delete },
+          class: "text-sm text-gray-600 hover:text-gray-900" %>
+    </div>
+
+  <% when :existing_user_not_logged_in %>
+    <%# State 4: User exists but is not logged in %>
+    <h2 class="form-header">Join <%= @organization.name %></h2>
+    <div class="form-text">
+      <p>You've been invited to join <strong><%= @organization.name %></strong>.</p>
+      <p class="mt-2">You already have a Fundamento account with this email address.</p>
+    </div>
+    <div class="form-footer">
+      <%= link_to "Sign in to accept invitation", new_user_session_path(return_to: accept_invited_user_invitation_path(invitation_token: resource.invitation_token)), class: "form-submit" %>
+    </div>
+
+  <% when :new_user %>
+    <%# State 5: New user (doesn't have an account) - Passwordless flow %>
+    <h2 class="form-header">You've been invited to <%= @organization.name %></h2>
+    <div class="form-text">
+      <p><% if resource.invited_by.present? %><%= resource.invited_by.display_name %> invited you<% else %>You've been invited<% end %> to collaborate in <strong><%= @organization.name %></strong> on Fundamento.</p>
+      <p class="mt-2">Fundamento is a free collaborative workspace for teams.</p>
+    </div>
+
+    <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
+      html: { method: :put, class: "default-form" }) do |f|
+    %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <%= f.hidden_field :invitation_token, readonly: true %>
+
+      <div class="form-footer">
+        <%= f.submit "Accept invitation & create free account", class: "form-submit" %>
       </div>
 
-      <div class="form-field">
-        <%= f.label :password_confirmation %>
-        <%= f.password_field :password_confirmation, class: "form-input" %>
+      <div class="text-center mt-4 text-sm text-gray-600">
+        By accepting, you agree to our <%= link_to "Terms of Service", "https://fundamento.it/terms-and-conditions", class: "text-blue-600 hover:text-blue-800" %>
       </div>
     <% end %>
 
-    <div class="form-footer">
-      <%= f.submit "Create an account", class: "form-submit" %>
-    </div>
+  <% else %>
+    <%# Fallback for any unexpected state - Passwordless flow %>
+    <h2 class="form-header">Accept invitation to <%= resource.organization.name %></h2>
+    <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
+      html: { method: :put, class: "default-form" }) do |f|
+    %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+      <%= f.hidden_field :invitation_token, readonly: true %>
+
+      <div class="form-footer">
+        <%= f.submit "Accept invitation", class: "form-submit" %>
+      </div>
+    <% end %>
   <% end %>
 </section>
