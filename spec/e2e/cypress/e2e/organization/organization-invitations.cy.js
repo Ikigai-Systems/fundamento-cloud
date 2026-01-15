@@ -19,8 +19,6 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
       cy.setCookie("organization_id", isOrganizationCookie);
 
-      cy.visit("/");
-
       // Visit the invitation form
       cy.visit("/invited_users/invitation/new?organization_id=is");
 
@@ -119,7 +117,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
       // Visit the invitation form
       cy.visit("/invited_users/invitation/new?organization_id=is");
 
-      // Try to invite Stefan again (he's already in the organization from previous test)
+      // Try to invite Stefan again (he's already in the organization from the fixture)
       cy.get('input[name="invited_user[email]"]').type("stefan@ikigai.systems");
       cy.get('input[type=submit]').click();
 
@@ -144,7 +142,9 @@ describe("Organization Invitations (Cloud Flow)", function() {
     it("shows account mismatch when wrong user is logged in", function() {
       // Invite bob@example.com to "is" organization (doesn't exist yet)
       cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
+
       cy.visit("/invited_users/invitation/new?organization_id=is");
+
       cy.get('input[name="invited_user[email]"]').type("bob@example.com");
       cy.get('input[type=submit]').click();
 
@@ -174,7 +174,9 @@ describe("Organization Invitations (Cloud Flow)", function() {
     it("allows user logged in with correct email to accept invitation", function() {
       // Invite Maria to "is" organization (she exists but isn't in "is" - she's in "hc")
       cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
+
       cy.visit("/invited_users/invitation/new?organization_id=is");
+
       cy.get('input[name="invited_user[email]"]').type("maria@ikigai.systems");
       cy.get('input[type=submit]').click();
 
@@ -210,6 +212,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
     it("shows already member message when user is already in organization", function() {
       // Invite Pawel to "is" organization (he's already a member)
       cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
+
       cy.visit("/invited_users/invitation/new?organization_id=is");
 
       // Create an invitation for Pawel manually via database using Devise's invite! method
