@@ -154,7 +154,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
       // Get invitation URL
       cy.appInvitationAcceptanceUrl({email: "bob@example.com"}).then((acceptanceUrl) => {
         // Now log in as Maria (wrong user) and try to accept Bob's invitation
-        cy.loginWithSession("maria@ikigai.systems", "password", "maria-wrong-user");
+        cy.loginWithSession("maria@ikigai.systems", "password", "maria-session");
 
         // Visit Bob's invitation URL while logged in as Maria
         cy.visit(acceptanceUrl);
@@ -186,7 +186,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
       // Get invitation URL
       cy.appInvitationAcceptanceUrl({email: "maria@ikigai.systems"}).then((acceptanceUrl) => {
         // Log in as Maria (correct user)
-        cy.loginWithSession("maria@ikigai.systems", "password", "maria-correct-user");
+        cy.loginWithSession("maria@ikigai.systems", "password", "maria-session");
 
         // Visit Maria's invitation URL while logged in as Maria
         cy.visit(acceptanceUrl);
