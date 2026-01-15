@@ -25,7 +25,7 @@
         <% end %>
 
         <% component.with_dropdown_menu do %>
-          <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
+          <%= button_to "Delete", organization_path(@organization), form: { data: { turbo_confirm: "Are you sure? Your organization will be immediately removed!" } }, data: { "dropdown-target" => "menuItem" }, role: "menuitem", tabindex: "-1", method: :delete %>
         <% end %>
       <% end %>
     <% end %>
@@ -41,11 +41,11 @@
 
     <% if policy(@organization).invite_user? %>
       <div class="table-legend-button-container">
-        <% if Flipper.enabled?(:cloud) %>
-        <% else %>
+        <% if Flipper.enabled?(:standalone) %>
           <%= link_to 'Add user', new_organization_user_path, class: "secondary-button" %>
+        <% else %>
+          <%= link_to 'Add user', new_invited_user_invitation_path(organization_id: @organization.id), class: "secondary-button" %>
         <% end %>
-        <%=  link_to 'Add user', new_invited_user_invitation_path(organization_id: @organization.id), class: "secondary-button"  %>
       </div>
     <% end %>
   </div>

@@ -17,48 +17,50 @@ RSpec.describe "OrganizationUsers", type: :request do
   let(:ou_hc_maria) { organization_users(:ou_hc_maria) } # member
 
   describe "GET #new" do
-    context "when user is manager" do
-      before do
-        sign_in(pawel)
-        post select_organization_path(is_org)
+    when_feature_enabled(:standalone) do
+      context "when user is manager" do
+        before do
+          sign_in(pawel)
+          post select_organization_path(is_org)
+        end
+
+        it "renders new form successfully" do
+          get new_organization_user_path
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("organization_user")
+        end
+
+        it "initializes new organization_user with nested user" do
+          get new_organization_user_path
+
+          expect(assigns(:organization_user)).to be_a_new(OrganizationUser)
+          expect(assigns(:organization_user).user).to be_a_new(User)
+        end
       end
 
-      it "renders new form successfully" do
-        get new_organization_user_path
+      context "when user is member" do
+        before do
+          sign_in(stefan)
+          post select_organization_path(is_org)
+        end
 
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("organization_user")
+        it "denies access" do
+          get new_organization_user_path
+          expect(response).to have_http_status(:forbidden)
+        end
       end
 
-      it "initializes new organization_user with nested user" do
-        get new_organization_user_path
+      context "when user is not in organization" do
+        before do
+          sign_in(john)
+          post select_organization_path(is_org)
+        end
 
-        expect(assigns(:organization_user)).to be_a_new(OrganizationUser)
-        expect(assigns(:organization_user).user).to be_a_new(User)
-      end
-    end
-
-    context "when user is member" do
-      before do
-        sign_in(stefan)
-        post select_organization_path(is_org)
-      end
-
-      it "denies access" do
-        get new_organization_user_path
-        expect(response).to have_http_status(:forbidden)
-      end
-    end
-
-    context "when user is not in organization" do
-      before do
-        sign_in(john)
-        post select_organization_path(is_org)
-      end
-
-      it "denies access" do
-        result = get new_organization_user_path
-        expect(result).to redirect_to(new_user_session_path)
+        it "denies access" do
+          result = get new_organization_user_path
+          expect(result).to redirect_to(new_user_session_path)
+        end
       end
     end
   end
@@ -78,7 +80,8 @@ RSpec.describe "OrganizationUsers", type: :request do
       }
     end
 
-    context "when user is manager" do
+    when_feature_enabled(:standalone) do
+      context "when user is manager" do
       before do
         sign_in(pawel)
         post select_organization_path(is_org)
@@ -172,18 +175,17 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
       end
     end
+    end
 
-    context "when :cloud feature flag is enabled" do
+    when_feature_disabled(:standalone) do
       before do
         sign_in(pawel)
         post select_organization_path(is_org)
       end
 
       it "denies access even for managers" do
-        with_feature(:cloud) do
-          post organization_users_path, params: new_user_params
-          expect(response).to have_http_status(:forbidden)
-        end
+        post organization_users_path, params: new_user_params
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
@@ -201,37 +203,39 @@ RSpec.describe "OrganizationUsers", type: :request do
   end
 
   describe "GET #change_password" do
-    context "when user is manager" do
-      before do
-        sign_in(pawel)
-        post select_organization_path(is_org)
+    when_feature_enabled(:standalone) do
+      context "when user is manager" do
+        before do
+          sign_in(pawel)
+          post select_organization_path(is_org)
+        end
+
+        it "renders change password form in Turbo frame" do
+          get change_password_organization_user_path(ou_is_stefan.id),
+            headers: { "Turbo-Frame" => "modal" }
+
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("password")
+        end
+
+        it "redirects if not a Turbo frame request" do
+          get change_password_organization_user_path(ou_is_stefan.id)
+
+          expect(response).to redirect_to(is_org)
+        end
       end
 
-      it "renders change password form in Turbo frame" do
-        get change_password_organization_user_path(ou_is_stefan.id),
-          headers: { "Turbo-Frame" => "modal" }
+      context "when user is member" do
+        before do
+          sign_in(stefan)
+          post select_organization_path(is_org)
+        end
 
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("password")
-      end
-
-      it "redirects if not a Turbo frame request" do
-        get change_password_organization_user_path(ou_is_stefan.id)
-
-        expect(response).to redirect_to(is_org)
-      end
-    end
-
-    context "when user is member" do
-      before do
-        sign_in(stefan)
-        post select_organization_path(is_org)
-      end
-
-      it "denies access" do
-        get change_password_organization_user_path(ou_is_stefan.id),
-          headers: { "Turbo-Frame" => "modal" }
-        expect(response).to have_http_status(:forbidden)
+        it "denies access" do
+          get change_password_organization_user_path(ou_is_stefan.id),
+            headers: { "Turbo-Frame" => "modal" }
+          expect(response).to have_http_status(:forbidden)
+        end
       end
     end
   end
@@ -249,7 +253,8 @@ RSpec.describe "OrganizationUsers", type: :request do
       }
     end
 
-    context "when user is manager" do
+    when_feature_enabled(:standalone) do
+      context "when user is manager" do
       before do
         sign_in(pawel)
         post select_organization_path(is_org)
@@ -315,17 +320,18 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
     end
 
-    context "when user is member" do
-      before do
-        sign_in(stefan)
-        post select_organization_path(is_org)
-      end
+      context "when user is member" do
+        before do
+          sign_in(stefan)
+          post select_organization_path(is_org)
+        end
 
-      it "denies access" do
-        patch organization_user_path(ou_is_stefan.id),
-          params: password_params,
-          headers: { "Turbo-Frame" => "modal" }
-        expect(response).to have_http_status(:forbidden)
+        it "denies access" do
+          patch organization_user_path(ou_is_stefan.id),
+            params: password_params,
+            headers: { "Turbo-Frame" => "modal" }
+          expect(response).to have_http_status(:forbidden)
+        end
       end
     end
   end

@@ -21,18 +21,13 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
       let(:target_org_user) { OrganizationUser.new(organization: is_org) }
 
-      context "when :cloud feature flag is disabled" do
-        before { Flipper.disable(:cloud) }
-
+      when_feature_enabled(:standalone) do
         it "permits creation" do
           expect(subject).to permit(policy_context, target_org_user)
         end
       end
 
-      context "when :cloud feature flag is enabled" do
-        before { Flipper.enable(:cloud) }
-        after { Flipper.disable(:cloud) }
-
+      when_feature_disabled(:standalone) do
         it "denies creation" do
           expect(subject).not_to permit(policy_context, target_org_user)
         end
@@ -43,10 +38,10 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
       let(:target_org_user) { OrganizationUser.new(organization: is_org) }
 
-      before { Flipper.disable(:cloud) }
-
-      it "denies creation" do
-        expect(subject).not_to permit(policy_context, target_org_user)
+      when_feature_both_states(:standalone) do
+        it "denies creation" do
+          expect(subject).not_to permit(policy_context, target_org_user)
+        end
       end
     end
 
@@ -54,32 +49,38 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
       let(:target_org_user) { OrganizationUser.new(organization: is_org) }
 
-      before { Flipper.disable(:cloud) }
-
-      it "denies creation" do
-        expect(subject).not_to permit(policy_context, target_org_user)
+      when_feature_both_states(:standalone) do
+        it "denies creation" do
+          expect(subject).not_to permit(policy_context, target_org_user)
+        end
       end
     end
   end
 
   permissions :change_password? do
-    it "has same permissions as #create?" do
-      policy_context = PolicyUserContext.new(pawel, is_org)
-      target_org_user = OrganizationUser.new(organization: is_org)
+    context "when standalone is disabled" do
+      before do
+        with_feature_flag(:standalone, enabled: false)
+      end
 
-      Flipper.disable(:cloud)
+      it "has same permissions as #create?" do
+        policy_context = PolicyUserContext.new(pawel, is_org)
+        target_org_user = OrganizationUser.new(organization: is_org)
 
-      create_permission = described_class.new(policy_context, target_org_user).create?
-      change_password_permission = described_class.new(policy_context, target_org_user).change_password?
+        create_permission = described_class.new(policy_context, target_org_user).create?
+        change_password_permission = described_class.new(policy_context, target_org_user).change_password?
 
-      expect(change_password_permission).to eq(create_permission)
+        expect(change_password_permission).to eq(create_permission)
+      end
     end
 
-    context "when user is manager and :cloud is disabled" do
+    context "when user is manager and :standalone is enabled" do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
       let(:target_org_user) { ou_is_stefan }
 
-      before { Flipper.disable(:cloud) }
+      before do
+        with_feature_flag(:standalone, enabled: true)
+      end
 
       it "permits password change" do
         expect(subject).to permit(policy_context, target_org_user)
