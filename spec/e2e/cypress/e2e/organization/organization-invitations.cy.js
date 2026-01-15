@@ -65,7 +65,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
   describe("Inviting new user", () => {
     it("manager can invite new user who completes passwordless registration and accesses organization", function() {
       // Pawel is a manager in "is" organization
-      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-2");
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
 
       cy.setCookie("organization_id", isOrganizationCookie);
 
@@ -114,7 +114,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
   describe("Edge cases", () => {
     it("prevents inviting the same user twice", function() {
-      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-3");
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
 
       // Visit the invitation form
       cy.visit("/invited_users/invitation/new?organization_id=is");
@@ -143,7 +143,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
     it("shows account mismatch when wrong user is logged in", function() {
       // Invite bob@example.com to "is" organization (doesn't exist yet)
-      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-4");
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
       cy.visit("/invited_users/invitation/new?organization_id=is");
       cy.get('input[name="invited_user[email]"]').type("bob@example.com");
       cy.get('input[type=submit]').click();
@@ -173,7 +173,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
     it("allows user logged in with correct email to accept invitation", function() {
       // Invite Maria to "is" organization (she exists but isn't in "is" - she's in "hc")
-      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-5");
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
       cy.visit("/invited_users/invitation/new?organization_id=is");
       cy.get('input[name="invited_user[email]"]').type("maria@ikigai.systems");
       cy.get('input[type=submit]').click();
@@ -209,7 +209,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
     it("shows already member message when user is already in organization", function() {
       // Invite Pawel to "is" organization (he's already a member)
-      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-6");
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
       cy.visit("/invited_users/invitation/new?organization_id=is");
 
       // Create an invitation for Pawel manually via database using Devise's invite! method
