@@ -106,7 +106,6 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
     # State 1: User is logged in but email doesn't match
     if current_user.present? && current_user.email != @invited_email
       @state = :wrong_user_logged_in
-      @current_user_email = current_user.email
       return
     end
 
@@ -119,7 +118,6 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
     # State 3: User logged in with correct email (ready to accept)
     if current_user.present? && current_user.email == @invited_email
       @state = :logged_in_ready
-      @user = current_user
       return
     end
 

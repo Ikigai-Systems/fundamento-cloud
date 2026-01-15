@@ -40,11 +40,12 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.visit(acceptanceUrl);
 
         // Existing user sees invitation message
-        cy.contains("Join Ikigai Systems").should("be.visible");
+        cy.contains("Accept invitation").should("be.visible");
+        cy.contains("Pawel Wiadomski invited you to join Ikigai Systems").should("be.visible");
         cy.contains("You already have a Fundamento account with this email address").should("be.visible");
 
         // Click "Accept invitation & sign in" button
-        cy.contains("Accept invitation & sign in").click();
+        cy.contains("Accept & sign in").click();
 
         // Should be redirected to sign-in page with confirmation message
         cy.contains("Welcome to Ikigai Systems!").should("be.visible");
@@ -87,8 +88,8 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Should see the passwordless invitation acceptance form
         cy.url().should("include", "/invited_users/invitation/accept");
-        cy.contains("You've been invited to Ikigai Systems").should("be.visible");
-        cy.contains("Accept invitation & create free account").should("be.visible");
+        cy.contains("Pawel Wiadomski invited you to collaborate in Ikigai Systems an organization on Fundamento.").should("be.visible");
+        cy.contains("Accept & create free account").should("be.visible");
 
         // Verify no password or name fields (passwordless flow)
         cy.get('input[name="invited_user[password]"]').should("not.exist");
@@ -192,12 +193,13 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.visit(acceptanceUrl);
 
         // Should see ready-to-accept message
-        cy.contains("Join Ikigai Systems").should("be.visible");
+        cy.contains("Accept invitation").should("be.visible");
+        cy.contains("Pawel Wiadomski invited you to join Ikigai Systems").should("be.visible");
         cy.contains("Continuing as Maria").should("be.visible");
         cy.contains("maria@ikigai.systems").should("be.visible");
 
         // Click accept button
-        cy.contains("Accept invitation").click();
+        cy.get('input[type=submit]').click();
 
         // Should be redirected to organization spaces
         cy.url().should("include", "/#spaces");

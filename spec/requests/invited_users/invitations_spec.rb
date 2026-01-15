@@ -97,7 +97,8 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         get accept_invited_user_invitation_path(invitation_token: invited_user.raw_invitation_token)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Join #{is_org.name}")
+        expect(response.body).to include(invited_user.invited_by.display_name)
+        expect(response.body).to include(is_org.name)
         expect(response.body).to include("Accept invitation")
         expect(response.body).to include(john.display_name)
       end
@@ -118,8 +119,10 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         get accept_invited_user_invitation_path(invitation_token: invited_user.raw_invitation_token)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Join #{is_org.name}")
-        expect(response.body).to include("Accept invitation &amp; sign in")
+        expect(response.body).to include(invited_user.invited_by.display_name)
+        expect(response.body).to include("to join")
+        expect(response.body).to include(is_org.name)
+        expect(response.body).to include("Accept &amp; sign in")
         expect(response.body).to include("already have a Fundamento account")
       end
     end
@@ -139,8 +142,10 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         get accept_invited_user_invitation_path(invitation_token: invited_user.raw_invitation_token)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("You've been invited to #{is_org.name}")
-        expect(response.body).to include("Accept invitation &amp; create free account")
+        expect(response.body).to include(invited_user.invited_by.display_name)
+        expect(response.body).to include("to collaborate in")
+        expect(response.body).to include(is_org.name)
+        expect(response.body).to include("Accept &amp; create free account")
         expect(response.body).not_to include('invited_user[password]') # No password fields in invitation form
         expect(response.body).not_to include("first_name") # Names not asked anymore
       end
