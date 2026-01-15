@@ -12,18 +12,6 @@ describe("Organization Invitations (Cloud Flow)", function() {
     });
   });
 
-  // Handle JavaScript errors from the application
-  Cypress.on("uncaught:exception", (err) => {
-    // Ignore "Cannot read properties of null" errors on invitation page
-    // This is a known issue with some JavaScript trying to access DOM elements
-    // that don't exist on the invitation acceptance page
-    if (err.message.includes("Cannot read properties of null") ||
-        err.message.includes("Cannot read properties of undefined")) {
-      return false;
-    }
-    return true;
-  });
-
   describe("Inviting existing user", () => {
     it("manager can invite existing user to their organization", function() {
       // Pawel is a manager in "is" organization, John exists but is not in "is"
