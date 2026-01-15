@@ -32,7 +32,7 @@
     </div>
 
     <div class="form-footer">
-      <%= link_to "Go to #{@organization.name}", organization_path(@organization), class: "form-submit" %>
+      <%= button_to "Go to #{@organization.name}", select_organization_path(@organization), method: :post, class: "form-submit" %>
     </div>
 
   <% when :logged_in_ready %>
@@ -59,10 +59,10 @@
       </div>
     <% end %>
 
-    <div class="text-center mt-4">
-      <%= link_to "Not you? Sign out", destroy_user_session_path, method: :delete,
-        data: { turbo_method: :delete },
-        class: "text-sm text-gray-600 hover:text-gray-900" %>
+    <div class="form-hint text-center">
+      <%= button_to "Not you? Sign out", destroy_user_session_path, method: :delete,
+        params: { return_to: accept_invited_user_invitation_path(invitation_token: resource.invitation_token) },
+        class: "link-button" %>
     </div>
 
   <% when :existing_user_not_logged_in %>

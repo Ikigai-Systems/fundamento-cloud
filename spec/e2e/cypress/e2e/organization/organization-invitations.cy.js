@@ -167,8 +167,23 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.contains("but this invitation is for").should("be.visible");
         cy.contains("bob@example.com").should("be.visible");
 
-        // Should have option to sign out - look for the form button specifically
-        cy.get('.form-footer button[type="submit"]').contains("Sign out").should("be.visible");
+        // Click sign out button
+        cy.get('.form-footer button[type="submit"]').contains("Sign out").click();
+
+        // Now should see the new user invitation flow
+        cy.contains("Accept invitation").should("be.visible");
+        cy.contains("Accept & create free account").should("be.visible");
+
+        // Accept the invitation as new user (passwordless flow)
+        cy.get('input[type=submit]').click();
+
+        // Should be auto-logged in and redirected to organization
+        cy.url().should("include", "/#spaces");
+        cy.contains("Favorites").should("be.visible");
+
+        // Verify access to Ikigai Systems organization
+        cy.visit("/s/is_default");
+        cy.contains("Default IS").should("be.visible");
       });
     });
 
@@ -198,6 +213,9 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.contains("Continuing as Maria").should("be.visible");
         cy.contains("maria@ikigai.systems").should("be.visible");
 
+        // Verify "Not you? Sign out" link is visible and functional
+        cy.contains("Not you? Sign out").should("be.visible");
+
         // Click accept button
         cy.get('input[type=submit]').click();
 
@@ -208,6 +226,42 @@ describe("Organization Invitations (Cloud Flow)", function() {
         // Verify access to Ikigai Systems organization
         cy.visit("/s/is_default");
         cy.contains("Default IS").should("be.visible");
+      });
+    });
+
+    it("allows user logged in to sign out and resume the invitation flow", function() {
+      cy.appEval(`OrganizationUser.find_by(user_id: "user_maria", organization_id: "is")&.destroy!`)
+
+      // Invite Maria to "is" organization (she exists but isn't in "is" - she's in "hc")
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
+
+      cy.visit("/invited_users/invitation/new?organization_id=is");
+
+      cy.get('input[name="invited_user[email]"]').type("maria@ikigai.systems");
+      cy.get('input[type=submit]').click();
+
+      // Wait for invitation to be created
+      cy.contains("An invitation email has been sent").should("be.visible");
+
+      // Get invitation URL
+      cy.appInvitationAcceptanceUrl({email: "maria@ikigai.systems"}).then((acceptanceUrl) => {
+        // Log in as Maria (correct user)
+        cy.loginWithSession("maria@ikigai.systems", "password", "maria-session");
+
+        // Visit Maria's invitation URL while logged in as Maria
+        cy.visit(acceptanceUrl);
+
+        // Should see ready-to-accept message
+        cy.contains("Accept invitation").should("be.visible");
+        cy.contains("Pawel Wiadomski invited you to join Ikigai Systems").should("be.visible");
+        cy.contains("Continuing as Maria").should("be.visible");
+        cy.contains("maria@ikigai.systems").should("be.visible");
+
+        // Verify "Not you? Sign out" link is visible and functional
+        cy.contains("Not you? Sign out").click()
+
+        // Should be redirected back to the invitation page
+        cy.contains("Accept invitation").should("be.visible");
       });
     });
 
@@ -239,8 +293,12 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.contains("You're already a member of").should("be.visible");
         cy.contains("Ikigai Systems").should("be.visible");
 
-        // Should have link to go to organization
-        cy.contains("Go to Ikigai Systems").should("be.visible");
+        // Click "Go to Ikigai Systems" button
+        cy.contains("Go to Ikigai Systems").click();
+
+        // Verify access to organization
+        cy.visit("/s/is_default");
+        cy.contains("Default IS").should("be.visible");
       });
     });
   });
