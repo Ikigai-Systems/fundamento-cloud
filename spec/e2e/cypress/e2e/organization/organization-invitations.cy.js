@@ -152,5 +152,103 @@ describe("Organization Invitations (Cloud Flow)", function() {
         expect(response.status).to.be.oneOf([403, 302]);
       });
     });
+
+    it("shows account mismatch when wrong user is logged in", function() {
+      // Invite bob@example.com to "is" organization (doesn't exist yet)
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-4");
+      cy.visit("/invited_users/invitation/new?organization_id=is");
+      cy.get('input[name="invited_user[email]"]').type("bob@example.com");
+      cy.get('input[type=submit]').click();
+
+      // Wait for invitation to be created
+      cy.contains("An invitation email has been sent").should("be.visible");
+
+      // Get invitation URL
+      cy.appInvitationAcceptanceUrl({email: "bob@example.com"}).then((acceptanceUrl) => {
+        // Now log in as Maria (wrong user) and try to accept Bob's invitation
+        cy.loginWithSession("maria@ikigai.systems", "password", "maria-wrong-user");
+
+        // Visit Bob's invitation URL while logged in as Maria
+        cy.visit(acceptanceUrl);
+
+        // Should see account mismatch message
+        cy.contains("Account Mismatch").should("be.visible");
+        cy.contains("You're signed in as").should("be.visible");
+        cy.contains("maria@ikigai.systems").should("be.visible");
+        cy.contains("but this invitation is for").should("be.visible");
+        cy.contains("bob@example.com").should("be.visible");
+
+        // Should have option to sign out - look for the form button specifically
+        cy.get('.form-footer button[type="submit"]').contains("Sign out").should("be.visible");
+      });
+    });
+
+    it("allows user logged in with correct email to accept invitation", function() {
+      // Invite Maria to "is" organization (she exists but isn't in "is" - she's in "hc")
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-5");
+      cy.visit("/invited_users/invitation/new?organization_id=is");
+      cy.get('input[name="invited_user[email]"]').type("maria@ikigai.systems");
+      cy.get('input[type=submit]').click();
+
+      // Wait for invitation to be created
+      cy.contains("An invitation email has been sent").should("be.visible");
+
+      // Get invitation URL
+      cy.appInvitationAcceptanceUrl({email: "maria@ikigai.systems"}).then((acceptanceUrl) => {
+        // Log in as Maria (correct user)
+        cy.loginWithSession("maria@ikigai.systems", "password", "maria-correct-user");
+
+        // Visit Maria's invitation URL while logged in as Maria
+        cy.visit(acceptanceUrl);
+
+        // Should see ready-to-accept message
+        cy.contains("Join Ikigai Systems").should("be.visible");
+        cy.contains("Continuing as Maria").should("be.visible");
+        cy.contains("maria@ikigai.systems").should("be.visible");
+
+        // Click accept button
+        cy.contains("Accept invitation").click();
+
+        // Should be redirected to organization spaces
+        cy.url().should("include", "/#spaces");
+        cy.contains("Favorites").should("be.visible");
+
+        // Verify access to Ikigai Systems organization
+        cy.visit("/s/is_default");
+        cy.contains("Default IS").should("be.visible");
+      });
+    });
+
+    it("shows already member message when user is already in organization", function() {
+      // Invite Pawel to "is" organization (he's already a member)
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session-6");
+      cy.visit("/invited_users/invitation/new?organization_id=is");
+
+      // Create an invitation for Pawel manually via database using Devise's invite! method
+      cy.app("eval", `
+        org = Organization.find("is")
+        InvitedUser.invite!(
+          {
+            email: "pawel@ikigai.systems",
+            organization: org
+          },
+          User.find("user_pawel")
+        )
+      `);
+
+      // Get invitation URL
+      cy.appInvitationAcceptanceUrl({email: "pawel@ikigai.systems"}).then((acceptanceUrl) => {
+        // Visit invitation URL while logged in as Pawel
+        cy.visit(acceptanceUrl);
+
+        // Should see already member message
+        cy.contains("You're already a member").should("be.visible");
+        cy.contains("You're already a member of").should("be.visible");
+        cy.contains("Ikigai Systems").should("be.visible");
+
+        // Should have link to go to organization
+        cy.contains("Go to Ikigai Systems").should("be.visible");
+      });
+    });
   });
 });
