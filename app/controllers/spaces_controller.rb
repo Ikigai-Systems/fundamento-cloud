@@ -89,7 +89,7 @@ class SpacesController < ApplicationController
     query = params[:q]
     preselects = params[:preselects].split(",")
 
-    @organization_users = current_organization.organization_users.query(query).map do |organization_user|
+    @organization_memberships = current_organization.organization_memberships.query(query).map do |organization_membership|
       {
         value: "#{organization_user.class}|#{organization_user.id}",
         text: organization_user.user.display_name
@@ -103,7 +103,7 @@ class SpacesController < ApplicationController
       }
     end
 
-    render json: (@organization_users + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
+    render json: (@organization_memberships + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
 
   def sidebar

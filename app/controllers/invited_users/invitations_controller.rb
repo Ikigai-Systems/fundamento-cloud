@@ -52,7 +52,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
         end
 
         # Explicitly create OrganizationUser with member role
-        OrganizationUser.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_user|
+        OrganizationMembership.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_membership|
           organization_user.role = :member
         end
 
