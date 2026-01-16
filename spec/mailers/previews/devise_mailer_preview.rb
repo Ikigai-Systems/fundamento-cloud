@@ -20,4 +20,10 @@ class DeviseMailerPreview < ActionMailer::Preview
 
     FundamentoDeviseMailer.reset_password_instructions(User.first, token)
   end
+
+  def magic_link
+    token = "dummy_token"
+
+    FundamentoDeviseMailer.magic_link(User.first, token, true)
+  end
 end
