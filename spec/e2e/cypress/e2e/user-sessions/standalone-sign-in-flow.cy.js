@@ -11,6 +11,8 @@ describe('Standalone sign-in flow', function () {
     cy.appFactories([
       ['create', 'user', {
         email: 'standalone@example.com',
+        first_name: "Standalone",
+        last_name: "User",
         password: 'Password123!',
         confirmed_at: new Date().toISOString()
       }]
