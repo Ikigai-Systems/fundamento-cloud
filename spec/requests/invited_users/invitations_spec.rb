@@ -8,8 +8,6 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
   let(:john) { users(:john) }
 
   before do
-    # Enable cloud feature flag for all tests
-    Flipper.enable(:cloud)
     ActionMailer::Base.deliveries.clear
   end
 

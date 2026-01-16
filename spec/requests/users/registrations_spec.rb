@@ -100,9 +100,8 @@ RSpec.describe "Users::Registrations" do
     end
 
     context "with invalid email" do
-      with_feature_both_states(:standalone) do
+      when_feature_both_states(:standalone) do
         it "does not create a user" do
-
           invalid_params = Flipper.enabled?(:standalone) ? user_params_standalone.merge(email: "invalid") : user_params_cloud.merge(email: "invalid")
 
           expect {
