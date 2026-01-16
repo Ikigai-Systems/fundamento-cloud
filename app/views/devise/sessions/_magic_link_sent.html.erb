@@ -1,0 +1,32 @@
+<!-- Magic link sent confirmation -->
+<section class="form-section">
+  <h2 class="form-header">Check your inbox</h2>
+
+  <div class="form-legend">
+    <p>
+      We sent a sign-in link to <strong><%= @email %></strong>
+    </p>
+
+    <p>
+      Click the link in the email to sign in to your account.
+    </p>
+
+    <p>
+      If you don't see the email, check your spam folder.
+    </p>
+  </div>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "default-form", data: { turbo: false }  }) do |f| %>
+    <%= f.hidden_field :email, value: @email %>
+    <%= f.hidden_field :authentication_method, value: "magic_link" %>
+    <%= f.hidden_field :remember_me, value: "1" %>
+
+    <div class="form-footer">
+      <%= f.submit "Resend email", class: "secondary-button w-full" %>
+    </div>
+  <% end %>
+
+  <div class="form-hint text-center mt-4">
+    <%= link_to "← Use different email", new_user_session_path, class: "link-button" %>
+  </div>
+</section>

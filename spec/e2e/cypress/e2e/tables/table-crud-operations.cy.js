@@ -20,6 +20,8 @@ describe("Table CRUD Operations", function() {
 
     cy.login("pawel@ikigai.systems", "password");
 
+    cy.visit("/");
+
     // Select an organization (Ikigai Systems)
     cy.contains("tr", "Ikigai Systems").within(() => {
       cy.contains("Switch to").click();

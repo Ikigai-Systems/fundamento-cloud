@@ -35,7 +35,8 @@ RSpec.describe PublicController, type: :request do
         post user_session_path, params: {
           user: {
             email: pawel.email,
-            password: "password"
+            password: "password",
+            authentication_method: "password"
           }
         }
 
