@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:maria) { users(:maria) }
   let(:pawel) { users(:pawel) }
@@ -106,7 +106,7 @@ RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
       set_organization_id_cookie(hc_org.id)
 
       # Remove user from hc organization
-      OrganizationUser.find("ou_hc_pawel").destroy
+      OrganizationUser.find("om_hc_pawel").destroy
 
       get root_path
 

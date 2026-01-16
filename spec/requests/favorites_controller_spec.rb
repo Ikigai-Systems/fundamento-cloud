@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe FavoritesController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :documents, :favorites
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :favorites
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }

@@ -15,7 +15,7 @@ RSpec.describe Organization, type: :model do
       organization_user = organization.organization_users.create!(user: user, role: :manager)
       api_token = organization.api_tokens.create!(
         title: "Test Token",
-        organization_user: organization_user
+        organization_membership: organization_user
       )
 
       expect(api_token.organization_id).to be_a(String)

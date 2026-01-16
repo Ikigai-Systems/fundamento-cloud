@@ -1,19 +1,19 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::AutomationInvocations", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:manager) { users(:pawel) }
   let(:organization) { organizations(:hc) }
   let(:space) { spaces(:hc_default) }
-  let(:org_user) { organization_users(:ou_hc_pawel) }
+  let(:org_user) { organization_memberships(:om_hc_pawel) }
 
   let(:webhook_body) { JSON.parse(File.read(Rails.root.join("spec/fixtures/files/formula/metabase-webhook.json"))) }
 
   let!(:api_token) do
     ApiToken.create!(
       organization: organization,
-      organization_user: org_user,
+      organization_membership: org_user,
       title: "Test API Token",
     )
   end

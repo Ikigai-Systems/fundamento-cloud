@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe OrganizationUser, type: :model do
   include ActionDispatch::TestProcess::FixtureFile
 
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   describe "NPI primary key migration" do
     it "uses string ID as primary key" do
-      organization_user = organization_users(:ou_is_pawel)
+      organization_user = organization_memberships(:om_is_pawel)
       expect(organization_user.id).to be_a(String)
     end
 
@@ -76,24 +76,24 @@ RSpec.describe OrganizationUser, type: :model do
 
   describe "associations" do
     it "belongs to organization" do
-      organization_user = organization_users(:ou_is_pawel)
+      organization_user = organization_memberships(:om_is_pawel)
       expect(organization_user.organization).to eq(organizations(:is))
     end
 
     it "belongs to user" do
-      organization_user = organization_users(:ou_is_pawel)
+      organization_user = organization_memberships(:om_is_pawel)
       expect(organization_user.user).to eq(users(:pawel))
     end
   end
 
   describe "roles" do
     it "can be manager" do
-      organization_user = organization_users(:ou_is_pawel)
+      organization_user = organization_memberships(:om_is_pawel)
       expect(organization_user.role).to eq("manager")
     end
 
     it "can be member" do
-      organization_user = organization_users(:ou_is_stefan)
+      organization_user = organization_memberships(:om_is_stefan)
       expect(organization_user.role).to eq("member")
     end
   end

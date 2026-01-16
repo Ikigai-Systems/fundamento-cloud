@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
-  fixtures :users, :organizations, :organization_users
+  fixtures :users, :organizations, :organization_memberships
 
   describe "NPI primary key migration" do
     it "uses string ID as primary key" do
@@ -11,7 +11,7 @@ RSpec.describe User, type: :model do
     end
 
     it "has string user_id in organization_users" do
-      organization_user = organization_users(:ou_is_pawel)
+      organization_user = organization_memberships(:om_is_pawel)
       expect(organization_user.user_id).to be_a(String)
       expect(organization_user.user_id).to eq("user_pawel")
     end

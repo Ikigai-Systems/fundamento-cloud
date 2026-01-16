@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ImportsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :document_imports
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :document_imports
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe PublicLinksController, type: :request do
-  fixtures :organizations, :spaces, :users, :organization_users, :documents, :public_links
+  fixtures :organizations, :spaces, :users, :organization_memberships, :documents, :public_links
 
   let(:user) { users(:pawel) }
   let(:document) { documents(:one) }

@@ -4,7 +4,7 @@ require 'rails_helper'
 RSpec.describe Table, type: :model do
   fixtures :users
   fixtures :organizations
-  fixtures :organization_users
+  fixtures :organization_memberships
   fixtures :spaces
   fixtures "tables/tables"
 
@@ -93,7 +93,7 @@ RSpec.describe Table, type: :model do
       it "returns the same calculated value for all rows" do
         table_data = tables_tables(:projects).data_to_json(
           evaluate_formulas: true,
-          evaluate_as: organization_users(:ou_is_pawel)
+          evaluate_as: organization_memberships(:om_is_pawel)
         )
 
         expect(table_data).to match(hash_including(:rows, :columns))
@@ -120,7 +120,7 @@ RSpec.describe Table, type: :model do
     it "returns data" do
       table_data = tables_tables(:projects).data_to_json(
         evaluate_formulas: true,
-        evaluate_as: organization_users(:ou_is_stefan)
+        evaluate_as: organization_memberships(:om_is_stefan)
       )
 
       expect(table_data).to match(hash_including(:rows, :columns))

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe OrganizationUserPolicy, type: :policy do
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
@@ -10,9 +10,9 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
   let(:maria) { users(:maria) }
   let(:john) { users(:john) }
 
-  let(:ou_is_pawel) { organization_users(:ou_is_pawel) } # manager in is_org
-  let(:ou_is_stefan) { organization_users(:ou_is_stefan) } # member in is_org
-  let(:ou_hc_maria) { organization_users(:ou_hc_maria) } # member in hc_org
+  let(:om_is_pawel) { organization_memberships(:om_is_pawel) } # manager in is_org
+  let(:om_is_stefan) { organization_memberships(:om_is_stefan) } # member in is_org
+  let(:om_hc_maria) { organization_memberships(:om_hc_maria) } # member in hc_org
 
   subject { described_class }
 
@@ -76,7 +76,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
     context "when user is manager and :standalone is enabled" do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
-      let(:target_org_user) { ou_is_stefan }
+      let(:target_org_user) { om_is_stefan }
 
       before do
         with_feature_flag(:standalone, enabled: true)
@@ -89,7 +89,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
     context "when user is member" do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
-      let(:target_org_user) { ou_is_stefan }
+      let(:target_org_user) { om_is_stefan }
 
       it "denies password change" do
         expect(subject).not_to permit(policy_context, target_org_user)
@@ -102,7 +102,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
 
       it "permits removing another member" do
-        expect(subject).to permit(policy_context, ou_is_stefan)
+        expect(subject).to permit(policy_context, om_is_stefan)
       end
 
       it "permits removing another manager" do
@@ -117,7 +117,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
       it "permits removing themselves (controller prevents this, not policy)" do
         # Note: The controller has its own check to prevent self-removal
-        expect(subject).to permit(policy_context, ou_is_pawel)
+        expect(subject).to permit(policy_context, om_is_pawel)
       end
     end
 
@@ -125,8 +125,8 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
 
       it "denies removing anyone" do
-        expect(subject).not_to permit(policy_context, ou_is_pawel)
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_pawel)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
 
@@ -134,7 +134,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
 
       it "denies removal" do
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
 
@@ -142,7 +142,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(maria, hc_org) }
 
       it "denies removal from another organization" do
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
   end
@@ -153,13 +153,13 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
       context "when target is a member" do
         it "permits promotion" do
-          expect(subject).to permit(policy_context, ou_is_stefan)
+          expect(subject).to permit(policy_context, om_is_stefan)
         end
       end
 
       context "when target is already a manager" do
         it "denies promotion" do
-          expect(subject).not_to permit(policy_context, ou_is_pawel)
+          expect(subject).not_to permit(policy_context, om_is_pawel)
         end
       end
     end
@@ -168,7 +168,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
 
       it "denies promotion" do
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
 
@@ -176,7 +176,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
 
       it "denies promotion" do
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
   end
@@ -184,12 +184,12 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
   permissions :demote? do
     before do
       # Make stefan a manager for testing demotion
-      ou_is_stefan.update!(role: :manager)
+      om_is_stefan.update!(role: :manager)
     end
 
     after do
       # Reset for other tests
-      ou_is_stefan.update!(role: :member)
+      om_is_stefan.update!(role: :member)
     end
 
     context "when user is manager in the organization" do
@@ -197,34 +197,34 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
       context "when target is a manager" do
         it "permits demotion" do
-          expect(subject).to permit(policy_context, ou_is_stefan)
+          expect(subject).to permit(policy_context, om_is_stefan)
         end
       end
 
       context "when target is already a member" do
-        before { ou_is_stefan.update!(role: :member) }
+        before { om_is_stefan.update!(role: :member) }
 
         it "denies demotion" do
-          expect(subject).not_to permit(policy_context, ou_is_stefan)
+          expect(subject).not_to permit(policy_context, om_is_stefan)
         end
       end
 
       context "when trying to demote themselves" do
         it "permits demotion (controller prevents this, not policy)" do
           # Note: The controller has its own check to prevent self-demotion
-          expect(subject).to permit(policy_context, ou_is_pawel)
+          expect(subject).to permit(policy_context, om_is_pawel)
         end
       end
     end
 
     context "when user is member in the organization" do
-      before { ou_is_stefan.update!(role: :member) }
+      before { om_is_stefan.update!(role: :member) }
 
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
 
       it "denies demotion" do
-        ou_is_pawel_manager = ou_is_pawel
-        expect(subject).not_to permit(policy_context, ou_is_pawel_manager)
+        om_is_pawel_manager = om_is_pawel
+        expect(subject).not_to permit(policy_context, om_is_pawel_manager)
       end
     end
 
@@ -232,7 +232,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
 
       it "denies demotion" do
-        expect(subject).not_to permit(policy_context, ou_is_stefan)
+        expect(subject).not_to permit(policy_context, om_is_stefan)
       end
     end
   end
@@ -255,7 +255,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
     context "when user has no membership in organization" do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
-      let(:target_org_user) { ou_is_stefan }
+      let(:target_org_user) { om_is_stefan }
 
       it "denies all actions" do
         expect(subject).not_to permit(policy_context, target_org_user)

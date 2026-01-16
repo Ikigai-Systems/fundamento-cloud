@@ -1,16 +1,16 @@
 require "rails_helper"
 
 RSpec.describe TeamMembership, type: :model do
-  fixtures :organizations, :users, :organization_users, :teams, :team_memberships
+  fixtures :organizations, :users, :organization_memberships, :teams, :team_memberships
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
   let(:john) { users(:john) }
 
-  let(:ou_is_pawel) { organization_users(:ou_is_pawel) }
-  let(:ou_is_stefan) { organization_users(:ou_is_stefan) }
-  let(:ou_hc_stefan) { organization_users(:ou_hc_stefan) }
-  let(:ou_hc_maria) { organization_users(:ou_hc_maria) }
+  let(:om_is_pawel) { organization_memberships(:om_is_pawel) }
+  let(:om_is_stefan) { organization_memberships(:om_is_stefan) }
+  let(:om_hc_stefan) { organization_memberships(:om_hc_stefan) }
+  let(:om_hc_maria) { organization_memberships(:om_hc_maria) }
 
   let(:hc_administrators_team) { teams(:hc_administrators) }
 
@@ -33,7 +33,7 @@ RSpec.describe TeamMembership, type: :model do
       membership = team_memberships(:hc_administrators_membership_1)
 
       expect(membership.member).to be_a(OrganizationUser)
-      expect(membership.member).to eq(ou_hc_stefan)
+      expect(membership.member).to eq(om_hc_stefan)
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe TeamMembership, type: :model do
       membership = TeamMembership.new(
         organization: hc_org,
         team: hc_administrators_team,
-        member: ou_hc_stefan
+        member: om_hc_stefan
       )
 
       expect(membership).to be_valid
@@ -89,10 +89,10 @@ RSpec.describe TeamMembership, type: :model do
       membership = TeamMembership.create!(
         organization: hc_org,
         team: hc_administrators_team,
-        member: ou_is_pawel
+        member: om_is_pawel
       )
 
-      expect(membership.member_id).to eq(ou_is_pawel.id)
+      expect(membership.member_id).to eq(om_is_pawel.id)
       expect(membership.member_type).to eq("OrganizationUser")
       expect(membership.member_id).to be_a(String) # NPI
     end
@@ -101,12 +101,12 @@ RSpec.describe TeamMembership, type: :model do
       membership = TeamMembership.create!(
         organization: hc_org,
         team: hc_administrators_team,
-        member: ou_is_pawel
+        member: om_is_pawel
       )
 
       found = TeamMembership.find_by(
         team_id: hc_administrators_team.id,
-        member_id: ou_is_pawel.id,
+        member_id: om_is_pawel.id,
         member_type: "OrganizationUser"
       )
 
@@ -117,11 +117,11 @@ RSpec.describe TeamMembership, type: :model do
       membership = TeamMembership.create!(
         organization: hc_org,
         team: hc_administrators_team,
-        member: ou_hc_maria
+        member: om_hc_maria
       )
 
-      expect(membership.member_id).to eq(ou_hc_maria.id)
-      expect(membership.member_id).to eq("ou_hc_maria")
+      expect(membership.member_id).to eq(om_hc_maria.id)
+      expect(membership.member_id).to eq("om_hc_maria")
       expect(membership.member_id).to be_a(String)
     end
   end
@@ -136,11 +136,11 @@ RSpec.describe TeamMembership, type: :model do
 
     it "finds specific membership by organization_user" do
       membership = TeamMembership.find_by(
-        member: ou_hc_stefan
+        member: om_hc_stefan
       )
 
       expect(membership).to be_present
-      expect(membership.member).to eq(ou_hc_stefan)
+      expect(membership.member).to eq(om_hc_stefan)
       expect(membership.team).to eq(hc_administrators_team)
     end
 
@@ -158,12 +158,12 @@ RSpec.describe TeamMembership, type: :model do
       it "returns display_name from organization_user" do
         membership = team_memberships(:hc_administrators_membership_1)
 
-        expect(membership.display_name).to eq(ou_hc_stefan.display_name)
+        expect(membership.display_name).to eq(om_hc_stefan.display_name)
       end
 
       it "delegates to user's display_name" do
         membership = team_memberships(:hc_administrators_membership_1)
-        expected_name = ou_hc_stefan.user.display_name
+        expected_name = om_hc_stefan.user.display_name
 
         expect(membership.display_name).to eq(expected_name)
       end
@@ -211,7 +211,7 @@ RSpec.describe TeamMembership, type: :model do
       membership = TeamMembership.create!(
         organization: hc_org,
         team: new_team,
-        member: ou_hc_stefan
+        member: om_hc_stefan
       )
 
       expect {
@@ -263,7 +263,7 @@ RSpec.describe TeamMembership, type: :model do
 
       expect(membership.member_type).to eq("OrganizationUser")
       expect(membership.member).to be_a(OrganizationUser)
-      expect(membership.member.id).to eq("ou_hc_stefan")
+      expect(membership.member.id).to eq("om_hc_stefan")
     end
 
     it "has correct organization reference in fixtures" do
@@ -285,11 +285,11 @@ RSpec.describe TeamMembership, type: :model do
       ou_members = hc_administrators_team.team_memberships.where(member_type: "OrganizationUser").map(&:member)
 
       expect(ou_members).to all(be_a(OrganizationUser))
-      expect(ou_members).to include(ou_hc_stefan)
+      expect(ou_members).to include(om_hc_stefan)
     end
 
     it "can find all teams an OrganizationUser is a member of" do
-      memberships = TeamMembership.where(member: ou_hc_stefan)
+      memberships = TeamMembership.where(member: om_hc_stefan)
       teams = memberships.map(&:team)
 
       expect(teams).to all(be_a(Team))

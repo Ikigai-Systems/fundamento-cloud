@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Formula::ActionExecutor, type: :service do
   fixtures :users
   fixtures :organizations
-  fixtures :organization_users
+  fixtures :organization_memberships
   fixtures :spaces
   fixtures "tables/tables"
   fixtures "tables/columns"
@@ -11,10 +11,10 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   fixtures "tables/cells"
 
   let(:space) { spaces(:is_default) }
-  let(:organization_user) { organization_users(:ou_is_pawel) }
+  let(:organization_user) { organization_memberships(:om_is_pawel) }
   let(:table) { tables_tables(:projects) }
 
-  let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_user: organization_user) }
+  let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_membership: organization_user) }
   let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_user), space:) }
 
   let(:engine) {

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe UpdateTagsTool, type: :model do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents
 
   let(:user) { users(:pawel) }
   let(:document) { documents(:one) }

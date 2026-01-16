@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe SpacesController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :teams, :team_memberships
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :teams, :team_memberships
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }
@@ -106,7 +106,7 @@ RSpec.describe SpacesController, type: :request do
       end
 
       it "adds space membership for user" do
-        stefan_ou = organization_users(:ou_hc_stefan)
+        stefan_ou = organization_memberships(:om_hc_stefan)
 
         expect {
           patch space_path(public_space), params: {
@@ -186,7 +186,7 @@ RSpec.describe SpacesController, type: :request do
       end
 
       it "updates both attributes and memberships in one request" do
-        stefan_ou = organization_users(:ou_hc_stefan)
+        stefan_ou = organization_memberships(:om_hc_stefan)
 
         patch space_path(public_space), params: {
           space: {
@@ -227,7 +227,7 @@ RSpec.describe SpacesController, type: :request do
         patch space_path(stefans_space), params: {
           space: {
             name: "Updated by Space Manager",
-            space_memberships: ["OrganizationUser|#{organization_users(:ou_is_stefan).id}"]
+            space_memberships: ["OrganizationUser|#{organization_memberships(:om_is_stefan).id}"]
           }
         }
 
@@ -326,7 +326,7 @@ RSpec.describe SpacesController, type: :request do
     end
 
     it "excludes preselected members" do
-      stefan_ou = organization_users(:ou_hc_stefan)
+      stefan_ou = organization_memberships(:om_hc_stefan)
       preselect_value = "OrganizationUser|#{stefan_ou.id}"
 
       get suggest_owners_spaces_path, params: { q: "", preselects: preselect_value }

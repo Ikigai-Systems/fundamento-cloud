@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "InvitedUsers::Invitations", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:is_org) { organizations(:is) }
   let(:pawel) { users(:pawel) }

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe PolicyUserContext, type: :model do
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
@@ -9,12 +9,12 @@ RSpec.describe PolicyUserContext, type: :model do
   let(:stefan) { users(:stefan) }
   let(:john) { users(:john) } # Not in any organization
 
-  let(:ou_is_pawel) { organization_users(:ou_is_pawel) }
-  let(:ou_is_stefan) { organization_users(:ou_is_stefan) }
-  let(:ou_hc_pawel) { organization_users(:ou_hc_pawel) }
+  let(:om_is_pawel) { organization_memberships(:om_is_pawel) }
+  let(:om_is_stefan) { organization_memberships(:om_is_stefan) }
+  let(:om_hc_pawel) { organization_memberships(:om_hc_pawel) }
 
   describe "#initialize with OrganizationUser" do
-    subject { described_class.new(ou_is_pawel) }
+    subject { described_class.new(om_is_pawel) }
 
     it "sets @user to organization_user's user" do
       expect(subject.user).to eq(pawel)
@@ -25,7 +25,7 @@ RSpec.describe PolicyUserContext, type: :model do
     end
 
     it "sets @organization_user to the passed organization_user" do
-      expect(subject.organization_user).to eq(ou_is_pawel)
+      expect(subject.organization_user).to eq(om_is_pawel)
     end
 
     it "exposes user via attr_reader" do
@@ -56,7 +56,7 @@ RSpec.describe PolicyUserContext, type: :model do
     end
 
     it "looks up @organization_user by user and organization" do
-      expect(subject.organization_user).to eq(ou_is_pawel)
+      expect(subject.organization_user).to eq(om_is_pawel)
       expect(subject.organization_user).to be_a(OrganizationUser)
     end
 
@@ -64,7 +64,7 @@ RSpec.describe PolicyUserContext, type: :model do
       it "finds the correct organization_user" do
         context = described_class.new(stefan, is_org)
 
-        expect(context.organization_user).to eq(ou_is_stefan)
+        expect(context.organization_user).to eq(om_is_stefan)
       end
 
       it "finds organization_user with correct role" do
@@ -80,10 +80,10 @@ RSpec.describe PolicyUserContext, type: :model do
         context_is = described_class.new(pawel, is_org)
         context_hc = described_class.new(pawel, hc_org)
 
-        expect(context_is.organization_user).to eq(ou_is_pawel)
+        expect(context_is.organization_user).to eq(om_is_pawel)
         expect(context_is.organization_user.organization).to eq(is_org)
 
-        expect(context_hc.organization_user).to eq(ou_hc_pawel)
+        expect(context_hc.organization_user).to eq(om_hc_pawel)
         expect(context_hc.organization_user.organization).to eq(hc_org)
       end
     end
@@ -120,9 +120,9 @@ RSpec.describe PolicyUserContext, type: :model do
 
   describe "type detection" do
     it "detects OrganizationUser input correctly" do
-      context = described_class.new(ou_is_pawel)
+      context = described_class.new(om_is_pawel)
 
-      expect(context.organization_user).to eq(ou_is_pawel)
+      expect(context.organization_user).to eq(om_is_pawel)
       expect(context.user).to eq(pawel)
       expect(context.current_organization).to eq(is_org)
     end
@@ -132,11 +132,11 @@ RSpec.describe PolicyUserContext, type: :model do
 
       expect(context.user).to eq(pawel)
       expect(context.current_organization).to eq(is_org)
-      expect(context.organization_user).to eq(ou_is_pawel)
+      expect(context.organization_user).to eq(om_is_pawel)
     end
 
     it "differentiates between OrganizationUser and User" do
-      ou_context = described_class.new(ou_is_pawel)
+      ou_context = described_class.new(om_is_pawel)
       user_context = described_class.new(pawel, is_org)
 
       # Both should result in same values but via different code paths

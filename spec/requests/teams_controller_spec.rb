@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe TeamsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :teams, :team_memberships, :spaces
+  fixtures :organizations, :users, :organization_memberships, :teams, :team_memberships, :spaces
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }

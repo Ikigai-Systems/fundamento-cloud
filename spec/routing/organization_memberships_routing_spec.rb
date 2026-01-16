@@ -103,10 +103,10 @@ RSpec.describe "Organization Users routing", type: :routing do
     end
 
     it "accepts NPI format strings (ou_*)" do
-      expect(get: "/organization_users/ou_is_pawel/change_password").to route_to(
+      expect(get: "/organization_users/om_is_pawel/change_password").to route_to(
         controller: "organization_users",
         action: "change_password",
-        npi: "ou_is_pawel"
+        npi: "om_is_pawel"
       )
     end
 
@@ -159,32 +159,32 @@ RSpec.describe "Organization Users routing", type: :routing do
   end
 
   describe "integration with OrganizationUser model" do
-    fixtures :organizations, :users, :organization_users
+    fixtures :organizations, :users, :organization_memberships
 
-    let(:ou_is_pawel) { organization_users(:ou_is_pawel) }
+    let(:om_is_pawel) { organization_memberships(:om_is_pawel) }
 
     it "generates correct path using model npi" do
-      path = organization_user_path(ou_is_pawel.id)
+      path = organization_user_path(om_is_pawel.id)
 
-      expect(path).to eq("/organization_users/#{ou_is_pawel.id}")
+      expect(path).to eq("/organization_users/#{om_is_pawel.id}")
     end
 
     it "generates correct change_password path using model" do
-      path = change_password_organization_user_path(ou_is_pawel)
+      path = change_password_organization_user_path(om_is_pawel)
 
-      expect(path).to eq("/organization_users/#{ou_is_pawel.to_param}/change_password")
+      expect(path).to eq("/organization_users/#{om_is_pawel.to_param}/change_password")
     end
 
     it "generates correct promote path using model" do
-      path = promote_organization_user_path(ou_is_pawel)
+      path = promote_organization_user_path(om_is_pawel)
 
-      expect(path).to eq("/organization_users/#{ou_is_pawel.to_param}/promote")
+      expect(path).to eq("/organization_users/#{om_is_pawel.to_param}/promote")
     end
 
     it "generates correct demote path using model" do
-      path = demote_organization_user_path(ou_is_pawel)
+      path = demote_organization_user_path(om_is_pawel)
 
-      expect(path).to eq("/organization_users/#{ou_is_pawel.to_param}/demote")
+      expect(path).to eq("/organization_users/#{om_is_pawel.to_param}/demote")
     end
   end
 

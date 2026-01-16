@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe FormulasController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }

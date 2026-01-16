@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Users", type: :request do
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   let(:pawel) { users(:pawel) }
   let(:stefan) { users(:stefan) }
@@ -9,14 +9,14 @@ RSpec.describe "Api::V1::Users", type: :request do
   let(:ikigai_systems) { organizations(:is) }
   let(:herocoders) { organizations(:hc) }
   
-  let(:pawel_ikigai_systems) { organization_users(:ou_is_pawel) }
-  let(:stefan_ikigai_systems) { organization_users(:ou_is_stefan) }
-  let(:pawel_herocoders) { organization_users(:ou_hc_pawel) }
+  let(:pawel_ikigai_systems) { organization_memberships(:om_is_pawel) }
+  let(:stefan_ikigai_systems) { organization_memberships(:om_is_stefan) }
+  let(:pawel_herocoders) { organization_memberships(:om_hc_pawel) }
   
   let!(:pawel_is_token) do
     ApiToken.create!(
       organization: ikigai_systems,
-      organization_user: pawel_ikigai_systems,
+      organization_membership: pawel_ikigai_systems,
       title: "Test API Token for Pawel at IS"
     )
   end
@@ -24,7 +24,7 @@ RSpec.describe "Api::V1::Users", type: :request do
   let!(:stefan_is_token) do
     ApiToken.create!(
       organization: ikigai_systems,
-      organization_user: stefan_ikigai_systems,
+      organization_membership: stefan_ikigai_systems,
       title: "Test API Token for Stefan at IS"
     )
   end
@@ -32,7 +32,7 @@ RSpec.describe "Api::V1::Users", type: :request do
   let!(:pawel_hc_token) do
     ApiToken.create!(
       organization: herocoders,
-      organization_user: pawel_herocoders,
+      organization_membership: pawel_herocoders,
       title: "Test API Token for Pawel at HC"
     )
   end
@@ -112,7 +112,7 @@ RSpec.describe "Api::V1::Users", type: :request do
 
     context "with JWT token authentication" do
       let(:jwt_secret_key) { "test_jwt_secret_key_for_specs" }
-      let(:organization_user) { organization_users(:ou_is_pawel) }
+      let(:organization_user) { organization_memberships(:om_is_pawel) }
       
       before do
         allow(Rails.application.credentials).to receive(:formula_eval).and_return(
@@ -220,7 +220,7 @@ RSpec.describe "Api::V1::Users", type: :request do
 
     context "authentication method precedence" do
       let(:jwt_secret_key) { "test_jwt_secret_key_for_specs" }
-      let(:organization_user) { organization_users(:ou_is_pawel) }
+      let(:organization_user) { organization_memberships(:om_is_pawel) }
       let(:payload) do
         {
           "sub" => organization_user.to_global_id.to_s,

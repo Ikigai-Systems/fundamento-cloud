@@ -1,12 +1,12 @@
 require "rails_helper"
 
 RSpec.describe FormulaService, type: :model do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }
   let(:space) { spaces(:is_default) }
-  let(:organization_user) { organization_users(:ou_is_pawel) }
+  let(:organization_user) { organization_memberships(:om_is_pawel) }
 
   describe ".evaluate" do
     context "with simple arithmetic formulas" do

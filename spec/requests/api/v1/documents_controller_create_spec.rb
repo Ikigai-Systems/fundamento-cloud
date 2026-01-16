@@ -1,17 +1,17 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Documents#create", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:pawel) { users(:pawel) }
   let(:ikigai_systems) { organizations(:is) }
   let(:is_default_space) { spaces(:is_default) }
-  let(:pawel_ikigai_systems) { organization_users(:ou_is_pawel) }
+  let(:pawel_ikigai_systems) { organization_memberships(:om_is_pawel) }
 
   let!(:pawel_is_token) do
     ApiToken.create!(
       organization: ikigai_systems,
-      organization_user: pawel_ikigai_systems,
+      organization_membership: pawel_ikigai_systems,
       title: "Test API Token"
     )
   end

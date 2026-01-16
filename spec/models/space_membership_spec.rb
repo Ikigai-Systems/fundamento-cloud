@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe SpaceMembership, type: :model do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :teams
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :teams
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
@@ -9,9 +9,9 @@ RSpec.describe SpaceMembership, type: :model do
   let(:hc_secret_space) { spaces(:hc_secret) }
   let(:hc_administrators_space) { spaces(:hc_administrators) }
 
-  let(:ou_is_pawel) { organization_users(:ou_is_pawel) }
-  let(:ou_is_stefan) { organization_users(:ou_is_stefan) }
-  let(:ou_hc_pawel) { organization_users(:ou_hc_pawel) }
+  let(:om_is_pawel) { organization_memberships(:om_is_pawel) }
+  let(:om_is_stefan) { organization_memberships(:om_is_stefan) }
+  let(:om_hc_pawel) { organization_memberships(:om_hc_pawel) }
 
   let(:hc_administrators_team) { teams(:hc_administrators) }
 
@@ -34,7 +34,7 @@ RSpec.describe SpaceMembership, type: :model do
       membership = space_memberships(:is_stefans_membership_1)
 
       expect(membership.member).to be_a(OrganizationUser)
-      expect(membership.member).to eq(ou_is_stefan)
+      expect(membership.member).to eq(om_is_stefan)
     end
   end
 
@@ -43,7 +43,7 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.new(
         organization: is_org,
         space: is_default_space,
-        member: ou_is_pawel,
+        member: om_is_pawel,
         role: :manager
       )
 
@@ -82,11 +82,11 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.create!(
         organization: is_org,
         space: is_default_space,
-        member: ou_is_pawel,
+        member: om_is_pawel,
         role: :manager
       )
 
-      expect(membership.member_id).to eq(ou_is_pawel.id)
+      expect(membership.member_id).to eq(om_is_pawel.id)
       expect(membership.member_type).to eq("OrganizationUser")
       expect(membership.member_id).to be_a(String) # NPI
     end
@@ -95,13 +95,13 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.create!(
         organization: is_org,
         space: is_default_space,
-        member: ou_is_pawel,
+        member: om_is_pawel,
         role: :manager
       )
 
       found = SpaceMembership.find_by(
         space_id: is_default_space.id,
-        member_id: ou_is_pawel.id,
+        member_id: om_is_pawel.id,
         member_type: "OrganizationUser"
       )
 
@@ -119,11 +119,11 @@ RSpec.describe SpaceMembership, type: :model do
 
     it "finds specific membership by organization_user" do
       membership = SpaceMembership.find_by(
-        member: ou_is_stefan
+        member: om_is_stefan
       )
 
       expect(membership).to be_present
-      expect(membership.member).to eq(ou_is_stefan)
+      expect(membership.member).to eq(om_is_stefan)
     end
 
     it "can query through space association" do
@@ -141,12 +141,12 @@ RSpec.describe SpaceMembership, type: :model do
       it "returns display_name from organization_user" do
         membership = space_memberships(:is_stefans_membership_1)
 
-        expect(membership.display_name).to eq(ou_is_stefan.display_name)
+        expect(membership.display_name).to eq(om_is_stefan.display_name)
       end
 
       it "delegates to user's display_name" do
         membership = space_memberships(:is_stefans_membership_1)
-        expected_name = ou_is_stefan.user.display_name
+        expected_name = om_is_stefan.user.display_name
 
         expect(membership.display_name).to eq(expected_name)
       end
@@ -202,7 +202,7 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.create!(
         organization: is_org,
         space: space,
-        member: ou_is_pawel,
+        member: om_is_pawel,
         role: :manager
       )
 
@@ -248,7 +248,7 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.create!(
         organization: is_org,
         space: is_default_space,
-        member: ou_is_pawel,
+        member: om_is_pawel,
         role: :manager
       )
 
@@ -259,7 +259,7 @@ RSpec.describe SpaceMembership, type: :model do
       membership = SpaceMembership.new(
         organization: is_org,
         space: is_default_space,
-        member: ou_is_pawel
+        member: om_is_pawel
       )
 
       expect { membership.role = :member }.to raise_error(ArgumentError)
@@ -272,7 +272,7 @@ RSpec.describe SpaceMembership, type: :model do
 
       expect(membership.member_type).to eq("OrganizationUser")
       expect(membership.member).to be_a(OrganizationUser)
-      expect(membership.member.id).to eq("ou_is_stefan")
+      expect(membership.member.id).to eq("om_is_stefan")
     end
 
     it "loads Team memberships from fixtures" do
@@ -296,11 +296,11 @@ RSpec.describe SpaceMembership, type: :model do
       ou_members = space.space_memberships.where(member_type: "OrganizationUser").map(&:member)
 
       expect(ou_members).to all(be_a(OrganizationUser))
-      expect(ou_members).to include(ou_hc_pawel)
+      expect(ou_members).to include(om_hc_pawel)
     end
 
     it "can find all spaces an OrganizationUser is a member of" do
-      memberships = SpaceMembership.where(member: ou_is_stefan)
+      memberships = SpaceMembership.where(member: om_is_stefan)
       spaces = memberships.map(&:space)
 
       expect(spaces).to all(be_a(Space))

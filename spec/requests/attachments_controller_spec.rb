@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe AttachmentsController, type: :request do
-  fixtures :organizations, :spaces, :users, :organization_users, :documents
+  fixtures :organizations, :spaces, :users, :organization_memberships, :documents
 
   let(:organization) { organizations(:is) }
   let(:space) { spaces(:is_default) }
