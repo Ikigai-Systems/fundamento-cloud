@@ -1,15 +1,15 @@
 is_stefans_membership_1:
   organization_id: "is"
   space_id: is_stefans
-  member_id: ou_is_stefan
-  member_type: OrganizationUser
+  member_id: om_is_stefan
+  member_type: OrganizationMembership
   role: :manager
 
 hc_pawels_membership_1:
   organization_id: "hc"
   space_id: hc_pawels
-  member_id: ou_hc_pawel
-  member_type: OrganizationUser
+  member_id: om_hc_pawel
+  member_type: OrganizationMembership
   role: :manager
 
 hc_administrators_membership_1:

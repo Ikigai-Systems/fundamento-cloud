@@ -1,7 +1,7 @@
 _fixture:
   model_class: ObjectVisitor
 
-ou_is_stefan_visited_projects:
+om_is_stefan_visited_projects:
   user_id: "user_stefan"
   object: projects (Table)
   visited_at: <%= Time.now %>
