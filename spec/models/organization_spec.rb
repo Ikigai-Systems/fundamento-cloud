@@ -12,7 +12,7 @@ RSpec.describe Organization, type: :model do
     it "has string organization_id in api_tokens" do
       user = users(:pawel)
       organization = Organization.create!(id: "testorg01", name: "Test Organization")
-      organization_user = organization.organization_users.create!(user: user, role: :manager)
+      organization_membership = organization.organization_users.create!(user: user, role: :manager)
       api_token = organization.api_tokens.create!(
         title: "Test Token",
         organization_membership: organization_user

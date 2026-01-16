@@ -192,9 +192,9 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         }.to change(OrganizationUser, :count).by(1)
 
         user = User.find_by(email: "newuser@example.com")
-        organization_user = OrganizationUser.find_by(user: user, organization: is_org)
+        organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
 
-        expect(organization_user).to be_present
+        expect(organization_membership).to be_present
         # Verify user is in the INVITED organization, not a new one
         expect(user.organizations).to eq([is_org])
       end
@@ -203,7 +203,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         put invited_user_invitation_path, params: valid_params
 
         user = User.find_by(email: "newuser@example.com")
-        organization_user = OrganizationUser.find_by(user: user, organization: is_org)
+        organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
 
         expect(organization_user.role).to eq("member")
       end
@@ -281,7 +281,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       it "assigns member role" do
         put invited_user_invitation_path, params: valid_params
 
-        organization_user = OrganizationUser.find_by(user: john, organization: is_org)
+        organization_membership = OrganizationUser.find_by(user: john, organization: is_org)
         expect(organization_user.role).to eq("member")
       end
 
@@ -373,7 +373,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
       # User should be in the INVITED organization as a member
       expect(is_org.users.reload).to include(user)
-      organization_user = OrganizationUser.find_by(user: user, organization: is_org)
+      organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
       expect(organization_user.role).to eq("member")
 
       # User should have exactly ONE organization (the invited one, not a new auto-created one)

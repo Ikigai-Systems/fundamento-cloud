@@ -65,7 +65,7 @@ RSpec.describe FormulaService, type: :model do
         result = FormulaService.evaluate(
           "1 + 1",
           space,
-          organization_user,
+          organization_membership,
           additional_context: { "name" => "Test User" }
         )
 
@@ -78,7 +78,7 @@ RSpec.describe FormulaService, type: :model do
         result = FormulaService.evaluate(
           "2 + 2",
           space,
-          organization_user,
+          organization_membership,
           additional_context: { "ThisRow" => { "age" => 25 } }
         )
 

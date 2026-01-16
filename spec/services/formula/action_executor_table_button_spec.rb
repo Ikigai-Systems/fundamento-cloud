@@ -15,7 +15,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   let(:table) { tables_tables(:projects) }
 
   let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_membership: organization_user) }
-  let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_user), space:) }
+  let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_membership), space:) }
 
   let(:engine) {
     Formula::Engine.new(

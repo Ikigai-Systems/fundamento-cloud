@@ -27,7 +27,8 @@
       "mcp__task_master_ai__*",
       "mcp__playwright__*",
       "WebSearch",
-      "Bash(npx cypress run:*)"
+      "Bash(npx cypress run:*)",
+      "Bash(git mv:*)"
     ],
     "deny": []
   },

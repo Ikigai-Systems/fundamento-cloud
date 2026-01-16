@@ -1,19 +1,19 @@
 require "rails_helper"
 
-RSpec.describe OrganizationUser, type: :model do
+RSpec.describe OrganizationMembership, type: :model do
   include ActionDispatch::TestProcess::FixtureFile
 
   fixtures :organizations, :users, :organization_memberships
 
   describe "NPI primary key migration" do
     it "uses string ID as primary key" do
-      organization_user = organization_memberships(:om_is_pawel)
+      organization_membership = organization_memberships(:om_is_pawel)
       expect(organization_user.id).to be_a(String)
     end
 
-    it "has string organization_user_id in api_tokens" do
+    it "has string organization_membership_id in api_tokens" do
       organization = organizations(:is)
-      organization_user = OrganizationUser.create!(
+      organization_membership = OrganizationUser.create!(
         id: "testou01",
         organization: organization,
         user: users(:john),
@@ -24,15 +24,15 @@ RSpec.describe OrganizationUser, type: :model do
         organization: organization
       )
 
-      expect(api_token.organization_user_id).to be_a(String)
-      expect(api_token.organization_user_id).to eq(organization_user.id)
-      expect(api_token.organization_user_id).to eq("testou01")
+      expect(api_token.organization_membership_id).to be_a(String)
+      expect(api_token.organization_membership_id).to eq(organization_user.id)
+      expect(api_token.organization_membership_id).to eq("testou01")
     end
 
-    it "has string organization_user_id in favorites" do
+    it "has string organization_membership_id in favorites" do
       organization = organizations(:another)
       space = organization.spaces.create!(id: "anothersp2", name: "Another Space 2")
-      organization_user = OrganizationUser.create!(
+      organization_membership = OrganizationUser.create!(
         id: "testou02",
         organization: organization,
         user: users(:john),
@@ -46,15 +46,15 @@ RSpec.describe OrganizationUser, type: :model do
         object: document
       )
 
-      expect(favorite.organization_user_id).to be_a(String)
-      expect(favorite.organization_user_id).to eq(organization_user.id)
-      expect(favorite.organization_user_id).to eq("testou02")
+      expect(favorite.organization_membership_id).to be_a(String)
+      expect(favorite.organization_membership_id).to eq(organization_user.id)
+      expect(favorite.organization_membership_id).to eq("testou02")
     end
 
     it "has string run_as_id in automations" do
       organization = organizations(:another)
       space = organization.spaces.create!(id: "anothersp1", name: "Another Space")
-      organization_user = OrganizationUser.create!(
+      organization_membership = OrganizationUser.create!(
         id: "testou03",
         organization: organization,
         user: users(:john),
@@ -76,24 +76,24 @@ RSpec.describe OrganizationUser, type: :model do
 
   describe "associations" do
     it "belongs to organization" do
-      organization_user = organization_memberships(:om_is_pawel)
+      organization_membership = organization_memberships(:om_is_pawel)
       expect(organization_user.organization).to eq(organizations(:is))
     end
 
     it "belongs to user" do
-      organization_user = organization_memberships(:om_is_pawel)
+      organization_membership = organization_memberships(:om_is_pawel)
       expect(organization_user.user).to eq(users(:pawel))
     end
   end
 
   describe "roles" do
     it "can be manager" do
-      organization_user = organization_memberships(:om_is_pawel)
+      organization_membership = organization_memberships(:om_is_pawel)
       expect(organization_user.role).to eq("manager")
     end
 
     it "can be member" do
-      organization_user = organization_memberships(:om_is_stefan)
+      organization_membership = organization_memberships(:om_is_stefan)
       expect(organization_user.role).to eq("member")
     end
   end
@@ -148,8 +148,8 @@ RSpec.describe OrganizationUser, type: :model do
           organization: organization
         )
 
-        expect(token.organization_user_id).to be_a(String)
-        expect(token.organization_user_id).to eq(organization_user.id)
+        expect(token.organization_membership_id).to be_a(String)
+        expect(token.organization_membership_id).to eq(organization_user.id)
       end
     end
 
@@ -180,8 +180,8 @@ RSpec.describe OrganizationUser, type: :model do
         document = organization.documents.create!(space: space)
         favorite = organization_user.favorites.create!(object: document)
 
-        expect(favorite.organization_user_id).to be_a(String)
-        expect(favorite.organization_user_id).to eq(organization_user.id)
+        expect(favorite.organization_membership_id).to be_a(String)
+        expect(favorite.organization_membership_id).to eq(organization_user.id)
       end
     end
 
@@ -227,8 +227,8 @@ RSpec.describe OrganizationUser, type: :model do
           emoji: "👍"
         )
 
-        expect(reaction.organization_user_id).to be_a(String)
-        expect(reaction.organization_user_id).to eq(organization_user.id)
+        expect(reaction.organization_membership_id).to be_a(String)
+        expect(reaction.organization_membership_id).to eq(organization_user.id)
       end
     end
 
@@ -270,7 +270,7 @@ RSpec.describe OrganizationUser, type: :model do
         )
       end
 
-      it "nullifies organization_user_id when organization_user is destroyed" do
+      it "nullifies organization_membership_id when organization_user is destroyed" do
         import = organization_user.document_imports.create!(
           organization: organization,
           space: space,
@@ -282,7 +282,7 @@ RSpec.describe OrganizationUser, type: :model do
         organization_user.destroy
 
         import.reload
-        expect(import.organization_user_id).to be_nil
+        expect(import.organization_membership_id).to be_nil
         expect(DocumentImport.exists?(import_id)).to be true
       end
 
@@ -305,8 +305,8 @@ RSpec.describe OrganizationUser, type: :model do
         import1.reload
         import2.reload
 
-        expect(import1.organization_user_id).to be_nil
-        expect(import2.organization_user_id).to be_nil
+        expect(import1.organization_membership_id).to be_nil
+        expect(import2.organization_membership_id).to be_nil
       end
 
       it "can create document_imports through organization_user" do
@@ -326,8 +326,8 @@ RSpec.describe OrganizationUser, type: :model do
           file: test_file
         )
 
-        expect(import.organization_user_id).to be_a(String)
-        expect(import.organization_user_id).to eq(organization_user.id)
+        expect(import.organization_membership_id).to be_a(String)
+        expect(import.organization_membership_id).to eq(organization_user.id)
       end
     end
 
@@ -342,7 +342,7 @@ RSpec.describe OrganizationUser, type: :model do
         )
 
         expect(organization_user.automations).to include(automation)
-        expect(automation.run_as).to eq(organization_user)
+        expect(automation.run_as).to eq(organization_membership)
       end
 
       it "run_as_id is string type (NPI)" do
@@ -388,14 +388,14 @@ RSpec.describe OrganizationUser, type: :model do
 
         invocation = AutomationInvocation.create!(
           automation: automation,
-          run_as: organization_user,
+          run_as: organization_membership,
           kind: :webhook,
           organization: organization,
           space: space
         )
 
         expect(organization_user.automation_invocations).to include(invocation)
-        expect(invocation.run_as).to eq(organization_user)
+        expect(invocation.run_as).to eq(organization_membership)
       end
 
       it "run_as_id is string type (NPI)" do
@@ -409,7 +409,7 @@ RSpec.describe OrganizationUser, type: :model do
 
         invocation = AutomationInvocation.create!(
           automation: automation,
-          run_as: organization_user,
+          run_as: organization_membership,
           kind: :webhook,
           organization: organization,
           space: space
@@ -430,7 +430,7 @@ RSpec.describe OrganizationUser, type: :model do
 
         invocation = AutomationInvocation.create!(
           automation: automation,
-          run_as: organization_user,
+          run_as: organization_membership,
           kind: :webhook,
           organization: organization,
           space: space
@@ -510,13 +510,13 @@ RSpec.describe OrganizationUser, type: :model do
         membership1 = SpaceMembership.create!(
           organization: organization,
           space: space1,
-          member: organization_user,
+          member: organization_membership,
           role: :manager
         )
         membership2 = SpaceMembership.create!(
           organization: organization,
           space: space2,
-          member: organization_user,
+          member: organization_membership,
           role: :manager
         )
 
@@ -541,7 +541,7 @@ RSpec.describe OrganizationUser, type: :model do
         membership = SpaceMembership.create!(
           organization: organization,
           space: space,
-          member: organization_user,
+          member: organization_membership,
           role: :manager
         )
 
@@ -552,7 +552,7 @@ RSpec.describe OrganizationUser, type: :model do
         membership = SpaceMembership.create!(
           organization: organization,
           space: space,
-          member: organization_user,
+          member: organization_membership,
           role: :manager
         )
 

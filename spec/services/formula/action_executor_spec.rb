@@ -252,7 +252,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
           "CustomVariable" => "test_value"
         }
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user, additional_context: additional_context)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership, additional_context: additional_context)
         action_executor.update_rows(additional_context, table.id, 'Equals([CustomVariable], "test_value")', {
           "Description" => "Updated with context"
         })

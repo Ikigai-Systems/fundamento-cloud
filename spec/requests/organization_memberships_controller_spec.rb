@@ -28,7 +28,7 @@ RSpec.describe "OrganizationUsers", type: :request do
           get new_organization_user_path
 
           expect(response).to have_http_status(:ok)
-          expect(response.body).to include("organization_user")
+          expect(response.body).to include("organization_membership")
         end
 
         it "initializes new organization_user with nested user" do
