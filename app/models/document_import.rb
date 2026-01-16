@@ -4,7 +4,7 @@ class DocumentImport < ApplicationRecord
 
   belongs_to :organization
   belongs_to :space
-  belongs_to :organization_user
+  belongs_to :organization_membership
   belongs_to :document, optional: true
 
   has_one_attached :file

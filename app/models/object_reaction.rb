@@ -2,7 +2,7 @@ class ObjectReaction < ApplicationRecord
   ALLOWED_OBJECT_TYPES = %w[Document Table ObjectComment]
 
   belongs_to :organization
-  belongs_to :organization_user
+  belongs_to :organization_membership
   belongs_to :object, polymorphic: true
 
   after_commit -> (object_reaction) {

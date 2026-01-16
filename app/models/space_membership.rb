@@ -5,7 +5,7 @@ class SpaceMembership < ApplicationRecord
   belongs_to :space
   belongs_to :member, polymorphic: true
 
-  validates_inclusion_of :member_type, in: %w(OrganizationUser Team)
+  validates_inclusion_of :member_type, in: %w(OrganizationMembership Team)
 
   enum :role, [:manager], scope: false
 

@@ -1,6 +1,6 @@
 class ApiToken < ApplicationRecord
   belongs_to :organization
-  belongs_to :organization_user
+  belongs_to :organization_membership
 
   encrypts :encrypted_token, deterministic: true
 

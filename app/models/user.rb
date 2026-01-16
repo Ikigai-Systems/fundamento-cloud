@@ -22,11 +22,11 @@ class User < ApplicationRecord
 
   scope :query, ->(query) { where("(first_name || ' ' || last_name) ILIKE ?", "%#{query}%") }
 
-  has_many :organizations_users, class_name: :OrganizationUser, dependent: :destroy
-  has_many :organizations, through: :organizations_users
+  has_many :organizations_memberships, class_name: :OrganizationMembership, dependent: :destroy
+  has_many :organizations, through: :organizations_memberships
   has_many :public_links, foreign_key: :updated_by_id, dependent: :nullify
 
-  has_many :team_memberships, through: :organizations_users
+  has_many :team_memberships, through: :organizations_memberships
   has_many :teams, through: :team_memberships, dependent: :destroy
   has_many :visited_objects, class_name: "ObjectVisitor", dependent: :delete_all
 

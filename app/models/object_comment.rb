@@ -2,7 +2,7 @@ class ObjectComment < ApplicationRecord
   ALLOWED_OBJECT_TYPES = %w[Document Table]
 
   belongs_to :organization
-  belongs_to :organization_user
+  belongs_to :organization_membership
   belongs_to :object, polymorphic: true
 
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all

@@ -1,7 +1,7 @@
 class Favorite < ApplicationRecord
   include NpiOrdering
 
-  belongs_to :organization_user
+  belongs_to :organization_membership
 
   belongs_to :object, polymorphic: true
 

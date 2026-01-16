@@ -7,15 +7,15 @@ class Organization < ApplicationRecord
   has_many :documents, dependent: :destroy
   has_many :document_imports, dependent: :destroy
   has_many :invited_users, dependent: :destroy
-  has_many :organization_users, class_name: :OrganizationUser, dependent: :destroy
+  has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :packs, dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy
   has_many :tables, dependent: :destroy
   has_many :team_memberships, dependent: :destroy
   has_many :teams, dependent: :destroy
-  has_many :users, through: :organization_users
-  has_many :favorites, through: :organization_users, dependent: :destroy
+  has_many :users, through: :organization_memberships
+  has_many :favorites, through: :organization_memberships, dependent: :destroy
 
   validates_presence_of :name
 
