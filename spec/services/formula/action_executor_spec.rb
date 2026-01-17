@@ -11,13 +11,13 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   fixtures "tables/cells"
 
   let(:space) { spaces(:is_default) }
-  let(:organization_user) { organization_memberships(:om_is_pawel) }
+  let(:organization_membership) { organization_memberships(:om_is_pawel) }
   let(:table) { tables_tables(:projects) }
 
   describe 'with dry_mode: false' do
     describe 'AddRow action' do
       it 'adds a new row to the table' do
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         
         expect {
           action_executor.add_row({}, table.id, {
@@ -36,7 +36,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
 
       it 'adds a row using table name instead of npi' do
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
 
         expect {
           action_executor.add_row({}, table.name, {
@@ -56,7 +56,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         original_count = table.rows.count
         expect(original_count).to be > 0
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.delete_rows({}, table.id)
 
         expect(table.reload.rows.count).to eq(0)
@@ -65,7 +65,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
     describe 'UpdateRows action' do
       it 'updates rows without condition (all rows)' do
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.update_rows({}, table.id, nil, {
           "Description" => "Updated description"
         })
@@ -78,7 +78,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
       it 'updates rows with condition formula' do
         # Update only the row where Key equals "JIRA"
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), "JIRA")', {
           "Description" => "Updated JIRA description"
         })
@@ -107,7 +107,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
           original_values[row.id] = row.cells.find_by(column: table.columns.find_by(name: "Description")).value
         end
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
           "Description" => "Should not be updated"
         })
@@ -123,7 +123,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       it 'adds new row when no rows match condition' do
         original_count = table.rows.count
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.add_or_update_rows({}, table.id, 'Equals(CurrentRow("Key"), "NONEXISTENT")', {
           "Key" => "ADDED",
           "Name" => "Added Row"
@@ -138,7 +138,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       it 'updates existing rows when condition matches' do
         original_count = table.rows.count
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.add_or_update_rows({}, table.id, 'Equals(CurrentRow("Key"), "JIRA")', {
           "Description" => "Updated via AddOrUpdate"
         })
@@ -157,7 +157,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         # First delete all rows
         Tables::DeleteRowsService.new(table).call
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.add_or_update_rows({}, table.id, nil, {
           "Key" => "FIRST",
           "Name" => "First Row"
@@ -173,7 +173,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         original_count = table.rows.count
         expect(original_count).to be > 0
 
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         action_executor.add_or_update_rows({}, table.id, nil, {
           "Description" => "Updated all via AddOrUpdate"
         })
@@ -192,7 +192,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
     describe 'multiple actions' do
       it 'executes multiple actions in sequence' do
         original_count = table.rows.count
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
         
         action_executor.add_row({}, table.id, {
           "Key" => "FIRST",
@@ -228,7 +228,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
     describe 'error handling' do
       it 'raises error for nonexistent table' do
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
 
         expect {
           action_executor.add_row({}, "nonexistent", { "Key" => "TEST" })
@@ -236,7 +236,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
 
       it 'raises error for invalid formula evaluation' do
-        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_user)
+        action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
 
         expect {
           action_executor.update_rows({}, table.id, 'InvalidFormula(', {

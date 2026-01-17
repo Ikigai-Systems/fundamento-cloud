@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "OrganizationUsers", type: :request do
+RSpec.describe "OrganizationMemberships", type: :request do
   include Turbo::Streams::StreamName
 
   fixtures :organizations, :users, :organization_memberships, :spaces
@@ -25,17 +25,17 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "renders new form successfully" do
-          get new_organization_user_path
+          get new_organization_membership_path
 
           expect(response).to have_http_status(:ok)
           expect(response.body).to include("organization_membership")
         end
 
-        it "initializes new organization_user with nested user" do
-          get new_organization_user_path
+        it "initializes new organization_membership with nested user" do
+          get new_organization_membership_path
 
-          expect(assigns(:organization_user)).to be_a_new(OrganizationUser)
-          expect(assigns(:organization_user).user).to be_a_new(User)
+          expect(assigns(:organization_membership)).to be_a_new(OrganizationMembership)
+          expect(assigns(:organization_membership).user).to be_a_new(User)
         end
       end
 
@@ -46,7 +46,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "denies access" do
-          get new_organization_user_path
+          get new_organization_membership_path
           expect(response).to have_http_status(:forbidden)
         end
       end
@@ -58,7 +58,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "denies access" do
-          result = get new_organization_user_path
+          result = get new_organization_membership_path
           expect(result).to redirect_to(new_user_session_path)
         end
       end
@@ -88,22 +88,22 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       context "with valid params for new user" do
-        it "creates new user and organization_user" do
+        it "creates new user and organization_membership" do
           expect {
-            post organization_users_path, params: new_user_params
+            post organization_memberships_path, params: new_user_params
           }.to change(User, :count).by(1)
-            .and change(OrganizationUser, :count).by(1)
+            .and change(OrganizationMembership, :count).by(1)
         end
 
         it "sets role to :member by default" do
-          post organization_users_path, params: new_user_params
+          post organization_memberships_path, params: new_user_params
 
-          new_org_user = OrganizationUser.order(:created_at).last
-          expect(new_org_user.role).to eq("member")
+          new_organization_membership = OrganizationMembership.order(:created_at).last
+          expect(new_organization_membership.role).to eq("member")
         end
 
         it "redirects to organization with success notice" do
-          post organization_users_path, params: new_user_params
+          post organization_memberships_path, params: new_user_params
 
           expect(response).to redirect_to(organization_path(is_org))
           expect(flash[:notice]).to eq("User was successfully created.")
@@ -111,8 +111,8 @@ RSpec.describe "OrganizationUsers", type: :request do
 
         it "broadcasts Turbo Stream updates" do
           expect {
-            post organization_users_path, params: new_user_params
-          }.to have_broadcasted_to(stream_name_from(["organization_users_list", is_org]))
+            post organization_memberships_path, params: new_user_params
+          }.to have_broadcasted_to(stream_name_from(["organization_memberships_list", is_org]))
         end
       end
 
@@ -133,16 +133,16 @@ RSpec.describe "OrganizationUsers", type: :request do
 
         it "adds existing user to organization without creating new user" do
           expect {
-            post organization_users_path, params: existing_user_params
+            post organization_memberships_path, params: existing_user_params
           }.to change(User, :count).by(0)
-            .and change(OrganizationUser, :count).by(1)
+            .and change(OrganizationMembership, :count).by(1)
         end
 
         it "uses the existing user account" do
-          post organization_users_path, params: existing_user_params
+          post organization_memberships_path, params: existing_user_params
 
-          new_org_user = OrganizationUser.order(:created_at).last
-          expect(new_org_user.user).to eq(john)
+          new_organization_membership = OrganizationMembership.order(:created_at).last
+          expect(new_organization_membership.user).to eq(john)
         end
       end
 
@@ -161,14 +161,14 @@ RSpec.describe "OrganizationUsers", type: :request do
           }
         end
 
-        it "does not create user or organization_user" do
+        it "does not create user or organization_membership" do
           expect {
-            post organization_users_path, params: invalid_params
+            post organization_memberships_path, params: invalid_params
           }.not_to change(User, :count)
         end
 
         it "re-renders new template with errors" do
-          post organization_users_path, params: invalid_params
+          post organization_memberships_path, params: invalid_params
 
           expect(response).to have_http_status(:ok)
           expect(response).to render_template(:new)
@@ -184,7 +184,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "denies access even for managers" do
-        post organization_users_path, params: new_user_params
+        post organization_memberships_path, params: new_user_params
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -196,7 +196,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "denies access" do
-        post organization_users_path, params: new_user_params
+        post organization_memberships_path, params: new_user_params
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -211,7 +211,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "renders change password form in Turbo frame" do
-          get change_password_organization_user_path(om_is_stefan.id),
+          get change_password_organization_membership_path(om_is_stefan.id),
             headers: { "Turbo-Frame" => "modal" }
 
           expect(response).to have_http_status(:ok)
@@ -219,7 +219,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "redirects if not a Turbo frame request" do
-          get change_password_organization_user_path(om_is_stefan.id)
+          get change_password_organization_membership_path(om_is_stefan.id)
 
           expect(response).to redirect_to(is_org)
         end
@@ -232,7 +232,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "denies access" do
-          get change_password_organization_user_path(om_is_stefan.id),
+          get change_password_organization_membership_path(om_is_stefan.id),
             headers: { "Turbo-Frame" => "modal" }
           expect(response).to have_http_status(:forbidden)
         end
@@ -261,7 +261,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "updates the user's password" do
-        patch organization_user_path(om_is_stefan.id),
+        patch organization_membership_path(om_is_stefan.id),
           params: password_params,
           headers: { "Turbo-Frame" => "modal" }
 
@@ -270,7 +270,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "responds with Turbo Stream redirect on success" do
-        patch organization_user_path(om_is_stefan.id),
+        patch organization_membership_path(om_is_stefan.id),
           params: password_params,
           headers: { "Turbo-Frame" => "modal" }
 
@@ -294,7 +294,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         it "does not update password" do
           old_encrypted_password = stefan.encrypted_password
 
-          patch organization_user_path(om_is_stefan.id),
+          patch organization_membership_path(om_is_stefan.id),
             params: invalid_password_params,
             headers: { "Turbo-Frame" => "modal" }
 
@@ -303,17 +303,17 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "re-renders change_password template with errors" do
-          patch organization_user_path(om_is_stefan.id),
+          patch organization_membership_path(om_is_stefan.id),
             params: invalid_password_params,
             headers: { "Turbo-Frame" => "modal" }
 
           expect(response).to render_template(:change_password)
-          expect(assigns(:organization_user).errors).not_to be_empty
+          expect(assigns(:organization_membership).errors).not_to be_empty
         end
       end
 
       it "redirects if not a Turbo frame request" do
-        patch organization_user_path(om_is_stefan.id),
+        patch organization_membership_path(om_is_stefan.id),
           params: password_params
 
         expect(response).to redirect_to(is_org)
@@ -327,7 +327,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         end
 
         it "denies access" do
-          patch organization_user_path(om_is_stefan.id),
+          patch organization_membership_path(om_is_stefan.id),
             params: password_params,
             headers: { "Turbo-Frame" => "modal" }
           expect(response).to have_http_status(:forbidden)
@@ -345,24 +345,24 @@ RSpec.describe "OrganizationUsers", type: :request do
 
       it "removes user from organization" do
         expect {
-          delete organization_user_path(om_is_stefan.id)
-        }.to change(OrganizationUser, :count).by(-1)
+          delete organization_membership_path(om_is_stefan.id)
+        }.to change(OrganizationMembership, :count).by(-1)
       end
 
       it "does not delete the user account" do
         expect {
-          delete organization_user_path(om_is_stefan.id)
+          delete organization_membership_path(om_is_stefan.id)
         }.not_to change(User, :count)
       end
 
       it "broadcasts Turbo Stream removal" do
         expect {
-          delete organization_user_path(om_is_stefan.id)
-        }.to have_broadcasted_to(stream_name_from(["organization_users_list", is_org]))
+          delete organization_membership_path(om_is_stefan.id)
+        }.to have_broadcasted_to(stream_name_from(["organization_memberships_list", is_org]))
       end
 
       it "redirects to organization with success notice" do
-        delete organization_user_path(om_is_stefan.id)
+        delete organization_membership_path(om_is_stefan.id)
 
         expect(response).to redirect_to(is_org)
         expect(flash[:notice]).to eq("User was removed from the organization.")
@@ -371,8 +371,8 @@ RSpec.describe "OrganizationUsers", type: :request do
       context "when trying to remove themselves" do
         it "prevents self-removal and shows notice" do
           expect {
-            delete organization_user_path(om_is_pawel.id)
-          }.not_to change(OrganizationUser, :count)
+            delete organization_membership_path(om_is_pawel.id)
+          }.not_to change(OrganizationMembership, :count)
 
           expect(response).to redirect_to(is_org)
           expect(flash[:notice]).to eq("You can't remove yourself from the organization.")
@@ -382,7 +382,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       context "when removing another manager" do
         before do
           # Create another manager to remove
-          @another_manager = OrganizationUser.create!(
+          @another_manager = OrganizationMembership.create!(
             organization: is_org,
             user: john,
             role: :manager
@@ -391,8 +391,8 @@ RSpec.describe "OrganizationUsers", type: :request do
 
         it "allows removal of other managers" do
           expect {
-            delete organization_user_path(@another_manager.id)
-          }.to change(OrganizationUser, :count).by(-1)
+            delete organization_membership_path(@another_manager.id)
+          }.to change(OrganizationMembership, :count).by(-1)
         end
       end
     end
@@ -404,7 +404,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "denies access" do
-        delete organization_user_path(om_is_stefan.id)
+        delete organization_membership_path(om_is_stefan.id)
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -419,12 +419,12 @@ RSpec.describe "OrganizationUsers", type: :request do
 
       it "promotes member to manager" do
         expect {
-          patch promote_organization_user_path(om_is_stefan.id)
+          patch promote_organization_membership_path(om_is_stefan.id)
         }.to change { om_is_stefan.reload.role }.from("member").to("manager")
       end
 
       it "redirects to organization with success notice" do
-        patch promote_organization_user_path(om_is_stefan.id)
+        patch promote_organization_membership_path(om_is_stefan.id)
 
         expect(response).to redirect_to(is_org)
         expect(flash[:notice]).to eq("User was promoted to manager.")
@@ -432,14 +432,14 @@ RSpec.describe "OrganizationUsers", type: :request do
 
       it "broadcasts Turbo Stream update" do
         expect {
-          patch promote_organization_user_path(om_is_stefan.id)
-        }.to have_broadcasted_to(stream_name_from(["organization_users_list", is_org]))
+          patch promote_organization_membership_path(om_is_stefan.id)
+        }.to have_broadcasted_to(stream_name_from(["organization_memberships_list", is_org]))
       end
 
       context "when target is already manager" do
         it "raises error or handles gracefully" do
           # Assuming Pundit policy prevents this
-          patch promote_organization_user_path(om_is_pawel.id)
+          patch promote_organization_membership_path(om_is_pawel.id)
           expect(response).to have_http_status(:forbidden)
         end
       end
@@ -452,7 +452,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "denies access" do
-        patch promote_organization_user_path(om_is_stefan.id)
+        patch promote_organization_membership_path(om_is_stefan.id)
         expect(response).to have_http_status(:forbidden)
       end
     end
@@ -472,12 +472,12 @@ RSpec.describe "OrganizationUsers", type: :request do
 
       it "demotes manager to member" do
         expect {
-          patch demote_organization_user_path(om_is_stefan.id)
+          patch demote_organization_membership_path(om_is_stefan.id)
         }.to change { om_is_stefan.reload.role }.from("manager").to("member")
       end
 
       it "redirects to organization with success notice" do
-        patch demote_organization_user_path(om_is_stefan.id)
+        patch demote_organization_membership_path(om_is_stefan.id)
 
         expect(response).to redirect_to(is_org)
         expect(flash[:notice]).to eq("Manager was demoted to member.")
@@ -485,14 +485,14 @@ RSpec.describe "OrganizationUsers", type: :request do
 
       it "broadcasts Turbo Stream update" do
         expect {
-          patch demote_organization_user_path(om_is_stefan.id)
-        }.to have_broadcasted_to(stream_name_from(["organization_users_list", is_org]))
+          patch demote_organization_membership_path(om_is_stefan.id)
+        }.to have_broadcasted_to(stream_name_from(["organization_memberships_list", is_org]))
       end
 
       context "when trying to demote themselves" do
         it "prevents self-demotion and shows notice" do
           expect {
-            patch demote_organization_user_path(om_is_pawel.id)
+            patch demote_organization_membership_path(om_is_pawel.id)
           }.not_to change { om_is_pawel.reload.role }
 
           expect(response).to redirect_to(is_org)
@@ -504,7 +504,7 @@ RSpec.describe "OrganizationUsers", type: :request do
         before { om_is_stefan.update!(role: :member) }
 
         it "raises error or handles gracefully" do
-          patch demote_organization_user_path(om_is_stefan.id)
+          patch demote_organization_membership_path(om_is_stefan.id)
           expect(response).to have_http_status(:forbidden)
         end
       end
@@ -518,7 +518,7 @@ RSpec.describe "OrganizationUsers", type: :request do
       end
 
       it "denies access" do
-        patch demote_organization_user_path(om_is_pawel.id)
+        patch demote_organization_membership_path(om_is_pawel.id)
         expect(response).to have_http_status(:forbidden)
       end
     end

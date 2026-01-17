@@ -5,7 +5,7 @@
     <span class="icon-[heroicons--bell] size-5"></span>
     <span class="sr-only">Notifications</span>
 
-    <% unread_mentions_count = current_organization_user.unread_mentions_count(policy_scope(current_organization.documents)) %>
+    <% unread_mentions_count = current_organization_membership.unread_mentions_count(policy_scope(current_organization.documents)) %>
 
     <% if unread_mentions_count > 0 %>
       <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">

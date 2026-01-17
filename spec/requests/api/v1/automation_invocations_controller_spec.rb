@@ -6,14 +6,14 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
   let(:manager) { users(:pawel) }
   let(:organization) { organizations(:hc) }
   let(:space) { spaces(:hc_default) }
-  let(:org_user) { organization_memberships(:om_hc_pawel) }
+  let(:organization_membership) { organization_memberships(:om_hc_pawel) }
 
   let(:webhook_body) { JSON.parse(File.read(Rails.root.join("spec/fixtures/files/formula/metabase-webhook.json"))) }
 
   let!(:api_token) do
     ApiToken.create!(
       organization: organization,
-      organization_membership: org_user,
+      organization_membership: organization_membership,
       title: "Test API Token",
     )
   end
@@ -50,7 +50,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
   let(:automation) do
     space.automations.create!(
       organization: organization,
-      run_as: org_user,
+      run_as: organization_membership,
       title: "Webhook Automation",
       kind: "webhook",
       formula: 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("npi", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))',

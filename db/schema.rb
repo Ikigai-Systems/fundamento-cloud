@@ -595,7 +595,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_064943) do
     t.index ["id"], name: "index_users_on_id", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_users_on_invited_by"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_memberships_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

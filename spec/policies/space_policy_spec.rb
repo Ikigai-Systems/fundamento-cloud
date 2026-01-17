@@ -12,13 +12,13 @@ RSpec.describe SpacePolicy, type: :model do
 
   subject { described_class }
 
-  let(:policy_user_context) { PolicyUserContext.new(organization_user.user, organization_user.organization) }
-  let(:current_organization) { organization_user.organization }
+  let(:policy_user_context) { PolicyUserContext.new(organization_membership.user, organization_membership.organization) }
+  let(:current_organization) { organization_membership.organization }
   let(:policy) { SpacePolicy::Scope.new(policy_user_context, current_organization.spaces.all) }
 
   context "current organization is is" do
     context "manager" do
-      let(:organization_user) { organization_memberships(:om_is_pawel) }
+      let(:organization_membership) { organization_memberships(:om_is_pawel) }
 
       it "sees all spaces" do
         expect(policy.resolve.order(:name).map(&:name)).to eq(["Default IS", "Stefan's Private Space"])
@@ -27,7 +27,7 @@ RSpec.describe SpacePolicy, type: :model do
 
     context "member" do
       context "stefan" do
-        let(:organization_user) { organization_memberships(:om_is_stefan) }
+        let(:organization_membership) { organization_memberships(:om_is_stefan) }
 
         it "sees only spaces that his member of" do
           expect(policy.resolve.order(:name).map(&:name)).to eq(["Default IS", "Stefan's Private Space"])
@@ -38,7 +38,7 @@ RSpec.describe SpacePolicy, type: :model do
 
   context "current organization is hc" do
     context "manager" do
-      let(:organization_user) { organization_memberships(:om_hc_pawel) }
+      let(:organization_membership) { organization_memberships(:om_hc_pawel) }
 
       it "sees all spaces" do
         expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Pawel's Private Space", "Restricted HC"])
@@ -47,7 +47,7 @@ RSpec.describe SpacePolicy, type: :model do
 
     context "member" do
       context "maria" do
-        let(:organization_user) { organization_memberships(:om_hc_maria) }
+        let(:organization_membership) { organization_memberships(:om_hc_maria) }
 
         it "maria can see only public and restricted spaces" do
           expect(policy.resolve.order(:name).map(&:name)).to eq(["Default HC", "Restricted HC"])
@@ -55,7 +55,7 @@ RSpec.describe SpacePolicy, type: :model do
       end
 
       context "stefan" do
-        let(:organization_user) { organization_memberships(:om_hc_stefan) }
+        let(:organization_membership) { organization_memberships(:om_hc_stefan) }
 
         it "sees only spaces that his member of" do
           expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Restricted HC"])

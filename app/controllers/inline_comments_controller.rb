@@ -20,7 +20,7 @@ class InlineCommentsController < ApplicationController
         {
           id: comment[:comment_id],
           content: comment[:content],
-          user: current_organization_user.user,
+          user: current_organization_membership.user,
           comment_attributes: comment[:attributes],
         }
       )
@@ -61,7 +61,7 @@ class InlineCommentsController < ApplicationController
     inline_comment_thread.update(
       {
         resolved_at: DateTime.now,
-        resolved_by: current_organization_user.user.id
+        resolved_by: current_organization_membership.user.id
       }
     )
 
@@ -93,7 +93,7 @@ class InlineCommentsController < ApplicationController
         inline_comment_thread_id: params[:thread_id],
         content: params[:content],
         comment_attributes: params[:attributes],
-        user: current_organization_user.user
+        user: current_organization_membership.user
       }
     )
 

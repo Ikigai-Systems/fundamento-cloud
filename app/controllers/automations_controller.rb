@@ -18,7 +18,7 @@ class AutomationsController < ApplicationController
   def create
     @automation = @space.automations.new(automation_params)
     @automation.organization_id = @space.organization_id
-    @automation.run_as = current_organization_user
+    @automation.run_as = current_organization_membership
 
     authorize @automation, :create?
 

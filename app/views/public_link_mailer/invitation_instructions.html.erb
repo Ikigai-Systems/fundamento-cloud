@@ -3,7 +3,7 @@
   <tr>
     <td style="padding-bottom: 17px;">
       <h1 style="margin: 0; font-family: Inter, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 24px; font-weight: 500; color: #111111; text-align: center; line-height: 28px; letter-spacing: -1.2px;">
-        <%= @pundit_user.organization_user.display_name %> invited you to review a document titled <strong><%= @public_link.object.title %></strong>.
+        <%= @pundit_user.organization_membership.display_name %> invited you to review a document titled <strong><%= @public_link.object.title %></strong>.
       </h1>
     </td>
   </tr>
@@ -19,7 +19,7 @@
             <table role="presentation" width="32" height="32" cellpadding="0" cellspacing="0" border="0" style="background-color: #3b82f6; border-radius: 50%; mso-border-radius-alt: 16px;">
               <tr>
                 <td align="center" valign="middle" style="font-family: Inter, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 15px; font-weight: 700; color: white; text-align: center; letter-spacing: -0.6px; line-height: 32px;">
-                  <%= @pundit_user.organization_user.initials %>
+                  <%= @pundit_user.organization_membership.initials %>
                 </td>
               </tr>
             </table>

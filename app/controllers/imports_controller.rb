@@ -14,7 +14,7 @@ class ImportsController < ApplicationController
 
   def create
     @document_import = current_organization.document_imports.build(document_import_params)
-    @document_import.organization_user = current_organization_user
+    @document_import.organization_membership = current_organization_membership
 
     authorize @document_import, :create?
 
@@ -33,7 +33,7 @@ class ImportsController < ApplicationController
   end
 
   def index
-    @document_imports = policy_scope(current_organization.document_imports).recent.includes(:space, :document, :organization_user)
+    @document_imports = policy_scope(current_organization.document_imports).recent.includes(:space, :document, :organization_membership)
 
     authorize DocumentImport, :index?
   end

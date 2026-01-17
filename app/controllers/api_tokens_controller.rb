@@ -5,24 +5,24 @@ class ApiTokensController < ApplicationController
   before_action :ensure_turbo_request, only: [:new, :create]
 
   def index
-    @api_tokens = pundit_user.organization_user.api_tokens
+    @api_tokens = pundit_user.organization_membership.api_tokens
   end
 
   def new
-    @api_token = pundit_user.organization_user.api_tokens.new
+    @api_token = pundit_user.organization_membership.api_tokens.new
     @api_token.generate_api_token
 
     authorize @api_token, :create?
   end
 
   def create
-    @api_token = pundit_user.organization_user.api_tokens.new(api_token_params)
+    @api_token = pundit_user.organization_membership.api_tokens.new(api_token_params)
     @api_token.organization = current_organization
 
     authorize @api_token, :create?
 
     if @api_token.save
-      @api_tokens = pundit_user.organization_user.api_tokens
+      @api_tokens = pundit_user.organization_membership.api_tokens
 
       respond_to do |format|
         format.turbo_stream
@@ -33,7 +33,7 @@ class ApiTokensController < ApplicationController
   end
 
   def destroy
-    @api_token = pundit_user.organization_user.api_tokens.find(params[:id])
+    @api_token = pundit_user.organization_membership.api_tokens.find(params[:id])
 
     authorize @api_token, :destroy?
 

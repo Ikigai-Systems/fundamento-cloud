@@ -4,20 +4,20 @@ class Api::V1::TablesController < Api::ApiController
     @table = self.class.find_relevant_table(
       params[:id],
       params.dig("evaluationContext", "space_id"),
-      current_organization_user,
+      current_organization_membership,
       for_update: false
     )
 
     render json: {
       table: @table.attributes,
-      data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user)
+      data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership)
     }
   end
 
-  def self.find_relevant_table(npi_or_name, space_id, organization_user, for_update: true)
+  def self.find_relevant_table(npi_or_name, space_id, organization_membership, for_update: true)
     space = Space.find(space_id)
 
-    pundit_user = PolicyUserContext.new(organization_user.user, organization_user.organization)
+    pundit_user = PolicyUserContext.new(organization_membership.user, organization_membership.organization)
 
     # Will throw if unauthorized
     Pundit.authorize(pundit_user, space, for_update ? :update? : :show?)

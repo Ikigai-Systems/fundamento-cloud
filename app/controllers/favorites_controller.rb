@@ -4,7 +4,7 @@ class FavoritesController < ApplicationController
   after_action :verify_authorized, except: [:index]
 
   def create
-    @favorite = pundit_user.organization_user.favorites.new(favorite_params)
+    @favorite = pundit_user.organization_membership.favorites.new(favorite_params)
 
     authorize @favorite, :update?
 
@@ -20,7 +20,7 @@ class FavoritesController < ApplicationController
   end
 
   def destroy
-    @favorite = pundit_user.organization_user.favorites.find(params[:npi])
+    @favorite = pundit_user.organization_membership.favorites.find(params[:npi])
 
     authorize @favorite, :update?
 
@@ -36,7 +36,7 @@ class FavoritesController < ApplicationController
   def index
     respond_to do |format|
       format.html { render partial: "favorites_tab" }
-      format.json { render json: pundit_user.organization_user.favorites }
+      format.json { render json: pundit_user.organization_membership.favorites }
     end
   end
 

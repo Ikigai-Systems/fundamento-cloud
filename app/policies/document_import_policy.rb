@@ -6,7 +6,7 @@ class DocumentImportPolicy < ApplicationPolicy
   end
 
   def index?
-    user_context.organization_user.present?
+    user_context.organization_membership.present?
   end
 
   def show?
@@ -14,16 +14,16 @@ class DocumentImportPolicy < ApplicationPolicy
   end
 
   def create?
-    user_context.organization_user.present?
+    user_context.organization_membership.present?
   end
 
   def update?
-    record.organization_user == user_context.organization_user ||
-      user_context.organization_user.manager?
+    record.organization_membership == user_context.organization_membership ||
+      user_context.organization_membership.manager?
   end
 
   def destroy?
-    record.organization_user == user_context.organization_user ||
-      user_context.organization_user.manager?
+    record.organization_membership == user_context.organization_membership ||
+      user_context.organization_membership.manager?
   end
 end

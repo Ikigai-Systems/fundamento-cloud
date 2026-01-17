@@ -112,7 +112,7 @@ RSpec.describe "Api::V1::Users", type: :request do
 
     context "with JWT token authentication" do
       let(:jwt_secret_key) { "test_jwt_secret_key_for_specs" }
-      let(:organization_user) { organization_memberships(:om_is_pawel) }
+      let(:organization_membership) { organization_memberships(:om_is_pawel) }
       
       before do
         allow(Rails.application.credentials).to receive(:formula_eval).and_return(
@@ -123,7 +123,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       context "with valid JWT token" do
         let(:payload) do
           {
-            "sub" => organization_user.to_global_id.to_s,
+            "sub" => organization_membership.to_global_id.to_s,
             "aud" => "test_audience",
             "exp" => 1.hour.from_now.to_i
           }
@@ -153,7 +153,7 @@ RSpec.describe "Api::V1::Users", type: :request do
       context "with invalid JWT token" do
         it "returns unauthorized with expired JWT token" do
           payload = {
-            "sub" => organization_user.to_global_id.to_s,
+            "sub" => organization_membership.to_global_id.to_s,
             "exp" => 1.hour.ago.to_i
           }
           expired_token = JWT.encode(payload, jwt_secret_key, "HS256")
@@ -166,7 +166,7 @@ RSpec.describe "Api::V1::Users", type: :request do
 
         it "returns unauthorized with invalid JWT signature" do
           payload = {
-            "sub" => organization_user.to_global_id.to_s,
+            "sub" => organization_membership.to_global_id.to_s,
             "exp" => 1.hour.from_now.to_i
           }
           invalid_token = JWT.encode(payload, "wrong_secret", "HS256")
@@ -184,9 +184,9 @@ RSpec.describe "Api::V1::Users", type: :request do
           expect(response).to have_http_status(:unauthorized)
         end
 
-        it "returns unauthorized with JWT token containing invalid organization_user" do
+        it "returns unauthorized with JWT token containing invalid organization_membership" do
           payload = {
-            "sub" => "gid://invalid/OrganizationUser/999999",
+            "sub" => "gid://invalid/OrganizationMembership/999999",
             "exp" => 1.hour.from_now.to_i
           }
           invalid_token = JWT.encode(payload, jwt_secret_key, "HS256")
@@ -220,10 +220,10 @@ RSpec.describe "Api::V1::Users", type: :request do
 
     context "authentication method precedence" do
       let(:jwt_secret_key) { "test_jwt_secret_key_for_specs" }
-      let(:organization_user) { organization_memberships(:om_is_pawel) }
+      let(:organization_membership) { organization_memberships(:om_is_pawel) }
       let(:payload) do
         {
-          "sub" => organization_user.to_global_id.to_s,
+          "sub" => organization_membership.to_global_id.to_s,
           "aud" => "test_audience", 
           "exp" => 1.hour.from_now.to_i
         }

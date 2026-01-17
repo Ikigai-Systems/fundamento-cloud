@@ -1,7 +1,7 @@
 # test/mailers/previews/devise_mailer_preview.rb
 class PublicLinkMailerPreview < ActionMailer::Preview
   def invitation_instructions
-    pundit_user = PolicyUserContext.new(OrganizationUser.last)
+    pundit_user = PolicyUserContext.new(OrganizationMembership.last)
 
     public_link = PublicLink.last
 

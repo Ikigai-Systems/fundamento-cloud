@@ -1,11 +1,11 @@
 <section class="form-section">
   <h2 class="form-header">Create user</h2>
 
-  <%= form_for(@organization_user,
+  <%= form_for(@organization_membership,
     html: { class: "default-form" },
     data: { turbo: false, controller: "prevent-double-submit" }) do |f|
   %>
-    <%= render "devise/shared/error_messages", resource: @organization_user %>
+    <%= render "devise/shared/error_messages", resource: @organization_membership %>
 
     <%= f.hidden_field :organization_id, value: current_organization.id %>
 

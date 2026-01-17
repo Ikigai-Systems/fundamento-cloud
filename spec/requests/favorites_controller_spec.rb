@@ -30,7 +30,7 @@ RSpec.describe FavoritesController, type: :request do
         new_favorite = Favorite.order(:created_at).last
         expect(new_favorite.id).to be_a(String)
         expect(new_favorite.id.length).to eq(10)
-        expect(new_favorite.organization_user.user).to eq(manager)
+        expect(new_favorite.organization_membership.user).to eq(manager)
         expect(new_favorite.object).to eq(document_two)
 
         expect(response).to have_http_status(:created)
@@ -90,8 +90,8 @@ RSpec.describe FavoritesController, type: :request do
       end
 
       it "destroys favorite" do
-        org_user = OrganizationUser.find_by(user: manager, organization: organization)
-        favorite_to_destroy = org_user.favorites.create!(
+        organization_membership = OrganizationMembership.find_by(user: manager, organization: organization)
+        favorite_to_destroy = organization_membership.favorites.create!(
           object: document_two
         )
 
@@ -122,8 +122,8 @@ RSpec.describe FavoritesController, type: :request do
       end
 
       it "can delete own favorites" do
-        org_user = OrganizationUser.find_by(user: member, organization: organization)
-        own_favorite = org_user.favorites.create!(
+        organization_membership = OrganizationMembership.find_by(user: member, organization: organization)
+        own_favorite = organization_membership.favorites.create!(
           object: document_two
         )
 

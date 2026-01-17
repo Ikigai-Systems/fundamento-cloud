@@ -42,8 +42,8 @@ RSpec.describe OrganizationsController, type: :request do
 
       it "om_hc_maria should not have access to is organization" do
         # Explicitly verify Maria (om_hc_maria) cannot access is organization
-        expect(OrganizationUser.exists?(organization_id: is_org.id, user_id: maria.id)).to be false
-        expect(OrganizationUser.exists?(organization_id: hc_org.id, user_id: maria.id)).to be true
+        expect(OrganizationMembership.exists?(organization_id: is_org.id, user_id: maria.id)).to be false
+        expect(OrganizationMembership.exists?(organization_id: hc_org.id, user_id: maria.id)).to be true
 
         # Attempt to select the organization they don't belong to should return 404
         post select_organization_path(is_org)

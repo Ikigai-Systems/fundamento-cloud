@@ -1,10 +1,10 @@
 <div class="rounded-xl border flex flex-col sidebar-colors pt-3">
   <div class="flex flex-row gap-3 pl-3 pb-3">
     <div>
-      <%= render UserAvatar.new(organization_user: comment.organization_user) %>
+      <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
     </div>
     <div class="flex flex-col">
-      <span class="font-semibold"><%= comment.organization_user.display_name %></span>
+      <span class="font-semibold"><%= comment.organization_membership.display_name %></span>
       <%= time_ago_in_words comment.created_at %>
     </div>
   </div>

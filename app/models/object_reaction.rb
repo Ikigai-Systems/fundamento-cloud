@@ -18,5 +18,5 @@ class ObjectReaction < ApplicationRecord
   validates :object_type, inclusion: { in: ALLOWED_OBJECT_TYPES }
 
   validates_presence_of :emoji
-  validates_uniqueness_of :emoji, scope: [:object_id, :object_type, :organization_user_id]
+  validates_uniqueness_of :emoji, scope: [:object_id, :object_type, :organization_membership_id]
 end

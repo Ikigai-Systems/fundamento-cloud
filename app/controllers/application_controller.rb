@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_organization
   helper_method :current_organization_membership
-  helper_method :current_organization_user # Legacy alias
+  helper_method :current_organization_membership # Legacy alias
   helper_method :subtitle
   helper_method :replays_session_sample_rate
 
@@ -37,11 +37,6 @@ class ApplicationController < ActionController::Base
   # TODO: In the future implement this as devise scope, the same way we handle Superintendents
   def current_organization_membership
     pundit_user&.organization_membership
-  end
-
-  # Legacy alias for backward compatibility
-  def current_organization_user
-    current_organization_membership
   end
 
   def verify_authorized_or_index_scoped

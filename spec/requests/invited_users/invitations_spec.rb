@@ -189,10 +189,10 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       it "creates organization user in the organization the invitation was for" do
         expect {
           put invited_user_invitation_path, params: valid_params
-        }.to change(OrganizationUser, :count).by(1)
+        }.to change(OrganizationMembership, :count).by(1)
 
         user = User.find_by(email: "newuser@example.com")
-        organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
+        organization_membership = OrganizationMembership.find_by(user: user, organization: is_org)
 
         expect(organization_membership).to be_present
         # Verify user is in the INVITED organization, not a new one
@@ -203,9 +203,9 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         put invited_user_invitation_path, params: valid_params
 
         user = User.find_by(email: "newuser@example.com")
-        organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
+        organization_membership = OrganizationMembership.find_by(user: user, organization: is_org)
 
-        expect(organization_user.role).to eq("member")
+        expect(organization_membership.role).to eq("member")
       end
 
       it "destroys the InvitedUser record" do
@@ -273,7 +273,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       it "adds user to organization" do
         expect {
           put invited_user_invitation_path, params: valid_params
-        }.to change(OrganizationUser, :count).by(1)
+        }.to change(OrganizationMembership, :count).by(1)
 
         expect(is_org.users.reload).to include(john)
       end
@@ -281,8 +281,8 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       it "assigns member role" do
         put invited_user_invitation_path, params: valid_params
 
-        organization_membership = OrganizationUser.find_by(user: john, organization: is_org)
-        expect(organization_user.role).to eq("member")
+        organization_membership = OrganizationMembership.find_by(user: john, organization: is_org)
+        expect(organization_membership.role).to eq("member")
       end
 
       it "destroys the invited user record" do
@@ -373,8 +373,8 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
       # User should be in the INVITED organization as a member
       expect(is_org.users.reload).to include(user)
-      organization_membership = OrganizationUser.find_by(user: user, organization: is_org)
-      expect(organization_user.role).to eq("member")
+      organization_membership = OrganizationMembership.find_by(user: user, organization: is_org)
+      expect(organization_membership.role).to eq("member")
 
       # User should have exactly ONE organization (the invited one, not a new auto-created one)
       expect(user.organizations.count).to eq(1)

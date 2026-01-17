@@ -2,7 +2,7 @@ class PolicyUserContext
   attr_reader :user, :current_organization, :organization_membership
 
   # Legacy alias for backward compatibility during migration
-  alias_method :organization_user, :organization_membership
+  alias_method :organization_membership, :organization_membership
 
   def initialize(user_or_organization_membership, current_organization = nil)
     if user_or_organization_membership.is_a?(OrganizationMembership)

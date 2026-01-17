@@ -11,7 +11,7 @@ describe("Organization Selection (EnsureOrganization)", function() {
     cy.app("clean");
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
-      fixtures: ["organizations", "users", "organization_users", "spaces"]
+      fixtures: ["organizations", "users", "organization_memberships", "spaces"]
     });
   });
 
@@ -114,7 +114,7 @@ describe("Organization Selection (EnsureOrganization)", function() {
     });
 
     it("clears invalid cookie (org exists but user not member) and redirects", function() {
-      cy.appEval(`OrganizationUser.find("ou_hc_pawel").destroy`)
+      cy.appEval(`OrganizationMembership.find("om_hc_pawel").destroy`)
 
       // Set cookie with organization that exists but Pawel doesn't have access to
       // Org 'another' exists but Pawel is not a member

@@ -33,8 +33,8 @@ module Api
     end
 
     # TODO: In the future implement this as devise scope, the same way we handle Superintendents
-    def current_organization_user
-      pundit_user&.organization_user
+    def current_organization_membership
+      pundit_user&.organization_membership
     end
   end
 end

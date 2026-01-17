@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe OrganizationUserPolicy, type: :policy do
+RSpec.describe OrganizationMembershipPolicy, type: :policy do
   fixtures :organizations, :users, :organization_memberships
 
   let(:is_org) { organizations(:is) }
@@ -19,39 +19,39 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
   permissions :create? do
     context "when user is manager in the organization" do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
-      let(:target_org_user) { OrganizationUser.new(organization: is_org) }
+      let(:target_organization_membership) { OrganizationMembership.new(organization: is_org) }
 
       when_feature_enabled(:standalone) do
         it "permits creation" do
-          expect(subject).to permit(policy_context, target_org_user)
+          expect(subject).to permit(policy_context, target_organization_membership)
         end
       end
 
       when_feature_disabled(:standalone) do
         it "denies creation" do
-          expect(subject).not_to permit(policy_context, target_org_user)
+          expect(subject).not_to permit(policy_context, target_organization_membership)
         end
       end
     end
 
     context "when user is member in the organization" do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
-      let(:target_org_user) { OrganizationUser.new(organization: is_org) }
+      let(:target_organization_membership) { OrganizationMembership.new(organization: is_org) }
 
       when_feature_both_states(:standalone) do
         it "denies creation" do
-          expect(subject).not_to permit(policy_context, target_org_user)
+          expect(subject).not_to permit(policy_context, target_organization_membership)
         end
       end
     end
 
     context "when user is not in the organization" do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
-      let(:target_org_user) { OrganizationUser.new(organization: is_org) }
+      let(:target_organization_membership) { OrganizationMembership.new(organization: is_org) }
 
       when_feature_both_states(:standalone) do
         it "denies creation" do
-          expect(subject).not_to permit(policy_context, target_org_user)
+          expect(subject).not_to permit(policy_context, target_organization_membership)
         end
       end
     end
@@ -65,10 +65,10 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
       it "has same permissions as #create?" do
         policy_context = PolicyUserContext.new(pawel, is_org)
-        target_org_user = OrganizationUser.new(organization: is_org)
+        target_organization_membership = OrganizationMembership.new(organization: is_org)
 
-        create_permission = described_class.new(policy_context, target_org_user).create?
-        change_password_permission = described_class.new(policy_context, target_org_user).change_password?
+        create_permission = described_class.new(policy_context, target_organization_membership).create?
+        change_password_permission = described_class.new(policy_context, target_organization_membership).change_password?
 
         expect(change_password_permission).to eq(create_permission)
       end
@@ -76,23 +76,23 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
     context "when user is manager and :standalone is enabled" do
       let(:policy_context) { PolicyUserContext.new(pawel, is_org) }
-      let(:target_org_user) { om_is_stefan }
+      let(:target_organization_membership) { om_is_stefan }
 
       before do
         with_feature_flag(:standalone, enabled: true)
       end
 
       it "permits password change" do
-        expect(subject).to permit(policy_context, target_org_user)
+        expect(subject).to permit(policy_context, target_organization_membership)
       end
     end
 
     context "when user is member" do
       let(:policy_context) { PolicyUserContext.new(stefan, is_org) }
-      let(:target_org_user) { om_is_stefan }
+      let(:target_organization_membership) { om_is_stefan }
 
       it "denies password change" do
-        expect(subject).not_to permit(policy_context, target_org_user)
+        expect(subject).not_to permit(policy_context, target_organization_membership)
       end
     end
   end
@@ -106,7 +106,7 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       end
 
       it "permits removing another manager" do
-        another_manager = OrganizationUser.create!(
+        another_manager = OrganizationMembership.create!(
           organization: is_org,
           user: john,
           role: :manager
@@ -239,8 +239,8 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
 
   permissions :create?, :promote?, :demote?, :change_password?, :destroy? do
     it "uses organization from record, not from policy context" do
-      # Create org_user in hc_org
-      ou_hc_john = OrganizationUser.create!(
+      # Create organization_membership in hc_org
+      om_hc_john = OrganizationMembership.create!(
         organization: hc_org,
         user: john,
         role: :member
@@ -250,15 +250,15 @@ RSpec.describe OrganizationUserPolicy, type: :policy do
       policy_context = PolicyUserContext.new(pawel, is_org)
 
       # Should deny because pawel is not manager in hc_org
-      expect(subject).not_to permit(policy_context, ou_hc_john)
+      expect(subject).not_to permit(policy_context, om_hc_john)
     end
 
     context "when user has no membership in organization" do
       let(:policy_context) { PolicyUserContext.new(john, is_org) }
-      let(:target_org_user) { om_is_stefan }
+      let(:target_organization_membership) { om_is_stefan }
 
       it "denies all actions" do
-        expect(subject).not_to permit(policy_context, target_org_user)
+        expect(subject).not_to permit(policy_context, target_organization_membership)
       end
     end
   end

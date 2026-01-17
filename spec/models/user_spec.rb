@@ -10,10 +10,10 @@ RSpec.describe User, type: :model do
       expect(user.id).to eq("user_pawel")
     end
 
-    it "has string user_id in organization_users" do
+    it "has string user_id in organization_memberships" do
       organization_membership = organization_memberships(:om_is_pawel)
-      expect(organization_user.user_id).to be_a(String)
-      expect(organization_user.user_id).to eq("user_pawel")
+      expect(organization_membership.user_id).to be_a(String)
+      expect(organization_membership.user_id).to eq("user_pawel")
     end
 
     it "can create new user with string ID" do
@@ -33,10 +33,10 @@ RSpec.describe User, type: :model do
       expect(User.implicit_order_column).to eq(:created_at)
     end
 
-    it "maintains organization_user associations" do
+    it "maintains organization_membership associations" do
       user = users(:pawel)
-      expect(user.organizations_users.count).to be > 0
-      expect(user.organizations_users.first).to be_a(OrganizationUser)
+      expect(user.organization_memberships.count).to be > 0
+      expect(user.organization_memberships.first).to be_a(OrganizationMembership)
     end
   end
 end

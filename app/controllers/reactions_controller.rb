@@ -19,7 +19,7 @@ class ReactionsController < ApplicationController
 
     @resource.reactions.find_or_create_by!(
       organization: current_organization,
-      organization_user: current_organization_user,
+      organization_membership: current_organization_membership,
       emoji: params[:reaction][:emoji],
     )
 
@@ -36,7 +36,7 @@ class ReactionsController < ApplicationController
   def destroy
     authorize @resource, :show?
 
-    @resource.reactions.find_by(id: params[:id], organization_user: current_organization_user).destroy!
+    @resource.reactions.find_by(id: params[:id], organization_membership: current_organization_membership).destroy!
 
     render html: "", status: :no_content
   end
@@ -47,7 +47,7 @@ class ReactionsController < ApplicationController
     @resource.reactions.order(:emoji).group_by(&:emoji).transform_values do |reactions|
       count = reactions.size
       reaction = reactions.first
-      destroyable = reactions.find { _1.organization_user == current_organization_user }
+      destroyable = reactions.find { _1.organization_membership == current_organization_membership }
 
       [count, reaction, destroyable]
     end

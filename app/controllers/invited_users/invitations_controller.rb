@@ -53,7 +53,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
 
         # Explicitly create OrganizationUser with member role
         OrganizationMembership.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_membership|
-          organization_user.role = :member
+          organization_membership.role = :member
         end
 
         # Sign in the user (since we're creating a separate User record, Devise can't auto-login)

@@ -112,13 +112,13 @@ RSpec.describe SpacesController, type: :request do
           patch space_path(public_space), params: {
             space: {
               name: public_space.name,
-              space_memberships: ["OrganizationUser|#{stefan_ou.id}"]
+              space_memberships: ["OrganizationMembership|#{stefan_ou.id}"]
             }
           }
         }.to change { public_space.space_memberships.count }.by(1)
 
         membership = public_space.space_memberships.last
-        expect(membership.member_type).to eq("OrganizationUser")
+        expect(membership.member_type).to eq("OrganizationMembership")
         expect(membership.member_id).to eq(stefan_ou.id.to_s) # member_id is string
         expect(membership.role).to eq("manager")
       end
@@ -192,7 +192,7 @@ RSpec.describe SpacesController, type: :request do
           space: {
             name: "Multi-update Space",
             access_mode: "private",
-            space_memberships: ["OrganizationUser|#{stefan_ou.id}"]
+            space_memberships: ["OrganizationMembership|#{stefan_ou.id}"]
           }
         }
 
@@ -227,7 +227,7 @@ RSpec.describe SpacesController, type: :request do
         patch space_path(stefans_space), params: {
           space: {
             name: "Updated by Space Manager",
-            space_memberships: ["OrganizationUser|#{organization_memberships(:om_is_stefan).id}"]
+            space_memberships: ["OrganizationMembership|#{organization_memberships(:om_is_stefan).id}"]
           }
         }
 
@@ -309,7 +309,7 @@ RSpec.describe SpacesController, type: :request do
       expect(json_response).to be_an(Array)
 
       # Should include both users and teams
-      user_results = json_response.select { |item| item["value"].start_with?("OrganizationUser|") }
+      user_results = json_response.select { |item| item["value"].start_with?("OrganizationMembership|") }
       team_results = json_response.select { |item| item["value"].start_with?("Team|") }
 
       expect(user_results).not_to be_empty
@@ -327,7 +327,7 @@ RSpec.describe SpacesController, type: :request do
 
     it "excludes preselected members" do
       stefan_ou = organization_memberships(:om_hc_stefan)
-      preselect_value = "OrganizationUser|#{stefan_ou.id}"
+      preselect_value = "OrganizationMembership|#{stefan_ou.id}"
 
       get suggest_owners_spaces_path, params: { q: "", preselects: preselect_value }
 

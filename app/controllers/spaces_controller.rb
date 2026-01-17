@@ -42,7 +42,7 @@ class SpacesController < ApplicationController
 
     authorize @space, :create?
 
-    if @space.save # && @organization_user.save
+    if @space.save # && @organization_membership.save
       update_space_memberships!(@space, space_params[:space_memberships])
 
       redirect_to @space, notice: 'Space was successfully created.', status: :see_other
@@ -91,8 +91,8 @@ class SpacesController < ApplicationController
 
     @organization_memberships = current_organization.organization_memberships.query(query).map do |organization_membership|
       {
-        value: "#{organization_user.class}|#{organization_user.id}",
-        text: organization_user.user.display_name
+        value: "#{organization_membership.class}|#{organization_membership.id}",
+        text: organization_membership.user.display_name
       }
     end
 

@@ -5,7 +5,7 @@ class ApplicationPolicy
 
   delegate :user, to: :user_context
   delegate :current_organization, to: :user_context
-  delegate :organization_user, to: :user_context
+  delegate :organization_membership, to: :user_context
 
   def initialize(user_context, record)
     @user_context = user_context
@@ -37,7 +37,7 @@ class ApplicationPolicy
 
     delegate :user, to: :user_context
     delegate :current_organization, to: :user_context
-    delegate :organization_user, to: :user_context
+    delegate :organization_membership, to: :user_context
 
     def initialize(user_context, scope)
       @user_context = user_context

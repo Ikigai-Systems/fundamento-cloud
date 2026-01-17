@@ -8,7 +8,7 @@ describe("Table CRUD Operations", function() {
       fixtures: [
         "organizations",
         "users",
-        "organization_users",
+        "organization_memberships",
         "spaces",
         "documents",
         "tables/tables",

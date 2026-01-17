@@ -32,13 +32,13 @@ RSpec.describe TeamMembership, type: :model do
     it "belongs to member polymorphically" do
       membership = team_memberships(:hc_administrators_membership_1)
 
-      expect(membership.member).to be_a(OrganizationUser)
+      expect(membership.member).to be_a(OrganizationMembership)
       expect(membership.member).to eq(om_hc_stefan)
     end
   end
 
   describe "polymorphic member_type validation" do
-    it "accepts OrganizationUser as member_type" do
+    it "accepts OrganizationMembership as member_type" do
       membership = TeamMembership.new(
         organization: hc_org,
         team: hc_administrators_team,
@@ -46,7 +46,7 @@ RSpec.describe TeamMembership, type: :model do
       )
 
       expect(membership).to be_valid
-      expect(membership.member_type).to eq("OrganizationUser")
+      expect(membership.member_type).to eq("OrganizationMembership")
     end
 
     it "rejects Team as member_type (teams cannot be members of teams)" do
@@ -73,18 +73,18 @@ RSpec.describe TeamMembership, type: :model do
       expect(membership.errors[:member_type]).to be_present
     end
 
-    it "only validates OrganizationUser in inclusion" do
+    it "only validates OrganizationMembership in inclusion" do
       team_membership_validators_on = TeamMembership.validators_on(:member_type)
 
       expect(team_membership_validators_on.map(&:class)).to include(ActiveModel::Validations::InclusionValidator)
 
       validator = team_membership_validators_on.find { |v| v.is_a?(ActiveModel::Validations::InclusionValidator) }
 
-      expect(validator&.options[:in]).to eq(%w(OrganizationUser))
+      expect(validator&.options[:in]).to eq(%w(OrganizationMembership))
     end
   end
 
-  describe "creating team_membership with OrganizationUser" do
+  describe "creating team_membership with OrganizationMembership" do
     it "creates membership successfully" do
       membership = TeamMembership.create!(
         organization: hc_org,
@@ -93,7 +93,7 @@ RSpec.describe TeamMembership, type: :model do
       )
 
       expect(membership.member_id).to eq(om_is_pawel.id)
-      expect(membership.member_type).to eq("OrganizationUser")
+      expect(membership.member_type).to eq("OrganizationMembership")
       expect(membership.member_id).to be_a(String) # NPI
     end
 
@@ -107,7 +107,7 @@ RSpec.describe TeamMembership, type: :model do
       found = TeamMembership.find_by(
         team_id: hc_administrators_team.id,
         member_id: om_is_pawel.id,
-        member_type: "OrganizationUser"
+        member_type: "OrganizationMembership"
       )
 
       expect(found).to eq(membership)
@@ -126,15 +126,15 @@ RSpec.describe TeamMembership, type: :model do
     end
   end
 
-  describe "querying team_memberships by OrganizationUser" do
-    it "finds memberships where member is OrganizationUser" do
-      ou_memberships = TeamMembership.where(member_type: "OrganizationUser")
+  describe "querying team_memberships by OrganizationMembership" do
+    it "finds memberships where member is OrganizationMembership" do
+      ou_memberships = TeamMembership.where(member_type: "OrganizationMembership")
 
       expect(ou_memberships.count).to be > 0
-      expect(ou_memberships.first.member).to be_a(OrganizationUser)
+      expect(ou_memberships.first.member).to be_a(OrganizationMembership)
     end
 
-    it "finds specific membership by organization_user" do
+    it "finds specific membership by organization_membership" do
       membership = TeamMembership.find_by(
         member: om_hc_stefan
       )
@@ -145,17 +145,17 @@ RSpec.describe TeamMembership, type: :model do
     end
 
     it "can query through team association" do
-      memberships = hc_administrators_team.team_memberships.where(member_type: "OrganizationUser")
+      memberships = hc_administrators_team.team_memberships.where(member_type: "OrganizationMembership")
 
       expect(memberships).to be_present
       ou_membership = memberships.first
-      expect(ou_membership.member).to be_a(OrganizationUser)
+      expect(ou_membership.member).to be_a(OrganizationMembership)
     end
   end
 
   describe "#display_name" do
-    context "when member is OrganizationUser" do
-      it "returns display_name from organization_user" do
+    context "when member is OrganizationMembership" do
+      it "returns display_name from organization_membership" do
         membership = team_memberships(:hc_administrators_membership_1)
 
         expect(membership.display_name).to eq(om_hc_stefan.display_name)
@@ -219,14 +219,14 @@ RSpec.describe TeamMembership, type: :model do
       }.to change(TeamMembership, :count).by(-1)
     end
 
-    it "is destroyed when organization_user is destroyed" do
+    it "is destroyed when organization_membership is destroyed" do
       new_team = Team.create!(
         organization: is_org,
         shortcut: "@test",
         name: "Another Test Team"
       )
 
-      new_ou = OrganizationUser.create!(
+      new_ou = OrganizationMembership.create!(
         organization: is_org,
         user: john,
         role: :member
@@ -240,7 +240,7 @@ RSpec.describe TeamMembership, type: :model do
 
       expect {
         new_ou.destroy
-      }.to change { TeamMembership.exists?(team: new_team, member_id: new_ou.id, member_type: "OrganizationUser") }.from(true).to(false)
+      }.to change { TeamMembership.exists?(team: new_team, member_id: new_ou.id, member_type: "OrganizationMembership") }.from(true).to(false)
     end
   end
 
@@ -258,11 +258,11 @@ RSpec.describe TeamMembership, type: :model do
   end
 
   describe "with fixtures" do
-    it "loads OrganizationUser memberships from fixtures" do
+    it "loads OrganizationMembership memberships from fixtures" do
       membership = team_memberships(:hc_administrators_membership_1)
 
-      expect(membership.member_type).to eq("OrganizationUser")
-      expect(membership.member).to be_a(OrganizationUser)
+      expect(membership.member_type).to eq("OrganizationMembership")
+      expect(membership.member).to be_a(OrganizationMembership)
       expect(membership.member.id).to eq("om_hc_stefan")
     end
 
@@ -281,14 +281,14 @@ RSpec.describe TeamMembership, type: :model do
   end
 
   describe "querying through associations" do
-    it "can find all OrganizationUser members of a team" do
-      ou_members = hc_administrators_team.team_memberships.where(member_type: "OrganizationUser").map(&:member)
+    it "can find all OrganizationMembership members of a team" do
+      ou_members = hc_administrators_team.team_memberships.where(member_type: "OrganizationMembership").map(&:member)
 
-      expect(ou_members).to all(be_a(OrganizationUser))
+      expect(ou_members).to all(be_a(OrganizationMembership))
       expect(ou_members).to include(om_hc_stefan)
     end
 
-    it "can find all teams an OrganizationUser is a member of" do
+    it "can find all teams an OrganizationMembership is a member of" do
       memberships = TeamMembership.where(member: om_hc_stefan)
       teams = memberships.map(&:team)
 
@@ -298,9 +298,9 @@ RSpec.describe TeamMembership, type: :model do
   end
 
   describe "difference from SpaceMembership" do
-    it "TeamMembership only accepts OrganizationUser, not Team" do
-      # SpaceMembership accepts both OrganizationUser and Team
-      # TeamMembership only accepts OrganizationUser
+    it "TeamMembership only accepts OrganizationMembership, not Team" do
+      # SpaceMembership accepts both OrganizationMembership and Team
+      # TeamMembership only accepts OrganizationMembership
 
       team_membership = TeamMembership.new(
         organization: hc_org,

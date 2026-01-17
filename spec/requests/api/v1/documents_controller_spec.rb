@@ -201,11 +201,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_memberships(:om_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_membership: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end
@@ -501,11 +501,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_memberships(:om_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_membership: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end
@@ -733,11 +733,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_memberships(:om_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_membership: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end

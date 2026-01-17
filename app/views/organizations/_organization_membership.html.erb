@@ -1,0 +1,39 @@
+<% user = organization_membership.user %>
+
+<tr id="<%= dom_id(organization_membership) %>">
+  <th scope="row">
+    <%= render UserWithEmail.new(organization_membership: organization_membership) %>
+  </th>
+  <td>
+    <%= organization_membership.role %>
+  </td>
+  <td>
+    <%= render partial: "users/online_status", locals: { current_organization: current_organization, user: user } %>
+  </td>
+  <td>
+    <% if policy(organization_membership).promote? %>
+      <%= button_to "Promote to manager", promote_organization_membership_path(organization_membership), form: { data: { turbo_confirm: "Are you sure you want to promote that user?" } }, class: "link-button", method: :patch %>
+    <% end %>
+
+    <% if policy(organization_membership).demote? %>
+      <%= button_to "Demote to member", demote_organization_membership_path(organization_membership), disabled: organization_membership.user == current_user, form: { data: { turbo_confirm: "Are you sure you want to demote that user?" } }, class: "link-button", method: :patch %>
+    <% end %>
+
+    <% if policy(organization_membership).change_password? %>
+      <%= link_to "Change password", change_password_organization_membership_path(organization_membership), data: { turbo_frame: "modal", action: "modal#open" }, class: "link-button" %>
+    <% end %>
+
+    <% if policy(organization_membership).destroy? %>
+      <%= button_to "Remove user",
+        organization_membership_path(organization_membership),
+        disabled: organization_membership.user == current_user,
+        title: organization_membership.user == current_user ? "You can't remove yourself from the organization" : "",
+        form: { data: {
+          turbo_confirm: "Are you sure? This user will be immediately removed from the organization!"
+        } },
+        class: "link-button",
+        method: :delete
+      %>
+    <% end %>
+  </td>
+</tr>
