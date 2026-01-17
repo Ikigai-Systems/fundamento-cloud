@@ -35,6 +35,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
       # Verify current user email matches invitation
       if current_user.present? && current_user.email != resource.email
         flash[:alert] = "You must be signed in as #{resource.email} to accept this invitation" if is_flashing_format?
+        # FIXME: this doesn't work as there's no route for invited_user
         respond_with(resource)
         # redirect_to invitation_path(resource, invitation_token: params[:invitation_token])
         return
