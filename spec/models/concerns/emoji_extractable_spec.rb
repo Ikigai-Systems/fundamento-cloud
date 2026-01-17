@@ -55,6 +55,58 @@ RSpec.describe EmojiExtractable do
       end
     end
 
+    context "when string starts with unusual or extended Unicode emojis" do
+      it "extracts beetle emoji from Unicode 13.0 Extended-A block (U+1FAB2)" do
+        model.title = "🪲 Bug Report"
+        expect(model.title_emoji).to eq("🪲")
+      end
+
+      it "extracts anatomical heart emoji (U+1FAC0)" do
+        model.title = "🫀 Heartbeat"
+        expect(model.title_emoji).to eq("🫀")
+      end
+
+      it "extracts wood emoji (U+1FAB5)" do
+        model.title = "🪵 Lumber"
+        expect(model.title_emoji).to eq("🪵")
+      end
+
+      it "extracts saluting face emoji (U+1FAE1)" do
+        model.title = "🫡 Salute"
+        expect(model.title_emoji).to eq("🫡")
+      end
+
+      it "extracts face holding back tears emoji (U+1F979)" do
+        model.title = "🥹 Emotional"
+        expect(model.title_emoji).to eq("🥹")
+      end
+
+      it "extracts heart hands emoji (U+1FAF6)" do
+        model.title = "🫶 Love"
+        expect(model.title_emoji).to eq("🫶")
+      end
+
+      it "extracts melting face emoji (U+1FAE0)" do
+        model.title = "🫠 Melting"
+        expect(model.title_emoji).to eq("🫠")
+      end
+
+      it "extracts rock emoji (U+1FAA8)" do
+        model.title = "🪨 Stone"
+        expect(model.title_emoji).to eq("🪨")
+      end
+
+      it "extracts lotus emoji (U+1FAB7)" do
+        model.title = "🪷 Lotus"
+        expect(model.title_emoji).to eq("🪷")
+      end
+
+      it "extracts coin emoji (U+1FA99)" do
+        model.title = "🪙 Coin"
+        expect(model.title_emoji).to eq("🪙")
+      end
+    end
+
     context "when string does not start with an emoji" do
       it "returns nil for regular text" do
         model.title = "Regular Title"
@@ -140,6 +192,58 @@ RSpec.describe EmojiExtractable do
       it "works with different attributes" do
         model.name = "🎉 Celebration"
         expect(model.name_emojiless).to eq("Celebration")
+      end
+    end
+
+    context "when string starts with unusual or extended Unicode emojis" do
+      it "removes beetle emoji (U+1FAB2)" do
+        model.title = "🪲 Bug Report"
+        expect(model.title_emojiless).to eq("Bug Report")
+      end
+
+      it "removes anatomical heart emoji (U+1FAC0)" do
+        model.title = "🫀 Heartbeat"
+        expect(model.title_emojiless).to eq("Heartbeat")
+      end
+
+      it "removes wood emoji (U+1FAB5)" do
+        model.title = "🪵 Lumber"
+        expect(model.title_emojiless).to eq("Lumber")
+      end
+
+      it "removes saluting face emoji (U+1FAE1)" do
+        model.title = "🫡 Salute"
+        expect(model.title_emojiless).to eq("Salute")
+      end
+
+      it "removes face holding back tears emoji (U+1F979)" do
+        model.title = "🥹 Emotional"
+        expect(model.title_emojiless).to eq("Emotional")
+      end
+
+      it "removes heart hands emoji (U+1FAF6)" do
+        model.title = "🫶 Love"
+        expect(model.title_emojiless).to eq("Love")
+      end
+
+      it "removes melting face emoji (U+1FAE0)" do
+        model.title = "🫠 Melting"
+        expect(model.title_emojiless).to eq("Melting")
+      end
+
+      it "removes rock emoji (U+1FAA8)" do
+        model.title = "🪨 Stone"
+        expect(model.title_emojiless).to eq("Stone")
+      end
+
+      it "removes lotus emoji (U+1FAB7)" do
+        model.title = "🪷 Lotus"
+        expect(model.title_emojiless).to eq("Lotus")
+      end
+
+      it "removes coin emoji (U+1FA99)" do
+        model.title = "🪙 Coin"
+        expect(model.title_emojiless).to eq("Coin")
       end
     end
 

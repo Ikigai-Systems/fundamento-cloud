@@ -38,8 +38,9 @@ module EmojiExtractable
     return nil unless first_grapheme
 
     # Check if it contains emoji characters (covers most common emoji ranges)
-    # Combined ranges to avoid overlaps: 1F300-1F9FF covers 1F600-1F64F and 1F680-1F6FF
-    if first_grapheme.match?(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{27BF}\u{1F191}-\u{1F251}]/)
+    # Extended range: 1F300-1FAFF includes newer emojis like 🪲 (U+1FAB2) from Unicode 13.0
+    # Combined ranges to avoid overlaps: 1F300-1FAFF covers 1F600-1F64F and 1F680-1F6FF
+    if first_grapheme.match?(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F191}-\u{1F251}]/)
       first_grapheme
     else
       nil
