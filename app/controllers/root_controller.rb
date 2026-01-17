@@ -7,6 +7,8 @@ class RootController < ApplicationController
 
     last_mention_seen_at_property = current_organization_membership.organization_membership_properties.find_by_key("last_mention_seen_at")
     @last_mention_seen_at = last_mention_seen_at_property&.value&.to_datetime
+
+    @show_shared_tab = PublicLink.shared_with(current_user.email).exists?
   end
 
   def recently_updated
@@ -19,9 +21,6 @@ class RootController < ApplicationController
   end
 
   def shared
-    @shared = PublicLink
-      .where(object_type: "Document")
-      .where("? = ANY(allowed_emails)", current_user.email)
-      .includes(:object)
+    @shared = PublicLink.shared_with(current_user.email).includes(:object)
   end
 end

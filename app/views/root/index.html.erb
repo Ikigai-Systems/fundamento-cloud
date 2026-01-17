@@ -1,82 +1,90 @@
 <% content_for :focused_content do %>
+  <div
+    data-controller="tabs"
+    data-tabs-update-anchor-value="true"
+    data-tabs-active-tab-class="active-tab"
+  >
+    <div class="border-b">
+      <nav data-tabs-target="list" aria-label="Tabs">
+        <% if @show_shared_tab %>
+          <button id="shared" data-action="click->tabs#change" data-tabs-target="tab">
+            <i class="fa-solid fa-share-nodes"></i>
+            Shared with you
+          </button>
+        <% end %>
 
-<div
-  data-controller="tabs"
-  data-tabs-update-anchor-value="true"
-  data-tabs-active-tab-class="active-tab"
->
-  <div class="border-b">
-    <nav data-tabs-target="list" aria-label="Tabs">
-      <button id="spaces" data-action="click->tabs#change" data-tabs-target="tab">
-        Shared with you
-      </button>
+        <button id="spaces" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-sharp fa-regular fa-space-station-moon"></i>
+          Spaces
+        </button>
 
-      <button id="spaces" data-action="click->tabs#change" data-tabs-target="tab">
-        Spaces
-      </button>
+        <button id="recently-updated" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-solid fa-clock"></i>
+          Recently updated
+        </button>
 
-      <button id="recently-updated" data-action="click->tabs#change" data-tabs-target="tab">
-        Recently updated
-      </button>
+        <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-regular fa-star"></i>
+          Favorites
+        </button>
 
-      <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
-        Favorites
-      </button>
+        <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
+          <i class="fa-solid fa-at"></i>
+          Mentions
+          <%= render(partial: 'mentions/count_badge', locals: { mentions_count: @mentions.count }) %>
+        </button>
+      </nav>
+    </div>
 
-      <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
-        Mentions
-        <%= render(partial: 'mentions/count_badge', locals: {mentions_count: @mentions.count} ) %>
-      </button>
-    </nav>
-  </div>
-
-  <div data-tabs-target="panel" class="hidden">
-    <%=
-      turbo_frame_tag "shared_frame",
-        data: { turbo: false },
-        src: shared_path,
-        loading: "lazy" do
-    %>
-      <%= render template: "application/components/loading" %>
+    <% if @show_shared_tab %>
+      <div data-tabs-target="panel" class="hidden">
+        <%=
+          turbo_frame_tag "shared_frame",
+            data: { turbo: false },
+            src: shared_path,
+            loading: "lazy" do
+        %>
+          <%= render template: "application/components/loading" %>
+        <% end %>
+      </div>
     <% end %>
-  </div>
 
-  <div data-tabs-target="panel" class="hidden">
-    <%=
-      turbo_frame_tag "spaces_frame",
-        data: { turbo: false },
-        src: spaces_path,
-        loading: "lazy" do
-    %>
-      <%= render template: "application/components/loading" %>
-    <% end %>
-  </div>
+    <div data-tabs-target="panel" class="hidden">
+      <%=
+        turbo_frame_tag "spaces_frame",
+          data: { turbo: false },
+          src: spaces_path,
+          loading: "lazy" do
+      %>
+        <%= render template: "application/components/loading" %>
+      <% end %>
+    </div>
 
-  <div data-tabs-target="panel" class="hidden">
-    <%=
-      turbo_frame_tag "recently_updated_frame",
-        data: { turbo: false },
-        src: recently_updated_path,
-        loading: "lazy" do
-    %>
-      <%= render template: "application/components/loading" %>
-    <% end %>
-  </div>
+    <div data-tabs-target="panel" class="hidden">
+      <%=
+        turbo_frame_tag "recently_updated_frame",
+          data: { turbo: false },
+          src: recently_updated_path,
+          loading: "lazy" do
+      %>
+        <%= render template: "application/components/loading" %>
+      <% end %>
+    </div>
 
-  <div data-tabs-target="panel" class="hidden">
-    <%=
-      turbo_frame_tag "favorites_frame",
-        src: favorites_path,
-        loading: "lazy" do
-    %>
-      <%= render template: "application/components/loading" %>
-    <% end %>
-  </div>
+    <div data-tabs-target="panel" class="hidden">
+      <%=
+        turbo_frame_tag "favorites_frame",
+          src: favorites_path,
+          loading: "lazy" do
+      %>
+        <%= render template: "application/components/loading" %>
+      <% end %>
+    </div>
 
-  <div data-tabs-target="panel" class="hidden">
-    <%= render partial: "mentions/mentions_tab" %>
+    <div data-tabs-target="panel" class="hidden">
+      <%= render partial: "mentions/mentions_tab" %>
+    </div>
   </div>
-</div>
 <% end %>
 
 <%= render partial: "focused_section" %>

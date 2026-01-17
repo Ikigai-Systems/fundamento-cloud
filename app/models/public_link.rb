@@ -11,6 +11,12 @@ class PublicLink < ApplicationRecord
 
   validates_uniqueness_of :object_id, scope: [:organization_id, :object_type]
 
+  scope :shared_with, -> (email) {
+    PublicLink.
+      where(object_type: "Document").
+      where("? = ANY(allowed_emails)", email)
+  }
+
   # Normalize emails before validation and save
   before_validation :normalize_allowed_emails
   validate :validate_allowed_emails_format
