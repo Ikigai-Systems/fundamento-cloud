@@ -35,6 +35,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Clear session so we can test as invited user
         cy.clearCookies();
+        cy.getCookies().should("be.empty");
 
         // Visit the acceptance URL - existing user should see prompt to accept and sign in
         cy.visit(acceptanceUrl);
@@ -82,6 +83,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
       cy.appInvitationAcceptanceUrl({email: "newuser@example.com"}).then((acceptanceUrl) => {
         // Clear session so we can test as new user
         cy.clearCookies();
+        cy.getCookies().should("be.empty");
 
         // Visit the acceptance URL
         cy.visit(acceptanceUrl);
