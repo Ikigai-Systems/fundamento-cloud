@@ -4,9 +4,11 @@ class Space < ApplicationRecord
   belongs_to :organization
 
   include ToReactProps
-
   # Keep it in sync with app/javascript/types.ts
   set_react_props :id, :name, :hierarchy
+
+  include EmojiExtractable
+  extracts_emoji_from :title
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
@@ -25,6 +27,10 @@ class Space < ApplicationRecord
   after_create :create_home_document!
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
+
+  def title
+    name
+  end
 
   def documents_from_hierarchy(starting_node = hierarchy)
     ids = traverse_hierarchy(starting_node)

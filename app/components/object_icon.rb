@@ -4,10 +4,12 @@ class ObjectIcon < ViewComponent::Base
   erb_template <<-ERB
     <% if @emoji.present? %>
       <%= @emoji %>
-    <% elsif @type == Document.to_s %>
+    <% elsif @type.to_s == Document.to_s %>
       <i class="fa-regular fa-file-lines"></i>
-    <% elsif @type == Table.to_s %>
+    <% elsif @type.to_s == Table.to_s %>
       <i class="fa-regular fa-table"></i>
+    <% elsif @type.to_s == Space.to_s %>
+      <i class="fa-sharp fa-regular fa-space-station-moon"></i>
     <% end %>
   ERB
 

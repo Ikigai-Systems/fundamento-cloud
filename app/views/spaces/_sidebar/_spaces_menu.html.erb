@@ -10,7 +10,11 @@
       class="secondary-button w-full justify-between py-1.5 truncate"
       aria-expanded="true"
       aria-haspopup="true">
-      <span class="truncate"><%= @space.name %></span>
+
+      <span class="truncate">
+        <%= render ObjectIcon.new(object: @space) %>
+        <%= @space.try(:title_emojiless) || @space.try(:title) %>
+      </span>
 
       <svg class="-mr-1 h-5 w-5 text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -35,12 +39,15 @@
     <div class="dropdown-container w-56">
       <% if current_organization.present? %>
         <% policy_scope(current_organization.spaces).order(:name).filter(&:persisted?).each do |space| %>
-          <%= link_to  space.name, space_path(space),
+          <%= link_to space_path(space),
             data: {"dropdown-target" => "menuItem"},
             class: "truncate",
             role: "menuitem",
-            tabindex: "-1"
+            tabindex: "-1" do
           %>
+            <%= render ObjectIcon.new(object: space) %>
+            <%= space.try(:title_emojiless) || space.try(:title) %>
+          <% end %>
         <% end %>
       <% end %>
 
