@@ -329,6 +329,43 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         expect(flash[:notice]).to be_present
       end
     end
+
+    context "when user is logged in with wrong email" do
+      let!(:invited_user) do
+        InvitedUser.invite!(
+          {
+            email: john.email,
+            organization: is_org
+          },
+          pawel
+        )
+      end
+
+      let(:valid_params) do
+        {
+          invited_user: {
+            invitation_token: invited_user.raw_invitation_token
+          }
+        }
+      end
+
+      before do
+        sign_in(pawel) # Pawel is logged in, but invitation is for John
+      end
+
+      it "prevents acceptance and shows error message" do
+        put invited_user_invitation_path, params: valid_params
+
+        expect(flash[:alert]).to include("You must be signed in as #{john.email}")
+        expect(response).to redirect_to(invited_user_invitation_path)
+
+        # Verify invitation was NOT consumed
+        expect(InvitedUser.find_by(email: john.email)).to be_present
+
+        # Verify john was NOT added to organization
+        expect(is_org.users.reload).not_to include(john)
+      end
+    end
   end
 
   describe "full flow: invitation acceptance followed by email confirmation" do
