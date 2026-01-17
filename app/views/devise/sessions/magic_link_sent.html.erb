@@ -4,7 +4,7 @@
 
   <div class="form-legend">
     <p>
-      We sent a sign-in link to <strong><%= @email %></strong>
+      We sent a sign-in link to <strong><%= resource.email %></strong>
     </p>
 
     <p>
@@ -17,7 +17,7 @@
   </div>
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "default-form", data: { turbo: false }  }) do |f| %>
-    <%= f.hidden_field :email, value: @email %>
+    <%= f.hidden_field :email, value: resource.email %>
     <%= f.hidden_field :authentication_method, value: "magic_link" %>
     <%= f.hidden_field :remember_me, value: "1" %>
 

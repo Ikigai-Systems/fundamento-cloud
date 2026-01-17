@@ -1,7 +1,5 @@
-<% if @magic_link_sent %>
-  <%= render partial: "magic_link_sent" %>
-<% elsif @show_auth_options %>
-  <%= render partial: "authentication_method" %>
+<% if @show_authorization_options %>
+  <%= render partial: "options_step" %>
 <% else %>
   <%= render partial: "email_step" %>
 <% end %>

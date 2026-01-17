@@ -55,6 +55,8 @@ describe('Cloud sign-in flow', function () {
       // Should see error
       cy.contains('Invalid Email or password');
       cy.url().should('include', '/users/sign_in');
+
+      cy.get('input[name="user[password]"]').should("be.visible");
     });
 
     it('can request magic link instead of using password', () => {
@@ -86,6 +88,103 @@ describe('Cloud sign-in flow', function () {
       cy.url().should('include', '/users/sign_in');
       cy.get('input[name="user[email]"]').should('be.visible');
       cy.get('input[name="user[password]"]').should('not.exist');
+    });
+
+    it('displays remember me checkbox on password form', () => {
+      cy.visit('/users/sign_in');
+
+      // Step 1: Enter email
+      cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type=submit]').click();
+
+      // Step 2: Should see remember me checkbox
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible');
+      cy.contains('Remember me').should('be.visible');
+    });
+
+    it('can sign in with remember me checked', () => {
+      cy.visit('/users/sign_in');
+
+      // Step 1: Enter email
+      cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type=submit]').click();
+
+      // Step 2: Check remember me and sign in
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').check();
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.checked');
+      cy.get('input[name="user[password]"]').type('Password123!');
+      cy.get('input[type=submit]').contains('Sign in with password').click();
+
+      // Should be signed in
+      cy.url().should('not.include', '/users/sign_in');
+      cy.contains('Favorites');
+
+      // Debug: Log all cookies
+      cy.getCookies().then((cookies) => {
+        cy.log('All cookies:', JSON.stringify(cookies.map(c => c.name)));
+      });
+
+      // Verify remember_user_token cookie is set
+      cy.getCookie('remember_user_token').should('exist');
+    });
+
+    it('can sign in without remember me', () => {
+      cy.visit('/users/sign_in');
+
+      // Step 1: Enter email
+      cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type=submit]').click();
+
+      // Step 2: Sign in without checking remember me
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
+      cy.get('input[name="user[password]"]').type('Password123!');
+      cy.get('input[type=submit]').contains('Sign in with password').click();
+
+      // Should be signed in
+      cy.url().should('not.include', '/users/sign_in');
+      cy.contains('Favorites');
+
+      // Verify remember_user_token cookie is not set
+      cy.getCookie('remember_user_token').should('not.exist');
+    });
+
+    it('persists remember me selection from email step to password step', () => {
+      cy.visit('/users/sign_in');
+
+      // Step 1: Enter email and check remember me
+      cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').check();
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.checked');
+      cy.get('input[type=submit]').click();
+
+      // Step 2: Remember me should still be checked on password page
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.checked');
+      cy.get('input[name="user[password]"]').type('Password123!');
+      cy.get('input[type=submit]').contains('Sign in with password').click();
+
+      // Should be signed in with remember token
+      cy.url().should('not.include', '/users/sign_in');
+      cy.contains('Favorites');
+      cy.getCookie('remember_user_token').should('exist');
+    });
+
+    it('does not check remember me on password step when not checked on email step', () => {
+      cy.visit('/users/sign_in');
+
+      // Step 1: Enter email without checking remember me
+      cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
+      cy.get('input[type=submit]').click();
+
+      // Step 2: Remember me should not be checked on password page
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
+      cy.get('input[name="user[password]"]').type('Password123!');
+      cy.get('input[type=submit]').contains('Sign in with password').click();
+
+      // Should be signed in without remember token
+      cy.url().should('not.include', '/users/sign_in');
+      cy.contains('Favorites');
+      cy.getCookie('remember_user_token').should('not.exist');
     });
   });
 

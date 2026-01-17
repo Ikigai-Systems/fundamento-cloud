@@ -3,18 +3,25 @@
   <h2 class="form-header">Welcome back</h2>
 
   <p class="form-legend">
-    Signing in as <strong><%= @email %></strong>
+    Signing in as <strong><%= resource.email %></strong>
   </p>
 
   <!-- Password authentication option -->
   <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "default-form", data: { turbo: false } }) do |f| %>
-    <%= f.hidden_field :email, value: @email %>
+    <%= f.hidden_field :email, value: resource.email %>
     <%= f.hidden_field :authentication_method, value: "password" %>
 
     <div class="form-field">
       <%= f.label :password %>
       <%= f.password_field :password, autocomplete: "current-password", class: "form-input", autofocus: true %>
     </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="form-field flex gap-2 items-center">
+        <%= f.check_box :remember_me, class: "h-4 w-4 rounded" %>
+        <%= f.label :remember_me, "Remember me" %>
+      </div>
+    <% end %>
 
     <div class="form-footer">
       <%= f.submit "Sign in with password", class: "form-submit" %>
@@ -32,8 +39,8 @@
   </div>
 
   <!-- Magic link option -->
-  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "default-form", data: { turbo: false }  }) do |f| %>
-    <%= f.hidden_field :email, value: @email %>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "default-form", data: { turbo: false } }) do |f| %>
+    <%= f.hidden_field :email, value: resource.email %>
     <%= f.hidden_field :authentication_method, value: "magic_link" %>
     <%= f.hidden_field :remember_me, value: "1" %>
 

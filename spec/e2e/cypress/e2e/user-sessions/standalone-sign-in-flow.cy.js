@@ -46,4 +46,53 @@ describe('Standalone sign-in flow', function () {
 
     cy.get('input[name="user[password]"]').should('have.value', '');
   });
+
+  it('displays remember me checkbox', () => {
+    cy.visit('/users/sign_in');
+
+    // Remember me checkbox should be visible
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible');
+    cy.contains('Remember me').should('be.visible');
+  });
+
+  it('can sign in with remember me checked', () => {
+    cy.visit('/users/sign_in');
+
+    // Fill in credentials
+    cy.get('input[name="user[email]"]').type('standalone@example.com');
+    cy.get('input[name="user[password]"]').type('Password123!');
+
+    // Check remember me
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').check();
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.checked');
+
+    cy.get('input[type=submit]').click();
+
+    // Should be signed in
+    cy.url().should('not.include', '/users/sign_in');
+    cy.contains('Favorites');
+
+    // Verify remember_user_token cookie is set
+    cy.getCookie('remember_user_token').should('exist');
+  });
+
+  it('can sign in without remember me', () => {
+    cy.visit('/users/sign_in');
+
+    // Fill in credentials
+    cy.get('input[name="user[email]"]').type('standalone@example.com');
+    cy.get('input[name="user[password]"]').type('Password123!');
+
+    // Ensure remember me is not checked
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
+
+    cy.get('input[type=submit]').click();
+
+    // Should be signed in
+    cy.url().should('not.include', '/users/sign_in');
+    cy.contains('Favorites');
+
+    // Verify remember_user_token cookie is not set
+    cy.getCookie('remember_user_token').should('not.exist');
+  });
 });

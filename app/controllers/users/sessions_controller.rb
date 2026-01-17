@@ -1,4 +1,10 @@
 class Users::SessionsController < Devise::SessionsController
+  def new
+    @show_authorization_options = !Flipper.enabled?(:standalone) && params.dig(:user, :authentication_method) == "password"
+
+    super
+  end
+
   # Override Devise's create method to handle both standalone and two-step flow
   def create
     # Standalone mode: use traditional email+password authentication
@@ -12,7 +18,7 @@ class Users::SessionsController < Devise::SessionsController
 
     case authentication_method
     when "password"
-      # Step 2: Password authentication
+      # Step 2: Password authentication, will call new if it fails
       super
     when "magic_link"
       # Step 2: Magic link request
@@ -35,11 +41,11 @@ class Users::SessionsController < Devise::SessionsController
 
   def handle_email_step
     email = params.dig(:user, :email)&.downcase&.strip
+    remember_me = params.dig(:user, :remember_me).to_b
 
-    # Always use new resource for form rendering (to avoid PATCH requests)
-    self.resource = resource_class.new
+    self.resource = resource_class.new(email: email, remember_me: remember_me)
 
-    if email.blank?
+    if resource.email.blank?
       flash.now[:alert] = "Please enter your email address"
       render :new, status: :unprocessable_entity
       return
@@ -55,34 +61,32 @@ class Users::SessionsController < Devise::SessionsController
 
     # Route based on whether user has password
     if found_user.has_password?
-      # User has password - show options page
-      @email = email
-      @show_auth_options = true
+      # Pre-populate the resource with remember_me value
+      @show_authorization_options = true
       render :new, status: :ok
     else
       # Passwordless user - send magic link immediately
-      found_user.send_magic_link(remember_me: true)
-      @email = email
-      @magic_link_sent = true
-      render :new, status: :ok
+      found_user.send_magic_link(remember_me: remember_me)
+
+      render :magic_link_sent, status: :ok
     end
   end
 
   def handle_magic_link_request
-    email = params.dig(:user, :email)
+    email = params.dig(:user, :email)&.downcase&.strip
+    remember_me = params.dig(:user, :remember_me).to_b
+
+    self.resource = resource_class.new(email: email, remember_me: remember_me)
 
     found_user = resource_class.find_for_authentication(email: email)
 
     if found_user
-      # Use new resource for form rendering (to avoid PATCH requests)
-      self.resource = resource_class.new
-      found_user.send_magic_link(remember_me: params.dig(:user, :remember_me))
-      @email = email
-      @magic_link_sent = true
-      render :new, status: :ok
+      found_user.send_magic_link(remember_me: remember_me)
+
+      render :magic_link_sent, status: :ok
     else
-      self.resource = resource_class.new
       flash[:alert] = "Something went wrong"
+
       redirect_to new_user_session_path
     end
   end
