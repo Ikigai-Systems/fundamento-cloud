@@ -11,11 +11,8 @@ class User < ApplicationRecord
     :rememberable,
     :validatable,
     :trackable,
-    :confirmable
-
-  unless Rails.env.standalone?
-    devise :magic_link_authenticatable
-  end
+    :confirmable,
+    :magic_link_authenticatable
 
   before_create :skip_confirmation_if_not_required
   before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
@@ -83,6 +80,24 @@ class User < ApplicationRecord
   # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
   def send_reset_password_instructions
     super if invitation_token.nil?
+  end
+
+  # Override to make passwords optional for passwordless authentication
+  def password_required?
+    # Don't require password if:
+    # 1. User is being invited (has invitation_token)
+    # 2. User is being created without a password (passwordless signup)
+    # 3. User already exists and isn't changing password
+    return false if invitation_token.present?
+    return false if new_record? && encrypted_password.blank?
+
+    # Require password validation when explicitly setting/changing password
+    password.present? || password_confirmation.present?
+  end
+
+  # Helper method to check if user has password set
+  def has_password?
+    encrypted_password.present?
   end
 
   def avatar_variant(size = :lg)

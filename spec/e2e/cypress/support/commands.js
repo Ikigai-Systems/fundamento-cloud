@@ -21,11 +21,23 @@
  *   cy.login("user@test.com", "password");
  */
 Cypress.Commands.add("login", (email, password) => {
-  cy.visit("/users/sign_in");
-  cy.get('input[name="user[email]"]').type(email);
-  cy.get('input[name="user[password]"]').type(password);
-  cy.get('input[type=submit]').click();
-  cy.url().should("not.include", "/users/sign_in");
+  cy.request({
+    method: "POST",
+    url: "/users/sign_in",
+    form: true,
+    body: {
+      user: {
+        email: email,
+        password: password,
+        authentication_method: "password"
+      }
+    },
+    followRedirect: true
+  }).then((response) => {
+    expect(response.status).to.eq(200);
+    expect(response.body).to.not.include("Invalid password");
+    expect(response.body).to.not.include("Invalid Email or password");
+  });
 });
 
 /**

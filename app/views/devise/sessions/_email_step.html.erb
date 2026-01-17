@@ -1,0 +1,28 @@
+<!-- Step 1: Email collection or standalone password login -->
+<section class="form-section">
+  <h2 class="form-header">Sign in</h2>
+
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name),
+    html: { class: "default-form", data: { turbo: false }  }) do |f|
+  %>
+    <div class="form-field">
+      <%= f.label :email %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input", required: true %>
+    </div>
+
+    <% if Flipper.enabled?(:standalone) %>
+      <!-- Standalone mode: show password field -->
+      <div class="form-field">
+        <%= f.label :password %>
+        <%= f.password_field :password, autocomplete: "current-password", class: "form-input", required: true %>
+      </div>
+    <% end %>
+
+    <div class="form-footer">
+      <%= f.submit Flipper.enabled?(:standalone) ? "Sign in" : "Continue", class: "form-submit" %>
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+
+</section>

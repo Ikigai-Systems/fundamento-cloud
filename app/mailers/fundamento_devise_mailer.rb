@@ -1,4 +1,4 @@
-class FundamentoDeviseMailer < Devise::Mailer
+class FundamentoDeviseMailer < Devise::Passwordless::Mailer
   before_action :add_logo_attachment!, only: [:invitation_instructions]
 
   protected
