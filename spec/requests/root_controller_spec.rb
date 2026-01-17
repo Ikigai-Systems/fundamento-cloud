@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:maria) { users(:maria) }
   let(:pawel) { users(:pawel) }
@@ -106,7 +106,7 @@ RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
       set_organization_id_cookie(hc_org.id)
 
       # Remove user from hc organization
-      OrganizationUser.find("ou_hc_pawel").destroy
+      OrganizationMembership.find("om_hc_pawel").destroy
 
       get root_path
 
@@ -145,8 +145,8 @@ RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
       expect(new_organization.name.split.length).to eq(2) # "Adjective Noun" format
 
       # Verify user is a manager of the new organization
-      org_user = new_organization.organization_users.find_by(user: john)
-      expect(org_user.role).to eq("manager")
+      organization_membership = new_organization.organization_memberships.find_by(user: john)
+      expect(organization_membership.role).to eq("manager")
 
       # Verify a default space was created
       expect(new_organization.spaces.count).to eq(1)

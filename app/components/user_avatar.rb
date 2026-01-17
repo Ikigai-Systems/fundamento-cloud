@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class UserAvatar < ViewComponent::Base
-  def initialize(organization_user: nil, user: nil, organization: nil, variant: "md")
+  def initialize(organization_membership: nil, user: nil, organization: nil, variant: "md")
     @variant = variant.to_sym
 
-    if organization_user.present?
-      @user = organization_user.user
-      @organization = organization_user.organization
+    if organization_membership.present?
+      @user = organization_membership.user
+      @organization = organization_membership.organization
     else
       @user = user
       @organization = organization

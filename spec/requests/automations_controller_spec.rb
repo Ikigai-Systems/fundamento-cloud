@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe AutomationsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :automations
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :automations
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }
@@ -146,7 +146,7 @@ RSpec.describe AutomationsController, type: :request do
         expect(new_automation.formula).to eq("2 + 2")
         expect(new_automation.space).to eq(public_space)
         expect(new_automation.organization).to eq(organization)
-        expect(new_automation.run_as).to eq(organization_users(:ou_hc_pawel))
+        expect(new_automation.run_as).to eq(organization_memberships(:om_hc_pawel))
         expect(new_automation.id).to be_a(String) # NPI is a string
         expect(new_automation.id.length).to eq(10) # NPI is 10 characters
 
@@ -298,7 +298,7 @@ RSpec.describe AutomationsController, type: :request do
       it "destroys automation" do
         automation_to_destroy = public_space.automations.create!(
           organization: organization,
-          run_as: organization_users(:ou_hc_pawel),
+          run_as: organization_memberships(:om_hc_pawel),
           title: "To Delete",
           kind: "webhook",
           formula: "1"

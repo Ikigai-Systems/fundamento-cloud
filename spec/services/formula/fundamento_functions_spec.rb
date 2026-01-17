@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Formula::Engine, type: :model do
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_16_064943) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,13 +46,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.datetime "created_at", null: false
     t.string "encrypted_token", null: false
     t.string "organization_id"
-    t.string "organization_user_id"
+    t.string "organization_membership_id"
     t.string "title", default: "", null: false
     t.datetime "updated_at", null: false
     t.datetime "used_at"
     t.index ["encrypted_token"], name: "index_api_tokens_on_encrypted_token", unique: true
     t.index ["organization_id"], name: "index_api_tokens_on_organization_id"
-    t.index ["organization_user_id"], name: "index_api_tokens_on_organization_user_id"
+    t.index ["organization_membership_id"], name: "index_api_tokens_on_organization_membership_id"
   end
 
   create_table "attachments", force: :cascade do |t|
@@ -110,14 +110,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.datetime "imported_at"
     t.text "imported_content"
     t.string "organization_id", null: false
-    t.string "organization_user_id"
+    t.string "organization_membership_id"
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_document_imports_on_document_id"
     t.index ["id"], name: "index_document_imports_on_id", unique: true
     t.index ["imported_at"], name: "index_document_imports_on_imported_at"
     t.index ["organization_id"], name: "index_document_imports_on_organization_id"
-    t.index ["organization_user_id"], name: "index_document_imports_on_organization_user_id"
+    t.index ["organization_membership_id"], name: "index_document_imports_on_organization_membership_id"
     t.index ["space_id"], name: "index_document_imports_on_space_id"
   end
 
@@ -141,11 +141,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.datetime "created_at", null: false
     t.string "object_id", null: false
     t.string "object_type", null: false
-    t.string "organization_user_id", null: false
+    t.string "organization_membership_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["object_id", "object_type", "organization_user_id"], name: "idx_on_object_id_object_type_organization_user_id_de4b921bd4", unique: true
+    t.index ["object_id", "object_type", "organization_membership_id"], name: "idx_on_object_id_object_type_organization_membershi_8aff638446", unique: true
     t.index ["object_type", "object_id"], name: "index_favorites_on_object"
-    t.index ["organization_user_id"], name: "index_favorites_on_organization_user_id"
+    t.index ["organization_membership_id"], name: "index_favorites_on_organization_membership_id"
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -303,11 +303,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.string "object_id", null: false
     t.string "object_type", null: false
     t.string "organization_id", null: false
-    t.string "organization_user_id", null: false
+    t.string "organization_membership_id", null: false
     t.datetime "updated_at", null: false
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
     t.index ["organization_id"], name: "index_object_comments_on_organization_id"
-    t.index ["organization_user_id"], name: "index_object_comments_on_organization_user_id"
+    t.index ["organization_membership_id"], name: "index_object_comments_on_organization_membership_id"
   end
 
   create_table "object_reactions", force: :cascade do |t|
@@ -316,11 +316,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.string "object_id", null: false
     t.string "object_type", null: false
     t.string "organization_id", null: false
-    t.string "organization_user_id", null: false
-    t.index ["emoji", "object_id", "object_type", "organization_user_id"], name: "idx_on_emoji_object_id_object_type_organization_use_9a84494fac", unique: true
+    t.string "organization_membership_id", null: false
+    t.index ["emoji", "object_id", "object_type", "organization_membership_id"], name: "idx_on_emoji_object_id_object_type_organization_mem_d5b05baa0f", unique: true
     t.index ["object_type", "object_id"], name: "index_object_reactions_on_object"
     t.index ["organization_id"], name: "index_object_reactions_on_organization_id"
-    t.index ["organization_user_id"], name: "index_object_reactions_on_organization_user_id"
+    t.index ["organization_membership_id"], name: "index_object_reactions_on_organization_membership_id"
   end
 
   create_table "object_tags", force: :cascade do |t|
@@ -346,25 +346,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.index ["user_id"], name: "index_object_visitors_on_user_id"
   end
 
-  create_table "organization_user_properties", force: :cascade do |t|
+  create_table "organization_membership_properties", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "key", null: false
-    t.string "organization_user_id", null: false
+    t.string "organization_membership_id", null: false
     t.datetime "updated_at", null: false
     t.jsonb "value", null: false
-    t.index ["key", "organization_user_id"], name: "idx_on_key_organization_user_id_f0a3f857a8", unique: true
-    t.index ["organization_user_id"], name: "index_organization_user_properties_on_organization_user_id"
+    t.index ["key", "organization_membership_id"], name: "idx_on_key_organization_membership_id_698dc06311", unique: true
+    t.index ["organization_membership_id"], name: "idx_on_organization_membership_id_91381a30b9"
   end
 
-  create_table "organization_users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "organization_memberships", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "organization_id"
     t.integer "role", limit: 2, default: 0, null: false
     t.datetime "updated_at", null: false
     t.string "user_id"
-    t.index ["id"], name: "index_organization_users_on_id", unique: true
-    t.index ["organization_id"], name: "index_organization_users_on_organization_id"
-    t.index ["user_id", "organization_id"], name: "index_organization_users_on_user_id_and_organization_id", unique: true
+    t.index ["id"], name: "index_organization_memberships_on_id", unique: true
+    t.index ["organization_id"], name: "index_organization_memberships_on_organization_id"
+    t.index ["user_id", "organization_id"], name: "index_organization_memberships_on_user_id_and_organization_id", unique: true
   end
 
   create_table "organizations", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -595,7 +595,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
     t.index ["id"], name: "index_users_on_id", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_users_on_invited_by"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_memberships_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -616,36 +616,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_14_205731) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "api_tokens", "organization_users"
+  add_foreign_key "api_tokens", "organization_memberships"
   add_foreign_key "api_tokens", "organizations"
   add_foreign_key "attachments", "organizations"
   add_foreign_key "automation_invocations", "automations"
-  add_foreign_key "automation_invocations", "organization_users", column: "run_as_id"
+  add_foreign_key "automation_invocations", "organization_memberships", column: "run_as_id"
   add_foreign_key "automation_invocations", "organizations"
   add_foreign_key "automation_invocations", "spaces"
-  add_foreign_key "automations", "organization_users", column: "run_as_id"
+  add_foreign_key "automations", "organization_memberships", column: "run_as_id"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
   add_foreign_key "document_imports", "documents"
-  add_foreign_key "document_imports", "organization_users"
+  add_foreign_key "document_imports", "organization_memberships"
   add_foreign_key "document_imports", "organizations"
   add_foreign_key "document_imports", "spaces"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
-  add_foreign_key "favorites", "organization_users"
+  add_foreign_key "favorites", "organization_memberships"
   add_foreign_key "inline_comment_threads", "documents"
   add_foreign_key "inline_comments", "users"
   add_foreign_key "invited_users", "organizations"
-  add_foreign_key "object_comments", "organization_users"
+  add_foreign_key "object_comments", "organization_memberships"
   add_foreign_key "object_comments", "organizations"
-  add_foreign_key "object_reactions", "organization_users"
+  add_foreign_key "object_reactions", "organization_memberships"
   add_foreign_key "object_reactions", "organizations"
   add_foreign_key "object_tags", "organizations"
   add_foreign_key "object_tags", "tags"
   add_foreign_key "object_visitors", "users"
-  add_foreign_key "organization_user_properties", "organization_users"
-  add_foreign_key "organization_users", "organizations"
-  add_foreign_key "organization_users", "users"
+  add_foreign_key "organization_membership_properties", "organization_memberships"
+  add_foreign_key "organization_memberships", "organizations"
+  add_foreign_key "organization_memberships", "users"
   add_foreign_key "pack_versions", "organizations"
   add_foreign_key "pack_versions", "packs"
   add_foreign_key "packs", "organizations"

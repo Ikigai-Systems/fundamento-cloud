@@ -8,9 +8,9 @@ class UserWithEmail < ViewComponent::Base
     </div>
   ERB
 
-  def initialize(organization_user: nil, user: nil)
-    @user = organization_user || user
+  def initialize(organization_membership: nil, user: nil)
+    @user = organization_membership || user
 
-    assert @user.present?, "You need to pass organization_user or user"
+    assert @user.present?, "You need to pass organization_membership or user"
   end
 end

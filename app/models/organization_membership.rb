@@ -1,4 +1,4 @@
-class OrganizationUser < ApplicationRecord
+class OrganizationMembership < ApplicationRecord
   include NpiOrdering
 
   scope :query, ->(query) { joins(:user).where("(users.first_name || ' ' || users.last_name) ILIKE ?", "%#{query}%") }
@@ -11,7 +11,7 @@ class OrganizationUser < ApplicationRecord
   has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
   has_many :automations, inverse_of: :run_as
   has_many :automation_invocations, inverse_of: :run_as
-  has_many :organization_user_properties, dependent: :delete_all
+  has_many :organization_membership_properties, dependent: :delete_all
   has_many :document_imports, dependent: :nullify
   has_many :team_memberships, inverse_of: :member, dependent: :delete_all
   has_many :space_memberships, inverse_of: :member, dependent: :delete_all
@@ -31,7 +31,7 @@ class OrganizationUser < ApplicationRecord
 
   after_create_commit do
     broadcast_refresh_to(
-      ["organization_users_list", self.organization]
+      ["organization_memberships_list", self.organization]
     )
 
     broadcast_append_to(
@@ -46,13 +46,13 @@ class OrganizationUser < ApplicationRecord
 
   after_update_commit do
     broadcast_refresh_to(
-      ["organization_users_list", self.organization]
+      ["organization_memberships_list", self.organization]
     )
   end
 
   after_destroy_commit do
     broadcast_remove_to(
-      ["organization_users_list", self.organization],
+      ["organization_memberships_list", self.organization],
       target: self.user
     )
 
@@ -63,7 +63,7 @@ class OrganizationUser < ApplicationRecord
   end
 
   def unread_mentions_count(documents)
-    last_mention_seen_at = self.organization_user_properties.find_by_key("last_mention_seen_at")&.value&.to_datetime
+    last_mention_seen_at = self.organization_membership_properties.find_by_key("last_mention_seen_at")&.value&.to_datetime
 
     MentionsExtractor::get_all_mentions(documents, self.user)
       .filter{ |mention| last_mention_seen_at.present? ? mention.created_at > last_mention_seen_at : true}

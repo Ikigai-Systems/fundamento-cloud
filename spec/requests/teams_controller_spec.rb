@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe TeamsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :teams, :team_memberships, :spaces
+  fixtures :organizations, :users, :organization_memberships, :teams, :team_memberships, :spaces
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }
@@ -313,12 +313,12 @@ RSpec.describe TeamsController, type: :request do
       expect(json_response).to be_an(Array)
       stefan_result = json_response.find { |ou| ou["text"].include?("Stefan") }
       expect(stefan_result).to be_present
-      expect(stefan_result["value"]).to match(/OrganizationUser\|/)
+      expect(stefan_result["value"]).to match(/OrganizationMembership\|/)
     end
 
     it "excludes preselected members" do
-      stefan_ou = organization.organization_users.find_by(user: member)
-      preselect_value = "OrganizationUser|#{stefan_ou.id}"
+      stefan_ou = organization.organization_memberships.find_by(user: member)
+      preselect_value = "OrganizationMembership|#{stefan_ou.id}"
 
       get suggest_members_teams_path, params: { q: "", preselects: preselect_value }
 

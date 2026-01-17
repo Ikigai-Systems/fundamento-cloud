@@ -1,6 +1,6 @@
 <tr id="<%= dom_id(user) %>">
   <th scope="row">
-    <%= render UserWithEmail.new(organization_user: user) %>
+    <%= render UserWithEmail.new(organization_membership: user) %>
   </th>
   <td>
     <%= render partial: "users/online_status", locals: { current_organization: current_organization, user: user } %>

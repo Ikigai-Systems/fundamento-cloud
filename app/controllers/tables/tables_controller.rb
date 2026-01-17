@@ -128,7 +128,7 @@ class Tables::TablesController < ApplicationController
       format.json do
         render json: {
           table: @table.attributes,
-          data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_user)
+          data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership)
         }
       end
 
@@ -273,7 +273,7 @@ class Tables::TablesController < ApplicationController
     formula_evaluation = FormulaService.evaluate(
       formula,
       @table.space,
-      current_organization_user,
+      current_organization_membership,
       additional_context: additional_context
     )
 

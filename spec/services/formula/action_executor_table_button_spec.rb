@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Formula::ActionExecutor, type: :service do
   fixtures :users
   fixtures :organizations
-  fixtures :organization_users
+  fixtures :organization_memberships
   fixtures :spaces
   fixtures "tables/tables"
   fixtures "tables/columns"
@@ -11,11 +11,11 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   fixtures "tables/cells"
 
   let(:space) { spaces(:is_default) }
-  let(:organization_user) { organization_users(:ou_is_pawel) }
+  let(:organization_membership) { organization_memberships(:om_is_pawel) }
   let(:table) { tables_tables(:projects) }
 
-  let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_user: organization_user) }
-  let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_user), space:) }
+  let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_membership: organization_membership) }
+  let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_membership), space:) }
 
   let(:engine) {
     Formula::Engine.new(
@@ -41,7 +41,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       expect(result).to eq(users(:pawel).id.to_s)
 
       result = engine.evaluate('Join(",", Filter(Split(Dig(First(Filter(Table("Orders"), Dig(CurrentValue, "id") == [ThisRow])), "Who"), ","), CurrentValue != ""), String(Dig(User(), "id")))', context:, action_executor:)
-      expect(result).to eq([users(:stefan).id, organization_user.user.id.to_s].join(","))
+      expect(result).to eq([users(:stefan).id, organization_membership.user.id.to_s].join(","))
     end
 
     context "original formula" do
@@ -67,7 +67,7 @@ EOF
       it "adds and removes value correctly (persisting existing value)" do
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_user.user.id.to_s].join(",")))
+        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
@@ -79,7 +79,7 @@ EOF
 
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => "," + organization_user.user.id.to_s))
+        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => "," + organization_membership.user.id.to_s))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
@@ -110,7 +110,7 @@ EOF
       it "adds and removes value correctly (persisting existing value)" do
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_user.user.id.to_s].join(",")))
+        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)

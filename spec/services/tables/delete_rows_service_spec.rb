@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Tables::DeleteRowsService, type: :service do
   fixtures :organizations
   fixtures :users
-  fixtures :organization_users
+  fixtures :organization_memberships
   fixtures :spaces
   fixtures "tables/tables"
   fixtures "tables/columns"

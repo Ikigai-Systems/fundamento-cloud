@@ -1,9 +1,9 @@
 class FormulaEvalGateway
 
-  def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {}, evaluation_context: {})
+  def self.evaluate(formula, space = nil, organization_membership = nil, additional_context: {}, evaluation_context: {})
     microservice_url = URI(ENV["FORMULA_EVAL_MICROSERVICE_URL"])
 
-    prepare_evaluation_context(space, organization_user, evaluation_context)
+    prepare_evaluation_context(space, organization_membership, evaluation_context)
 
     req_body_json = {
       formula: formula,
@@ -14,7 +14,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
-      "Authorization" => prepare_jwt_token(space, organization_user)
+      "Authorization" => prepare_jwt_token(space, organization_membership)
     }
 
     use_http2 = true # for development/debugging only
@@ -31,7 +31,7 @@ class FormulaEvalGateway
 
     res_json = JSON.parse(res.body)
 
-    process_commands(res_json&.[]("commands"), space, organization_user, additional_context)
+    process_commands(res_json&.[]("commands"), space, organization_membership, additional_context)
 
     return res_json
   rescue Exception => e
@@ -43,10 +43,10 @@ class FormulaEvalGateway
     }
   end
 
-  def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
+  def self.batch_evaluate(evaluations, space = nil, organization_membership = nil)
     microservice_url = URI("#{ENV["FORMULA_EVAL_MICROSERVICE_URL"]}/batch")
 
-    evaluation_context = prepare_evaluation_context(space, organization_user)
+    evaluation_context = prepare_evaluation_context(space, organization_membership)
 
     req_body_json = {
       evaluations: evaluations,
@@ -56,7 +56,7 @@ class FormulaEvalGateway
     req_headers = {
       "Content-type" => "application/json",
       "Accept" => "application/json",
-      "Authorization" => prepare_jwt_token(space, organization_user)
+      "Authorization" => prepare_jwt_token(space, organization_membership)
     }
 
     use_http2 = true # for development/debugging only
@@ -74,7 +74,7 @@ class FormulaEvalGateway
     res_json = JSON.parse(res.body)
 
     res_json&.each do |evaluated_formula|
-      process_commands(evaluated_formula&.[]("commands"), space, organization_user)
+      process_commands(evaluated_formula&.[]("commands"), space, organization_membership)
     end
 
     return res_json
@@ -85,22 +85,22 @@ class FormulaEvalGateway
     return evaluations.map { |evaluation| { "error" => error_message(e) } }
   end
 
-  def self.process_commands(commands, space, organization_user, additional_context = {})
+  def self.process_commands(commands, space, organization_membership, additional_context = {})
     commands&.each do |command|
       case command["type"]
       when "AddRow"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_membership)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
         table.add_row(nil, command["values"])
       when "DeleteRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_membership)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
 
         Tables::DeleteRowsService.new(table).call
       when "AddOrUpdateRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_membership)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -130,7 +130,7 @@ class FormulaEvalGateway
           end
 
           row_ids_to_update = []
-          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_user).each_with_index do |evaluated_formula, index|
+          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_membership).each_with_index do |evaluated_formula, index|
             if evaluated_formula["result"] == true
               row_ids_to_update << formulas_to_evaluate[index][:row_id]
             end
@@ -153,7 +153,7 @@ class FormulaEvalGateway
           end
         end
       when "UpdateRows"
-        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_user)
+        table = Api::V1::TablesController::find_relevant_table(command["tableNpi"], space.id, organization_membership)
         command["tableNpi"] = table.npi # in case user provided table name, let's transform it to table id and provide it to frontend for caches invalidation
         # todo: validate the user is permitted to update this table
 
@@ -183,7 +183,7 @@ class FormulaEvalGateway
           end
 
           row_ids_to_update = []
-          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_user).each_with_index do |evaluated_formula, index|
+          FormulaEvalGateway.batch_evaluate(formulas_to_evaluate.map { |e| {formula: e[:formula], additional_context: e[:additional_context]}}, space, organization_membership).each_with_index do |evaluated_formula, index|
             if evaluated_formula["result"] == true
               row_ids_to_update << formulas_to_evaluate[index][:row_id]
             end
@@ -215,11 +215,11 @@ class FormulaEvalGateway
     "Unable to evaluate formula due to error: #{e.message}"
   end
 
-  def self.prepare_jwt_token(space, organization_user)
+  def self.prepare_jwt_token(space, organization_membership)
     jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
     jwt_payload = {
       exp: Time.now.to_i + 60,
-      sub: organization_user.to_global_id.to_s,
+      sub: organization_membership.to_global_id.to_s,
       aud: space.to_global_id.to_s
     }
 
@@ -228,14 +228,14 @@ class FormulaEvalGateway
     "JWT #{token}"
   end
 
-  def self.prepare_evaluation_context(space, organization_user, evaluation_context = {})
+  def self.prepare_evaluation_context(space, organization_membership, evaluation_context = {})
     if space
       evaluation_context[:space_npi] = space.id
       evaluation_context[:space_id] = space.id
     end
 
-    if organization_user
-      evaluation_context[:user_id] = organization_user.user.id
+    if organization_membership
+      evaluation_context[:user_id] = organization_membership.user.id
     end
 
     evaluation_context

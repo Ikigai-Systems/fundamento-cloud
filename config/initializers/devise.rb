@@ -21,13 +21,13 @@ class JwtAuthenticatableStrategy < Devise::Strategies::Base
 
     payload, _headers = JWT.decode(jwt, jwt_secret_key, true, algorithm: "HS256")
 
-    organization_user = GlobalID::Locator.locate(payload["sub"]) rescue nil
+    organization_membership = GlobalID::Locator.locate(payload["sub"]) rescue nil
     # space = GlobalID::Locator.locate payload["aud"]
 
-    if organization_user
-      RequestContext.current_organization = organization_user.organization
+    if organization_membership
+      RequestContext.current_organization = organization_membership.organization
 
-      success!(organization_user.user)
+      success!(organization_membership.user)
     else
       fail!("User not found: #{payload["sub"]}")
     end
@@ -63,7 +63,7 @@ class ApiTokenAuthenticatableStrategy < JwtAuthenticatableStrategy
 
       RequestContext.current_organization = token.organization
 
-      success!(token.organization_user.user)
+      success!(token.organization_membership.user)
     else
       fail!("Invalid API token")
     end

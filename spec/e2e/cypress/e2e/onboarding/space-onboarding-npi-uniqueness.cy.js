@@ -64,7 +64,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
         password: "password",
         confirmed_at: Time.now
       )
-      org.organization_users.create!(user: user, role: :manager)
+      org.organization_memberships.create!(user: user, role: :manager)
 
       # Find the advanced table by name (not by hardcoded NPI)
       advanced_table = space.tables.find_by(name: "Advanced Table: Customer their first full month of sales")
@@ -138,7 +138,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
         password: "password",
         confirmed_at: Time.now
       )
-      org.organization_users.create!(user: user, role: :manager)
+      org.organization_memberships.create!(user: user, role: :manager)
 
       # Find document with advancedTable block referencing 7hDhcL1cyv
       formula_doc = space.documents.joins(:versions)

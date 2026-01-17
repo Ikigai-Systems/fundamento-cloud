@@ -1,17 +1,17 @@
 class Formula::ActionExecutor
   attr_reader :actions
 
-  def initialize(dry_mode: true, space: nil, organization_user: nil, additional_context: {})
+  def initialize(dry_mode: true, space: nil, organization_membership: nil, additional_context: {})
     @actions = []
     @dry_mode = dry_mode
     @space = space
-    @organization_user = organization_user
+    @organization_membership = organization_membership
     @additional_context = additional_context
     
     if !@dry_mode
       raise ArgumentError, "space is required when dry_mode is false" unless @space
-      raise ArgumentError, "organization_user is required when dry_mode is false" unless @organization_user
-      @pundit_user = PolicyUserContext.new(@organization_user.user, @organization_user.organization)
+      raise ArgumentError, "organization_membership is required when dry_mode is false" unless @organization_membership
+      @pundit_user = PolicyUserContext.new(@organization_membership.user, @organization_membership.organization)
     end
   end
 
@@ -117,7 +117,7 @@ class Formula::ActionExecutor
     Pundit.authorize(@pundit_user, table, :update?)
 
     row = table.rows.create!(
-      organization: @organization_user.organization,
+      organization: @organization_membership.organization,
       previous_row: table.rows_in_order.last
     )
     
@@ -132,7 +132,7 @@ class Formula::ActionExecutor
       row.cells.create!(
         column: column,
         value: evaluated_value,
-        organization: @organization_user.organization,
+        organization: @organization_membership.organization,
         table: table
       )
     end
@@ -162,7 +162,7 @@ class Formula::ActionExecutor
           evaluated_value = evaluate_new_value_formula(value, context)
           
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
-            new_cell.organization = @organization_user.organization
+            new_cell.organization = @organization_membership.organization
             new_cell.table = table
           end
           cell.update!(value: evaluated_value)
@@ -188,7 +188,7 @@ class Formula::ActionExecutor
     if matching_rows.empty?
       # Add new row
       row = table.rows.create!(
-        organization: @organization_user.organization,
+        organization: @organization_membership.organization,
         previous_row: table.rows_in_order.last
       )
       
@@ -202,7 +202,7 @@ class Formula::ActionExecutor
         row.cells.create!(
           column: column,
           value: evaluated_value,
-          organization: @organization_user.organization,
+          organization: @organization_membership.organization,
           table: table
         )
       end
@@ -218,7 +218,7 @@ class Formula::ActionExecutor
           evaluated_value = evaluate_new_value_formula(value, context)
           
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
-            new_cell.organization = @organization_user.organization
+            new_cell.organization = @organization_membership.organization
             new_cell.table = table
           end
           cell.update!(value: evaluated_value)
@@ -263,8 +263,8 @@ class Formula::ActionExecutor
     functions = Formula::DefaultFunctions.get_functions.dup
     
     # Add fundamento functions if available
-    if @space && @organization_user
-      pundit_user = PolicyUserContext.new(@organization_user)
+    if @space && @organization_membership
+      pundit_user = PolicyUserContext.new(@organization_membership)
       fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
       functions.merge!(fundamento_functions.functions)
     end
@@ -314,8 +314,8 @@ class Formula::ActionExecutor
       additional_functions = {}
       
       # Add fundamento functions if available
-      if @space && @organization_user
-        pundit_user = PolicyUserContext.new(@organization_user)
+      if @space && @organization_membership
+        pundit_user = PolicyUserContext.new(@organization_membership)
         fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
         additional_functions.merge!(fundamento_functions.functions)
       end
@@ -328,8 +328,8 @@ class Formula::ActionExecutor
       functions = Formula::DefaultFunctions.get_functions.dup
       
       # Add fundamento functions if available
-      if @space && @organization_user
-        pundit_user = PolicyUserContext.new(@organization_user)
+      if @space && @organization_membership
+        pundit_user = PolicyUserContext.new(@organization_membership)
         fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
         functions.merge!(fundamento_functions.functions)
       end

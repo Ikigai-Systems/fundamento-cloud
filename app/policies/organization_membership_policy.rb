@@ -1,4 +1,4 @@
-class OrganizationUserPolicy < ApplicationPolicy
+class OrganizationMembershipPolicy < ApplicationPolicy
   def create?
     # Currently we don't allow creating users manually in Cloud
     destroy? && Flipper.enabled?(:standalone)
@@ -10,7 +10,7 @@ class OrganizationUserPolicy < ApplicationPolicy
 
   def destroy?
     # Only managers can remove users from the organization
-    current_organization == record.organization && OrganizationUser.find_by({ organization: record.organization, user: user })&.manager?
+    current_organization == record.organization && OrganizationMembership.find_by({ organization: record.organization, user: user })&.manager?
   end
 
   def demote?

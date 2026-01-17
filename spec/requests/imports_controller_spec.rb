@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ImportsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :space_memberships, :document_imports
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :document_imports
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }
@@ -137,7 +137,7 @@ RSpec.describe ImportsController, type: :request do
         expect(new_import.id).to be_a(String)
         expect(new_import.id.length).to eq(10)
         expect(new_import.organization).to eq(organization)
-        expect(new_import.organization_user.user).to eq(manager)
+        expect(new_import.organization_membership.user).to eq(manager)
 
         expect(response).to redirect_to(import_path(new_import))
         expect(flash[:notice]).to include("Import started successfully")
@@ -181,7 +181,7 @@ RSpec.describe ImportsController, type: :request do
       it "allows creating imports with valid space" do
         file = fixture_file_upload("spec/fixtures/test.md", "text/markdown")
 
-        # DocumentImportPolicy#create? only checks organization_user presence,
+        # DocumentImportPolicy#create? only checks organization_membership presence,
         # not space-level permissions. Space validation happens at model/controller level.
         expect {
           post imports_path, params: {

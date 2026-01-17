@@ -27,7 +27,7 @@ module EnsureOrganization
       
       # Create the organization for the user
       organization = Organization.create!(name: organization_name)
-      organization.organization_users.create!(user: current_user, role: :manager)
+      organization.organization_memberships.create!(user: current_user, role: :manager)
     end
   end
 

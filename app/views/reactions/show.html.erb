@@ -2,7 +2,7 @@
   <div class="flex-col">
     <% @reactions.each do |reaction| %>
       <div>
-        <%= reaction.organization_user.display_name %>
+        <%= reaction.organization_membership.display_name %>
         <%= time_ago_in_words reaction.created_at %>
       </div>
     <% end %>

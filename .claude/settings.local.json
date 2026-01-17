@@ -16,6 +16,7 @@
       "Bash(gh run view:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
+      "Bash(git mv:*)",
       "Bash(grep:*)",
       "Bash(npm run lint)",
       "Bash(npm run:*)",
@@ -27,11 +28,11 @@
       "Bash(ruby:*)",
       "Bash(sops:*)",
       "Bash(task-master:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
       "WebSearch",
       "mcp__github__*",
       "mcp__playwright__*",
-      "mcp__task_master_ai__*",
+      "mcp__task_master_ai__*"
     ],
     "deny": []
   },

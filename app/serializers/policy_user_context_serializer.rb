@@ -1,8 +1,8 @@
 class PolicyUserContextSerializer < ActiveJob::Serializers::ObjectSerializer
   def serialize(policy_user_context)
     super(
-      if policy_user_context.organization_user
-        { 'organization_user_id' => policy_user_context.organization_user.id }
+      if policy_user_context.organization_membership
+        { 'organization_membership_id' => policy_user_context.organization_membership.id }
       else
         { 
           'user_id' => policy_user_context.user.id, 
@@ -13,9 +13,9 @@ class PolicyUserContextSerializer < ActiveJob::Serializers::ObjectSerializer
   end
 
   def deserialize(hash)
-    if hash['organization_user_id']
-      organization_user = OrganizationUser.find(hash['organization_user_id'])
-      PolicyUserContext.new(organization_user)
+    if hash['organization_membership_id']
+      organization_membership = OrganizationUser.find(hash['organization_membership_id'])
+      PolicyUserContext.new(organization_membership)
     else
       user = User.find(hash['user_id'])
       organization = Organization.find(hash['organization_id'])

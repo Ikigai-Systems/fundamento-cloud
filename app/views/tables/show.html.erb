@@ -3,7 +3,7 @@
 <% end %>
 
 <% content_for :content_menu do %>
-  <% if (favorite = pundit_user.organization_user.favorites.find_by(object: @table)) %>
+  <% if (favorite = pundit_user.organization_membership.favorites.find_by(object: @table)) %>
     <%= render partial: "favorites/destroy_favorite", locals: { object: @table, favorite: favorite } %>
   <% else %>
     <%= render partial: "favorites/create_favorite", locals: { object: @table } %>
@@ -51,7 +51,7 @@
   }, {
     data: @table.data_to_json(
       evaluate_formulas: true,
-      evaluate_as: current_organization_user,
+      evaluate_as: current_organization_membership,
     )
   } %>
 </article>

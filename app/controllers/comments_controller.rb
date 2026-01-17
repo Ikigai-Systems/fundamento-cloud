@@ -17,7 +17,7 @@ class CommentsController < ApplicationController
   def create
     @comment = @resource.comments.new(create_params)
     @comment.organization = current_organization
-    @comment.organization_user = current_organization_user
+    @comment.organization_membership = current_organization_membership
 
     authorize @resource, :create?
 
@@ -44,7 +44,7 @@ class CommentsController < ApplicationController
   def destroy
     authorize @resource, :show?
 
-    @resource.comments.find_by(id: params[:id], organization_user: current_organization_user).destroy!
+    @resource.comments.find_by(id: params[:id], organization_membership: current_organization_membership).destroy!
 
     render html: "", status: :no_content
   end

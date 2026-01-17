@@ -1,6 +1,6 @@
 class PackPolicy < OrganizationPolicy
 
   def create?
-    organization_user.manager?
+    organization_membership.manager?
   end
 end

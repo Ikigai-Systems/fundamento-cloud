@@ -28,7 +28,7 @@ class OrganizationsController < ApplicationController
     authorize @organization, :create?
 
     if @organization.save
-      OrganizationUser.create!(
+      OrganizationMembership.create!(
         organization: @organization,
         user: current_user,
         role: :manager,

@@ -12,10 +12,10 @@ RSpec.describe Organization, type: :model do
     it "has string organization_id in api_tokens" do
       user = users(:pawel)
       organization = Organization.create!(id: "testorg01", name: "Test Organization")
-      organization_user = organization.organization_users.create!(user: user, role: :manager)
+      organization_membership = organization.organization_memberships.create!(user: user, role: :manager)
       api_token = organization.api_tokens.create!(
         title: "Test Token",
-        organization_user: organization_user
+        organization_membership: organization_membership
       )
 
       expect(api_token.organization_id).to be_a(String)

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe OrganizationsController, type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
@@ -40,10 +40,10 @@ RSpec.describe OrganizationsController, type: :request do
         expect(response).to have_http_status(:not_found)
       end
 
-      it "ou_hc_maria should not have access to is organization" do
-        # Explicitly verify Maria (ou_hc_maria) cannot access is organization
-        expect(OrganizationUser.exists?(organization_id: is_org.id, user_id: maria.id)).to be false
-        expect(OrganizationUser.exists?(organization_id: hc_org.id, user_id: maria.id)).to be true
+      it "om_hc_maria should not have access to is organization" do
+        # Explicitly verify Maria (om_hc_maria) cannot access is organization
+        expect(OrganizationMembership.exists?(organization_id: is_org.id, user_id: maria.id)).to be false
+        expect(OrganizationMembership.exists?(organization_id: hc_org.id, user_id: maria.id)).to be true
 
         # Attempt to select the organization they don't belong to should return 404
         post select_organization_path(is_org)

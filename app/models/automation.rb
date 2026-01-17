@@ -5,7 +5,7 @@ class Automation < ApplicationRecord
 
   belongs_to :organization
   belongs_to :space
-  belongs_to :run_as, class_name: "OrganizationUser", optional: true
+  belongs_to :run_as, class_name: "OrganizationMembership", optional: true
 
   has_many :invocations, class_name: "AutomationInvocation", dependent: :delete_all
 

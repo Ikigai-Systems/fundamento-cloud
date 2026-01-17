@@ -1,18 +1,18 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Documents", type: :request do
-  fixtures :organizations, :users, :organization_users, :spaces, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents
 
   let(:pawel) { users(:pawel) }
   let(:ikigai_systems) { organizations(:is) }
   let(:is_default_space) { spaces(:is_default) }
   let(:document_one) { documents(:one) }
-  let(:pawel_ikigai_systems) { organization_users(:ou_is_pawel) }
+  let(:pawel_ikigai_systems) { organization_memberships(:om_is_pawel) }
 
   let!(:pawel_is_token) do
     ApiToken.create!(
       organization: ikigai_systems,
-      organization_user: pawel_ikigai_systems,
+      organization_membership: pawel_ikigai_systems,
       title: "Test API Token for Pawel at IS"
     )
   end
@@ -201,11 +201,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_users(:ou_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_user: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end
@@ -501,11 +501,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_users(:ou_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_user: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end
@@ -733,11 +733,11 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "authorization" do
       let(:other_org) { organizations(:hc) }
-      let(:other_org_user) { organization_users(:ou_hc_pawel) }
+      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
-          organization_user: other_org_user,
+          organization_membership: other_organization_membership,
           title: "Test API Token for Other Org"
         )
       end

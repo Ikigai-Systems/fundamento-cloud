@@ -3,7 +3,7 @@ namespace :fundamento do
   task stats: :environment do
     tables = [
       "users",
-      "organization_users",
+      "organization_memberships",
       "documents",
       "tables",
       "api_tokens",

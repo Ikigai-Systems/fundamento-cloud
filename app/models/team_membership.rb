@@ -5,7 +5,7 @@ class TeamMembership < ApplicationRecord
   belongs_to :team
   belongs_to :member, polymorphic: true
 
-  validates_inclusion_of :member_type, in: %w(OrganizationUser)
+  validates_inclusion_of :member_type, in: %w(OrganizationMembership)
 
   # enum :role, [:manager], scope: false
 

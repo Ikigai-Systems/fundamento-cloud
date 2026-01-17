@@ -1,11 +1,11 @@
 hc_favorite_1:
   id: "hc_favorite_1"
-  organization_user_id: "ou_hc_pawel"
+  organization_membership_id: "om_hc_pawel"
   object_id: one
   object_type: Document
 
 is_favorite_1:
   id: "is_favorite_1"
-  organization_user_id: "ou_is_pawel"
+  organization_membership_id: "om_is_pawel"
   object_id: one
   object_type: Document

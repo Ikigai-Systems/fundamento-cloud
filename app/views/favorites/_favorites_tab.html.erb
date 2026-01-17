@@ -1,6 +1,6 @@
-<%= turbo_stream_from [pundit_user.organization_user, "favorites"] %>
+<%= turbo_stream_from [pundit_user.organization_membership, "favorites"] %>
 
-<% favorites = pundit_user.organization_user.favorites %>
+<% favorites = pundit_user.organization_membership.favorites %>
 
 <%= turbo_frame_tag "favorites_frame" do %>
   <div id="favorites_container">

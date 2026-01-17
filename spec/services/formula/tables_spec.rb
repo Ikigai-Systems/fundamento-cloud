@@ -48,7 +48,7 @@ RSpec.describe Formula::Engine, type: :model do
     describe 'Table function' do
       fixtures :users
       fixtures :organizations
-      fixtures :organization_users
+      fixtures :organization_memberships
       fixtures :spaces
       fixtures "tables/tables"
       fixtures "tables/columns"
@@ -56,8 +56,8 @@ RSpec.describe Formula::Engine, type: :model do
       fixtures "tables/cells"
 
       let(:space) { spaces(:is_default) }
-      let(:organization_user) { organization_users(:ou_is_pawel) }
-      let(:pundit_user) { PolicyUserContext.new(organization_user) }
+      let(:organization_membership) { organization_memberships(:om_is_pawel) }
+      let(:pundit_user) { PolicyUserContext.new(organization_membership) }
       let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user:, space:) }
 
       let(:engine) { Formula::Engine.new(additional_functions: fundamento_functions.functions) }

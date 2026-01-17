@@ -29,7 +29,7 @@ class RunFormulaTool < ApplicationTool
     result = FormulaService.evaluate(
       formula,
       space,
-      pundit_user.organization_user,
+      pundit_user.organization_membership,
       additional_context: {}
     )
 

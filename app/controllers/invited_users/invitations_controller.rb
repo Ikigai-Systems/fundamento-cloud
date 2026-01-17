@@ -35,6 +35,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
       # Verify current user email matches invitation
       if current_user.present? && current_user.email != resource.email
         flash[:alert] = "You must be signed in as #{resource.email} to accept this invitation" if is_flashing_format?
+        # FIXME: this doesn't work as there's no route for invited_user
         respond_with(resource)
         # redirect_to invitation_path(resource, invitation_token: params[:invitation_token])
         return
@@ -52,8 +53,8 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
         end
 
         # Explicitly create OrganizationUser with member role
-        OrganizationUser.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_user|
-          organization_user.role = :member
+        OrganizationMembership.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_membership|
+          organization_membership.role = :member
         end
 
         # Sign in the user (since we're creating a separate User record, Devise can't auto-login)

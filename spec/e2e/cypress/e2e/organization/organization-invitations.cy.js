@@ -8,7 +8,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
     // Load fixtures
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
-      fixtures: ["organizations", "users", "organization_users", "spaces"]
+      fixtures: ["organizations", "users", "organization_memberships", "spaces"]
     });
   });
 
@@ -35,6 +35,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Clear session so we can test as invited user
         cy.clearCookies();
+        cy.getCookies().should("be.empty");
 
         // Visit the acceptance URL - existing user should see prompt to accept and sign in
         cy.visit(acceptanceUrl);
@@ -82,6 +83,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
       cy.appInvitationAcceptanceUrl({email: "newuser@example.com"}).then((acceptanceUrl) => {
         // Clear session so we can test as new user
         cy.clearCookies();
+        cy.getCookies().should("be.empty");
 
         // Visit the acceptance URL
         cy.visit(acceptanceUrl);
@@ -230,7 +232,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
     });
 
     it("allows user logged in to sign out and resume the invitation flow", function() {
-      cy.appEval(`OrganizationUser.find_by(user_id: "user_maria", organization_id: "is")&.destroy!`)
+      cy.appEval(`OrganizationMembership.find_by(user_id: "user_maria", organization_id: "is")&.destroy!`)
 
       // Invite Maria to "is" organization (she exists but isn't in "is" - she's in "hc")
       cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe OrganizationPolicy, type: :policy do
-  fixtures :organizations, :users, :organization_users
+  fixtures :organizations, :users, :organization_memberships
 
   let(:is_org) { organizations(:is) }
   let(:hc_org) { organizations(:hc) }
@@ -53,7 +53,7 @@ RSpec.describe OrganizationPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(maria, is_org) }
 
       it "denies showing the organization" do
-        # Maria (ou_hc_maria) is only a member of hc_org, not is_org
+        # Maria (om_hc_maria) is only a member of hc_org, not is_org
         expect(maria.organizations).not_to include(is_org)
         expect(subject).not_to permit(policy_context, is_org)
       end
@@ -129,7 +129,7 @@ RSpec.describe OrganizationPolicy, type: :policy do
       let(:policy_context) { PolicyUserContext.new(maria, is_org) }
 
       it "denies selecting the organization" do
-        # This is the critical test - ou_hc_maria should NOT be able to select is_org
+        # This is the critical test - om_hc_maria should NOT be able to select is_org
         expect(subject).not_to permit(policy_context, is_org)
       end
     end

@@ -22,5 +22,5 @@ if Rails.env.standalone?
     user.password = ENV.fetch("FUNDAMENTO_ADMIN_PASSWORD", "password!")
   end
 
-  organization_user = organization.organization_users.find_or_create_by!(user: administrator)
+  organization_membership = organization.organization_memberships.find_or_create_by!(user: administrator)
 end

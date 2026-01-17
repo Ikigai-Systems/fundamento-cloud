@@ -1,18 +1,18 @@
 class FormulaService
   # Service that uses Formula::Engine for formula evaluation
 
-  def self.evaluate(formula, space = nil, organization_user = nil, additional_context: {})
+  def self.evaluate(formula, space = nil, organization_membership = nil, additional_context: {})
     begin
       # Prepare context
       context = additional_context.dup
 
-      pundit_user = PolicyUserContext.new(organization_user)
+      pundit_user = PolicyUserContext.new(organization_membership)
 
       # Create action executor for formula actions
       action_executor = Formula::ActionExecutor.new(
         dry_mode: false,
         space: space,
-        organization_user: organization_user,
+        organization_membership: organization_membership,
         additional_context: context
       )
 
@@ -39,12 +39,12 @@ class FormulaService
     end
   end
 
-  def self.batch_evaluate(evaluations, space = nil, organization_user = nil)
+  def self.batch_evaluate(evaluations, space = nil, organization_membership = nil)
     evaluations.map do |evaluation|
       evaluate(
         evaluation[:formula],
         space,
-        organization_user,
+        organization_membership,
         additional_context: evaluation[:additional_context],
       )
     end
