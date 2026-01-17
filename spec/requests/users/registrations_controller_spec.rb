@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Users::Registrations" do
+RSpec.describe Users::RegistrationsController, type: :request do
   describe "POST /users (sign up)" do
     let(:user_params_cloud) do
       {
