@@ -4,7 +4,7 @@ class RenameOrganizationUserToOrganizationMembership < ActiveRecord::Migration[8
     rename_table :organization_users, :organization_memberships
 
     # Rename related table
-    rename_table :organization_users_properties, :organization_membership_properties
+    rename_table :organization_user_properties, :organization_membership_properties
 
     # Rename foreign key columns in dependent tables
     rename_column :api_tokens, :organization_users_id, :organization_membership_id
@@ -53,7 +53,7 @@ class RenameOrganizationUserToOrganizationMembership < ActiveRecord::Migration[8
     rename_column :api_tokens, :organization_membership_id, :organization_users_id
 
     # Rollback related table rename
-    rename_table :organization_membership_properties, :organization_users_properties
+    rename_table :organization_membership_properties, :organization_user_properties
 
     # Rollback main table rename
     rename_table :organization_memberships, :organization_users
