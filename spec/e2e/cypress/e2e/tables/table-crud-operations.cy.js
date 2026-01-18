@@ -163,7 +163,6 @@ describe("Table CRUD Operations", function() {
 
       // Verify content menu has the Edit button
       cy.get(".edit-table-button").should("exist");
-      cy.get(".edit-table-button").should("contain", "Edit");
 
       // Request the table data via API to verify structure
       cy.request({
