@@ -21,7 +21,7 @@
     <div class="flex flex-col grow overflow-y-auto">
         <div class="section-header-container">
           <div class="section-header-title">
-            <i class="fa-regular fa-file-lines"></i>
+            <%= render ObjectIcon.new(type: Document) %>
             Documents
           </div>
 
@@ -50,7 +50,7 @@
 
         <div class="section-header-container">
           <div class="section-header-title">
-            <i class="fa-regular fa-table"></i>
+            <%= render ObjectIcon.new(type: Table) %>
             Tables
           </div>
 
