@@ -33,7 +33,6 @@
 
   <script type="text/javascript">
       window.handleUpdateButton = async (e) => {
-          e.target.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document);
 
           if (window.ckEditor) {
               await window.ckEditor.plugins.get("RevisionTracker").saveRevision();
@@ -41,6 +40,7 @@
               e.target.form.elements['content_html'].value = window.ckEditor.getData();
               e.target.form.elements['revisions'].value = JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true}));
           }
+          e.currentTarget.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document);
       }
   </script>
 
