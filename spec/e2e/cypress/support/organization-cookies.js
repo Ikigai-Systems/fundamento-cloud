@@ -1,0 +1,3 @@
+export const noOrganizationCookie = "7S5d93XFo3Nn1CHY6EleXXZN92GUt9KeJDst7nwZTWT0LX1ivcYyBNZ6linwpA%2BiHy%2FqLxtxOD4bM26DNAAYGqQObcO619l%2BW6fFxYrVTz%2BQeOo%3D--%2FomOOmUpAJUsXdy6--QokFlTXNdnFbarBRggoT0g%3D%3D";
+export const hcOrganizationCookie = "7pz%2Fteyl17PrTaHqdS4cTw%2FSl0qzRjDHGhkWeUcWx0g5L%2BUBzAi3%2BI2wtljLVmnPKQLIDQz9QtJKMdmnw23c3BILveIvjs7%2BsNDC--fhkIELnWGF5a5Irq--tCDkBAyZyz5JUm2CmSMv9w%3D%3D";
+export const isOrganizationCookie = "S%2B8izWFmjA4zW0FkMH97fnyVerT1sCW%2Fg%2FotxW3noRh0icOQvXOdx2T6Q4s%2FVErcAksXznmNnIyPIk4j6kHs7PAoWnajg48sQbZM--EY0y%2BpMv4HdJi5K5--gPFakDbAFEvGZvkQbo92qQ%3D%3D";

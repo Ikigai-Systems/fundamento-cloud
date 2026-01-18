@@ -1,4 +1,4 @@
-const isOrganizationCookie = "S%2B8izWFmjA4zW0FkMH97fnyVerT1sCW%2Fg%2FotxW3noRh0icOQvXOdx2T6Q4s%2FVErcAksXznmNnIyPIk4j6kHs7PAoWnajg48sQbZM--EY0y%2BpMv4HdJi5K5--gPFakDbAFEvGZvkQbo92qQ%3D%3D";
+import {isOrganizationCookie} from "../../support/organization-cookies.js";
 
 describe("Organization Invitations (Cloud Flow)", function() {
   before(() => {
