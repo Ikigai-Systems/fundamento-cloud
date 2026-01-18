@@ -158,6 +158,84 @@ describe("Document Editor", function () {
     });
   });
 
+  it("displays version history and allows viewing specific versions", function () {
+    const documentId = "two";
+
+    // Assert one version is already in the database (Version 1)
+    cy.appEval(`Document.find('${documentId}').versions.count`).then((versionCount) => {
+      expect(versionCount).to.be.equal(1);
+    });
+
+    cy.visit(`/d/${documentId}/edit`);
+
+    // Wait for editor to load
+    cy.get("[data-document-editor]").should("exist");
+
+    // Make first edit and save
+    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 2 content.{enter}");
+    cy.get('[aria-label="Save document"]').click();
+
+    cy.contains("Document has been updated").should("be.visible");
+    cy.get('[aria-label="Edit document"]').click();
+
+    // Make second edit and save
+    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 3 content.{enter}");
+    cy.get('[aria-label="Save document"]').click();
+
+    cy.contains("Document has been updated").should("be.visible");
+    cy.get('[aria-label="Edit document"]').click();
+
+    // Make third edit and save
+    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 4 content.{enter}");
+    cy.get('[aria-label="Save document"]').click();
+
+    cy.contains("Document has been updated").should("be.visible");
+    cy.get('[aria-label="Edit document"]').click();
+
+    // Navigate to versions page
+    cy.visit(`/d/${documentId}/versions`);
+
+    // Verify we're on the versions page
+    cy.url().should("include", "/versions");
+    cy.contains("Versions").should("be.visible");
+
+    // Verify versions are listed (should have at least 3 versions)
+    cy.get("tr").should("have.length.at.least", 4); // header row + 3 versions
+
+    // Get the version IDs
+    cy.appEval(`Document.find('${documentId}').versions.order('created_at DESC').pluck(:sequential_id)`).then((versionIds) => {
+      expect(versionIds.length).to.be.at.least(3);
+
+      // View the first version (most recent)
+      cy.visit(`/d/${documentId}/versions/${versionIds[0]}`);
+
+      // Verify the editor is in read-only mode
+      cy.get("[data-document-editor]").should("exist");
+
+      // Verify content contains version 3 content
+      cy.contains("Version 4 content.").should("be.visible");
+      cy.contains("Version 3 content.").should("not.exist");
+      cy.contains("Version 2 content.").should("not.exist");
+
+      cy.get("#content-sidebar").within(() => {
+        cy.contains("Version 3").click();
+        cy.url().should("include", `/d/${documentId}/versions/${versionIds[1]}`);
+      })
+
+      cy.contains("Version 4 content.").should("not.exist");
+      cy.contains("Version 3 content.").should("be.visible");
+      cy.contains("Version 2 content.").should("not.exist");
+
+      cy.get("#content-sidebar").within(() => {
+        cy.contains("Version 2").click();
+        cy.url().should("include", `/d/${documentId}/versions/${versionIds[2]}`);
+      })
+
+      cy.contains("Version 4 content.").should("not.exist");
+      cy.contains("Version 3 content.").should("not.exist");
+      cy.contains("Version 2 content.").should("be.visible");
+    });
+  });
   it("allows keyboard shortcut for saving document (CMD+Enter or CTRL+Enter)", function () {
     // Get existing document ID
     cy.appEval("Document.first.id").then((documentId) => {
