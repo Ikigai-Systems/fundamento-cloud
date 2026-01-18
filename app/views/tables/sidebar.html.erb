@@ -7,19 +7,19 @@
     <div class="border-b">
       <nav data-tabs-target="list" aria-label="Tabs">
         <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
-          <%= render SidebarTabIcon.new(tooltip: "Details") do %>
+          <%= render SidebarTabIcon.new(label: "Details") do %>
             <i class="fa-regular fa-memo-circle-info"></i>
           <% end %>
         </button>
 
         <button id="visitors" data-action="click->tabs#change" data-tabs-target="tab">
-          <%= render SidebarTabIcon.new(tooltip: "Visitors") do %>
+          <%= render SidebarTabIcon.new(label: "Visitors") do %>
             <i class="fa-regular fa-screen-users"></i>
           <% end %>
         </button>
 
         <button id="connections" data-action="click->tabs#change" data-tabs-target="tab">
-          <%= render SidebarTabIcon.new(tooltip: "Connections") do %>
+          <%= render SidebarTabIcon.new(label: "Connections") do %>
             <i class="fa-regular fa-chart-network"></i>
           <% end %>
         </button>
