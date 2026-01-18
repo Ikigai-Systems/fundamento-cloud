@@ -18,7 +18,8 @@
       params: { content_blocks: "", content_html: "", revisions: "" },
       onclick: "handleUpdateButton(event)",
       class: "primary-button document-toolbar-button update-button",
-      form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } } do
+      form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
+      aria: { label: "Save document" } do
     %>
       <i class="fa-regular fa-floppy-disk"></i>
     <% end %>
