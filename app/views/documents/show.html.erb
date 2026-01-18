@@ -19,7 +19,8 @@
       id: dom_id(@document, :edit),
       disabled: !has_permission_to_edit,
       class: "primary-button document-toolbar-button",
-      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} } do
+      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} },
+      aria: { label: "Edit document" } do
     %>
       <i class="fa-regular fa-pencil"></i>
     <% end %>

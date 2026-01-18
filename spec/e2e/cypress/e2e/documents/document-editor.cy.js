@@ -105,52 +105,55 @@ describe("Document Editor", function () {
   });
 
   it("saves multiple versions correctly and displays them in version history", function () {
-    // Get existing document ID
-    cy.appEval("Document.first.id").then((documentId) => {
-      cy.visit(`/d/${documentId}`);
+    const documentId = "one";
 
-      // Wait for editor to load
-      cy.get("[data-document-editor]").should("exist");
+    cy.visit(`/d/${documentId}`);
 
-      // Get initial version count
-      cy.appEval(`Document.find('${documentId}').versions.count`).then((initialVersionCount) => {
-        // Make first edit
-        cy.get("[data-document-editor] [role=\"textbox\"]").first().type("First version content.{enter}");
+    // Wait for editor to load
+    cy.get("[data-document-editor]").should("exist");
 
-        // Save the document by clicking the update button
-        cy.get('[aria-label="Save document"]').click();
+    // Get initial version count
+    cy.appEval(`Document.find('${documentId}').versions.count`).then((initialVersionCount) => {
+      // Make first edit
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("First version content.{enter}");
 
-        // Wait for save confirmation
-        cy.contains("Document has been updated").should("be.visible");
+      // Save the document by clicking the update button
+      cy.get('[aria-label="Save document"]').click();
 
-        // Verify version was created
-        cy.appEval(`Document.find('${documentId}').versions.count`).then((newCount) => {
-          expect(newCount).to.equal(initialVersionCount + 1);
-        });
+      // Wait for save confirmation
+      cy.contains("Document has been updated").should("be.visible");
 
-        // Make second edit
-        cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Second version content.{enter}");
+      // Verify version was created
+      cy.appEval(`Document.find('${documentId}').versions.count`).then((newCount) => {
+        expect(newCount).to.equal(initialVersionCount + 1);
+      });
 
-        // Save again
-        cy.get('[aria-label="Save document"]').click();
-        cy.contains("Document has been updated").should("be.visible");
+      cy.get('[aria-label="Edit document"]').click();
 
-        // Verify another version was created
-        cy.appEval(`Document.find('${documentId}').versions.count`).then((finalCount) => {
-          expect(finalCount).to.equal(initialVersionCount + 2);
-        });
+      // Make second edit
+      cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Second version content.{enter}");
 
-        // Make third edit
-        cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Third version content.");
+      // Save again
+      cy.get('[aria-label="Save document"]').click();
+      cy.contains("Document has been updated").should("be.visible");
 
-        // Save again
-        cy.get('[aria-label="Save document"]').click();
-        cy.contains("Document has been updated").should("be.visible");
+      // Verify another version was created
+      cy.appEval(`Document.find('${documentId}').versions.count`).then((finalCount) => {
+        expect(finalCount).to.equal(initialVersionCount + 2);
+      });
 
-        // Verify third version was created
-        cy.appEval(`Document.find('${documentId}').versions.count`).then((thirdCount) => {
-          expect(thirdCount).to.equal(initialVersionCount + 3);
-        });
+      // Make third edit
+      cy.get('[aria-label="Edit document"]').click();
+
+      cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Third version content.");
+
+      // Save again
+      cy.get('[aria-label="Save document"]').click();
+      cy.contains("Document has been updated").should("be.visible");
+
+      // Verify third version was created
+      cy.appEval(`Document.find('${documentId}').versions.count`).then((thirdCount) => {
+        expect(thirdCount).to.equal(initialVersionCount + 3);
       });
     });
   });
