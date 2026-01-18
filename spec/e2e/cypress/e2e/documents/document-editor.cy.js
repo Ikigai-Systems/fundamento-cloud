@@ -157,4 +157,39 @@ describe("Document Editor", function () {
       });
     });
   });
+
+  it("allows keyboard shortcut for saving document (CMD+Enter or CTRL+Enter)", function () {
+    // Get existing document ID
+    cy.appEval("Document.first.id").then((documentId) => {
+      cy.visit(`/d/${documentId}/edit`);
+
+      // Wait for editor to load
+      cy.get("[data-document-editor]").should("exist");
+
+      // Get initial version count
+      cy.appEval(`Document.find('${documentId}').versions.count`).then((initialCount) => {
+        // Add content
+        cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Keyboard shortcut test content.{ctrl+enter}");
+
+        // Use keyboard shortcut to save (CTRL+Enter works on all platforms in Cypress)
+        cy.document().trigger('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          which: 13,
+          ctrlKey: true,
+          bubbles: true
+        });
+
+        // Wait for save confirmation
+        cy.url().should("include", `/d/${documentId}`);
+        cy.contains("Document has been updated").should("be.visible");
+
+        // Verify version was created
+        cy.appEval(`Document.find('${documentId}').versions.count`).then((newCount) => {
+          expect(newCount).to.equal(initialCount + 1);
+        });
+      });
+    });
+  });
 });
