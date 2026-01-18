@@ -192,4 +192,76 @@ describe("Document Editor", function () {
       });
     });
   });
+
+  it("supports using slash commands when editing", function () {
+    // Create a new document with various block types
+    cy.visit("/s/is_default");
+    cy.get('[aria-label="Create new document"]').click();
+
+    // Wait for redirect to edit page
+    cy.url().should("match", editPageUrl);
+
+    // Wait for editor to load
+    cy.get("[data-document-editor]").should("exist");
+
+    // Update title
+    cy.get('input.content-title-input').clear().type("Multi-Block Document");
+
+    // Click into the editor
+    cy.get("[data-document-editor] [role=\"textbox\"]").first().click();
+
+    // Add a heading using slash command
+    cy.focused().type("/heading");
+
+    // Wait for slash menu to appear
+    cy.get('.bn-suggestion-menu').should('be.visible');
+
+    // Click "Heading 1" from the menu
+    cy.get('.bn-suggestion-menu-item').contains('Heading 1').click();
+
+    // Type the heading text
+    cy.focused().type("Main Heading{enter}");
+
+    // Add a paragraph
+    cy.focused().type("This is a paragraph.{enter}");
+
+    // Add a bullet list using slash command
+    cy.focused().type("/bullet");
+
+    // Wait for menu
+    cy.get('.bn-suggestion-menu').should('be.visible');
+
+    // Click "Bullet List" from the menu
+    cy.get('.bn-suggestion-menu-item').contains('Bullet List').click();
+
+    // Type list items
+    cy.focused().type("First bullet{enter}");
+    cy.focused().type("Second bullet{enter}");
+
+    // Exit the list (double enter)
+    cy.focused().type("{enter}");
+
+    // Add another paragraph
+    cy.focused().type("Final paragraph.");
+
+    // Verify all content is visible
+    cy.contains("Main Heading").should("be.visible");
+    cy.contains("This is a paragraph.").should("be.visible");
+    cy.contains("First bullet").should("be.visible");
+    cy.contains("Second bullet").should("be.visible");
+    cy.contains("Final paragraph.").should("be.visible");
+
+    // Verify multiple blocks are created
+    cy.get("[data-document-editor] .bn-block-outer").should("have.length.at.least", 5);
+
+    // Save the document
+    cy.get('[aria-label="Save document"]').click();
+    cy.contains("Document has been updated").should("be.visible");
+
+    // Reload and verify structure persists
+    cy.get("[data-document-editor]").should("exist");
+    cy.contains("Main Heading").should("be.visible");
+    cy.contains("First bullet").should("be.visible");
+    cy.get("[data-document-editor] .bn-block-outer").should("have.length.at.least", 5);
+  });
 });
