@@ -14,14 +14,15 @@
   <% has_permission_to_edit = policy(@document).update? %>
 
   <div data-controller="popover" class="relative">
-    <%= button_to "Edit",
-      edit_document_path(@document),
+    <%= button_to edit_document_path(@document),
       method: :get,
       id: dom_id(@document, :edit),
       disabled: !has_permission_to_edit,
       class: "primary-button document-toolbar-button",
-      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} }
+      form: { data: {action: "mouseenter->popover#show mouseleave->popover#hide"} } do
     %>
+      <i class="fa-regular fa-pencil"></i>
+    <% end %>
 
     <template data-popover-target="content">
       <div data-popover-target="card" class="popover-tooltip-card m-1">
