@@ -21,7 +21,7 @@ Cypress.Commands.add('appCommands', function (body) {
   });
 });
 
-Cypress.Commands.add('app', function (name, command_options) {
+Cypress.Commands.add('app', function (name, command_options = {}) {
   return cy.appCommands({name: name, options: command_options}).then((body) => {
     return body[0]
   });

@@ -39,7 +39,8 @@ describe("Document Editor", function () {
     cy.get("[data-document-editor]").should("exist");
 
     // Update the document title
-    cy.get('input.content-title-input').clear().type("Test Document for Editor");
+    cy.get('input.content-title-input').clear();
+    cy.get('input.content-title-input').type("Test Document for Editor");
 
     // Type content in the editor
     cy.get("[data-document-editor] [role=\"textbox\"]").first().type("This is the first paragraph of the test document.");
@@ -130,8 +131,9 @@ describe("Document Editor", function () {
       cy.get('[aria-label="Edit document"]').click();
 
       // Make second edit
+      cy.url().should("include", `/d/${documentId}/edit`);
       cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Second version content.{enter}");
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Second version content.{enter}");
 
       // Save again
       cy.get('[aria-label="Save document"]').click();
@@ -145,8 +147,9 @@ describe("Document Editor", function () {
       // Make third edit
       cy.get('[aria-label="Edit document"]').click();
 
+      cy.url().should("include", `/d/${documentId}/edit`);
       cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor] [role=\"textbox\"]").last().type("Third version content.");
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Third version content.");
 
       // Save again
       cy.get('[aria-label="Save document"]').click();
@@ -181,6 +184,7 @@ describe("Document Editor", function () {
     cy.get('[aria-label="Edit document"]').click();
 
     // Make second edit and save
+    cy.url().should("include", `/d/${documentId}/edit`);
     cy.contains("Loading content").should("not.be.visible");
     cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 3 content.{enter}");
     cy.get('[aria-label="Save document"]').click();
@@ -189,6 +193,7 @@ describe("Document Editor", function () {
     cy.get('[aria-label="Edit document"]').click();
 
     // Make third edit and save
+    cy.url().should("include", `/d/${documentId}/edit`);
     cy.contains("Loading content").should("not.be.visible");
     cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 4 content.{enter}");
     cy.get('[aria-label="Save document"]').click();
@@ -250,7 +255,8 @@ describe("Document Editor", function () {
 
       // Add unique content
       const uniqueContent = `Unique content ${Date.now()}`;
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().clear().type(uniqueContent);
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().clear();
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().type(uniqueContent);
 
       // Save the document
       cy.get('[aria-label="Save document"]').click();
