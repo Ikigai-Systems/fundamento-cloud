@@ -96,7 +96,10 @@ export const DocumentTitleInput = ({document, extraClasses}: DocumentTitleInputP
         const newTitle = e.target.value;
         if (newTitle !== document.title) {
           const updatedDocument = await DocumentsApi.update({
-            params: document,
+            params: {
+              npi: document.id, // FIXME: remove once we switch back to using id in params
+              ...document
+            },
             data: {title: e.target.value}
           });
           const sideBarElement = window.document.querySelector(`[data-document-id="${updatedDocument.id}"]`);
