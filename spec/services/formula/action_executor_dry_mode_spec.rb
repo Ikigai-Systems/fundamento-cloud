@@ -6,13 +6,13 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
   describe '#record_action' do
     it 'records actions with their parameters' do
-      action_executor.record_action("AddRow", tableNpi: "table1", values: { "col1" => "val1" })
+      action_executor.record_action("AddRow", tableId: "table1", values: { "col1" => "val1" })
       
       actions = action_executor.get_actions
       expect(actions).to eq([
         {
           type: "AddRow",
-          tableNpi: "table1", 
+          tableId: "table1",
           values: { "col1" => "val1" }
         }
       ])
@@ -36,7 +36,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(action_executor.get_actions).to eq([
           {
             type: "AddRow",
-            tableNpi: "npi",
+            tableId: "npi",
             values: {
               "column_npi" => "test_value"
             }
@@ -59,7 +59,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(action_executor.get_actions).to eq([
           {
             type: "AddRow",
-            tableNpi: "npi",
+            tableId: "npi",
             values: {
               "key_col" => "JIRA",
               "name_col" => "Jira"
@@ -78,7 +78,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(action_executor.get_actions).to eq([
           {
             type: "DeleteRows",
-            tableNpi: "table_npi"
+            tableId: "table_npi"
           }
         ])
       end
@@ -93,7 +93,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(action_executor.get_actions).to eq([
           {
             type: "UpdateRows",
-            tableNpi: "table_npi",
+            tableId: "table_npi",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",
@@ -113,7 +113,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(action_executor.get_actions).to eq([
           {
             type: "AddOrUpdateRows",
-            tableNpi: "table_npi",
+            tableId: "table_npi",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",
@@ -132,7 +132,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         
         expect(result).to eq(true)
         expect(action_executor.get_actions).to include(
-          hash_including(type: "DeleteRows", tableNpi: "npi")
+          hash_including(type: "DeleteRows", tableId: "npi")
         )
         
         # Then test a simple If statement separately
@@ -141,7 +141,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         
         expect(result).to eq(true)
         expect(action_executor.get_actions).to include(
-          hash_including(type: "AddRow", tableNpi: "npi")
+          hash_including(type: "AddRow", tableId: "npi")
         )
       end
     end
@@ -166,7 +166,7 @@ RSpec.describe Formula::ActionExecutor, type: :service do
 
   describe '#clear' do
     it 'clears all recorded actions' do
-      action_executor.record_action("AddRow", tableNpi: "table1")
+      action_executor.record_action("AddRow", tableId: "table1")
       expect(action_executor.has_actions?).to eq(true)
       
       action_executor.clear

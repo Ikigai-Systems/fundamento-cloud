@@ -41,20 +41,20 @@ class Formula::ActionExecutor
   # Get available action functions for the evaluator
   def get_action_functions
     {
-      'AddRow' => ->(function_context, table_npi, *args) {
+      'AddRow' => ->(function_context, table_id, *args) {
         values = Hash[*args]
-        add_row(function_context, table_npi, values)
+        add_row(function_context, table_id, values)
       },
-      'DeleteRows' => ->(function_context, table_npi) {
-        delete_rows(function_context, table_npi)
+      'DeleteRows' => ->(function_context, table_id) {
+        delete_rows(function_context, table_id)
       },
-      'UpdateRows' => ->(function_context, table_npi, condition_formula, *args) {
+      'UpdateRows' => ->(function_context, table_id, condition_formula, *args) {
         values = Hash[*args]
-        update_rows(function_context, table_npi, condition_formula, values)
+        update_rows(function_context, table_id, condition_formula, values)
       },
-      'AddOrUpdateRows' => ->(function_context, table_npi, condition_formula, *args) {
+      'AddOrUpdateRows' => ->(function_context, table_id, condition_formula, *args) {
         values = Hash[*args]
-        add_or_update_rows(function_context, table_npi, condition_formula, values)
+        add_or_update_rows(function_context, table_id, condition_formula, values)
       },
       'RunActions' => ->(function_context, *args) {
         run_actions(function_context, *args)
@@ -63,41 +63,41 @@ class Formula::ActionExecutor
   end
 
   # Public action methods for direct use in tests
-  def add_row(function_context, table_npi, values = {})
-    record_action("AddRow", tableNpi: table_npi, values: values)
+  def add_row(function_context, table_id, values = {})
+    record_action("AddRow", tableId: table_id, values: values)
     
     unless @dry_mode
-      execute_add_row(function_context, table_npi, values:)
+      execute_add_row(function_context, table_id, values:)
     end
     
     true
   end
 
-  def delete_rows(function_context, table_npi)
-    record_action("DeleteRows", tableNpi: table_npi)
+  def delete_rows(function_context, table_id)
+    record_action("DeleteRows", tableId: table_id)
     
     unless @dry_mode
-      execute_delete_rows(function_context, table_npi)
+      execute_delete_rows(function_context, table_id)
     end
     
     true
   end
 
-  def update_rows(function_context, table_npi, condition_formula, values = {})
-    record_action("UpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
+  def update_rows(function_context, table_id, condition_formula, values = {})
+    record_action("UpdateRows", tableId: table_id, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_update_rows(function_context, table_npi, condition_formula:, values:)
+      execute_update_rows(function_context, table_id, condition_formula:, values:)
     end
     
     true
   end
 
-  def add_or_update_rows(function_context, table_npi, condition_formula, values = {})
-    record_action("AddOrUpdateRows", tableNpi: table_npi, conditionFormula: condition_formula, values: values)
+  def add_or_update_rows(function_context, table_id, condition_formula, values = {})
+    record_action("AddOrUpdateRows", tableId: table_id, conditionFormula: condition_formula, values: values)
     
     unless @dry_mode
-      execute_add_or_update_rows(function_context, table_npi, condition_formula:, values:)
+      execute_add_or_update_rows(function_context, table_id, condition_formula:, values:)
     end
     
     true
@@ -111,8 +111,8 @@ class Formula::ActionExecutor
   private
 
   # Execution methods (copied from ExecuteActionsService)
-  def execute_add_row(function_context, table_npi, values:)
-    table = find_table(table_npi)
+  def execute_add_row(function_context, table_id, values:)
+    table = find_table(table_id)
 
     Pundit.authorize(@pundit_user, table, :update?)
 
@@ -138,8 +138,8 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_delete_rows(function_context, table_npi)
-    table = find_table(table_npi)
+  def execute_delete_rows(function_context, table_id)
+    table = find_table(table_id)
     Pundit.authorize(@pundit_user, table, :update?)
     
     # Handle foreign key constraints by clearing previous_row_id references first
@@ -147,8 +147,8 @@ class Formula::ActionExecutor
     table.rows.destroy_all
   end
 
-  def execute_update_rows(function_context, table_npi, condition_formula:, values:)
-    table = find_table(table_npi)
+  def execute_update_rows(function_context, table_id, condition_formula:, values:)
+    table = find_table(table_id)
     Pundit.authorize(@pundit_user, table, :update?)
 
     table.rows.each do |row|
@@ -171,8 +171,8 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_add_or_update_rows(function_context, table_npi, condition_formula:, values:)
-    table = find_table(table_npi)
+  def execute_add_or_update_rows(function_context, table_id, condition_formula:, values:)
+    table = find_table(table_id)
     Pundit.authorize(@pundit_user, table, :update?)
 
     matching_rows = []

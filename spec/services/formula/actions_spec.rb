@@ -26,19 +26,19 @@ RSpec.describe Formula::Engine, type: :model do
 
         expected_actions = [
           {
-            tableNpi: "npi",
+            tableId: "npi",
             type: "DeleteRows"
           },
           {
             type: "AddRow",
-            tableNpi: "npi",
+            tableId: "npi",
             values: {
               "column_npi" => "JIRA Jira"
             },
           },
           {
             type: "AddRow",
-            tableNpi: "npi",
+            tableId: "npi",
             values: {
               "column_npi" => "JIRA Jira"
             }
@@ -65,7 +65,7 @@ RSpec.describe Formula::Engine, type: :model do
         expected_actions = [
           {
             type: "AddRow",
-            tableNpi: "npi",
+            tableId: "npi",
             values: {
               "column_npi" => "JIRA Jira"
             }
@@ -91,7 +91,7 @@ RSpec.describe Formula::Engine, type: :model do
           expected_actions = [
             {
               type: "AddRow",
-              tableNpi: "npi",
+              tableId: "npi",
               values: {
                 "column_npi" => "JIRA Jira"
               }
@@ -118,82 +118,82 @@ RSpec.describe Formula::Engine, type: :model do
           expect(action_executor.get_actions).to eq([
             {
               type: "AddRow",
-              tableNpi: "npi",
+              tableId: "npi",
               values: { "another_npi" => 2, "column_npi" => "2024-07-07T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 2, "column_npi" => "2024-07-14T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 2, "column_npi" => "2024-07-21T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 2, "column_npi" => "2024-07-28T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-08-04T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-08-11T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-08-18T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-08-25T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-09-01T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-09-08T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-09-15T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-09-22T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-09-29T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 3, "column_npi" => "2024-10-06T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 4, "column_npi" => "2024-10-13T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 6, "column_npi" => "2024-10-20T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 7, "column_npi" => "2024-10-27T00:00:00+02:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 8, "column_npi" => "2024-11-03T00:00:00+01:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 9, "column_npi" => "2024-11-10T00:00:00+01:00" }
             },
-            { tableNpi: "npi",
+            { tableId: "npi",
               type: "AddRow",
               values: { "another_npi" => 12, "column_npi" => "2024-11-17T00:00:00+01:00" }
             }
@@ -210,7 +210,7 @@ RSpec.describe Formula::Engine, type: :model do
         expected_actions = [
           {
             type: "DeleteRows",
-            tableNpi: "table_npi"
+            tableId: "table_npi"
           }
         ]
 
@@ -227,7 +227,7 @@ RSpec.describe Formula::Engine, type: :model do
         expected_actions = [
           {
             type: "UpdateRows",
-            tableNpi: "table_npi",
+            tableId: "table_npi",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",
@@ -249,7 +249,7 @@ RSpec.describe Formula::Engine, type: :model do
         expected_actions = [
           {
             type: "AddOrUpdateRows",
-            tableNpi: "table_npi",
+            tableId: "table_npi",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",
