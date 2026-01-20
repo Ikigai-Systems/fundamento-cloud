@@ -71,7 +71,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
                 const table = await TablesApi.create({
                   params: {
                     query: {
-                      space_npi: space?.npi,
+                      space_id: space?.id,
                     },
                   },
                   data: {
@@ -105,7 +105,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
               const table = await request("post", TablesApi.create.path(), {
                 params: {
                   query: {
-                    space_npi: space?.npi
+                    space_id: space?.id
                   }
                 },
                 data: body,
@@ -149,7 +149,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
             loadOptions={async (query) => {
               const tables = await TablesApi.index({
                 query: {
-                  space_npi: space.id,
+                  space_id: space.id,
                   query,
                 }
               });
@@ -209,15 +209,15 @@ export const createAdvancedTable = createReactBlockSpec(
 
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
-      const tableNpi = blockProps.tableNpi;
+      const tableId = blockProps.tableNpi;
       const tableQuery = useQuery({
-        queryKey: ["tables", space.id, tableNpi], queryFn: async () => {
-          if (tableNpi === "") {
+        queryKey: ["tables", space.id, tableId], queryFn: async () => {
+          if (tableId === "") {
             return null;
           }
           const currentDataDeserializer = Config.deserializeData;
           Config.deserializeData = (val => val);
-          const promiseData = TablesApi.show({npi: tableNpi});
+          const promiseData = TablesApi.show({id: tableId});
           Config.deserializeData = currentDataDeserializer;
           const data = await promiseData;
           return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -234,14 +234,14 @@ export const createAdvancedTable = createReactBlockSpec(
         )
       }
 
-      if (tableNpi === "") {
+      if (tableId === "") {
         return (<SelectOrCreateTableContainer editor={editor} space={space} block={props.block}/>);
       }
 
       if (isError) {
         return (
           <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800 dark:text-red-400">
-            Unable to load table with id {tableNpi}
+            Unable to load table with id {tableId}
           </div>
         )
       }

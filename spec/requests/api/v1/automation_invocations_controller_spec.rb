@@ -22,7 +22,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
     space.tables.create!(
       organization: organization,
       name: "Test Table",
-      id: "npi",
+      id: "id",
       parent: space,
     )
   end
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
       run_as: organization_membership,
       title: "Webhook Automation",
       kind: "webhook",
-      formula: 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("npi", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))',
+      formula: 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("id", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))',
     )
   end
 

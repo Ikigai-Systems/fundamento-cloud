@@ -14,7 +14,7 @@ module Api
       end
 
       def show
-        space = current_organization.spaces.find(params[:npi])
+        space = current_organization.spaces.find(params[:id])
         authorize space
 
         documents = space.documents_from_hierarchy.map { |doc|
@@ -56,12 +56,12 @@ module Api
 
       def build_document_hierarchy(doc, space)
         node = {
-          npi: doc.npi,
+          npi: doc.id,
           title: doc.title
         }
 
         # Find children from hierarchy
-        hierarchy_node = find_in_hierarchy(space.hierarchy, doc.npi)
+        hierarchy_node = find_in_hierarchy(space.hierarchy, doc.id)
         if hierarchy_node && hierarchy_node['children']
           children_docs = hierarchy_node['children'].map do |child_node|
             child_doc = space.documents.find_by(npi: child_node['id'])

@@ -55,7 +55,7 @@ export const createChartBlock = createReactBlockSpec(
         }
         const currentDataDeserializer = Config.deserializeData;
         Config.deserializeData = (val => val);
-        const promiseData = TablesApi.show({npi: tableNpi});
+        const promiseData = TablesApi.show({id: tableNpi});
         Config.deserializeData = currentDataDeserializer;
         const data = await promiseData;
         return {...data, forceRerenderUuid: crypto.randomUUID()}
@@ -122,7 +122,7 @@ export const createChartBlock = createReactBlockSpec(
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
                       query: {
-                        space_npi: space?.id,
+                        space_id: space?.id,
                         query,
                       }
                     });
@@ -173,7 +173,7 @@ export const createChartBlock = createReactBlockSpec(
                   loadOptions={async (query) => {
                     const tables = await TablesApi.index({
                       params: {
-                        space_npi: space?.id,
+                        space_id: space?.id,
                         query,
                       }
                     });

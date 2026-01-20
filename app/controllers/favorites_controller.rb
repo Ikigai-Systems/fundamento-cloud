@@ -20,7 +20,7 @@ class FavoritesController < ApplicationController
   end
 
   def destroy
-    @favorite = pundit_user.organization_membership.favorites.find(params[:npi])
+    @favorite = pundit_user.organization_membership.favorites.find(params[:id])
 
     authorize @favorite, :update?
 

@@ -3,7 +3,7 @@ class Documents::VersionsController < ApplicationController
 
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
 
-  include LoadDocument.from_param(:document_npi)
+  include LoadDocument.from_param(:document_id)
 
   after_action :verify_authorized
 

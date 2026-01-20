@@ -12,7 +12,7 @@ class FormulasController < ApplicationController
 
     formula_evaluation = FormulaService.evaluate(
       formula,
-      current_organization.spaces.find_by_param!(params[:space_npi] || params.dig("evaluation_context", "space_npi")),
+      current_organization.spaces.find_by_param!(params[:space_id] || params.dig("evaluation_context", "space_id")),
       current_organization_membership,
       additional_context: additional_context
     )

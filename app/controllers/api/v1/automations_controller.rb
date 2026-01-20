@@ -4,7 +4,6 @@ class Api::V1::AutomationsController < Api::ApiController
   private
 
   def load_automation
-    @automation = Automation.find_by_npi!(params[:npi])
+    @automation = Automation.find(params[:id])
   end
-
 end

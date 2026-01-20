@@ -16,53 +16,53 @@ RSpec.describe "Organization Users routing", type: :routing do
       )
     end
 
-    it "routes PATCH /organization_memberships/:npi to organization_memberships#update" do
+    it "routes PATCH /organization_memberships/:id to organization_memberships#update" do
       expect(patch: "/organization_memberships/ou_test").to route_to(
         controller: "organization_memberships",
         action: "update",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
 
-    it "routes PUT /organization_memberships/:npi to organization_memberships#update" do
+    it "routes PUT /organization_memberships/:id to organization_memberships#update" do
       expect(put: "/organization_memberships/ou_test").to route_to(
         controller: "organization_memberships",
         action: "update",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
 
-    it "routes DELETE /organization_memberships/:npi to organization_memberships#destroy" do
+    it "routes DELETE /organization_memberships/:id to organization_memberships#destroy" do
       expect(delete: "/organization_memberships/ou_test").to route_to(
         controller: "organization_memberships",
         action: "destroy",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
   end
 
   describe "member routes" do
-    it "routes GET /organization_memberships/:npi/change_password to organization_memberships#change_password" do
+    it "routes GET /organization_memberships/:id/change_password to organization_memberships#change_password" do
       expect(get: "/organization_memberships/ou_test/change_password").to route_to(
         controller: "organization_memberships",
         action: "change_password",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
 
-    it "routes PATCH /organization_memberships/:npi/promote to organization_memberships#promote" do
+    it "routes PATCH /organization_memberships/:id/promote to organization_memberships#promote" do
       expect(patch: "/organization_memberships/ou_test/promote").to route_to(
         controller: "organization_memberships",
         action: "promote",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
 
-    it "routes PATCH /organization_memberships/:npi/demote to organization_memberships#demote" do
+    it "routes PATCH /organization_memberships/:id/demote to organization_memberships#demote" do
       expect(patch: "/organization_memberships/ou_test/demote").to route_to(
         controller: "organization_memberships",
         action: "demote",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
   end
@@ -76,7 +76,7 @@ RSpec.describe "Organization Users routing", type: :routing do
       expect(organization_memberships_path).to eq("/organization_memberships")
     end
 
-    it "generates organization_membership_path with npi parameter" do
+    it "generates organization_membership_path with id parameter" do
       expect(organization_membership_path("ou_test")).to eq("/organization_memberships/ou_test")
     end
 
@@ -94,11 +94,11 @@ RSpec.describe "Organization Users routing", type: :routing do
   end
 
   describe "param name" do
-    it "uses :npi instead of :id" do
+    it "uses :id instead of :id" do
       expect(get: "/organization_memberships/ou_test/change_password").to route_to(
         controller: "organization_memberships",
         action: "change_password",
-        npi: "ou_test"
+        id: "ou_test"
       )
     end
 
@@ -106,7 +106,7 @@ RSpec.describe "Organization Users routing", type: :routing do
       expect(get: "/organization_memberships/om_is_pawel/change_password").to route_to(
         controller: "organization_memberships",
         action: "change_password",
-        npi: "om_is_pawel"
+        id: "om_is_pawel"
       )
     end
 
@@ -117,7 +117,7 @@ RSpec.describe "Organization Users routing", type: :routing do
         expect(get: "/organization_memberships/#{npi}/change_password").to route_to(
           controller: "organization_memberships",
           action: "change_password",
-          npi: npi
+          id: npi
         )
       end
     end
@@ -163,7 +163,7 @@ RSpec.describe "Organization Users routing", type: :routing do
 
     let(:om_is_pawel) { organization_memberships(:om_is_pawel) }
 
-    it "generates correct path using model npi" do
+    it "generates correct path using model id" do
       path = organization_membership_path(om_is_pawel.id)
 
       expect(path).to eq("/organization_memberships/#{om_is_pawel.id}")

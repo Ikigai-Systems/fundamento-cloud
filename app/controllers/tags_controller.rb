@@ -1,6 +1,6 @@
 class TagsController < ApplicationController
   include EnsureOrganization
-  include LoadSpace.from_param(:space_npi)
+  include LoadSpace.from_param(:space_id)
 
   after_action :verify_authorized
 

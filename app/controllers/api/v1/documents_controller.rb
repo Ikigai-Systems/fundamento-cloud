@@ -2,7 +2,7 @@ module Api
   module V1
     class DocumentsController < Api::ApiController
       def index
-        space = current_organization.spaces.find_by_param!(params[:space_npi])
+        space = current_organization.spaces.find_by_param!(params[:space_id])
         authorize space
 
         documents = policy_scope(space.documents).order(:title)
@@ -26,17 +26,17 @@ module Api
         document = if document_params[:file].present?
           DocumentService.new(pundit_user: pundit_user).
             create_from_file!(
-              space_id: params[:space_npi],
+              space_id: params[:space_id],
               title: document_params[:title],
-              parent_document_id: document_params[:parent_document_npi],
+              parent_document_id: document_params[:parent_document_id],
               file: document_params[:file],
             )
         else
           DocumentService.new(pundit_user: pundit_user).
             create!(
-              space_id: params[:space_npi],
+              space_id: params[:space_id],
               title: document_params[:title],
-              parent_document_id: document_params[:parent_document_npi],
+              parent_document_id: document_params[:parent_document_id],
               markdown: document_params[:markdown],
             )
         end
@@ -56,7 +56,7 @@ module Api
       end
 
       def show
-        document = current_organization.documents.find(params[:npi])
+        document = current_organization.documents.find(params[:id])
         authorize document
 
         blocks = if document.versions.empty?
@@ -87,7 +87,7 @@ module Api
         begin
           document = DocumentService.new(pundit_user: pundit_user).
             update!(
-              document_id: params[:npi],
+              document_id: params[:id],
               markdown: document_params[:markdown]
             )
 
@@ -107,7 +107,7 @@ module Api
       private
 
       def document_params
-        params.require(:document).permit(:title, :markdown, :parent_document_npi, :file)
+        params.require(:document).permit(:title, :markdown, :parent_document_id, :file)
       end
     end
   end

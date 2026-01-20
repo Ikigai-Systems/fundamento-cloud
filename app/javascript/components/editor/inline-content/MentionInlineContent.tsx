@@ -17,7 +17,7 @@ const DocumentMention = ({documentNpi}) => {
   const documentQuery = useQuery({
     queryKey: ["documents", documentNpi],
     queryFn: async () => {
-      return await DocumentsApi.show({npi: documentNpi});
+      return await DocumentsApi.show({id: documentNpi});
     }}, queryClient);
   
   const isLoading = documentQuery.isLoading;
@@ -26,7 +26,7 @@ const DocumentMention = ({documentNpi}) => {
 
   return (
     <a
-      href={DocumentsApi.show.path({npi: document?.npi})}
+      href={DocumentsApi.show.path({id: document?.id})}
       className="mention"
     >
       @{displayName}
@@ -39,7 +39,7 @@ const TableMention = ({tableNpi}) => {
   const contentQuery = useQuery({
     queryKey: ["tables", tableNpi],
     queryFn: async () => {
-      return await TablesApi.show({npi: tableNpi});
+      return await TablesApi.show({id: tableNpi});
     }}, queryClient);
 
   const isLoading = contentQuery.isLoading;
@@ -48,7 +48,7 @@ const TableMention = ({tableNpi}) => {
 
   return (
     <a
-      href={TablesApi.show.path({npi: content?.table?.npi})}
+      href={TablesApi.show.path({id: content?.table?.id})}
       className="mention"
     >
       @{displayName}

@@ -46,7 +46,7 @@
       <%= button_to polymorphic_path([content.class]),
         method: :post,
         params: {
-          "space_npi": @space.id,
+          "space_id": @space.id,
           "document": { title: "" },
           "parent_type": content.class,
           "parent_id": content.id,

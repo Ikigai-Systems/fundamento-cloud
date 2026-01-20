@@ -14,7 +14,7 @@ class Api::V1::TablesController < Api::ApiController
     }
   end
 
-  def self.find_relevant_table(npi_or_name, space_id, organization_membership, for_update: true)
+  def self.find_relevant_table(id_or_name, space_id, organization_membership, for_update: true)
     space = Space.find(space_id)
 
     pundit_user = PolicyUserContext.new(organization_membership.user, organization_membership.organization)
@@ -22,10 +22,10 @@ class Api::V1::TablesController < Api::ApiController
     # Will throw if unauthorized
     Pundit.authorize(pundit_user, space, for_update ? :update? : :show?)
 
-    table = space.tables.find_by(id: npi_or_name)
+    table = space.tables.find_by(id: id_or_name)
 
     if table.nil? # maybe it was table Name provided instead of id?
-      table = space.tables.find_by_name!(npi_or_name)
+      table = space.tables.find_by_name!(id_or_name)
     end
 
     # Will throw if unauthorized

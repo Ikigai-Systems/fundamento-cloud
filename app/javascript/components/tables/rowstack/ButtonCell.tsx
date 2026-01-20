@@ -33,7 +33,7 @@ function ButtonCell({
           additionalContext: {
             "ThisRow": rowId
           },
-          spaceNpi: space?.id,
+          spaceId: space?.id,
         }
       });
 

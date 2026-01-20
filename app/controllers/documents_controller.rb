@@ -14,7 +14,7 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: policy_scope(current_organization.documents).select(:npi, :title), only: [:npi, :title]
+          render json: policy_scope(current_organization.documents).select(:id, :title), only: [:id, :title]
         else
           render json: policy_scope(current_organization.documents), :except => [:sync]
         end
@@ -188,12 +188,12 @@ class DocumentsController < ApplicationController
   end
 
   def load_document
-    @document = current_organization.documents.find(params[:npi])
+    @document = current_organization.documents.find(params[:id])
     @space = @document.space
   end
 
   def load_space
-    @space = current_organization.spaces.find_by_param!(params[:space_npi])
+    @space = current_organization.spaces.find_by_param!(params[:space_id])
   end
 
   def ensure_turbo_request

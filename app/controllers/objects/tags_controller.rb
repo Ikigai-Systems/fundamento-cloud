@@ -1,13 +1,13 @@
 class Objects::TagsController < ApplicationController
   include EnsureOrganization
 
-  include LoadDocument.from_param(:document_npi)
-  include LoadTable.from_param(:table_npi)
+  include LoadDocument.from_param(:document_id)
+  include LoadTable.from_param(:table_id)
 
   after_action :verify_authorized
 
-  before_action :load_document, if: -> { params[:document_npi].present? }
-  before_action :load_table, if: -> { params[:table_npi].present? }
+  before_action :load_document, if: -> { params[:document_id].present? }
+  before_action :load_table, if: -> { params[:table_id].present? }
   before_action -> { @object = @document || @table }
 
   def create

@@ -17,16 +17,16 @@ function DocumentsSelectCell({
     return (await DocumentsApi.index());
   }}, queryClient);
 
-  const documentNpis = data ? data.split(",") : [];
+  const documentIds = data ? data.split(",") : [];
 
   const documentQueries = useQueries({
-    queries: documentNpis.map(documentNpi => ({
-      queryKey: ["documents", documentNpi],
+    queries: documentIds.map(documentId => ({
+      queryKey: ["documents", documentId],
       queryFn: async () => {
-        if (!documentNpi) {
+        if (!documentId) {
           return null;
         }
-        return (await DocumentsApi.show({npi: documentNpi}));
+        return (await DocumentsApi.show({id: documentId}));
       }})),
   }, queryClient);
 
@@ -51,7 +51,7 @@ function DocumentsSelectCell({
       } else if (documentQuery.isSuccess) {
         const title = documentQuery.data ? documentQuery.data.title : undefined;
         return (
-          <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({npi: documentQuery.data.npi})}>
+          <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({id: documentQuery.data.id})}>
             <i className="fa-regular fa-file-lines"></i>
             {title}
           </a>
@@ -84,10 +84,10 @@ function DocumentsSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          value={selectedDocuments.map(document => ({ value: document.npi, title: document.title }))}
+          value={selectedDocuments.map(document => ({ value: document.id, title: document.title }))}
           loadOptions={async (query) =>
             documentsQuery.data.map(document => ({
-              value: document.npi,
+              value: document.id,
               title: document.title,
             }))}
           formatOptionLabel={({title}) => {
@@ -98,9 +98,9 @@ function DocumentsSelectCell({
             )}
           }
           onChange={(newOption) => {
-            const documentNpis = Array.from(newOption.values().map(value => value.value));
+            const documentIds = Array.from(newOption.values().map(value => value.value));
 
-            setData(join(documentNpis));
+            setData(join(documentIds));
             setFocus("focused");
           }}
         />

@@ -19,25 +19,29 @@ const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
     } else {
       const currentDataDeserializer = Config.deserializeData;
       Config.deserializeData = (val => val);
-      const promiseData = TablesApi.show({npi: table.id});
+      const promiseData = TablesApi.show({id: table.id});
       Config.deserializeData = currentDataDeserializer;
       const data = await promiseData
       return {...data, forceRerenderUuid: crypto.randomUUID()}
     }
   }}, queryClient);
+
   const {isLoading, isError} = tableQuery;
 
   window.tableData = tableQuery.data;
 
   return <CurrentSpaceContext.Provider value={{space}}>
-
     <div className="flex flex-col">
       <div className="content-editor-padding">
         <TableTitleInput table={table} space={space}/>
       </div>
 
       <div className="content-editor-padding min-h-72">
-        {!isLoading && !isError && <EditableTableWithRowstack table={tableQuery.data.table} data={tableQuery.data.data} forceRerenderUuid={tableQuery.data.forceRerenderUuid}/>}
+        {!isLoading && !isError && <EditableTableWithRowstack
+          table={tableQuery.data.table}
+          data={tableQuery.data.data}
+          forceRerenderUuid={tableQuery.data.forceRerenderUuid}/>
+        }
       </div>
     </div>
   </CurrentSpaceContext.Provider>

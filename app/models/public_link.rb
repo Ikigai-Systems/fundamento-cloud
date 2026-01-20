@@ -45,7 +45,7 @@ class PublicLink < ApplicationRecord
     end
   end
 
-  def generate_npi
+  def generate_id
     self.id = Nanoid.generate(size: 10)
   end
 

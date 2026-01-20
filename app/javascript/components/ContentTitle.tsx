@@ -48,7 +48,7 @@ export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputPro
       if (newName !== table.name) {
         try {
           await TablesApi.update({
-            params: {npi: table.id},
+            params: {id: table.id},
             data: {name: e.target.value},
           });
         } catch (e) {
@@ -96,10 +96,7 @@ export const DocumentTitleInput = ({document, extraClasses}: DocumentTitleInputP
         const newTitle = e.target.value;
         if (newTitle !== document.title) {
           const updatedDocument = await DocumentsApi.update({
-            params: {
-              npi: document.id, // FIXME: remove once we switch back to using id in params
-              ...document
-            },
+            params: {id: document.id},
             data: {title: e.target.value}
           });
           const sideBarElement = window.document.querySelector(`[data-document-id="${updatedDocument.id}"]`);

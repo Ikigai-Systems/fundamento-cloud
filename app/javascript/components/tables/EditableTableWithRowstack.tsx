@@ -206,13 +206,15 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
-          const spaceNpi = space.id;
-          const tableNpi = table.id;
+          const spaceId = space.id;
+          const tableId = table.id;
+
           await TablesApi.moveColumnLeft({
-            params: {npi: tableNpi},
+            params: {id: tableId},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableNpi]});
+
+          queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
@@ -228,13 +230,15 @@ const extraColumnHeaderPopupActions = [{
     return (
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={async () => {
-          const spaceNpi = space.id;
-          const tableNpi = table.id;
+          const spaceId = space.id;
+          const tableId = table.id;
+
           await TablesApi.moveColumnRight({
-            params: {npi: tableNpi},
+            params: {id: tableId},
             data: {colId: column.id}
           });
-          queryClient.invalidateQueries({queryKey: ["tables", spaceNpi, tableNpi]});
+
+          queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
         }}
       >
         <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
@@ -276,8 +280,6 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
     ...initialViewProps?.columns[id]
   }));
 
-  const rows = data.rows.map(({npi, ...row}) => ({...row, id: npi}));
-
   columns.filter(({type}) => type === "formula").forEach(column => {
     column.formula = (row) => {
       const formulaResult = row[column.id];
@@ -291,11 +293,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
 
   return (<div className="ikigai-rowstack-overrides">
     <EditableTableContext.Provider value={{space, table}}>
-      <EditableTableRowsContext.Provider value={{rows}}>
+      <EditableTableRowsContext.Provider value={{rows: data.rows}}>
         <Rowstack
           key={forceRerenderUuid}
           columns={columns}
-          data={rows}
+          data={data.rows}
           config={{
             theme: {color: window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light"},
             addRow: {enabled: isEditable},
@@ -341,7 +343,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                       try {
                         const currentDataDeserializer = Config.deserializeData;
                         Config.deserializeData = (val => val);
-                        const promiseData = TablesApi.show({npi: table.id});
+                        const promiseData = TablesApi.show({id: table.id});
                         Config.deserializeData = currentDataDeserializer;
                         const tableData = await promiseData;
 
@@ -533,7 +535,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               const currentDataSerializer = Config.serializeData;
               Config.serializeData = (val => val);
               const promise = TablesApi.updateByRowstack({
-                params: {npi: table.id},
+                params: {id: table.id},
                 data: {event}
               });
               Config.serializeData = currentDataSerializer;

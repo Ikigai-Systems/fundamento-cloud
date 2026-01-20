@@ -5,7 +5,7 @@
     html: { class: "default-form" },
     data: { turbo: false, controller: "prevent-double-submit" }) do |f|
   %>
-    <%= f.hidden_field :space_npi, value: @space.id %>
+    <%= f.hidden_field :space_id, value: @space.id %>
 
     <%= render "devise/shared/error_messages", resource: @table %>
 
