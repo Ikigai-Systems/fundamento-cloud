@@ -7,6 +7,8 @@ describe('Cloud sign up flow', function() {
   it("you can sign up with cloud", function() {
     cy.visit("/");
     cy.contains("Sign up").click();
+
+    cy.url().should('include', '/users/sign_up');
     cy.get('input[name="user[email]"]').type("pawel.nowak@random.pl");
     cy.get('input[type=submit]').click();
 
