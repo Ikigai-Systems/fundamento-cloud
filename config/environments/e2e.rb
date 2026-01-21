@@ -15,10 +15,6 @@ Rails.application.configure do
   # Active Storage: Use local storage for tests
   config.active_storage.service = :local
 
-  # Disable request forgery protection in test environment
-  # Cypress handles CSRF differently
-  config.action_controller.allow_forgery_protection = false
-
   # I18n: Raise errors for missing translations
   config.i18n.raise_on_missing_translations = true
 
