@@ -214,9 +214,13 @@ describe("Command Palette (Ctrl+K)", () => {
       cy.get("ninja-keys").shadow()
         .find(".modal").should("have.class", "visible");
 
+      cy.intercept("GET", "/search").as("search");
+
       cy.get("ninja-keys").shadow()
         .find("ninja-header").shadow()
         .find("#search").type("one");
+
+      cy.wait("@search");
 
       // Wait for search results to update by checking for the specific command
       clickCommand(/One/);
@@ -232,6 +236,8 @@ describe("Command Palette (Ctrl+K)", () => {
       cy.get("ninja-keys").shadow()
         .find("ninja-header").shadow()
         .find("#search").type("two");
+
+      cy.wait("@search");
 
       // Wait for search results to update by checking for the specific command
       clickCommand(/Two/);
