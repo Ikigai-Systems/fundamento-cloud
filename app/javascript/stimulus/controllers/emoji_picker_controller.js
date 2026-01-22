@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import data from "@emoji-mart/data";
 import { Picker } from "emoji-mart";
 // import "emoji-mart/css/emoji-mart.css"; // Ensure this is imported to style the picker
 
@@ -17,6 +18,7 @@ export default class extends Controller {
       this.picker = null;
     } else {
       this.picker = new Picker({
+        data: data,
         onEmojiSelect: this.handleEmojiSelect.bind(this),
       });
       this.pickerContainerTarget.appendChild(this.picker); // Append the picker to the container
