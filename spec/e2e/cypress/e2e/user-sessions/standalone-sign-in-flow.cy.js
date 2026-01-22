@@ -89,7 +89,7 @@ describe('Standalone sign-in flow', function () {
     cy.get('input[type=submit]').click();
 
     // Should be signed in
-    cy.url().should('not.include', '/users/sign_in');
+    cy.url().should('include', '/#spaces');
     cy.contains('Favorites');
 
     // Verify remember_user_token cookie is not set
