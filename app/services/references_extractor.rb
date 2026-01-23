@@ -26,8 +26,9 @@ class ReferencesExtractor
 
         references = references_from_blocknote(version.content_blocks)
         references.each do |reference|
-          unless unique_references.has_key?([document, reference[:object_type], reference[:object_id]])
-            unique_references[reference] = ObjectReference.new(
+          key = [document, reference[:object_type], reference[:object_id]]
+          unless unique_references.has_key?(key)
+            unique_references[key] = ObjectReference.new(
               referenced_by: document,
               object_type: reference[:object_type],
               object_id: reference[:object_id],
@@ -46,8 +47,9 @@ class ReferencesExtractor
 
         references = references_from_blocknote(comment.content)
         references.each do |reference|
-          unless unique_references.has_key?([document, reference[:object_type], reference[:object_id]])
-            unique_references[reference] = ObjectReference.new(
+          key = [document, reference[:object_type], reference[:object_id]]
+          unless unique_references.has_key?(key)
+            unique_references[key] = ObjectReference.new(
               referenced_by: document,
               object_type: reference[:object_type],
               object_id: reference[:object_id],
