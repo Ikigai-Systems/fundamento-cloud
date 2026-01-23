@@ -55,7 +55,7 @@ class DocumentsController < ApplicationController
     if @document.save
       hierarchy_node = @space.create_hierarchy_node(@document.id)
 
-      if params[:parent_id].blank? || @space.add_item_to_hierarchy!(@space.hierarchy, params[:parent_id].to_i, hierarchy_node).blank?
+      if params[:parent_id].blank? || @space.add_item_to_hierarchy!(@space.hierarchy, params[:parent_id], hierarchy_node).blank?
         @space.hierarchy.append(hierarchy_node)
       end
 
