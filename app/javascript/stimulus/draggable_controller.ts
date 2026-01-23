@@ -67,7 +67,7 @@ export default class extends Controller<HTMLElement> {
 
         const spaceId = this.element.dataset.spaceId;
 
-        await SpacesApi.reorderHierarchy({params: {space_id: spaceId}, data: {
+        await SpacesApi.reorderHierarchy({params: {id: spaceId}, data: {
           documentId: e.detail.item.querySelector("div[data-document-id]").dataset.documentId,
           parentId: item.dataset.documentId,
           position: e.detail.destination.index}});

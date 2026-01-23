@@ -50,11 +50,10 @@ Rails.application.routes.draw do
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
   defaults export: true do
     resources :spaces, path: "s" do
-      put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
-
       get :suggest_owners, on: :collection
 
       member do
+        put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
         get :sidebar
       end
 
