@@ -70,17 +70,59 @@ class SpacesController < ApplicationController
   def reorder_hierarchy
     authorize @space, :update?
 
-    document_id = params["document_id"].to_i
-    parent_id = params["parent_id"]&.to_i
+    document_id = params["document_id"]
+    parent_id = params["parent_id"]
     position = params["position"].to_i
+
+    # Validate that document_id is provided
+    if document_id.blank?
+      render json: { error: "document_id is required" }, status: :unprocessable_content
+      return
+    end
+
+    # Validate that the document exists and belongs to this space
+    document = @space.documents.find_by(id: document_id)
+    unless document
+      render json: { error: "Document not found or does not belong to this space" }, status: :unprocessable_content
+      return
+    end
+
+    # Validate parent_id if provided
+    if parent_id.present?
+      parent_document = @space.documents.find_by(id: parent_id)
+      unless parent_document
+        render json: { error: "Parent document not found or does not belong to this space" }, status: :unprocessable_content
+        return
+      end
+
+      # Prevent circular references - document cannot be its own parent
+      if document_id == parent_id
+        render json: { error: "Document cannot be its own parent" }, status: :unprocessable_content
+        return
+      end
+
+      # Prevent moving a document under one of its descendants
+      descendant_ids = @space.get_all_descendant_ids(document_id)
+      if descendant_ids.include?(parent_id)
+        render json: { error: "Cannot move document under one of its descendants" }, status: :unprocessable_content
+        return
+      end
+    end
 
     hierarchy = @space.hierarchy
 
     removed_item = @space.remove_item_with_children_from_hierarchy!(document_id, hierarchy)
 
+    unless removed_item
+      render json: { error: "Document not found in hierarchy" }, status: :unprocessable_content
+      return
+    end
+
     parent_item = @space.add_item_to_hierarchy!(hierarchy, parent_id, removed_item, position)
 
-    unless @space.save
+    if @space.save
+      head :ok
+    else
       render json: @space.errors, status: :unprocessable_content
     end
   end

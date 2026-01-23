@@ -42,8 +42,6 @@ class Space < ApplicationRecord
   end
 
   def remove_single_item_from_hierarchy!(document_id, starting_node = hierarchy)
-    document_id = document_id.to_i
-
     starting_node.each_with_index do |item, index|
       if item["id"] == document_id
         starting_node.delete_at(index)
@@ -64,8 +62,6 @@ class Space < ApplicationRecord
   end
 
   def remove_item_with_children_from_hierarchy!(document_id, starting_node = hierarchy)
-    document_id = document_id.to_i
-
     starting_node.each_with_index do |item, index|
       if item["id"] == document_id
         starting_node.delete_at(index)
@@ -82,8 +78,6 @@ class Space < ApplicationRecord
   end
 
   def get_children_ids_from_hierarchy(document_id, starting_node = hierarchy)
-    document_id = document_id.to_i
-
     starting_node.each do |item|
       if item["id"] == document_id
         return item["children"].map { _1["id"] }
@@ -94,6 +88,25 @@ class Space < ApplicationRecord
     end
 
     nil
+  end
+
+  def get_all_descendant_ids(document_id, starting_node = hierarchy)
+    # Get all descendant IDs recursively (children, grandchildren, etc.)
+    descendant_ids = []
+
+    starting_node.each do |item|
+      if item["id"] == document_id
+        # Found the document, collect all its descendants
+        collect_descendant_ids(item["children"], descendant_ids)
+        return descendant_ids
+      else
+        # Recursively search in children
+        ids = get_all_descendant_ids(document_id, item["children"])
+        return ids if ids.present?
+      end
+    end
+
+    []
   end
 
   def add_item_to_hierarchy!(starting_node, parent_id, item_to_add, position = nil, document_id = nil)
@@ -145,6 +158,13 @@ class Space < ApplicationRecord
   end
 
   private
+
+  def collect_descendant_ids(nodes, accumulator)
+    nodes.each do |node|
+      accumulator << node["id"]
+      collect_descendant_ids(node["children"], accumulator)
+    end
+  end
 
   def create_onboarding_document(yjs_file)
     directory = File.dirname(yjs_file)

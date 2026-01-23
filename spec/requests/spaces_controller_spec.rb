@@ -357,4 +357,221 @@ RSpec.describe SpacesController, type: :request do
       expect(names).to eq(names.sort)
     end
   end
+
+  describe "PUT #reorder_hierarchy" do
+    let(:space) { spaces(:is_default) }
+    let!(:doc1) { space.documents.create!(title: "Document 1", organization: organizations(:is)) }
+    let!(:doc2) { space.documents.create!(title: "Document 2", organization: organizations(:is)) }
+    let!(:doc3) { space.documents.create!(title: "Document 3", organization: organizations(:is)) }
+
+    before do
+      sign_in users(:pawel)
+      post select_organization_path(organizations(:is))
+      space.update!(hierarchy: [
+        { "id" => doc1.id, "children" => [] },
+        { "id" => doc2.id, "children" => [] },
+        { "id" => doc3.id, "children" => [] }
+      ])
+    end
+
+    context "with valid parameters" do
+      it "reorders document to a different position at root level" do
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: nil,
+          position: 2
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        space.reload
+        expect(space.hierarchy[2]["id"]).to eq(doc1.id)
+      end
+
+      it "moves document under a parent" do
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: doc2.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        space.reload
+        expect(space.hierarchy.find { |item| item["id"] == doc2.id }["children"][0]["id"]).to eq(doc1.id)
+      end
+
+      it "moves document with children" do
+        space.update!(hierarchy: [
+          { "id" => doc1.id, "children" => [{ "id" => doc2.id, "children" => [] }] },
+          { "id" => doc3.id, "children" => [] }
+        ])
+
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: nil,
+          position: 1
+        }
+
+        expect(response).to have_http_status(:ok)
+
+        space.reload
+        expect(space.hierarchy[1]["id"]).to eq(doc1.id)
+        expect(space.hierarchy[1]["children"][0]["id"]).to eq(doc2.id)
+      end
+    end
+
+    context "with invalid parameters" do
+      it "returns error when document_id is missing" do
+        put reorder_hierarchy_space_path(space), params: {
+          parent_id: doc2.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("document_id is required")
+      end
+
+      it "returns error when document does not exist" do
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: "nonexistent_id",
+          parent_id: nil,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Document not found or does not belong to this space")
+      end
+
+      it "returns error when document belongs to a different space" do
+        other_space = spaces(:hc_default)
+        other_doc = other_space.documents.create!(title: "Other Doc", organization: organizations(:hc))
+
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: other_doc.id,
+          parent_id: nil,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Document not found or does not belong to this space")
+      end
+
+      it "returns error when parent document does not exist" do
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: "nonexistent_parent",
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Parent document not found or does not belong to this space")
+      end
+
+      it "returns error when parent belongs to a different space" do
+        other_space = spaces(:hc_default)
+        other_doc = other_space.documents.create!(title: "Other Doc", organization: organizations(:hc))
+
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: other_doc.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Parent document not found or does not belong to this space")
+      end
+
+      it "returns error when document is its own parent" do
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: doc1.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Document cannot be its own parent")
+      end
+
+      it "returns error when moving document under one of its descendants" do
+        # Setup: doc1 -> doc2 -> doc3
+        space.update!(hierarchy: [
+          { "id" => doc1.id, "children" => [
+            { "id" => doc2.id, "children" => [
+              { "id" => doc3.id, "children" => [] }
+            ] }
+          ] }
+        ])
+
+        # Try to move doc1 under doc3 (its grandchild)
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: doc3.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Cannot move document under one of its descendants")
+      end
+
+      it "returns error when moving document under its direct child" do
+        # Setup: doc1 -> doc2
+        space.update!(hierarchy: [
+          { "id" => doc1.id, "children" => [
+            { "id" => doc2.id, "children" => [] }
+          ] },
+          { "id" => doc3.id, "children" => [] }
+        ])
+
+        # Try to move doc1 under doc2 (its child)
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: doc1.id,
+          parent_id: doc2.id,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Cannot move document under one of its descendants")
+      end
+
+      it "returns error when document is not in hierarchy" do
+        orphan_doc = space.documents.create!(title: "Orphan", organization: organizations(:is))
+
+        put reorder_hierarchy_space_path(space), params: {
+          document_id: orphan_doc.id,
+          parent_id: nil,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("Document not found in hierarchy")
+      end
+    end
+
+    context "authorization" do
+      it "denies access when user cannot update space" do
+        sign_in users(:maria)
+        post select_organization_path(organizations(:hc))
+
+        private_space = spaces(:hc_pawels)
+
+        put reorder_hierarchy_space_path(private_space), params: {
+          document_id: doc1.id,
+          parent_id: nil,
+          position: 0
+        }
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
 end
