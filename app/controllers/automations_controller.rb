@@ -30,19 +30,19 @@ class AutomationsController < ApplicationController
   end
 
   def show
-    @automation = @space.automations.find(params[:npi])
+    @automation = @space.automations.find(params[:id])
 
     authorize @automation, :show?
   end
 
   def edit
-    @automation = @space.automations.find(params[:npi])
+    @automation = @space.automations.find(params[:id])
 
     authorize @automation, :update?
   end
 
   def update
-    @automation = @space.automations.find(params[:npi])
+    @automation = @space.automations.find(params[:id])
 
     authorize @automation, :update?
 
@@ -54,7 +54,7 @@ class AutomationsController < ApplicationController
   end
 
   def destroy
-    @automation = @space.automations.find(params[:npi])
+    @automation = @space.automations.find(params[:id])
 
     authorize @automation, :destroy?
 
@@ -66,7 +66,7 @@ class AutomationsController < ApplicationController
   protected
 
   def load_space
-    @space = current_organization.spaces.find(params[:space_npi])
+    @space = current_organization.spaces.find(params[:space_id])
   end
 
   def automation_params

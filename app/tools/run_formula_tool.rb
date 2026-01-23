@@ -6,7 +6,7 @@ class RunFormulaTool < ApplicationTool
   input_schema(
     properties: {
       formula: { type: :string },
-      space_npi: { type: :string },
+      space_id: { type: :string },
     },
     required: [:formula]
   )
@@ -16,13 +16,13 @@ class RunFormulaTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(formula:, space_npi:, server_context:)
+  def self.call(formula:, space_id:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     space = nil
 
-    if space_npi.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_npi)
+    if space_id.present?
+      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

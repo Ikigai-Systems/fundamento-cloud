@@ -3,7 +3,7 @@ class SpacesController < ApplicationController
 
   after_action :verify_authorized, except: [:suggest_owners]
 
-  include LoadSpace.from_param(:npi)
+  include LoadSpace.from_param(:id)
 
   before_action :load_space, except: [:new, :index, :create, :suggest_owners]
   before_action :ensure_turbo_request, only: [:sidebar]

@@ -28,7 +28,7 @@ module Api::V1
       @pack_version = @pack.versions.find_by_version!(params[:version])
 
       blob = ActiveStorage::Blob.create_before_direct_upload!(
-        key: "packs/#{params[:pack_npi]}/#{params[:version]}/bundle.json",
+        key: "packs/#{params[:pack_id]}/#{params[:version]}/bundle.json",
         filename: "bundle.json",
         content_type: "application/json",
         byte_size: params[:byte_size],
@@ -52,7 +52,7 @@ module Api::V1
     private
 
     def load_pack
-      @pack = Pack.find(params[:pack_npi])
+      @pack = Pack.find(params[:pack_id])
     end
   end
 end

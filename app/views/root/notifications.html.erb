@@ -1,16 +1,28 @@
 <%= turbo_frame_tag :notifications do %>
+  <% unread_mentions_count = current_organization_membership.unread_mentions_count(policy_scope(current_organization.documents)) %>
+
   <%= link_to root_path(:anchor => "mentions"),
     title: "Notifications",
-    class: "ml-2 document-toolbar-button relative inline-flex items-center p-2 text-sm font-medium text-center rounded-lg" do %>
-    <span class="icon-[heroicons--bell] size-5"></span>
-    <span class="sr-only">Notifications</span>
+    class: "ml-2 document-toolbar-button relative inline-flex items-center p-2 text-sm font-medium text-center rounded-lg",
+    role: "button",
+    aria: { label: unread_mentions_count > 0 ? "Notifications, #{unread_mentions_count} unread" : "Notifications, no unread" },
+    data: { testid: "notifications-button" } do %>
 
-    <% unread_mentions_count = current_organization_membership.unread_mentions_count(policy_scope(current_organization.documents)) %>
+    <span class="icon-[heroicons--bell] size-5" aria-hidden="true"></span>
 
     <% if unread_mentions_count > 0 %>
-      <div class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900">
+      <span
+        class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 dark:border-gray-900"
+        role="status"
+        aria-label="<%= unread_mentions_count %> unread mentions"
+        data-testid="notification-badge"
+        data-count="<%= unread_mentions_count %>"
+      >
         <%= unread_mentions_count %>
-      </div>
+      </span>
+    <% else %>
+      <%# Hidden status for screen readers when there are no notifications %>
+      <span class="sr-only" role="status">No unread notifications</span>
     <% end %>
   <% end %>
 <% end %>

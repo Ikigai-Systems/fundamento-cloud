@@ -34,7 +34,7 @@ class PublicLinksController < ApplicationController
 
   def update
     @public_link = current_organization.public_links.find(params[:id])
-    @public_link.generate_npi if params[:refresh].to_b
+    @public_link.generate_id if params[:refresh].to_b
     @public_link.updated_by = current_user
 
     authorize @public_link.object.space, :update?

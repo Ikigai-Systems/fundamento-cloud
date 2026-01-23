@@ -12,6 +12,7 @@ class Organization < ApplicationRecord
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy
   has_many :tables, dependent: :destroy
+  has_many :tags, dependent: :destroy
   has_many :team_memberships, dependent: :destroy
   has_many :teams, dependent: :destroy
   has_many :users, through: :organization_memberships

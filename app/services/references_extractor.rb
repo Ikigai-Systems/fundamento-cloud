@@ -1,4 +1,4 @@
-ObjectReference = Struct.new(:object_type, :object_npi, :referenced_by, :object_path, :object_title) do
+ObjectReference = Struct.new(:object_type, :object_id, :referenced_by, :object_path, :object_title) do
   include EmojiExtractable
   extracts_emoji_from :object_title
 end
@@ -6,7 +6,7 @@ end
 class ReferencesExtractor
   def self.all_references(documents)
     # We only return single reference for every object that references it
-    # so they key is [referenced_by, object_type, object_npi]
+    # so they key is [referenced_by, object_type, object_id]
     unique_references = Hash.new
 
     documents.each do |document|
@@ -26,11 +26,12 @@ class ReferencesExtractor
 
         references = references_from_blocknote(version.content_blocks)
         references.each do |reference|
-          unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
-            unique_references[reference] = ObjectReference.new(
+          key = [document, reference[:object_type], reference[:object_id]]
+          unless unique_references.has_key?(key)
+            unique_references[key] = ObjectReference.new(
               referenced_by: document,
               object_type: reference[:object_type],
-              object_npi: reference[:object_npi],
+              object_id: reference[:object_id],
             )
           end
         end
@@ -46,11 +47,12 @@ class ReferencesExtractor
 
         references = references_from_blocknote(comment.content)
         references.each do |reference|
-          unless unique_references.has_key?([document, reference[:object_type], reference[:object_npi]])
-            unique_references[reference] = ObjectReference.new(
+          key = [document, reference[:object_type], reference[:object_id]]
+          unless unique_references.has_key?(key)
+            unique_references[key] = ObjectReference.new(
               referenced_by: document,
               object_type: reference[:object_type],
-              object_npi: reference[:object_npi],
+              object_id: reference[:object_id],
             )
           end
         end
@@ -76,25 +78,25 @@ class ReferencesExtractor
         object_type = block.dig("props", "entity")
 
         if block.dig("type") == "mention" && %w[document table].include?(object_type)
-          object_npi = block.dig("props", "entityId")
+          object_id = block.dig("props", "entityId")
           mention_id = block["props"]["id"]
 
-          next if object_npi.blank?
+          next if object_id.blank?
 
           all_references.push({
             id: mention_id,
             object_type: object_type.upcase_first,
-            object_npi: object_npi,
+            object_id: object_id,
           })
         elsif block.dig("type") == "advancedTable"
-          object_npi = block.dig("props", "tableNpi") || block.dig("props", "tableId")
+          object_id = block.dig("props", "tableNpi") || block.dig("props", "tableId")
 
-          next if object_npi.blank?
+          next if object_id.blank?
 
           all_references.push({
             id: block["id"],
             object_type: Table.to_s,
-            object_npi: object_npi,
+            object_id: object_id,
           })
         end
       end

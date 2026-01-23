@@ -1,0 +1,34 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+_fixture:
+  model_class: Tag
+
+is_policy:
+  id: is_policy
+  name: "policy"
+  organization_id: "is"
+  space_id: "is_default"
+
+is_status_wip:
+  id: is_status_wip
+  name: "status/wip"
+  organization_id: "is"
+  space_id: "is_default"
+
+is_status_done:
+  id: is_status_done
+  name: "status/done"
+  organization_id: "is"
+  space_id: "is_default"
+
+is_project_nemesis:
+  id: is_project_nemesis
+  name: "project/nemesis"
+  organization_id: "is"
+  space_id: "is_default"
+
+is_project_tomorrow:
+  id: is_project_tomorrow
+  name: "project/tomorrow"
+  organization_id: "is"
+  space_id: "is_default"

@@ -34,7 +34,7 @@ class PacksController < ApplicationController
   end
 
   def update
-    @pack = current_organization.packs.find(params[:npi])
+    @pack = current_organization.packs.find(params[:id])
 
     authorize @pack, :update?
 
@@ -48,19 +48,19 @@ class PacksController < ApplicationController
   end
 
   def show
-    @pack = current_organization.packs.find(params[:npi])
+    @pack = current_organization.packs.find(params[:id])
 
     authorize @pack, :show?
   end
 
   def edit
-    @pack = current_organization.packs.find(params[:npi])
+    @pack = current_organization.packs.find(params[:id])
 
     authorize @pack, :update?
   end
 
   def destroy
-    @pack = current_organization.packs.find_by(id: params[:npi])
+    @pack = current_organization.packs.find_by(id: params[:id])
 
     authorize @pack, :destroy?
 

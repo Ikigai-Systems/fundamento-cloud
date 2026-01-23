@@ -1,0 +1,16 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+_fixture:
+  model_class: ObjectTag
+
+orders_status_wip:
+  tag_id: is_status_wip
+  object_id: orders
+  object_type: Table
+  organization_id: is
+
+orders_project_tomorrow:
+  tag_id: is_project_tomorrow
+  object_id: orders
+  object_type: Table
+  organization_id: is

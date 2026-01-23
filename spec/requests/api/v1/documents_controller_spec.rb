@@ -20,7 +20,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
   describe "GET /api/v1/documents" do
     context "with valid API token" do
       it "returns list of documents in the space" do
-        get api_v1_documents_path(space_npi: is_default_space.id),
+        get api_v1_documents_path(space_id: is_default_space.id),
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:ok)
@@ -38,7 +38,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid API token" do
       it "returns unauthorized" do
-        get api_v1_documents_path(space_npi: is_default_space.id),
+        get api_v1_documents_path(space_id: is_default_space.id),
           headers: { "Authorization" => "Bearer invalid_token" }
 
         expect(response).to have_http_status(:unauthorized)
@@ -223,7 +223,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
     context "with valid API token" do
       it "creates a document with title only" do
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "New Test Document",
@@ -250,7 +250,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "creates a document without title (defaults to 'Untitled')" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               markdown: "Test Content"
@@ -268,7 +268,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         markdown_content = "# Hello World\n\nThis is a test document."
 
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "Document with Content",
@@ -296,7 +296,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "Document with Frontmatter Tags",
@@ -343,7 +343,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "Document with Non-Tag Frontmatter",
@@ -373,7 +373,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "Document Reusing Tags",
@@ -404,12 +404,12 @@ RSpec.describe "Api::V1::Documents", type: :request do
         is_default_space.save!
 
         expect {
-          post api_v1_documents_path(space_npi: is_default_space.id),
+          post api_v1_documents_path(space_id: is_default_space.id),
             params: {
               document: {
                 title: "Child Document",
                 markdown: "Test Content",
-                parent_document_npi: parent_doc.id
+                parent_document_id: parent_doc.id
               }
             },
             headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -431,7 +431,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "creates document at space root when parent doesn't exist in hierarchy" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Root Document",
@@ -455,7 +455,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       it "sets created_by on version when creating with content" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
 
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Document with Author",
@@ -474,7 +474,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid API token" do
       it "returns unauthorized" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Test Document"
@@ -488,7 +488,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "without authentication" do
       it "returns unauthorized" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Test Document"
@@ -511,7 +511,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "returns not found when trying to create in space from different organization" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Test Document",
@@ -526,7 +526,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid space npi" do
       it "returns not found" do
-        post api_v1_documents_path(space_npi: "invalid-npi"),
+        post api_v1_documents_path(space_id: "invalid-npi"),
           params: {
             document: {
               title: "Test Document",
@@ -541,12 +541,12 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid parent document npi" do
       it "returns not found" do
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Test Document",
               markdown: "Test Content",
-              parent_document_npi: "invalid-npi"
+              parent_document_id: "invalid-npi"
             }
           },
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
@@ -560,7 +560,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
           .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
 
-        post api_v1_documents_path(space_npi: is_default_space.id),
+        post api_v1_documents_path(space_id: is_default_space.id),
           params: {
             document: {
               title: "Test Document",
@@ -580,7 +580,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         markdown_content = file_fixture("documents/updated_content.md").read
 
         expect {
-          patch api_v1_document_path(npi: document_one.id),
+          patch api_v1_document_path(id: document_one.id),
             params: {
               document: {
                 markdown: markdown_content
@@ -611,7 +611,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
         expect {
-          patch api_v1_document_path(npi: document_one.id),
+          patch api_v1_document_path(id: document_one.id),
             params: {
               document: {
                 markdown: markdown_with_frontmatter
@@ -648,7 +648,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: markdown_with_frontmatter
@@ -668,7 +668,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return({})
 
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -689,7 +689,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
 
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "# Updated Content"
@@ -706,7 +706,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid API token" do
       it "returns unauthorized" do
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -720,7 +720,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "without authentication" do
       it "returns unauthorized" do
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -743,7 +743,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
 
       it "returns not found when updating document from different organization" do
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"
@@ -757,7 +757,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "with invalid document npi" do
       it "returns not found" do
-        patch api_v1_document_path(npi: "invalid-npi"),
+        patch api_v1_document_path(id: "invalid-npi"),
           params: {
             document: {
               markdown: "Updated Content"
@@ -774,7 +774,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
           .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
 
-        patch api_v1_document_path(npi: document_one.id),
+        patch api_v1_document_path(id: document_one.id),
           params: {
             document: {
               markdown: "Updated Content"

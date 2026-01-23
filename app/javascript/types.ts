@@ -5,7 +5,7 @@ export type Document = {
 
 // Make sure you keep it in sync with Space#to_react_props
 export type Space = {
-  npi: string,
+  id: string,
   name: string,
   hierarchy: number[],
 }

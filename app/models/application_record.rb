@@ -1,7 +1,7 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
-  before_create :generate_npi_if_needed
+  before_create :generate_id_if_needed
 
   class << self
     alias_method :find_by_param!, :find
@@ -9,7 +9,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   private
 
-  def generate_npi_if_needed
+  def generate_id_if_needed
     # Automatically generate NPI for string primary keys (migrated models)
     if self.class.columns_hash["id"]&.type == :string && id.blank?
       self.id = Nanoid.generate(size: 10)

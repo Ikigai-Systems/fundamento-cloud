@@ -93,7 +93,7 @@ class OrganizationMembershipsController < ApplicationController
   private
 
   def load_organization_membership
-    @organization_membership = OrganizationMembership.find(params[:npi])
+    @organization_membership = OrganizationMembership.find(params[:id])
   end
 
   def create_params

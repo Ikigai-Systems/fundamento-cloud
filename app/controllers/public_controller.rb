@@ -10,7 +10,7 @@ class PublicController < ApplicationController
   before_action :set_security_headers
 
   def show
-    @public_link = PublicLink.find(params[:npi])
+    @public_link = PublicLink.find(params[:id])
     
     authorize @public_link, :show?
     

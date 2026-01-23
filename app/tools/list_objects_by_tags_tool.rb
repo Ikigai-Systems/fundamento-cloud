@@ -14,9 +14,9 @@ class ListObjectsByTagsTool < ApplicationTool
         items: { type: :string, enum: ["Document", "Table"] },
         description: "Types of objects to include in search. Defaults to both Document and Table if not specified"
       },
-      space_npi: {
+      space_id: {
         type: :string,
-        description: "NPI of the space to search in. If not provided, searches across all spaces in the organization"
+        description: "ID of the space to search in. If not provided, searches across all spaces in the organization"
       }
     },
     required: [:tags]
@@ -27,7 +27,7 @@ class ListObjectsByTagsTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(tags:, object_types: nil, space_npi: nil, server_context:)
+  def self.call(tags:, object_types: nil, space_id: nil, server_context:)
     pundit_user = pundit_user_from_context(server_context)
     organization = pundit_user.current_organization
 
@@ -45,8 +45,8 @@ class ListObjectsByTagsTool < ApplicationTool
     tag_scope = organization.tags.where(name: normalized_tags)
 
     # Filter by space if provided
-    if space_npi.present?
-      space = organization.spaces.find_by_param!(space_npi)
+    if space_id.present?
+      space = organization.spaces.find_by_param!(space_id)
       Pundit.authorize(pundit_user, space, :show?)
       tag_scope = tag_scope.where(space: space)
     end
@@ -82,7 +82,7 @@ class ListObjectsByTagsTool < ApplicationTool
       end
 
       # Filter by space if provided
-      if space_npi.present?
+      if space_id.present?
         base_scope = base_scope.where(space: space)
       end
 

@@ -27,7 +27,7 @@ class ImportsController < ApplicationController
   end
 
   def show
-    @document_import = current_organization.document_imports.find(params[:npi])
+    @document_import = current_organization.document_imports.find(params[:id])
 
     authorize @document_import, :show?
   end

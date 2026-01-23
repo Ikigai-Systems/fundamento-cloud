@@ -1,6 +1,6 @@
 class Tables::TablesController < ApplicationController
   include EnsureOrganization
-  include LoadTable.from_param(:npi)
+  include LoadTable.from_param(:id)
   include TrackObjectVisit.for_instance_variable(:@table)
 
   after_action :verify_authorized_or_index_scoped
@@ -11,8 +11,9 @@ class Tables::TablesController < ApplicationController
   def index
     @tables = policy_scope(current_organization.tables.lexicographically)
 
-    space_npi = params[:space_npi]
-    @tables = @tables.where(space: current_organization.spaces.find_by_param!(space_npi)) if space_npi.present?
+    space_id = params[:space_id]
+
+    @tables = @tables.where(space: current_organization.spaces.find_by_param!(space_id)) if space_id.present?
 
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
@@ -191,23 +192,24 @@ class Tables::TablesController < ApplicationController
 
     case event_type
     when "update_row"
-      row = @table.rows.find_by(id: event["rowId"])
-      event["update"].each do |column_npi, new_cell_value|
-        @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
+      row = @table.rows.find(event["rowId"])
+
+      event["update"].each do |column_id, new_cell_value|
+        @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
       end
     when "update_rows"
       event["rows"].each do |event_row|
-        row = @table.rows.find_by(id: event_row["rowId"])
-        event_row["update"].each do |column_npi, new_cell_value|
-          @table.columns.find_by(id: column_npi).cells.find_by(row_id: row).update(value: new_cell_value)
+        row = @table.rows.find(event_row["rowId"])
+        event_row["update"].each do |column_id, new_cell_value|
+          @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
         end
       end
     when "add_row"
-      row_npi = event["rowId"]
-      @table.add_row(row_npi)
+      row_id = event["rowId"]
+      @table.add_row(row_id)
     when "delete_rows"
-      event["rows"][0].each do |row_npi|
-        row = @table.rows.find_by(id: row_npi)
+      event["rows"][0].each do |row_id|
+        row = @table.rows.find(row_id)
         next_row = row.next_row
         next_row.update(previous_row: row.previous_row) unless next_row.nil?
         row.destroy
@@ -231,7 +233,7 @@ class Tables::TablesController < ApplicationController
         )
       end
     when "update_column"
-      column = @table.columns.find_by(id: event["colId"])
+      column = @table.columns.find(event["colId"])
       update = event["update"]
 
       column.name = update["name"] if update.has_key?("name")
@@ -241,7 +243,7 @@ class Tables::TablesController < ApplicationController
       column.configuration = update["configuration"] if update.has_key?("configuration")
       column.save! if column.changed?
     when "delete_column"
-      column = @table.columns.find_by(id: event["colId"])
+      column = @table.columns.find(event["colId"])
       next_column = column.next_column
       next_column.update(previous_column: column.previous_column) unless next_column.nil?
       column.destroy
@@ -258,7 +260,7 @@ class Tables::TablesController < ApplicationController
   def preview_formula
     authorize @table, :show?
 
-    row = @table.rows.find_by(id: params["row_id"])
+    row = @table.rows.find(params["row_id"])
     formula = params["formula"]
 
     cells = row.cells.index_by(&:column_id)
@@ -286,7 +288,7 @@ class Tables::TablesController < ApplicationController
   def move_column_left
     authorize @table, :update?
 
-    column = @table.columns.find_by(id: params["col_id"])
+    column = @table.columns.find(params["col_id"])
 
     column.move_left
   end
@@ -294,7 +296,7 @@ class Tables::TablesController < ApplicationController
   def move_column_right
     authorize @table, :update?
 
-    column = @table.columns.find_by(id: params["col_id"])
+    column = @table.columns.find(params["col_id"])
 
     column.move_right
   end
@@ -306,7 +308,7 @@ class Tables::TablesController < ApplicationController
   end
 
   def load_space
-    @space = current_organization.spaces.find_by_param!(params[:space_npi] || params.dig(:table, :space_npi))
+    @space = current_organization.spaces.find_by_param!(params[:space_id] || params.dig(:table, :space_id))
   end
 
   def subtitle

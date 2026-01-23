@@ -49,7 +49,7 @@ Rails.application.routes.draw do
   # We use `defaults export: true` here to export routes to app/javascript/api,
   # to learn more visit https://github.com/ElMassimo/js_from_routes?tab=readme-ov-file#specify-the-routes-you-want
   defaults export: true do
-    resources :spaces, path: "s", param: :npi do
+    resources :spaces, path: "s" do
       put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
 
       get :suggest_owners, on: :collection
@@ -58,13 +58,13 @@ Rails.application.routes.draw do
         get :sidebar
       end
 
-      resources :automations, param: :npi
+      resources :automations
       resources :tags, only: [] do
         get :suggest, on: :collection
       end
     end
 
-    resources :documents, path: "d", param: :npi do
+    resources :documents, path: "d" do
       resources :versions, module: :documents, only: [:create, :index, :show, :update]
       resources :tags, module: :objects, only: [:create, :index]
 
@@ -77,9 +77,9 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :imports, param: :npi
+    resources :imports
 
-    resources :tables, path: "t", param: :npi, module: :tables do
+    resources :tables, path: "t", module: :tables do
       resources :columns
       resources :rows do
         resources :cells
@@ -96,7 +96,7 @@ Rails.application.routes.draw do
     end
 
     # Workaround to use Objects::TagsController, instead of Tables::Objects::TagsController
-    resources :tables, path: "t", param: :npi, only: [] do
+    resources :tables, path: "t", only: [] do
       resources :tags, module: :objects, only: [:create, :index]
     end
 
@@ -131,7 +131,7 @@ Rails.application.routes.draw do
     put "/inline_comments/threads/:thread_id/comments/:comment_id" => "inline_comments#update_comment"
     delete "/inline_comments/threads/:thread_id/comments/:comment_id" => "inline_comments#remove_comment"
 
-    get "/public/:npi" => "public#show", as: :public
+    get "/public/:id" => "public#show", as: :public
     get "/public/attachments/:id" => "public#attachment"
 
     post "/formulas/eval", to: "formulas#eval"
@@ -139,13 +139,13 @@ Rails.application.routes.draw do
     resource :search, only: [:show]
   end
 
-  resources :organizations, param: :npi do
+  resources :organizations do
     member do
       post :select
     end
   end
 
-  resources :organization_memberships, param: :npi, only: [:new, :create, :update, :destroy] do
+  resources :organization_memberships, only: [:new, :create, :update, :destroy] do
     member do
       patch :promote
       patch :demote
@@ -153,15 +153,15 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :favorites, param: :npi, only: [:create, :destroy, :index]
+  resources :favorites, only: [:create, :destroy, :index]
 
-  resources :mentions, param: :npi, only: [:index]
+  resources :mentions, only: [:index]
 
   resources :teams do
     get :suggest_members, on: :collection
   end
 
-  resources :packs, param: :npi do
+  resources :packs do
     # get :suggest_members, on: :collection
   end
 
@@ -169,16 +169,16 @@ Rails.application.routes.draw do
   get "/api/v1/attachments/:id", to: "attachments#show"
 
   # TODO: remove those after some time
-  get "/spaces/:space_npi/documents/:npi", to: "documents#show"
-  get "/spaces/:space_npi/documents/:npi/edit", to: "documents#edit"
-  get "/spaces/:space_npi/tables/:npi", to: "tables/tables#show"
-  get "/spaces/:space_npi/tables/:npi/edit", to: "tables/tables#edit"
+  get "/spaces/:space_id/documents/:id", to: "documents#show"
+  get "/spaces/:space_id/documents/:id/edit", to: "documents#edit"
+  get "/spaces/:space_id/tables/:id", to: "tables/tables#show"
+  get "/spaces/:space_id/tables/:id/edit", to: "tables/tables#edit"
 
   namespace :api, defaults: { format: :json } do
     resource :mcp, only: [:create, :show], controller: :mcp
 
     namespace :v1 do
-      resources :packs, param: :npi do
+      resources :packs do
         member do
           post :next_version
         end
@@ -190,13 +190,13 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :automations, param: :npi, only: [] do
+      resources :automations, only: [] do
         resources :invocations, controller: "automation_invocations", only: [:create]
       end
 
-      resources :spaces, param: :npi, only: [:index, :show, :create]
+      resources :spaces, only: [:index, :show, :create]
 
-      resources :documents, param: :npi, only: [:index, :show, :create, :update]
+      resources :documents, only: [:index, :show, :create, :update]
 
       resources :tables, only: [:show]
 

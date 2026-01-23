@@ -59,7 +59,7 @@ export default class CommandPaletteController extends Controller {
       const objectTitleWithPath = object.parentPath + object.title;
       const displayTitle = `${space.name} ⎯ ${objectTitleWithPath.length > 60 ? "..." : ""}${(objectTitleWithPath).slice(-60)}`;
       return {
-        id: `documentSearch#${object.npi}`,
+        id: `documentSearch#${object.id}`,
         value: object.title,
         title: displayTitle,
         section: "Documents and tables",
@@ -68,9 +68,9 @@ export default class CommandPaletteController extends Controller {
           : '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 512 512"><path d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>' ,
         handler: () => {
           if (object.type === "Document") {
-            Turbo.visit(DocumentsApi.show.path({npi: object?.npi}));
+            Turbo.visit(DocumentsApi.show.path({id: object?.id}));
           } else if (object.type === "Table") {
-            Turbo.visit(TablesApi.show.path({npi: object?.npi}));
+            Turbo.visit(TablesApi.show.path({id: object?.id}));
           }
         }
       };

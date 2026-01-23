@@ -5,7 +5,7 @@ module Api::V1
     end
     
     def next_version
-      @pack = Pack.find(params[:npi])
+      @pack = Pack.find(params[:id])
       # @pack.versions.create!(version: @pack.versions.maximum(:version).to_i + 1)
 
       render json: @pack
