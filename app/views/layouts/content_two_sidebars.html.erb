@@ -64,7 +64,7 @@
             %>
 
             <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
-              <%= render SidebarLoadingComponent.new %>
+              <%= render Object::SidebarLoadingComponent.new %>
             <% end %>
           <% end %>
         </div>

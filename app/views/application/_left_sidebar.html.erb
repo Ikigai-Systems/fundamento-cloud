@@ -34,7 +34,7 @@
 
   <div class="h-full overflow-auto group-[.collapsed]/collapser:hidden">
     <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
-      <%= render SidebarLoadingComponent.new %>
+      <%= render Object::SidebarLoadingComponent.new %>
     <% end %>
   </div>
 </aside>

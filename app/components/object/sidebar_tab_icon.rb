@@ -1,4 +1,4 @@
-class SidebarTabIcon < ViewComponent::Base
+class Object::SidebarTabIcon < ViewComponent::Base
   erb_template <<-ERB
     <div data-controller="popover" class="relative" data-action="mouseenter->popover#show mouseleave->popover#hide" aria-label="<%= @label %>">
       <%= content %>

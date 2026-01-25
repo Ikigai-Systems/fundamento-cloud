@@ -24,7 +24,7 @@ class Objects::TagsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: turbo_stream.replace([@object, :tags], SidebarTags.new(object: @object))
+        render turbo_stream: turbo_stream.replace([@object, :tags], Object::SidebarTags.new(object: @object))
       end
     end
   end
