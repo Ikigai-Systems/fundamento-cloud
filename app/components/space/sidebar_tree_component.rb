@@ -4,6 +4,7 @@ class Space::SidebarTreeComponent < ViewComponent::Base
   def initialize(node:, documents:, space:, params:, level: 0)
     @node = node || []
     @documents = documents
+    @documents_by_id = documents.index_by(&:id)
     @space = space
     @params = params
     @level = level
@@ -12,7 +13,7 @@ class Space::SidebarTreeComponent < ViewComponent::Base
   private
 
   def find_document(id)
-    @documents.find { |doc| doc.id == id }
+    @documents_by_id[id]
   end
 
   def selected?(document)
