@@ -1,0 +1,34 @@
+<% @node.each do |item| %>
+  <% document = find_document(item["id"]) %>
+  <% next unless document.present? %>
+
+  <li
+    class="section-content-node-container"
+    data-controller="collapsible<%= scroll_into_view_controller?(document) %>"
+    data-space-id="<%= @space.id %>"
+    data-collapsible-expand-to-this="<%= selected?(document) %>"
+  >
+    <%= render Space::SidebarTreeItemComponent.new(
+          document: document,
+          level: @level,
+          has_children: has_children?(item),
+          selected: selected?(document),
+          space: @space
+        ) %>
+
+    <ul
+      data-collapsible-target="collapsible"
+      data-draggable-target="item"
+      data-document-id="<%= item["id"] %>"
+      class="overflow-hidden max-h-0"
+    >
+      <%= render Space::SidebarTreeComponent.new(
+            node: item["children"],
+            documents: @documents,
+            space: @space,
+            params: @params,
+            level: @level + 1
+          ) %>
+    </ul>
+  </li>
+<% end %>

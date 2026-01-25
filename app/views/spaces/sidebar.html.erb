@@ -40,12 +40,13 @@
           <div class="section-empty hidden">No documents in this space</div>
 
           <ul class="section-content-list" data-controller="draggable" data-draggable-target="item" data-space-id="<%= @space.id %>">
-            <%= render partial: "spaces/_sidebar/hierarchy_node",
-              locals: {
-                node: @space.hierarchy,
-                level: 0
-              }
-            %>
+            <%= render Space::SidebarTreeComponent.new(
+              node: @space.hierarchy,
+              documents: @documents,
+              space: @space,
+              params: params,
+              level: 0
+            ) %>
           </ul>
         </div>
 
