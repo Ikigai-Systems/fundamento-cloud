@@ -128,7 +128,8 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "rails-controller-testing"
   gem "database_cleaner-active_record"
-  gem 'cypress-on-rails'
+  gem "cypress-on-rails"
+  gem "warning"
 end
 
 # This will be installed into the docker image (those are needed to run E2E tests)

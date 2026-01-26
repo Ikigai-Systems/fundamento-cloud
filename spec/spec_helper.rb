@@ -13,6 +13,23 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+# Suppress known harmless warnings from gems that haven't been updated for Ruby 3.4 yet
+# These are cosmetic issues that don't affect functionality
+# Using the 'warning' gem: https://github.com/jeremyevans/ruby-warning
+require "warning"
+
+Warning.ignore(/fixture_support\.rb.*method redefined/)        # RSpec fixture helper methods
+Warning.ignore(/turbo.*method redefined/)                      # Turbo Rails monkey patches
+Warning.ignore(/devise.*method redefined/)                     # Devise compatibility patches
+Warning.ignore(/warden.*method redefined/)                     # Warden/Devise integration
+Warning.ignore(/lograge.*method redefined/)                    # Lograge internal methods
+Warning.ignore(/logstash-event.*method redefined/)             # Logstash-event internal methods
+Warning.ignore(/devise-passwordless.*method redefined/)        # Devise-passwordless monkey patches
+Warning.ignore(/initials.*method redefined/)                   # Initials gem internal methods
+Warning.ignore(/action_view\/layouts\.rb.*method redefined/)   # ActionView/Turbo interaction
+Warning.ignore(/association_scope\.rb.*may be ignored/)        # Rails 8.1 ActiveRecord internal
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
