@@ -15,10 +15,10 @@ class SidebarConnectionsTab < ViewComponent::Base
     @references = ReferencesExtractor::all_references(Pundit.policy_scope(@pundit_user, @pundit_user.current_organization.documents))
 
     # Because some objects might be referenced by ID/NPI we need to make sure we show them once
-    @references.uniq! { |reference| [reference.referenced_by, reference.object_type, reference.object_id] }
+    @references.uniq! { |reference| [reference.referenced_by, reference.referenced_type, reference.referenced_id] }
 
     @incoming = @references.select do |reference|
-      reference.object_type == @object.class.to_s && reference.object_id == @object.id
+      reference.referenced_type == @object.class.to_s && reference.referenced_id == @object.id
     end.map { |reference| with_link_details(reference) }
 
     @outgoing = @references.select do |reference|
@@ -30,15 +30,15 @@ class SidebarConnectionsTab < ViewComponent::Base
 
   def with_link_details(reference)
     reference.tap do |reference|
-      case reference.object_type
+      case reference.referenced_type
       when "Table"
-        reference.object_title = @pundit_user.current_organization.tables.select(:name).find_by_param!(reference.object_id).name
-        reference.object_path = table_path(reference.object_id)
+        reference.referenced_title = @pundit_user.current_organization.tables.select(:name).find_by_param!(reference.referenced_id).name
+        reference.referenced_path = table_path(reference.referenced_id)
       when "Document"
-        reference.object_title = @pundit_user.current_organization.documents.select(:title).find_by_param!(reference.object_id).title
-        reference.object_path = document_path(reference.object_id)
+        reference.referenced_title = @pundit_user.current_organization.documents.select(:title).find_by_param!(reference.referenced_id).title
+        reference.referenced_path = document_path(reference.referenced_id)
       else
-        raise ArgumentError.new("Unrecognized object type: #{reference.object_type}")
+        raise ArgumentError.new("Unrecognized object type: #{reference.referenced_type}")
       end
     end
   end

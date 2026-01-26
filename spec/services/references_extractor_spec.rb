@@ -53,18 +53,18 @@ RSpec.describe ReferencesExtractor do
       it "extracts document mentions from version content" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" }
+        doc_refs = references.select { |r| r.referenced_type == "Document" }
         expect(doc_refs.length).to eq(1)
-        expect(doc_refs.first.object_id).to eq(referenced_doc_id)
+        expect(doc_refs.first.referenced_id).to eq(referenced_doc_id)
         expect(doc_refs.first.referenced_by).to eq(document)
       end
 
       it "extracts table mentions from version content" do
         references = ReferencesExtractor.all_references([document])
 
-        table_refs = references.select { |r| r.object_type == "Table" }
+        table_refs = references.select { |r| r.referenced_type == "Table" }
         expect(table_refs.length).to eq(1)
-        expect(table_refs.first.object_id).to eq(referenced_table_id)
+        expect(table_refs.first.referenced_id).to eq(referenced_table_id)
         expect(table_refs.first.referenced_by).to eq(document)
       end
 
@@ -72,11 +72,11 @@ RSpec.describe ReferencesExtractor do
         references = ReferencesExtractor.all_references([document])
 
         expect(references).to all(be_an(ObjectReference))
-        expect(references.first).to respond_to(:object_type)
-        expect(references.first).to respond_to(:object_id)
+        expect(references.first).to respond_to(:referenced_type)
+        expect(references.first).to respond_to(:referenced_id)
         expect(references.first).to respond_to(:referenced_by)
-        expect(references.first).to respond_to(:object_path)
-        expect(references.first).to respond_to(:object_title)
+        expect(references.first).to respond_to(:referenced_path)
+        expect(references.first).to respond_to(:referenced_title)
       end
     end
 
@@ -108,9 +108,9 @@ RSpec.describe ReferencesExtractor do
       it "extracts table references from advancedTable blocks using tableNpi" do
         references = ReferencesExtractor.all_references([document])
 
-        table_refs = references.select { |r| r.object_type == "Table" }
+        table_refs = references.select { |r| r.referenced_type == "Table" }
         expect(table_refs.length).to eq(1)
-        expect(table_refs.first.object_id).to eq(table_npi)
+        expect(table_refs.first.referenced_id).to eq(table_npi)
         expect(table_refs.first.referenced_by).to eq(document)
       end
     end
@@ -143,9 +143,9 @@ RSpec.describe ReferencesExtractor do
       it "extracts table references from advancedTable blocks using tableId fallback" do
         references = ReferencesExtractor.all_references([document])
 
-        table_refs = references.select { |r| r.object_type == "Table" }
+        table_refs = references.select { |r| r.referenced_type == "Table" }
         expect(table_refs.length).to eq(1)
-        expect(table_refs.first.object_id).to eq(table_id)
+        expect(table_refs.first.referenced_id).to eq(table_id)
       end
     end
 
@@ -186,9 +186,9 @@ RSpec.describe ReferencesExtractor do
       it "extracts references from comment content" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" }
+        doc_refs = references.select { |r| r.referenced_type == "Document" }
         expect(doc_refs.length).to eq(1)
-        expect(doc_refs.first.object_id).to eq(referenced_doc_id)
+        expect(doc_refs.first.referenced_id).to eq(referenced_doc_id)
         expect(doc_refs.first.referenced_by).to eq(document)
       end
     end
@@ -239,9 +239,9 @@ RSpec.describe ReferencesExtractor do
       it "extracts references from nested blocks" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" }
+        doc_refs = references.select { |r| r.referenced_type == "Document" }
         expect(doc_refs.length).to eq(1)
-        expect(doc_refs.first.object_id).to eq(nested_doc_id)
+        expect(doc_refs.first.referenced_id).to eq(nested_doc_id)
       end
     end
 
@@ -297,14 +297,14 @@ RSpec.describe ReferencesExtractor do
       it "returns only one reference per unique (document, object_type, object_id) combination" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" && r.object_id == doc_id }
+        doc_refs = references.select { |r| r.referenced_type == "Document" && r.referenced_id == doc_id }
         expect(doc_refs.length).to eq(1)
       end
 
       it "de-duplicates mentions within the same version" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" && r.object_id == doc_id }
+        doc_refs = references.select { |r| r.referenced_type == "Document" && r.referenced_id == doc_id }
         expect(doc_refs.length).to eq(1)
         expect(doc_refs.first.referenced_by).to eq(document)
       end
@@ -314,7 +314,7 @@ RSpec.describe ReferencesExtractor do
         # All should be de-duplicated to a single reference
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" && r.object_id == doc_id }
+        doc_refs = references.select { |r| r.referenced_type == "Document" && r.referenced_id == doc_id }
         expect(doc_refs.length).to eq(1)
       end
     end
@@ -365,7 +365,7 @@ RSpec.describe ReferencesExtractor do
       it "extracts references from all provided documents" do
         references = ReferencesExtractor.all_references([doc1, doc2])
 
-        doc_refs = references.select { |r| r.object_type == "Document" && r.object_id == ref_id }
+        doc_refs = references.select { |r| r.referenced_type == "Document" && r.referenced_id == ref_id }
         expect(doc_refs.length).to eq(2)
 
         referenced_by_docs = doc_refs.map(&:referenced_by)
@@ -572,9 +572,9 @@ RSpec.describe ReferencesExtractor do
       it "extracts references only from the latest version" do
         references = ReferencesExtractor.all_references([document])
 
-        doc_refs = references.select { |r| r.object_type == "Document" }
+        doc_refs = references.select { |r| r.referenced_type == "Document" }
         expect(doc_refs.length).to eq(1)
-        expect(doc_refs.first.object_id).to eq(new_ref_id)
+        expect(doc_refs.first.referenced_id).to eq(new_ref_id)
       end
     end
 
@@ -604,7 +604,7 @@ RSpec.describe ReferencesExtractor do
         )
 
         references = ReferencesExtractor.all_references([document])
-        expect(references.first.object_type).to eq("Document")
+        expect(references.first.referenced_type).to eq("Document")
       end
 
       it "handles entity=table (lowercase)" do
@@ -630,7 +630,7 @@ RSpec.describe ReferencesExtractor do
         )
 
         references = ReferencesExtractor.all_references([document])
-        expect(references.first.object_type).to eq("Table")
+        expect(references.first.referenced_type).to eq("Table")
       end
     end
   end
@@ -638,17 +638,17 @@ RSpec.describe ReferencesExtractor do
   describe "ObjectReference" do
     it "has emoji extraction capability" do
       ref = ObjectReference.new(
-        object_type: "Document",
-        object_id: "doc123",
+        referenced_type: "Document",
+        referenced_id: "doc123",
         referenced_by: nil,
-        object_path: "/documents/doc123",
-        object_title: "📝 My Document"
+        referenced_path: "/documents/doc123",
+        referenced_title: "📝 My Document"
       )
 
-      expect(ref).to respond_to(:object_title_emoji)
-      expect(ref).to respond_to(:object_title_emojiless)
-      expect(ref.object_title_emoji).to eq("📝")
-      expect(ref.object_title_emojiless).to eq("My Document")
+      expect(ref).to respond_to(:referenced_title_emoji)
+      expect(ref).to respond_to(:referenced_title_emojiless)
+      expect(ref.referenced_title_emoji).to eq("📝")
+      expect(ref.referenced_title_emojiless).to eq("My Document")
     end
   end
 end

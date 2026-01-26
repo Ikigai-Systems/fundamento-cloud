@@ -1,12 +1,12 @@
-ObjectReference = Struct.new(:object_type, :object_id, :referenced_by, :object_path, :object_title) do
+ObjectReference = Struct.new(:referenced_type, :referenced_id, :referenced_by, :referenced_path, :referenced_title) do
   include EmojiExtractable
-  extracts_emoji_from :object_title
+  extracts_emoji_from :referenced_title
 end
 
 class ReferencesExtractor
   def self.all_references(documents)
     # We only return single reference for every object that references it
-    # so they key is [referenced_by, object_type, object_id]
+    # so they key is [referenced_by, referenced_type, referenced_id]
     unique_references = Hash.new
 
     documents.each do |document|
@@ -30,8 +30,8 @@ class ReferencesExtractor
           unless unique_references.has_key?(key)
             unique_references[key] = ObjectReference.new(
               referenced_by: document,
-              object_type: reference[:object_type],
-              object_id: reference[:object_id],
+              referenced_type: reference[:object_type],
+              referenced_id: reference[:object_id],
             )
           end
         end
@@ -51,8 +51,8 @@ class ReferencesExtractor
           unless unique_references.has_key?(key)
             unique_references[key] = ObjectReference.new(
               referenced_by: document,
-              object_type: reference[:object_type],
-              object_id: reference[:object_id],
+              referenced_type: reference[:object_type],
+              referenced_id: reference[:object_id],
             )
           end
         end
