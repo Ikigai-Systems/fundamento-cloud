@@ -6,7 +6,6 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_organization
   helper_method :current_organization_membership
-  helper_method :current_organization_membership # Legacy alias
   helper_method :subtitle
   helper_method :replays_session_sample_rate
 
