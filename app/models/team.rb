@@ -3,7 +3,11 @@ class Team < ApplicationRecord
 
   belongs_to :organization
 
-  scope :query, ->(query) { where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%") }
+  scope :query, ->(query) do
+    return all if query.blank?
+    
+    where("(name || ' ' || shortcut) ILIKE ?", "%#{query}%")
+  end
 
   has_many :team_memberships, dependent: :destroy
 

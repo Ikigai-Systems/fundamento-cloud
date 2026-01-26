@@ -17,7 +17,11 @@ class User < ApplicationRecord
   before_create :skip_confirmation_if_not_required
   before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
 
-  scope :query, ->(query) { where("(first_name || ' ' || last_name) ILIKE ?", "%#{query}%") }
+  scope :query, ->(query) do
+    return all if query.blank?
+
+    where("(first_name || ' ' || last_name) ILIKE ? OR email ILIKE ?", "%#{query}%", "%#{query}%")
+  end
 
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :organizations, through: :organization_memberships
