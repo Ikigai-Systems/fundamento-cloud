@@ -93,8 +93,8 @@ export default class extends Controller<HTMLElement> {
           const li = container.closest("li") as HTMLElement;
 
           if (li) {
-            // Update data attribute - CSS will handle visibility
-            li.dataset.collapsibleHasChildren = hasChildren.toString();
+            // Update Stimulus value - will automatically update hasChildrenValue in collapsible controller
+            li.dataset.collapsibleHasChildrenValue = hasChildren.toString();
           }
 
           // Reset inline styles

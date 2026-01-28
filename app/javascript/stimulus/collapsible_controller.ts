@@ -6,12 +6,14 @@ export default class extends Controller<HTMLElement> {
   static values = {
     collapsed: {type: Boolean, default: true},
     expandToThis: {type: Boolean, default: false},
+    hasChildren: {type: Boolean, default: false},
   };
 
   declare contentTarget: HTMLElement;
   declare triggerTarget: HTMLElement;
   declare collapsedValue: boolean;
   declare expandToThisValue: boolean;
+  declare hasChildrenValue: boolean;
   declare element: HTMLElement;
 
   initialize() {

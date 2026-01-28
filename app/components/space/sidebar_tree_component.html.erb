@@ -7,7 +7,7 @@
     data-controller="collapsible<%= scroll_into_view_controller?(document) %>"
     data-space-id="<%= @space.id %>"
     data-collapsible-expand-to-this-value="<%= selected?(document) %>"
-    data-collapsible-has-children="<%= has_children?(item) %>"
+    data-collapsible-has-children-value="<%= has_children?(item) %>"
     data-collapsible-collapsed-value="<%= !selected?(document) %>"
   >
     <%= render Space::SidebarTreeItemComponent.new(
