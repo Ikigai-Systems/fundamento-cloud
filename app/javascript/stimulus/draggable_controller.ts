@@ -12,27 +12,23 @@ export default class extends Controller<HTMLElement> {
   private readonly draggableSelector = '[data-controller~="draggable"]';
 
   connect() {
-    let fixPlaceholderIntervalId = undefined;
+    let updatePlaceholderInterval = undefined;
 
     sortable(this.element, {
-      // forcePlaceholderSize: true,
       acceptFrom: this.draggableSelector,
-      // dropTargetContainerClass: 'bg-red-100',
-      // placeholder: '<li class="bg-red-100"></li>',
-      placeholderClass: 'sortable-placeholder float-left bg-indigo-600 h-0.5 w-[268px] data-[surround=true]:before:hidden absolute before:absolute before:h-2 before:w-2 before:-top-[3px] before:border-2 before:border-solid before:rounded-full before:bg-white before:border-indigo-600'
+      placeholderClass: 'sortable-placeholder'
     }).forEach((item: HTMLElement) => {
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortupdate
       // This event is triggered when the user stopped sorting and the DOM position has changed.
       item.addEventListener('sortupdate', async (e: CustomEvent) => {
+        // Update level for all nested items after drop
         e.detail.item.querySelectorAll(".document-padding-left").forEach(element => {
           const level = this.calculateDepth(element.closest("ul")) - 1;
           element.style.setProperty("--level", level.toString());
         });
 
-        const container = e.detail.destination.container;
-        container.classList.remove("h-[37px]", "mb-[-37px]", "top-[-37px]");
-
         // Auto-expand destination container if it has collapsible controller
+        const container = e.detail.destination.container;
         const closestCollapsible = container.closest("[data-controller~='collapsible']") as HTMLElement;
         if (closestCollapsible) {
           const controller = this.application.getControllerForElementAndIdentifier(
@@ -42,6 +38,7 @@ export default class extends Controller<HTMLElement> {
           controller?.expand();
         }
 
+        // Persist the reorder to the backend
         const spaceId = this.element.dataset.spaceId;
 
         await SpacesApi.reorderHierarchy({
@@ -57,37 +54,27 @@ export default class extends Controller<HTMLElement> {
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortstart
       // This event is triggered when the user starts sorting and the DOM position has not yet changed.
       item.addEventListener('sortstart', (e: CustomEvent) => {
-        fixPlaceholderIntervalId = setInterval(() => {
+        // Continuously update placeholder state during drag
+        updatePlaceholderInterval = setInterval(() => {
           this.updatePlaceholder();
-        }, 10)
+        }, 10);
 
+        // Mark empty containers so they can accept drops (CSS will style them)
         setTimeout(() => {
-          // Initially all empty sortable containers have height 0px, so we need to fix that to make it possible to drag items into them.
-
-          // this.itemTargets.forEach(container => {
           document.querySelectorAll(this.draggableSelector).forEach(container => {
-            console.log(`Fixing container ${container.children.length}`, container);
+            const isEmpty = container.children.length === 0;
 
-            // debugger;
-            if (container.children.length === 0) {
-              // element.style.backgroundColor = "red";
-              // element.style.opacity = "70%";
-              container.style.maxHeight = "inherit";
-              container.style.height = "19px";
-              container.style.position = "relative";
-              container.style.top = "-23px";
-              container.style.marginBottom = "-19px";
-              container.style.overflow = "visible";
-            }
+            (container as HTMLElement).dataset.draggableEmpty = isEmpty.toString();
           });
-        }, 10)
+        }, 10);
       });
 
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortstop
       // This event is triggered when the user stops sorting and the DOM position has not yet changed.
       item.addEventListener('sortstop', (e: CustomEvent) => {
-        clearInterval(fixPlaceholderIntervalId);
+        clearInterval(updatePlaceholderInterval);
 
+        // Update has-children state and clean up empty markers
         document.querySelectorAll(this.draggableSelector).forEach(container => {
           const hasChildren = container.children.length > 0;
           const li = container.closest("li") as HTMLElement;
@@ -97,8 +84,8 @@ export default class extends Controller<HTMLElement> {
             li.dataset.collapsibleHasChildrenValue = hasChildren.toString();
           }
 
-          // Reset inline styles
-          this.resetContainerStyles(container as HTMLElement);
+          // Clean up drag state
+          delete (container as HTMLElement).dataset.draggableEmpty;
         });
       });
     });
@@ -113,17 +100,6 @@ export default class extends Controller<HTMLElement> {
     return accumulator;
   }
 
-  private resetContainerStyles(container: HTMLElement): void {
-    container.style.backgroundColor = "";
-    container.style.maxHeight = "";
-    container.style.height = "";
-    container.style.position = "";
-    container.style.top = "";
-    container.style.marginBottom = "";
-    container.style.opacity = "";
-    container.style.overflow = "";
-  }
-
   private updatePlaceholder() {
     const placeholder: HTMLElement = document.querySelector('.sortable-placeholder');
 
@@ -133,26 +109,11 @@ export default class extends Controller<HTMLElement> {
     const containerDepth = this.calculateDepth(container);
     const level = containerDepth - 1;
 
+    // Set level for CSS to calculate indentation
     placeholder.style.setProperty("--level", level.toString());
 
-    if (container.querySelectorAll("li:not(.sortable-placeholder)").length === 0) {
-      placeholder.style.height = "35px";
-      placeholder.style.top = "-13px";
-      placeholder.style.border = "solid 2px rgb(79 70 229)"; //bg-indigo-600
-      placeholder.style.borderRadius = "8px";
-      placeholder.style.backgroundColor = "inherit";
-      placeholder.dataset.surround = "true";
-      placeholder.style.marginLeft = "";
-      placeholder.style.width = "";
-    } else {
-      placeholder.dataset.surround = "false";
-      placeholder.style.height = "";
-      placeholder.style.top = "";
-      placeholder.style.border = "";
-      placeholder.style.borderRadius = "";
-      placeholder.style.backgroundColor = "";
-      placeholder.style.marginLeft = "";
-      placeholder.style.width = "";
-    }
+    // Mark whether placeholder is surrounding an empty container (CSS handles styling)
+    const isEmpty = container.querySelectorAll("li:not(.sortable-placeholder)").length === 0;
+    placeholder.dataset.surround = isEmpty.toString();
   }
 }
