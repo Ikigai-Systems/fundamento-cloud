@@ -25,7 +25,8 @@ export default class extends Controller<HTMLElement> {
       // This event is triggered when the user stopped sorting and the DOM position has changed.
       item.addEventListener('sortupdate', async (e: CustomEvent) => {
         e.detail.item.querySelectorAll(".document-padding-left").forEach(element => {
-          element.style.paddingLeft = `${16 * (this.calculateDepth(element.closest("ul")) - 1)}px`;
+          const level = this.calculateDepth(element.closest("ul")) - 1;
+          element.style.setProperty("--level", level.toString());
         });
 
         const container = e.detail.destination.container;

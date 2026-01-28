@@ -5,7 +5,7 @@
 ) do %>
   <%= link_to polymorphic_path([@document]), class: "content-link" do %>
     <%= tag.div(
-      style: "padding-left: #{padding_left_px}px",
+      style: "--level: #{@level}",
       class: "document-padding-left flex items-center w-full",
     ) do %>
       <%= tag.div(

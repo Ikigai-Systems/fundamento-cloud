@@ -11,10 +11,6 @@ class Space::SidebarTreeItemComponent < ViewComponent::Base
 
   private
 
-  def padding_left_px
-    @level * 16
-  end
-
   def show_archived_cookie
     helpers.cookies["ikigai_userPreferences_showArchived"] == "true"
   end

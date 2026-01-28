@@ -48,6 +48,10 @@
                 @apply flex flex-row items-center flex-grow;
             }
 
+            .document-padding-left {
+                padding-left: calc(var(--level) * 16px);
+            }
+
             .content-link-buttons-container {
                 @apply absolute gap-1 right-1 top-1 p-1 flex;
             }
