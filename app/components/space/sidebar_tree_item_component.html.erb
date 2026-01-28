@@ -8,14 +8,19 @@
       style: "--level: #{@level}",
       class: "document-padding-left flex items-center w-full",
     ) do %>
-      <%= tag.div(
-        data: {  "action" => "click->collapsible#toggle:prevent"  },
-        class: chevron_classes
+      <%= tag.button(
+        type: "button",
+        data: {
+          "collapsible-target" => "trigger",
+          "action" => "click->collapsible#toggle:prevent"
+        },
+        class: "collapsible-trigger flex items-center justify-center"
       ) do %>
-        <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
+        <div class="multi-items-expander">
+          <div class="icon-chevron icon-[heroicons--chevron-right-16-solid] size-4 m-1"></div>
+        </div>
+        <div class="single-item-dot pt-1 mx-2.5 -mt-[0.3rem]">•</div>
       <% end %>
-
-      <%= tag.div("•", class: dot_classes ) %>
 
       <div data-document-id="<%= @document.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
         <%= render ObjectIcon.new(object: @document) %>

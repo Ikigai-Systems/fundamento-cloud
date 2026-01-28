@@ -86,4 +86,53 @@
         @apply sidebar-colors;
         @apply border-l overflow-auto max-h-screen;
     }
+
+    /* Collapsible controller styles */
+    [data-controller~="collapsible"] {
+        /* Collapsible content visibility */
+        > [data-collapsible-target="content"] {
+            overflow: hidden;
+            transition: max-height 150ms ease-in-out;
+        }
+
+        &[data-collapsible-collapsed-value="true"] > [data-collapsible-target="content"] {
+            max-height: 0;
+        }
+
+        &[data-collapsible-collapsed-value="false"] > [data-collapsible-target="content"] {
+            max-height: none;
+        }
+
+        /* Chevron rotation based on collapsed state */
+        .icon-chevron {
+            transition: transform 150ms ease-in-out;
+        }
+
+        &[data-collapsible-collapsed-value="true"] > div .icon-chevron {
+            transform: rotate(0deg);
+        }
+
+        &[data-collapsible-collapsed-value="false"] > div .icon-chevron {
+            transform: rotate(90deg);
+        }
+
+        /* Icon visibility based on has-children state */
+        &[data-collapsible-has-children="true"] > div .multi-items-expander {
+            display: flex;
+        }
+
+        &[data-collapsible-has-children="true"] > div .single-item-dot {
+            display: none;
+        }
+
+        &[data-collapsible-has-children="false"] > div .multi-items-expander,
+        &:not([data-collapsible-has-children]) > div .multi-items-expander {
+            display: none;
+        }
+
+        &[data-collapsible-has-children="false"] > div .single-item-dot,
+        &:not([data-collapsible-has-children]) > div .single-item-dot {
+            display: block;
+        }
+    }
 }

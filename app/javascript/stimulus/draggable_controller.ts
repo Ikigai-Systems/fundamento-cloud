@@ -32,9 +32,14 @@ export default class extends Controller<HTMLElement> {
         const container = e.detail.destination.container;
         container.classList.remove("h-[37px]", "mb-[-37px]", "top-[-37px]");
 
-        const closestCollapsible = container.closest("[data-controller~='collapsible']");
+        // Auto-expand destination container if it has collapsible controller
+        const closestCollapsible = container.closest("[data-controller~='collapsible']") as HTMLElement;
         if (closestCollapsible) {
-          closestCollapsible.dataset.collapsibleCollapsedValue = "false";
+          const controller = this.application.getControllerForElementAndIdentifier(
+            closestCollapsible,
+            "collapsible"
+          ) as any;
+          controller?.expand();
         }
 
         const spaceId = this.element.dataset.spaceId;
@@ -83,30 +88,17 @@ export default class extends Controller<HTMLElement> {
       item.addEventListener('sortstop', (e: CustomEvent) => {
         clearInterval(fixPlaceholderIntervalId);
 
-        // this.itemTargets.forEach(container => {
         document.querySelectorAll(this.draggableSelector).forEach(container => {
-          const li = container.closest("li");
-          if (li) {
-            const expanderIcon = li.querySelector(".multi-items-expander");
-            const dotIcon = li.querySelector(".single-item-dot");
+          const hasChildren = container.children.length > 0;
+          const li = container.closest("li") as HTMLElement;
 
-            if (container.children.length >= 1) {
-              expanderIcon.classList.remove("hidden");
-              dotIcon.classList.add("hidden");
-            } else {
-              expanderIcon.classList.add("hidden");
-              dotIcon.classList.remove("hidden");
-            }
+          if (li) {
+            // Update data attribute - CSS will handle visibility
+            li.dataset.collapsibleHasChildren = hasChildren.toString();
           }
 
-          container.style.backgroundColor = "";
-          container.style.maxHeight = "";
-          container.style.height = "";
-          container.style.position = "";
-          container.style.top = "";
-          container.style.marginBottom = "";
-          container.style.opacity = "";
-          container.style.overflow = "";
+          // Reset inline styles
+          this.resetContainerStyles(container as HTMLElement);
         });
       });
     });
@@ -120,7 +112,18 @@ export default class extends Controller<HTMLElement> {
     }
     return accumulator;
   }
-  
+
+  private resetContainerStyles(container: HTMLElement): void {
+    container.style.backgroundColor = "";
+    container.style.maxHeight = "";
+    container.style.height = "";
+    container.style.position = "";
+    container.style.top = "";
+    container.style.marginBottom = "";
+    container.style.opacity = "";
+    container.style.overflow = "";
+  }
+
   private updatePlaceholder() {
     const placeholder: HTMLElement = document.querySelector('.sortable-placeholder');
 
