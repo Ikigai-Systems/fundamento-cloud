@@ -16,13 +16,15 @@
       space: @space
     ) %>
 
-    <% if has_children?(item) %>
-      <ul
-        data-collapsible-target="collapsible"
-        data-draggable-target="item"
-        data-document-id="<%= item["id"] %>"
-        class="overflow-hidden max-h-0"
-      >
+    <ul
+      data-controller="draggable"
+      data-collapsible-target="collapsible"
+      data-draggable-target="item"
+      data-space-id="<%= @space.id %>"
+      data-document-id="<%= item["id"] %>"
+      class="overflow-hidden max-h-0"
+    >
+      <% if has_children?(item) %>
         <%= render Space::SidebarTreeComponent.new(
           node: item["children"],
           documents: @documents,
@@ -30,7 +32,7 @@
           params: @params,
           level: @level + 1
         ) %>
-      </ul>
-    <% end %>
+      <% end %>
+    </ul>
   </li>
 <% end %>
