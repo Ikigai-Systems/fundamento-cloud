@@ -128,6 +128,9 @@ export default class extends Controller<HTMLElement> {
 
     const container = placeholder.closest(this.draggableSelector);
     const containerDepth = this.calculateDepth(container);
+    const level = containerDepth - 1;
+
+    placeholder.style.setProperty("--level", level.toString());
 
     if (container.querySelectorAll("li:not(.sortable-placeholder)").length === 0) {
       placeholder.style.height = "35px";
@@ -139,14 +142,14 @@ export default class extends Controller<HTMLElement> {
       placeholder.style.marginLeft = "";
       placeholder.style.width = "";
     } else {
-      placeholder.style.marginLeft = `${16 * (containerDepth - 1)}px`;
-      placeholder.style.width = `${268 - (16 * (containerDepth - 1))}px`;
       placeholder.dataset.surround = "false";
       placeholder.style.height = "";
       placeholder.style.top = "";
       placeholder.style.border = "";
       placeholder.style.borderRadius = "";
       placeholder.style.backgroundColor = "";
+      placeholder.style.marginLeft = "";
+      placeholder.style.width = "";
     }
   }
 }

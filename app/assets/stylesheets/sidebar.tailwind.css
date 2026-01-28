@@ -52,6 +52,11 @@
                 padding-left: calc(var(--level) * 16px);
             }
 
+            .sortable-placeholder:not([data-surround="true"]) {
+                margin-left: calc(var(--level) * 16px);
+                width: calc(268px - (var(--level) * 16px));
+            }
+
             .content-link-buttons-container {
                 @apply absolute gap-1 right-1 top-1 p-1 flex;
             }
