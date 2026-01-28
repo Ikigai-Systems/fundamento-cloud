@@ -16,7 +16,7 @@ class Space::SidebarTreeItemComponent < ViewComponent::Base
   end
 
   def show_archived_cookie
-    cookies["ikigai_userPreferences_showArchived"] == "true"
+    helpers.cookies["ikigai_userPreferences_showArchived"] == "true"
   end
 
   def hidden?
@@ -47,6 +47,6 @@ class Space::SidebarTreeItemComponent < ViewComponent::Base
   end
 
   def can_update_space?
-    Pundit.policy(helpers.current_organization_membership, @space).update?
+    Pundit.policy(helpers.pundit_user, @space).update?
   end
 end
