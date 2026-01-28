@@ -31,19 +31,19 @@ class Space::SidebarTreeItemComponent < ViewComponent::Base
     classes = ["content-link-container", "group"]
     classes << "archived" if @document.archived?
     classes << "selected" if @selected
-    classes.join(" ")
+    classes
   end
 
   def chevron_classes
     classes = ["multi-items-expander", "size-6", "ml-1"]
     classes << "hidden" unless @has_children
-    classes.join(" ")
+    classes
   end
 
   def dot_classes
     classes = ["single-item-dot", "pt-1", "mx-2.5", "-mt-[0.3rem]"]
     classes << "hidden" if @has_children
-    classes.join(" ")
+    classes
   end
 
   def can_update_space?
