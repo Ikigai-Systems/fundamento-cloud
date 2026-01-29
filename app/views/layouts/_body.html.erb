@@ -42,9 +42,6 @@
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
       replaysSessionSampleRate: <%= replays_session_sample_rate %>,
-      ckeditor: {
-        licenseKey: <%= Rails.application.credentials.dig(:ckeditor, :license_key).to_json.html_safe %>
-      },
       plausibleDomain: <%= ENV["PLAUSIBLE_DOMAIN"].to_json.html_safe %>
     };
   </script>

@@ -15,7 +15,7 @@
 
   <div data-controller="popover" class="relative">
     <%= button_to document_versions_path(@document), method: :create,
-      params: { content_blocks: "", content_html: "", revisions: "" },
+      params: { content_blocks: "" },
       onclick: "handleUpdateButton(event)",
       class: "primary-button document-toolbar-button update-button",
       form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
@@ -33,13 +33,6 @@
 
   <script type="text/javascript">
       window.handleUpdateButton = async (e) => {
-
-          if (window.ckEditor) {
-              await window.ckEditor.plugins.get("RevisionTracker").saveRevision();
-
-              e.target.form.elements['content_html'].value = window.ckEditor.getData();
-              e.target.form.elements['revisions'].value = JSON.stringify(window.ckEditor.plugins.get("RevisionHistory").getRevisions({toJSON: true}));
-          }
           e.currentTarget.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document);
       }
   </script>
@@ -61,10 +54,6 @@
     space: @space.to_react_props,
     current_user: current_user,
     database_id: database_id,
-    content_html: @document.content_html,
-    revisions: @document.revisions,
-    operationsA: @document.versions.latest.present? ? @document.versions.latest.operations : nil,
-    operationsB: @document.operations,
     features: enabled_feature_names
   } %>
 </article>

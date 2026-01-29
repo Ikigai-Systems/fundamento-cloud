@@ -163,7 +163,7 @@ class InlineCommentsController < ApplicationController
     {
       comment_id: comment.id,
       content: comment.content,
-      author_id: comment.user.id.to_s, # CKEditor requires author_id to be a string
+      author_id: comment.user.id.to_s,
       created_at: comment.created_at,
       attributes: comment.comment_attributes,
     }

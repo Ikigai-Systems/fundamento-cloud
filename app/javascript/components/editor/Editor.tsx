@@ -36,10 +36,9 @@ type EditorProps = {
   currentUser: User,
   document: Document,
   editable?: boolean,
-  contentHtml: string,
 }
 
-const Editor = ({currentUser, document, editable = true, databaseId = "", contentHtml}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = ""}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 

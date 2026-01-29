@@ -13,8 +13,6 @@ class Documents::VersionsController < ApplicationController
     authorize @document, :update?
 
     content_blocks = JSON.parse(params["content_blocks"].to_s)
-    content_html = params["content_html"]
-    revisions = params["revisions"]
 
     if ENV["BLOCKNOTE_DIFF"].to_bool
       blocks2 = @document.to_blocks
@@ -29,19 +27,9 @@ class Documents::VersionsController < ApplicationController
 
     @version = @document.versions.new
     @version.content_blocks = content_blocks
-    @version.content_html = content_html
-    @version.revisions = revisions
     @version.created_by = current_user
 
     if @version.save
-      @document.update(
-        {
-          content_html: content_html,
-          revisions: revisions,
-          operations: nil,
-        }
-      )
-
       respond_to do |format|
         flash[:notice] = "Document has been updated."
         format.html { redirect_to document_path(@document) }
@@ -89,13 +77,6 @@ class Documents::VersionsController < ApplicationController
     authorize @document, :update?
 
     @version = @document.versions.find_by(sequential_id: params[:id])
-
-    @version.update(
-      {
-        content_html: params[:content_html],
-        operations: params[:operations],
-      }
-    )
 
     head :no_content
   end

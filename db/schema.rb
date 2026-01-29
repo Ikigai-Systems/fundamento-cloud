@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_16_064943) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -123,11 +123,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_064943) do
 
   create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false
-    t.text "content_html", default: ""
     t.datetime "created_at", null: false
-    t.json "operations", default: ""
     t.string "organization_id"
-    t.json "revisions", default: ""
     t.string "space_id"
     t.binary "sync"
     t.string "title"
@@ -595,18 +592,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_16_064943) do
     t.index ["id"], name: "index_users_on_id", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_memberships_on_invited_by"
+    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_users_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   create_table "versions", force: :cascade do |t|
     t.json "content_blocks"
-    t.text "content_html", default: ""
     t.datetime "created_at", null: false
     t.string "created_by_id"
     t.string "document_id", null: false
-    t.json "operations", default: ""
-    t.json "revisions", default: ""
     t.integer "sequential_id", null: false
     t.datetime "updated_at", null: false
     t.index ["created_by_id"], name: "index_versions_on_created_by_id"
