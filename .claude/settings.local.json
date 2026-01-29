@@ -32,7 +32,10 @@
       "WebSearch",
       "mcp__github__*",
       "mcp__playwright__*",
-      "mcp__task_master_ai__*"
+      "mcp__task_master_ai__*",
+      "Skill(agent-browser)",
+      "Bash(npx agent-browser:*)",
+      "Bash(agent-browser:*)"
     ],
     "deny": []
   },
