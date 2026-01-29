@@ -85,6 +85,7 @@
     /* Draggable controller styles */
     [data-controller~="draggable"] {
         --drop-placeholder-height: 36px;
+        position: relative;
 
         /* Add small gap between items to allow dropping between siblings */
         & > li:not(.sortable-dragging):not(.sortable-placeholder) {
@@ -111,7 +112,7 @@
 
         /* Adaptive width based on nesting level */
         margin-left: calc(var(--level) * 16px);
-        width: calc(268px - (var(--level) * 16px));
+        width: calc(100% - (var(--level) * 16px));
 
         /* Dot indicator before the line */
         &::before {
