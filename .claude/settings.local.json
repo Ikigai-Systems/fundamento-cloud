@@ -3,11 +3,6 @@
     "allow": [
       "Bash(age:*)",
       "Bash(bin/dev-e2e:*)",
-      "Bash(bin/rails db:migrate)",
-      "Bash(bin/rails generate:*)",
-      "Bash(bundle exec rails:*)",
-      "Bash(bundle exec rspec:*)",
-      "Bash(bundle exec rubocop:*)",
       "Bash(bundle install)",
       "Bash(cat:*)",
       "Bash(docker compose:*)",
@@ -18,30 +13,26 @@
       "Bash(git commit:*)",
       "Bash(git mv:*)",
       "Bash(grep:*)",
-      "Bash(npm run lint)",
       "Bash(npm run:*)",
       "Bash(npm update:*)",
+      "Bash(npx agent-browser:*)",
       "Bash(npx cypress run:*)",
-      "Bash(rails --help)",
       "Bash(rails:*)",
+      "Bash(rspec:*)",
       "Bash(rg:*)",
       "Bash(ruby:*)",
       "Bash(sops:*)",
-      "Bash(task-master:*)",
       "Bash(tee:*)",
+      "Skill(agent-browser)",
       "WebSearch",
       "mcp__github__*",
       "mcp__playwright__*",
-      "mcp__task_master_ai__*",
-      "Skill(agent-browser)",
-      "Bash(npx agent-browser:*)",
-      "Bash(agent-browser:*)"
+      "mcp__task_master_ai__*"
     ],
     "deny": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "task-master-ai",
     "github"
   ]
 }

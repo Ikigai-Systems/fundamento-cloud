@@ -2,52 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+Context includes also:
+@README.md
+@SECRETS.md
 
-### Starting the Application
-```bash
-bin/dev
-```
-This runs the full development stack via Foreman with:
-- Rails app on port 3000
-- Formula evaluation micro-service on port 3001
-- Rails API server on port 3002
-- Vite dev server on port 3036
-- Good Job to process background jobs
+## Running commands
 
+Whenever you want to run rails related commands use `rails` (not `bin/rails`).
 
-### Running Tests
-```bash
-# RSpec unit tests
-bundle exec rspec
+To run agent-brwoser related commands use `npx agent-browser`. Use save state functionality to create cached states. Let agent-browser store them in `tmp/agent-browser` directory.
 
-# Run specific test file
-bundle exec rspec spec/models/space_spec.rb
-
-# Go the the next failed test
-bundle exec rspec --next
-```
-
-### Code Quality
-```bash
-# JavaScript/TypeScript linting
-npm run lint
-
-# Build frontend assets
-npm run build
-```
-
-### Database Operations
-```bash
-# Setup database
-rails db:prepare
-
-# Run migrations
-rails db:migrate
-
-# Reset database with seeds
-rails db:reset
-```
+When possible use binstubs instead of using `bundle exec`.
 
 ## Architecture Overview
 
@@ -114,119 +79,8 @@ Node.js services handle specialized processing:
 - **Feature flags** via Flipper
 - **Error tracking** with Sentry
 
-### Docker Development
-```bash
-# Run with environment variables
-SECRET_KEY_BASE=abcdef docker-compose up
-
-# Run only infrastructure services
-docker compose up redis postgresql
-```
-
 ## Code formatting
 
 Whenever possible, use the following rules:
 - strings should be put into double-quotes
 - don't add indentation spaces on empty lines
-
-## E2E Testing (Simultaneous with Development)
-
-E2E tests use the same `docker-compose.yml` but with environment variables to offset ports (+1000) and the `-p e2e-tests` flag for container/volume isolation.
-
-### Port Mapping
-
-| Service | Development | E2E Tests | Offset |
-|---------|-------------|-----------|--------|
-| Rails Website | 3000 | 4000 | +1000 |
-| Vite Dev Server | 3036 | 3037 | test env |
-| BlockNote Converter | 3002 | 4002 | +1000 |
-| PostgreSQL | 5432 | 6432 | +1000 |
-| Redis | 6379 | 7379 | +1000 |
-| MinIO API | 9000 | 10000 | +1000 |
-| MinIO Console | 9001 | 10001 | +1000 |
-
-### Running Both Environments Simultaneously
-
-```bash
-# Terminal 1: Start local development (normal ports)
-bin/dev
-
-# Terminal 2: Start E2E environment (offset ports)
-bin/dev-e2e
-
-# Terminal 3: Run Cypress tests
-npx cypress run --project spec/e2e
-npx cypress open --project spec/e2e
-```
-
-### E2E Environment Management
-
-```bash
-# Start E2E environment
-bin/dev-e2e
-
-# Start with rebuild (after Dockerfile changes)
-bin/dev-e2e --build
-
-# Stop E2E environment
-docker compose -p e2e-tests down
-
-# Full cleanup (including volumes)
-docker compose -p e2e-tests down --volumes
-
-# Aggressive cleanup
-docker compose -p e2e-tests down --volumes --remove-orphans --rmi local 
-
-# View logs
-docker compose -p e2e-tests logs -f
-
-# Rebuild containers manually
-docker compose -p e2e-tests build
-```
-
-### Key Features
-
-- **Single Config File**: Uses main `docker-compose.yml` with environment variables for ports
-- **Project Isolation**: `-p e2e-tests` flag isolates containers and volumes
-- **Independent Data**: E2E tests use separate volumes via project flag
-- **Fully Containerized**: All services run in Docker for consistency with CI/CD
-- **Fast Iteration**: Docker build layers are cached, only code changes trigger rebuilds
-- **No Conflicts**: Can run local development and E2E tests at the same time
-
-## Secrets Management
-
-This project uses SOPS (Secrets OPerationS) with age encryption instead of git-crypt.
-
-### Quick Reference
-
-- **Secret files**: `config/secrets/*.sops.yaml` (encrypted in git)
-- **View secrets**: `sops -d config/secrets/development.sops.yaml`
-- **Edit secrets**: `sops config/secrets/development.sops.yaml`
-- **Extract value**: `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml`
-
-### In Application Code
-
-Access secrets via the SOPS initializer:
-
-```ruby
-# Direct SOPS access
-Rails.application.sops.dig("fontawesome", "auth_token")
-
-# Access via credentials namespace
-Rails.application.sops.credentials[:mailtrap][:username]
-
-# Backward compatible - Rails.application.credentials is overridden to use SOPS
-Rails.application.credentials[:mailtrap][:username]  # Works automatically!
-
-# Helper methods
-Rails.application.sops.fontawesome_token
-Rails.application.sops.minio_access_key
-```
-
-**Note**: `Rails.application.credentials` is overridden to return SOPS credentials, ensuring gems that expect Rails credentials work without modification.
-
-**See [SECRETS.md](SECRETS.md) for complete documentation.**
-
-## Task Master AI Instructions
-**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
-@./.taskmaster/CLAUDE.md
