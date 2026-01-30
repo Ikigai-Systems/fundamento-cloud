@@ -35,7 +35,7 @@ function ShowVersionComponent(props: {
   </>;
 }
 
-const ShowVersionPanel = ({version, document, space, currentUser, features}: ShowVersionPanelProps) => {
+const ShowDocumentVersionPanel = ({version, document, space, currentUser, features}: ShowVersionPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.contentBlocks,
@@ -54,4 +54,4 @@ const ShowVersionPanel = ({version, document, space, currentUser, features}: Sho
   </FeaturesContext.Provider>
 }
 
-export default ShowVersionPanel;
+export default ShowDocumentVersionPanel;
