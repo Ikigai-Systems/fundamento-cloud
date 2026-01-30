@@ -3,16 +3,15 @@
     [data-controller~="collapsible"] {
         /* Collapsible content visibility */
         > [data-collapsible-target="content"] {
-            overflow: hidden;
-            transition: max-height 150ms ease-in-out;
+            @apply overflow-hidden transition-[max-height] duration-150 ease-in-out;
         }
 
         &[data-collapsible-collapsed-value="true"] > [data-collapsible-target="content"] {
-            max-height: 0;
+            @apply max-h-0;
         }
 
         &[data-collapsible-collapsed-value="false"] > [data-collapsible-target="content"] {
-            max-height: none;
+            @apply max-h-none;
         }
 
         /* Collapsible trigger states - managed by controller via classes API */
@@ -20,44 +19,43 @@
             /* Hide both icons by default until controller sets state */
             .collapsible-icon,
             .collapsible-dot {
-                display: none;
+                @apply hidden;
             }
 
             .icon-chevron {
-                transition: transform 150ms ease-in-out;
+                @apply transition-transform duration-150 ease-in-out;
             }
 
             /* Collapsed state - show chevron pointing right */
             &.is-collapsed {
                 .collapsible-icon {
-                    display: flex;
+                    @apply flex;
                 }
 
                 .icon-chevron {
-                    transform: rotate(0deg);
+                    @apply rotate-0;
                 }
             }
 
             /* Expanded state - show chevron pointing down */
             &.is-expanded {
                 .collapsible-icon {
-                    display: flex;
+                    @apply flex;
                 }
 
                 .icon-chevron {
-                    transform: rotate(90deg);
+                    @apply rotate-90;
                 }
             }
 
             /* Leaf state (no children) - show dot instead */
             &.is-leaf {
                 .collapsible-dot {
-                    display: block;
+                    @apply block;
                 }
 
                 /* Make non-interactive */
-                cursor: default;
-                pointer-events: none;
+                @apply cursor-default pointer-events-none;
             }
         }
     }
