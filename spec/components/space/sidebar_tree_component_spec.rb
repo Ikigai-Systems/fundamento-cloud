@@ -19,7 +19,7 @@ RSpec.describe Space::SidebarTreeComponent, type: :component do
     allow_any_instance_of(Space::SidebarTreeItemComponent).to receive(:helpers)
       .and_return(
         double(
-          current_organization_membership: OrganizationMembership.new(user: user, organization: organization),
+          pundit_user: PolicyUserContext.new(user, organization),
           protect_against_forgery?: false
         )
       )

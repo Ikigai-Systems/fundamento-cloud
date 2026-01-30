@@ -23,7 +23,7 @@ RSpec.describe Space::SidebarTreeItemComponent, type: :component do
       allow_any_instance_of(described_class).to receive(:cookies).and_return({})
       allow_any_instance_of(described_class).to receive(:helpers).and_return(
         double(
-          current_organization_membership: OrganizationMembership.new(user: user, organization: organization),
+          pundit_user: PolicyUserContext.new(user, organization),
           protect_against_forgery?: false
         )
       )
@@ -44,27 +44,12 @@ RSpec.describe Space::SidebarTreeItemComponent, type: :component do
 
   it "applies correct padding at level 0" do
     result = render_item(level: 0)
-    expect(result.to_html).to include('padding-left: 0px')
+    expect(result.to_html).to include('--level: 0')
   end
 
   it "applies correct padding at level 2" do
     result = render_item(level: 2)
-    expect(result.to_html).to include('padding-left: 32px')
-  end
-
-  it "shows chevron when has_children is true" do
-    result = render_item(has_children: true)
-    html = result.to_html
-    expect(html).to include('multi-items-expander')
-    expect(html).not_to match(/multi-items-expander[^>]*hidden/)
-    expect(html).to match(/single-item-dot[^>]*hidden/)
-  end
-
-  it "shows dot when has_children is false" do
-    result = render_item(has_children: false)
-    html = result.to_html
-    expect(html).to match(/multi-items-expander[^>]*hidden/)
-    expect(html).to include('single-item-dot')
+    expect(result.to_html).to include('--level: 2')
   end
 
   it "applies selected class when selected" do

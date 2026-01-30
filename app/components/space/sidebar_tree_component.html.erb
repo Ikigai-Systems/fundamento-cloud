@@ -9,6 +9,9 @@
     data-collapsible-expand-to-this-value="<%= selected?(document) %>"
     data-collapsible-has-children-value="<%= has_children?(item) %>"
     data-collapsible-collapsed-value="<%= !selected?(document) %>"
+    data-collapsible-collapsed-class="is-collapsed"
+    data-collapsible-expanded-class="is-expanded"
+    data-collapsible-leaf-class="is-leaf"
   >
     <%= render Space::SidebarTreeItemComponent.new(
       document: document,

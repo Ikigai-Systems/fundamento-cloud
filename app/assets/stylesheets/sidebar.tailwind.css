@@ -155,36 +155,50 @@
             max-height: none;
         }
 
-        /* Chevron rotation based on collapsed state */
-        .icon-chevron {
-            transition: transform 150ms ease-in-out;
-        }
+        /* Collapsible trigger states - managed by controller via classes API */
+        .collapsible-trigger {
+            /* Hide both icons by default until controller sets state */
+            .collapsible-icon,
+            .collapsible-dot {
+                display: none;
+            }
 
-        &[data-collapsible-collapsed-value="true"] > div .icon-chevron {
-            transform: rotate(0deg);
-        }
+            .icon-chevron {
+                transition: transform 150ms ease-in-out;
+            }
 
-        &[data-collapsible-collapsed-value="false"] > div .icon-chevron {
-            transform: rotate(90deg);
-        }
+            /* Collapsed state - show chevron pointing right */
+            &.is-collapsed {
+                .collapsible-icon {
+                    display: flex;
+                }
 
-        /* Icon visibility based on has-children state */
-        &[data-collapsible-has-children-value="true"] > div .multi-items-expander {
-            display: flex;
-        }
+                .icon-chevron {
+                    transform: rotate(0deg);
+                }
+            }
 
-        &[data-collapsible-has-children-value="true"] > div .single-item-dot {
-            display: none;
-        }
+            /* Expanded state - show chevron pointing down */
+            &.is-expanded {
+                .collapsible-icon {
+                    display: flex;
+                }
 
-        &[data-collapsible-has-children-value="false"] > div .multi-items-expander,
-        &:not([data-collapsible-has-children-value]) > div .multi-items-expander {
-            display: none;
-        }
+                .icon-chevron {
+                    transform: rotate(90deg);
+                }
+            }
 
-        &[data-collapsible-has-children-value="false"] > div .single-item-dot,
-        &:not([data-collapsible-has-children-value]) > div .single-item-dot {
-            display: block;
+            /* Leaf state (no children) - show dot instead */
+            &.is-leaf {
+                .collapsible-dot {
+                    display: block;
+                }
+
+                /* Make non-interactive */
+                cursor: default;
+                pointer-events: none;
+            }
         }
     }
 }
