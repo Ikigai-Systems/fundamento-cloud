@@ -1,0 +1,62 @@
+@layer components {
+    /* Collapsible controller styles */
+    [data-controller~="collapsible"] {
+        /* Collapsible content visibility */
+        > [data-collapsible-target="content"] {
+            @apply overflow-hidden transition-[max-height] duration-150 ease-in-out;
+        }
+
+        &[data-collapsible-collapsed-value="true"] > [data-collapsible-target="content"] {
+            @apply max-h-0;
+        }
+
+        &[data-collapsible-collapsed-value="false"] > [data-collapsible-target="content"] {
+            @apply max-h-none;
+        }
+
+        /* Collapsible trigger states - managed by controller via classes API */
+        .collapsible-trigger {
+            /* Hide both icons by default until controller sets state */
+            .collapsible-icon,
+            .collapsible-dot {
+                @apply hidden;
+            }
+
+            .icon-chevron {
+                @apply transition-transform duration-150 ease-in-out;
+            }
+
+            /* Collapsed state - show chevron pointing right */
+            &.is-collapsed {
+                .collapsible-icon {
+                    @apply flex;
+                }
+
+                .icon-chevron {
+                    @apply rotate-0;
+                }
+            }
+
+            /* Expanded state - show chevron pointing down */
+            &.is-expanded {
+                .collapsible-icon {
+                    @apply flex;
+                }
+
+                .icon-chevron {
+                    @apply rotate-90;
+                }
+            }
+
+            /* Leaf state (no children) - show dot instead */
+            &.is-leaf {
+                .collapsible-dot {
+                    @apply block;
+                }
+
+                /* Make non-interactive */
+                @apply cursor-default pointer-events-none;
+            }
+        }
+    }
+}

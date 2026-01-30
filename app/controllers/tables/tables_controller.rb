@@ -38,9 +38,9 @@ class Tables::TablesController < ApplicationController
     if params[:tab] == "details"
       render template: "tables/_sidebar/details"
     elsif params[:tab] == "visitors"
-      render SidebarVisitorsTab.new(object: @table)
+      render Object::SidebarVisitorsTab.new(object: @table)
     elsif params[:tab] == "connections"
-      render SidebarConnectionsTab.new(object: @table, pundit_user: pundit_user)
+      render Object::SidebarConnectionsTab.new(object: @table, pundit_user: pundit_user)
     else
       render "tables/sidebar"
     end

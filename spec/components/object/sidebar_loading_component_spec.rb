@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe SidebarLoadingComponent, type: :component do
+RSpec.describe Object::SidebarLoadingComponent, type: :component do
   pending "add some examples to (or delete) #{__FILE__}"
 
   # it "renders something useful" do

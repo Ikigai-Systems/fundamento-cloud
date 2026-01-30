@@ -245,7 +245,7 @@ sops -d config/secrets/development.sops.yaml
 **Solution**: Check the Rails initializer loaded correctly:
 ```bash
 # Start rails console
-bin/rails c
+rails console
 
 # Check if SOPS is loaded
 Rails.application.sops

@@ -1,8 +1,6 @@
 # Fundamento Cloud
 
-## Prerequisites
-
-### Secrets Management
+## Secrets Management
 
 This project uses SOPS (Secrets OPerationS) with age encryption for managing secrets. You need to:
 
@@ -23,39 +21,108 @@ This project uses SOPS (Secrets OPerationS) with age encryption for managing sec
    chmod 600 ~/.config/sops/age/keys.txt
    ```
 
-**For detailed secrets management documentation, see [SECRETS.md](SECRETS.md)**
+### Quick Reference
 
-# Running
+- **Secret files**: `config/secrets/*.sops.yaml` (encrypted in git)
+- **View secrets**: `sops -d config/secrets/development.sops.yaml`
+- **Edit secrets**: `sops config/secrets/development.sops.yaml`
+- **Extract value**: `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml`
+
+### In Application Code
+
+Access secrets via the SOPS initializer:
+
+```ruby
+# Direct SOPS access
+Rails.application.sops.dig("fontawesome", "auth_token")
+
+# Access via credentials namespace
+Rails.application.sops.credentials[:mailtrap][:username]
+
+# Backward compatible - Rails.application.credentials is overridden to use SOPS
+Rails.application.credentials[:mailtrap][:username]  # Works automatically!
+
+# Helper methods
+Rails.application.sops.fontawesome_token
+Rails.application.sops.minio_access_key
+```
+
+**Note**: `Rails.application.credentials` is overridden to return SOPS credentials, ensuring gems that expect Rails credentials work without modification.
+
+**See [SECRETS.md](SECRETS.md) for complete documentation.**
+
+## Development Commands
+
+### Running locally
 
 ```
 bin/dev
 ```
-This is equivalent to `foreman start -f Procfile.dev` run manually.
 
-It should spawn two processes:
+This runs the full development stack including docker services like PostgreSQL and Redis..
+
+It should spawn following processes:
 * rails app listening on port `3000`
 * vite devserver listening on port `3036`
-* rails background job processor
+* rails background job processor (Good Job)
 * formula evaluation micro-service listening on port `3001`
 
 Access application via `http://localhost:3000`
 
-# Production mode
+### Running Tests
+```bash
+# RSpec unit tests
+bundle exec rspec
+
+# Run specific test file
+bundle exec rspec spec/models/space_spec.rb
+
+# Go the the next failed test
+bundle exec rspec --next
+```
+
+### Code Quality
+```bash
+# JavaScript/TypeScript linting
+npm run lint
+
+# Build frontend assets
+npm run build
+```
+
+### Database Operations
+```bash
+# Setup database
+rails db:prepare
+
+# Run migrations
+rails db:migrate
+
+# Reset database with seeds
+rails db:reset
+```
+
+## Production mode
 
 1. `rails db:prepare RAILS_ENV=production` -> once, to setup database schema
 2. (re)build frontend: `npm run build` -> this will (re)populate `public` folder
 3. `foreman start -f Procfile.prod`  
    This will run rails server on port `3000`
 
-# Docker
+## Docker Development
 
-1. To run app, provide secret_base_key as env variable:
-```
+Infrastucture services are managed by docker compose locally and on CI/CD. Also the app is distributed as docker images and those get deployed automatically to Kubernetes cluster.
+
+
+```bash
+# Run with environment variables
 SECRET_KEY_BASE=abcdef docker-compose up
-```
-Access application on port `3000`
 
-## Running only selected services
+# Run only infrastructure services
+docker compose up redis postgresql
+```
+
+### Running only selected services
 
 ```
 docker compose up redis postgresql
@@ -66,49 +133,39 @@ Running the same docker compose again with different name:
 docker compose -p e2e-tests up
 ```
 
-# Running tests
+## E2E testing (Simultaneous with Development)
 
-## E2E
+E2E tests use the same `docker-compose.yml` but with environment variables to offset ports (+1000) and the `-p e2e-tests` flag for container/volume isolation.
 
-E2E tests use the same `docker-compose.yml` with environment variables for port offsetting (+1000) and the `-p e2e-tests` flag for isolation.
+### Running Both Environments Simultaneously
 
-### Quick Start
+The easiest way to run E2E tests:
 
 ```bash
-# Start E2E environment (offset ports: Rails on 4000, DB on 6432, etc.)
-bin/dev-e2e
-
-# In another terminal, run tests
-npx cypress run --project spec/e2e          # Headless
-npx cypress open --project spec/e2e         # Interactive
+docker compose -p e2e-tests down && bin/dev-e2e --build && npx cypress run --project spec/e2e
 ```
 
-### Running Development and E2E Simultaneously
+You can run both development and E2E environments simultaneously as they don't conflict with each other on ports, database, etc.
 
 ```bash
-# Terminal 1: Local development (ports 3000, 5432, 6379, 9000/9001)
+# Terminal 1: Start local development (normal ports)
 bin/dev
 
-# Terminal 2: E2E environment (ports 4000, 6432, 7379, 10000/10001)
+# Terminal 2: Start E2E environment (offset ports)
 bin/dev-e2e
 
 # Terminal 3: Run Cypress tests
+npx cypress run --project spec/e2e
 npx cypress open --project spec/e2e
 ```
-
-### Port Mapping
-
-| Service | Development | E2E | Offset |
-|---------|-------------|-----|--------|
-| Rails | 3000 | 4000 | +1000 |
-| PostgreSQL | 5432 | 6432 | +1000 |
-| Redis | 6379 | 7379 | +1000 |
-| MinIO | 9000/9001 | 10000/10001 | +1000 |
 
 ### Management
 
 ```bash
-# Rebuild after Dockerfile changes
+# Start E2E environment (no rebuild)
+bin/dev-e2e
+
+# Start with rebuild (after Dockerfile changes)
 bin/dev-e2e --build
 
 # Stop E2E environment
@@ -116,11 +173,25 @@ docker compose -p e2e-tests down
 
 # Full cleanup (including volumes)
 docker compose -p e2e-tests down --volumes
+
+# Aggressive cleanup
+docker compose -p e2e-tests down --volumes --remove-orphans --rmi local 
+
+# View logs
+docker compose -p e2e-tests logs -f
+
+# Rebuild containers manually
+docker compose -p e2e-tests build
 ```
 
-**Features:**
-- ✅ Single config file with environment variable port overrides
-- ✅ Run dev and E2E simultaneously (no port conflicts)
-- ✅ Independent data (Docker project isolation via `-p` flag)
-- ✅ Fast iteration (Docker build cache)
-- ✅ Consistent with CI/CD environment
+### E2E Port Mapping
+
+| Service | Development | E2E Tests | Offset |
+|---------|-------------|-----------|--------|
+| Rails Website | 3000 | 4000 | +1000 |
+| Vite Dev Server | 3036 | 3037 | test env |
+| BlockNote Converter | 3002 | 4002 | +1000 |
+| PostgreSQL | 5432 | 6432 | +1000 |
+| Redis | 6379 | 7379 | +1000 |
+| MinIO API | 9000 | 10000 | +1000 |
+| MinIO Console | 9001 | 10001 | +1000 |

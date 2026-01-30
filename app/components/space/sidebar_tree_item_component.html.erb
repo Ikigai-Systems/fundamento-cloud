@@ -1,0 +1,66 @@
+<%= tag.div(
+  hidden: hidden?,
+  class: container_classes,
+  data: {"visibility-target" => visibility_target_attribute },
+) do %>
+  <%= link_to polymorphic_path([@document]), class: "content-link" do %>
+    <%= tag.div(
+      style: "--level: #{@level}",
+      class: "document-padding-left flex items-center w-full",
+    ) do %>
+      <%= tag.button(
+        type: "button",
+        data: {
+          "collapsible-target" => "trigger",
+          "action" => "click->collapsible#toggle:prevent"
+        },
+        class: "collapsible-trigger flex items-center justify-center"
+      ) do %>
+        <div class="collapsible-icon">
+          <div class="icon-chevron icon-[heroicons--chevron-right-16-solid] size-4 m-1"></div>
+        </div>
+        <div class="collapsible-dot pt-1 mx-2.5 -mt-[0.3rem]">•</div>
+      <% end %>
+
+      <div data-document-id="<%= @document.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
+        <%= render ObjectIcon.new(object: @document) %>
+
+        <span class="truncate">
+          <%= @document.try(:title_emojiless) || @document.try(:title) %>
+        </span>
+
+        <% if @document.try(:draft?) %>
+          <span class="draft-lozenge">Draft</span>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="content-link-buttons-container">
+    <% if can_update_space? %>
+      <%= button_to polymorphic_path([@document.class]),
+        method: :post,
+        params: {
+          "space_id": @space.id,
+          "document": { title: "" },
+          "parent_type": @document.class,
+          "parent_id": @document.id,
+        },
+        form_class: "flex items-center",
+        class: { "content-link-button" => true, "selected" => @selected } do
+      %>
+        <i class="fa-regular fa-plus"></i>
+      <% end %>
+    <% end %>
+
+    <% if can_update_space? %>
+      <%= link_to polymorphic_path([:edit, @document]),
+        class: {
+          "content-link-button" => true,
+          "selected" => @selected,
+        } do %>
+        <i class="fa-regular fa-pencil"></i>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

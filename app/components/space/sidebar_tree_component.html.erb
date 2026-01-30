@@ -1,0 +1,49 @@
+<% @node.each do |item| %>
+  <% document = find_document(item["id"]) %>
+  <% next unless document.present? %>
+
+  <li
+    class="section-content-node-container"
+    data-controller="collapsible<%= scroll_into_view_controller?(document) %>"
+    data-space-id="<%= @space.id %>"
+    data-collapsible-expand-to-this-value="<%= selected?(document) %>"
+    data-collapsible-has-children-value="<%= has_children?(item) %>"
+    data-collapsible-collapsed-value="<%= !selected?(document) %>"
+    data-collapsible-collapsed-class="is-collapsed"
+    data-collapsible-expanded-class="is-expanded"
+    data-collapsible-leaf-class="is-leaf"
+  >
+    <%= render Space::SidebarTreeItemComponent.new(
+      document: document,
+      level: @level,
+      has_children: has_children?(item),
+      selected: selected?(document),
+      space: @space
+    ) %>
+
+    <!-- That's a hack to make it possible to drop items onto a collapsed section -->
+    <ul
+      data-controller="draggable"
+      data-space-id="<%= @space.id %>"
+      data-document-id="<%= item["id"] %>"
+    >
+    </ul>
+
+    <ul
+      data-controller="draggable"
+      data-collapsible-target="content"
+      data-space-id="<%= @space.id %>"
+      data-document-id="<%= item["id"] %>"
+    >
+      <% if has_children?(item) %>
+        <%= render Space::SidebarTreeComponent.new(
+          node: item["children"],
+          documents: @documents,
+          space: @space,
+          params: @params,
+          level: @level + 1
+        ) %>
+      <% end %>
+    </ul>
+  </li>
+<% end %>
