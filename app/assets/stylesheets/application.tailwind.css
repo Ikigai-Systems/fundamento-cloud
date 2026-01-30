@@ -12,6 +12,7 @@
 @import "./popover.tailwind.css";
 @import "./react-select.tailwind.css";
 @import "./blocknote.tailwind.css";
+@import "./collapsible.tailwind.css";
 
 @tailwind base;
 @tailwind components;
