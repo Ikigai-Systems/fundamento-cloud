@@ -16,35 +16,29 @@
 
         /* Collapsible trigger states - managed by controller via classes API */
         .collapsible-trigger {
+            @apply flex justify-center items-center w-5;
+
             /* Hide both icons by default until controller sets state */
             .collapsible-icon,
             .collapsible-dot {
                 @apply hidden;
             }
 
-            .icon-chevron {
-                @apply transition-transform duration-150 ease-in-out;
+            .collapsible-icon {
+                @apply transition-transform duration-150 ease-in-out w-full;
             }
 
             /* Collapsed state - show chevron pointing right */
             &.is-collapsed {
                 .collapsible-icon {
-                    @apply flex;
-                }
-
-                .icon-chevron {
-                    @apply rotate-0;
+                    @apply flex rotate-0;
                 }
             }
 
             /* Expanded state - show chevron pointing down */
             &.is-expanded {
                 .collapsible-icon {
-                    @apply flex;
-                }
-
-                .icon-chevron {
-                    @apply rotate-90;
+                    @apply flex rotate-90;
                 }
             }
 
