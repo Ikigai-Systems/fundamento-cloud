@@ -45,6 +45,8 @@
     .document-toolbar-button {
         /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
         /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
-        @apply secondary-button h-8 ml-2 text-sm;
+        @apply secondary-button ml-2 text-sm;
+        @apply size-8 rounded-full p-0;
+        @apply flex items-center justify-center;
     }
 }

@@ -17,7 +17,7 @@
     <%= button_to document_versions_path(@document), method: :create,
       params: { content_blocks: "" },
       onclick: "handleUpdateButton(event)",
-      class: "primary-button document-toolbar-button update-button",
+      class: "document-toolbar-button update-button",
       form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
       aria: { label: "Save document" } do
     %>

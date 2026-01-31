@@ -16,7 +16,7 @@
       method: :get,
       id: dom_id(@table, :edit),
       disabled: !has_permission_to_edit,
-      class: "primary-button document-toolbar-button edit-table-button",
+      class: "document-toolbar-button edit-table-button",
       form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
       aria: { label: "Edit table" } do
     %>

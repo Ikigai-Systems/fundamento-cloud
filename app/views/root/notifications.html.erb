@@ -1,9 +1,10 @@
 <%= turbo_frame_tag :notifications do %>
   <% unread_mentions_count = current_organization_membership.unread_mentions_count(policy_scope(current_organization.documents)) %>
 
+  <%# Make sure when updating link style you also update one in app/views/application/_notifications_menu.html.erb %>
   <%= link_to root_path(:anchor => "mentions"),
     title: "Notifications",
-    class: "ml-2 document-toolbar-button relative inline-flex items-center p-2 text-sm font-medium text-center rounded-lg",
+    class: "document-toolbar-button relative",
     role: "button",
     aria: { label: unread_mentions_count > 0 ? "Notifications, #{unread_mentions_count} unread" : "Notifications, no unread" },
     data: { testid: "notifications-button" } do %>

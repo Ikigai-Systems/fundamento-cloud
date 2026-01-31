@@ -3,11 +3,14 @@
     src: notifications_path,
     data: { turbo: false },
     loading: "lazy" do %>
+
+    <%# Make sure when updating link style you also update one in app/views/root/notifications.html.erb %>
     <%= link_to root_path(:anchor => "mentions"),
       title: "Notifications",
-      class: "ml-2 document-toolbar-button relative inline-flex items-center p-2 text-sm font-medium text-center rounded-lg" do %>
-      <span class="icon-[heroicons--bell] size-5"></span>
+      class: "document-toolbar-button" do %>
+      <span class="icon-[heroicons--bell] size-5" aria-hidden="true"></span>
       <span class="sr-only">Notifications</span>
     <% end %>
+
   <% end %>
 <% end %>
