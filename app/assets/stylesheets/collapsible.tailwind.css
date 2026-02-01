@@ -16,7 +16,7 @@
 
         /* Collapsible trigger states - managed by controller via classes API */
         .collapsible-trigger {
-            @apply flex justify-center items-center w-5;
+            @apply flex justify-center items-center w-5 shrink-0;
 
             /* Hide both icons by default until controller sets state */
             .collapsible-icon,
