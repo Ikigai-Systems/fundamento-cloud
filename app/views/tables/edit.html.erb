@@ -3,7 +3,10 @@
 <% end %>
 
 <% content_for :content_menu do %>
-  <span>Each change is saved automatically</span>
+  <%= link_to table_path(@table),
+    class: "link-button" do %>
+    <i class="fa-regular fa-turn-left"></i>
+  <% end %>
 
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
 <% end %>
@@ -18,4 +21,9 @@
       evaluate_as: current_organization_membership,
     )
   } %>
+
+  <p class="mx-auto p-3 text-sm">
+    <i class="fa-solid fa-circle-info"></i>
+    Changes are saved automatically
+  </p>
 </article>
