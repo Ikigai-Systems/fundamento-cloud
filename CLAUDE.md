@@ -53,7 +53,7 @@ Node.js services handle specialized processing:
 ### Frontend Technology Stack
 - **Vite** build tool with HMR for Stimulus controllers
 - **BlockNote** rich text editor (similar to Notion)
-- **TailwindCSS** with custom design system
+- **TailwindCSS** with custom design system (the latest 3.x version)
 - **Hotwire (Turbo/Stimulus)** for enhanced Rails views
 - **React Query** for server state management
 
