@@ -1,0 +1,130 @@
+@layer components {
+    .space-sidebar {
+        .space-container {
+            @apply my-2 p-2 bg-indigo-700 rounded-md flex justify-between font-semibold text-white;
+        }
+
+        .section-header-container {
+            @apply flex justify-between items-center text-sm border-b px-1;
+        }
+
+        .section-header-title {
+            @apply mx-2 py-2 font-bold text-slate-600 uppercase flex flex-grow gap-2 items-center;
+            @apply dark:text-gray-400;
+        }
+
+        .secondary-button {
+            @apply px-3;
+        }
+
+        span.secondary-button[disabled="disabled"] {
+            @apply disabled-button;
+        }
+
+        .section-empty {
+            @apply text-slate-400 mx-2 p-2 only:block;
+        }
+
+        .section-content-container {
+            .section-content-node-container {
+                @apply relative w-full ;
+            }
+
+            .content-link-container {
+                @apply text-slate-800 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700;
+            }
+
+            .content-link-container.archived {
+                @apply text-slate-400 dark:text-gray-600;
+            }
+
+            .content-link-container.selected {
+                @apply bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 active:bg-blue-300 dark:hover:bg-blue-800 dark:active:bg-blue-700;
+            }
+
+            .content-link {
+                @apply flex flex-row items-center flex-grow;
+            }
+
+            .document-padding-left {
+                padding-left: calc(var(--level) * 16px);
+            }
+
+            .content-link-buttons-container {
+                @apply absolute gap-1 right-1 top-1 p-1 flex;
+            }
+
+            .content-link-button {
+                @apply rounded-md size-7 group-hover:bg-gray-200 group-hover:hover:bg-gray-300 group-hover:active:bg-gray-400 inline-flex justify-center items-center;
+                @apply group-hover:opacity-100 opacity-0 transition-opacity duration-300;
+                @apply dark:group-hover:bg-gray-900 dark:group-hover:hover:bg-gray-800 dark:group-hover:active:bg-gray-600 dark:group-hover:border-gray-600 dark:group-hover:border;
+
+                i {
+                    @apply text-gray-950 dark:text-gray-50 opacity-50;
+                }
+            }
+
+            .content-link-button.selected {
+                @apply group-hover:bg-blue-300 group-hover:hover:bg-blue-400 group-hover:active:bg-blue-500;
+                @apply dark:group-hover:bg-blue-900 dark:group-hover:border-blue-600 dark:group-hover:hover:bg-blue-800 dark:group-hover:active:bg-blue-600;
+            }
+        }
+    }
+
+    /* Draggable controller styles */
+    [data-controller~="draggable"] {
+        --drop-placeholder-height: 36px;
+        position: relative;
+        z-index: 1;
+        isolation: isolate;
+
+        /* Add small gap between items to allow dropping between siblings */
+        & > li {
+            @apply my-[1px];
+        }
+
+        /* Empty containers during drag - make them valid drop targets */
+        &[data-draggable-empty="true"] {
+            max-height: none !important;
+            height: var(--drop-placeholder-height);
+            position: relative;
+            top: calc(-1 * var(--drop-placeholder-height));
+            margin-bottom: calc(-1 * var(--drop-placeholder-height));
+            overflow: visible !important;
+        }
+    }
+
+    /* Sortable placeholder - visual indicator of drop position */
+    /*       placeholderClass: 'sortable-placeholder float-left bg-indigo-600 h-0.5 w-[268px] data-[surround=true]:before:hidden absolute before:absolute before:h-2 before:w-2 before:-top-[3px] before:border-2 before:border-solid before:rounded-full before:bg-white before:border-indigo-600' */
+    .sortable-placeholder {
+        --level: 0;
+        @apply bg-indigo-600 h-0.5 absolute;
+        z-index: 50;
+
+        /* Adaptive width based on nesting level */
+        margin-left: calc(var(--level) * 16px);
+        width: calc(100% - (var(--level) * 16px));
+
+        /* Dot indicator before the line */
+        &::before {
+            content: "";
+
+            @apply absolute h-2 w-2 -top-[3px] border-2 border-solid rounded-full bg-white border-indigo-600;
+        }
+
+        /* When surrounding an empty container - box style wraps parent element */
+        &[data-surround="true"] {
+            height: var(--drop-placeholder-height);
+            top: -2px;
+            border: solid 2px rgb(79 70 229);
+            border-radius: 8px;
+            background-color: inherit;
+            margin-left: 0;
+            width: 100%;
+
+            &::before {
+                display: none;
+            }
+        }
+    }
+}

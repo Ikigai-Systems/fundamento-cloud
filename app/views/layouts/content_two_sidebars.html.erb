@@ -1,4 +1,4 @@
-<%= render "layouts/body", body_class: "overflow-hidden" do %>
+<%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
   <div class="h-screen">
     <div class="h-full grid grid-cols-[min-content_minmax(200px,_3fr)_min-content]">
       <%= render "application/left_sidebar" %>
@@ -22,7 +22,7 @@
       <%= tag.aside(
         id: "content-sidebar",
         class: {
-          "content-sidebar w-[320px] overflow-visible group/collapser [&.collapsed]:w-5 transition-all" => true,
+          "content-sidebar sidebar w-[320px] group/collapser [&.collapsed]:w-5" => true,
           "collapsed" => cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false",
         },
         data: {
@@ -34,12 +34,13 @@
         }) do
       %>
         <div class="relative z-10">
-          <div class="absolute size-7 content-container border top-4 -left-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+          <div class="sidebar-collapse-trigger -left-3.5 group-[.collapsed]/collapser:left-1"
                data-controller="hotkey popover"
                data-hotkey="]"
                data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
           >
             <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
+            <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
 
             <template data-popover-target="content">
               <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center group-[:not(.collapsed)]/collapser:!left-8 group-[.collapsed]/collapser:right-8 -top-1">
@@ -47,11 +48,10 @@
                 <p class="hidden group-[.collapsed]/collapser:block">Expand <code>]</code></p>
               </div>
             </template>
-            <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
           </div>
         </div>
 
-        <div class="h-full overflow-auto group-[.collapsed]/collapser:hidden">
+        <div class="sidebar-internal">
           <% if content_for?(:content_sidebar) %>
             <%= content_for :content_sidebar %>
           <% else %>
@@ -63,9 +63,11 @@
               end
             %>
 
-            <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
-              <%= render Object::SidebarLoadingComponent.new %>
-            <% end %>
+            <div class="m-5 rounded-xl drop-shadow-lg sidebar-colors grow">
+              <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
+                <%= render Object::SidebarLoadingComponent.new %>
+              <% end %>
+            </div>
           <% end %>
         </div>
       <% end %>
