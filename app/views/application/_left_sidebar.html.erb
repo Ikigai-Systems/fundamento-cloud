@@ -6,7 +6,7 @@
   end
 %>
 
-<aside id="space-sidebar" class="space-sidebar sidebar group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>"
+<aside id="space-sidebar" class="space-sidebar sidebar group/collapser <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>"
        data-controller="cookie-controlled-toggle"
        data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
        data-cookie-controlled-toggle-target="toggleable" data-toggle-class="collapsed"

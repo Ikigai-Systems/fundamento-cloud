@@ -22,7 +22,7 @@
       <%= tag.aside(
         id: "content-sidebar",
         class: {
-          "content-sidebar sidebar w-[320px] group/collapser [&.collapsed]:w-5" => true,
+          "content-sidebar sidebar group/collapser" => true,
           "collapsed" => cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false",
         },
         data: {

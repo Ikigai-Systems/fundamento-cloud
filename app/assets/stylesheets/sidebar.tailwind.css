@@ -29,6 +29,10 @@
         /*@apply border-r;*/
         @apply h-screen w-[300px] transition-all;
         @apply [&.collapsed]:bg-gray-50 [&.collapsed]:dark:bg-gray-900 [&.collapsed]:overflow-visible;
+
+        &.collapsed {
+            @apply lg:w-10;
+        }
     }
 
     .content-sidebar {
