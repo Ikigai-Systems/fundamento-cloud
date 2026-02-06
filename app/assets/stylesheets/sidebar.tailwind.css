@@ -1,43 +1,88 @@
 @layer components {
-    .sidebar-colors {
-        @apply bg-gray-50 dark:bg-gray-900 overflow-visible;
+    /* Spacer creates layout space on desktop grid */
+    .sidebar-spacer {
+        @apply hidden lg:block w-[320px] duration-[350ms] ease-in-out transition-[width];
+
+        @apply group-[.collapsed]/collapser:w-5;
     }
 
-    .sidebar-internal {
-        @apply flex flex-col;
-        @apply h-full overflow-auto group-[.collapsed]/collapser:hidden
-    }
-
-    .sidebar-collapse-trigger {
-        @apply absolute size-7 content-container border
-            top-4 rounded-full opacity-0
-            transition-opacity cursor-pointer
-            hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700;
-
-        @apply group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100;
-
-        /*@apply group-[.collapsed]/collapser:bg-red-50;*/
-    }
-
-    /*.sidebar-collapse-tooltip {*/
-    /*    @apply popover-tooltip-card w-24 flex flex-row items-center*/
-    /*        justify-center -top-1;*/
-    /*}*/
-
+    /* Sidebar is always fixed positioned, slides with transform */
     .sidebar {
-        /*@apply sidebar-colors;*/
-        /*@apply border-r;*/
-        @apply h-screen w-[300px] transition-all;
-        @apply [&.collapsed]:bg-gray-50 [&.collapsed]:dark:bg-gray-900 [&.collapsed]:overflow-visible;
+        @apply fixed inset-y-0 w-[300px] z-20;
+        @apply transition-transform duration-[350ms] ease-in-out;
+        @apply flex flex-col;
+        /*@apply bg-yellow-50;*/
 
-        &.collapsed {
-            @apply lg:w-10;
+        &.left-side {
+            @apply left-0;
+            @apply group-[.collapsed]/collapser:-translate-x-full;
+        }
+
+        &.right-side {
+            @apply right-0;
+            @apply group-[.collapsed]/collapser:translate-x-full;
         }
     }
 
-    .content-sidebar {
-        /*@apply sidebar-colors;*/
+    /* The visible panel with background and content */
+    .sidebar-panel {
+        @apply relative;
+        @apply flex flex-1 flex-col;
+        @apply bg-gray-50 dark:bg-gray-900;
+        @apply m-5 drop-shadow-lg;
+
+        &.left-side {
+            @apply rounded-l-xl;
+        }
+
+        &.right-side {
+            @apply rounded-r-xl;
+        }
     }
 
-    .space-sidebar {}
+    /* Full-height clickable trigger area on panel edge */
+    .sidebar-trigger-area {
+        @apply absolute inset-y-0 w-7 cursor-pointer;
+        @apply flex items-center justify-center;
+        @apply bg-gray-50 dark:bg-gray-900;
+        /*@apply bg-red-100;*/
+
+        &.left-side {
+            @apply -right-7;
+            @apply rounded-r-xl;
+        }
+
+        &.right-side {
+            @apply -left-7;
+            @apply rounded-l-xl;
+        }
+    }
+
+    /* Visual button indicator within trigger area */
+    .sidebar-trigger-button {
+        @apply size-7 rounded-full border;
+        @apply bg-white dark:bg-gray-800 content-container;
+        @apply flex items-center justify-center;
+
+        &.left-side {
+            @apply relative inset-x-5;
+        }
+
+        &.right-side {
+            @apply relative -inset-x-5;
+        }
+    }
+
+    /* Scrollable content area */
+    .sidebar-content {
+        @apply flex-1 overflow-y-auto overflow-x-hidden scroll-smooth;
+
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.gray.300') transparent;
+
+        @media (prefers-color-scheme: dark) {
+            scrollbar-color: theme('colors.gray.700') transparent;
+        }
+    }
 }
