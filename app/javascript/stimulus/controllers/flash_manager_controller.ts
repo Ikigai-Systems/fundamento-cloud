@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 type FlashOptions = {
   type?: "notice" | "alert" | "error"
   message: string
-  durationMilliseconds?: number
+  duration?: "short"
   key?: string
   replacePrevious?: boolean
 }
@@ -19,7 +19,7 @@ export default class extends Controller<HTMLElement> {
       this.show({
         type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
         message: el.dataset.flashMessage || "",
-        durationMilliseconds: el.dataset.flashAutoDismiss ? parseInt(el.dataset.flashAutoDismiss) : undefined
+        duration: el.dataset.flashDuration as FlashOptions["duration"]
       })
 
       el.remove()
@@ -55,8 +55,10 @@ export default class extends Controller<HTMLElement> {
         type = "alert"
       }
     }
-    const autoDismissAttr = options.durationMilliseconds
-      ? `data-alert-dismiss-after-value="${options.durationMilliseconds}"`
+    // Map duration to milliseconds
+    const durationMs = options.duration === "short" ? 3000 : undefined
+    const autoDismissAttr = durationMs
+      ? `data-alert-dismiss-after-value="${durationMs}"`
       : ""
     const keyAttr = options.key ? `data-flash-key="${options.key}"` : ""
 
@@ -84,7 +86,7 @@ export default class extends Controller<HTMLElement> {
               <p class="text-sm">${this.escapeHtml(options.message)}</p>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
-              <button data-action="alert#close" class="inline-flex flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150">
+              <button data-action="alert#close" class="inline-flex flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">
                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>

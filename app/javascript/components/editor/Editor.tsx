@@ -55,7 +55,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
           type: isStale ? "error" : "notice",
           replacePrevious: true,
           key: `isStaleMessage`,
-          durationMilliseconds: isStale ? undefined : 5000,
+          duration: isStale ? undefined : "short",
         });
       }
       return isStale;

@@ -3,7 +3,7 @@ type FlashOptions = {
   replacePrevious?: boolean,
   type?: "notice" | "alert" | "error",
   message: string,
-  durationMilliseconds?: number,
+  duration?: "short",
 }
 
 interface StimulusApplication {
