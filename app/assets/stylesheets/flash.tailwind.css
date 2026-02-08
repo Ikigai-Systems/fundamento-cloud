@@ -1,0 +1,31 @@
+@layer components {
+  .flash-notice-container {
+    @apply bg-sky-100 dark:bg-sky-800 border-sky-500 text-sky-900 dark:text-sky-50;
+  }
+  .flash-notice-icon {
+    @apply text-sky-500;
+  }
+  .flash-notice-button {
+    @apply text-sky-500 dark:text-sky-50;
+  }
+
+  .flash-alert-container {
+    @apply bg-orange-100 dark:bg-orange-800 border-orange-500 text-orange-900 dark:text-orange-50;
+  }
+  .flash-alert-icon {
+    @apply text-orange-500;
+  }
+  .flash-alert-button {
+    @apply text-orange-500 dark:text-orange-50;
+  }
+
+  .flash-error-container {
+    @apply bg-red-100 dark:bg-red-800 border-red-500 text-red-900 dark:text-red-50;
+  }
+  .flash-error-icon {
+    @apply text-red-500;
+  }
+  .flash-error-button {
+    @apply text-red-500 dark:text-red-50;
+  }
+}

@@ -94,7 +94,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       // Visit edit mode
       cy.get(".edit-table-button").click();
       cy.url().should("include", "/edit");
-      cy.contains("Each change is saved automatically").should("be.visible");
+      cy.contains("Changes are saved automatically").should("be.visible");
     });
   });
 

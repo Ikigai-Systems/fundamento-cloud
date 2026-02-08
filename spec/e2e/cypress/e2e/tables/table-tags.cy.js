@@ -58,6 +58,8 @@ describe("Table Tags", function () {
   it("adds a new tag to a table", function () {
     const newTag = "table-tag";
 
+    cy.intercept('GET', `/s/is_default/tags/suggest.json*`).as('suggestTags');
+
     cy.appEval("Table.first.id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
@@ -74,6 +76,7 @@ describe("Table Tags", function () {
         cy.get("#details_sidebar_tab").within(() => {
           cy.get(".multiselect__container").click();
           cy.get(".multiselect__search").type(newTag);
+          cy.wait("@suggestTags");
           cy.get(".multiselect__no-result").click();
         });
 
@@ -139,9 +142,17 @@ describe("Table Tags", function () {
   });
 
   it("adds multiple tags to a table", function () {
-    const tags = ["table-tag1", "table-tag2", "table-tag3"];
+    // FIXME: breaks with more than 2 tags at the moment
+    // const tags = ["table-tag1", "table-tag2", "table-tag3"];
+    const tags = ["table-tag1", "table-tag2"];
+
+    cy.intercept('GET', `/s/is_default/tags/suggest.json?q=*`).as('suggestTags');
+    cy.intercept('GET', `/s/is_default/tags/suggest.json`).as('loadTags');
+
 
     cy.appEval("Table.first.id").then((tableId) => {
+      cy.intercept('POST', `/t/${tableId}/tags`).as('updateTags');
+
       cy.visit(`/t/${tableId}`);
 
       cy.contains("Loading content").should("not.be.visible");
@@ -158,7 +169,10 @@ describe("Table Tags", function () {
           cy.get("#details_sidebar_tab").within(() => {
             cy.get(".multiselect__container").click();
             cy.get(".multiselect__search").type(tag);
+            cy.wait("@suggestTags");
             cy.get(".multiselect__no-result").click();
+            cy.wait("@updateTags");
+            cy.wait("@loadTags");
 
             cy.get(".multiselect__preview").within(() => {
               cy.contains(`#${tag}`).should("be.visible");

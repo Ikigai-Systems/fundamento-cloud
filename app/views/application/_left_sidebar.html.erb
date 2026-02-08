@@ -4,23 +4,37 @@
   elsif defined?(@table)
     object = @table
   end
+
+  is_collapsed = cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false"
 %>
 
-<aside id="left-sidebar" class="sidebar h-screen w-[300px] group/collapser [&.collapsed]:w-5 <%= cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false" ? "collapsed " : "" %>transition-all"
-       data-controller="cookie-controlled-toggle"
-       data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
-       data-cookie-controlled-toggle-target="toggleable" data-toggle-class="collapsed"
-       data-cookie-controlled-toggle-open-value="<%= !(cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false")%>"
-       data-turbo-keep-scroll>
-  <div class="relative z-10">
-    <div class="absolute content-container top-4 right-3.5">
-      <div class="fixed size-7 border rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer bg-white hover:bg-gray-100 dark:!bg-gray-800 hover:dark:!bg-gray-700"
+<%# Container for spacer + sidebar (relative on desktop for absolute positioning) %>
+<div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
+     data-controller="cookie-controlled-toggle"
+     data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
+     data-cookie-controlled-toggle-target="toggleable"
+     data-toggle-class="collapsed"
+     data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
+
+  <div class="sidebar-spacer"></div>
+
+  <%# Sidebar floats above the spacer, always fixed positioned %>
+  <aside id="space-sidebar" class="sidebar left-side" data-turbo-keep-scroll>
+
+    <%# The visible panel with background and shadow %>
+    <div class="sidebar-panel left-side">
+
+      <%# Full-height trigger area on panel edge %>
+      <div class="sidebar-trigger-area left-side"
            data-controller="hotkey popover"
            data-hotkey="["
-           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
-      >
-        <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
-        <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
+           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+
+        <%# Visual button indicator %>
+        <div class="sidebar-trigger-button left-side">
+          <span class="icon-[heroicons--chevron-left-16-solid] size-4 block group-[.collapsed]/collapser:hidden"></span>
+          <span class="icon-[heroicons--chevron-right-16-solid] size-4 hidden group-[.collapsed]/collapser:block"></span>
+        </div>
 
         <template data-popover-target="content">
           <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center left-8 -top-1">
@@ -29,12 +43,14 @@
           </div>
         </template>
       </div>
-    </div>
-  </div>
 
-  <div class="h-full overflow-auto group-[.collapsed]/collapser:hidden">
-    <%= turbo_frame_tag "left_sidebar_content", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
-      <%= render Object::SidebarLoadingComponent.new %>
-    <% end %>
-  </div>
-</aside>
+      <%# Scrollable content area %>
+      <div class="sidebar-content">
+        <%= turbo_frame_tag "space_sidebar", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
+          <%= render Object::SidebarLoadingComponent.new %>
+        <% end %>
+      </div>
+
+    </div>
+  </aside>
+</div>

@@ -1,9 +1,13 @@
-<%= render "layouts/body", body_class: "overflow-hidden" do %>
+<%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
   <div class="h-screen">
-    <div class="h-full grid grid-cols-[min-content_minmax(200px,_3fr)_min-content]">
+    <%# Grid layout: spacers create the layout structure %>
+    <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
+
+      <%# Left sidebar with spacer %>
       <%= render "application/left_sidebar" %>
 
-      <div class="h-screen content-container flex flex-col">
+      <%# Main content area %>
+      <div class="h-screen content-container flex flex-col relative">
         <nav class="w-full flex justify-end p-3 gap-1 items-center min-h-15 max-h-15 border-b">
           <%= content_for :content_menu %>
 
@@ -19,60 +23,64 @@
         </div>
       </div>
 
-      <%= tag.aside(
-        id: "content-sidebar",
-        class: {
-          "content-sidebar w-[320px] overflow-visible group/collapser [&.collapsed]:w-5 transition-all" => true,
-          "collapsed" => cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false",
-        },
-        data: {
-          "controller" => "cookie-controlled-toggle",
-          "cookie-controlled-toggle-cookie-key-value" => "ikigai_userPreferences_contentSideBarExpanded",
-          "cookie-controlled-toggle-target" => "toggleable",
-          "toggle-class" => "collapsed",
-          "cookie-controlled-toggle-open-value" => !(cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false"),
-        }) do
+      <%# Right sidebar with spacer %>
+      <%
+        is_collapsed = cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false"
+
+        if defined?(@document)
+          object = @document
+        elsif defined?(@table)
+          object = @table
+        end
       %>
-        <div class="relative z-10">
-          <div class="absolute size-7 content-container border top-4 -left-3.5 rounded-full opacity-0 group-hover/collapser:opacity-100 group-[.collapsed]/collapser:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
-               data-controller="hotkey popover"
-               data-hotkey="]"
-               data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide"
-          >
-            <span class="icon-[heroicons--chevron-right-16-solid] size-4 ml-1.5 mt-[4px] block group-[.collapsed]/collapser:hidden"></span>
 
-            <template data-popover-target="content">
-              <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center group-[:not(.collapsed)]/collapser:!left-8 group-[.collapsed]/collapser:right-8 -top-1">
-                <p class="block group-[.collapsed]/collapser:hidden">Collapse <code>]</code></p>
-                <p class="hidden group-[.collapsed]/collapser:block">Expand <code>]</code></p>
+      <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
+           data-controller="cookie-controlled-toggle"
+           data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
+           data-cookie-controlled-toggle-target="toggleable"
+           data-toggle-class="collapsed"
+           data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
+
+        <%# Spacer creates layout space on desktop grid %>
+        <div class="sidebar-spacer"></div>
+
+        <aside id="content-sidebar" class="sidebar right-side">
+
+          <%# The visible panel with background and shadow %>
+          <div class="sidebar-panel right-side">
+
+            <div class="sidebar-trigger-area right-side"
+                 data-controller="hotkey popover"
+                 data-hotkey="]"
+                 data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+
+              <div class="sidebar-trigger-button right-side">
+                <span class="icon-[heroicons--chevron-right-16-solid] size-4 block group-[.collapsed]/collapser:hidden"></span>
+                <span class="icon-[heroicons--chevron-left-16-solid] size-4 hidden group-[.collapsed]/collapser:block"></span>
               </div>
-            </template>
-            <span class="icon-[heroicons--chevron-left-16-solid] size-4 ml-1.5 mt-[4px] hidden group-[.collapsed]/collapser:block"></span>
+
+              <template data-popover-target="content">
+                <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center right-8 -top-1">
+                  <p class="block group-[.collapsed]/collapser:hidden">Collapse <code>]</code></p>
+                  <p class="hidden group-[.collapsed]/collapser:block">Expand <code>]</code></p>
+                </div>
+              </template>
+            </div>
+
+            <div class="sidebar-content">
+              <% if content_for?(:content_sidebar) %>
+                <%= content_for :content_sidebar %>
+              <% else %>
+                <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
+                  <%= render Object::SidebarLoadingComponent.new %>
+                <% end %>
+              <% end %>
+            </div>
+
           </div>
-        </div>
+        </aside>
+      </div>
 
-        <div class="h-full overflow-auto group-[.collapsed]/collapser:hidden">
-          <% if content_for?(:content_sidebar) %>
-            <%= content_for :content_sidebar %>
-          <% else %>
-            <%
-              if defined?(@document)
-                object = @document
-              elsif defined?(@table)
-                object = @table
-              end
-            %>
-
-            <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
-              <%= render Object::SidebarLoadingComponent.new %>
-            <% end %>
-          <% end %>
-        </div>
-      <% end %>
     </div>
-  </div>
-
-  <div id="flashes" class="fixed top-0 w-full flex flex-col items-end pointer-events-none">
-    <%= render partial: "flash_messages_as_alerts" %>
   </div>
 <% end %>

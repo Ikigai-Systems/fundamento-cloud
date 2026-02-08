@@ -376,7 +376,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                     onClick={() => {
                       navigator.clipboard.writeText(table.id);
                       createFlash({
-                        type: "info",
+                        type: "notice",
                         message: `Table ID (${table.id}) copied to clipboard.`
                       })
                     }}

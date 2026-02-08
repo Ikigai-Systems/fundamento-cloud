@@ -4,7 +4,8 @@
     data-controller="tabs"
     data-tabs-active-tab-class="active-tab"
   >
-    <div class="border-b">
+    <%# Sticky tabs header %>
+    <div class="shrink-0 border-b">
       <nav data-tabs-target="list" aria-label="Tabs">
         <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab"
                 class="flex flex-row items-center"
@@ -40,7 +41,9 @@
       </nav>
     </div>
 
-    <div data-tabs-target="panel" class="hidden max-h-0">
+    <%# Scrollable panels container %>
+    <div class="flex-1 overflow-y-auto">
+      <div data-tabs-target="panel" class="hidden max-h-0">
       <%= turbo_frame_tag "table_of_contents_sidebar_tab", data: { turbo: false }, src: polymorphic_path([:sidebar, @document], tab: :table_of_contents) do %>
         <%= render Object::SidebarLoadingComponent.new %>
       <% end %>
@@ -64,10 +67,11 @@
       <% end %>
     </div>
 
-    <div data-tabs-target="panel" class="hidden max-h-0">
-      <%= turbo_frame_tag "attachments_sidebar_tab", loading: "lazy", data: { turbo: true }, src: polymorphic_path([:sidebar, @document], tab: :attachments) do %>
-        <%= render Object::SidebarLoadingComponent.new %>
-      <% end %>
+      <div data-tabs-target="panel" class="hidden max-h-0">
+        <%= turbo_frame_tag "attachments_sidebar_tab", loading: "lazy", data: { turbo: true }, src: polymorphic_path([:sidebar, @document], tab: :attachments) do %>
+          <%= render Object::SidebarLoadingComponent.new %>
+        <% end %>
+      </div>
     </div>
   </div>
 <% end %>

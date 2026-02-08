@@ -20,6 +20,7 @@ import Clipboard from '@stimulus-components/clipboard';
 import AutoSubmit from '@stimulus-components/auto-submit';
 import {Multiselect} from "@wizardhealth/stimulus-multiselect";
 import MultiselectNoopAddableController from "./controllers/multiselect-noop-addable-controller.js";
+import FlashManagerController from "./controllers/flash_manager_controller";
 
 const application = Application.start()
 
@@ -75,6 +76,8 @@ application.register("serialize-blocknote", SerializeBlockNote);
 application.register("command-palette", CommandPaletteController);
 
 application.register('clipboard', Clipboard);
+
+application.register("flash-manager", FlashManagerController);
 
 // Configure Stimulus development experience
 application.debug = true

@@ -1,6 +1,9 @@
 const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
+  viewportWidth: 1280,
+  viewportHeight: 720,
+  allowCypressEnv: false,
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || "http://localhost:4000",
     defaultCommandTimeout: 10000,

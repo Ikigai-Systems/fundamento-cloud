@@ -7,7 +7,7 @@ class Users::SignUpWithGoogleController < ApplicationController
     Sentry.capture_message("Attempt to sign up with Google", level: :info, extra: {
       ip_address: request.remote_ip
     })
-    flash[:warning] = "Sign up with Google is under construction, please use email registration in the meanwhile."
+    flash[:alert] = "Sign up with Google is under construction, please use email registration in the meanwhile."
     redirect_to new_user_registration_path
   end
 end

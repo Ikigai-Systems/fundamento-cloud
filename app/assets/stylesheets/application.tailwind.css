@@ -2,6 +2,7 @@
 @import "./tabs.tailwind.css";
 @import "./dropdown.tailwind.css";
 @import "./sidebar.tailwind.css";
+@import "./space-sidebar.tailwind.css";
 @import "./content.tailwind.css";
 @import "./form.tailwind.css";
 @import "./automation.tailwind.css";
@@ -13,6 +14,7 @@
 @import "./react-select.tailwind.css";
 @import "./blocknote.tailwind.css";
 @import "./collapsible.tailwind.css";
+@import "./flash.tailwind.css";
 
 @tailwind base;
 @tailwind components;

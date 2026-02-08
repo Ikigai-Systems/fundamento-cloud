@@ -52,10 +52,10 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       if (isStale !== prevState) {
         createFlash({
           message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
-          type: isStale ? "error" : "success",
+          type: isStale ? "error" : "notice",
           replacePrevious: true,
           key: `isStaleMessage`,
-          durationMilliseconds: isStale ? undefined : 5000,
+          duration: isStale ? undefined : "short",
         });
       }
       return isStale;
