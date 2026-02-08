@@ -8,8 +8,8 @@
   is_collapsed = cookies["ikigai_userPreferences_leftSideBarExpanded"] == "false"
 %>
 
-<%# Spacer creates layout space on desktop grid %>
-<div class="group/collapser <%= 'collapsed' if is_collapsed %>"
+<%# Container for spacer + sidebar (relative on desktop for absolute positioning) %>
+<div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
      data-controller="cookie-controlled-toggle"
      data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
      data-cookie-controlled-toggle-target="toggleable"

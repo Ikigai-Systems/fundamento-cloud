@@ -6,12 +6,17 @@
         @apply group-[.collapsed]/collapser:w-5;
     }
 
-    /* Sidebar is always fixed positioned, slides with transform */
+    /* Sidebar container needs relative positioning on desktop for absolute children */
+    .sidebar-container {
+        @apply lg:relative;
+    }
+
+    /* Sidebar: fixed on mobile (overlay), absolute on desktop (within grid cell) */
     .sidebar {
-        @apply fixed inset-y-0 w-[300px] z-10;
+        @apply inset-y-0 w-[300px] z-10;
+        @apply max-lg:fixed lg:absolute;
         @apply transition-transform duration-[350ms] ease-in-out;
         @apply flex flex-col;
-        /*@apply bg-yellow-50;*/
 
         &.left-side {
             @apply left-0;

@@ -1,7 +1,7 @@
 <%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
   <div class="h-screen">
     <%# Grid layout: spacers create the layout structure %>
-    <div class="h-full lg:grid lg:grid-cols-[auto_1fr_auto]">
+    <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
 
       <%# Left sidebar with spacer %>
       <%= render "application/left_sidebar" %>
@@ -34,13 +34,14 @@
         end
       %>
 
-      <div class="group/collapser <%= 'collapsed' if is_collapsed %>"
+      <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
            data-controller="cookie-controlled-toggle"
            data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
            data-cookie-controlled-toggle-target="toggleable"
            data-toggle-class="collapsed"
            data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
 
+        <%# Spacer creates layout space on desktop grid %>
         <div class="sidebar-spacer"></div>
 
         <aside id="content-sidebar" class="sidebar right-side">
