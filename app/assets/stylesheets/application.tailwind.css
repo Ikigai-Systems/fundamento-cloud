@@ -14,6 +14,7 @@
 @import "./react-select.tailwind.css";
 @import "./blocknote.tailwind.css";
 @import "./collapsible.tailwind.css";
+@import "./flash.tailwind.css";
 
 @tailwind base;
 @tailwind components;

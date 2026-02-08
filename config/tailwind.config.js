@@ -9,6 +9,20 @@ module.exports = {
     './app/views/**/*.{erb,haml,html,slim}',
     './app/components/**/*.{erb,haml,html,slim}',
   ],
+  safelist: [
+    // Flash message component classes (dynamically generated in flash_manager_controller.ts)
+    // Rails standard types
+    'flash-notice-container',
+    'flash-notice-icon',
+    'flash-notice-button',
+    'flash-alert-container',
+    'flash-alert-icon',
+    'flash-alert-button',
+    // Custom types
+    'flash-error-container',
+    'flash-error-icon',
+    'flash-error-button',
+  ],
   theme: {
     extend: {
       fontFamily: {

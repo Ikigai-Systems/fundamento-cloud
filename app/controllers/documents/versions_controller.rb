@@ -21,7 +21,7 @@ class Documents::VersionsController < ApplicationController
       diff = HashDiff.diff(blocks, blocks2)
       if diff.present?
         Sentry.capture_message("XmlfragmentToBlock mismatch for #{@space.id} / #{@document.id} (call stefan) : #{diff}")
-        flash[:warning] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
+        flash[:alert] = "Detected document desynchronization between your local version and server. This might mean network connection problems, server performance problems or someone else editing the document concurrently. Proceeding with saving your local version."
       end
     end
 

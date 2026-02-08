@@ -8,7 +8,7 @@
 
     /* Sidebar is always fixed positioned, slides with transform */
     .sidebar {
-        @apply fixed inset-y-0 w-[300px] z-20;
+        @apply fixed inset-y-0 w-[300px] z-10;
         @apply transition-transform duration-[350ms] ease-in-out;
         @apply flex flex-col;
         /*@apply bg-yellow-50;*/

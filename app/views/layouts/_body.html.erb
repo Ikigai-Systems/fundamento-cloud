@@ -70,6 +70,12 @@
     </div>
   </dialog>
 
+  <div id="flashes"
+       data-controller="flash-manager"
+       class="fixed top-0 w-full flex flex-col items-end pointer-events-none">
+    <%= render partial: "flash_messages_as_alerts" %>
+  </div>
+
   <%= command_palette %>
 
   <% if Flipper.enabled?(:livechat) %>
