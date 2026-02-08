@@ -52,7 +52,11 @@ describe("Document References and Mentions", function () {
 
           // Save the document
           cy.get('[aria-label="Save document"]').click();
-          cy.contains("Document has been updated").should("be.visible");
+
+          cy.get("#flashes").within(() => {
+            cy.contains("Document has been updated").should("be.visible");
+            cy.get('[aria-label="Close"]').click();
+          });
 
           // Open connections tab
           cy.get('#content-sidebar').within(() => {
@@ -96,7 +100,11 @@ describe("Document References and Mentions", function () {
 
             // Save the document
             cy.get('[aria-label="Save document"]').click();
-            cy.contains("Document has been updated").should("be.visible");
+
+            cy.get("#flashes").within(() => {
+              cy.contains("Document has been updated").should("be.visible");
+              cy.get('[aria-label="Close"]').click();
+            });
 
             // Open connections tab
             cy.get('#content-sidebar').within(() => {
@@ -145,7 +153,11 @@ describe("Document References and Mentions", function () {
 
         // Save the document
         cy.get('[aria-label="Save document"]').click();
-        cy.contains("Document has been updated").should("be.visible");
+
+        cy.get("#flashes").within(() => {
+          cy.contains("Document has been updated").should("be.visible");
+          cy.get('[aria-label="Close"]').click();
+        });
 
         // Open connections tab
         cy.get('#content-sidebar').within(() => {
@@ -268,7 +280,11 @@ describe("Document References and Mentions", function () {
 
       // Save empty document
       cy.get('[aria-label="Save document"]').click();
-      cy.contains("Document has been updated").should("be.visible");
+
+      cy.get("#flashes").within(() => {
+        cy.contains("Document has been updated").should("be.visible");
+        cy.get('[aria-label="Close"]').click();
+      });
 
       // Open connections tab
       cy.get('#content-sidebar').within(() => {
@@ -310,7 +326,11 @@ describe("Document References and Mentions", function () {
 
           // Save the document
           cy.get('[aria-label="Save document"]').click();
-          cy.contains("Document has been updated").should("be.visible");
+
+          cy.get("#flashes").within(() => {
+            cy.contains("Document has been updated").should("be.visible");
+            cy.get('[aria-label="Close"]').click();
+          });
 
           // Open connections tab
           cy.get('#content-sidebar').within(() => {
