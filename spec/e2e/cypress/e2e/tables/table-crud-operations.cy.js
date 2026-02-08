@@ -63,7 +63,7 @@ describe("Table CRUD Operations", function () {
       cy.url().should("include", "/edit");
 
       // Wait for autosave message to appear, which indicates edit mode is ready
-      cy.contains("Each change is saved automatically").should("be.visible");
+      cy.contains("Changes are saved automatically").should("be.visible");
 
       // Verify table is in edit mode with Rowstack
       cy.get(".ikigai-rowstack-overrides").should("exist");
@@ -87,7 +87,7 @@ describe("Table CRUD Operations", function () {
 
       // Wait for table to load by checking for the Rowstack container and autosave message
       cy.get(".ikigai-rowstack-overrides").should("exist");
-      cy.contains("Each change is saved automatically").should("be.visible");
+      cy.contains("Changes are saved automatically").should("be.visible");
 
       // Count initial rows in the database
       cy.appEval("Table.find_by(name: 'projects').rows.count").then((initialCount) => {
@@ -116,7 +116,7 @@ describe("Table CRUD Operations", function () {
 
       // Wait for table to load
       cy.get(".ikigai-rowstack-overrides").should("exist");
-      cy.contains("Each change is saved automatically").should("be.visible");
+      cy.contains("Changes are saved automatically").should("be.visible");
 
       // Verify original value exists
       cy.contains('[role="gridcell"]', "MON").should("exist");
@@ -147,7 +147,7 @@ describe("Table CRUD Operations", function () {
       cy.visit(`/t/${tableId}/edit`);
 
       // Wait for edit mode to load
-      cy.contains("Each change is saved automatically").should("be.visible");
+      cy.contains("Changes are saved automatically").should("be.visible");
 
       // Verify the change still exists in edit mode
       cy.contains('[role="gridcell"]', "MON-UPDATED").should("exist");
@@ -217,7 +217,7 @@ describe("Table CRUD Operations", function () {
 
     // Wait for table to load by checking for the Rowstack container and autosave message
     cy.get(".ikigai-rowstack-overrides").should("exist");
-    cy.contains("Each change is saved automatically").should("be.visible");
+    cy.contains("Changes are saved automatically").should("be.visible");
 
     // Verify row data from the CSV file is present
     cy.contains("JIRA").should("exist");
