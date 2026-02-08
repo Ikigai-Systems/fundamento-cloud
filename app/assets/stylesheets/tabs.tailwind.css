@@ -33,6 +33,11 @@
         @apply py-4;
     }
 
+    /* Content sidebar tabs: flex layout for sticky header */
+    div.content-sidebar-tabs[data-controller="tabs"] {
+        @apply flex flex-col h-full;
+    }
+
     div.content-sidebar-tabs[data-controller="tabs"] nav[data-tabs-target="list"] {
         @apply -mb-px flex space-x-0;
     }
