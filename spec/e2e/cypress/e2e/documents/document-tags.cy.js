@@ -389,6 +389,11 @@ describe("Document Tags", function () {
     cy.url().should("include", `/d/${documentId}`);
     cy.url().should("not.include", "/edit");
 
+    cy.get("#flashes").within(() => {
+      cy.contains("Document has been updated").should("be.visible");
+      cy.get('[aria-label="Close"]').click();
+    });
+
     // Wait for content to load on show page
     cy.contains("Loading content").should("not.be.visible");
 
