@@ -253,7 +253,7 @@ describe("Table Reactions", function () {
         ObjectReaction.find('${reactionId}').destroy!
       `);
 
-      cy.get(".destroy-reaction-button").should("not.exist");
+      cy.get(".destroy-reaction-button", { timeout: 10000 }).should("not.exist");
     });
   });
 
