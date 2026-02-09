@@ -32,7 +32,7 @@
     /* The visible panel with background and content */
     .sidebar-panel {
         @apply relative;
-        @apply flex flex-1 flex-col;
+        @apply flex flex-1 flex-col min-h-0;
         @apply bg-gray-50 dark:bg-gray-900;
         @apply m-5 drop-shadow-lg;
 
