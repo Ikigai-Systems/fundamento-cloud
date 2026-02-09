@@ -41,45 +41,79 @@
         @apply m-5 drop-shadow-lg;
 
         &.left-side {
-            @apply rounded-l-xl;
+            @apply rounded-xl;
         }
 
         &.right-side {
-            @apply rounded-r-xl;
+            @apply rounded-xl;
         }
     }
 
-    /* Full-height clickable trigger area on panel edge */
+    /* Invisible clickable trigger area on panel edge */
     .sidebar-trigger-area {
         @apply absolute inset-y-0 w-7 cursor-pointer;
         @apply flex items-center justify-center;
-        @apply sidebar-bg;
-        /*@apply bg-red-100;*/
 
         &.left-side {
             @apply -right-7;
-            @apply rounded-r-xl;
         }
 
         &.right-side {
             @apply -left-7;
-            @apply rounded-l-xl;
         }
     }
 
-    /* Visual button indicator within trigger area */
+    /* When collapsed: show trigger area background and flatten panel's inner edge */
+    .collapsed .sidebar-trigger-area {
+        @apply sidebar-bg;
+    }
+
+    .collapsed .sidebar-trigger-area.left-side {
+        @apply rounded-r-xl;
+    }
+
+    .collapsed .sidebar-trigger-area.right-side {
+        @apply rounded-l-xl;
+    }
+
+    .collapsed .sidebar-panel.left-side {
+        @apply rounded-r-none;
+    }
+
+    .collapsed .sidebar-panel.right-side {
+        @apply rounded-l-none;
+    }
+
+    .collapsed .sidebar-trigger-button.left-side {
+        @apply left-5;
+    }
+
+    .collapsed .sidebar-trigger-button.right-side {
+        @apply -left-5;
+    }
+
+    /* Visual button indicator, centered on panel edge */
     .sidebar-trigger-button {
         @apply size-7 rounded-full border;
         @apply bg-white dark:bg-gray-800 content-container;
         @apply flex items-center justify-center;
+        @apply z-10 opacity-0 transition-opacity duration-200;
 
         &.left-side {
-            @apply relative inset-x-5;
+            @apply relative -left-3.5;
         }
 
         &.right-side {
-            @apply relative -inset-x-5;
+            @apply relative left-3.5;
         }
+    }
+
+    .sidebar-trigger-area:hover .sidebar-trigger-button {
+        @apply opacity-100;
+    }
+
+    .collapsed .sidebar-trigger-button {
+        @apply opacity-100;
     }
 
     /* Scrollable content area */
