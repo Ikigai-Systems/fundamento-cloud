@@ -28,7 +28,7 @@
 
         .section-content-container {
             .section-content-node-container {
-                @apply relative w-full ;
+                @apply relative w-full scroll-mt-10;
             }
 
             .content-link-container {
