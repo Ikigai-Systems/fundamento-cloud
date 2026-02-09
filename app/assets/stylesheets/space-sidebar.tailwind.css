@@ -6,6 +6,7 @@
 
         .section-header-container {
             @apply flex justify-between items-center text-sm border-b px-1;
+            @apply sticky top-0 z-10 sidebar-bg;
         }
 
         .section-header-title {

@@ -1,4 +1,8 @@
 @layer components {
+    .sidebar-bg {
+        @apply bg-gray-50 dark:bg-gray-900;
+    }
+
     /* Spacer creates layout space on desktop grid */
     .sidebar-spacer {
         @apply hidden lg:block w-[320px] duration-[350ms] ease-in-out transition-[width];
@@ -33,7 +37,7 @@
     .sidebar-panel {
         @apply relative;
         @apply flex flex-1 flex-col min-h-0;
-        @apply bg-gray-50 dark:bg-gray-900;
+        @apply sidebar-bg;
         @apply m-5 drop-shadow-lg;
 
         &.left-side {
@@ -49,7 +53,7 @@
     .sidebar-trigger-area {
         @apply absolute inset-y-0 w-7 cursor-pointer;
         @apply flex items-center justify-center;
-        @apply bg-gray-50 dark:bg-gray-900;
+        @apply sidebar-bg;
         /*@apply bg-red-100;*/
 
         &.left-side {
