@@ -8,17 +8,23 @@
 
       <%# Main content area %>
       <div class="h-screen content-container flex flex-col relative">
-        <nav class="w-full flex justify-end p-3 gap-1 items-center min-h-15 max-h-15 border-b">
-          <%= content_for :content_menu %>
+        <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+          <div class="flex-1 min-w-0">
+            <%= content_for :content_title %>
+          </div>
 
-          <%= render "application/notifications_menu" %>
+          <div class="flex gap-1 items-center">
+            <%= content_for :content_menu %>
 
-          <div class="mx-1">
-            <%= render "application/user_menu" %>
+            <%= render "application/notifications_menu" %>
+
+            <div class="mx-1">
+              <%= render "application/user_menu" %>
+            </div>
           </div>
         </nav>
 
-        <div class="overflow-y-auto pt-1">
+        <div class="overflow-y-auto pt-3">
           <%= yield %>
         </div>
       </div>
