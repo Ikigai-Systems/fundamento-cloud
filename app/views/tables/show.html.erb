@@ -2,6 +2,14 @@
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
 
+<% content_for :content_title do %>
+  <%= react_component "EditableContentTitle", {
+    content_type: "table",
+    table: @table.to_react_props,
+    editable: policy(@table).update?,
+  } %>
+<% end %>
+
 <% content_for :content_menu do %>
   <% if (favorite = pundit_user.organization_membership.favorites.find_by(object: @table)) %>
     <%= render partial: "favorites/destroy_favorite", locals: { object: @table, favorite: favorite } %>

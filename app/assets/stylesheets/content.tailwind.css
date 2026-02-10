@@ -42,6 +42,24 @@
         @apply bg-transparent;
     }
 
+    /* EditableContentTitle component styles */
+    .editable-content-title {
+        @apply text-base font-semibold truncate;
+
+        &.editable {
+            @apply cursor-pointer rounded px-1;
+            @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+            @apply transition-colors duration-150;
+        }
+
+        input {
+            @apply text-base font-semibold w-full bg-transparent border-0 p-0 px-1;
+            @apply focus:outline-none focus:ring-0 focus:[box-shadow:none];
+            min-width: 200px;
+            max-width: 400px;
+        }
+    }
+
     .document-toolbar-button {
         /*@apply ml-2 text-blue-600 dark:text-blue-500 hover:underline;*/
         /*@apply ml-2 px-2.5 py-1 bg-blue-500 text-white text-sm rounded;*/
