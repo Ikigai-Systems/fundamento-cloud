@@ -44,7 +44,7 @@
 
     /* EditableContentTitle component styles */
     .editable-content-title {
-        @apply text-base font-semibold truncate text-primary-orange-600;
+        @apply text-base font-semibold truncate;
 
         &.editable {
             @apply cursor-pointer rounded px-1;
