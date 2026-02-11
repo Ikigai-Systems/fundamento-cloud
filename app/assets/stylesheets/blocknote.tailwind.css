@@ -60,5 +60,5 @@
 }
 
 [data-document-editor].read-only .bn-editor {
-    @apply ps-0 pe-0 px-5;
+    @apply px-5;
 }

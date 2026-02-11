@@ -8,12 +8,12 @@ import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient.tsx";
 import {Document, Space, Version} from "../types.ts";
 import {useCreateBlockNote} from "@blocknote/react";
-import {ContentTitle} from "./ContentTitle.tsx";
+import {UNTITLED_CONTENT} from "./EditableContentTitle.tsx";
 
 type PublicDocumentViewerProps = {
-  document: Document,
-  version: Version,
-  space: Space,
+    document: Document,
+    version: Version,
+    space: Space,
 }
 
 const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerProps) => {
@@ -26,8 +26,8 @@ const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerPr
   return (
     <QueryClientProvider client={queryClient}>
       <CurrentSpaceContext.Provider value={{space}}>
-        <div className="px-5">
-          <ContentTitle document={document}/>
+        <div className="px-5 min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl">
+          {document?.title || UNTITLED_CONTENT}
         </div>
 
         <BlockNoteView editor={editor} editable={false} className={"read-only"} data-document-editor/>
