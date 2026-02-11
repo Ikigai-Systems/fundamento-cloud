@@ -1,14 +1,13 @@
 import {Document, Space, Table} from "../types.js";
 import createFlash from "./createFlash.ts";
 import TablesApi from "../api/Tables/TablesApi.js";
+import {UNTITLED_CONTENT} from "./EditableContentTitle.tsx";
 
 type ContentTitleProps = {
   document?: Document,
   table?: Table,
   extraClasses?: string,
 }
-
-const UNTITLED_CONTENT = "Untitled";
 
 export const ContentTitle = ({document, table, extraClasses}: ContentTitleProps) => {
   return <div
