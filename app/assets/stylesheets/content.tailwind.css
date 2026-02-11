@@ -19,15 +19,6 @@
         padding-inline: 54px;
     }
 
-    .content-title {
-        @apply min-h-12 mt-1 mb-1 border-0 focus:[box-shadow:none] border-0 w-full resize-none text-4xl;
-    }
-
-    .content-title-input {
-        @apply content-title h-12 p-0;
-        @apply bg-transparent;
-    }
-
     /* EditableContentTitle component styles */
     .editable-content-title {
         @apply text-base font-semibold truncate;
@@ -43,6 +34,22 @@
             @apply focus:outline-none focus:ring-0 focus:[box-shadow:none];
             min-width: 200px;
             max-width: 400px;
+        }
+    }
+
+    /* AdvancedTableTitle component styles */
+    .advanced-table-title {
+        @apply text-xl font-bold min-h-0 max-h-6 p-0;
+
+        &.editable {
+            @apply cursor-pointer rounded px-1;
+            @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+            @apply transition-colors duration-150;
+        }
+
+        input {
+            @apply text-xl font-bold w-full bg-transparent border-0 p-0;
+            @apply focus:outline-none focus:ring-0 focus:[box-shadow:none];
         }
     }
 

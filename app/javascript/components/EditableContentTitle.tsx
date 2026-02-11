@@ -6,6 +6,24 @@ import TablesApi from "../api/Tables/TablesApi.js";
 
 export const UNTITLED_CONTENT = "Untitled";
 
+export async function saveTableTitle(tableId: string, name: string): Promise<void> {
+  await TablesApi.update({
+    params: {id: tableId},
+    data: {name},
+  });
+  window.dispatchEvent(new CustomEvent("content-title-updated", {
+    detail: {id: tableId, title: name},
+  }));
+}
+
+export function handleTitleSaveError(e: unknown, fallbackMessage?: string): void {
+  const err = e as {response?: {data?: {errors?: Record<string, string>}}};
+  const errorMessage = err.response?.data?.errors
+    ? Object.entries(err.response.data.errors).map(([key, value]) => `${key[0].toUpperCase()}${key.slice(1)} ${value}`).join("<br/>")
+    : (fallbackMessage || "Failed to update the title, please reload page and try again.");
+  createFlash({type: "error", message: errorMessage});
+}
+
 type EditableContentTitleProps = {
   editable: boolean;
 } & (
@@ -18,13 +36,6 @@ const getTitle = (props: EditableContentTitleProps): string => {
     return props.document.title || UNTITLED_CONTENT;
   }
   return props.table.name || UNTITLED_CONTENT;
-};
-
-const getId = (props: EditableContentTitleProps): string => {
-  if (props.contentType === "document") {
-    return props.document.id;
-  }
-  return props.table.id;
 };
 
 const EditableContentTitle = (props: EditableContentTitleProps) => {
@@ -51,26 +62,17 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
           params: {id: props.document.id},
           data: {title: titleToSave},
         });
+        window.dispatchEvent(new CustomEvent("content-title-updated", {
+          detail: {id: props.document.id, title: titleToSave},
+        }));
       } else {
-        await TablesApi.update({
-          params: {id: props.table.id},
-          data: {name: titleToSave},
-        });
+        await saveTableTitle(props.table.id, titleToSave);
       }
 
       setTitle(titleToSave);
       setOriginalTitle(titleToSave);
-
-      window.dispatchEvent(new CustomEvent("content-title-updated", {
-        detail: {id: getId(props), title: titleToSave},
-      }));
     } catch (e: unknown) {
-      const err = e as {response?: {data?: {errors?: Record<string, string>}}};
-      const errorMessage = err.response?.data?.errors
-        ? Object.entries(err.response.data.errors).map(([key, value]) => `${key[0].toUpperCase()}${key.slice(1)} ${value}`).join("<br/>")
-        : "Failed to update the title, please reload page and try again.";
-
-      createFlash({type: "error", message: errorMessage});
+      handleTitleSaveError(e);
       setTitle(originalTitle);
     }
   };
