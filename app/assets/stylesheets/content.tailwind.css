@@ -1,18 +1,4 @@
 @layer base {
-    .editor-container a {
-        text-decoration: underline;
-        cursor: pointer;
-
-        @apply text-primary-blue-500
-    }
-
-    .editor-container .read-only {
-        .bn-editor {
-            padding-inline: 0;
-            @apply px-5;
-        }
-    }
-
     .document {
         @apply flex-col overflow-auto;
     }

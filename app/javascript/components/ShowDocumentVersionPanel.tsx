@@ -8,7 +8,6 @@ import '@blocknote/mantine/style.css';
 import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
-import {ContentTitle} from "./ContentTitle.tsx";
 
 import {Features, FeaturesContext} from "../contextes/FeaturesContext.tsx";
 
@@ -18,21 +17,6 @@ type ShowVersionPanelProps = {
   space: Space,
   currentUser: User,
   features?: Features,
-}
-
-function ShowVersionComponent(props: {
-    document: Document,
-    editor: BlockNoteEditor<DefaultBlockSchema, DefaultInlineContentSchema, DefaultStyleSchema>
-}) {
-  return <>
-    <div className="content-editor-padding">
-      <ContentTitle document={props.document}/>
-    </div>
-
-    <div className="editor-container">
-      <BlockNoteView editor={props.editor} editable={false} data-document-editor/>
-    </div>
-  </>;
 }
 
 const ShowDocumentVersionPanel = ({version, document, space, currentUser, features}: ShowVersionPanelProps) => {
@@ -45,10 +29,7 @@ const ShowDocumentVersionPanel = ({version, document, space, currentUser, featur
   return <FeaturesContext.Provider value={features || []}>
     <QueryClientProvider client={queryClient}>
       <CurrentSpaceContext.Provider value={{space}}>
-        <ShowVersionComponent
-          document={document}
-          editor={editor}
-        />
+        <BlockNoteView editor={editor} editable={false} data-document-editor/>
       </CurrentSpaceContext.Provider>
     </QueryClientProvider>
   </FeaturesContext.Provider>

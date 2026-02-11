@@ -1,6 +1,5 @@
 import {Document, Space, Table} from "../types.js";
 import createFlash from "./createFlash.ts";
-import DocumentsApi from "../api/DocumentsApi.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 
 type ContentTitleProps = {
@@ -64,49 +63,4 @@ export const TableTitleInput = ({table, space, extraClasses}: TableTitleInputPro
     }}
   >
   </input>;
-}
-
-type DocumentTitleInputProps = {
-  document: Document,
-  extraClasses?: string,
-}
-
-export const DocumentTitleInput = ({document, extraClasses}: DocumentTitleInputProps) => {
-  return <>
-    <input
-      key={document.id + "_title"}
-      type="text"
-      autoFocus={!document.title}
-      placeholder={UNTITLED_CONTENT}
-      defaultValue={document.title === UNTITLED_CONTENT ? undefined : document.title}
-      className={`content-title-input${extraClasses ? ` ${extraClasses}` : ""}`}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          if (e.target instanceof HTMLElement) {
-            e.target.blur();
-          }
-        } else if (e.key === "Escape") {
-          if (e.target instanceof HTMLInputElement) {
-            e.target.value = document.title;
-            e.target.blur();
-          }
-        }
-      }}
-      onBlur={async (e) => {
-        const newTitle = e.target.value;
-        if (newTitle !== document.title) {
-          const updatedDocument = await DocumentsApi.update({
-            params: {id: document.id},
-            data: {title: e.target.value}
-          });
-          const sideBarElement = window.document.querySelector(`[data-document-id="${updatedDocument.id}"]`);
-          if (sideBarElement) {
-            sideBarElement.innerHTML = updatedDocument.title;
-          }
-          document = updatedDocument; //todo: ensure this work in React world
-        }
-      }}
-    >
-    </input>
-  </>;
 }

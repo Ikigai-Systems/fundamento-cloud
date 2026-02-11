@@ -54,3 +54,11 @@
     background-color: rgb(107 114 128); /* bg-gray-500 */
   }
 }
+
+[data-document-editor] a {
+    @apply underline cursor-pointer text-primary-blue-500;
+}
+
+[data-document-editor].read-only .bn-editor {
+    @apply ps-0 pe-0 px-5;
+}
