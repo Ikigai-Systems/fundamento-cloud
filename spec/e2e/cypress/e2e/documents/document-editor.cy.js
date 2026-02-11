@@ -369,9 +369,20 @@ describe("Document Editor", function () {
     cy.contains("Loading content").should("not.be.visible");
     cy.get("[data-document-editor]").should("exist");
 
+    // Extract document ID from URL to intercept the exact PATCH request
+    cy.url().then((url) => {
+      const documentId = url.match(/\/d\/([^/]+)/)[1];
+      cy.intercept("PATCH", `/d/${documentId}`).as("updateDocument");
+    });
+
     // Update title
     const documentTitle = "Multi-Block Document";
-    cy.get('input.content-title-input').type(`{selectall}${documentTitle}`);
+    cy.get("nav .editable-content-title.editable").click();
+    cy.get("nav .editable-content-title input").clear();
+    cy.get("nav .editable-content-title input").type(documentTitle);
+    cy.get("nav .editable-content-title input").blur();
+
+    cy.wait("@updateDocument");
 
     // Click into the editor
     cy.get("[data-document-editor] [role=\"textbox\"]").first().click();
