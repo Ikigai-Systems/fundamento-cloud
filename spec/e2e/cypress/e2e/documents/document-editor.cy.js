@@ -38,10 +38,6 @@ describe("Document Editor", function () {
     cy.contains("Loading content").should("not.be.visible");
     cy.get("[data-document-editor]").should("exist");
 
-    // Update the document title
-    cy.get('input.content-title-input').clear();
-    cy.get('input.content-title-input').type("Test Document for Editor");
-
     // Type content in the editor
     cy.get("[data-document-editor] [role=\"textbox\"]").first().type("This is the first paragraph of the test document.");
 
@@ -336,6 +332,8 @@ describe("Document Editor", function () {
   it("allows editing document title inline", function () {
     // Get existing document ID
     cy.appEval("Document.first.id").then((documentId) => {
+      cy.intercept("PATCH", `/d/${documentId}`).as("updateDocument");
+
       cy.visit(`/d/${documentId}/edit`);
 
       // Wait for editor to load
@@ -344,16 +342,18 @@ describe("Document Editor", function () {
 
       // Find and edit the title
       const newTitle = `Updated Title ${Date.now()}`;
-      cy.get('input.content-title-input').clear();
-      cy.get('input.content-title-input').type(newTitle);
-      cy.get('input.content-title-input').blur();
+      // Update the document title
+      cy.get("nav .editable-content-title.editable").click();
+      cy.get("nav .editable-content-title input").clear();
+      cy.get("nav .editable-content-title input").type(newTitle);
+      cy.get("nav .editable-content-title input").blur();
 
       // Wait for auto-save (if implemented) or reload
-      cy.wait(1000);
+      cy.wait("@updateDocument");
       cy.reload();
 
       // Verify title persists
-      cy.get('input.content-title-input').should("have.value", newTitle);
+      cy.get('nav .editable-content-title').should("contain", newTitle);
     });
   });
 
@@ -369,9 +369,20 @@ describe("Document Editor", function () {
     cy.contains("Loading content").should("not.be.visible");
     cy.get("[data-document-editor]").should("exist");
 
+    // Extract document ID from URL to intercept the exact PATCH request
+    cy.url().then((url) => {
+      const documentId = url.match(/\/d\/([^/]+)/)[1];
+      cy.intercept("PATCH", `/d/${documentId}`).as("updateDocument");
+    });
+
     // Update title
     const documentTitle = "Multi-Block Document";
-    cy.get('input.content-title-input').type(`{selectall}${documentTitle}`);
+    cy.get("nav .editable-content-title.editable").click();
+    cy.get("nav .editable-content-title input").clear();
+    cy.get("nav .editable-content-title input").type(documentTitle);
+    cy.get("nav .editable-content-title input").blur();
+
+    cy.wait("@updateDocument");
 
     // Click into the editor
     cy.get("[data-document-editor] [role=\"textbox\"]").first().click();

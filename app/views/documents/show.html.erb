@@ -2,6 +2,14 @@
   <meta name="turbo-cache-control" content="no-cache">
 <% end %>
 
+<% content_for :content_title do %>
+  <%= react_component "EditableContentTitle", {
+    content_type: "document",
+    document: @document.to_react_props,
+    editable: policy(@document).update?,
+  } %>
+<% end %>
+
 <% content_for :content_menu do %>
   <div id="editor-connection-indicator"></div>
 

@@ -12,6 +12,16 @@ if defined?(ActiveRecord)
   logger.debug "loading fixtures: { dir: #{fixtures_dir}, files: #{fixture_files} }"
   ActiveRecord::FixtureSet.reset_cache
   ActiveRecord::FixtureSet.create_fixtures(fixtures_dir, fixture_files)
+
+  # Sync space hierarchies with loaded documents and tables.
+  # Fixtures bypass model callbacks, so documents/tables won't be added
+  # to their space's hierarchy automatically. This rebuilds it.
+  Space.find_each do |space|
+    hierarchy = Document.where(space_id: space.id).order(:created_at).map { |d| space.create_hierarchy_node(d.id) }
+    # hierarchy += Table.where(space_id: space.id).order(:created_at).map { |t| space.create_hierarchy_node(t.id) }
+    space.update_column(:hierarchy, hierarchy) if hierarchy.any?
+  end
+
   "Fixtures Done" # this gets returned
 else # this else part can be removed
   logger.error "Looks like activerecord_fixtures has to be modified to suite your need"

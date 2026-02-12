@@ -114,6 +114,8 @@ describe("Table CRUD Operations", function () {
     cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
       cy.visit(`/t/${tableId}/edit`);
 
+      cy.intercept("PUT", `/t/${tableId}/update_by_rowstack`).as("updateTableCell");
+
       // Wait for table to load
       cy.get(".ikigai-rowstack-overrides").should("exist");
       cy.contains("Changes are saved automatically").should("be.visible");
@@ -128,11 +130,15 @@ describe("Table CRUD Operations", function () {
       cy.focused().should("exist");
       cy.focused().type("{selectall}MON-UPDATED").blur();
 
+      cy.wait("@updateTableCell");
+
       // Click on a different cell to fully deselect the edited cell
       cy.contains('[role="gridcell"]', "JIRA").click();
 
       // Wait for the new value to appear (indicating save is complete)
       cy.contains("MON-UPDATED").should("exist");
+
+      cy.wait("@updateTableCell");
 
       // Navigate to view mode
       cy.visit(`/t/${tableId}`);
