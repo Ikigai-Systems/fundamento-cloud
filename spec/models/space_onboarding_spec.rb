@@ -14,7 +14,7 @@ RSpec.describe "Space onboarding content", type: :model do
       end
 
       it "creates onboarding documents" do
-        # Should create multiple onboarding documents (one per .yjs file)
+        # Should create multiple onboarding documents (one per .blocknote.json file)
         expect(space.documents.count).to be > 3
       end
 

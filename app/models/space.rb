@@ -152,8 +152,8 @@ class Space < ApplicationRecord
   }.freeze
 
   def populate_with_onboarding_content!
-    Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.yjs") do |yjs_file|
-      create_onboarding_document(yjs_file)
+    Dir.glob("#{Rails.root.join("app", "templates", "space_onboarding_content")}/**/*.blocknote.json") do |blocknote_file|
+      create_onboarding_document(blocknote_file)
     end
   end
 
@@ -166,18 +166,20 @@ class Space < ApplicationRecord
     end
   end
 
-  def create_onboarding_document(yjs_file)
-    directory = File.dirname(yjs_file)
-    title_filename = directory + "/" + File.basename(yjs_file, ".*") + ".title.txt"
+  def create_onboarding_document(blocknote_file)
+    directory = File.dirname(blocknote_file)
+    basename = File.basename(blocknote_file, ".blocknote.json")
+    title_filename = directory + "/" + basename + ".title.txt"
+
+    # Load BlockNote JSON and derive Y.js binary
+    content_blocks = JSON.load_file!(blocknote_file)
+    sync = BlocknoteConverterService.blocks_to_yjs(content_blocks)
 
     document = self.organization.documents.create!(
-      title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
-      sync: File.read(yjs_file),
+      title: File.exist?(title_filename) ? File.read(title_filename) : basename,
+      sync: sync,
       space: self,
     )
-
-    # Load BlockNote JSON
-    content_blocks = JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
 
     # Create tables and build NPI mapping
     table_id_mapping = {}
@@ -263,14 +265,18 @@ class Space < ApplicationRecord
   def create_home_document!
     return if home_document_id.present?
 
+    markdown = File.read(Rails.root.join("app", "templates", "space.markdown"))
+    blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
+    sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+
     home_document = documents.create!(
       title: "Home for #{name}",
       organization: organization,
-      sync: File.read(Rails.root.join("app", "templates", "space.yjs"))
+      sync: sync
     )
 
     home_document.versions.create!(
-      content_blocks: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))
+      content_blocks: blocks
     )
 
     update!(home_document: home_document)

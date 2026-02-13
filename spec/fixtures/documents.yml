@@ -1,4 +1,5 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+<% _fixture_sync = Base64.encode64(BlocknoteConverterService.blocks_to_yjs(BlocknoteConverterService.markdown_to_blocks("Fixture content"))) %>
 
 _fixture:
   model_class: Document
@@ -8,11 +9,11 @@ one:
   title: One
   organization_id: "is"
   space_id: "is_default"
-  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
+  sync: !!binary "<%= _fixture_sync %>"
 
 two:
   id: two
   title: Two
   organization_id: "is"
   space_id: "is_default"
-  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
+  sync: !!binary "<%= _fixture_sync %>"
