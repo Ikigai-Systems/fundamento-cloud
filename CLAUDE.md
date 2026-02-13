@@ -79,6 +79,19 @@ Node.js services handle specialized processing:
 - **Feature flags** via Flipper
 - **Error tracking** with Sentry
 
+## Git Worktrees
+
+Worktrees are stored in `.worktrees/` (gitignored). After creating a worktree, these gitignored files must be copied from the main repo and the blocknote-converter must be built before tests will pass:
+
+```bash
+# Copy gitignored config files
+cp config/database.yml <worktree>/config/database.yml
+cp dockerfiles/sops-age-key.secret <worktree>/dockerfiles/sops-age-key.secret
+
+# Build the blocknote-converter micro-service (used by fixtures and model code)
+cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
+```
+
 ## Code formatting
 
 Whenever possible, use the following rules:
