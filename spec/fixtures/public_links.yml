@@ -3,4 +3,4 @@ public_link_to_two:
   organization_id: "is"
   object_id: two
   object_type: Document
-  updated_by: :stefan
+  updated_by_id: :user_stefan

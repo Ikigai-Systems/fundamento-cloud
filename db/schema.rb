@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_13_150005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -254,7 +254,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
     t.datetime "created_at", null: false
     t.string "document_id", null: false
     t.datetime "resolved_at"
-    t.bigint "resolved_by"
+    t.string "resolved_by"
     t.datetime "updated_at", null: false
     t.index ["document_id"], name: "index_inline_comment_threads_on_document_id"
   end
@@ -400,7 +400,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
     t.string "object_type", null: false
     t.string "organization_id", null: false
     t.datetime "updated_at", null: false
-    t.bigint "updated_by_id", null: false
+    t.string "updated_by_id"
     t.index ["id"], name: "index_public_links_on_id", unique: true
     t.index ["object_id", "object_type", "organization_id"], name: "idx_on_object_id_object_type_organization_id_771a32f229", unique: true
     t.index ["object_type", "object_id"], name: "index_public_links_on_object"
@@ -628,6 +628,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_memberships"
   add_foreign_key "inline_comment_threads", "documents"
+  add_foreign_key "inline_comment_threads", "users", column: "resolved_by"
+  add_foreign_key "inline_comments", "inline_comment_threads"
   add_foreign_key "inline_comments", "users"
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "object_comments", "organization_memberships"
@@ -645,16 +647,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_18_133726) do
   add_foreign_key "packs", "organizations"
   add_foreign_key "packs", "pack_versions", column: "active_version_id"
   add_foreign_key "public_links", "organizations"
+  add_foreign_key "public_links", "users", column: "updated_by_id"
   add_foreign_key "space_memberships", "organizations"
+  add_foreign_key "space_memberships", "spaces"
   add_foreign_key "spaces", "documents", column: "home_document_id"
   add_foreign_key "spaces", "organizations"
+  add_foreign_key "superintendents", "superintendents", column: "approved_by_id"
   add_foreign_key "table_cells", "organizations"
   add_foreign_key "table_cells", "table_columns", column: "column_id"
   add_foreign_key "table_cells", "table_rows", column: "row_id"
+  add_foreign_key "table_cells", "tables"
   add_foreign_key "table_columns", "organizations"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
+  add_foreign_key "table_columns", "tables"
   add_foreign_key "table_rows", "organizations"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
+  add_foreign_key "table_rows", "tables"
   add_foreign_key "tables", "organizations"
   add_foreign_key "tables", "spaces"
   add_foreign_key "tags", "organizations"
