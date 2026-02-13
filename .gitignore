@@ -71,3 +71,6 @@ config/database.yml
 tasks.json
 .taskmaster/tasks/
 
+# Git worktrees
+.worktrees/
+
