@@ -2,7 +2,7 @@ describe("Cookie Banner", () => {
   context("Cloud mode (non-standalone)", () => {
     beforeEach(() => {
       cy.app("clean");
-      cy.appFlipper({ flags: [] });
+      cy.appFlipper({ flags: ["cookie_banner"] });
       cy.appFactories([
         ["create", "user", {
           email: "test@example.com",

@@ -93,7 +93,7 @@
     <% if Rails.application.credentials.dig(:reddit, :pixel_id).present? %>
       <%= render partial: "layouts/reddit_pixel" %>
     <% end %>
-    <%= render partial: "layouts/cookie_banner" %>
+    <%= render partial: "layouts/cookie_banner" if Flipper.enabled?(:cookie_banner) %>
   <% end %>
 <% end %>
 </html>
