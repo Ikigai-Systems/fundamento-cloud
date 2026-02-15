@@ -4,7 +4,7 @@ import {Placement} from '@floating-ui/utils'
 import {useContext, useState} from "react";
 import FormulaConfiguration from "./formula/FormulaConfiguration.tsx";
 import FormulasApi from "../../../api/FormulasApi.js";
-import createFlash from "../../createFlash.ts";
+import createFlash from "../../../utils/createFlash.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import clsx from "clsx";

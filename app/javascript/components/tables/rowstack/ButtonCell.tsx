@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import FormulasApi from "../../../api/FormulasApi";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
-import createFlash from "../../createFlash.ts";
+import createFlash from "../../../utils/createFlash.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 
