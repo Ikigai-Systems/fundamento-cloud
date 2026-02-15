@@ -78,6 +78,8 @@ describe("Cookie Banner", () => {
       cy.appFactories([
         ["create", "user", {
           email: "standalone@example.com",
+          first_name: "Standalone",
+          last_name: "User",
           password: "Password123!",
           confirmed_at: new Date().toISOString(),
         }],
