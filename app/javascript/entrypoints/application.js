@@ -61,6 +61,7 @@ if (window.FundamentoConfig.posthogKey) {
     ui_host: "https://eu.posthog.com",
     capture_pageview: false,
     capture_pageleave: true,
+    defaults: "2026-01-30",
     person_profiles: "always",
     cookieless_mode: "on_reject",
     session_recording: {
@@ -105,6 +106,6 @@ if (window.FundamentoConfig.posthogKey) {
   document.addEventListener("turbo:load", () => {
     posthog.capture("$pageview", { $current_url: window.location.href });
   });
-}
 
-window.posthog = posthog;
+  window.posthog = posthog;
+}
