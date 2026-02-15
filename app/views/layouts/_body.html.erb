@@ -23,10 +23,6 @@
   <%= vite_react_refresh_tag %>
   <%= vite_javascript_tag 'application' %>
 
-  <% if Rails.application.credentials.google_tag_manager_id.present? %>
-    <%= render partial: "layouts/google_tag_manager", locals: { gtm_id: Rails.application.credentials.google_tag_manager_id } %>
-  <% end %>
-
   <% if content_for?(:head) %>
     <%= yield(:head) %>
   <% end %>
@@ -42,7 +38,15 @@
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
       replaysSessionSampleRate: <%= replays_session_sample_rate %>,
-      plausibleDomain: <%= ENV["PLAUSIBLE_DOMAIN"].to_json.html_safe %>
+      <% unless Flipper.enabled?(:standalone) %>
+        posthogKey: <%= Rails.application.credentials.dig(:posthog, :api_key).to_json.html_safe %>,
+        twitterPixelId: <%= Rails.application.credentials.dig(:twitter, :pixel_id).to_json.html_safe %>,
+        redditPixelId: <%= Rails.application.credentials.dig(:reddit, :pixel_id).to_json.html_safe %>,
+        <% if current_user.present? %>
+          currentUserId: <%= current_user.id.to_json.html_safe %>,
+          currentUserEmail: <%= current_user.email.to_json.html_safe %>,
+        <% end %>
+      <% end %>
     };
   </script>
 
@@ -80,6 +84,16 @@
 
   <% if Flipper.enabled?(:livechat) %>
     <%= render partial: "layouts/livechat" %>
+  <% end %>
+
+  <% unless Flipper.enabled?(:standalone) %>
+    <% if Rails.application.credentials.dig(:twitter, :pixel_id).present? %>
+      <%= render partial: "layouts/twitter_pixel" %>
+    <% end %>
+    <% if Rails.application.credentials.dig(:reddit, :pixel_id).present? %>
+      <%= render partial: "layouts/reddit_pixel" %>
+    <% end %>
+    <%= render partial: "layouts/cookie_banner" if Flipper.enabled?(:cookie_banner) %>
   <% end %>
 <% end %>
 </html>

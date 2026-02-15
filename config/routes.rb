@@ -38,6 +38,9 @@ Rails.application.routes.draw do
   #   root "construction/root#index", as: :construction_root
   # end
 
+  # PostHog analytics proxy
+  match "/ingest/*path", to: "analytics/ingest#proxy", via: [:get, :post]
+
   root "root#index"
 
   get "/recently_updated" => "root#recently_updated", as: :recently_updated

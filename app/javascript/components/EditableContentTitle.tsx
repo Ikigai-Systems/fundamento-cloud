@@ -1,6 +1,6 @@
 import {useState, useRef, useEffect} from "react";
 import {Document, Table} from "../types.js";
-import createFlash from "./createFlash.ts";
+import createFlash from "../utils/createFlash.ts";
 import DocumentsApi from "../api/DocumentsApi.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 

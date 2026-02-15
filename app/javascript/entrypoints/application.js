@@ -18,50 +18,16 @@ console.log('Visit the guide for more information: ', 'https://vite-ruby.netlify
 import '@hotwired/turbo-rails'
 Turbo.start()
 
-import "~/turbo/turbo_keep_scroll.js"
-import "~/turbo/turbo_redirect_to.js"
-import "~/turbo/turbo_reload_turbo_frame.js"
-
 import * as ActiveStorage from '@rails/activestorage'
 ActiveStorage.start()
 
+import "~/turbo"
 import "~/stimulus"
+import "../utils/sentry-initialization";
+import "../utils/posthog-initialization";
 
 // // Import all channels.
 // const channels = import.meta.globEager('./**/*_channel.js')
 
 // Example: Import a stylesheet in app/frontend/index.css
 // import '~/index.css'
-
-import * as Sentry from "@sentry/react";
-
-if (window.FundamentoConfig.sentryDsn) {
-  Sentry.init({
-    dsn: window.FundamentoConfig.sentryDsn,
-    integrations: [
-      Sentry.replayIntegration(),
-    ],
-    // Session Replay
-    replaysSessionSampleRate: (typeof window.FundamentoConfig.replaysSessionSampleRate !== "undefined") ? window.FundamentoConfig.replaysSessionSampleRate : 0.1,
-    // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-    replaysOnErrorSampleRate: 1.0,
-  });
-}
-
-import Plausible from 'plausible-tracker';
-
-// Dummy plausible function so we can still call it even if Plausible was not initialized
-window.plausible = window.plausible || function () {
-  (window.plausible.q = window.plausible.q || []).push(arguments)
-};
-
-if (window.FundamentoConfig.plausibleDomain) {
-  const {trackPageview} = Plausible({
-    domain: window.FundamentoConfig.plausibleDomain,
-    trackLocalhost: true,
-  });
-
-  document.addEventListener("turbo:load", () => {
-    trackPageview();
-  });
-}
