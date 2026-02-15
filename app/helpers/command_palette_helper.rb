@@ -1,6 +1,6 @@
 module CommandPaletteHelper
   def command_palette(**args)
-    ninja_keys_tag = tag("ninja-keys", data: {
+    ninja_keys_tag = content_tag("ninja-keys", nil, data: {
       controller: "command-palette",
       command_palette_commands_value: palette_commands
     })
