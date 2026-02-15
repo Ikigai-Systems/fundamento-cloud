@@ -108,21 +108,3 @@ if (window.FundamentoConfig.posthogKey) {
 }
 
 window.posthog = posthog;
-
-import Plausible from 'plausible-tracker';
-
-// Dummy plausible function so we can still call it even if Plausible was not initialized
-window.plausible = window.plausible || function () {
-  (window.plausible.q = window.plausible.q || []).push(arguments)
-};
-
-if (window.FundamentoConfig.plausibleDomain) {
-  const {trackPageview} = Plausible({
-    domain: window.FundamentoConfig.plausibleDomain,
-    trackLocalhost: true,
-  });
-
-  document.addEventListener("turbo:load", () => {
-    trackPageview();
-  });
-}
