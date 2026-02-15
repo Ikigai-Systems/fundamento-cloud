@@ -46,6 +46,7 @@
       <% unless Flipper.enabled?(:standalone) %>
         posthogKey: <%= ENV["POSTHOG_KEY"].to_json.html_safe %>,
         twitterPixelId: <%= ENV["TWITTER_PIXEL_ID"].to_json.html_safe %>,
+        redditPixelId: <%= ENV["REDDIT_PIXEL_ID"].to_json.html_safe %>,
         <% if current_user.present? %>
           currentUserId: <%= current_user.id.to_json.html_safe %>,
           currentUserEmail: <%= current_user.email.to_json.html_safe %>,
@@ -93,6 +94,9 @@
   <% unless Flipper.enabled?(:standalone) %>
     <% if ENV["TWITTER_PIXEL_ID"].present? %>
       <%= render partial: "layouts/twitter_pixel" %>
+    <% end %>
+    <% if ENV["REDDIT_PIXEL_ID"].present? %>
+      <%= render partial: "layouts/reddit_pixel" %>
     <% end %>
     <%= render partial: "layouts/cookie_banner" %>
   <% end %>
