@@ -39,9 +39,9 @@
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
       replaysSessionSampleRate: <%= replays_session_sample_rate %>,
       <% unless Flipper.enabled?(:standalone) %>
-        posthogKey: <%= ENV["POSTHOG_KEY"].to_json.html_safe %>,
-        twitterPixelId: <%= ENV["TWITTER_PIXEL_ID"].to_json.html_safe %>,
-        redditPixelId: <%= ENV["REDDIT_PIXEL_ID"].to_json.html_safe %>,
+        posthogKey: <%= Rails.application.credentials.dig(:posthog, :api_key).to_json.html_safe %>,
+        twitterPixelId: <%= Rails.application.credentials.dig(:twitter, :pixel_id).to_json.html_safe %>,
+        redditPixelId: <%= Rails.application.credentials.dig(:reddit, :pixel_id).to_json.html_safe %>,
         <% if current_user.present? %>
           currentUserId: <%= current_user.id.to_json.html_safe %>,
           currentUserEmail: <%= current_user.email.to_json.html_safe %>,
@@ -87,10 +87,10 @@
   <% end %>
 
   <% unless Flipper.enabled?(:standalone) %>
-    <% if ENV["TWITTER_PIXEL_ID"].present? %>
+    <% if Rails.application.credentials.dig(:twitter, :pixel_id).present? %>
       <%= render partial: "layouts/twitter_pixel" %>
     <% end %>
-    <% if ENV["REDDIT_PIXEL_ID"].present? %>
+    <% if Rails.application.credentials.dig(:reddit, :pixel_id).present? %>
       <%= render partial: "layouts/reddit_pixel" %>
     <% end %>
     <%= render partial: "layouts/cookie_banner" %>

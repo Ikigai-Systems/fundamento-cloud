@@ -1,4 +1,4 @@
 <div data-controller="twitter-pixel"
-     data-twitter-pixel-id-value="<%= ENV["TWITTER_PIXEL_ID"] %>"
+     data-twitter-pixel-id-value="<%= Rails.application.credentials.dig(:twitter, :pixel_id) %>"
      style="display:none">
 </div>
