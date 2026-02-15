@@ -88,5 +88,9 @@
   <% if Flipper.enabled?(:livechat) %>
     <%= render partial: "layouts/livechat" %>
   <% end %>
+
+  <% unless Flipper.enabled?(:standalone) %>
+    <%= render partial: "layouts/cookie_banner" %>
+  <% end %>
 <% end %>
 </html>

@@ -22,6 +22,7 @@ import {Multiselect} from "@wizardhealth/stimulus-multiselect";
 import MultiselectNoopAddableController from "./controllers/multiselect-noop-addable-controller.js";
 import FlashManagerController from "./controllers/flash_manager_controller";
 import ContentTitleSyncController from "./content_title_sync_controller.ts";
+import CookieBannerController from "./cookie_banner_controller.js";
 
 const application = Application.start()
 
@@ -81,6 +82,8 @@ application.register('clipboard', Clipboard);
 application.register("flash-manager", FlashManagerController);
 
 application.register("content-title-sync", ContentTitleSyncController);
+
+application.register("cookie-banner", CookieBannerController);
 
 // Configure Stimulus development experience
 application.debug = true
