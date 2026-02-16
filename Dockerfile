@@ -169,6 +169,9 @@ COPY --from=build /rails/spec/fixtures ./spec/fixtures
 
 RUN echo "RAILS_ENV is $RAILS_ENV"
 
+# Standalone variant (credentials stripped, writable config/credentials, nano installed)
+FROM packaged AS standalone
+
 # Publish production as the default layer
 FROM packaged AS production
 
