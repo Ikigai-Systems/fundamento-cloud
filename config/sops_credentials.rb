@@ -94,7 +94,7 @@ module SopsCredentials
 
       if $?.success?
         @secrets = YAML.safe_load(decrypted_content, aliases: true) || {}
-        @secrets = @secrets.with_indifferent_access
+        @secrets = @secrets.is_a?(Hash) ? @secrets.with_indifferent_access : {}
         log_message("Successfully loaded SOPS secrets for #{env} environment", :info)
       else
         log_message("Failed to decrypt SOPS secrets: #{decrypted_content}", :error)
