@@ -28,9 +28,18 @@ jobs:
           - image-name: fundamento-cloud
             context: .
             needs-secrets: true
+            rails-env: production
+            build-target: production
+          - image-name: fundamento
+            context: .
+            needs-secrets: true
+            rails-env: standalone
+            build-target: standalone
           - image-name: blocknote-converter
             context: micro-services/blocknote-converter
             needs-secrets: false
+            rails-env: ''
+            build-target: ''
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
@@ -109,6 +118,8 @@ jobs:
           build-args: |
             SOPS_VERSION=${{ env.SOPS_VERSION }}
             NODE_MAJOR=${{ env.NODE_MAJOR }}
+            ${{ matrix.rails-env && format('RAILS_ENV={0}', matrix.rails-env) || '' }}
+          target: ${{ matrix.build-target || '' }}
           secret-files: |
             ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"', env.FONTAWESOME_SECRET_FILE) || '' }}
             ${{ matrix.needs-secrets && format('"sops-age-key={0}"', env.SOPS_AGE_KEY_FILE) || '' }}

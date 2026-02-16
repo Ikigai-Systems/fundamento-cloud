@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# Auto-generate credentials for standalone on first boot
+if [ "$RAILS_ENV" = "standalone" ] && [ ! -f config/credentials/standalone.yml.enc ]; then
+  echo "First boot detected — generating standalone credentials..."
+  EDITOR=true ./bin/rails credentials:edit -e standalone
+fi
+
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
 fi
