@@ -140,8 +140,11 @@ COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     if [ "$RAILS_ENV" = "standalone" ]; then \
-      rm -f ./config/secrets/*.yml.enc && \
+      rm -f ./config/secrets/*.sops.yaml && \
       chown rails:rails ./config/secrets && \
+      mkdir -p ./config/credentials && \
+      touch ./config/credentials/.keep && \
+      chown -R rails:rails ./config/credentials && \
       apt-get update -qq && \
       apt-get install --no-install-recommends -y nano; \
     fi
