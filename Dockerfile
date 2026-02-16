@@ -140,8 +140,8 @@ COPY --from=build --chown=rails:rails /rails/tmp /rails/tmp
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     if [ "$RAILS_ENV" = "standalone" ]; then \
-      rm -f ./config/secrets/*.yml.enc && \
-      chown rails:rails ./config/secrets && \
+      rm -f ./config/credentials/*.yml.enc && \
+      chown rails:rails ./config/credentials && \
       apt-get update -qq && \
       apt-get install --no-install-recommends -y nano; \
     fi
@@ -169,7 +169,7 @@ COPY --from=build /rails/spec/fixtures ./spec/fixtures
 
 RUN echo "RAILS_ENV is $RAILS_ENV"
 
-# Standalone variant (secrets stripped, writable config/secrets, nano installed)
+# Standalone variant (credentials stripped, writable config/credentials, nano installed)
 FROM packaged AS standalone
 
 # Publish production as the default layer
