@@ -45,7 +45,9 @@ module Flipper
       end
 
       def get_all
-        @adapter.get_all
+        result = @adapter.get_all
+        result[@feature_name] = { boolean: @enabled ? "true" : nil }
+        result
       end
 
       def enable(feature, gate, thing)
