@@ -25,6 +25,7 @@ import ContentTitleSyncController from "./content_title_sync_controller.ts";
 import CookieBannerController from "./cookie_banner_controller.js";
 import TwitterPixelController from "./twitter_pixel_controller.js";
 import RedditPixelController from "./reddit_pixel_controller.js";
+import LivechatController from "./livechat_controller.js";
 
 const application = Application.start()
 
@@ -90,6 +91,8 @@ application.register("cookie-banner", CookieBannerController);
 application.register("twitter-pixel", TwitterPixelController);
 
 application.register("reddit-pixel", RedditPixelController);
+
+application.register("livechat", LivechatController);
 
 // Configure Stimulus development experience
 application.debug = true

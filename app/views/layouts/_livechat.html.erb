@@ -1,27 +1,9 @@
-<!--Start of Tawk.to Script-->
-<script type="text/javascript">
-    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    (function () {
-        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-        s1.async = true;
-        s1.src = 'https://embed.tawk.to/<%= Rails.application.credentials.livechat.tawk_site_id %>';
-        s1.charset = 'UTF-8';
-        s1.setAttribute('crossorigin', '*');
-        s1.setAttribute('data-turbo-track', 'reload');
-        s0.parentNode.insertBefore(s1, s0);
-    })();
-</script>
-<!--End of Tawk.to Script-->
-
-<% if current_user.present? %>
-  <script type="text/javascript">
-      Tawk_API.onLoad = function () {
-          Tawk_API.setAttributes({
-              'name': '<%= current_user.display_name %>',
-              'email': '<%= current_user.email %>',
-              'hash': '<%= OpenSSL::HMAC.hexdigest("sha256", Rails.application.credentials.livechat.tawk_api_key, current_user.email) %>'
-          }, function (error) {
-          });
-      };
-  </script>
-<% end %>
+<div data-controller="livechat"
+     data-livechat-site-id-value="<%= Rails.application.credentials.livechat.tawk_site_id %>"
+     <% if current_user.present? %>
+     data-livechat-user-name-value="<%= current_user.display_name %>"
+     data-livechat-user-email-value="<%= current_user.email %>"
+     data-livechat-user-hash-value="<%= OpenSSL::HMAC.hexdigest("sha256", Rails.application.credentials.livechat.tawk_api_key, current_user.email) %>"
+     <% end %>
+     style="display:none">
+</div>
