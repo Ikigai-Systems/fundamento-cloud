@@ -139,49 +139,53 @@ E2E tests use the same `docker-compose.yml` but with environment variables to of
 
 ### Running Both Environments Simultaneously
 
-The easiest way to run E2E tests:
-
-```bash
-docker compose -p e2e-tests down && bin/dev-e2e --build && npx cypress run --project spec/e2e
-```
-
 You can run both development and E2E environments simultaneously as they don't conflict with each other on ports, database, etc.
 
 ```bash
 # Terminal 1: Start local development (normal ports)
 bin/dev
 
-# Terminal 2: Start E2E environment (offset ports)
+# Terminal 2: Rebuild and start E2E environment (tears down old containers automatically)
 bin/dev-e2e
-
-# Terminal 3: Run Cypress tests
-npx cypress run --project spec/e2e
-npx cypress open --project spec/e2e
 ```
 
-### Management
+The easiest way to rebuild and run E2E tests in one command:
 
 ```bash
-# Start E2E environment (no rebuild)
+bin/dev-e2e up --test
+```
+
+### E2E Commands
+
+`bin/dev-e2e` is a self-contained CLI for managing the E2E environment:
+
+```bash
+# Rebuild and start (default - tears down, rebuilds, starts fresh)
 bin/dev-e2e
 
-# Start with rebuild (after Dockerfile changes)
-bin/dev-e2e --build
+# Start without rebuilding (faster, uses existing images)
+bin/dev-e2e up --no-build
 
-# Stop E2E environment
-docker compose -p e2e-tests down
+# Rebuild, start, and run Cypress tests
+bin/dev-e2e up --test
 
-# Full cleanup (including volumes)
-docker compose -p e2e-tests down --volumes
+# Run Cypress tests (environment must be running)
+bin/dev-e2e test
 
-# Aggressive cleanup
-docker compose -p e2e-tests down --volumes --remove-orphans --rmi local 
+# Stream logs from all containers
+bin/dev-e2e logs
 
-# View logs
-docker compose -p e2e-tests logs -f
+# Open Rails console in the website container
+bin/dev-e2e console
 
-# Rebuild containers manually
-docker compose -p e2e-tests build
+# Open bash shell in the website container
+bin/dev-e2e shell
+
+# Stop E2E containers
+bin/dev-e2e down
+
+# Full cleanup (containers, volumes, and local images)
+bin/dev-e2e clean
 ```
 
 ### E2E Port Mapping

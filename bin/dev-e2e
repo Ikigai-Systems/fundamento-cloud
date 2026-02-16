@@ -1,109 +1,218 @@
-#!/usr/bin/env sh
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "thor"
 
-# Trap to restore cursor visibility on exit (Docker Compose can hide it)
-cleanup() {
-  # Restore cursor visibility and terminal state
-  tput cnorm 2>/dev/null || printf '\033[?25h' || true
-  stty echo 2>/dev/null || true
-}
-trap cleanup EXIT INT TERM
+class DevE2E < Thor
+  PROJECT = "e2e-tests"
+  WEBSITE_CONTAINER = "website"
 
-# Parse command line arguments
-BUILD_FLAG=""
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --build)
-      BUILD_FLAG="--build"
-      shift
-      ;;
-    *)
-      echo "Unknown option: $1"
-      echo "Usage: bin/dev-e2e [--build]"
-      echo ""
-      echo "Options:"
-      echo "  --build    Force rebuild of Docker images"
-      exit 1
-      ;;
-  esac
-done
+  ENV_VARS = {
+    "RAILS_ENV" => "e2e",
+    "RAILS_PORT" => "4000",
+    "RAILS_LOG_LEVEL" => "debug",
+    "POSTGRES_PORT" => "6432",
+    "REDIS_PORT" => "7379",
+    "MINIO_PORT" => "10000",
+    "MINIO_CONSOLE_PORT" => "10001",
+    "BLOCKNOTE_PORT" => "4002",
+    "HTTP_HOST" => "localhost:4000",
+  }.freeze
 
-# Load SOPS_AGE_KEY from dockerfiles/sops-age-key.secret if not already set
-if [ -z "$SOPS_AGE_KEY" ]; then
-  if [ -f dockerfiles/sops-age-key.secret ]; then
-    echo "Loading SOPS_AGE_KEY from dockerfiles/sops-age-key.secret..."
-    echo ""
-    export SOPS_AGE_KEY=$(grep -v '^#' dockerfiles/sops-age-key.secret | grep -v '^$' | head -n 1)
-  else
-    echo "❌ Error: SOPS_AGE_KEY is not set and dockerfiles/sops-age-key.secret not found!"
-    echo ""
-    echo "SOPS_AGE_KEY is required to decrypt secrets for the E2E environment."
-    echo ""
-    echo "Options:"
-    echo "  1. Run bin/setup to import it from 1password vault"
-    echo "  2. Export it in your shell: export SOPS_AGE_KEY='your-key-here'"
-    echo "  3. Pass it inline: SOPS_AGE_KEY='your-key' bin/dev-e2e"
-    echo ""
-    exit 1
-  fi
-fi
+  default_command :up
 
-# Set E2E environment variables (offset ports by +1000)
-export RAILS_ENV=e2e
-export RAILS_PORT=4000
-export RAILS_LOG_LEVEL=debug
-export POSTGRES_PORT=6432
-export REDIS_PORT=7379
-export MINIO_PORT=10000
-export MINIO_CONSOLE_PORT=10001
-export BLOCKNOTE_PORT=4002
-export HTTP_HOST=localhost:4000
+  desc "up", "Start the E2E test environment (default command)"
+  option :build, type: :boolean, default: true, desc: "Build Docker images before starting"
+  option :test, type: :boolean, default: false, desc: "Run Cypress tests after environment is healthy"
+  def up
+    setup_env!
+    load_sops_key!
+    print_status
 
-echo "Starting E2E test environment with offset ports..."
-echo "  Rails: http://localhost:${RAILS_PORT}"
-echo "  MinIO Console: http://localhost:${MINIO_CONSOLE_PORT}"
-echo "  PostgreSQL: localhost:${POSTGRES_PORT}"
-echo "  Redis: localhost:${REDIS_PORT}"
-echo ""
+    compose("down")
 
-# Fix local file permissions before Docker build
-# Docker COPY preserves source permissions, so restrictive local perms (600) cause access issues
-echo "Checking file permissions..."
-FIXED_FILES=$(find . -type f \( -name "*.rb" -o -name "*.erb" -o -name "*.rake" -o -name "*.js" -o -name "*.ts" -o -name "*.yml" \) \
-  ! -path "*/node_modules/*" \
-  ! -path "*/vendor/*" \
-  ! -path "*/.git/*" \
-  ! -perm -044 \
-  2>/dev/null)
+    if options[:build]
+      fix_permissions!
+      puts "Rebuilding Docker images..."
+    else
+      puts "Starting Docker Compose services..."
+    end
 
-if [ -n "$FIXED_FILES" ]; then
-  FILE_COUNT=$(echo "$FIXED_FILES" | wc -l | tr -d ' ')
-  echo "⚠️  Found $FILE_COUNT file(s) with restrictive permissions (not world-readable)"
-  echo "$FIXED_FILES" | head -5
-  if [ "$FILE_COUNT" -gt 5 ]; then
-    echo "   ... and $((FILE_COUNT - 5)) more"
-  fi
-  echo ""
-  echo "Fixing permissions to 644 (readable by all, writable by owner)..."
-  echo "$FIXED_FILES" | xargs chmod 644
-  echo "✓ Fixed permissions for $FILE_COUNT file(s)"
-  echo ""
-fi
+    build_args = options[:build] ? ["--build"] : []
+    success = with_terminal_cleanup do
+      compose("up", *build_args, "--wait")
+    end
 
-if [ -n "$BUILD_FLAG" ]; then
-  echo "Rebuilding Docker images..."
-else
-  echo "Starting Docker Compose services..."
-fi
+    unless success
+      abort "\nFailed to start E2E environment."
+    end
 
-# Start all E2E services with -p flag for isolation and wait for them to be healthy
-# Use --ansi never to prevent terminal escape sequences that can corrupt terminal state
-docker compose --ansi never -p e2e-tests up $BUILD_FLAG --wait
+    puts ""
+    puts "E2E environment is ready!"
+    puts ""
 
-echo ""
-echo "✓ E2E environment is ready!"
-echo ""
-echo "Next steps:"
-echo "  Run tests:  npx cypress run --project spec/e2e"
-echo "  Open UI:    npx cypress open --project spec/e2e"
-echo "  Stop:       docker compose -p e2e-tests down"
-echo "  Cleanup:    docker compose -p e2e-tests down --volumes"
+    if options[:test]
+      run_cypress
+    else
+      print_hints
+    end
+  end
+
+  desc "down", "Stop E2E containers"
+  def down
+    setup_env!
+    compose("down")
+  end
+
+  desc "clean", "Remove all containers, volumes, and local images"
+  def clean
+    setup_env!
+    puts "Removing all E2E containers, volumes, and local images..."
+    compose("down", "--volumes", "--remove-orphans", "--rmi", "local")
+    puts "Clean complete."
+  end
+
+  desc "logs", "Stream docker compose logs (Ctrl-C to exit)"
+  def logs
+    setup_env!
+    exec_compose("logs", "-f")
+  end
+
+  desc "console", "Rails console in the website container"
+  def console
+    setup_env!
+    exec_in_container("bin/rails", "console")
+  end
+
+  desc "shell", "Bash shell in the website container"
+  map "shell" => :open_shell
+  def open_shell
+    setup_env!
+    exec_in_container("bash")
+  end
+
+  desc "test", "Run Cypress tests (assumes environment already running)"
+  def test
+    run_cypress
+  end
+
+  private
+
+  def setup_env!
+    ENV_VARS.each { |key, value| ENV[key] = value }
+  end
+
+  def load_sops_key!
+    return if ENV["SOPS_AGE_KEY"] && !ENV["SOPS_AGE_KEY"].empty?
+
+    secret_file = File.join(Dir.pwd, "dockerfiles", "sops-age-key.secret")
+
+    if File.exist?(secret_file)
+      puts "Loading SOPS_AGE_KEY from dockerfiles/sops-age-key.secret..."
+      puts ""
+
+      key = File.readlines(secret_file)
+        .reject { |line| line.start_with?("#") || line.strip.empty? }
+        .first&.strip
+
+      if key && !key.empty?
+        ENV["SOPS_AGE_KEY"] = key
+      else
+        abort <<~MSG
+          Error: dockerfiles/sops-age-key.secret exists but contains no valid key!
+
+          The file should contain an age secret key (lines starting with # are ignored).
+        MSG
+      end
+    else
+      abort <<~MSG
+        Error: SOPS_AGE_KEY is not set and dockerfiles/sops-age-key.secret not found!
+
+        SOPS_AGE_KEY is required to decrypt secrets for the E2E environment.
+
+        Options:
+          1. Run bin/setup to import it from 1password vault
+          2. Export it in your shell: export SOPS_AGE_KEY='your-key-here'
+          3. Pass it inline: SOPS_AGE_KEY='your-key' bin/dev-e2e
+      MSG
+    end
+  end
+
+  def fix_permissions!
+    puts "Checking file permissions..."
+
+    extensions = %w[rb erb rake js ts yml]
+    pattern = extensions.map { |ext| "-name '*.#{ext}'" }.join(" -o ")
+    excludes = "-not -path '*/node_modules/*' -not -path '*/vendor/*' -not -path '*/.git/*'"
+
+    files = `find . -type f \\( #{pattern} \\) #{excludes} ! -perm -044 2>/dev/null`.strip
+
+    return if files.empty?
+
+    file_list = files.split("\n")
+    count = file_list.size
+
+    puts "Found #{count} file(s) with restrictive permissions (not world-readable)"
+    file_list.first(5).each { |f| puts "  #{f}" }
+    puts "   ... and #{count - 5} more" if count > 5
+    puts ""
+    puts "Fixing permissions to 644 (readable by all, writable by owner)..."
+
+    file_list.each { |f| File.chmod(0644, f) }
+
+    puts "Fixed permissions for #{count} file(s)"
+    puts ""
+  end
+
+  def compose(*args)
+    cmd = ["docker", "compose", "--ansi", "never", "-p", PROJECT, *args]
+    system(*cmd)
+  end
+
+  def exec_compose(*args)
+    Kernel.exec("docker", "compose", "--ansi", "never", "-p", PROJECT, *args)
+  end
+
+  def exec_in_container(*command)
+    container_id = `docker compose -p #{PROJECT} ps -q #{WEBSITE_CONTAINER}`.strip
+
+    if container_id.empty?
+      abort "Error: #{WEBSITE_CONTAINER} container is not running. Start with: bin/dev-e2e up"
+    end
+
+    Kernel.exec("docker", "exec", "-it", container_id, *command)
+  end
+
+  def with_terminal_cleanup
+    yield
+  ensure
+    system("tput cnorm 2>/dev/null || printf '\\033[?25h' || true")
+    system("stty echo 2>/dev/null || true")
+  end
+
+  def run_cypress
+    system("npx", "cypress", "run", "--project", "spec/e2e")
+    exit($?.exitstatus || 1)
+  end
+
+  def print_status
+    puts "Starting E2E test environment with offset ports..."
+    puts "  Rails:         http://localhost:#{ENV['RAILS_PORT']}"
+    puts "  MinIO Console: http://localhost:#{ENV['MINIO_CONSOLE_PORT']}"
+    puts "  PostgreSQL:    localhost:#{ENV['POSTGRES_PORT']}"
+    puts "  Redis:         localhost:#{ENV['REDIS_PORT']}"
+    puts ""
+  end
+
+  def print_hints
+    puts "Quick commands:"
+    puts "  Run tests:  bin/dev-e2e test"
+    puts "  Open UI:    npx cypress open --project spec/e2e"
+    puts "  Logs:       bin/dev-e2e logs"
+    puts "  Console:    bin/dev-e2e console"
+    puts "  Shell:      bin/dev-e2e shell"
+    puts "  Stop:       bin/dev-e2e down"
+    puts "  Cleanup:    bin/dev-e2e clean"
+  end
+end
+
+DevE2E.start(ARGV)
