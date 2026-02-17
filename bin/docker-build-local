@@ -18,13 +18,6 @@ echo -e "${GREEN}Building Docker image for target: ${TARGET}${NC}"
 echo "Using RAILS_ENV: ${RAILS_ENV}"
 echo ""
 
-# Check if SOPS age key exists
-if [ ! -f ~/.config/sops/age/keys.txt ]; then
-  echo -e "${RED}Error: SOPS age key not found at ~/.config/sops/age/keys.txt${NC}"
-  echo "Run 'sops updatekeys config/secrets/${RAILS_ENV}.sops.yaml' to set up your key"
-  exit 1
-fi
-
 # Create secret files directory
 mkdir -p dockerfiles
 
@@ -45,7 +38,6 @@ docker buildx build \
   --file Dockerfile \
   --target "${TARGET}" \
   --build-arg RAILS_ENV="${RAILS_ENV}" \
-  --build-arg SOPS_VERSION=3.11.0 \
   --build-arg NODE_MAJOR=24 \
   --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
   --tag "fundamento-cloud:${TARGET}" \
