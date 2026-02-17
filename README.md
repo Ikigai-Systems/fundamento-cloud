@@ -2,26 +2,33 @@
 
 ## Secrets Management
 
-This project uses SOPS (Secrets OPerationS) with age encryption for managing secrets. You need to:
+This project uses two systems for secrets:
 
-1. Install age and sops:
-   ```bash
-   # macOS
-   brew install age sops
+1. **Rails encrypted credentials** (`config/credentials/*.yml.enc`) for application secrets
+2. **SOPS with age encryption** (`config/secrets/*.sops.yaml`) for infrastructure keys only
 
-   # Linux
-   sudo apt-get install age
-   # For sops, see SECRETS.md for installation instructions
-   ```
+### Setup
 
-2. Obtain the age private key from the project owner and save it to:
-   ```bash
-   mkdir -p ~/.config/sops/age
-   # Save the private key to ~/.config/sops/age/keys.txt
-   chmod 600 ~/.config/sops/age/keys.txt
-   ```
+Install age and sops (needed for infrastructure keys):
 
-### Quick Reference
+```bash
+# macOS
+brew install age sops
+
+# Linux
+sudo apt-get install age
+# For sops, see SECRETS.md for installation instructions
+```
+
+Obtain the age private key from the project owner and save it to:
+
+```bash
+mkdir -p ~/.config/sops/age
+# Save the private key to ~/.config/sops/age/keys.txt
+chmod 600 ~/.config/sops/age/keys.txt
+```
+
+### SOPS Quick Reference (infrastructure keys only)
 
 - **Secret files**: `config/secrets/*.sops.yaml` (encrypted in git)
 - **View secrets**: `sops -d config/secrets/development.sops.yaml`
@@ -30,24 +37,16 @@ This project uses SOPS (Secrets OPerationS) with age encryption for managing sec
 
 ### In Application Code
 
-Access secrets via the SOPS initializer:
+Access secrets via standard Rails encrypted credentials:
 
 ```ruby
-# Direct SOPS access
-Rails.application.sops.dig("fontawesome", "auth_token")
-
-# Access via credentials namespace
-Rails.application.sops.credentials[:mailtrap][:username]
-
-# Backward compatible - Rails.application.credentials is overridden to use SOPS
-Rails.application.credentials[:mailtrap][:username]  # Works automatically!
-
-# Helper methods
-Rails.application.sops.fontawesome_token
-Rails.application.sops.minio_access_key
+# Standard Rails credentials (per-environment)
+Rails.application.credentials.dig(:mailtrap, :username)
+Rails.application.credentials.dig(:sentry, :frontend_dsn)
+Rails.application.credentials.recaptcha[:site_key]
 ```
 
-**Note**: `Rails.application.credentials` is overridden to return SOPS credentials, ensuring gems that expect Rails credentials work without modification.
+**SOPS is only used for infrastructure keys** (fontawesome token, minio credentials, Rails master keys). These are extracted by `bin/setup`, CI workflows, and Docker builds -- the running Rails app does not use SOPS.
 
 **See [SECRETS.md](SECRETS.md) for complete documentation.**
 

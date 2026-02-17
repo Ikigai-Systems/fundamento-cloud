@@ -1,21 +1,43 @@
-# Secrets Management with SOPS
+# Secrets Management
 
-This project uses [SOPS (Secrets OPerationS)](https://github.com/getsops/sops) with [age encryption](https://github.com/FiloSottile/age) to manage secrets securely in version control.
+This project uses two systems for managing secrets:
+
+1. **Rails encrypted credentials** -- Application secrets used by the running Rails app
+2. **SOPS with age encryption** -- Infrastructure keys used by scripts, CI, and Docker builds
 
 ## Overview
 
-All secrets are stored encrypted in the repository under `config/secrets/` directory:
-- `development.sops.yaml` - Development environment secrets
-- `test.sops.yaml` - Test environment secrets
-- `production.sops.yaml` - Production environment secrets
+### Rails Encrypted Credentials (Application Secrets)
 
-The secrets are automatically decrypted at Rails boot time via the SOPS loader initializer (`config/sops_credentials.rb`).
+Application secrets are stored in standard Rails encrypted credentials, per-environment:
+
+- `config/credentials/development.yml.enc` -- Development app secrets
+- `config/credentials/test.yml.enc` -- Test app secrets
+- `config/credentials/production.yml.enc` -- Production app secrets
+
+Each `.yml.enc` file is encrypted with the corresponding `.key` file (e.g., `config/credentials/development.key`). The key files are gitignored and extracted from SOPS by `bin/setup` and CI workflows.
+
+### SOPS (Infrastructure Keys)
+
+Infrastructure keys are stored encrypted in `config/secrets/`:
+
+- `development.sops.yaml` -- Development infra keys
+- `test.sops.yaml` -- Test infra keys
+- `e2e.sops.yaml` -- E2E infra keys
+- `production.sops.yaml` -- Production infra keys
+
+These contain only:
+- `rails.master_key` -- Rails credential encryption key (extracted into `config/credentials/*.key`)
+- `fontawesome.auth_token` -- FontAwesome Pro npm/bundler auth token
+- `minio.access_key` / `minio.secret_key` -- MinIO S3 credentials for docker-compose
+
+The running Rails app does **not** use SOPS directly. SOPS keys are extracted by `bin/setup`, CI workflows, and Docker builds.
 
 ## Prerequisites
 
 ### Local Development
 
-You need to install `age` and `sops`:
+You need to install `age` and `sops` (for infrastructure keys):
 
 ```bash
 # macOS
@@ -53,11 +75,75 @@ chmod 600 ~/.config/sops/age/keys.txt
 
 **IMPORTANT**: Never commit your age private key to version control!
 
-## Working with Secrets
+## Working with Rails Credentials (Application Secrets)
 
-### Viewing Secrets
+### Editing Credentials
 
-To view decrypted secrets for an environment:
+Use the standard Rails credentials commands:
+
+```bash
+# Edit development credentials
+rails credentials:edit --environment development
+
+# Edit test credentials
+rails credentials:edit --environment test
+
+# Edit production credentials
+rails credentials:edit --environment production
+```
+
+This opens the decrypted YAML in your `$EDITOR`. Save and exit to re-encrypt.
+
+### Accessing Credentials in Code
+
+```ruby
+# Standard Rails credentials (per-environment)
+Rails.application.credentials.dig(:mailtrap, :username)
+Rails.application.credentials.dig(:sentry, :frontend_dsn)
+Rails.application.credentials.recaptcha[:site_key]
+```
+
+### Adding New Application Secrets
+
+1. Edit the credentials for the appropriate environment:
+   ```bash
+   rails credentials:edit --environment development
+   ```
+
+2. Add your secret:
+   ```yaml
+   new_service:
+     api_key: your_secret_key_here
+   ```
+
+3. Access in your application:
+   ```ruby
+   Rails.application.credentials.dig(:new_service, :api_key)
+   ```
+
+4. Repeat for other environments (test, production) as needed.
+
+### Credential Structure
+
+Application credentials follow this structure:
+
+```yaml
+mailtrap:
+  username: xxx
+  password: xxx
+formula_eval:
+  jwt_secret_key: xxx
+recaptcha:
+  site_key: xxx
+  secret_key: xxx
+sentry:
+  frontend_dsn: xxx
+  backend_dsn: xxx
+```
+
+## Working with SOPS (Infrastructure Keys)
+
+### Viewing SOPS Secrets
 
 ```bash
 # Development
@@ -70,9 +156,7 @@ sops -d config/secrets/production.sops.yaml
 sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml
 ```
 
-### Editing Secrets
-
-To edit secrets in your preferred editor:
+### Editing SOPS Secrets
 
 ```bash
 # Development
@@ -87,47 +171,29 @@ SOPS will:
 2. Open it in your `$EDITOR` (default: vim)
 3. Re-encrypt it when you save and exit
 
-**Note**: Changes are automatically committed as encrypted YAML.
+### Adding New Infrastructure Keys
 
-### Adding New Secrets
+Only add keys to SOPS if they are needed by scripts, CI, or Docker builds (not the running Rails app). For application secrets, use Rails credentials instead.
 
-1. Edit the appropriate environment file:
+1. Edit the appropriate SOPS file:
    ```bash
    sops config/secrets/development.sops.yaml
    ```
 
-2. Add your secret under the appropriate section:
+2. Add your key:
    ```yaml
-   new_service:
-     api_key: your_secret_key_here
+   new_infra_service:
+     api_key: your_key_here
    ```
 
-3. Update the Rails initializer if you need a helper method:
-   ```ruby
-   # config/sops_credentials.rb
-   def new_service_api_key
-     dig("new_service", "api_key")
-   end
-   ```
+3. Update `bin/setup` or CI workflows to extract the key where needed.
 
-4. Access in your application:
-   ```ruby
-   # Direct SOPS access
-   Rails.application.sops.dig("new_service", "api_key")
+### SOPS Secret Structure
 
-   # Via credentials (backward compatible with Rails.application.credentials)
-   Rails.application.sops.credentials[:new_service][:api_key]
-
-   # For gems expecting Rails.application.credentials (automatically redirected to SOPS)
-   Rails.application.credentials[:new_service][:api_key]
-   ```
-
-### Secret Structure
-
-Secrets are organized in a hierarchical YAML structure:
+Infrastructure keys follow this structure:
 
 ```yaml
-# Rails master key
+# Rails master key (extracted into config/credentials/*.key)
 rails:
   master_key: xxx
 
@@ -139,31 +205,7 @@ fontawesome:
 minio:
   access_key: xxx
   secret_key: xxx
-
-# Application credentials (from old Rails credentials)
-credentials:
-  mailtrap:
-    username: xxx
-    password: xxx
-  formula_eval:
-    jwt_secret_key: xxx
-  recaptcha:
-    site_key: xxx
-    secret_key: xxx
 ```
-
-## Backward Compatibility with Rails.application.credentials
-
-For gems and code that expect `Rails.application.credentials`, we've overridden the `credentials` method in `config/application.rb` to return SOPS credentials transparently.
-
-This means:
-- **Old code**: `Rails.application.credentials[:mailtrap][:username]` → Works automatically with SOPS
-- **New code**: `Rails.application.sops.credentials[:mailtrap][:username]` → More explicit
-- **Direct access**: `Rails.application.sops.dig("mailtrap", "username")` → Direct SOPS access
-
-All three approaches access the same data from the `credentials:` section in your SOPS YAML files.
-
-**Why this matters**: Many gems (like Flipper, Devise, etc.) expect secrets to be at `Rails.application.credentials`. This override ensures they work without modification.
 
 ## CI/CD Configuration
 
@@ -171,22 +213,24 @@ All three approaches access the same data from the `credentials:` section in you
 
 The following GitHub secret must be configured:
 
-**`SOPS_AGE_KEY`** - The age private key for decrypting secrets in CI/CD
+**`SOPS_AGE_KEY`** -- The age private key for decrypting infrastructure keys in CI/CD
 
 To add it:
 1. Get the age private key from your password manager or `~/.config/sops/age/keys.txt`
-2. Go to GitHub → Settings → Secrets and variables → Actions
+2. Go to GitHub -> Settings -> Secrets and variables -> Actions
 3. Add new repository secret named `SOPS_AGE_KEY`
 4. Paste the entire private key (including the header and footer lines)
 
 The workflows will:
 1. Install age and sops
 2. Create the age key file from the secret
-3. Decrypt secrets as needed for builds and tests
+3. Extract Rails master keys from SOPS into `config/credentials/*.key`
+4. Extract FontAwesome token for bundler/npm auth
+5. Rails then boots normally using standard encrypted credentials
 
 ## Key Rotation
 
-To rotate the age encryption key:
+### Rotating the Age Key (SOPS)
 
 1. Generate a new age key:
    ```bash
@@ -213,9 +257,22 @@ To rotate the age encryption key:
    sops updatekeys config/secrets/*.sops.yaml
    ```
 
+### Rotating Rails Master Keys
+
+1. Generate a new master key and re-encrypt credentials:
+   ```bash
+   rails credentials:edit --environment <env>
+   ```
+
+2. Update the master key in the corresponding SOPS file:
+   ```bash
+   sops config/secrets/<env>.sops.yaml
+   # Update rails.master_key with the new key from config/credentials/<env>.key
+   ```
+
 ## Troubleshooting
 
-### "Failed to decrypt" error
+### "Failed to decrypt" SOPS error
 
 **Problem**: `Failed to get the data key required to decrypt the SOPS file.`
 
@@ -227,7 +284,7 @@ ls -la ~/.config/sops/age/keys.txt
 
 ### "No age key found" error
 
-**Problem**: Rails can't find the age key at boot.
+**Problem**: Cannot decrypt SOPS files.
 
 **Solution**:
 ```bash
@@ -238,22 +295,24 @@ cat ~/.config/sops/age/keys.txt
 sops -d config/secrets/development.sops.yaml
 ```
 
-### Secrets not loading in Rails
+### Credentials not loading in Rails
 
-**Problem**: Application boots but secrets are nil.
+**Problem**: Application boots but credentials are nil.
 
-**Solution**: Check the Rails initializer loaded correctly:
+**Solution**: Check that the master key file exists:
 ```bash
-# Start rails console
+# Verify master key exists for the environment
+ls -la config/credentials/development.key
+
+# If missing, extract from SOPS
+sops -d --extract '["rails"]["master_key"]' config/secrets/development.sops.yaml > config/credentials/development.key
+
+# Or run bin/setup which does this automatically
+bin/setup
+
+# Test in Rails console
 rails console
-
-# Check if SOPS is loaded
-Rails.application.sops
-# Should return the SopsCredentials module
-
-# Check secrets are loaded
-Rails.application.sops.secrets
-# Should return a hash of your secrets
+Rails.application.credentials.dig(:mailtrap, :username)
 ```
 
 ### CI/CD failures
@@ -271,23 +330,16 @@ Rails.application.sops.secrets
 
 ## Security Best Practices
 
-1. **Never commit unencrypted secrets** - All secrets must be SOPS-encrypted
-2. **Protect your age private key** - Store in a password manager
-3. **Rotate keys periodically** - At least once per year
-4. **Use different keys per environment** - Consider separate keys for prod vs dev
-5. **Audit secret access** - Review who has access to age keys
-6. **Remove secrets from git history** - Use git-filter-repo if secrets were leaked
-
-## Migration from git-crypt
-
-This project was migrated from git-crypt to SOPS. Old encrypted files:
-- `config/credentials/*.key` - Now in SOPS under `rails.master_key`
-- `dockerfiles/fontawesome-auth.secret` - Now in SOPS under `fontawesome.auth_token`
-
-These files are now gitignored and should not be committed.
+1. **Never commit unencrypted secrets** -- All secrets must be encrypted (SOPS or Rails credentials)
+2. **Protect your age private key** -- Store in a password manager
+3. **Protect Rails master keys** -- Never commit `config/credentials/*.key` files
+4. **Rotate keys periodically** -- At least once per year
+5. **Audit secret access** -- Review who has access to age keys and master keys
+6. **Remove secrets from git history** -- Use git-filter-repo if secrets were leaked
 
 ## Additional Resources
 
+- [Rails Encrypted Credentials Guide](https://guides.rubyonrails.org/security.html#custom-credentials)
 - [SOPS Documentation](https://github.com/getsops/sops)
 - [age Documentation](https://github.com/FiloSottile/age)
 - [SOPS with age Tutorial](https://devops.datenkollektiv.de/using-sops-with-age-and-git-like-a-pro.html)

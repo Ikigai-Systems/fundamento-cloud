@@ -4,7 +4,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Context includes also:
 @README.md
-@SECRETS.md
 
 ## Running commands
 
@@ -60,6 +59,7 @@ Node.js services handle specialized processing:
 ### Authorization & Security
 - **Pundit policies** for authorization
 - **Devise** for user management (password and Google SSO)
+- **Rails encrypted credentials** for per-environment secret management
 - **API tokens** for programmatic access
 - **Space-level access controls** (public, restricted, private)
 
