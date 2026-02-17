@@ -14,6 +14,7 @@ env:
   REGISTRY: ghcr.io
   SOPS_VERSION: 3.11.0
   NODE_MAJOR: 24
+  IMAGE_NAME: fundamento
 
 jobs:
   build-platform-images:
@@ -51,8 +52,22 @@ jobs:
         uses: ./.github/actions/docker-build-setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: fundamento
-          tag-suffix: ${{ matrix.tag-suffix }}
+
+      # Platform-specific tags (suffixed with -amd64 / -arm64)
+      # These are intermediate — the merge job combines them into final multi-arch tags
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            suffix=${{ matrix.tag-suffix }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
@@ -60,8 +75,8 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           push: true
-          tags: ${{ steps.build-setup.outputs.tags }}
-          labels: ${{ steps.build-setup.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NODE_MAJOR=${{ env.NODE_MAJOR }}
             RAILS_ENV=standalone
@@ -69,9 +84,9 @@ jobs:
           secret-files: |
             "fontawesome-auth=${{ env.FONTAWESOME_SECRET_FILE }}"
           cache-from: |
-            type=gha,scope=fundamento-${{ matrix.platform }}
-            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento:master${{ matrix.tag-suffix }}
-          cache-to: type=gha,mode=max,scope=fundamento-${{ matrix.platform }}
+            type=gha,scope=${{ env.IMAGE_NAME }}-${{ matrix.platform }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest${{ matrix.tag-suffix }}
+          cache-to: type=gha,mode=max,scope=${{ env.IMAGE_NAME }}-${{ matrix.platform }}
 
   create-multi-arch-manifest:
     runs-on: ubuntu-latest
@@ -88,12 +103,23 @@ jobs:
         uses: ./.github/actions/docker-build-setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: fundamento
 
-      - name: Create multi-arch manifest
+      # Final user-facing tags (no platform suffix)
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Create multi-arch manifests
         run: |
-          # For each tag, create a manifest that combines both platform images
-          echo '${{ steps.build-setup.outputs.tags }}' | while read -r TAG; do
+          echo '${{ steps.meta.outputs.tags }}' | while read -r TAG; do
             [ -z "$TAG" ] && continue
             echo "Creating manifest for: $TAG"
             docker buildx imagetools create \

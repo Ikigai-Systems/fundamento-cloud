@@ -1,5 +1,5 @@
 name: "Docker Build Setup"
-description: "Common setup for Docker image builds: Buildx, registry login, metadata extraction"
+description: "Common setup for Docker image builds: Buildx, registry login, timestamp"
 inputs:
   registry:
     description: "Container registry URL"
@@ -8,21 +8,11 @@ inputs:
   github-token:
     description: "GitHub token for registry authentication"
     required: true
-  image-name:
-    description: "Docker image name (without registry prefix)"
-    required: true
-  tag-suffix:
-    description: "Optional suffix to append to all tags (e.g. -amd64)"
-    required: false
-    default: ""
 
 outputs:
-  tags:
-    description: "Generated Docker tags"
-    value: ${{ steps.meta.outputs.tags }}
-  labels:
-    description: "Generated Docker labels"
-    value: ${{ steps.meta.outputs.labels }}
+  timestamp:
+    description: "Current UTC timestamp for tagging"
+    value: ${{ steps.current-time.outputs.time }}
 
 runs:
   using: "composite"
@@ -40,27 +30,3 @@ runs:
     - name: Get current time
       id: current-time
       uses: josStorer/get-current-time@v2
-
-    - name: Set lowercase repository owner
-      id: lowercase_repository_owner
-      uses: actions/github-script@v7
-      with:
-        script: |
-          return context.repo.owner.toLowerCase()
-        result-encoding: string
-
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ inputs.registry }}/${{ github.repository_owner }}/${{ inputs.image-name }}
-        flavor: |
-          suffix=${{ inputs.tag-suffix }}
-        tags: |
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha
-          type=raw,value=${{ steps.current-time.outputs.time }},enable={{is_default_branch}}

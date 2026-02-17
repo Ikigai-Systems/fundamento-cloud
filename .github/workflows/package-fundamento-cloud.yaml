@@ -57,15 +57,27 @@ jobs:
         uses: ./.github/actions/docker-build-setup
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: ${{ matrix.image-name }}
+
+      # Tags for CI/CD consumption (FluxCD picks up timestamp tags)
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}
+          tags: |
+            type=raw,value=${{ steps.build-setup.outputs.timestamp }},enable={{is_default_branch}}
+            type=sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
           push: true
-          tags: ${{ steps.build-setup.outputs.tags }}
-          labels: ${{ steps.build-setup.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NODE_MAJOR=${{ env.NODE_MAJOR }}
             ${{ matrix.rails-env && format('RAILS_ENV={0}', matrix.rails-env) || '' }}
