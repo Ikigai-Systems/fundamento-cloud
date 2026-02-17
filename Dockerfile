@@ -2,7 +2,6 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.4.7
-ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
 
 # Node.js source stage for copying binaries
@@ -31,9 +30,7 @@ ENV RAILS_ENV=${RAILS_ENV} \
 FROM base AS build
 
 # Re-declare build args for this stage
-ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
-ARG TARGETARCH
 
 # Copy Node.js from node-source stage
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
@@ -42,16 +39,13 @@ RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
     ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
-# Install packages needed to build gems (including age and sops for secrets management during asset precompilation)
+# Install packages needed to build gems
 # Ruby 3.4+ requires libyaml-dev for psych gem native extension
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libvips pkg-config age libyaml-dev && \
-    npm install -g npm@latest && \
-    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
-    dpkg -i sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
-    rm sops_${SOPS_VERSION}_${TARGETARCH}.deb
+    apt-get install --no-install-recommends -y build-essential git libvips pkg-config libyaml-dev && \
+    npm install -g npm@latest
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
