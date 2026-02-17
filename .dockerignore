@@ -17,6 +17,7 @@
 # Ignore all default key files.
 /config/master.key
 /config/credentials/*.key
+/config/secrets/
 
 # Ignore npm modules as they will be installed (cleanly)
 /node_modules/
