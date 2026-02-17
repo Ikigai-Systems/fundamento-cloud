@@ -76,15 +76,21 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    :user_name => Rails.application.credentials.dig(:mailtrap, :username),
-    :password => Rails.application.credentials.dig(:mailtrap, :password),
-    :address => 'live.smtp.mailtrap.io',
-    :host => 'live.smtp.mailtrap.io',
-    :port => '587',
-    :authentication => :login
-  }
+  # Configure SMTP from credentials if provided, otherwise emails are logged only.
+  # To enable email delivery, add smtp settings to standalone credentials:
+  #   smtp:
+  #     user_name: your_username
+  #     password: your_password
+  #     address: smtp.example.com
+  #     port: 587
+  #     authentication: login
+  smtp = Rails.application.credentials.dig(:smtp)
+  if smtp.present?
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = smtp.symbolize_keys
+  else
+    config.action_mailer.delivery_method = :test
+  end
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
