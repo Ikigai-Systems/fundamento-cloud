@@ -13,7 +13,7 @@ module PandocConverterService
 
   def self.build_env
     env = {}
-    sentry_dsn = Rails.application.sops.credentials.dig(:sentry, :pandoc_converter_dsn)
+    sentry_dsn = Rails.application.credentials.dig(:sentry, :pandoc_converter_dsn)
     env["SENTRY_DSN"] = sentry_dsn if sentry_dsn.present?
     env
   end
