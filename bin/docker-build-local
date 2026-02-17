@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Default values
-RAILS_ENV="${RAILS_ENV:-development}"
+RAILS_ENV="${RAILS_ENV:-production}"
 TARGET="${1:-production}"
 
 echo -e "${GREEN}Building Docker image for target: ${TARGET}${NC}"
