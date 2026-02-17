@@ -111,7 +111,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            SOPS_VERSION=${{ env.SOPS_VERSION }}
             NODE_MAJOR=${{ env.NODE_MAJOR }}
             ${{ matrix.rails-env && format('RAILS_ENV={0}', matrix.rails-env) || '' }}
           target: ${{ matrix.build-target || '' }}
