@@ -36,9 +36,6 @@ if ! sops -d --extract '["fontawesome"]["auth_token"]' "config/secrets/${RAILS_E
   exit 1
 fi
 
-# Copy SOPS age key to secret file
-cat ~/.config/sops/age/keys.txt > dockerfiles/sops-age-key.secret
-
 # Set permissions
 chmod 600 dockerfiles/*.secret
 
@@ -51,18 +48,17 @@ docker buildx build \
   --build-arg SOPS_VERSION=3.11.0 \
   --build-arg NODE_MAJOR=24 \
   --secret id=fontawesome-auth,src=dockerfiles/fontawesome-auth.secret \
-  --secret id=sops-age-key,src=dockerfiles/sops-age-key.secret \
   --tag "fundamento-cloud:${TARGET}" \
   --load \
   .
 
 echo ""
-echo -e "${GREEN}✓ Build complete!${NC}"
+echo -e "${GREEN}Build complete!${NC}"
 echo "Image: fundamento-cloud:${TARGET}"
 echo ""
-echo "To run with docker-compose (includes secrets at runtime):"
-echo "  export SOPS_AGE_KEY_FILE=\$(pwd)/dockerfiles/sops-age-key.secret"
+echo "To run with docker-compose:"
+echo "  export RAILS_MASTER_KEY=\$(sops -d --extract '[\"rails\"][\"master_key\"]' config/secrets/${RAILS_ENV}.sops.yaml)"
 echo "  docker-compose up"
 echo ""
 echo "Or run standalone:"
-echo "  docker run -p 3000:3000 -e SOPS_AGE_KEY=\"\$(cat ~/.config/sops/age/keys.txt)\" fundamento-cloud:${TARGET}"
+echo "  docker run -p 3000:3000 -e RAILS_MASTER_KEY=\"\$(sops -d --extract '[\"rails\"][\"master_key\"]' config/secrets/${RAILS_ENV}.sops.yaml)\" fundamento-cloud:${TARGET}"

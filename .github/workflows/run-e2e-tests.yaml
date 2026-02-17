@@ -43,11 +43,11 @@ jobs:
         run: |
           # Extract FontAwesome token and create secret file for Docker
           sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/test.sops.yaml > dockerfiles/fontawesome-auth.secret
+          chmod 600 dockerfiles/fontawesome-auth.secret
 
-          # Create SOPS age key secret file for Docker build
-          echo "${{ secrets.SOPS_AGE_KEY }}" > dockerfiles/sops-age-key.secret
-
-          chmod 600 dockerfiles/*.secret
+          # Extract Rails master key for credential decryption
+          RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/e2e.sops.yaml)
+          echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 
           # Export FontAwesome token for bundle install
           echo "BUNDLE_DL__FONTAWESOME__COM=$(cat dockerfiles/fontawesome-auth.secret)" >> $GITHUB_ENV
@@ -69,7 +69,7 @@ jobs:
 
       - uses: hoverkraft-tech/compose-action@v2.0.1
         env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+          RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
       - name: Cypress run
         uses: cypress-io/github-action@v6

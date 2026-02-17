@@ -25,7 +25,7 @@ class DevE2E < Thor
   option :test, type: :boolean, default: false, desc: "Run Cypress tests after environment is healthy"
   def up
     setup_env!
-    load_sops_key!
+    load_rails_master_key!
     print_status
 
     compose("down")
@@ -101,38 +101,44 @@ class DevE2E < Thor
     ENV_VARS.each { |key, value| ENV[key] = value }
   end
 
-  def load_sops_key!
-    return if ENV["SOPS_AGE_KEY"] && !ENV["SOPS_AGE_KEY"].empty?
+  def load_rails_master_key!
+    return if ENV["RAILS_MASTER_KEY"] && !ENV["RAILS_MASTER_KEY"].empty?
 
-    secret_file = File.join(Dir.pwd, "dockerfiles", "sops-age-key.secret")
-
-    if File.exist?(secret_file)
-      puts "Loading SOPS_AGE_KEY from dockerfiles/sops-age-key.secret..."
-      puts ""
-
-      key = File.readlines(secret_file)
-        .reject { |line| line.start_with?("#") || line.strip.empty? }
-        .first&.strip
-
-      if key && !key.empty?
-        ENV["SOPS_AGE_KEY"] = key
-      else
-        abort <<~MSG
-          Error: dockerfiles/sops-age-key.secret exists but contains no valid key!
-
-          The file should contain an age secret key (lines starting with # are ignored).
-        MSG
+    # Try reading from the key file first
+    key_file = File.join(Dir.pwd, "config", "credentials", "e2e.key")
+    if File.exist?(key_file)
+      key = File.read(key_file).strip
+      if !key.empty?
+        puts "Loading RAILS_MASTER_KEY from config/credentials/e2e.key..."
+        puts ""
+        ENV["RAILS_MASTER_KEY"] = key
+        return
       end
+    end
+
+    # Fall back to extracting from SOPS
+    sops_file = File.join(Dir.pwd, "config", "secrets", "e2e.sops.yaml")
+
+    unless File.exist?(sops_file)
+      abort <<~MSG
+        Error: Neither config/credentials/e2e.key nor config/secrets/e2e.sops.yaml found!
+
+        Run bin/setup to extract credential keys from SOPS.
+      MSG
+    end
+
+    puts "Extracting RAILS_MASTER_KEY from SOPS for e2e environment..."
+    puts ""
+
+    key = `sops -d --extract '["rails"]["master_key"]' #{sops_file} 2>/dev/null`.strip
+
+    if $?.success? && !key.empty?
+      ENV["RAILS_MASTER_KEY"] = key
     else
       abort <<~MSG
-        Error: SOPS_AGE_KEY is not set and dockerfiles/sops-age-key.secret not found!
+        Error: Failed to extract rails master key from #{sops_file}
 
-        SOPS_AGE_KEY is required to decrypt secrets for the E2E environment.
-
-        Options:
-          1. Run bin/setup to import it from 1password vault
-          2. Export it in your shell: export SOPS_AGE_KEY='your-key-here'
-          3. Pass it inline: SOPS_AGE_KEY='your-key' bin/dev-e2e
+        Ensure your age key is configured at ~/.config/sops/age/keys.txt
       MSG
     end
   end

@@ -80,10 +80,8 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Ikigai-specific: precompile assets
-# Mount SOPS age key as secret and set it as environment variable for SOPS to use
-RUN --mount=type=secret,id=sops-age-key,env=SOPS_AGE_KEY \
-    SECRET_KEY_BASE_DUMMY=1 DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
+# Precompile assets (SECRET_KEY_BASE_DUMMY=1 skips credential loading)
+RUN SECRET_KEY_BASE_DUMMY=1 DATABASE_URL="postgres://postgres:password@localhost/postgres" bin/rails assets:precompile && \
     rm -rf tmp/cache/assets
 
 # Transpile blocknote-converter server side utils for document-to-blocks conversion
@@ -92,10 +90,7 @@ RUN cd micro-services/blocknote-converter && npm run build
 # Final stage for app image
 FROM base AS packaged
 
-# Re-declare build args for this stage
-ARG SOPS_VERSION=3.11.0
 ARG NODE_MAJOR=24
-ARG TARGETARCH
 
 # Copy Node.js from node-source stage
 COPY --from=node-source /usr/local/bin/node /usr/local/bin/node
@@ -104,14 +99,11 @@ RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
     ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
     ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
 
-# Install packages needed for deployment (including age and sops for secrets management)
+# Install packages needed for deployment
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update -qq && \
-    apt-get install --no-install-recommends -y libvips gettext age && \
-    curl -LO https://github.com/getsops/sops/releases/download/v${SOPS_VERSION}/sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
-    dpkg -i sops_${SOPS_VERSION}_${TARGETARCH}.deb && \
-    rm sops_${SOPS_VERSION}_${TARGETARCH}.deb
+    apt-get install --no-install-recommends -y libvips gettext
 
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash

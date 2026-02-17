@@ -16,6 +16,17 @@ FileUtils.chdir APP_ROOT do
   system!("op document get --account my.1password.com 57od4h7zivbd6pfr2yvapqttwm --out-file dockerfiles/sops-age-key.secret")
   system!("SOPS_AGE_KEY_FILE=dockerfiles/sops-age-key.secret sops -d --extract '[\"fontawesome\"][\"auth_token\"]' --output dockerfiles/fontawesome-auth.secret config/secrets/development.sops.yaml")
 
+  puts "== Extracting Rails credential keys from SOPS =="
+  FileUtils.mkdir_p("config/credentials")
+  %w[development test e2e production].each do |env|
+    sops_file = "config/secrets/#{env}.sops.yaml"
+    key_file = "config/credentials/#{env}.key"
+    next unless File.exist?(sops_file)
+
+    system!("SOPS_AGE_KEY_FILE=dockerfiles/sops-age-key.secret sops -d --extract '[\"rails\"][\"master_key\"]' --output #{key_file} #{sops_file}")
+    File.chmod(0600, key_file)
+  end
+
   puts "== Installing and configuring bundler =="
   system! "gem install bundler --conservative"
 
