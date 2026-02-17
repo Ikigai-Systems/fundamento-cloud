@@ -1,0 +1,103 @@
+name: "Package: fundamento-standalone"
+
+on:
+  workflow_run:
+    workflows: [ "Run Tests" ]
+    types:
+      - completed
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  SOPS_VERSION: 3.11.0
+  NODE_MAJOR: 24
+
+jobs:
+  build-platform-images:
+    runs-on: ${{ matrix.runner }}
+    if: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            tag-suffix: -amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            tag-suffix: -arm64
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SOPS with age
+        uses: ./.github/actions/setup-sops
+        with:
+          age-key: ${{ secrets.SOPS_AGE_KEY }}
+          sops-version: ${{ env.SOPS_VERSION }}
+
+      - name: Decrypt secrets for Docker build
+        run: |
+          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/production.sops.yaml > /tmp/fontawesome-auth.secret
+          echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
+
+      - name: Docker build setup
+        id: build-setup
+        uses: ./.github/actions/docker-build-setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: fundamento
+          tag-suffix: ${{ matrix.tag-suffix }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ${{ steps.build-setup.outputs.tags }}
+          labels: ${{ steps.build-setup.outputs.labels }}
+          build-args: |
+            NODE_MAJOR=${{ env.NODE_MAJOR }}
+            RAILS_ENV=standalone
+          target: standalone
+          secret-files: |
+            "fontawesome-auth=${{ env.FONTAWESOME_SECRET_FILE }}"
+          cache-from: |
+            type=gha,scope=fundamento-${{ matrix.platform }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento:master${{ matrix.tag-suffix }}
+          cache-to: type=gha,mode=max,scope=fundamento-${{ matrix.platform }}
+
+  create-multi-arch-manifest:
+    runs-on: ubuntu-latest
+    needs: build-platform-images
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker build setup
+        id: build-setup
+        uses: ./.github/actions/docker-build-setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: fundamento
+
+      - name: Create multi-arch manifest
+        run: |
+          # For each tag, create a manifest that combines both platform images
+          echo '${{ steps.build-setup.outputs.tags }}' | while read -r TAG; do
+            [ -z "$TAG" ] && continue
+            echo "Creating manifest for: $TAG"
+            docker buildx imagetools create \
+              --tag "$TAG" \
+              "${TAG}-amd64" \
+              "${TAG}-arm64"
+          done
