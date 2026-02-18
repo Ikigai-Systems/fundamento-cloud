@@ -7,7 +7,7 @@ module Flipper
     class StaticFeature
       def initialize(adapter, feature_name, enabled)
         @adapter = adapter
-        @feature_name = feature_name.to_sym
+        @feature_name = feature_name.to_s
         @enabled = enabled
       end
 
