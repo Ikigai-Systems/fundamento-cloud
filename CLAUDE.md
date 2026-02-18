@@ -7,11 +7,7 @@ Context includes also:
 
 ## Running commands
 
-Whenever you want to run rails related commands use `rails` (not `bin/rails`).
-
-To run agent-brwoser related commands use `npx agent-browser`. Use save state functionality to create cached states. Let agent-browser store them in `tmp/agent-browser` directory.
-
-When possible use binstubs instead of using `bundle exec`.
+When possible use scripts from `bin/` instead of using `bundle exec`. For example `bin/rails`, `bin/rspec`, `bin/rake`, etc.
 
 ## Architecture Overview
 
