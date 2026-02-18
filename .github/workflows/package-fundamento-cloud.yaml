@@ -1,0 +1,90 @@
+name: "Package: fundamento-cloud"
+
+on:
+  workflow_run:
+    workflows: [ "Run Tests" ]
+    types:
+      - completed
+    branches:
+      - master
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: ghcr.io
+  SOPS_VERSION: 3.11.0
+  NODE_MAJOR: 24
+
+jobs:
+  build-and-push-images:
+    runs-on: ubuntu-latest
+    if: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
+    strategy:
+      matrix:
+        include:
+          - image-name: fundamento-cloud
+            context: .
+            needs-secrets: true
+            rails-env: production
+            build-target: production
+          - image-name: blocknote-converter
+            context: micro-services/blocknote-converter
+            needs-secrets: false
+            rails-env: ''
+            build-target: ''
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SOPS with age
+        if: matrix.needs-secrets
+        uses: ./.github/actions/setup-sops
+        with:
+          age-key: ${{ secrets.SOPS_AGE_KEY }}
+          sops-version: ${{ env.SOPS_VERSION }}
+
+      - name: Decrypt secrets for Docker build
+        if: matrix.needs-secrets
+        run: |
+          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/production.sops.yaml > /tmp/fontawesome-auth.secret
+          echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
+
+      - name: Docker build setup
+        id: build-setup
+        uses: ./.github/actions/docker-build-setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Tags for CI/CD consumption (FluxCD picks up timestamp tags)
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}
+          tags: |
+            type=raw,value=${{ steps.build-setup.outputs.timestamp }},enable={{is_default_branch}}
+            type=sha
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NODE_MAJOR=${{ env.NODE_MAJOR }}
+            ${{ matrix.rails-env && format('RAILS_ENV={0}', matrix.rails-env) || '' }}
+          target: ${{ matrix.build-target || '' }}
+          secret-files: |
+            ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"', env.FONTAWESOME_SECRET_FILE) || '' }}
+          cache-from: |
+            type=gha,scope=${{ matrix.image-name }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}:master
+          cache-to: type=gha,mode=max,scope=${{ matrix.image-name }}
