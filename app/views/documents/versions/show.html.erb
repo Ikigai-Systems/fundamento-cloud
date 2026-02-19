@@ -39,7 +39,7 @@
   <% end %>
 <% end %>
 
-<article class="document">
+<article class="flex flex-col">
   <%= react_component "ShowDocumentVersionPanel", {
     version: @version.attributes.except("id"),
     document: @document.to_react_props,

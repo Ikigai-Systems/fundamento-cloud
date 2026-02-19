@@ -1,12 +1,4 @@
 @layer base {
-    .document {
-        @apply flex-col overflow-auto;
-    }
-
-    .document-editable {
-        @apply min-h-[calc(100vh-70px)]
-    }
-
     .content-container {
         @apply text-black dark:text-white;
         @apply bg-white dark:bg-gray-800;

@@ -56,12 +56,12 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
-<article class="document document-editable">
+<article class="flex flex-col flex-1">
   <%= react_component "EditDocumentPanel", {
     document: @document.to_react_props,
     space: @space.to_react_props,
     current_user: current_user,
     database_id: database_id,
     features: enabled_feature_names
-  } %>
+  }, class: "flex flex-col flex-1" %>
 </article>

@@ -55,7 +55,7 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
 <% end %>
 
-<article class="document">
+<article class="flex flex-col">
   <%= react_component "ViewTablePanel", {
     table: @table,
     space: @space.to_react_props

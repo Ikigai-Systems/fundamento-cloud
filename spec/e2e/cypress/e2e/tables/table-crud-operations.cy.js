@@ -165,7 +165,7 @@ describe("Table CRUD Operations", function () {
       cy.visit(`/t/${tableId}`);
 
       // Verify the ViewTablePanel is rendered
-      cy.get("article.document").should("exist");
+      cy.get('[data-react-loader-component-value="ViewTablePanel"]').should("exist");
 
       // Verify content menu has the Edit button
       cy.get(".edit-table-button").should("exist");

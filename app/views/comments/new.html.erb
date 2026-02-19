@@ -17,13 +17,13 @@
     <%= f.hidden_field :content, data: { target: "serialize-blocknote.field" } %>
 
     <div class="flex flex-col gap-3">
-      <div class="rounded-xl py-3 border min-h-[10rem]">
+      <div class="rounded-xl py-3 border min-h-[10rem] flex flex-col">
         <%= react_component "EditCommentPanel", {
           object: @resource.to_react_props,
           space: @resource.space.to_react_props,
           current_user: current_user,
           database_id: database_id,
-        } %>
+        }, class: "flex flex-col flex-1" %>
       </div>
 
       <div>

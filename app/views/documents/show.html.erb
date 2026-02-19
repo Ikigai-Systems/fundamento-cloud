@@ -76,7 +76,7 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
-<article class="document">
+<article class="flex flex-col">
   <%= turbo_frame_tag "document_hierarchy",
     data: { turbo: false },
     src: hierarchy_document_path(@document) %>

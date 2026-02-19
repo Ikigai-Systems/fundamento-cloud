@@ -19,7 +19,7 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
 <% end %>
 
-<article class="document document-editable">
+<article class="flex flex-col">
   <%= react_component "EditTablePanel", {
     table: @table,
     space: @table.space.to_react_props

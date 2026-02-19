@@ -62,3 +62,20 @@
 [data-document-editor].read-only .bn-editor {
     @apply px-5;
 }
+
+/* Make document and comment editors fill available space for better drag-and-drop */
+[data-document-editor] {
+    @apply flex-1 flex flex-col;
+}
+
+[data-document-editor] .bn-editor {
+    @apply flex-1;
+}
+
+[data-comment-editor] {
+    @apply flex-1 flex flex-col;
+}
+
+[data-comment-editor] .bn-editor {
+    @apply flex-1;
+}
