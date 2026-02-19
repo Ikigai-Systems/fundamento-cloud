@@ -1,11 +1,12 @@
 #!/bin/bash -e
 
-# Auto-generate secret key for standalone on first boot
+# Auto-generate credentials for standalone on first boot
 if [ "$RAILS_ENV" = "standalone" ]; then
-  SECRET_KEY_BASE_FILE=config/credentials/secret_key_base
-  if [ ! -f "$SECRET_KEY_BASE_FILE" ]; then
-    echo "First boot detected — generating secret key..."
-    ./bin/rails secret > "$SECRET_KEY_BASE_FILE"
+  CREDENTIALS_FILE=config/credentials/standalone.yml.enc
+
+  if [ ! -f "$CREDENTIALS_FILE" ]; then
+    echo "First boot detected — generating standalone credentials..."
+    EDITOR="true" ./bin/rails credentials:edit --environment standalone
   fi
 fi
 
