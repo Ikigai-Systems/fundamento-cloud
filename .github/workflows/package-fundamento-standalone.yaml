@@ -127,3 +127,17 @@ jobs:
               "${TAG}-amd64" \
               "${TAG}-arm64"
           done
+
+  notify-fundamento-cli:
+    runs-on: ubuntu-latest
+    needs: create-multi-arch-manifest
+    permissions:
+      contents: read
+    steps:
+      - name: Trigger Fundamento CLI integration tests
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.FUNDAMENTO_CLI_PAT }}
+          repository: Ikigai-Systems/fundamento-cli
+          event-type: fundamento-standalone-image-published
+          client-payload: '{"version": "sha-${{ github.sha }}"}'
