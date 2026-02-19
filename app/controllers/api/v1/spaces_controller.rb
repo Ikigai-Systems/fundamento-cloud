@@ -64,7 +64,7 @@ module Api
         hierarchy_node = find_in_hierarchy(space.hierarchy, doc.id)
         if hierarchy_node && hierarchy_node['children']
           children_docs = hierarchy_node['children'].map do |child_node|
-            child_doc = space.documents.find_by(npi: child_node['id'])
+            child_doc = space.documents.find_by(id: child_node['id'])
             build_document_hierarchy(child_doc, space) if child_doc
           end.compact
 
