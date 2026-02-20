@@ -114,8 +114,6 @@ describe("Table CRUD Operations", function () {
     cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}/edit`);
 
-      cy.intercept("PUT", `/t/${tableId}/update_by_rowstack`).as("updateTableCell");
-
       // Wait for table to load
       cy.get(".ikigai-rowstack-overrides").should("exist");
       cy.contains("Changes are saved automatically").should("be.visible");
@@ -126,19 +124,28 @@ describe("Table CRUD Operations", function () {
       // Edit a cell - double click to enter edit mode
       cy.contains('[role="gridcell"]', "MON").dblclick();
 
-      // Type new value and blur to commit the edit
+      // Type new value
       cy.focused().should("exist");
-      cy.focused().type("{selectall}MON-UPDATED").blur();
+      cy.focused().type("{selectall}MON-UPDATED");
 
-      cy.wait("@updateTableCell");
-
-      // Click on a different cell to fully deselect the edited cell
+      // Click on a different cell to commit the edit and exit edit mode
       cy.contains('[role="gridcell"]', "JIRA").click();
 
-      // Wait for the new value to appear (indicating save is complete)
-      cy.contains("MON-UPDATED").should("exist");
+      // Wait for the value to appear as text content (cell exited edit mode)
+      cy.contains('[role="gridcell"]', "MON-UPDATED").should("exist");
 
-      cy.wait("@updateTableCell");
+      // Poll the database until the value is persisted before navigating
+      const waitForPersistence = (attempt = 0) => {
+        return cy.appEval(
+          "Tables::Cell.find_by(row_id: 'projects_row_3', column_id: 'project_key')&.value"
+        ).then((value) => {
+          if (value === "MON-UPDATED") return;
+          if (attempt >= 20) throw new Error("Cell value was not persisted to database");
+          cy.wait(250);
+          return waitForPersistence(attempt + 1);
+        });
+      };
+      waitForPersistence();
 
       // Navigate to view mode
       cy.visit(`/t/${tableId}`);
