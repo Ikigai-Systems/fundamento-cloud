@@ -1,73 +1,37 @@
+import fs from "fs";
+import path from "path";
 import {convertBlocksToMarkdown, convertMarkdownToBlocks} from "../src/converters";
+
+function loadFixture(name: string): string {
+  return fs.readFileSync(path.join(__dirname, "fixtures", name), "utf-8");
+}
 
 describe("Custom block markdown round-trip", () => {
   describe("advancedTable", () => {
-    const advancedTableBlock = {
-      id: "table1",
-      type: "advancedTable",
-      props: {
-        tableId: 42,
-        tableNpi: "abc123",
-        viewProps: JSON.stringify({columns: {}}),
-      },
-      content: undefined,
-      children: [],
-    };
+    const fixture = loadFixture("advancedTable.md");
 
-    it("should preserve advancedTable block type through round-trip", async () => {
-      const markdown = await convertBlocksToMarkdown([advancedTableBlock]);
-      const blocks = await convertMarkdownToBlocks(markdown);
-
+    it("should parse advancedTable block from markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
       const table = blocks.find((b: any) => b.type === "advancedTable");
       expect(table).toBeDefined();
-    });
-
-    it("should preserve advancedTable props through round-trip", async () => {
-      const markdown = await convertBlocksToMarkdown([advancedTableBlock]);
-      const blocks = await convertMarkdownToBlocks(markdown);
-
-      const table = blocks.find((b: any) => b.type === "advancedTable");
       expect(table.props.tableId).toBe(42);
       expect(table.props.tableNpi).toBe("abc123");
     });
 
-    it("should emit raw HTML containing data-content-type in markdown", async () => {
-      const markdown = await convertBlocksToMarkdown([advancedTableBlock]);
-
-      expect(markdown).toContain("data-content-type=\"advancedTable\"");
-      expect(markdown).toContain("data-table-npi=\"abc123\"");
-      expect(markdown).toContain("data-table-id=\"42\"");
+    it("should round-trip advancedTable back to identical markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
+      const markdown = await convertBlocksToMarkdown(blocks);
+      expect(markdown).toBe(fixture);
     });
   });
 
   describe("chartBlock", () => {
-    const chartBlock = {
-      id: "chart1",
-      type: "chartBlock",
-      props: {
-        tableNpi: "tbl999",
-        title: "Revenue",
-        chartType: "bar",
-        xAxisColumnNpi: "col1",
-        yAxisColumnNpi: "col2",
-      },
-      content: undefined,
-      children: [],
-    };
+    const fixture = loadFixture("chartBlock.md");
 
-    it("should preserve chartBlock block type through round-trip", async () => {
-      const markdown = await convertBlocksToMarkdown([chartBlock]);
-      const blocks = await convertMarkdownToBlocks(markdown);
-
+    it("should parse chartBlock from markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
       const chart = blocks.find((b: any) => b.type === "chartBlock");
       expect(chart).toBeDefined();
-    });
-
-    it("should preserve chartBlock props through round-trip", async () => {
-      const markdown = await convertBlocksToMarkdown([chartBlock]);
-      const blocks = await convertMarkdownToBlocks(markdown);
-
-      const chart = blocks.find((b: any) => b.type === "chartBlock");
       expect(chart.props.tableNpi).toBe("tbl999");
       expect(chart.props.title).toBe("Revenue");
       expect(chart.props.chartType).toBe("bar");
@@ -75,64 +39,41 @@ describe("Custom block markdown round-trip", () => {
       expect(chart.props.yAxisColumnNpi).toBe("col2");
     });
 
-    it("should emit raw HTML containing data-content-type in markdown", async () => {
-      const markdown = await convertBlocksToMarkdown([chartBlock]);
-
-      expect(markdown).toContain("data-content-type=\"chartBlock\"");
-      expect(markdown).toContain("data-table-npi=\"tbl999\"");
-      expect(markdown).toContain("data-chart-type=\"bar\"");
+    it("should round-trip chartBlock back to identical markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
+      const markdown = await convertBlocksToMarkdown(blocks);
+      expect(markdown).toBe(fixture);
     });
   });
 
   describe("mixed document", () => {
-    it("should preserve custom blocks alongside standard blocks", async () => {
-      const blocks = [
-        {
-          id: "h1",
-          type: "heading",
-          props: {textColor: "default", backgroundColor: "default", textAlignment: "left", level: 1},
-          content: [{type: "text", text: "Title", styles: {}}],
-          children: [],
-        },
-        {
-          id: "table1",
-          type: "advancedTable",
-          props: {tableId: 7, tableNpi: "npi1", viewProps: JSON.stringify({columns: {}})},
-          content: undefined,
-          children: [],
-        },
-        {
-          id: "p1",
-          type: "paragraph",
-          props: {textColor: "default", backgroundColor: "default", textAlignment: "left"},
-          content: [{type: "text", text: "Some text", styles: {}}],
-          children: [],
-        },
-        {
-          id: "chart1",
-          type: "chartBlock",
-          props: {tableNpi: "npi2", title: "Sales", chartType: "pie", xAxisColumnNpi: "", yAxisColumnNpi: ""},
-          content: undefined,
-          children: [],
-        },
-      ];
+    const fixture = loadFixture("mixed-document.md");
 
-      const markdown = await convertBlocksToMarkdown(blocks);
-      const result = await convertMarkdownToBlocks(markdown);
+    it("should parse all block types from mixed markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
 
-      // Standard blocks survive
-      expect(result.find((b: any) => b.type === "heading")).toBeDefined();
-      expect(result.find((b: any) => b.type === "paragraph")).toBeDefined();
+      const heading = blocks.find((b: any) => b.type === "heading");
+      expect(heading).toBeDefined();
+      expect(heading.content[0].text).toBe("Project Overview");
 
-      // Custom blocks survive
-      const table = result.find((b: any) => b.type === "advancedTable");
+      const paragraphs = blocks.filter((b: any) => b.type === "paragraph");
+      expect(paragraphs.some((p: any) => p.content?.[0]?.text === "Here is the data:")).toBe(true);
+      expect(paragraphs.some((p: any) => p.content?.[0]?.text === "And the chart:")).toBe(true);
+
+      const table = blocks.find((b: any) => b.type === "advancedTable");
       expect(table).toBeDefined();
-      expect(table.props.tableNpi).toBe("npi1");
+      expect(table.props.tableNpi).toBe("abc123");
 
-      const chart = result.find((b: any) => b.type === "chartBlock");
+      const chart = blocks.find((b: any) => b.type === "chartBlock");
       expect(chart).toBeDefined();
-      expect(chart.props.title).toBe("Sales");
-      expect(chart.props.chartType).toBe("pie");
+      expect(chart.props.title).toBe("Revenue");
+      expect(chart.props.chartType).toBe("bar");
+    });
+
+    it("should round-trip mixed document back to identical markdown", async () => {
+      const blocks = await convertMarkdownToBlocks(fixture);
+      const markdown = await convertBlocksToMarkdown(blocks);
+      expect(markdown).toBe(fixture);
     });
   });
 
