@@ -91,6 +91,8 @@ jobs:
   create-multi-arch-manifest:
     runs-on: ubuntu-latest
     needs: build-platform-images
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
     permissions:
       contents: read
       packages: write
@@ -140,4 +142,4 @@ jobs:
           token: ${{ secrets.FUNDAMENTO_CLI_PAT }}
           repository: Ikigai-Systems/fundamento-cli
           event-type: fundamento-standalone-image-published
-          client-payload: '{"version": "sha-${{ github.sha }}"}'
+          client-payload: '{"version": "${{ needs.create-multi-arch-manifest.outputs.version }}"}'
