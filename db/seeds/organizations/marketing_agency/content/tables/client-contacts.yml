@@ -1,0 +1,13 @@
+name: "Client Contacts"
+columns:
+  - name: "Client"
+    kind: string
+  - name: "Contact Name"
+    kind: string
+  - name: "Email"
+    kind: string
+  - name: "Role"
+    kind: string
+  - name: "Last Contact"
+    kind: date
+data: client-contacts.csv
