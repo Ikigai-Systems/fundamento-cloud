@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_155608) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_160324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -234,6 +234,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_155608) do
   end
 
   create_table "import_files", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "blob_signed_id"
     t.string "checksum"
     t.datetime "created_at", null: false
     t.string "document_id"

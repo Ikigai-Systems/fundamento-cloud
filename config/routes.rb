@@ -201,6 +201,17 @@ Rails.application.routes.draw do
       resources :tables, only: [:show]
 
       resources :users, only: [:show]
+
+      resources :import_sessions, only: [:create, :show, :destroy] do
+        member do
+          post :manifest
+          post :process, action: :trigger_processing
+          post :retry, action: :retry_failed
+        end
+        resources :import_files, only: [:update]
+      end
     end
   end
+
+  resources :import_sessions, only: [:index, :show, :new]
 end
