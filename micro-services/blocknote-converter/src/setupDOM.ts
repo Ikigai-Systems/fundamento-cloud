@@ -16,7 +16,7 @@ export function setupDOM() {
   // Set up global DOM objects
   (global as any).window = window;
   (global as any).document = window.document;
-  (global as any).navigator = window.navigator;
+  Object.defineProperty(global, "navigator", {value: window.navigator, writable: true, configurable: true});
   (global as any).HTMLElement = window.HTMLElement;
   (global as any).Element = window.Element;
   (global as any).Node = window.Node;

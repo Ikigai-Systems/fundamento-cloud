@@ -44,6 +44,9 @@ const createAdvancedTable = createReactBlockSpec(
 
       return <a href={tableUrl}>Table</a>;
     },
+    toExternalHTML: () => {
+      return <div data-content-type="advancedTable">Table</div>;
+    },
   }
 );
 
@@ -74,6 +77,9 @@ const createChartBlock = createReactBlockSpec(
   }, {
     render: () => {
       return <p>Chart</p>;
+    },
+    toExternalHTML: () => {
+      return <div data-content-type="chartBlock">Chart</div>;
     },
   }
 );
