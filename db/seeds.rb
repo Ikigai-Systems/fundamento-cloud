@@ -21,4 +21,20 @@ end
 # Development seed data
 return unless Rails.env.development?
 
+# Seed organization names - add new scenarios here
+SEED_ORG_NAMES = [
+  "BrightPath Media"
+].freeze
+
+# Seed user email domains - one per scenario
+SEED_EMAIL_DOMAINS = [
+  "@brightpath.example.com"
+].freeze
+
+puts "Cleaning previous seed data..."
+Organization.where(name: SEED_ORG_NAMES).destroy_all
+SEED_EMAIL_DOMAINS.each { |domain| User.where("email LIKE ?", "%#{domain}").destroy_all }
+
+puts "Seeding development data..."
 Oaken.seed :organizations
+puts "Done!"
