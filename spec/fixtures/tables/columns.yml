@@ -46,3 +46,18 @@ orders_who:
   table_id: "orders"
   kind: :string
   previous_column_id: "orders_pizza"
+
+users_tracker_count:
+  id: "users_tracker_count"
+  name: "Users Count"
+  organization_id: "is"
+  table_id: "users_tracker"
+  kind: :number
+
+users_tracker_counted_at:
+  id: "users_tracker_counted_at"
+  name: "Counted At"
+  organization_id: "is"
+  table_id: "users_tracker"
+  kind: :string
+  previous_column_id: "users_tracker_count"

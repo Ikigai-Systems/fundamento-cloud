@@ -1,8 +1,19 @@
 require "rails_helper"
 
 RSpec.describe Formula::Engine, type: :model do
+  fixtures :users
+  fixtures :organizations
+  fixtures :organization_memberships
+  fixtures :spaces
+  fixtures "tables/tables"
+  fixtures "tables/columns"
+  fixtures "tables/rows"
+  fixtures "tables/cells"
+
+  let(:space) { spaces(:is_default) }
+  let(:organization_membership) { organization_memberships(:om_is_pawel) }
+  let(:action_executor) { Formula::ActionExecutor.new(space: space, organization_membership: organization_membership) }
   let(:engine) { Formula::Engine.new }
-  let(:action_executor) { Formula::ActionExecutor.new }
 
   describe 'Actions' do
     describe 'RunActions' do
@@ -15,10 +26,10 @@ RSpec.describe Formula::Engine, type: :model do
         }
 
         formula = 'RunActions(
-          DeleteRows("npi"),
+          DeleteRows("projects"),
           RunActions(
-            AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name"))),
-            AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))
+            AddRow("projects", "project_description", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name"))),
+            AddRow("projects", "project_description", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))
           )
         )'
 
@@ -26,21 +37,21 @@ RSpec.describe Formula::Engine, type: :model do
 
         expected_actions = [
           {
-            tableId: "npi",
+            tableId: "projects",
             type: "DeleteRows"
           },
           {
             type: "AddRow",
-            tableId: "npi",
+            tableId: "projects",
             values: {
-              "column_npi" => "JIRA Jira"
+              "project_description" => "JIRA Jira"
             },
           },
           {
             type: "AddRow",
-            tableId: "npi",
+            tableId: "projects",
             values: {
-              "column_npi" => "JIRA Jira"
+              "project_description" => "JIRA Jira"
             }
           }
         ]
@@ -59,15 +70,15 @@ RSpec.describe Formula::Engine, type: :model do
           }
         }
 
-        formula = 'AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
+        formula = 'AddRow("Projects", "project_description", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
         result = engine.evaluate(formula, context:, action_executor:)
 
         expected_actions = [
           {
             type: "AddRow",
-            tableId: "npi",
+            tableId: "projects",
             values: {
-              "column_npi" => "JIRA Jira"
+              "project_description" => "JIRA Jira"
             }
           }
         ]
@@ -85,15 +96,15 @@ RSpec.describe Formula::Engine, type: :model do
             }
           }
 
-          formula = 'AddRow("npi", "column_npi", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
+          formula = 'AddRow("Projects", "projects_description", Concatenate(CurrentRow("Key"), " ", CurrentRow("Name")))'
           result = engine.evaluate(formula, context:, action_executor:)
 
           expected_actions = [
             {
               type: "AddRow",
-              tableId: "npi",
+              tableId: "projects",
               values: {
-                "column_npi" => "JIRA Jira"
+                "projects_description" => "JIRA Jira"
               }
             }
           ]
@@ -111,91 +122,91 @@ RSpec.describe Formula::Engine, type: :model do
             "WebhookBody" => webhook_body
           }
 
-          formula = 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("npi", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))'
+          formula = 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("Users Tracker", "users_tracker_counted_at", First(CurrentValue), "users_tracker_count", Last(CurrentValue)))'
           result = engine.evaluate(formula, context:, action_executor:)
 
           expect(result).to eq([true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true])
           expect(action_executor.get_actions).to eq([
             {
               type: "AddRow",
-              tableId: "npi",
-              values: { "another_npi" => 2, "column_npi" => "2024-07-07T00:00:00+02:00" }
+              tableId: "users_tracker",
+              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-07T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 2, "column_npi" => "2024-07-14T00:00:00+02:00" }
+              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-14T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 2, "column_npi" => "2024-07-21T00:00:00+02:00" }
+              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-21T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 2, "column_npi" => "2024-07-28T00:00:00+02:00" }
+              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-28T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-08-04T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-04T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-08-11T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-11T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-08-18T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-18T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-08-25T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-25T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-09-01T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-01T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-09-08T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-08T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-09-15T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-15T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-09-22T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-22T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-09-29T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-29T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 3, "column_npi" => "2024-10-06T00:00:00+02:00" }
+              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-10-06T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 4, "column_npi" => "2024-10-13T00:00:00+02:00" }
+              values: { "users_tracker_count" => 4, "users_tracker_counted_at" => "2024-10-13T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 6, "column_npi" => "2024-10-20T00:00:00+02:00" }
+              values: { "users_tracker_count" => 6, "users_tracker_counted_at" => "2024-10-20T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 7, "column_npi" => "2024-10-27T00:00:00+02:00" }
+              values: { "users_tracker_count" => 7, "users_tracker_counted_at" => "2024-10-27T00:00:00+02:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 8, "column_npi" => "2024-11-03T00:00:00+01:00" }
+              values: { "users_tracker_count" => 8, "users_tracker_counted_at" => "2024-11-03T00:00:00+01:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 9, "column_npi" => "2024-11-10T00:00:00+01:00" }
+              values: { "users_tracker_count" => 9, "users_tracker_counted_at" => "2024-11-10T00:00:00+01:00" }
             },
-            { tableId: "npi",
+            { tableId: "users_tracker",
               type: "AddRow",
-              values: { "another_npi" => 12, "column_npi" => "2024-11-17T00:00:00+01:00" }
+              values: { "users_tracker_count" => 12, "users_tracker_counted_at" => "2024-11-17T00:00:00+01:00" }
             }
           ])
         end
@@ -204,13 +215,13 @@ RSpec.describe Formula::Engine, type: :model do
 
     describe 'DeleteRows' do
       it 'creates DeleteRows command' do
-        formula = 'DeleteRows("table_npi")'
+        formula = 'DeleteRows("Projects")'
         result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
             type: "DeleteRows",
-            tableId: "table_npi"
+            tableId: "projects"
           }
         ]
 
@@ -221,13 +232,13 @@ RSpec.describe Formula::Engine, type: :model do
 
     describe 'UpdateRows' do
       it 'creates UpdateRows command with condition and values' do
-        formula = 'UpdateRows("table_npi", "condition_formula", "col1", "value1", "col2", "value2")'
+        formula = 'UpdateRows("projects", "condition_formula", "col1", "value1", "col2", "value2")'
         result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
             type: "UpdateRows",
-            tableId: "table_npi",
+            tableId: "projects",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",
@@ -243,13 +254,13 @@ RSpec.describe Formula::Engine, type: :model do
 
     describe 'AddOrUpdateRows' do
       it 'creates AddOrUpdateRows command with condition and values' do
-        formula = 'AddOrUpdateRows("table_npi", "condition_formula", "col1", "value1", "col2", "value2")'
+        formula = 'AddOrUpdateRows("projects", "condition_formula", "col1", "value1", "col2", "value2")'
         result = engine.evaluate(formula, action_executor:)
 
         expected_actions = [
           {
             type: "AddOrUpdateRows",
-            tableId: "table_npi",
+            tableId: "projects",
             conditionFormula: "condition_formula",
             values: {
               "col1" => "value1",

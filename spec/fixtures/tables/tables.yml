@@ -3,14 +3,21 @@ _fixture:
 
 users:
   id: "users"
-  name: users
+  name: Users
+  organization_id: "is"
+  space_id: "is_default"
+  parent: is_default (Space)
+
+users_tracker:
+  id: "users_tracker"
+  name: Users Tracker
   organization_id: "is"
   space_id: "is_default"
   parent: is_default (Space)
 
 projects:
   id: "projects"
-  name: projects
+  name: Projects
   organization_id: "is"
   space_id: "is_default"
   parent: is_default (Space)

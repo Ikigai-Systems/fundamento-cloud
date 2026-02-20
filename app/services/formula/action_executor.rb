@@ -1,18 +1,17 @@
 class Formula::ActionExecutor
   attr_reader :actions
 
-  def initialize(dry_mode: true, space: nil, organization_membership: nil, additional_context: {})
+  def initialize(dry_mode: true, space:, organization_membership:, additional_context: {})
     @actions = []
     @dry_mode = dry_mode
     @space = space
     @organization_membership = organization_membership
     @additional_context = additional_context
-    
-    if !@dry_mode
-      raise ArgumentError, "space is required when dry_mode is false" unless @space
-      raise ArgumentError, "organization_membership is required when dry_mode is false" unless @organization_membership
-      @pundit_user = PolicyUserContext.new(@organization_membership.user, @organization_membership.organization)
-    end
+
+    raise ArgumentError, "space is required" unless @space
+    raise ArgumentError, "organization_membership" unless @organization_membership
+
+    @pundit_user = PolicyUserContext.new(@organization_membership.user, @organization_membership.organization)
   end
 
   # Record an action execution
@@ -64,42 +63,50 @@ class Formula::ActionExecutor
 
   # Public action methods for direct use in tests
   def add_row(function_context, table_id, values = {})
-    record_action("AddRow", tableId: table_id, values: values)
-    
+    table = find_table(table_id)
+
+    record_action("AddRow", tableId: table.id, values: values)
+
     unless @dry_mode
-      execute_add_row(function_context, table_id, values:)
+      execute_add_row(function_context, table, values:)
     end
-    
+
     true
   end
 
   def delete_rows(function_context, table_id)
-    record_action("DeleteRows", tableId: table_id)
-    
+    table = find_table(table_id)
+
+    record_action("DeleteRows", tableId: table.id)
+
     unless @dry_mode
-      execute_delete_rows(function_context, table_id)
+      execute_delete_rows(function_context, table)
     end
-    
+
     true
   end
 
   def update_rows(function_context, table_id, condition_formula, values = {})
-    record_action("UpdateRows", tableId: table_id, conditionFormula: condition_formula, values: values)
-    
+    table = find_table(table_id)
+
+    record_action("UpdateRows", tableId: table.id, conditionFormula: condition_formula, values: values)
+
     unless @dry_mode
-      execute_update_rows(function_context, table_id, condition_formula:, values:)
+      execute_update_rows(function_context, table, condition_formula:, values:)
     end
-    
+
     true
   end
 
   def add_or_update_rows(function_context, table_id, condition_formula, values = {})
-    record_action("AddOrUpdateRows", tableId: table_id, conditionFormula: condition_formula, values: values)
-    
+    table = find_table(table_id)
+
+    record_action("AddOrUpdateRows", tableId: table.id, conditionFormula: condition_formula, values: values)
+
     unless @dry_mode
-      execute_add_or_update_rows(function_context, table_id, condition_formula:, values:)
+      execute_add_or_update_rows(function_context, table, condition_formula:, values:)
     end
-    
+
     true
   end
 
@@ -111,9 +118,7 @@ class Formula::ActionExecutor
   private
 
   # Execution methods (copied from ExecuteActionsService)
-  def execute_add_row(function_context, table_id, values:)
-    table = find_table(table_id)
-
+  def execute_add_row(function_context, table, values:)
     Pundit.authorize(@pundit_user, table, :update?)
 
     row = table.rows.create!(
@@ -138,8 +143,7 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_delete_rows(function_context, table_id)
-    table = find_table(table_id)
+  def execute_delete_rows(function_context, table)
     Pundit.authorize(@pundit_user, table, :update?)
     
     # Handle foreign key constraints by clearing previous_row_id references first
@@ -147,8 +151,7 @@ class Formula::ActionExecutor
     table.rows.destroy_all
   end
 
-  def execute_update_rows(function_context, table_id, condition_formula:, values:)
-    table = find_table(table_id)
+  def execute_update_rows(function_context, table, condition_formula:, values:)
     Pundit.authorize(@pundit_user, table, :update?)
 
     table.rows.each do |row|
@@ -171,8 +174,7 @@ class Formula::ActionExecutor
     end
   end
 
-  def execute_add_or_update_rows(function_context, table_id, condition_formula:, values:)
-    table = find_table(table_id)
+  def execute_add_or_update_rows(function_context, table, condition_formula:, values:)
     Pundit.authorize(@pundit_user, table, :update?)
 
     matching_rows = []
