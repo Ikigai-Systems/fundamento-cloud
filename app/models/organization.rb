@@ -5,7 +5,7 @@ class Organization < ApplicationRecord
   has_many :attachments, dependent: :destroy
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
-  has_many :document_imports, dependent: :destroy
+  has_many :import_sessions, dependent: :destroy
   has_many :invited_users, dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :packs, dependent: :destroy

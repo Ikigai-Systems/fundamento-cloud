@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_152958) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_155608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -231,6 +231,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_152958) do
     t.index ["priority", "scheduled_at"], name: "index_good_jobs_on_priority_scheduled_at_unfinished_unlocked", where: "((finished_at IS NULL) AND (locked_by_id IS NULL))"
     t.index ["queue_name", "scheduled_at"], name: "index_good_jobs_on_queue_name_and_scheduled_at", where: "(finished_at IS NULL)"
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
+  end
+
+  create_table "import_files", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "checksum"
+    t.datetime "created_at", null: false
+    t.string "document_id"
+    t.text "error_message"
+    t.bigint "file_size"
+    t.integer "file_type", default: 0, null: false
+    t.string "format", default: "other", null: false
+    t.string "import_session_id", null: false
+    t.datetime "processed_at"
+    t.string "relative_path", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.datetime "uploaded_at"
+    t.index ["document_id"], name: "index_import_files_on_document_id"
+    t.index ["import_session_id", "checksum"], name: "index_import_files_on_import_session_id_and_checksum"
+    t.index ["import_session_id", "relative_path"], name: "index_import_files_on_import_session_id_and_relative_path", unique: true
+    t.index ["import_session_id", "status"], name: "index_import_files_on_import_session_id_and_status"
+    t.index ["import_session_id"], name: "index_import_files_on_import_session_id"
+  end
+
+  create_table "import_sessions", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "completed_processing_at"
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.integer "failed_files", default: 0, null: false
+    t.string "organization_id", null: false
+    t.string "organization_membership_id", null: false
+    t.jsonb "path_map", default: {}, null: false
+    t.integer "processed_files", default: 0, null: false
+    t.jsonb "settings", default: {}, null: false
+    t.integer "skipped_files", default: 0, null: false
+    t.string "source_format", default: "generic", null: false
+    t.string "space_id", null: false
+    t.datetime "started_processing_at"
+    t.integer "status", default: 0, null: false
+    t.integer "total_files", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.integer "uploaded_files", default: 0, null: false
+    t.index ["expires_at"], name: "index_import_sessions_on_expires_at"
+    t.index ["organization_id"], name: "index_import_sessions_on_organization_id"
+    t.index ["organization_membership_id"], name: "index_import_sessions_on_organization_membership_id"
+    t.index ["space_id"], name: "index_import_sessions_on_space_id"
+    t.index ["status"], name: "index_import_sessions_on_status"
   end
 
   create_table "inline_comment_threads", id: :string, force: :cascade do |t|
@@ -606,6 +652,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_152958) do
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_memberships"
+  add_foreign_key "import_files", "documents"
+  add_foreign_key "import_files", "import_sessions"
+  add_foreign_key "import_sessions", "organization_memberships"
+  add_foreign_key "import_sessions", "organizations"
+  add_foreign_key "import_sessions", "spaces"
   add_foreign_key "inline_comment_threads", "documents"
   add_foreign_key "inline_comment_threads", "users", column: "resolved_by"
   add_foreign_key "inline_comments", "inline_comment_threads"
