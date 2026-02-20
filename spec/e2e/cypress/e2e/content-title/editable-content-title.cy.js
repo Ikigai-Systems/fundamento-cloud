@@ -93,14 +93,14 @@ describe("Editable Content Title", function () {
 
   describe("Table show page", function () {
     it("displays the table title in the nav bar", function () {
-      cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.appEval("Table.find(:projects).id").then((tableId) => {
         cy.visit(`/t/${tableId}`);
-        cy.get("nav .editable-content-title").should("contain", "projects");
+        cy.get("nav .editable-content-title").should("contain", "Projects");
       });
     });
 
     it("allows clicking the title to edit, saving on blur, and updates sidebar", function () {
-      cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.appEval("Table.find(:projects).id").then((tableId) => {
         cy.visit(`/t/${tableId}`);
 
         // Click to enter edit mode
@@ -122,7 +122,7 @@ describe("Editable Content Title", function () {
     });
 
     it("cancels editing on Escape", function () {
-      cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.appEval("Table.find(:projects).id").then((tableId) => {
         cy.visit(`/t/${tableId}`);
 
         cy.get("nav .editable-content-title.editable").click();
@@ -130,7 +130,7 @@ describe("Editable Content Title", function () {
         cy.get("nav .editable-content-title input").type("Should Not Save");
         cy.get("nav .editable-content-title input").type("{esc}");
 
-        cy.get("nav .editable-content-title").should("contain", "projects");
+        cy.get("nav .editable-content-title").should("contain", "Projects");
         cy.get("nav .editable-content-title input").should("not.exist");
       });
     });
@@ -138,9 +138,9 @@ describe("Editable Content Title", function () {
 
   describe("Table edit page", function () {
     it("displays an editable title in the nav bar", function () {
-      cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+      cy.appEval("Table.find(:projects).id").then((tableId) => {
         cy.visit(`/t/${tableId}/edit`);
-        cy.get("nav .editable-content-title.editable").should("contain", "projects");
+        cy.get("nav .editable-content-title.editable").should("contain", "Projects");
       });
     });
   });

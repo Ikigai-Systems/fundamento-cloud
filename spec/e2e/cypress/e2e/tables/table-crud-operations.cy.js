@@ -30,11 +30,11 @@ describe("Table CRUD Operations", function () {
 
   it("displays a table in view mode correctly", function () {
     // Get the table NPI and visit it using the cy.appEval command
-    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+    cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
       // Verify the page loads successfully
-      cy.contains("projects").should("exist");
+      cy.contains("Projects").should("exist");
 
       // Verify the Edit button is present
       cy.get(".edit-table-button").should("exist");
@@ -53,7 +53,7 @@ describe("Table CRUD Operations", function () {
   });
 
   it("allows editing a table and updating cell values", function () {
-    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+    cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
       // Click the Edit button
@@ -82,7 +82,7 @@ describe("Table CRUD Operations", function () {
   });
 
   it("allows adding a new row to the table", function () {
-    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+    cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}/edit`);
 
       // Wait for table to load by checking for the Rowstack container and autosave message
@@ -90,7 +90,7 @@ describe("Table CRUD Operations", function () {
       cy.contains("Changes are saved automatically").should("be.visible");
 
       // Count initial rows in the database
-      cy.appEval("Table.find_by(name: 'projects').rows.count").then((initialCount) => {
+      cy.appEval("Table.find(:projects).rows.count").then((initialCount) => {
         // Capture the current row count text
         const initialRowText = `${initialCount} rows`;
         cy.contains(initialRowText).should("be.visible");
@@ -103,7 +103,7 @@ describe("Table CRUD Operations", function () {
         cy.contains(newRowText).should("be.visible");
 
         // Verify row count increased in the database
-        cy.appEval("Table.find_by(name: 'projects').rows.count").then((newCount) => {
+        cy.appEval("Table.find(:projects).rows.count").then((newCount) => {
           expect(newCount).to.equal(initialCount + 1);
         });
       });
@@ -111,7 +111,7 @@ describe("Table CRUD Operations", function () {
   });
 
   it("persists changes after navigating away and back", function () {
-    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+    cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}/edit`);
 
       cy.intercept("PUT", `/t/${tableId}/update_by_rowstack`).as("updateTableCell");
@@ -161,7 +161,7 @@ describe("Table CRUD Operations", function () {
   });
 
   it("displays correct table data structure", function () {
-    cy.appEval("Table.find_by(name: 'projects').id").then((tableId) => {
+    cy.appEval("Table.find(:projects).id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
       // Verify the ViewTablePanel is rendered
@@ -184,7 +184,7 @@ describe("Table CRUD Operations", function () {
         // Verify table structure
         const {table, data} = response.body;
         expect(table).to.have.property("id");
-        expect(table.name).to.eq("projects");
+        expect(table.name).to.eq("Projects");
 
         // Verify data structure
         expect(data).to.have.property("columns");
