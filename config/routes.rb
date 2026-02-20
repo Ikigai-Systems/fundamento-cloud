@@ -79,8 +79,6 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :imports
-
     resources :tables, path: "t", module: :tables do
       resources :columns
       resources :rows do

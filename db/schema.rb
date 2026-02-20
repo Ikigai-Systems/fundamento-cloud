@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_13_150005) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_152958) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,23 +102,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_150005) do
     t.index ["run_as_id"], name: "index_automations_on_run_as_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
-  end
-
-  create_table "document_imports", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "document_id"
-    t.datetime "imported_at"
-    t.text "imported_content"
-    t.string "organization_id", null: false
-    t.string "organization_membership_id"
-    t.string "space_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["document_id"], name: "index_document_imports_on_document_id"
-    t.index ["id"], name: "index_document_imports_on_id", unique: true
-    t.index ["imported_at"], name: "index_document_imports_on_imported_at"
-    t.index ["organization_id"], name: "index_document_imports_on_organization_id"
-    t.index ["organization_membership_id"], name: "index_document_imports_on_organization_membership_id"
-    t.index ["space_id"], name: "index_document_imports_on_space_id"
   end
 
   create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -620,10 +603,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_150005) do
   add_foreign_key "automations", "organization_memberships", column: "run_as_id"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
-  add_foreign_key "document_imports", "documents"
-  add_foreign_key "document_imports", "organization_memberships"
-  add_foreign_key "document_imports", "organizations"
-  add_foreign_key "document_imports", "spaces"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_memberships"
