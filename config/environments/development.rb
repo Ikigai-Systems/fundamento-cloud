@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 require_relative "redis_cache_store"
 
 Rails.application.configure do
+  require_relative "../../lib/middleware/dev_sign_in_backdoor"
+  config.middleware.insert_after Warden::Manager, DevSignInBackdoor
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.
