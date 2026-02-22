@@ -110,4 +110,8 @@ exec "$CHROME" \
   --remote-debugging-port="$DEBUG_PORT" \
   --no-first-run \
   --no-default-browser-check \
+  --window-size=1400,900 \
+  --use-mock-keychain \
+  --disable-background-networking \
+  --enable-automation \
   "${APP_URL}/?as=${EMAIL}"
