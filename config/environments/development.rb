@@ -4,7 +4,7 @@ require_relative "redis_cache_store"
 require_relative "../../lib/middleware/warden_sign_in_backdoor_for_development"
 
 Rails.application.configure do
-  config.middleware.insert_after Warden::Manager, WardenSignInBackdoorForDevelopment
+  config.middleware.insert_after Warden::Manager, Middleware::WardenSignInBackdoorForDevelopment
 
   # Settings specified here will take precedence over those in config/application.rb.
 
