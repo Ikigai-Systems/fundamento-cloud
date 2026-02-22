@@ -1,7 +1,7 @@
 require "rails_helper"
-require "middleware/dev_sign_in_backdoor"
+require "middleware/warden_sign_in_backdoor_for_development"
 
-RSpec.describe DevSignInBackdoor do
+RSpec.describe WardenSignInBackdoorForDevelopment do
   let(:inner_app) { ->(env) { [200, { "Content-Type" => "text/html" }, ["OK"]] } }
   let(:middleware) { described_class.new(inner_app) }
   let(:warden) { double("warden") }

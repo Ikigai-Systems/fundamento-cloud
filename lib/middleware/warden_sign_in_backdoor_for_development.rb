@@ -5,7 +5,7 @@
 #
 # Usage: http://localhost:3000/?as=sarah@brightpath.example.com
 # Usage: http://localhost:3000/some/path?as=sarah@brightpath.example.com
-class DevSignInBackdoor
+class WardenSignInBackdoorForDevelopment
   def initialize(app)
     @app = app
   end
@@ -25,7 +25,7 @@ class DevSignInBackdoor
         clean_url = remove_param(request.url, "as")
         return [302, { "Location" => clean_url, "Content-Type" => "text/html" }, ["Redirecting..."]]
       else
-        Rails.logger.warn "[DevSignInBackdoor] No user found for email: #{email}"
+        Rails.logger.warn "[WardenSignInBackdoorForDevelopment] No user found for email: #{email}"
       end
     end
 
