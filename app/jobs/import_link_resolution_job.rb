@@ -2,10 +2,9 @@ class ImportLinkResolutionJob < ApplicationJob
   queue_as :imports
 
   # Called by Good Job batch on_finish callback
-  # batch and options are passed by Good Job
-  def perform(batch = nil, options = {})
-    session_id = options.is_a?(Hash) ? options["import_session_id"] : options
-    session_id ||= batch&.properties&.dig("import_session_id")
+  # GoodJob 4.x passes (batch, { event: :finish }); import_session_id is in batch.properties with symbol keys
+  def perform(batch = nil, _options = {})
+    session_id = batch&.properties&.dig(:import_session_id)
 
     session = ImportSession.find(session_id)
     path_map = session.reload.path_map
