@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { FileChecksum } from "@rails/activestorage"
+import SparkMD5 from "spark-md5"
 
 const MAX_FILES = 500
 const MAX_TOTAL_BYTES = 1 * 1024 * 1024 * 1024 // 1 GB
@@ -200,10 +200,31 @@ export default class extends Controller {
 
   async #md5Base64(file) {
     return new Promise((resolve, reject) => {
-      FileChecksum.create(file, (error, checksum) => {
-        if (error) reject(error)
-        else resolve(checksum)
-      })
+      const CHUNK = 2 * 1024 * 1024 // 2 MB chunks
+      const spark = new SparkMD5.ArrayBuffer()
+      const reader = new FileReader()
+      let offset = 0
+
+      const readNext = () => {
+        const slice = file.slice(offset, offset + CHUNK)
+        reader.readAsArrayBuffer(slice)
+      }
+
+      reader.onload = (e) => {
+        spark.append(e.target.result)
+        offset += CHUNK
+        if (offset < file.size) {
+          readNext()
+        } else {
+          const hex = spark.end()
+          // Convert hex to base64 (ActiveStorage expects MD5 as base64)
+          const bytes = new Uint8Array(hex.match(/.{2}/g).map(b => parseInt(b, 16)))
+          resolve(btoa(String.fromCharCode(...bytes)))
+        }
+      }
+
+      reader.onerror = () => reject(reader.error)
+      readNext()
     })
   }
 
