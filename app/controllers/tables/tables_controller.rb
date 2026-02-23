@@ -129,7 +129,7 @@ class Tables::TablesController < ApplicationController
       format.json do
         render json: {
           table: @table.attributes,
-          data: @table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership)
+          data: TableDataBlueprint.render(@table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership))
         }
       end
 

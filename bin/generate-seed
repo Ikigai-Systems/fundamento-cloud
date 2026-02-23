@@ -1,0 +1,124 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Usage: bin/generate-seed "A design studio called PixelCraft with 8 people..."
+#
+# Generates a first-draft seed scenario using Claude CLI.
+# Review and edit the output before committing.
+
+require "fileutils"
+
+description = ARGV.join(" ")
+if description.empty?
+  puts "Usage: bin/generate-seed \"<scenario description>\""
+  puts ""
+  puts "Example:"
+  puts "  bin/generate-seed \"A design studio called PixelCraft with 8 people, managing branding projects\""
+  exit 1
+end
+
+# Derive slug from description
+slug = description.scan(/called (\w+)/i).flatten.first&.downcase
+slug ||= description.split.first(3).join("_").downcase.gsub(/[^a-z0-9_]/, "")
+
+project_root = File.expand_path("..", __dir__)
+output_dir = File.join(project_root, "db/seeds/organizations/#{slug}")
+
+if Dir.exist?(output_dir)
+  puts "Error: Directory already exists: #{output_dir}"
+  puts "Remove it first or choose a different name."
+  exit 1
+end
+
+# Load prompt template and reference materials
+template_path = File.join(project_root, "db/seeds/generator/prompt_template.md")
+reference_readme = File.join(project_root, "db/seeds/organizations/marketing_agency/README.md")
+reference_seed = File.join(project_root, "db/seeds/organizations/marketing_agency/seed.rb")
+setup_file = File.join(project_root, "db/seeds/setup.rb")
+
+unless File.exist?(template_path)
+  puts "Error: Prompt template not found: #{template_path}"
+  puts "Run from the project root directory."
+  exit 1
+end
+
+template = File.read(template_path)
+readme_ref = File.exist?(reference_readme) ? File.read(reference_readme) : ""
+seed_ref = File.exist?(reference_seed) ? File.read(reference_seed) : ""
+setup_ref = File.exist?(setup_file) ? File.read(setup_file) : ""
+
+prompt = <<~PROMPT
+  #{template}
+
+  ## Reference: Existing Scenario README
+
+  ```markdown
+  #{readme_ref}
+  ```
+
+  ## Reference: Existing Scenario seed.rb
+
+  ```ruby
+  #{seed_ref}
+  ```
+
+  ## Reference: Oaken Setup (available helpers)
+
+  ```ruby
+  #{setup_ref}
+  ```
+
+  ## Your Task
+
+  Generate a complete seed scenario based on this description:
+
+  #{description}
+
+  The scenario slug is: #{slug}
+  The output directory is: db/seeds/organizations/#{slug}/
+
+  Generate ALL files needed:
+  1. README.md (scenario documentation)
+  2. seed.rb (main seed script using Oaken DSL)
+  3. content/documents/*.md (all markdown documents)
+  4. content/tables/*.yml + *.csv (all table definitions and data)
+
+  After generating, remind the user to:
+  1. Review and edit the generated files
+  2. Add the org name to SEED_ORG_NAMES in db/seeds.rb
+  3. Add the email domain to SEED_EMAIL_DOMAINS in db/seeds.rb
+  4. Run bin/rails db:seed to test
+PROMPT
+
+FileUtils.mkdir_p(output_dir)
+
+puts "Generating seed scenario: #{slug}"
+puts "Output directory: #{output_dir}"
+puts ""
+
+# Write the prompt to a temp file to avoid shell escaping issues
+require "tempfile"
+prompt_file = Tempfile.new(["seed-prompt", ".md"])
+prompt_file.write(prompt)
+prompt_file.close
+
+puts "Running Claude CLI..."
+system("claude", "-p", File.read(prompt_file.path), "--output-dir", output_dir)
+
+prompt_file.unlink
+
+if $?.success?
+  puts ""
+  puts "Scenario generated at: #{output_dir}"
+  puts ""
+  puts "Next steps:"
+  puts "  1. Review and edit the generated files"
+  puts "  2. Add the org name to SEED_ORG_NAMES in db/seeds.rb"
+  puts "  3. Add the email domain to SEED_EMAIL_DOMAINS in db/seeds.rb"
+  puts "  4. Run: bin/rails db:seed"
+else
+  puts ""
+  puts "Generation failed. Check the output above for errors."
+  puts "You can also create the scenario manually using the marketing_agency as a template."
+  exit 1
+end

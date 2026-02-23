@@ -1,0 +1,15 @@
+name: "Expense Reports"
+columns:
+  - name: "Date"
+    kind: date
+  - name: "Employee"
+    kind: string
+  - name: "Category"
+    kind: select
+  - name: "Amount"
+    kind: decimal
+  - name: "Status"
+    kind: select
+  - name: "Notes"
+    kind: string
+data: expense-reports.csv

@@ -130,6 +130,7 @@ group :development, :test do
   gem "database_cleaner-active_record"
   gem "cypress-on-rails"
   gem "warning"
+  gem "oaken"
 end
 
 # This will be installed into the docker image (those are needed to run E2E tests)

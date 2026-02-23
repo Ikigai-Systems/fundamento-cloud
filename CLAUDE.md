@@ -89,6 +89,49 @@ cp dockerfiles/fontawesome-auth.secret <worktree>/dockerfiles/fontawesome-auth.s
 cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
 ```
 
+## Development Seeds
+
+Seeds use the [Oaken gem](https://github.com/kaspth/oaken) for realistic development data.
+
+- **Entry point**: `db/seeds.rb` (calls `Oaken.seed :organizations`)
+- **Setup/helpers**: `db/seeds/setup.rb` and `db/seeds/setup/` (timeline, document, table helpers)
+- **Scenarios**: `db/seeds/organizations/<name>/` (each has `README.md`, `seed.rb`, `content/`)
+- **Content**: Markdown documents in `content/documents/`, YAML+CSV tables in `content/tables/`
+- **Generator**: `bin/generate-seed "<description>"` bootstraps new scenarios via Claude CLI
+
+Run `bin/rails db:seed` to populate the development database. Seeds are clean-slate (destroy and recreate seed orgs on each run). Login as `sarah@brightpath.example.com` / `password` to explore.
+
+The blocknote-converter must be built before seeds can run:
+
+```bash
+cd micro-services/blocknote-converter && npm install && npm run build
+```
+
+To add a new scenario: create a directory under `db/seeds/organizations/`, add the org name to `SEED_ORG_NAMES` and email domain to `SEED_EMAIL_DOMAINS` in `db/seeds.rb`.
+
+## Dev Browser Sessions
+
+Open isolated Chrome sessions pre-authenticated as any dev user:
+
+```bash
+# List available accounts
+bin/browser-session-for --list
+
+# Open a session (launches Chrome, auto-logs in)
+bin/browser-session-for sarah@brightpath.example.com
+
+# Open a second session simultaneously
+bin/browser-session-for james@brightpath.example.com
+```
+
+Each session gets its own Chrome profile (`tmp/browser-sessions/<email>/`) with persistent cookies. The debug port is written to `tmp/browser-sessions/<email>/debug-port` and printed to stdout for agent-browser connectivity:
+
+```bash
+npx agent-browser --remote-debugging-port=$(cat tmp/browser-sessions/sarah@brightpath.example.com/debug-port)
+```
+
+Requires the Rails dev server running (`bin/dev`) and uses the `?as=<email>` backdoor (dev-only middleware) for instant login.
+
 ## Code formatting
 
 Whenever possible, use the following rules:
