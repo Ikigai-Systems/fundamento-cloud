@@ -1,0 +1,76 @@
+<% content_for :focused_header do %>
+  Import — <%= @session.space.name %>
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <% if @session.failed_files > 0 %>
+    <%= button_to "Retry Failed", retry_api_v1_import_session_path(@session),
+        method: :post, class: "btn btn-secondary",
+        data: { turbo: false } %>
+  <% end %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <%= turbo_stream_from ["import_session", @session] %>
+
+  <div class="mb-6">
+    <%= render "import_sessions/session_status", session: @session %>
+    <div class="grid grid-cols-4 gap-4 mt-4 text-center">
+      <div class="bg-gray-50 rounded p-3">
+        <div class="text-2xl font-bold"><%= @session.total_files %></div>
+        <div class="text-xs text-gray-500">Total</div>
+      </div>
+      <div class="bg-green-50 rounded p-3">
+        <div class="text-2xl font-bold text-green-700"><%= @session.processed_files %></div>
+        <div class="text-xs text-gray-500">Processed</div>
+      </div>
+      <div class="bg-red-50 rounded p-3">
+        <div class="text-2xl font-bold text-red-700"><%= @session.failed_files %></div>
+        <div class="text-xs text-gray-500">Failed</div>
+      </div>
+      <div class="bg-yellow-50 rounded p-3">
+        <div class="text-2xl font-bold text-yellow-700"><%= @session.skipped_files %></div>
+        <div class="text-xs text-gray-500">Skipped</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="import-log">
+    <h3 class="font-semibold mb-3">Import Log</h3>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-gray-500 border-b">
+          <th class="pb-2">Path</th>
+          <th class="pb-2">Status</th>
+          <th class="pb-2">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @import_files.each do |file| %>
+          <tr class="border-b border-gray-100 py-2">
+            <td class="py-2 font-mono text-xs text-gray-700"><%= file.relative_path %></td>
+            <td class="py-2">
+              <% case file.status %>
+              <% when "completed" %><span class="text-green-600">✓</span>
+              <% when "failed" %><span class="text-red-600">✗</span>
+              <% when "skipped" %><span class="text-gray-400">⊘</span>
+              <% else %><span class="text-yellow-500">⏳</span>
+              <% end %>
+            </td>
+            <td class="py-2 font-mono text-xs">
+              <% if file.document_id %>
+                <%= link_to file.document_id, "/d/#{file.document_id}", class: "text-blue-600 hover:underline" %>
+              <% elsif file.error_message %>
+                <span class="text-red-600 truncate max-w-xs inline-block" title="<%= file.error_message %>">
+                  <%= file.error_message.truncate(80) %>
+                </span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<%= render "focused_section" %>

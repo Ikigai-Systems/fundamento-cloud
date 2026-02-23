@@ -1,0 +1,46 @@
+<% content_for :focused_header do %>
+  Imports
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <%= link_to "New Import", new_import_session_path, class: "primary-button" %>
+<% end %>
+
+<% content_for :focused_content do %>
+  <% if @sessions.any? %>
+    <div class="imports-list space-y-4">
+      <% @sessions.each do |session| %>
+        <div class="import-item border rounded-lg p-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-semibold">
+                <%= link_to session.space.name, import_session_path(session), class: "link" %>
+              </h3>
+              <div class="text-sm text-gray-600 mt-1">
+                <span><%= session.source_format.capitalize %></span> •
+                <span><%= session.organization_membership.user.email %></span> •
+                <span><%= session.created_at.strftime("%b %d, %Y") %></span>
+              </div>
+              <div class="text-sm mt-1">
+                <%= session.processed_files %> / <%= session.total_files %> processed
+                <% if session.failed_files > 0 %>
+                  • <span class="text-red-600"><%= session.failed_files %> failed</span>
+                <% end %>
+              </div>
+            </div>
+            <div>
+              <%= render "import_sessions/session_status", session: session %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state text-center py-12">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No imports yet</h3>
+      <%= link_to "Start Import", new_import_session_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= render "focused_section" %>
