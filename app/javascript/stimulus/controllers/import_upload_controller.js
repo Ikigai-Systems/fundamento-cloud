@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { FileChecksum } from "@rails/activestorage"
 
 const MAX_FILES = 500
 const MAX_TOTAL_BYTES = 1 * 1024 * 1024 * 1024 // 1 GB
@@ -147,7 +148,7 @@ export default class extends Controller {
 
   async #buildManifest() {
     return Promise.all(this.files.map(async ({ file, relativePath }) => {
-      const checksum = await this.#sha256(file)
+      const checksum = await this.#md5Base64(file)
       return {
         relative_path: relativePath,
         checksum,
@@ -176,11 +177,12 @@ export default class extends Controller {
     const fileData = this.files.find(f => f.relativePath === entry.relative_path)
     if (!fileData) return
 
-    await fetch(entry.direct_upload_url, {
+    const uploadRes = await fetch(entry.direct_upload_url, {
       method: "PUT",
       headers: { "Content-Type": entry.content_type || "application/octet-stream" },
       body: fileData.file
     })
+    if (!uploadRes.ok) throw new Error(`Upload failed for ${entry.relative_path}: HTTP ${uploadRes.status}`)
 
     await fetch(`${this.apiUrlValue}/${sessionId}/import_files/${entry.id}`, {
       method: "PATCH",
@@ -196,11 +198,13 @@ export default class extends Controller {
 
   // ── Utilities ─────────────────────────────────────────────────────
 
-  async #sha256(file) {
-    const buffer = await file.arrayBuffer()
-    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("")
+  async #md5Base64(file) {
+    return new Promise((resolve, reject) => {
+      FileChecksum.create(file, (error, checksum) => {
+        if (error) reject(error)
+        else resolve(checksum)
+      })
+    })
   }
 
   #detectFormat(filename) {

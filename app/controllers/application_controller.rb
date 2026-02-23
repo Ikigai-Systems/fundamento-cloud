@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include CommandPalette
+  include ActiveStorage::SetCurrent
 
   prepend_before_action :authenticate_user!
 

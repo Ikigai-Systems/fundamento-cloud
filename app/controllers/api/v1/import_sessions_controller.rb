@@ -157,6 +157,7 @@ module Api
 
         file_json(import_file).merge(
           direct_upload_url: blob.service_url_for_direct_upload,
+          content_type: blob.content_type,
           signed_blob_id: blob.signed_id
         )
       end
