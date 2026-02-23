@@ -5,7 +5,7 @@
 #
 # Usage: http://localhost:3000/?as=sarah@brightpath.example.com
 # Usage: http://localhost:3000/some/path?as=sarah@brightpath.example.com
-class Middleware::WardenSignInBackdoorForDevelopment
+class WardenSignInBackdoorForDevelopment
   def initialize(app)
     @app = app
   end
