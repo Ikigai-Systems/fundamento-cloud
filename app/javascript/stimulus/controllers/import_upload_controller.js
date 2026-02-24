@@ -43,10 +43,18 @@ export default class extends Controller {
     event.preventDefault()
     this.dropZoneTarget.classList.remove("border-blue-500")
     const items = Array.from(event.dataTransfer.items)
-    const entries = items.map(item => item.webkitGetAsEntry()).filter(Boolean)
+    const entries = items.map(item => item.webkitGetAsEntry?.()).filter(Boolean)
     const collected = []
-    for (const entry of entries) {
-      await this.#collectEntry(entry, "", collected)
+    if (entries.length > 0) {
+      // File System API path (real browser drag-drop with folder support)
+      for (const entry of entries) {
+        await this.#collectEntry(entry, "", collected)
+      }
+    } else {
+      // Fallback: plain dataTransfer.files (Cypress simulation, no folder traversal)
+      for (const file of Array.from(event.dataTransfer.files)) {
+        collected.push({ file, relativePath: file.name })
+      }
     }
     this.#setFiles(collected)
   }
