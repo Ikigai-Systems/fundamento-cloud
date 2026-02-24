@@ -1,20 +1,23 @@
 module Api
   module V1
     class ImportSessionsController < Api::ApiController
+      before_action :load_session, except: [:create]
+
       def create
         space = current_organization.spaces.find(params[:space_id])
-        session = current_organization.import_sessions.build(
+
+        @session = current_organization.import_sessions.build(
           space: space,
           organization_membership: current_organization_membership,
           source_format: params[:source_format] || "generic",
           settings: params[:settings] || {}
         )
 
-        authorize session
+        authorize @session
 
-        session.save!
+        @session.save!
 
-        render json: session_json(session), status: :created
+        render json: session_json(@session), status: :created
       rescue ActiveRecord::RecordNotFound
         render json: { error: "Space not found" }, status: :not_found
       rescue ActiveRecord::RecordInvalid => e
@@ -22,31 +25,29 @@ module Api
       end
 
       def show
-        session = find_session
-        authorize session
+        authorize @session
 
-        render json: session_json(session).merge(
-          files: session.import_files.order(:relative_path).map { |f| file_json(f) }
+        render json: session_json(@session).merge(
+          files: @session.import_files.order(:relative_path).map { |f| file_json(f) }
         )
       end
 
       def destroy
-        session = find_session
-        authorize session
+        authorize @session
 
-        session.destroy!
+        @session.destroy!
+
         head :no_content
       end
 
       def manifest
-        session = find_session
-        authorize session, :update?
+        authorize @session, :update?
 
         file_entries = Array(params[:files])
-        results = file_entries.map { |entry| process_manifest_entry(session, entry) }
+        results = file_entries.map { |entry| process_manifest_entry(@session, entry) }
 
-        session.update!(
-          total_files: session.import_files.count,
+        @session.update!(
+          total_files: @session.import_files.count,
           status: :uploading
         )
 
@@ -54,44 +55,42 @@ module Api
       end
 
       def trigger_processing
-        session = find_session
-        authorize session, :update?
+        authorize @session, :update?
 
-        still_pending = session.import_files.where(status: [:pending, :uploading]).count
+        still_pending = @session.import_files.where(status: [:pending, :uploading]).count
         if still_pending > 0
           return render json: {
             error: "#{still_pending} files not yet uploaded"
           }, status: :unprocessable_entity
         end
 
-        if session.processing? || session.completed?
-          return render json: { error: "Session is already #{session.status}" },
+        if @session.processing? || @session.completed?
+          return render json: { error: "Session is already #{@session.status}" },
                         status: :unprocessable_entity
         end
 
-        session.update!(status: :processing, started_processing_at: Time.current)
-        ImportSessionOrchestratorJob.perform_later(session)
+        @session.update!(status: :processing, started_processing_at: Time.current)
+        ImportSessionOrchestratorJob.perform_later(@session)
 
-        render json: session_json(session)
+        render json: session_json(@session)
       end
 
       def retry_failed
-        session = find_session
-        authorize session, :update?
+        authorize @session, :update?
 
-        failed_files = session.import_files.where(status: :failed)
+        failed_files = @session.import_files.where(status: :failed)
         failed_files.update_all(status: :pending, error_message: nil)
 
-        session.update!(status: :processing)
-        ImportSessionOrchestratorJob.perform_later(session)
+        @session.update!(status: :processing)
+        ImportSessionOrchestratorJob.perform_later(@session)
 
-        render json: session_json(session)
+        render json: session_json(@session)
       end
 
       private
 
-      def find_session
-        current_organization.import_sessions.find(params[:id])
+      def load_session
+        @session = current_organization.import_sessions.find(params[:id])
       end
 
       def session_json(session)
