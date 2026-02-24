@@ -50,8 +50,8 @@
           <tr class="border-b border-gray-100 py-2">
             <td class="py-2 font-mono text-xs text-gray-700"><%= file.relative_path %></td>
             <td class="py-2">
-              <% case file.status %>
-              <% when "completed" %><span class="text-green-600">✓</span>
+              <% case file.status
+                 when "completed" %><span class="text-green-600">✓</span>
               <% when "failed" %><span class="text-red-600">✗</span>
               <% when "skipped" %><span class="text-gray-400">⊘</span>
               <% else %><span class="text-yellow-500">⏳</span>
