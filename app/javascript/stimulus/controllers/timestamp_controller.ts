@@ -13,7 +13,7 @@ export default class TimestampController extends Controller {
   private hideTimeout: ReturnType<typeof setTimeout> | null = null
 
   connect(): void {
-    this.element.classList.add("relative", "cursor-default")
+    this.element.classList.add("cursor-default")
     this.element.addEventListener("mouseenter", this.handleMouseEnter)
     this.element.addEventListener("mouseleave", this.handleMouseLeave)
   }
@@ -21,6 +21,7 @@ export default class TimestampController extends Controller {
   disconnect(): void {
     this.element.removeEventListener("mouseenter", this.handleMouseEnter)
     this.element.removeEventListener("mouseleave", this.handleMouseLeave)
+    this.removePopup()
     if (this.hideTimeout) clearTimeout(this.hideTimeout)
   }
 
@@ -58,8 +59,8 @@ export default class TimestampController extends Controller {
       : `UTC${sign}${hours}`
 
     const popup = document.createElement("div")
-    popup.setAttribute("data-timestamp-target", "card")
-    popup.className = "absolute right-0 bottom-full mb-2 z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm whitespace-nowrap"
+    popup.setAttribute("data-timestamp-popup", "")
+    popup.className = "fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm whitespace-nowrap"
     popup.addEventListener("mouseenter", () => {
       if (this.hideTimeout) {
         clearTimeout(this.hideTimeout)
@@ -102,12 +103,34 @@ export default class TimestampController extends Controller {
       </div>
     `
 
-    this.element.appendChild(popup)
+    // Append to body with fixed positioning to escape sidebar overflow clipping
+    document.body.appendChild(popup)
+
+    // Position relative to trigger element
+    const rect = this.element.getBoundingClientRect()
+    const popupRect = popup.getBoundingClientRect()
+
+    // Position above the trigger, aligned to the right edge
+    let top = rect.top - popupRect.height - 8
+    let left = rect.right - popupRect.width
+
+    // If it would go above the viewport, show below instead
+    if (top < 8) {
+      top = rect.bottom + 8
+    }
+
+    // Keep within viewport horizontally
+    if (left < 8) {
+      left = 8
+    }
+
+    popup.style.top = `${top}px`
+    popup.style.left = `${left}px`
   }
 
   private removePopup(): void {
-    const card = this.element.querySelector("[data-timestamp-target='card']")
-    if (card) card.remove()
+    const popup = document.querySelector("[data-timestamp-popup]")
+    if (popup) popup.remove()
   }
 
   copyValue(event: Event): void {

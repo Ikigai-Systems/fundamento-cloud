@@ -4,15 +4,15 @@
   </div>
   <div class="flex flex-col sm:items-end">
     <% if datetime %>
-      <p class="text-sm/6 text-gray-900 dark:text-gray-100"
-         data-controller="timestamp"
-         data-timestamp-datetime-value="<%= datetime.iso8601 %>">
+      <span class="text-sm/6 text-gray-900 dark:text-gray-100"
+            data-controller="timestamp"
+            data-timestamp-datetime-value="<%= datetime.iso8601 %>">
         <%= time_ago_in_words datetime %>
-      </p>
+      </span>
     <% else %>
-      <p class="text-sm/6 text-gray-900 dark:text-gray-100">
+      <span class="text-sm/6 text-gray-900 dark:text-gray-100">
         <span class="draft-lozenge">Draft</span>
-      </p>
+      </span>
     <% end %>
   </div>
 </li>
