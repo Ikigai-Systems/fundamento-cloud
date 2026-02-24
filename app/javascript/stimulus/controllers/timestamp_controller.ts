@@ -1,10 +1,10 @@
-import Popover from "@stimulus-components/popover"
+import { Controller } from "@hotwired/stimulus"
 import dayjs from "dayjs"
 import utc from "dayjs/plugin/utc"
 
 dayjs.extend(utc)
 
-export default class TimestampController extends Popover {
+export default class TimestampController extends Controller {
   static values = {
     datetime: String,
   }
@@ -49,9 +49,13 @@ export default class TimestampController extends Popover {
     const utcFormatted = utcTime.format("ddd, MMM D, YYYY h:mm:ss A")
 
     const offsetMinutes = new Date().getTimezoneOffset()
-    const offsetHours = -offsetMinutes / 60
-    const offsetSign = offsetHours >= 0 ? "+" : ""
-    const offsetLabel = `UTC${offsetSign}${offsetHours}`
+    const totalMinutes = -offsetMinutes
+    const hours = Math.floor(Math.abs(totalMinutes) / 60)
+    const minutes = Math.abs(totalMinutes) % 60
+    const sign = totalMinutes >= 0 ? "+" : "-"
+    const offsetLabel = minutes > 0
+      ? `UTC${sign}${hours}:${String(minutes).padStart(2, "0")}`
+      : `UTC${sign}${hours}`
 
     const popup = document.createElement("div")
     popup.setAttribute("data-timestamp-target", "card")
@@ -119,6 +123,8 @@ export default class TimestampController extends Popover {
           icon.className = "icon-[heroicons--clipboard] size-4"
         }, 1500)
       }
+    }).catch(() => {
+      // Clipboard API may not be available in all contexts
     })
   }
 }
