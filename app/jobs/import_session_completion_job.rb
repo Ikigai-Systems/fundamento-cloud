@@ -14,11 +14,6 @@ class ImportSessionCompletionJob < ApplicationJob
   private
 
   def broadcast_completion(session)
-    Turbo::StreamsChannel.broadcast_replace_to(
-      ["import_session", session],
-      target: "import_session_#{session.id}_status",
-      partial: "imports/session_status",
-      locals: { session: session }
-    )
+    Turbo::StreamsChannel.broadcast_refresh_to(["import_session", session])
   end
 end
