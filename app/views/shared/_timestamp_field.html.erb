@@ -1,0 +1,18 @@
+<li class="flex justify-between gap-x-6 py-5">
+  <div class="flex-auto min-w-0 gap-x-4">
+    <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100"><%= label %></p>
+  </div>
+  <div class="flex flex-col sm:items-end">
+    <% if datetime %>
+      <p class="text-sm/6 text-gray-900 dark:text-gray-100"
+         data-controller="timestamp"
+         data-timestamp-datetime-value="<%= datetime.iso8601 %>">
+        <%= time_ago_in_words datetime %>
+      </p>
+    <% else %>
+      <p class="text-sm/6 text-gray-900 dark:text-gray-100">
+        <span class="draft-lozenge">Draft</span>
+      </p>
+    <% end %>
+  </div>
+</li>
