@@ -83,7 +83,7 @@ export default class TimestampController extends Controller {
           </div>
           <div class="flex items-center gap-2">
             <span class="text-gray-900 dark:text-gray-100">${localFormatted}</span>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${localFormatted}" data-action="click->timestamp#copyValue">
+            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${localFormatted}">
               <span class="icon-[heroicons--clipboard] size-4"></span>
             </button>
           </div>
@@ -95,13 +95,18 @@ export default class TimestampController extends Controller {
           </div>
           <div class="flex items-center gap-2">
             <span class="text-gray-900 dark:text-gray-100">${utcFormatted}</span>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${utcFormatted}" data-action="click->timestamp#copyValue">
+            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${utcFormatted}">
               <span class="icon-[heroicons--clipboard] size-4"></span>
             </button>
           </div>
         </div>
       </div>
     `
+
+    // Bind copy handlers directly since popup is outside the controller's DOM
+    popup.querySelectorAll<HTMLButtonElement>("button[data-copy-value]").forEach((button) => {
+      button.addEventListener("click", (event) => this.copyValue(event))
+    })
 
     // Append to body with fixed positioning to escape sidebar overflow clipping
     document.body.appendChild(popup)
