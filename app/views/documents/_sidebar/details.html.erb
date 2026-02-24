@@ -1,50 +1,8 @@
 <%= turbo_frame_tag :details_sidebar_tab do %>
   <ul role="list" class="divide-y divide-gray-100 px-3">
-    <li class="flex justify-between gap-x-6 py-5">
-      <div class="flex-auto min-w-0 gap-x-4">
-        <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Created at</p>
-      </div>
-      <div class="flex flex-col sm:items-end">
-        <p class="text-sm/6 text-gray-900 dark:text-gray-100"><%= time_ago_in_words @document.created_at %></p>
-        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
-          <time datetime="<%= @document.created_at.to_s %>"><%= @document.created_at %></time>
-        </p>
-      </div>
-    </li>
-
-    <li class="flex justify-between gap-x-6 py-5">
-      <div class="flex-auto min-w-0 gap-x-4">
-        <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Updated at</p>
-      </div>
-      <div class="flex flex-col sm:items-end">
-        <p class="text-sm/6 text-gray-900 dark:text-gray-100"><%= time_ago_in_words @document.updated_at %></p>
-        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
-          <time datetime="<%= @document.updated_at.to_s %>"><%= @document.updated_at %></time>
-        </p>
-      </div>
-    </li>
-
-    <% published_at = @document.versions.last %>
-
-    <li class="flex justify-between gap-x-6 py-5">
-      <div class="flex-auto min-w-0 gap-x-4">
-        <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Published at</p>
-      </div>
-      <div class="flex flex-col sm:items-end">
-        <p class="text-sm/6 text-gray-900 dark:text-gray-100">
-          <% if published_at %>
-            <%= time_ago_in_words published_at.updated_at %>
-          <% else %>
-            <span class="draft-lozenge">Draft</span>
-          <% end %>
-        </p>
-        <p class="mt-1 text-xs/5 text-gray-500 dark:text-gray-400">
-          <time datetime="<%= published_at&.updated_at.to_s %>">
-            <%= published_at&.updated_at %>
-          </time>
-        </p>
-      </div>
-    </li>
+    <%= render "shared/timestamp_field", label: "Created at", datetime: @document.created_at %>
+    <%= render "shared/timestamp_field", label: "Updated at", datetime: @document.updated_at %>
+    <%= render "shared/timestamp_field", label: "Published at", datetime: @document.versions.last&.updated_at %>
 
     <li class="flex justify-between gap-x-6 py-5">
       <div class="flex-auto min-w-0 gap-x-4">
