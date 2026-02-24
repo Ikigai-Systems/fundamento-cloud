@@ -1,14 +1,14 @@
 <li class="flex justify-between gap-x-6 py-5">
   <div class="flex-auto min-w-0 gap-x-4">
-    <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100"><%= label %></p>
+    <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100"><%= @label %></p>
   </div>
   <div class="flex flex-col sm:items-end">
-    <% if datetime %>
-      <time class="text-sm/6 text-gray-900 dark:text-gray-100"
-            datetime="<%= datetime.iso8601 %>"
+    <% if @datetime %>
+      <time class="text-sm/6 text-gray-900 dark:text-gray-100 underline decoration-dotted"
+            datetime="<%= @datetime.iso8601 %>"
             data-controller="timestamp"
-            data-timestamp-datetime-value="<%= datetime.iso8601 %>">
-        <%= time_ago_in_words datetime %>
+            data-timestamp-datetime-value="<%= @datetime.iso8601 %>">
+        <%= time_ago_in_words @datetime %>
       </time>
     <% else %>
       <span class="text-sm/6 text-gray-900 dark:text-gray-100">
