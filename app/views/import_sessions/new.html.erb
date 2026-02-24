@@ -5,7 +5,7 @@
 <% content_for :focused_content do %>
   <div class="max-w-2xl mx-auto"
        data-controller="import-upload"
-       data-import-upload-api-url-value="<%= api_v1_import_sessions_path %>"
+       data-import-upload-api-url-value="<%= import_sessions_path %>"
        data-import-upload-space-options-value="<%= @spaces.map { |s| { id: s.id, name: s.name } }.to_json %>">
 
     <%# Step 1: Configure %>

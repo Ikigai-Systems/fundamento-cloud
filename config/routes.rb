@@ -213,5 +213,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :import_sessions, only: [:index, :show, :new]
+  resources :import_sessions, only: [:index, :show, :new, :create] do
+    member do
+      post :manifest
+      post :process, action: :trigger_processing
+    end
+    resources :import_files, only: [:update]
+  end
 end
