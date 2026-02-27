@@ -2,6 +2,9 @@ class Version < ApplicationRecord
   belongs_to :document
   belongs_to :created_by, class_name: "User", optional: true
 
+  has_many :editing_sessions, class_name: "DocumentEditingSession"
+  has_many :editor_sessions, -> { where(edited: true) }, class_name: "DocumentEditingSession"
+
   scope :latest, -> { order(updated_at: :desc).first }
 
   before_create :set_sequential_id

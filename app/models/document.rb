@@ -23,6 +23,7 @@ class Document < ApplicationRecord
   has_many :tags, through: :object_tags
   has_many :inline_comment_threads, dependent: :destroy
   has_many :attachments, as: :parent, dependent: :destroy
+  has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :delete_all
 
   before_destroy :nullify_space_home_document_id
 
