@@ -34,13 +34,13 @@ class DocumentChannel < ApplicationCable::Channel
   end
 
   def receive(data)
+    document_id = params[:documentId]
+    sync("document/#{document_id}", data)
+
     unless @marked_as_edited
       @editing_session&.update_columns(edited: true)
       @marked_as_edited = true
     end
-
-    document_id = params[:documentId]
-    sync("document/#{document_id}", data)
   end
 
   def unsubscribed
