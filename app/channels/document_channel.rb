@@ -20,6 +20,12 @@ class DocumentChannel < ApplicationCable::Channel
       return
     end
 
+    @editing_session = DocumentEditingSession.create!(
+      document: document,
+      member: current_membership,
+      connected_at: Time.current
+    )
+
     sync_from("document/#{document_id}") do |_|
       persist do |_, update|
         save_doc(document_id, update)
@@ -28,14 +34,30 @@ class DocumentChannel < ApplicationCable::Channel
   end
 
   def receive(data)
+    unless @marked_as_edited
+      @editing_session&.update_columns(edited: true)
+      @marked_as_edited = true
+    end
+
     document_id = params[:documentId]
     sync("document/#{document_id}", data)
+  end
+
+  def unsubscribed
+    @editing_session&.update_columns(disconnected_at: Time.current)
   end
 
   private
 
   def find_document(document_id)
     current_organization.documents.find_by(id: document_id)
+  end
+
+  def current_membership
+    @current_membership ||= OrganizationMembership.find_by!(
+      organization: current_organization,
+      user: current_user
+    )
   end
 
   def load_doc(document_id)

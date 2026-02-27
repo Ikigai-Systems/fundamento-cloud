@@ -88,4 +88,75 @@ RSpec.describe DocumentChannel, type: :channel do
       end
     end
   end
+
+  describe "editing session tracking" do
+    fixtures :document_editing_sessions
+
+    let(:organization_membership) { organization_memberships(:om_is_pawel) }
+    let(:document) { documents(:one) }
+
+    context "on subscribe" do
+      it "creates a DocumentEditingSession" do
+        expect {
+          subscribe(documentId: document.id)
+        }.to change(DocumentEditingSession, :count).by(1)
+      end
+
+      it "sets connected_at and links to the correct member" do
+        subscribe(documentId: document.id)
+
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.document).to eq(document)
+        expect(session.member).to eq(organization_membership)
+        expect(session.connected_at).to be_present
+        expect(session.edited).to be(false)
+        expect(session.version_id).to be_nil
+      end
+
+      it "does not create a session when subscription is rejected" do
+        expect {
+          subscribe(documentId: "nonexistent")
+        }.not_to change(DocumentEditingSession, :count)
+      end
+    end
+
+    context "on receive" do
+      before do
+        subscribe(documentId: document.id)
+        allow(subscription).to receive(:sync)
+      end
+
+      it "marks the session as edited on first receive" do
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.edited).to be(false)
+
+        perform(:receive, { "update" => "data" })
+
+        session.reload
+        expect(session.edited).to be(true)
+      end
+
+      it "does not perform extra DB writes on subsequent receives" do
+        perform(:receive, { "update" => "data1" })
+
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect {
+          perform(:receive, { "update" => "data2" })
+        }.not_to change { session.reload.updated_at }
+      end
+    end
+
+    context "on unsubscribe" do
+      it "sets disconnected_at on the session" do
+        subscribe(documentId: document.id)
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.disconnected_at).to be_nil
+
+        subscription.unsubscribe_from_channel
+
+        session.reload
+        expect(session.disconnected_at).to be_present
+      end
+    end
+  end
 end
