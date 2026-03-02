@@ -27,7 +27,11 @@ class DocumentChannel < ApplicationCable::Channel
         connected_at: Time.current
       )
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
-      Sentry.capture_exception(e)
+      Sentry.capture_exception(e, extra: {
+        document_id: document_id,
+        user_id: current_user.id,
+        organization_id: current_organization.id
+      })
     end
 
     sync_from("document/#{document_id}") do |_|
