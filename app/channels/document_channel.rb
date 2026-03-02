@@ -27,7 +27,7 @@ class DocumentChannel < ApplicationCable::Channel
         connected_at: Time.current
       )
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
-      logger.error "Could not create editing session for document #{document_id}: #{e.message}"
+      Sentry.capture_exception(e)
     end
 
     sync_from("document/#{document_id}") do |_|
