@@ -121,18 +121,20 @@ RSpec.describe DocumentChannel, type: :channel do
     end
 
     context "on receive" do
-      # Base64-encoded Y.js protocol messages:
-      # Sync message (message_type=0): [0, 1, 2] -> "AAEC"
-      # Awareness message (message_type=1): [1, 1, 2] -> "AQEC"
-      let(:sync_update) { Base64.strict_encode64([0, 1, 2].pack("C*")) }
-      let(:awareness_update) { Base64.strict_encode64([1, 1, 2].pack("C*")) }
+      # Y.js protocol: first varuint = message type, second varuint = sync sub-type
+      # Message types: 0=sync, 1=awareness
+      # Sync sub-types: 0=syncStep1, 1=syncStep2, 2=update
+      let(:sync_update) { Base64.strict_encode64([0, 2, 1, 0].pack("C*")) }       # sync + update + payload
+      let(:sync_step1) { Base64.strict_encode64([0, 0, 1, 0].pack("C*")) }        # sync + syncStep1
+      let(:sync_step2) { Base64.strict_encode64([0, 1, 2, 0, 0].pack("C*")) }     # sync + syncStep2
+      let(:awareness_update) { Base64.strict_encode64([1, 1, 2].pack("C*")) }     # awareness
 
       before do
         subscribe(documentId: document.id)
         allow(subscription).to receive(:sync)
       end
 
-      it "marks the session as edited on first sync message" do
+      it "marks the session as edited on sync update message" do
         session = DocumentEditingSession.order(created_at: :desc).first
         expect(session.edited).to be(false)
 
@@ -140,6 +142,26 @@ RSpec.describe DocumentChannel, type: :channel do
 
         session.reload
         expect(session.edited).to be(true)
+      end
+
+      it "does not mark the session as edited for sync step1 (state vector request)" do
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.edited).to be(false)
+
+        perform(:receive, { "update" => sync_step1 })
+
+        session.reload
+        expect(session.edited).to be(false)
+      end
+
+      it "does not mark the session as edited for sync step2 (initial document state)" do
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.edited).to be(false)
+
+        perform(:receive, { "update" => sync_step2 })
+
+        session.reload
+        expect(session.edited).to be(false)
       end
 
       it "does not mark the session as edited for awareness messages" do

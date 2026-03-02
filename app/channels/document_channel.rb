@@ -37,7 +37,7 @@ class DocumentChannel < ApplicationCable::Channel
     document_id = params[:documentId]
     sync("document/#{document_id}", data)
 
-    if !@marked_as_edited && sync_message?(data)
+    if !@marked_as_edited && sync_update_message?(data)
       @editing_session&.update_columns(edited: true)
       @marked_as_edited = true
     end
@@ -76,18 +76,25 @@ class DocumentChannel < ApplicationCable::Channel
     logger.error "Document sync #{document_id} could not be saved"
   end
 
-  # Y.js protocol message types (from y-protocols/sync)
+  # Y.js protocol message types (from y-protocols)
   YJS_MESSAGE_SYNC = 0
-  YJS_MESSAGE_AWARENESS = 1
 
-  def sync_message?(data)
+  # Y.js sync sub-types (from y-protocols/sync)
+  YJS_SYNC_STEP1 = 0   # state vector request
+  YJS_SYNC_STEP2 = 1   # initial document state
+  YJS_SYNC_UPDATE = 2   # incremental document update
+
+  def sync_update_message?(data)
     update = data["update"]
     return false if update.blank?
 
     bytes = Y::Lib0::Decoding.decode_base64_to_uint8_array(update)
     decoder = Y::Lib0::Decoding.create_decoder(bytes)
     message_type = Y::Lib0::Decoding.read_var_uint(decoder)
-    message_type == YJS_MESSAGE_SYNC
+    return false unless message_type == YJS_MESSAGE_SYNC
+
+    sync_type = Y::Lib0::Decoding.read_var_uint(decoder)
+    sync_type == YJS_SYNC_UPDATE
   rescue
     false
   end
