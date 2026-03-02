@@ -121,27 +121,43 @@ RSpec.describe DocumentChannel, type: :channel do
     end
 
     context "on receive" do
+      # Base64-encoded Y.js protocol messages:
+      # Sync message (message_type=0): [0, 1, 2] -> "AAEC"
+      # Awareness message (message_type=1): [1, 1, 2] -> "AQEC"
+      let(:sync_update) { Base64.strict_encode64([0, 1, 2].pack("C*")) }
+      let(:awareness_update) { Base64.strict_encode64([1, 1, 2].pack("C*")) }
+
       before do
         subscribe(documentId: document.id)
         allow(subscription).to receive(:sync)
       end
 
-      it "marks the session as edited on first receive" do
+      it "marks the session as edited on first sync message" do
         session = DocumentEditingSession.order(created_at: :desc).first
         expect(session.edited).to be(false)
 
-        perform(:receive, { "update" => "data" })
+        perform(:receive, { "update" => sync_update })
 
         session.reload
         expect(session.edited).to be(true)
       end
 
-      it "does not perform extra DB writes on subsequent receives" do
-        perform(:receive, { "update" => "data1" })
+      it "does not mark the session as edited for awareness messages" do
+        session = DocumentEditingSession.order(created_at: :desc).first
+        expect(session.edited).to be(false)
+
+        perform(:receive, { "update" => awareness_update })
+
+        session.reload
+        expect(session.edited).to be(false)
+      end
+
+      it "does not perform extra DB writes on subsequent sync receives" do
+        perform(:receive, { "update" => sync_update })
 
         session = DocumentEditingSession.order(created_at: :desc).first
         expect {
-          perform(:receive, { "update" => "data2" })
+          perform(:receive, { "update" => sync_update })
         }.not_to change { session.reload.updated_at }
       end
     end

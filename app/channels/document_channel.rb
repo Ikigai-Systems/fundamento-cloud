@@ -37,7 +37,7 @@ class DocumentChannel < ApplicationCable::Channel
     document_id = params[:documentId]
     sync("document/#{document_id}", data)
 
-    unless @marked_as_edited
+    if !@marked_as_edited && sync_message?(data)
       @editing_session&.update_columns(edited: true)
       @marked_as_edited = true
     end
@@ -74,6 +74,22 @@ class DocumentChannel < ApplicationCable::Channel
     document.update(sync: update.pack("C*"))
   rescue
     logger.error "Document sync #{document_id} could not be saved"
+  end
+
+  # Y.js protocol message types (from y-protocols/sync)
+  YJS_MESSAGE_SYNC = 0
+  YJS_MESSAGE_AWARENESS = 1
+
+  def sync_message?(data)
+    update = data["update"]
+    return false if update.blank?
+
+    bytes = Y::Lib0::Decoding.decode_base64_to_uint8_array(update)
+    decoder = Y::Lib0::Decoding.create_decoder(bytes)
+    message_type = Y::Lib0::Decoding.read_var_uint(decoder)
+    message_type == YJS_MESSAGE_SYNC
+  rescue
+    false
   end
 
   def authorized_to_update?(document)
