@@ -20,11 +20,15 @@ class DocumentChannel < ApplicationCable::Channel
       return
     end
 
-    @editing_session = DocumentEditingSession.create!(
-      document: document,
-      member: current_membership,
-      connected_at: Time.current
-    )
+    begin
+      @editing_session = DocumentEditingSession.create!(
+        document: document,
+        member: current_membership,
+        connected_at: Time.current
+      )
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotFound => e
+      logger.error "Could not create editing session for document #{document_id}: #{e.message}"
+    end
 
     sync_from("document/#{document_id}") do |_|
       persist do |_, update|
@@ -95,7 +99,7 @@ class DocumentChannel < ApplicationCable::Channel
 
     sync_type = Y::Lib0::Decoding.read_var_uint(decoder)
     sync_type == YJS_SYNC_UPDATE
-  rescue
+  rescue StandardError
     false
   end
 
