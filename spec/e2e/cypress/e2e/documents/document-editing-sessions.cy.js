@@ -144,6 +144,25 @@ describe("Document Editing Sessions", function () {
       // Every session should be linked to a version
       expect(result.all_sessions_have_version).to.be.true;
     });
+
+    // --- UI verification: contributors visible in version history sidebar ---
+    cy.visit(`/d/${documentId}/versions/latest`);
+
+    // The sidebar should show versions with contributor avatars
+    cy.get("#content-sidebar").within(() => {
+      // Each version entry should exist
+      cy.contains("Version 1").should("be.visible");
+      cy.contains("Version 2").should("be.visible");
+      cy.contains("Version 3").should("be.visible");
+
+      // Version 2 should show contributors (both Pawel and Stefan)
+      cy.get("[data-testid='version-contributors']").should("have.length.at.least", 1);
+    });
+
+    // Also verify the index table
+    cy.visit(`/d/${documentId}/versions`);
+    cy.contains("th", "Contributors").should("be.visible");
+    cy.get("[data-testid='version-contributors']").should("have.length.at.least", 3);
   });
 
   it("distinguishes editors from viewers in editing sessions", function () {
@@ -179,6 +198,13 @@ describe("Document Editing Sessions", function () {
       expect(result.total).to.be.at.least(2);
       expect(result.editors).to.include("om_is_pawel");
       expect(result.viewers).to.include("om_is_stefan");
+    });
+
+    // --- UI verification: both Pawel and Stefan appear as contributors ---
+    cy.visit(`/d/${documentId}/versions/latest`);
+
+    cy.get("#content-sidebar").within(() => {
+      cy.get("[data-testid='version-contributors']").should("exist");
     });
   });
 });
