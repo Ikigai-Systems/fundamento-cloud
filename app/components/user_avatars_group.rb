@@ -42,7 +42,9 @@ class UserAvatarsGroup < ViewComponent::Base
     Z_INDEX_CLASSES[visible_users.length] || "z-0"
   end
 
+  VARIANT_SIZES = { xs: 16, sm: 24, md: 32, lg: 64, xl: 128 }.freeze
+
   def avatar_size_class
-    UserAvatar.new(user: @users.first, variant: @variant).variant_to_class
+    "size-#{VARIANT_SIZES[@variant.to_sym] || VARIANT_SIZES[:xs]}"
   end
 end
