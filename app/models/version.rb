@@ -5,6 +5,13 @@ class Version < ApplicationRecord
   has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :nullify
   has_many :editor_sessions, -> { where(edited: true) }, class_name: "DocumentEditingSession"
 
+  def contributors
+    User.joins(organization_memberships: :editing_sessions)
+        .where(document_editing_sessions: { version_id: id })
+        .distinct
+        .order(:first_name, :last_name)
+  end
+
   scope :latest, -> { order(updated_at: :desc).first }
 
   before_create :set_sequential_id
