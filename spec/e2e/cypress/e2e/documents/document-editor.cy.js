@@ -155,6 +155,13 @@ describe("Document Editor", function () {
       cy.appEval(`Document.find('${documentId}').versions.count`).then((thirdCount) => {
         expect(thirdCount).to.equal(initialVersionCount + 3);
       });
+
+      // Verify contributors appear in sidebar details
+      cy.get("#content-sidebar").within(() => {
+        cy.get('[aria-label="Details"]').click();
+      });
+
+      cy.get("[data-testid='user-avatars-group']").should("exist");
     });
   });
 
@@ -203,6 +210,12 @@ describe("Document Editor", function () {
     cy.url().should("include", "/versions");
     cy.contains("Versions").should("be.visible");
 
+    // Verify the versions table has a Contributors column
+    cy.contains("th", "Contributors").should("be.visible");
+
+    // Each version row should have a contributors cell
+    cy.get("[data-testid='version-contributors']").should("have.length.at.least", 1);
+
     // Verify versions are listed (should have at least 3 versions)
     cy.get("tr").should("have.length.at.least", 4); // header row + 3 versions
 
@@ -215,6 +228,11 @@ describe("Document Editor", function () {
 
       // Verify the editor is in read-only mode
       cy.get("[data-document-editor]").should("exist");
+
+      // Verify contributor avatars appear in the sidebar
+      cy.get("#content-sidebar").within(() => {
+        cy.get("[data-testid='version-contributors']").should("exist");
+      });
 
       // Verify content contains version 3 content
       cy.contains("Version 4 content.").should("be.visible");
