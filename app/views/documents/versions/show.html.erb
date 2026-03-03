@@ -29,11 +29,17 @@
             <%= render UserAvatar.new(user: version.created_by, organization: current_organization) %>
           <% end %>
         </div>
-        <div class="p-2">
+        <div class="flex-1 p-2">
           <div class="font-bold">Version <%= version.sequential_id %></div>
           <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
           <div title="<%= version.created_at %>"><%= time_ago_in_words version.created_at %> ago</div>
         </div>
+        <% version_contributors = version.contributors %>
+        <% if version_contributors.any? %>
+          <div class="flex items-center pr-2" data-testid="version-contributors">
+            <%= render UserAvatarsGroup.new(users: version_contributors, organization: current_organization, variant: "xs") %>
+          </div>
+        <% end %>
       <% end %>
     <% end %>
   <% end %>
