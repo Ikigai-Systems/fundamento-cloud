@@ -40,6 +40,34 @@ RSpec.describe Document, type: :model do
     end
   end
 
+  describe "#contributors" do
+    fixtures :users, :organization_memberships, :document_editing_sessions
+
+    it "returns unique users from editing sessions ordered by name" do
+      document = documents(:one)
+      contributors = document.contributors
+
+      expect(contributors).to be_an(ActiveRecord::Relation)
+      expect(contributors.map(&:display_name)).to eq(contributors.map(&:display_name).sort)
+      expect(contributors.pluck(:id).uniq.length).to eq(contributors.length)
+    end
+
+    it "includes both editors and viewers" do
+      document = documents(:one)
+      contributors = document.contributors
+
+      expect(contributors.map(&:id)).to include("user_pawel")
+      expect(contributors.map(&:id)).to include("user_stefan")
+    end
+
+    it "returns empty relation when no editing sessions exist" do
+      document = documents(:two)
+      document.editing_sessions.delete_all
+
+      expect(document.contributors).to be_empty
+    end
+  end
+
   describe "validations" do
     it "requires an organization" do
       document = Document.new(space_id: "is_default")
