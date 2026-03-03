@@ -269,4 +269,176 @@ object_reactions.create(
   created_at: t.around(t.ramp_up + 5.days + 2.hours)
 )
 
+# ─── Document Editing Sessions ─────────────────────────────────
+# Simulate who participated in editing each document.
+# Each document has a single version (from create_from_markdown).
+# Sessions reflect the narrative: author always edited, others reviewed or contributed.
+
+def self.create_editing_session(document:, member:, version:, connected_at:, disconnected_at:, edited:)
+  DocumentEditingSession.create!(
+    document: document,
+    member: member,
+    version: version,
+    connected_at: connected_at,
+    disconnected_at: disconnected_at,
+    edited: edited
+  )
+end
+
+# Helper to create sessions for a document with its author + reviewers/contributors
+def self.seed_editing_sessions(document:, author_membership:, participants:, timeline:)
+  version = document.versions.first
+  doc_created = document.created_at
+
+  # Author always has an editing session
+  session_start = timeline.around(doc_created - 1.hour)
+  session_end = timeline.around(doc_created + 2.hours)
+  create_editing_session(
+    document: document, member: author_membership, version: version,
+    connected_at: session_start, disconnected_at: session_end, edited: true
+  )
+
+  # Each participant gets a session (reviewing or contributing)
+  participants.each do |participant|
+    member = participant[:member]
+    edited = participant.fetch(:edited, false)
+    # Participants typically connect after the author started
+    p_start = timeline.around(doc_created + rand(30..120).minutes)
+    p_end = timeline.around(p_start + rand(20..90).minutes)
+    create_editing_session(
+      document: document, member: member, version: version,
+      connected_at: p_start, disconnected_at: p_end, edited: edited
+    )
+  end
+end
+
+puts "  Seeding editing sessions..."
+
+# BrightPath HQ documents
+
+# Welcome doc: Sarah authored, James and Priya reviewed
+seed_editing_sessions(
+  document: welcome_doc, author_membership: sarah_membership, timeline: t,
+  participants: [
+    { member: james_membership, edited: false },
+    { member: priya_membership, edited: false }
+  ]
+)
+
+# Vacation policy: Sarah authored, Priya reviewed (she manages PTO requests)
+seed_editing_sessions(
+  document: vacation_doc, author_membership: sarah_membership, timeline: t,
+  participants: [
+    { member: priya_membership, edited: false }
+  ]
+)
+
+# Travel reimbursement: Sarah authored alone
+seed_editing_sessions(
+  document: travel_doc, author_membership: sarah_membership, timeline: t,
+  participants: []
+)
+
+# Out of office: Sarah authored, Elena contributed (added scheduling details)
+seed_editing_sessions(
+  document: ooo_doc, author_membership: sarah_membership, timeline: t,
+  participants: [
+    { member: elena_membership, edited: true }
+  ]
+)
+
+# Onboarding checklist: Sarah authored, James contributed, Alex recently viewed
+seed_editing_sessions(
+  document: onboarding_doc, author_membership: sarah_membership, timeline: t,
+  participants: [
+    { member: james_membership, edited: true },
+    { member: alex_membership, edited: false }
+  ]
+)
+
+# Meeting notes: Sarah authored, everyone attended and viewed
+seed_editing_sessions(
+  document: meeting_doc, author_membership: sarah_membership, timeline: t,
+  participants: [
+    { member: james_membership, edited: false },
+    { member: priya_membership, edited: false },
+    { member: marcus_membership, edited: false },
+    { member: elena_membership, edited: false },
+    { member: alex_membership, edited: false }
+  ]
+)
+
+# Client Projects documents
+
+# GreenLeaf GTM: James authored, Priya and Sarah reviewed
+seed_editing_sessions(
+  document: gtm_doc, author_membership: james_membership, timeline: t,
+  participants: [
+    { member: priya_membership, edited: false },
+    { member: sarah_membership, edited: false }
+  ]
+)
+
+# GreenLeaf Q1 Brief: James authored, Elena and Marcus contributed
+seed_editing_sessions(
+  document: campaign_brief_doc, author_membership: james_membership, timeline: t,
+  participants: [
+    { member: elena_membership, edited: true },
+    { member: marcus_membership, edited: true }
+  ]
+)
+
+# UrbanFit Brand Voice: Priya authored, James reviewed
+seed_editing_sessions(
+  document: brand_voice_doc, author_membership: priya_membership, timeline: t,
+  participants: [
+    { member: james_membership, edited: false }
+  ]
+)
+
+# UrbanFit Instagram: Elena authored, Marcus contributed visuals
+seed_editing_sessions(
+  document: instagram_doc, author_membership: elena_membership, timeline: t,
+  participants: [
+    { member: marcus_membership, edited: true }
+  ]
+)
+
+# TechNova Proposal: James authored, Sarah and Priya reviewed — active collaboration
+seed_editing_sessions(
+  document: technova_doc, author_membership: james_membership, timeline: t,
+  participants: [
+    { member: sarah_membership, edited: true },
+    { member: priya_membership, edited: false }
+  ]
+)
+
+# Creative Lab documents
+
+# Content Calendar Template: Elena authored, Marcus reviewed
+seed_editing_sessions(
+  document: calendar_template_doc, author_membership: elena_membership, timeline: t,
+  participants: [
+    { member: marcus_membership, edited: false }
+  ]
+)
+
+# Campaign Brainstorm: James led, Marcus/Elena/Priya all contributed — collaborative session
+seed_editing_sessions(
+  document: brainstorm_doc, author_membership: james_membership, timeline: t,
+  participants: [
+    { member: marcus_membership, edited: true },
+    { member: elena_membership, edited: true },
+    { member: priya_membership, edited: true }
+  ]
+)
+
+# Design System: Marcus authored, James reviewed
+seed_editing_sessions(
+  document: design_doc, author_membership: marcus_membership, timeline: t,
+  participants: [
+    { member: james_membership, edited: false }
+  ]
+)
+
 puts "=== Done: BrightPath Media ===\n\n"
