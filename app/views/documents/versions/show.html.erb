@@ -32,7 +32,13 @@
         <div class="flex-1 p-2">
           <div class="font-bold">Version <%= version.sequential_id %></div>
           <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
-          <div title="<%= version.created_at %>"><%= time_ago_in_words version.created_at %> ago</div>
+
+          <time class="underline decoration-dotted"
+                datetime="<%= version.created_at.iso8601 %>"
+                data-controller="timestamp"
+                data-timestamp-datetime-value="<%= version.created_at.iso8601 %>">
+            <%= time_ago_in_words version.created_at %>
+          </time>
         </div>
         <% version_contributors = version.contributors %>
         <% if version_contributors.any? %>
