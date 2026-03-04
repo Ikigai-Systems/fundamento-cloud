@@ -36,10 +36,11 @@
             <%= time_ago_in_words version.created_at %>
           </time>
         </div>
+
         <% version_contributors = version.contributors %>
         <% if version_contributors.any? %>
           <div class="flex items-center pr-2" data-testid="version-contributors">
-            <%= render UserAvatarsGroup.new(users: version_contributors, organization: current_organization, variant: "xs") %>
+            <%= render UserAvatarsGroup.new(users: version_contributors, organization: current_organization, max: 2, variant: "sm") %>
           </div>
         <% end %>
       <% end %>

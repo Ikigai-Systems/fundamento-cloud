@@ -3,11 +3,19 @@
 class UserAvatarsGroup < ViewComponent::Base
   Z_INDEX_CLASSES = %w[z-30 z-20 z-10 z-0].freeze
 
+  OVERFLOW_TEXT_CLASSES = {
+    xs: "text-[8px]",
+    sm: "text-[10px]",
+    md: "text-xs",
+    lg: "text-sm",
+    xl: "text-base"
+  }.freeze
+
   def initialize(users:, organization:, max: 4, variant: "sm")
     @users = users.to_a
     @organization = organization
     @max = max
-    @variant = variant
+    @variant = variant.to_sym
   end
 
   def render?
@@ -42,9 +50,11 @@ class UserAvatarsGroup < ViewComponent::Base
     Z_INDEX_CLASSES[visible_users.length] || "z-0"
   end
 
-  VARIANT_SIZES = { xs: 16, sm: 24, md: 32, lg: 64, xl: 128 }.freeze
-
   def avatar_size_class
-    "size-#{VARIANT_SIZES[@variant.to_sym] || VARIANT_SIZES[:xs]}"
+    "size-#{UserAvatar::VARIANT_SIZES[@variant] || UserAvatar::VARIANT_SIZES[:xs]}"
+  end
+
+  def overflow_text_class
+    OVERFLOW_TEXT_CLASSES[@variant] || OVERFLOW_TEXT_CLASSES[:xs]
   end
 end
