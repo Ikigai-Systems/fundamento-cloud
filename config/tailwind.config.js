@@ -7,7 +7,7 @@ module.exports = {
     './app/helpers/**/*.rb',
     './app/javascript/**/*.{js,ts,jsx,tsx}',
     './app/views/**/*.{erb,haml,html,slim}',
-    './app/components/**/*.{erb,haml,html,slim}',
+    './app/components/**/*.{erb,haml,html,slim,rb}',
   ],
   safelist: [
     // Flash message component classes (dynamically generated in flash_manager_controller.ts)
