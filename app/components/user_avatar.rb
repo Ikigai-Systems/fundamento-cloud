@@ -2,6 +2,7 @@
 
 class UserAvatar < ViewComponent::Base
   VARIANT_SIZES = { xs: 16, sm: 24, md: 32, lg: 64, xl: 128 }.freeze
+  VARIANT_CLASSES = { xs: "size-4", sm: "size-6", md: "size-8", lg: "size-16", xl: "size-32" }.freeze
 
   def initialize(organization_membership: nil, user: nil, organization: nil, variant: "md")
     @variant = variant.to_sym
@@ -26,6 +27,6 @@ class UserAvatar < ViewComponent::Base
   end
 
   def variant_to_class
-    "size-#{variant_to_dimensions}"
+    VARIANT_CLASSES[@variant] || VARIANT_CLASSES[:xs]
   end
 end

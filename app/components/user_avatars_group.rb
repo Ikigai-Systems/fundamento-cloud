@@ -51,7 +51,7 @@ class UserAvatarsGroup < ViewComponent::Base
   end
 
   def avatar_size_class
-    "size-#{UserAvatar::VARIANT_SIZES[@variant] || UserAvatar::VARIANT_SIZES[:xs]}"
+    UserAvatar::VARIANT_CLASSES[@variant] || UserAvatar::VARIANT_CLASSES[:xs]
   end
 
   def overflow_text_class
