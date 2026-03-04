@@ -95,8 +95,12 @@ describe("Table CRUD Operations", function () {
         const initialRowText = `${initialCount} rows`;
         cy.contains(initialRowText).should("be.visible");
 
+        cy.intercept("PUT", "/t/projects/update_by_rowstack").as("updateTable");
+
         // Find and click the "+ New row" button
         cy.contains("New row").click();
+
+        cy.wait("@updateTable");
 
         // Wait for the UI to reflect the new row count
         const newRowText = `${initialCount + 1} rows`;
