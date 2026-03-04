@@ -20,18 +20,14 @@
         "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700" => @version != version,
       }) do %>
         <div class="<%= @version == version ? "bg-blue-500 dark:!bg-blue-400" : "" %> w-1"></div>
-        <div class="whitespace-nowrap px-2 py-5 text-base text-slate-500">
-          <% if version.created_by.blank? %>
-            <div title="Deleted user" class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center font-bold">
-              ?
-            </div>
-          <% else %>
-            <%= render UserAvatar.new(user: version.created_by, organization: current_organization) %>
-          <% end %>
-        </div>
+
         <div class="flex-1 p-2">
           <div class="font-bold">Version <%= version.sequential_id %></div>
-          <div class="<%= version.created_by.blank? ? "text-slate-500 italic" : "" %>"><%= version.created_by&.display_name || "Deleted user" %></div>
+
+          <div class="flex items-center gap-1">
+            <%= render UserAvatar.new(user: version.created_by, organization: current_organization, variant: "xs") %>
+            <%= version.created_by&.display_name || "Deleted user" %>
+          </div>
 
           <time class="underline decoration-dotted"
                 datetime="<%= version.created_at.iso8601 %>"
