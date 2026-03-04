@@ -149,7 +149,11 @@ describe("Document Editor", function () {
 
       // Save again
       cy.get('[aria-label="Save document"]').click();
-      cy.contains("Document has been updated").should("be.visible");
+
+      cy.get("#flashes").within(() => {
+        cy.contains("Document has been updated").should("be.visible");
+        cy.get('[aria-label="Close"]').click();
+      });
 
       // Verify third version was created
       cy.appEval(`Document.find('${documentId}').versions.count`).then((thirdCount) => {
