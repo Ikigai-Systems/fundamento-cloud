@@ -12,8 +12,5 @@
       "Bash(npx playwright:*)",
       "WebFetch(domain:docs.fundamento.it)"
     ]
-  },
-  "enabledMcpjsonServers": [
-    "github"
-  ]
+  }
 }
