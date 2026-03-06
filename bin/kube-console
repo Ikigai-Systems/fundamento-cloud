@@ -6,6 +6,8 @@ NAMESPACE="fundamento-cloud"
 DEPLOYMENT="website"
 MEMORY="${MEMORY:-512Mi}"
 CPU="${CPU:-1000m}"
+POD_RUNNING_TIMEOUT="${POD_RUNNING_TIMEOUT:-5m}"
+SHELL_MODE=false
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -18,23 +20,36 @@ while [[ $# -gt 0 ]]; do
       CPU="$2"
       shift 2
       ;;
+    --shell)
+      SHELL_MODE=true
+      shift
+      ;;
+    --timeout)
+      POD_RUNNING_TIMEOUT="$2"
+      shift 2
+      ;;
     --help|-h)
       echo "Usage: $0 [OPTIONS]"
       echo ""
       echo "Launch a temporary Rails console container in Kubernetes with custom resource limits."
       echo ""
       echo "Options:"
-      echo "  --memory MEMORY    Set memory limit (default: 512Mi)"
-      echo "  --cpu CPU          Set CPU limit (default: 1000m)"
-      echo "  --help, -h         Show this help message"
+      echo "  --memory MEMORY      Set memory limit (default: 512Mi)"
+      echo "  --cpu CPU            Set CPU limit (default: 1000m)"
+      echo "  --shell              Launch bash shell instead of Rails console"
+      echo "  --timeout DURATION   Set pod startup timeout (default: 5m)"
+      echo "  --help, -h           Show this help message"
       echo ""
       echo "Environment variables:"
-      echo "  MEMORY             Alternative way to set memory limit"
-      echo "  CPU                Alternative way to set CPU limit"
+      echo "  MEMORY               Alternative way to set memory limit"
+      echo "  CPU                  Alternative way to set CPU limit"
+      echo "  POD_RUNNING_TIMEOUT  Alternative way to set pod startup timeout"
       echo ""
       echo "Examples:"
       echo "  $0                           # Use default resources (512Mi memory, 1000m CPU)"
       echo "  $0 --memory 4096Mi --cpu 2000m"
+      echo "  $0 --shell                   # Launch bash instead of Rails console"
+      echo "  $0 --timeout 10m"
       echo "  MEMORY=4096Mi CPU=2000m $0"
       exit 0
       ;;
@@ -46,11 +61,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "Launching Rails console in Kubernetes..."
+if [ "$SHELL_MODE" = true ]; then
+  POD_COMMAND='["bash"]'
+  MODE_LABEL="bash shell"
+else
+  POD_COMMAND='["bin/rails", "console"]'
+  MODE_LABEL="Rails console"
+fi
+
+echo "Launching $MODE_LABEL in Kubernetes..."
 echo "Namespace: $NAMESPACE"
 echo "Deployment: $DEPLOYMENT"
 echo "Memory limit: $MEMORY"
 echo "CPU limit: $CPU"
+echo "Pod startup timeout: $POD_RUNNING_TIMEOUT"
 echo ""
 
 # Get the current image from the deployment
@@ -79,7 +103,7 @@ POD_SPEC=$(cat <<EOF
       {
         "name": "console",
         "image": "$IMAGE",
-        "command": ["bin/rails", "console"],
+        "command": $POD_COMMAND,
         "stdin": true,
         "tty": true,
         "resources": {
@@ -88,8 +112,8 @@ POD_SPEC=$(cat <<EOF
             "cpu": "$CPU"
           },
           "requests": {
-            "memory": "$MEMORY",
-            "cpu": "$CPU"
+            "memory": "256Mi",
+            "cpu": "200m"
           }
         },
         "env": $ENV_JSON
@@ -113,4 +137,5 @@ kubectl run "console-$(date +%s)" \
   -it \
   --image="$IMAGE" \
   --restart=Never \
+  --pod-running-timeout="$POD_RUNNING_TIMEOUT" \
   --overrides="$POD_SPEC"

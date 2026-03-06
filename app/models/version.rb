@@ -2,6 +2,20 @@ class Version < ApplicationRecord
   belongs_to :document
   belongs_to :created_by, class_name: "User", optional: true
 
+  has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :nullify
+  has_many :editor_sessions, -> { where(edited: true) }, class_name: "DocumentEditingSession"
+
+  def contributors
+    if editing_sessions.loaded?
+      editing_sessions.map { |s| s.member.user }.uniq.sort_by { |u| [u.first_name, u.last_name] }
+    else
+      User.joins(organization_memberships: :editing_sessions)
+          .where(document_editing_sessions: { version_id: id })
+          .distinct
+          .order(:first_name, :last_name)
+    end
+  end
+
   scope :latest, -> { order(updated_at: :desc).first }
 
   before_create :set_sequential_id

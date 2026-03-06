@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# bin/browser-session-for - Launch an isolated browser session for a dev user account.
+#
+# Usage:
+#   bin/browser-session-for sarah@brightpath.example.com
+#   bin/browser-session-for --polypane sarah@brightpath.example.com
+#   bin/browser-session-for --list
+#
+# Each email gets its own Chrome profile directory (tmp/browser-sessions/<email>/)
+# with persistent cookies/localStorage. A unique --remote-debugging-port is assigned
+# per email so agent-browser can connect.
+#
+# With --polypane, launches Polypane instead of Chrome using the "Fundamento" project.
+
+USE_POLYPANE=false
+APP_PORT="${APP_PORT:-3000}"
+APP_URL="http://localhost:${APP_PORT}"
+SESSIONS_DIR="tmp/browser-sessions"
+
+# ─── Find Chrome ──────────────────────────────────────────────
+
+find_chrome() {
+  # macOS
+  if [[ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]]; then
+    echo "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    return
+  fi
+
+  # Linux (try common names)
+  for cmd in google-chrome google-chrome-stable chromium-browser chromium; do
+    if command -v "$cmd" &>/dev/null; then
+      echo "$cmd"
+      return
+    fi
+  done
+
+  echo "Error: Google Chrome not found." >&2
+  echo "  macOS: Install from https://www.google.com/chrome/" >&2
+  echo "  Linux: apt install google-chrome-stable (or chromium-browser)" >&2
+  exit 1
+}
+
+# ─── Find Polypane ───────────────────────────────────────────
+
+find_polypane() {
+  # macOS
+  if [[ -x "/Applications/Polypane.app/Contents/MacOS/polypane" ]]; then
+    echo "/Applications/Polypane.app/Contents/MacOS/polypane"
+    return
+  fi
+
+  # Linux / PATH
+  if command -v polypane &>/dev/null; then
+    echo "polypane"
+    return
+  fi
+
+  echo "Error: Polypane not found." >&2
+  echo "  macOS: Install from https://polypane.app/" >&2
+  echo "  Linux: See https://polypane.app/docs/" >&2
+  exit 1
+}
+
+# ─── Deterministic port from email ────────────────────────────
+
+debug_port_for() {
+  local email="$1"
+  # Hash email to a number in range 9200-9299
+  local hash
+  hash=$(printf '%s' "$email" | cksum | awk '{print $1}')
+  echo $(( 9200 + (hash % 100) ))
+}
+
+# ─── List seed accounts ──────────────────────────────────────
+
+list_accounts() {
+  local seeds_dir="db/seeds/organizations"
+  echo "Available seed accounts (password: \"password\"):"
+  echo ""
+  if [[ -d "$seeds_dir" ]]; then
+    for seed_file in "$seeds_dir"/*/seed.rb; do
+      if [[ -f "$seed_file" ]]; then
+        grep -oE '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+' "$seed_file" | sort -u | while read -r email; do
+          local port
+          port=$(debug_port_for "$email")
+          printf "  %-40s (debug port: %s)\n" "$email" "$port"
+        done
+      fi
+    done
+  else
+    echo "  No seed directory found at $seeds_dir"
+  fi
+  echo ""
+  echo "Usage: bin/browser-session-for <email>"
+}
+
+# ─── Main ─────────────────────────────────────────────────────
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --list|-l)
+      list_accounts
+      exit 0
+      ;;
+    --polypane)
+      USE_POLYPANE=true
+      shift
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      echo "Usage: bin/browser-session-for [--polypane] <email>"
+      echo "       bin/browser-session-for --list"
+      exit 1
+      ;;
+    *)
+      EMAIL="$1"
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "${EMAIL:-}" ]]; then
+  echo "Usage: bin/browser-session-for [--polypane] <email>"
+  echo "       bin/browser-session-for --list"
+  exit 1
+fi
+
+DEBUG_PORT=$(debug_port_for "$EMAIL")
+
+if [[ "$USE_POLYPANE" == true ]]; then
+  POLYPANE=$(find_polypane)
+
+  echo "Opening Polypane session for: $EMAIL"
+  echo "  Project:        Fundamento"
+  echo "  Debug port:     $DEBUG_PORT"
+  echo "  App URL:        $APP_URL"
+  echo ""
+  echo "To connect with agent-browser:"
+  echo "  npx agent-browser --remote-debugging-port=$DEBUG_PORT"
+  echo ""
+
+  # Launch Polypane with the "Fundamento" project
+  exec "$POLYPANE" \
+    --project "Fundamento" \
+    --create \
+    --remote-debugging-port="$DEBUG_PORT" \
+    "${APP_URL}/?as=${EMAIL}"
+else
+  CHROME=$(find_chrome)
+  USER_DATA_DIR="${SESSIONS_DIR}/${EMAIL}"
+
+  # Create session directory
+  mkdir -p "$USER_DATA_DIR"
+
+  # Write debug port for easy reference
+  echo "$DEBUG_PORT" > "${USER_DATA_DIR}/debug-port"
+
+  echo "Opening Chrome session for: $EMAIL"
+  echo "  User data dir:  $USER_DATA_DIR"
+  echo "  Debug port:     $DEBUG_PORT"
+  echo "  App URL:        $APP_URL"
+  echo ""
+  echo "To connect with agent-browser:"
+  echo "  npx agent-browser --remote-debugging-port=$DEBUG_PORT"
+  echo ""
+
+  # Launch Chrome with isolated profile
+  exec "$CHROME" \
+    --user-data-dir="$(pwd)/$USER_DATA_DIR" \
+    --remote-debugging-port="$DEBUG_PORT" \
+    --no-first-run \
+    --no-default-browser-check \
+    --window-size=1400,900 \
+    --use-mock-keychain \
+    --disable-background-networking \
+    --enable-automation \
+    "${APP_URL}/?as=${EMAIL}"
+fi

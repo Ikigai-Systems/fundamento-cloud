@@ -25,6 +25,7 @@
                 <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-0">Version</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Date</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Created by</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Contributors</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Actions</th>
               </tr>
               </thead>
@@ -40,6 +41,12 @@
                         </div>
                       <% else %>
                         <%= render UserAvatar.new(user: version.created_by, organization: current_organization) %>
+                      <% end %>
+                    </td>
+                    <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500" data-testid="version-contributors">
+                      <% version_contributors = version.contributors %>
+                      <% if version_contributors.any? %>
+                        <%= render UserAvatarsGroup.new(users: version_contributors, organization: current_organization, variant: "xs") %>
                       <% end %>
                     </td>
                     <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500">

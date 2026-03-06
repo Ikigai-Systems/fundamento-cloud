@@ -1,0 +1,17 @@
+name: "Campaign Tracker"
+columns:
+  - name: "Campaign"
+    kind: string
+  - name: "Client"
+    kind: string
+  - name: "Start Date"
+    kind: date
+  - name: "End Date"
+    kind: date
+  - name: "Budget"
+    kind: decimal
+  - name: "Status"
+    kind: select
+  - name: "Impressions"
+    kind: number
+data: campaign-tracker.csv

@@ -1,0 +1,13 @@
+name: "Vacation Tracker"
+columns:
+  - name: "Name"
+    kind: string
+  - name: "Start Date"
+    kind: date
+  - name: "End Date"
+    kind: date
+  - name: "Type"
+    kind: select
+  - name: "Status"
+    kind: select
+data: vacation-tracker.csv

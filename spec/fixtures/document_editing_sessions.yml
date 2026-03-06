@@ -1,0 +1,25 @@
+_fixture:
+  model_class: DocumentEditingSession
+
+session_pawel_doc_one:
+  id: des_pawel_1
+  document_id: one
+  member_id: om_is_pawel
+  connected_at: <%= 2.hours.ago.to_fs(:db) %>
+  disconnected_at: <%= 1.hour.ago.to_fs(:db) %>
+  edited: true
+
+session_stefan_doc_one:
+  id: des_stefan_1
+  document_id: one
+  member_id: om_is_stefan
+  connected_at: <%= 2.hours.ago.to_fs(:db) %>
+  disconnected_at: <%= 1.hour.ago.to_fs(:db) %>
+  edited: false
+
+session_pawel_doc_two:
+  id: des_pawel_2
+  document_id: two
+  member_id: om_is_pawel
+  connected_at: <%= 30.minutes.ago.to_fs(:db) %>
+  edited: true

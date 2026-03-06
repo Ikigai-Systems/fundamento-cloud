@@ -1,17 +1,9 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# db/seeds.rb
 
-if Rails.env.standalone?
+# Standalone mode seeding (production/self-hosted)
+if Flipper.enabled?(:standalone)
   DatabaseId.upsert(ActiveRecord::Base.connection)
 
-  # Code to initialize a standalone server
   organization = Organization.find_or_create_by!(
     name: ENV.fetch("FUNDAMENTO_ORGANIZATION", "Acme Inc.")
   )
@@ -22,5 +14,27 @@ if Rails.env.standalone?
     user.password = ENV.fetch("FUNDAMENTO_ADMIN_PASSWORD", "password!")
   end
 
-  organization_membership = organization.organization_memberships.find_or_create_by!(user: administrator)
+  organization.organization_memberships.find_or_create_by!(user: administrator)
+  return
 end
+
+# Development seed data
+return unless Rails.env.development?
+
+# Seed organization names - add new scenarios here
+SEED_ORG_NAMES = [
+  "BrightPath Media"
+].freeze
+
+# Seed user email domains - one per scenario
+SEED_EMAIL_DOMAINS = [
+  "@brightpath.example.com"
+].freeze
+
+puts "Cleaning previous seed data..."
+Organization.where(name: SEED_ORG_NAMES).destroy_all
+SEED_EMAIL_DOMAINS.each { |domain| User.where("email LIKE ?", "%#{domain}").destroy_all }
+
+puts "Seeding development data..."
+Oaken.seed :organizations
+puts "Done!"
