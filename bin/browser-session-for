@@ -167,6 +167,12 @@ else
   echo "  npx agent-browser --remote-debugging-port=$DEBUG_PORT"
   echo ""
 
+  # Linux-only: use XWayland mode to avoid Wayland CSD rendering artifacts
+  LINUX_FLAGS=()
+  if [[ "$(uname)" == "Linux" ]]; then
+    LINUX_FLAGS=(--ozone-platform=x11)
+  fi
+
   # Launch Chrome with isolated profile
   exec "$CHROME" \
     --user-data-dir="$(pwd)/$USER_DATA_DIR" \
@@ -177,5 +183,6 @@ else
     --use-mock-keychain \
     --disable-background-networking \
     --enable-automation \
+    "${LINUX_FLAGS[@]}" \
     "${APP_URL}/?as=${EMAIL}"
 fi
