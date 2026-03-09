@@ -14,12 +14,14 @@ class ImportSessionsController < ApplicationController
 
   def show
     authorize @session, :show?
+
     @import_files = @session.import_files.order(:relative_path)
   end
 
   def new
     @session = current_organization.import_sessions.new
     @spaces = updatable_spaces
+
     authorize @session, :create?
   end
 
