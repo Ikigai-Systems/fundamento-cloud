@@ -50,7 +50,7 @@ describe("Import Sessions", function () {
     cy.get("[data-import-upload-target='fileCount']").should("have.text", "2")
     cy.get("[data-import-upload-target='totalSize']").should("not.be.empty")
     cy.get("[data-import-upload-target='limitError']").should("not.be.visible")
-    cy.contains("Start Upload").should("be.visible")
+    cy.contains("Import files").should("be.visible")
   })
 
   it("shows an error when more than 500 files are selected", function () {
@@ -72,7 +72,7 @@ describe("Import Sessions", function () {
     cy.get("[data-import-upload-target='limitError']")
       .should("be.visible")
       .and("contain", "Too many files")
-    cy.contains("Start Upload").should("not.exist")
+    cy.contains("Import files").should("not.exist")
   })
 
   // ── Full import flows ───────────────────────────────────────────────
@@ -88,7 +88,7 @@ describe("Import Sessions", function () {
       [DOCX, ODT],
       { force: true }
     )
-    cy.contains("Start Upload").click()
+    cy.contains("Import files").click()
 
     // Stimulus redirects to the show page after triggering processing
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
@@ -121,7 +121,7 @@ describe("Import Sessions", function () {
     )
 
     cy.get("[data-import-upload-target='fileCount']").should("have.text", "1")
-    cy.contains("Start Upload").click()
+    cy.contains("Import files").click()
 
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
     cy.contains("✓ Completed", { timeout: 90000 }).should("be.visible")
@@ -139,7 +139,7 @@ describe("Import Sessions", function () {
     cy.get("[data-import-upload-target='spaceSelect']").select("Default IS")
     cy.contains("Continue").click()
     cy.get("input[type='file']:not([webkitdirectory])").selectFile([DOCX], { force: true })
-    cy.contains("Start Upload").click()
+    cy.contains("Import files").click()
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
     cy.contains("✓ Completed", { timeout: 90000 }).should("be.visible")
 
