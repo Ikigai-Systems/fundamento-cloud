@@ -22,6 +22,14 @@ class Document < ApplicationRecord
   has_many :tags, through: :object_tags
   has_many :inline_comment_threads, dependent: :destroy
   has_many :attachments, as: :parent, dependent: :destroy
+  has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :delete_all
+
+  def contributors
+    User.joins(organization_memberships: :editing_sessions)
+        .where(document_editing_sessions: { document_id: id })
+        .distinct
+        .order(:first_name, :last_name)
+  end
 
   before_destroy :nullify_space_home_document_id
 

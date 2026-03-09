@@ -1,11 +1,16 @@
 <div class="rounded-xl border flex flex-col sidebar-colors pt-3">
-  <div class="flex flex-row gap-3 pl-3 pb-3">
-    <div>
-      <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
-    </div>
+  <div class="flex flex-row gap-3 pl-3 pb-3 items-center">
+    <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
+
     <div class="flex flex-col">
       <span class="font-semibold"><%= comment.organization_membership.display_name %></span>
-      <%= time_ago_in_words comment.created_at %>
+
+      <time class="text-sm/6 text-gray-900 dark:text-gray-100 underline decoration-dotted"
+            datetime="<%= comment.created_at.iso8601 %>"
+            data-controller="timestamp"
+            data-timestamp-datetime-value="<%= comment.created_at.iso8601 %>">
+        <%= time_ago_in_words comment.created_at %>
+      </time>
     </div>
   </div>
 

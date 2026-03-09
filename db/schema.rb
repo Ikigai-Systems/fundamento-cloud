@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_20_160324) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_27_195949) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,6 +102,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_160324) do
     t.index ["run_as_id"], name: "index_automations_on_run_as_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
+  end
+
+  create_table "document_editing_sessions", id: :string, force: :cascade do |t|
+    t.datetime "connected_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "disconnected_at"
+    t.string "document_id", null: false
+    t.boolean "edited", default: false, null: false
+    t.string "member_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "version_id"
+    t.index ["document_id", "member_id"], name: "index_document_editing_sessions_on_document_id_and_member_id"
+    t.index ["document_id", "version_id"], name: "index_document_editing_sessions_on_document_id_and_version_id"
+    t.index ["document_id"], name: "index_document_editing_sessions_on_document_id"
+    t.index ["member_id"], name: "index_document_editing_sessions_on_member_id"
+    t.index ["version_id"], name: "index_document_editing_sessions_on_version_id"
   end
 
   create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -650,6 +666,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_20_160324) do
   add_foreign_key "automations", "organization_memberships", column: "run_as_id"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
+  add_foreign_key "document_editing_sessions", "documents"
+  add_foreign_key "document_editing_sessions", "organization_memberships", column: "member_id"
+  add_foreign_key "document_editing_sessions", "versions"
   add_foreign_key "documents", "organizations"
   add_foreign_key "documents", "spaces"
   add_foreign_key "favorites", "organization_memberships"

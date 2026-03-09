@@ -35,6 +35,9 @@
 !/spec/e2e
 !/spec/fixtures
 
+# Ignore any seeds
+/db/seeds/
+
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
@@ -51,3 +54,8 @@
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
+
+# Ignore any claude settings and documents
+CLAUDE.md
+.claude/
+docs/

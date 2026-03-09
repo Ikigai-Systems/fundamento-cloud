@@ -1,43 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(age:*)",
+      "Bash(rails:*)",
+      "Bash(rspec:*)",
+      "Bash(bin/rspec:*)",
+      "Bash(bin/rails:*)",
       "Bash(bin/dev-e2e:*)",
-      "Bash(bundle install)",
-      "Bash(cat:*)",
-      "Bash(docker compose:*)",
-      "Bash(find:*)",
-      "Bash(gh run list:*)",
-      "Bash(gh run view:*)",
-      "Bash(git add:*)",
-      "Bash(git check-ignore:*)",
-      "Bash(git commit:*)",
-      "Bash(git mv:*)",
-      "Bash(git worktree:*)",
-      "Bash(grep:*)",
-      "Bash(ls:*)",
-      "Bash(npm install:*)",
-      "Bash(npm run:*)",
-      "Bash(npm update:*)",
-      "Bash(npx agent-browser:*)",
+      "Bash(bin/rake:*)",
+      "Bash(npx vitest run:*)",
       "Bash(npx cypress run:*)",
       "Bash(npx playwright:*)",
-      "Bash(rails:*)",
-      "Bash(rg:*)",
-      "Bash(rspec:*)",
-      "Bash(ruby:*)",
-      "Bash(sops:*)",
-      "Bash(tee:*)",
-      "Skill(agent-browser)",
-      "WebSearch",
-      "mcp__github__*",
-      "mcp__playwright__*",
-      "mcp__task_master_ai__*"
-    ],
-    "deny": []
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "github"
-  ]
+      "WebFetch(domain:docs.fundamento.it)"
+    ]
+  }
 }

@@ -11,26 +11,6 @@
         "streamablehttp",
         "https://fundamento.cloud/api/mcp"
       ]
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${GITHUB_PAT}"
-      }
-    },
-    "atlassian": {
-      "type": "sse",
-      "url": "https://mcp.atlassian.com/v1/sse"
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest"
-      ],
-      "env": {}
     }
   }
 }

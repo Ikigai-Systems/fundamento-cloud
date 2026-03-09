@@ -30,6 +30,8 @@ class Documents::VersionsController < ApplicationController
     @version.created_by = current_user
 
     if @version.save
+      @document.editing_sessions.unlinked.update_all(version_id: @version.id)
+
       respond_to do |format|
         flash[:notice] = "Document has been updated."
         format.html { redirect_to document_path(@document) }
@@ -53,7 +55,7 @@ class Documents::VersionsController < ApplicationController
 
     @documents = @space.documents_from_hierarchy
 
-    @versions = @document.versions.order('created_at DESC')
+    @versions = @document.versions.includes(:created_by, editing_sessions: { member: :user }).order('created_at DESC')
 
     render layout: "full_width_application"
   end
@@ -70,7 +72,7 @@ class Documents::VersionsController < ApplicationController
 
     @documents = @space.documents_from_hierarchy
 
-    @versions = @document.versions.order('created_at DESC')
+    @versions = @document.versions.includes(editing_sessions: { member: :user }).order('created_at DESC')
   end
 
   def update

@@ -15,6 +15,7 @@ class OrganizationMembership < ApplicationRecord
   has_many :import_sessions, dependent: :destroy
   has_many :team_memberships, inverse_of: :member, dependent: :delete_all
   has_many :space_memberships, inverse_of: :member, dependent: :delete_all
+  has_many :editing_sessions, class_name: "DocumentEditingSession", foreign_key: :member_id, inverse_of: :member, dependent: :delete_all
 
   enum :role, [:manager, :member], scope: false
 

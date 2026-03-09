@@ -1,0 +1,30 @@
+<div data-testid="user-avatars-group" class="isolate flex items-center -space-x-1">
+  <% visible_users.each_with_index do |user, index| %>
+    <div class="relative <%= z_class(index) %> inline-flex">
+      <%= render UserAvatar.new(user: user, organization: @organization, variant: @variant) %>
+    </div>
+  <% end %>
+
+  <% if overflow? %>
+    <div class="relative <%= overflow_z_class %> inline-block"
+         data-controller="popover"
+         data-action="mouseenter->popover#show mouseleave->popover#hide">
+      <div class="<%= avatar_size_class %> rounded-full bg-gray-200 dark:bg-gray-600 ring-1 ring-white dark:ring-gray-900 flex items-center justify-center <%= overflow_text_class %> font-medium text-gray-600 dark:text-gray-300">
+        +<%= overflow_count %>
+      </div>
+
+      <template data-popover-target="content">
+        <div class="popover-card p-2 whitespace-nowrap right-0 mt-1" data-popover-target="card">
+          <ul class="space-y-2">
+            <% overflow_users.each do |user| %>
+              <li class="flex items-center gap-2">
+                <%= render UserAvatar.new(user: user, organization: @organization, variant: "xs") %>
+                <span class="text-sm"><%= user.display_name %></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </template>
+    </div>
+  <% end %>
+</div>

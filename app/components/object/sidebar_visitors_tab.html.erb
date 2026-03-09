@@ -3,7 +3,17 @@
     <% @object.visitors.order(visited_at: :desc).each do |visitor| %>
       <div class="flex flex-row gap-3 items-center">
         <%= render UserAvatar.new(user: visitor.user, organization: helpers.current_organization) %>
-        <%= time_ago_in_words visitor.visited_at %>
+
+        <div class="flex flex-col">
+          <span class="font-semibold"><%= visitor.user.display_name %></span>
+
+          <time class="text-sm/6 text-gray-900 dark:text-gray-100 underline decoration-dotted"
+                datetime="<%= visitor.visited_at.iso8601 %>"
+                data-controller="timestamp"
+                data-timestamp-datetime-value="<%= visitor.visited_at.iso8601 %>">
+            <%= time_ago_in_words visitor.visited_at %>
+          </time>
+        </div>
       </div>
     <% end %>
   </div>
