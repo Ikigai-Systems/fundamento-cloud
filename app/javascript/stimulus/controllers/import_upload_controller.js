@@ -36,12 +36,12 @@ export default class extends Controller {
 
   dragOver(event) {
     event.preventDefault()
-    this.dropZoneTarget.classList.add("border-blue-500")
+    this.dropZoneTarget.classList.add("!border-blue-500")
   }
 
   async drop(event) {
     event.preventDefault()
-    this.dropZoneTarget.classList.remove("border-blue-500")
+    this.dropZoneTarget.classList.remove("!border-blue-500")
     const items = Array.from(event.dataTransfer.items)
     const entries = items.map(item => item.webkitGetAsEntry?.()).filter(Boolean)
     const collected = []
