@@ -848,7 +848,7 @@ module Api
       end
 
       def show
-        session = find_session
+        session = load_session
         authorize session
 
         render json: session_json(session).merge(
@@ -857,7 +857,7 @@ module Api
       end
 
       def destroy
-        session = find_session
+        session = load_session
         authorize session
 
         session.destroy!
@@ -1044,8 +1044,9 @@ Expected: FAIL with routing error
 Add to `app/controllers/api/v1/import_sessions_controller.rb`, before the `private` keyword:
 
 ```ruby
+
 def manifest
-  session = find_session
+  session = load_session
   authorize session, :update?
 
   file_entries = Array(params[:files])
@@ -1223,8 +1224,9 @@ end
 Add before `private` in the sessions controller:
 
 ```ruby
+
 def trigger_processing
-  session = find_session
+  session = load_session
   authorize session, :update?
 
   still_pending = session.import_files.where(status: [:pending, :uploading]).count
@@ -1236,7 +1238,7 @@ def trigger_processing
 
   if session.processing? || session.completed?
     return render json: { error: "Session is already #{session.status}" },
-                  status: :unprocessable_entity
+      status: :unprocessable_entity
   end
 
   session.update!(status: :processing, started_processing_at: Time.current)
@@ -1246,7 +1248,7 @@ def trigger_processing
 end
 
 def retry_failed
-  session = find_session
+  session = load_session
   authorize session, :update?
 
   failed_files = session.import_files.where(status: :failed)
