@@ -13,6 +13,7 @@ class DevE2E < Thor
     "POSTGRES_PORT" => "6432",
     "REDIS_PORT" => "7379",
     "MINIO_PORT" => "10000",
+    "MINIO_URL" => "http://localhost:10000",
     "MINIO_CONSOLE_PORT" => "10001",
     "BLOCKNOTE_PORT" => "4002",
     "HTTP_HOST" => "localhost:4000",

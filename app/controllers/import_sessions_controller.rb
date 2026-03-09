@@ -131,6 +131,9 @@ class ImportSessionsController < ApplicationController
 
     file_json(import_file).merge(
       direct_upload_url: blob.service_url_for_direct_upload,
+      direct_upload_headers: blob.service.headers_for_direct_upload(
+        blob.key, content_type: blob.content_type, checksum: blob.checksum
+      ).compact,
       content_type: blob.content_type,
       signed_blob_id: blob.signed_id
     )

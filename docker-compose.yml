@@ -7,6 +7,8 @@ x-minio-configuration: &minio-configuration
 x-minio-storage-credentials: &minio-storage-credentials
   MINIO_ACCESS_KEY: fundamento
   MINIO_SECRET_KEY: IPaWkaUi9Ko1NA
+  MINIO_URL: ${MINIO_URL:-http://localhost:9000}
+  MINIO_INTERNAL_URL: http://minio:9000
 
 x-rails-environment: &rails-environment
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:-abcdef}

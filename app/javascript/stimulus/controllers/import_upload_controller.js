@@ -187,7 +187,7 @@ export default class extends Controller {
 
     const uploadRes = await fetch(entry.direct_upload_url, {
       method: "PUT",
-      headers: { "Content-Type": entry.content_type || "application/octet-stream" },
+      headers: entry.direct_upload_headers || { "Content-Type": entry.content_type || "application/octet-stream" },
       body: fileData.file
     })
     if (!uploadRes.ok) throw new Error(`Upload failed for ${entry.relative_path}: HTTP ${uploadRes.status}`)
