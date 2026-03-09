@@ -55,7 +55,7 @@ describe("Import Sessions", function () {
 
   it("shows an error when more than 500 files are selected", function () {
     const tooManyFiles = Array.from({ length: 501 }, (_, i) => ({
-      contents: "# Test",
+      contents: Cypress.Buffer.from("# Test"),
       fileName: `note-${i}.md`,
       mimeType: "text/markdown",
       lastModified: Date.now()
@@ -72,7 +72,8 @@ describe("Import Sessions", function () {
     cy.get("[data-import-upload-target='limitError']")
       .should("be.visible")
       .and("contain", "Too many files")
-    cy.contains("Import files").should("not.exist")
+
+    cy.contains("Import files").should("not.be.visible")
   })
 
   // ── Full import flows ───────────────────────────────────────────────

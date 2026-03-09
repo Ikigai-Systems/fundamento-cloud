@@ -9,7 +9,7 @@ export default class extends Controller {
   static targets = [
     "stepConfigure", "stepFiles", "stepUploading", "stepProcessing",
     "spaceSelect", "formatSelect",
-    "dropZone", "fileSummary", "fileCount", "totalSize", "limitError",
+    "dropZone", "fileSummary", "fileCount", "totalSize", "limitError", "submitButton",
     "sessionId", "uploadBar", "uploadedCount", "uploadTotal",
     "processingStatus"
   ]
@@ -70,26 +70,29 @@ export default class extends Controller {
 
   #setFiles(collected) {
     this.files = collected
+
     const totalBytes = collected.reduce((sum, f) => sum + f.file.size, 0)
+
+    this.fileCountTarget.textContent = collected.length
+    this.totalSizeTarget.textContent = this.#formatBytes(totalBytes)
+
+    this.fileSummaryTarget.classList.remove("hidden")
+    this.limitErrorTarget.classList.add("hidden")
+    this.submitButtonTarget.classList.remove("hidden")
 
     if (collected.length > MAX_FILES) {
       this.limitErrorTarget.textContent = `Too many files: ${collected.length} (max ${MAX_FILES})`
       this.limitErrorTarget.classList.remove("hidden")
-      this.fileSummaryTarget.classList.remove("hidden")
+      this.submitButtonTarget.classList.add("hidden")
       return
     }
 
     if (totalBytes > MAX_TOTAL_BYTES) {
       this.limitErrorTarget.textContent = `Total size too large: ${this.#formatBytes(totalBytes)} (max 1 GB)`
       this.limitErrorTarget.classList.remove("hidden")
-      this.fileSummaryTarget.classList.remove("hidden")
+      this.submitButtonTarget.classList.add("hidden")
       return
     }
-
-    this.limitErrorTarget.classList.add("hidden")
-    this.fileCountTarget.textContent = collected.length
-    this.totalSizeTarget.textContent = this.#formatBytes(totalBytes)
-    this.fileSummaryTarget.classList.remove("hidden")
   }
 
   async #collectEntry(entry, prefix, results) {
