@@ -2,6 +2,7 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
+  after_action :enqueue_reddit_sign_up_event, only: [:create]
 
   def create
     build_resource(sign_up_params)
@@ -24,7 +25,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i[first_name last_name])
+    devise_parameter_sanitizer.permit(:sign_up, keys: %i[first_name last_name reddit_click_id])
     devise_parameter_sanitizer.permit(:account_update, keys: %i[first_name last_name])
   end
 
@@ -34,5 +35,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def after_inactive_sign_up_path_for(resource)
     users_confirmation_pending_path
+  end
+
+  def enqueue_reddit_sign_up_event
+    return unless resource.persisted?
+
+    RedditConversionJob.perform_later(
+      event_type: "SignUp",
+      user_id: resource.id,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent
+    )
   end
 end

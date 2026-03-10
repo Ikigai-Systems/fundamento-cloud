@@ -54,6 +54,18 @@
       </div>
     <% end %>
 
+    <%= f.hidden_field :reddit_click_id, id: "reddit-click-id-field" %>
+
+    <script>
+      (function() {
+        var match = document.cookie.match(/(?:^|;\s*)rdt_cid=([^;]*)/);
+        if (match) {
+          var field = document.getElementById("reddit-click-id-field");
+          if (field) field.value = decodeURIComponent(match[1]);
+        }
+      })();
+    </script>
+
     <% if Flipper.enabled?(:recaptcha) %>
       <%= recaptcha_tags(noscript: false) %>
     <% end %>
