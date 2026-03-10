@@ -51,6 +51,8 @@ class DevE2E < Thor
     puts "E2E environment is ready!"
     puts ""
 
+    warn_build_cache_size! if options[:build]
+
     if options[:test]
       run_cypress
     else
@@ -141,6 +143,45 @@ class DevE2E < Thor
 
         Ensure your age key is configured at ~/.config/sops/age/keys.txt
       MSG
+    end
+  end
+
+  def warn_build_cache_size!
+    max_gb = 10
+
+    cache_fields = `docker system df --format '{{.Type}}\t{{.TotalCount}}\t{{.Size}}' 2>/dev/null`
+      .each_line
+      .find { |line| line.start_with?("Build Cache") }
+      &.split("\t")
+
+    return unless cache_fields
+
+    count = cache_fields[1].to_i
+    raw_size = cache_fields[2]&.strip
+    size_gb = parse_size_to_gb(raw_size)
+
+    return unless size_gb > max_gb
+
+    puts "WARNING: Docker build cache is #{raw_size} (#{count} layers), which may cause build failures."
+    puts "  To free space, try these commands (from least to most aggressive):"
+    puts ""
+    puts "  # Remove only this project's images (triggers a full rebuild next time)"
+    puts "  docker compose -p #{PROJECT} down --rmi local"
+    puts ""
+    puts "  # Remove unused build cache layers (keeps layers referenced by existing images)"
+    puts "  docker builder prune"
+    puts ""
+    puts "  # Remove ALL build cache layers including active ones"
+    puts "  docker builder prune --all"
+    puts ""
+  end
+
+  def parse_size_to_gb(size)
+    case size
+    when /(\d+\.?\d*)\s*GB/i then $1.to_f
+    when /(\d+\.?\d*)\s*MB/i then $1.to_f / 1024
+    when /(\d+\.?\d*)\s*kB/i then $1.to_f / (1024 * 1024)
+    else 0
     end
   end
 
