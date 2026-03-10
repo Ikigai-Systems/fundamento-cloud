@@ -2,13 +2,14 @@ require "rails_helper"
 
 RSpec.describe "User Registration", type: :request do
   describe "POST /users" do
-    it "saves reddit_click_id from the form" do
+    it "saves reddit_click_id from session" do
+      # Simulate landing with rdt_cid URL param (captured by ApplicationController)
       post user_registration_path, params: {
+        rdt_cid: "rdt_abc123",
         user: {
           email: "newuser@example.com",
           password: "password123",
-          password_confirmation: "password123",
-          reddit_click_id: "rdt_abc123"
+          password_confirmation: "password123"
         }
       }
 
@@ -39,8 +40,7 @@ RSpec.describe "User Registration", type: :request do
             user: {
               email: "reddit-test@example.com",
               password: "password123",
-              password_confirmation: "password123",
-              reddit_click_id: "rdt_abc123"
+              password_confirmation: "password123"
             }
           }
         }.to have_enqueued_job(RedditConversionJob).with(

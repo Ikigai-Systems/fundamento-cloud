@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include ActiveStorage::SetCurrent
 
   prepend_before_action :authenticate_user!
+  before_action :capture_reddit_click_id
 
   helper_method :current_organization
   helper_method :current_organization_membership
@@ -51,6 +52,11 @@ class ApplicationController < ActionController::Base
     render "application/access_denied",
       layout: "application",
       status: :forbidden
+  end
+
+  def capture_reddit_click_id
+    return unless params[:rdt_cid].present?
+    session[:reddit_click_id] = params[:rdt_cid]
   end
 
   def replays_session_sample_rate

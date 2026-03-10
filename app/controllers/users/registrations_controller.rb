@@ -9,6 +9,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     if !Flipper.enabled?(:recaptcha) || (resource.validate && verify_recaptcha(model: resource))
       super
+      resource.update_column(:reddit_click_id, session[:reddit_click_id]) if resource.persisted? && session[:reddit_click_id].present?
     else
       logger.warn("reCAPTCHA failed because: #{@_recaptcha_failure_reason}") if defined?(@_recaptcha_failure_reason) && @_recaptcha_failure_reason.present? && Flipper.enabled?(:recaptcha_debug)
 
@@ -25,7 +26,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: %i[first_name last_name reddit_click_id])
+    devise_parameter_sanitizer.permit(:sign_up, keys: %i[first_name last_name])
     devise_parameter_sanitizer.permit(:account_update, keys: %i[first_name last_name])
   end
 
