@@ -1,4 +1,5 @@
 const { defineConfig } = require('cypress')
+const os = require('os')
 
 module.exports = defineConfig({
   viewportWidth: 1280,
@@ -9,6 +10,17 @@ module.exports = defineConfig({
     defaultCommandTimeout: 10000,
     supportFile: "cypress/support/index.js",
     excludeSpecPattern: "**/rails_examples/**/*",
+    setupNodeEvents(on) {
+      // Linux/Wayland: force XWayland mode to avoid rendering artifacts
+      if (os.platform() === "linux") {
+        on("before:browser:launch", (browser, launchOptions) => {
+          if (browser.family === "chromium") {
+            launchOptions.args.push("--ozone-platform=x11")
+          }
+          return launchOptions
+        })
+      }
+    },
   },
   // JUnit reporter configuration for GitHub Actions integration
   reporter: "junit",
