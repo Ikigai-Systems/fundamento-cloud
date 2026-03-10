@@ -147,6 +147,6 @@ describe("Import Sessions", function () {
     cy.visit("/import_sessions")
 
     cy.contains("Default IS").should("exist")
-    cy.contains("completed").should("exist")
+    cy.contains("Completed").should("exist")
   })
 })

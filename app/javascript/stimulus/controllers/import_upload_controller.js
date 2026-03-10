@@ -1,4 +1,4 @@
-import { Controller } from "@hotwired/stimulus"
+import {Controller} from "@hotwired/stimulus"
 import SparkMD5 from "spark-md5"
 
 const MAX_FILES = 500
@@ -50,10 +50,11 @@ export default class extends Controller {
       for (const entry of entries) {
         await this.#collectEntry(entry, "", collected)
       }
-    } else {
-      // Fallback: plain dataTransfer.files (Cypress simulation, no folder traversal)
+    }
+    if (collected.length === 0) {
+      // Fallback: plain dataTransfer.files (no folder traversal)
       for (const file of Array.from(event.dataTransfer.files)) {
-        collected.push({ file, relativePath: file.name })
+        collected.push({file, relativePath: file.name})
       }
     }
     this.#setFiles(collected)
@@ -98,7 +99,8 @@ export default class extends Controller {
   async #collectEntry(entry, prefix, results) {
     if (entry.isFile) {
       const file = await new Promise(resolve => entry.file(resolve))
-      results.push({ file, relativePath: prefix ? `${prefix}/${entry.name}` : entry.name })
+      const name = entry.name || file.name
+      results.push({file, relativePath: prefix ? `${prefix}/${name}` : name})
     } else if (entry.isDirectory) {
       const reader = entry.createReader()
       const entries = await new Promise(resolve => reader.readEntries(resolve))
@@ -117,48 +119,69 @@ export default class extends Controller {
     this.stepFilesTarget.classList.add("hidden")
     this.stepUploadingTarget.classList.remove("hidden")
 
-    // Create session
-    const sessionRes = await fetch(this.apiUrlValue, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken() },
-      body: JSON.stringify({ space_id: spaceId, source_format: sourceFormat })
-    })
-    const session = await sessionRes.json()
-    this.sessionId = session.id
-    this.sessionIdTarget.textContent = session.id
+    try {
+      // Create session
+      const sessionRes = await fetch(this.apiUrlValue, {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken()},
+        body: JSON.stringify({space_id: spaceId, source_format: sourceFormat})
+      })
 
-    // Submit manifest
-    const manifest = await this.#buildManifest()
-    const manifestRes = await fetch(`${this.apiUrlValue}/${session.id}/manifest`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken() },
-      body: JSON.stringify({ files: manifest })
-    })
-    const fileEntries = await manifestRes.json()
+      if (!sessionRes.ok) {
+        const error = await sessionRes.json().catch(() => ({}))
+        throw new Error(`Session creation failed: ${error.error || error.errors || sessionRes.status}`)
+      }
 
-    const toUpload = fileEntries.filter(f => f.direct_upload_url)
-    this.uploadTotalTarget.textContent = toUpload.length
-    this.uploadedCountTarget.textContent = 0
-    this.uploadedCount = 0
+      const session = await sessionRes.json()
+      this.sessionId = session.id
+      this.sessionIdTarget.textContent = session.id
 
-    // Upload with concurrency limit
-    await this.#uploadWithConcurrency(toUpload, UPLOAD_CONCURRENCY, session.id)
+      // Submit manifest
+      const manifest = await this.#buildManifest()
+      const manifestRes = await fetch(`${this.apiUrlValue}/${session.id}/manifest`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken()},
+        body: JSON.stringify({files: manifest})
+      })
 
-    // Trigger processing
-    await fetch(`${this.apiUrlValue}/${session.id}/process`, {
-      method: "POST",
-      headers: { "X-CSRF-Token": this.#csrfToken() }
-    })
+      if (!manifestRes.ok) {
+        const error = await manifestRes.json().catch(() => ({}))
+        throw new Error(`Manifest failed: ${error.error || error.errors || manifestRes.status}`)
+      }
 
-    this.stepUploadingTarget.classList.add("hidden")
-    this.stepProcessingTarget.classList.remove("hidden")
+      const fileEntries = await manifestRes.json()
 
-    // Redirect to session show page
-    window.location.href = `/import_sessions/${session.id}`
+      const toUpload = fileEntries.filter(f => f.direct_upload_url)
+      this.uploadTotalTarget.textContent = toUpload.length
+      this.uploadedCountTarget.textContent = 0
+      this.uploadedCount = 0
+
+      // Upload with concurrency limit
+      await this.#uploadWithConcurrency(toUpload, UPLOAD_CONCURRENCY, session.id)
+
+      // Trigger processing
+      await fetch(`${this.apiUrlValue}/${session.id}/process`, {
+        method: "POST",
+        headers: {"X-CSRF-Token": this.#csrfToken()}
+      })
+
+      this.stepUploadingTarget.classList.add("hidden")
+      this.stepProcessingTarget.classList.remove("hidden")
+
+      // Redirect to session show page
+      window.location.href = `/import_sessions/${session.id}`
+    } catch (error) {
+      console.error("Import upload failed:", error)
+      this.stepUploadingTarget.classList.add("hidden")
+      this.stepFilesTarget.classList.remove("hidden")
+      this.limitErrorTarget.textContent = `Upload failed: ${error.message}`
+      this.limitErrorTarget.classList.remove("hidden")
+      this.submitButtonTarget.classList.add("hidden")
+    }
   }
 
   async #buildManifest() {
-    return Promise.all(this.files.map(async ({ file, relativePath }) => {
+    return Promise.all(this.files.map(async ({file, relativePath}) => {
       const checksum = await this.#md5Base64(file)
       return {
         relative_path: relativePath,
@@ -172,7 +195,7 @@ export default class extends Controller {
 
   async #uploadWithConcurrency(entries, concurrency, sessionId) {
     const queue = [...entries]
-    const workers = Array.from({ length: concurrency }, () => this.#worker(queue, sessionId))
+    const workers = Array.from({length: concurrency}, () => this.#worker(queue, sessionId))
     await Promise.all(workers)
   }
 
@@ -186,19 +209,22 @@ export default class extends Controller {
 
   async #uploadFile(entry, sessionId) {
     const fileData = this.files.find(f => f.relativePath === entry.relative_path)
-    if (!fileData) return
+    if (!fileData) {
+      console.warn(`No local file found for "${entry.relative_path}", skipping upload`)
+      return
+    }
 
     const uploadRes = await fetch(entry.direct_upload_url, {
       method: "PUT",
-      headers: entry.direct_upload_headers || { "Content-Type": entry.content_type || "application/octet-stream" },
+      headers: entry.direct_upload_headers || {"Content-Type": entry.content_type || "application/octet-stream"},
       body: fileData.file
     })
     if (!uploadRes.ok) throw new Error(`Upload failed for ${entry.relative_path}: HTTP ${uploadRes.status}`)
 
     await fetch(`${this.apiUrlValue}/${sessionId}/import_files/${entry.id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken() },
-      body: JSON.stringify({ status: "uploaded" })
+      headers: {"Content-Type": "application/json", "X-CSRF-Token": this.#csrfToken()},
+      body: JSON.stringify({status: "uploaded"})
     })
 
     this.uploadedCount++
@@ -241,16 +267,18 @@ export default class extends Controller {
 
   #detectFormat(filename) {
     const ext = filename.split(".").pop().toLowerCase()
-    const docFormats = { md: "markdown", docx: "docx", odt: "odt", doc: "doc" }
-    const attachFormats = { png: "image", jpg: "image", jpeg: "image", gif: "image",
-                            webp: "image", svg: "image", pdf: "pdf",
-                            mp4: "video", mov: "video", avi: "video" }
+    const docFormats = {md: "markdown", docx: "docx", odt: "odt", doc: "doc"}
+    const attachFormats = {
+      png: "image", jpg: "image", jpeg: "image", gif: "image",
+      webp: "image", svg: "image", pdf: "pdf",
+      mp4: "video", mov: "video", avi: "video"
+    }
     return docFormats[ext] || attachFormats[ext] || "other"
   }
 
   #isAttachment(filename) {
     const attachExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "pdf", "mp4", "mov", "avi",
-                        "zip", "tar", "gz", "xlsx", "csv"]
+      "zip", "tar", "gz", "xlsx", "csv"]
     const ext = filename.split(".").pop().toLowerCase()
     return attachExts.includes(ext)
   }
