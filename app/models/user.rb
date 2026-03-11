@@ -74,10 +74,13 @@ class User < ApplicationRecord
   end
 
   def visit_object(object)
-    self.visited_objects.find_or_initialize_by(
+    visitor = self.visited_objects.find_or_initialize_by(
       object_type: object.class.to_s,
       object_id: object.id
-    ).update!(visited_at: Time.now)
+    )
+    first_visit = visitor.new_record?
+    visitor.update!(visited_at: Time.now)
+    first_visit
   end
 
   # Do not allow user to reset its password until it accepts the invitation

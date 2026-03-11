@@ -1,5 +1,11 @@
 class DocumentsController < ApplicationController
   include EnsureOrganization
+
+  # Declared before TrackObjectVisit so it runs after it in the after_action chain
+  # (Rails executes after_actions in reverse declaration order).
+  # This ensures @document_first_visit is set by TrackObjectVisit before we check it.
+  after_action :enqueue_reddit_page_visit_event, only: [:show]
+
   include TrackObjectVisit.for_instance_variable(:@document)
 
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
@@ -206,5 +212,19 @@ class DocumentsController < ApplicationController
 
   def document_move_params
     params.require(:document).permit(:space_id)
+  end
+
+  def enqueue_reddit_page_visit_event
+    return unless @document
+    return unless @document_first_visit
+    return unless @document.space&.home_document_id == @document.id
+    return unless current_user.reddit_click_id.present?
+
+    RedditConversionJob.perform_later(
+      event_type: "PageVisit",
+      user: current_user,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent
+    )
   end
 end
