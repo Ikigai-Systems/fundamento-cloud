@@ -14,11 +14,16 @@ module ImportSessionActions
   end
 
   def process_manifest(session)
+    unless session.pending? || session.uploading?
+      return { error: "Cannot add files to a session that is #{session.status}" }
+    end
+
     file_entries = Array(params[:files])
     results = file_entries.map { |entry| process_manifest_entry(session, entry) }
 
     session.update!(
       total_files: session.import_files.count,
+      skipped_files: session.import_files.where(status: :skipped).count,
       status: :uploading
     )
 
@@ -50,6 +55,20 @@ module ImportSessionActions
         import_file.uploaded? &&
         import_file.checksum == entry[:checksum]
       return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil)
+    end
+
+    # Skip files already imported in a previous session for this space
+    already_imported = ImportFile
+      .joins(:import_session)
+      .where(import_sessions: { space_id: session.space_id })
+      .where(relative_path: entry[:relative_path], checksum: entry[:checksum], status: :completed)
+      .where.not(import_session_id: session.id)
+      .exists?
+
+    if already_imported
+      import_file.assign_attributes(status: :skipped)
+      import_file.save!
+      return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
     end
 
     import_file.assign_attributes(

@@ -38,7 +38,12 @@ module Api
       def manifest
         authorize @session, :update?
 
-        render json: process_manifest(@session)
+        result = process_manifest(@session)
+        if result.is_a?(Hash) && result[:error]
+          render json: result, status: :unprocessable_entity
+        else
+          render json: result
+        end
       end
 
       def trigger_processing
