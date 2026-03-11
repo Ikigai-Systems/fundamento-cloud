@@ -27,6 +27,7 @@ import TwitterPixelController from "./twitter_pixel_controller.js";
 import RedditPixelController from "./reddit_pixel_controller.js";
 import LivechatController from "./livechat_controller.js";
 import TimestampController from "./controllers/timestamp_controller.ts";
+import ImportUploadController from "./controllers/import_upload_controller.js";
 
 const application = Application.start()
 
@@ -96,6 +97,8 @@ application.register("reddit-pixel", RedditPixelController);
 application.register("livechat", LivechatController);
 
 application.register("timestamp", TimestampController);
+
+application.register("import-upload", ImportUploadController);
 
 // Configure Stimulus development experience
 application.debug = true

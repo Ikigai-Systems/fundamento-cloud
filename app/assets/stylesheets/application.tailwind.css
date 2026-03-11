@@ -15,6 +15,7 @@
 @import "./blocknote.tailwind.css";
 @import "./collapsible.tailwind.css";
 @import "./flash.tailwind.css";
+@import "./badge.tailwind.css";
 
 @tailwind base;
 @tailwind components;

@@ -12,7 +12,7 @@ class Space < ApplicationRecord
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
-  has_many :document_imports, dependent: :destroy
+  has_many :import_sessions, dependent: :destroy
   has_many :space_memberships, dependent: :destroy
   has_many :tables, dependent: :destroy
   has_many :tags, dependent: :delete_all

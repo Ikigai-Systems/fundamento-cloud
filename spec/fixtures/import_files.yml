@@ -1,0 +1,23 @@
+_fixture:
+  model_class: ImportFile
+
+is_file_pending:
+  id: "isfile001"
+  import_session_id: "issession01"
+  relative_path: "Notes/hello.md"
+  file_type: 0
+  format: "markdown"
+  status: 0
+  checksum: "abc123"
+  file_size: 1024
+
+is_file_uploaded:
+  id: "isfile002"
+  import_session_id: "issession01"
+  relative_path: "assets/image.png"
+  file_type: 1
+  format: "image"
+  status: 2
+  checksum: "def456"
+  file_size: 204800
+  uploaded_at: <%= 10.minutes.ago %>

@@ -6,10 +6,13 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
-minio:
-  service: S3
-  endpoint: <%= ENV.fetch("MINIO_URL", "http://localhost:9000") %>
+# MinIO service for E2E Docker environments where Rails containers connect
+# to MinIO internally (http://minio:9000) but browsers need the host-mapped
+# port (MINIO_URL, e.g. http://localhost:10000) for presigned direct uploads.
+minio_from_docker_compose:
+  service: MinioFromDockerCompose
+  endpoint: <%= ENV.fetch("MINIO_INTERNAL_URL", "http://minio:9000") %>
+  public_endpoint: <%= ENV.fetch("MINIO_URL", "http://localhost:9000") %>
   access_key_id: <%= ENV["MINIO_ACCESS_KEY"] %>
   secret_access_key: <%= ENV["MINIO_SECRET_KEY"] %>
   region: us-east-1

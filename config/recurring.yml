@@ -1,0 +1,4 @@
+import_session_cleanup:
+  class: ImportSessionCleanupJob
+  cron: "0 3 * * *"
+  description: "Clean up expired import sessions and their uploaded files"

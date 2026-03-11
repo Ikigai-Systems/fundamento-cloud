@@ -1,0 +1,14 @@
+<div id="import_session_<%= session.id %>_status">
+  <% case session.status
+     when "pending", "uploading" %>
+    <span class="badge-yellow">Uploading</span>
+  <% when "processing" %>
+    <span class="badge-blue">Processing</span>
+  <% when "completed" %>
+    <span class="badge-green">Completed</span>
+  <% when "partial" %>
+    <span class="badge-orange">Partial</span>
+  <% when "failed" %>
+    <span class="badge-red">Failed</span>
+  <% end %>
+</div>

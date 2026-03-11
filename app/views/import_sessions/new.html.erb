@@ -1,0 +1,122 @@
+<section class="form-section">
+  <h2 class="form-header">Import documents</h2>
+
+  <div class="default-form"
+       data-controller="import-upload"
+       data-import-upload-api-url-value="<%= import_sessions_path %>"
+       data-import-upload-space-options-value="<%= @spaces.map { |s| { id: s.id, name: s.name } }.to_json %>">
+
+    <%# Step 1: Configure %>
+    <div data-import-upload-target="stepConfigure" class="import-step">
+      <h3 class="form-header">Step 1: Configure</h3>
+
+      <div class="form-field">
+        <label>Target Space</label>
+
+        <select data-import-upload-target="spaceSelect" class="form-input">
+          <% @spaces.each do |space| %>
+            <option value="<%= space.id %>"><%= space.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Source Format</label>
+
+        <select data-import-upload-target="formatSelect" class="form-input">
+          <option value="generic">Generic (Markdown / Word)</option>
+          <option value="obsidian">Obsidian Vault</option>
+        </select>
+      </div>
+
+      <div class="form-footer">
+        <%= link_to "Cancel", import_sessions_path, class: "secondary-button" %>
+
+        <button data-action="click->import-upload#nextStep" class="form-submit">
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <%# Step 2: Select files %>
+    <div data-import-upload-target="stepFiles" class="import-step hidden">
+      <h3 class="form-header">Step 2: Select Files</h3>
+
+      <div data-import-upload-target="dropZone"
+           data-action="dragover->import-upload#dragOver drop->import-upload#drop"
+           class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center mt-4">
+
+        <div class="form-legend mb-4">
+          <p>
+            Drop a folder or files here
+          </p>
+        </div>
+
+        <div class="flex gap-4 justify-center">
+          <label class="secondary-button cursor-pointer">
+            Select Folder
+            <input type="file" webkitdirectory multiple class="hidden"
+                   data-action="change->import-upload#filesSelected">
+          </label>
+
+          <label class="secondary-button cursor-pointer">
+            Select Files
+            <input type="file" multiple class="hidden"
+                   data-action="change->import-upload#filesSelected">
+          </label>
+        </div>
+      </div>
+
+      <div data-import-upload-target="fileSummary" class="mt-4 hidden">
+        <div class="form-legend">
+          <p>
+            <span data-import-upload-target="fileCount"></span> files selected
+            (<span data-import-upload-target="totalSize"></span>)
+          </p>
+        </div>
+
+        <p data-import-upload-target="limitError" class="text-red-600 text-sm hidden"></p>
+
+        <button data-import-upload-target="submitButton" data-action="click->import-upload#startUpload" class="form-submit mt-4">
+          Import files
+        </button>
+      </div>
+    </div>
+
+    <%# Step 3: Uploading progress %>
+    <div data-import-upload-target="stepUploading" class="import-step hidden">
+      <h3 class="form-header">Step 3: Uploading</h3>
+
+      <div class="form-field">
+        <div class=" form-legend">
+          <p>Session ID: <code data-import-upload-target="sessionId" class="text-xs bg-gray-100 px-1 rounded"></code></p>
+        </div>
+
+        <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
+          <div data-import-upload-target="uploadBar"
+               class="bg-blue-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+        </div>
+
+        <div class="form-legend">
+          <p>
+            <span data-import-upload-target="uploadedCount">0</span> /
+            <span data-import-upload-target="uploadTotal">0</span> files
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <%# Step 4: Processing / complete %>
+    <div data-import-upload-target="stepProcessing" class="import-step hidden">
+      <h3 class="form-header">Step 4: Processing</h3>
+
+      <div class="form-legend">
+        <p>
+          Files are being converted and imported. You can close this tab and return later.
+        </p>
+      </div>
+
+      <div data-import-upload-target="processingStatus"></div>
+    </div>
+  </div>
+</section>

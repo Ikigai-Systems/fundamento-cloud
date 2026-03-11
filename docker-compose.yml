@@ -1,8 +1,14 @@
-x-minio-credentials: &minio-credentials
+x-minio-configuration: &minio-configuration
   MINIO_ROOT_USER: minio
   MINIO_ROOT_PASSWORD: password
   MINIO_VOLUMES: /var/lib/minio/data
   MINIO_HOST: minio
+
+x-minio-storage-credentials: &minio-storage-credentials
+  MINIO_ACCESS_KEY: fundamento
+  MINIO_SECRET_KEY: IPaWkaUi9Ko1NA
+  MINIO_URL: ${MINIO_URL:-http://localhost:9000}
+  MINIO_INTERNAL_URL: http://minio:9000
 
 x-rails-environment: &rails-environment
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:-abcdef}
@@ -42,7 +48,7 @@ services:
       - --console-address
       - :9001
     environment:
-      <<: *minio-credentials
+      <<: *minio-configuration
     volumes:
       - minio:/var/lib/minio/data
     ports:
@@ -60,7 +66,7 @@ services:
     volumes:
       - ./dockerfiles/minio-init.sh:/minio-init.sh
     environment:
-      <<: *minio-credentials
+      <<: [*minio-configuration, *minio-storage-credentials]
     depends_on:
       minio:
         condition: service_healthy
@@ -73,7 +79,7 @@ services:
       secrets:
         - fontawesome-auth
     environment:
-      <<: *rails-environment
+      <<: [*rails-environment, *minio-storage-credentials]
     ports:
       - '${RAILS_PORT:-3000}:3000'
     depends_on:
@@ -95,7 +101,7 @@ services:
         - fontawesome-auth
     command: bundle exec good_job start
     environment:
-      <<: *rails-environment
+      <<: [*rails-environment, *minio-storage-credentials]
     depends_on:
       postgresql:
         condition: service_healthy
@@ -105,11 +111,6 @@ services:
         condition: service_healthy
       minio-initialization:
         condition: service_completed_successfully
-  blocknote-converter:
-    build:
-      context: ./micro-services/blocknote-converter
-    ports:
-      - '${BLOCKNOTE_PORT:-3002}:3002'
 
 volumes:
   postgres:

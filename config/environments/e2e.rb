@@ -2,6 +2,7 @@
 # This environment mirrors production as closely as possible while allowing for test-specific needs
 
 require_relative "production"
+require Rails.root.join("lib/active_storage/service/minio_from_docker_compose_service")
 
 # Inherit most settings from production, then override specific settings below for E2E testing environment
 Rails.application.configure do
@@ -12,8 +13,9 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :test
   config.action_mailer.perform_caching = false
 
-  # Active Storage: Use local storage for tests
-  config.active_storage.service = :local
+  # Active Storage: Use MinIO with dual-endpoint support for E2E Docker environments.
+  # Presigned URLs use MINIO_URL (browser-accessible) while internal ops use MINIO_INTERNAL_URL.
+  config.active_storage.service = :minio_from_docker_compose
 
   # I18n: Raise errors for missing translations
   config.i18n.raise_on_missing_translations = true

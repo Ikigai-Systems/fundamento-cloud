@@ -31,7 +31,7 @@ tmp
 /app/assets/builds/*
 !/app/assets/builds/.keep
 
-/storage/*.sqlite*
+/storage/
 !/storage/.keep
 
 # Vite Ruby

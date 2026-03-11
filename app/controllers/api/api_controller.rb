@@ -1,6 +1,7 @@
 module Api
   class ApiController < ActionController::Base
     include Pundit::Authorization
+    include ActiveStorage::SetCurrent
 
     skip_before_action :verify_authenticity_token
 
