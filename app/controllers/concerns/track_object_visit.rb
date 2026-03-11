@@ -19,9 +19,10 @@ module TrackObjectVisit
           object = instance_variable_get(variable_name)
 
           if object&.persisted?
-            current_user.visit_object(object)
+            first_visit = current_user.visit_object(object)
 
             instance_variable_set("#{variable_name}_tracked", true)
+            instance_variable_set("#{variable_name}_first_visit", first_visit)
           end
         end
       end

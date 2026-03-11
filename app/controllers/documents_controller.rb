@@ -1,5 +1,8 @@
 class DocumentsController < ApplicationController
   include EnsureOrganization
+
+  after_action :enqueue_reddit_page_visit_event, only: [:show]
+
   include TrackObjectVisit.for_instance_variable(:@document)
 
   layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
@@ -8,10 +11,7 @@ class DocumentsController < ApplicationController
 
   before_action :load_space, only: [:new, :create]
   before_action :load_document, except: [:new, :index, :create]
-  before_action :mark_first_document_visit, only: [:show]
   before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy, :sidebar]
-
-  after_action :enqueue_reddit_page_visit_event, only: [:show]
 
   def index
     respond_to do |format|
@@ -211,14 +211,9 @@ class DocumentsController < ApplicationController
     params.require(:document).permit(:space_id)
   end
 
-  def mark_first_document_visit
-    return unless @document
-    @first_document_visit = !ObjectVisitor.exists?(user: current_user, object: @document)
-  end
-
   def enqueue_reddit_page_visit_event
     return unless @document
-    return unless @first_document_visit
+    return unless @document_first_visit
     return unless @document.space&.home_document_id == @document.id
     return unless current_user.reddit_click_id.present?
 
