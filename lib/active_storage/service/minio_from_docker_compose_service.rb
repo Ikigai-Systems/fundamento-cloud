@@ -13,7 +13,7 @@ require "active_storage/service/s3_service"
 #
 # Configure in storage.yml with both +endpoint+ (internal) and +public_endpoint+
 # (browser-accessible).
-class ActiveStorage::Service::MinioE2eService < ActiveStorage::Service::S3Service
+class ActiveStorage::Service::MinioFromDockerComposeService < ActiveStorage::Service::S3Service
   def initialize(public_endpoint:, **options)
     @public_endpoint = public_endpoint
     @s3_config = options.slice(:access_key_id, :secret_access_key, :region, :force_path_style)
