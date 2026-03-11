@@ -41,6 +41,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     return unless resource.persisted?
 
     resource.update_column(:reddit_click_id, session[:reddit_click_id]) if session[:reddit_click_id].present?
+    return unless resource.reddit_click_id.present?
 
     RedditConversionJob.perform_later(
       event_type: "SignUp",

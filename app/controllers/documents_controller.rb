@@ -8,7 +8,7 @@ class DocumentsController < ApplicationController
 
   before_action :load_space, only: [:new, :create]
   before_action :load_document, except: [:new, :index, :create]
-  before_action :check_existing_document_visit, only: [:show]
+  before_action :mark_first_document_visit, only: [:show]
   before_action :ensure_turbo_request, only: [:select_destination, :move, :hierarchy, :sidebar]
 
   after_action :enqueue_reddit_page_visit_event, only: [:show]
@@ -211,15 +211,16 @@ class DocumentsController < ApplicationController
     params.require(:document).permit(:space_id)
   end
 
-  def check_existing_document_visit
+  def mark_first_document_visit
     return unless @document
-    @document_visit_already_existed = ObjectVisitor.exists?(user: current_user, object: @document)
+    @first_document_visit = !ObjectVisitor.exists?(user: current_user, object: @document)
   end
 
   def enqueue_reddit_page_visit_event
     return unless @document
+    return unless @first_document_visit
     return unless @document.space&.home_document_id == @document.id
-    return if @document_visit_already_existed
+    return unless current_user.reddit_click_id.present?
 
     RedditConversionJob.perform_later(
       event_type: "PageVisit",

@@ -12,6 +12,7 @@ RSpec.describe "Reddit PAGE_VISIT on first space home visit", type: :request do
     sign_in user
     post select_organization_path(organization)
     space.update!(home_document: home_doc)
+    user.update_column(:reddit_click_id, "rdt_abc123")
     allow(RedditConversionService).to receive(:enabled?).and_return(true)
   end
 
@@ -43,6 +44,15 @@ RSpec.describe "Reddit PAGE_VISIT on first space home visit", type: :request do
 
     expect {
       get document_path(regular_doc, format: :json)
+    }.not_to have_enqueued_job(RedditConversionJob)
+  end
+
+  it "does not enqueue PAGE_VISIT for users without reddit_click_id" do
+    user.update_column(:reddit_click_id, nil)
+    ObjectVisitor.where(user: user, object: home_doc).delete_all
+
+    expect {
+      get document_path(home_doc, format: :json)
     }.not_to have_enqueued_job(RedditConversionJob)
   end
 end
