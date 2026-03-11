@@ -38,10 +38,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def enqueue_reddit_sign_up_event
-    return unless resource.persisted?
+    return unless resource.persisted? && session[:reddit_click_id].present?
 
-    resource.update_column(:reddit_click_id, session[:reddit_click_id]) if session[:reddit_click_id].present?
-    return unless resource.reddit_click_id.present?
+    resource.update_column(:reddit_click_id, session[:reddit_click_id])
 
     RedditConversionJob.perform_later(
       event_type: "SignUp",
