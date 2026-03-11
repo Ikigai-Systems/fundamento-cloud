@@ -1,5 +1,6 @@
 class ImportFilesController < ApplicationController
   include EnsureOrganization
+  include ImportFileActions
 
   after_action :verify_authorized
 
@@ -9,15 +10,7 @@ class ImportFilesController < ApplicationController
 
     authorize session, :update?
 
-    if params[:status] == "uploaded"
-      if import_file.blob_signed_id.present?
-        blob = ActiveStorage::Blob.find_signed!(import_file.blob_signed_id)
-        import_file.file.attach(blob)
-      end
-
-      import_file.update!(status: :uploaded, uploaded_at: Time.current)
-      session.increment_counter!(:uploaded_files)
-    end
+    confirm_file_upload(session, import_file)
 
     render json: {
       id: import_file.id,

@@ -1,21 +1,15 @@
 module Api
   module V1
     class ImportFilesController < Api::ApiController
+      include ImportFileActions
+
       def update
         session = current_organization.import_sessions.find(params[:import_session_id])
         import_file = session.import_files.find(params[:id])
 
         authorize session, :update?
 
-        if params[:status] == "uploaded"
-          if import_file.blob_signed_id.present?
-            blob = ActiveStorage::Blob.find_signed!(import_file.blob_signed_id)
-            import_file.file.attach(blob)
-          end
-
-          import_file.update!(status: :uploaded, uploaded_at: Time.current)
-          session.increment_counter!(:uploaded_files)
-        end
+        confirm_file_upload(session, import_file)
 
         render json: {
           id: import_file.id,
