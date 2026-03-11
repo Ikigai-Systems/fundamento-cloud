@@ -59,5 +59,40 @@ RSpec.describe ImportAttachmentJob, type: :job do
         described_class.perform_now(import_file)
       }.to change { session.reload.processed_files }.by(1)
     end
+
+    it "attaches to the folder document when path_map has the parent directory" do
+      folder_doc = space.documents.create!(organization: org, title: "assets")
+      session.merge_path_map!("assets", folder_doc.id)
+      session.reload
+
+      import_file = build_attachment_file(relative_path: "assets/photo.png")
+      described_class.perform_now(import_file)
+
+      attachment = Attachment.last
+      expect(attachment.parent).to eq(folder_doc)
+    end
+
+    it "walks up directory tree to find closest folder document" do
+      folder_doc = space.documents.create!(organization: org, title: "Notes")
+      session.merge_path_map!("Notes", folder_doc.id)
+      session.reload
+
+      import_file = build_attachment_file(relative_path: "Notes/assets/photo.png")
+      described_class.perform_now(import_file)
+
+      attachment = Attachment.last
+      expect(attachment.parent).to eq(folder_doc)
+    end
+
+    it "falls back to space home document when no folder document exists" do
+      home_doc = space.documents.create!(organization: org, title: "Home")
+      space.update!(home_document: home_doc)
+
+      import_file = build_attachment_file(relative_path: "photo.png")
+      described_class.perform_now(import_file)
+
+      attachment = Attachment.last
+      expect(attachment.parent).to eq(home_doc)
+    end
   end
 end
