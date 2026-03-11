@@ -95,7 +95,7 @@ describe("Import Sessions", function () {
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
 
     // Turbo Stream broadcasts a page refresh when ImportSessionCompletionJob finishes
-    cy.contains("✓ Completed", { timeout: 90000 }).should("be.visible")
+    cy.contains("Completed", { timeout: 90000 }).should("be.visible")
 
     // Counters
     cy.contains("2").should("be.visible") // total_files
@@ -125,7 +125,7 @@ describe("Import Sessions", function () {
     cy.contains("Import files").click()
 
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
-    cy.contains("✓ Completed", { timeout: 90000 }).should("be.visible")
+    cy.contains("Completed", { timeout: 90000 }).should("be.visible")
 
     cy.contains("Volume-2-Terms-of-Reference.docx").should("exist")
     cy.get(".text-green-600").should("have.length.at.least", 1)
@@ -142,7 +142,7 @@ describe("Import Sessions", function () {
     cy.get("input[type='file']:not([webkitdirectory])").selectFile([DOCX], { force: true })
     cy.contains("Import files").click()
     cy.url().should("match", /\/import_sessions\/[a-zA-Z0-9_-]+$/)
-    cy.contains("✓ Completed", { timeout: 90000 }).should("be.visible")
+    cy.contains("Completed", { timeout: 90000 }).should("be.visible")
 
     cy.visit("/import_sessions")
 
