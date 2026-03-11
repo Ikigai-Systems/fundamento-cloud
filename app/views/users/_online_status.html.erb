@@ -1,9 +1,9 @@
 <div id="<%= dom_id(user, "online_status") %>" class="flex items-center">
   <% if user.online?(current_organization) %>
-    <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
+    <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2 flex flex-shrink-0"></div> Online
   <% elsif user.last_online_at(current_organization).present? %>
-    <div class="h-2.5 w-2.5 rounded-full bg-gray-500 me-2"></div> Last seen <%= time_ago_in_words user.last_online_at(current_organization) %> ago
+    <div class="h-2.5 w-2.5 rounded-full bg-gray-500 me-2 flex flex-shrink-0"></div> Last seen <%= time_ago_in_words user.last_online_at(current_organization) %> ago
   <% else %>
-    <div class="h-2.5 w-2.5 rounded-full bg-red-300 me-2"></div> Never signed in
+    <div class="h-2.5 w-2.5 rounded-full bg-red-300 me-2 flex flex-shrink-0"></div> Never signed in
   <% end %>
 </div>

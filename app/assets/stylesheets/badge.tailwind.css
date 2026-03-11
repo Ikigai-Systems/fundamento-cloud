@@ -1,0 +1,50 @@
+@layer components {
+    .badge {
+        @apply inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset;
+    }
+
+    .badge-gray {
+        @apply badge bg-gray-50 text-gray-600 ring-gray-500/10;
+        @apply dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20;
+    }
+
+    .badge-red {
+        @apply badge bg-red-50 text-red-700 ring-red-600/10;
+        @apply dark:bg-red-400/10 dark:text-red-400 dark:ring-red-400/20;
+    }
+
+    .badge-yellow {
+        @apply badge bg-yellow-50 text-yellow-800 ring-yellow-600/20;
+        @apply dark:bg-yellow-400/10 dark:text-yellow-500 dark:ring-yellow-400/20;
+    }
+
+    .badge-green {
+        @apply badge bg-green-50 text-green-700 ring-green-600/20;
+        @apply dark:bg-green-400/10 dark:text-green-400 dark:ring-green-500/20;
+    }
+
+    .badge-blue {
+        @apply badge bg-blue-50 text-blue-700 ring-blue-700/10;
+        @apply dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30;
+    }
+
+    .badge-indigo {
+        @apply badge bg-indigo-50 text-indigo-700 ring-indigo-700/10;
+        @apply dark:bg-indigo-400/10 dark:text-indigo-400 dark:ring-indigo-400/30;
+    }
+
+    .badge-purple {
+        @apply badge bg-purple-50 text-purple-700 ring-purple-700/10;
+        @apply dark:bg-purple-400/10 dark:text-purple-400 dark:ring-purple-400/30;
+    }
+
+    .badge-pink {
+        @apply badge bg-pink-50 text-pink-700 ring-pink-700/10;
+        @apply dark:bg-pink-400/10 dark:text-pink-400 dark:ring-pink-400/20;
+    }
+
+    .badge-orange {
+        @apply badge bg-orange-50 text-orange-700 ring-orange-600/20;
+        @apply dark:bg-orange-400/10 dark:text-orange-400 dark:ring-orange-400/20;
+    }
+}
