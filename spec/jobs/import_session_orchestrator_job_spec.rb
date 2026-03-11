@@ -66,6 +66,12 @@ RSpec.describe ImportSessionOrchestratorJob, type: :job do
 
       # Should have created "Notes" and "Notes/Projects" directory documents
       expect(session.reload.path_map.keys).to include("Notes", "Notes/Projects")
+
+      # Directory documents should not be drafts (must have a version)
+      session.path_map.each_value do |doc_id|
+        doc = Document.find(doc_id)
+        expect(doc).not_to be_draft
+      end
     end
   end
 end

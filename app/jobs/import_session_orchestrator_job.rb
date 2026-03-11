@@ -41,9 +41,18 @@ class ImportSessionOrchestratorJob < ApplicationJob
       dir_name = File.basename(dir_path)
       space = session.space
 
+      blocks = BlocknoteConverterService.markdown_to_blocks("")
+      sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+
       document = space.documents.create!(
         organization: session.organization,
-        title: dir_name
+        title: dir_name,
+        sync: sync
+      )
+
+      document.versions.create!(
+        content_blocks: blocks,
+        created_by: session.organization_membership.user
       )
 
       hierarchy_node = space.create_hierarchy_node(document.id)
