@@ -14,7 +14,7 @@ module.exports = defineConfig({
       // Linux/Wayland: force XWayland mode to avoid rendering artifacts
       if (os.platform() === "linux") {
         on("before:browser:launch", (browser, launchOptions) => {
-          if (browser.family === "chromium") {
+          if (browser.family === "chromium" && browser.name !== "electron") {
             launchOptions.args.push("--ozone-platform=x11")
           }
           return launchOptions
