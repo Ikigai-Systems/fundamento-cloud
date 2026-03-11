@@ -4,7 +4,6 @@ class RedditConversionJob < ApplicationJob
   end
 
   retry_on RedditConversionService::ApiError, wait: :polynomially_longer, attempts: 5
-  discard_on ActiveRecord::RecordNotFound
 
   def perform(event_type:, user:, ip_address:, user_agent:)
     RedditConversionService.new.send_event(
