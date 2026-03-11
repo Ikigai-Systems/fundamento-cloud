@@ -19,6 +19,7 @@ class ImportAttachmentJob < ApplicationJob
 
     import_file.update!(
       status: :completed,
+      document: parent_document.is_a?(Document) ? parent_document : nil,
       processed_at: Time.current
     )
 
