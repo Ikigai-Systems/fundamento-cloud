@@ -1,6 +1,9 @@
 class DocumentsController < ApplicationController
   include EnsureOrganization
 
+  # Declared before TrackObjectVisit so it runs after it in the after_action chain
+  # (Rails executes after_actions in reverse declaration order).
+  # This ensures @document_first_visit is set by TrackObjectVisit before we check it.
   after_action :enqueue_reddit_page_visit_event, only: [:show]
 
   include TrackObjectVisit.for_instance_variable(:@document)
