@@ -9,7 +9,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     if !Flipper.enabled?(:recaptcha) || (resource.validate && verify_recaptcha(model: resource))
       super
-      resource.update_column(:reddit_click_id, session[:reddit_click_id]) if resource.persisted? && session[:reddit_click_id].present?
     else
       logger.warn("reCAPTCHA failed because: #{@_recaptcha_failure_reason}") if defined?(@_recaptcha_failure_reason) && @_recaptcha_failure_reason.present? && Flipper.enabled?(:recaptcha_debug)
 
@@ -40,6 +39,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def enqueue_reddit_sign_up_event
     return unless resource.persisted?
+
+    resource.update_column(:reddit_click_id, session[:reddit_click_id]) if session[:reddit_click_id].present?
 
     RedditConversionJob.perform_later(
       event_type: "SignUp",
