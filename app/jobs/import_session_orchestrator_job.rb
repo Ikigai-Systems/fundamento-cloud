@@ -34,6 +34,7 @@ class ImportSessionOrchestratorJob < ApplicationJob
 
     dir_paths.each do |dir_path|
       next if dir_path == "."
+      next if session.reload.path_map&.key?(dir_path)
 
       parent_path = File.dirname(dir_path)
       parent_id = parent_path == "." ? nil : session.path_map[parent_path]

@@ -55,9 +55,15 @@ module Api
         authorize @session, :update?
 
         failed_files = @session.import_files.where(status: :failed)
-        failed_files.update_all(status: :pending, error_message: nil)
+        failed_files_count = failed_files.count
+        failed_files.update_all(status: :uploaded, error_message: nil, processed_at: nil)
 
-        @session.update!(status: :processing)
+        @session.update!(
+          status: :processing,
+          failed_files: [0, @session.failed_files - failed_files_count].max,
+          processed_files: [0, @session.processed_files - failed_files_count].max
+        )
+
         ImportSessionOrchestratorJob.perform_later(@session)
 
         render json: session_json(@session)
