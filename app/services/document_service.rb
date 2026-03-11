@@ -1,5 +1,5 @@
 class DocumentService
-
+  include MarkdownFrontmatter
   include Pundit::Authorization
 
   attr_reader :pundit_user
@@ -154,18 +154,4 @@ class DocumentService
     end
   end
 
-  def extract_frontmatter(markdown)
-    frontmatter_data = nil
-
-    # Extract and parse frontmatter if present
-    if markdown.start_with?("---\n")
-      parts = markdown.split(/^---\s*$/m, 3)
-      if parts.length >= 3
-        frontmatter_data = YAML.safe_load(parts[1])
-        markdown = parts[2].strip
-      end
-    end
-
-    [markdown, frontmatter_data]
-  end
 end

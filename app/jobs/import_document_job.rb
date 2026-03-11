@@ -1,4 +1,6 @@
 class ImportDocumentJob < ApplicationJob
+  include MarkdownFrontmatter
+
   queue_as :imports
 
   def perform(import_file)
@@ -75,18 +77,6 @@ class ImportDocumentJob < ApplicationJob
         raise "Unsupported document format: #{import_file.format}"
       end
     end
-  end
-
-  def extract_frontmatter(markdown)
-    frontmatter_data = nil
-    if markdown.start_with?("---\n")
-      parts = markdown.split(/^---\s*$/m, 3)
-      if parts.length >= 3
-        frontmatter_data = YAML.safe_load(parts[1])
-        markdown = parts[2].strip
-      end
-    end
-    [markdown, frontmatter_data]
   end
 
   def parent_document_id(import_file, session)

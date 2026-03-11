@@ -13,9 +13,9 @@ class Tag < ApplicationRecord
 
   before_validation :normalize_name
 
-  validates :name, format: { 
-    with: /\A[0-9\p{L}\-_\/]+\z/, 
-    message: "can only contain lowercase letters, numbers, localized characters, hyphens, underscores, and forward slashes for hierarchy"
+  validates :name, format: {
+    with: /\A[0-9\p{L}\-_\/\{\}:]+\z/,
+    message: "can only contain lowercase letters, numbers, localized characters, hyphens, underscores, forward slashes, curly braces, and colons"
   }
 
   scope :root_tags, -> { where.not("name LIKE '%/%'") }
