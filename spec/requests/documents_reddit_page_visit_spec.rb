@@ -24,7 +24,7 @@ RSpec.describe "Reddit PAGE_VISIT on first space home visit", type: :request do
       get document_path(home_doc, format: :json)
     }.to have_enqueued_job(RedditConversionJob).with(
       event_type: "PageVisit",
-      user_id: user.id,
+      user: user,
       ip_address: anything,
       user_agent: anything
     )

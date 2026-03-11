@@ -46,7 +46,7 @@ RSpec.describe "User Registration", type: :request do
           }
         }.to have_enqueued_job(RedditConversionJob).with(
           event_type: "SignUp",
-          user_id: anything,
+          user: anything,
           ip_address: anything,
           user_agent: anything
         )

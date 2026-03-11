@@ -222,7 +222,7 @@ class DocumentsController < ApplicationController
 
     RedditConversionJob.perform_later(
       event_type: "PageVisit",
-      user_id: current_user.id,
+      user: current_user,
       ip_address: request.remote_ip,
       user_agent: request.user_agent
     )

@@ -44,7 +44,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     RedditConversionJob.perform_later(
       event_type: "SignUp",
-      user_id: resource.id,
+      user: resource,
       ip_address: request.remote_ip,
       user_agent: request.user_agent
     )
