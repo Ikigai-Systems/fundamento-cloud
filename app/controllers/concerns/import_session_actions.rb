@@ -1,7 +1,17 @@
 module ImportSessionActions
   extend ActiveSupport::Concern
 
+  class ImportSessionNotAcceptingFiles < StandardError; end
+
+  included do
+    rescue_from ImportSessionNotAcceptingFiles, with: :render_session_not_accepting_files
+  end
+
   private
+
+  def render_session_not_accepting_files(exception)
+    render json: { error: exception.message }, status: :unprocessable_entity
+  end
 
   def build_import_session
     space = current_organization.spaces.find(params[:space_id])
@@ -15,7 +25,7 @@ module ImportSessionActions
 
   def process_manifest(session)
     unless session.pending? || session.uploading?
-      return { error: "Cannot add files to a session that is #{session.status}" }
+      raise ImportSessionNotAcceptingFiles, "Cannot add files to a session that is #{session.status}"
     end
 
     file_entries = Array(params[:files])
