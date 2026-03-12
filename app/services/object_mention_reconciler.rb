@@ -40,7 +40,7 @@ class ObjectMentionReconciler
       target_id = target_info ? entity_id : nil
 
       # Use target's real title if it exists, otherwise use the mention node's title
-      title = target_info&.fetch(:title, nil) || node[:title].presence || "Untitled"
+      title = target_info&.dig(:title) || node[:title].presence || "Untitled"
 
       if (existing = existing_mentions[node[:id]])
         existing.update!(current: true, title: title, target_id: target_id)
