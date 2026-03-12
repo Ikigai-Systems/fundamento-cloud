@@ -81,4 +81,45 @@ RSpec.describe Document, type: :model do
       expect(document.errors[:space]).to include("must exist")
     end
   end
+
+  describe "object_mention cleanup on destroy" do
+    let(:organization) { organizations(:is) }
+    let(:source_doc) { documents(:one) }
+    let(:target_doc) { documents(:two) }
+
+    it "nullifies target_id on object_mentions pointing to deleted document" do
+      om = ObjectMention.create!(
+        id: SecureRandom.uuid,
+        source: source_doc,
+        target_type: "Document",
+        target_id: target_doc.id,
+        title: "Target Doc",
+        organization: organization
+      )
+
+      target_doc.space.remove_single_item_from_hierarchy!(target_doc.id)
+      target_doc.destroy!
+
+      om.reload
+      expect(om.target_id).to be_nil
+      expect(om.target_type).to eq("Document")
+      expect(om.title).to eq("Target Doc")
+    end
+
+    it "deletes object_mentions where deleted document is the source" do
+      om = ObjectMention.create!(
+        id: SecureRandom.uuid,
+        source: source_doc,
+        target_type: "Document",
+        target_id: target_doc.id,
+        title: "Target Doc",
+        organization: organization
+      )
+
+      source_doc.space.remove_single_item_from_hierarchy!(source_doc.id)
+      source_doc.destroy!
+
+      expect(ObjectMention.exists?(om.id)).to be false
+    end
+  end
 end
