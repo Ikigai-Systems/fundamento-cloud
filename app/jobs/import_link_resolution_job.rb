@@ -79,24 +79,21 @@ class ImportLinkResolutionJob < ApplicationJob
       end
     end
 
-    # Replace [[wiki links]] with markdown links or broken-link markers
+    # Replace [[wiki links]] with mention spans
     markdown.gsub(/\[\[([^\]]+)\]\]/) do |match|
       raw = $1.strip
       # Handle [[target|alias]] syntax
       target, alias_text = raw.split("|", 2).map(&:strip)
       # Handle [[target#heading]] syntax
-      target_base, heading = target.split("#", 2)
+      target_base, _heading = target.split("#", 2)
 
       doc_id = resolve_wiki_link(target_base, combined_map)
+      display = alias_text || target_base
 
       if doc_id
-        display = alias_text || target_base
-        anchor = heading ? "##{heading}" : ""
-        "[#{display}](/d/#{doc_id}#{anchor})"
+        "<span data-mention=\"document\" data-entity-id=\"#{doc_id}\">#{display}</span>"
       else
-        # Broken link marker — preserve original text
-        display = alias_text || target
-        "~~[[#{display}]]~~{.broken_link data-original=\"#{match}\"}"
+        "<span data-mention=\"document\" data-entity-id=\"\">#{display}</span>"
       end
     end
   end

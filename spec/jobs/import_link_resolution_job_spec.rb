@@ -51,12 +51,12 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       expect(result).not_to include("[[foo]]")
     end
 
-    it "replaces unresolvable [[link]] with broken-link marker" do
+    it "replaces unresolvable [[link]] with mention span with empty entity-id" do
       path_map = {}
       markdown = "See [[missing]] here"
       result = subject.send(:process_wiki_links_in_markdown, markdown, path_map)
-      expect(result).to include("[[missing]]")
-      expect(result).to include("broken_link")
+      expect(result).to include('<span data-mention="document" data-entity-id="">missing</span>')
+      expect(result).not_to include("[[missing]]")
     end
 
     it "replaces ![[image.png]] with attachment reference" do
@@ -64,6 +64,46 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       markdown = "Here ![[image.png]] is shown"
       result = subject.send(:process_wiki_links_in_markdown, markdown, path_map)
       expect(result).to include("attachment:42")
+    end
+  end
+
+  describe "process_wiki_links_in_markdown with mention spans" do
+    let(:job) { ImportLinkResolutionJob.new }
+
+    it "converts resolved wiki link to data-mention span" do
+      combined_map = { "project.md" => "doc_abc" }
+      result = job.send(:process_wiki_links_in_markdown, "See [[project]]", combined_map)
+
+      expect(result).to include('<span data-mention="document" data-entity-id="doc_abc">project</span>')
+    end
+
+    it "converts broken wiki link to data-mention span with empty entity-id" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[missing]]", combined_map)
+
+      expect(result).to include('<span data-mention="document" data-entity-id="">missing</span>')
+    end
+
+    it "uses alias text as display text" do
+      combined_map = { "project.md" => "doc_abc" }
+      result = job.send(:process_wiki_links_in_markdown, "See [[project|My Project]]", combined_map)
+
+      expect(result).to include('<span data-mention="document" data-entity-id="doc_abc">My Project</span>')
+    end
+
+    it "uses alias text for broken links" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[missing|Display Name]]", combined_map)
+
+      expect(result).to include('<span data-mention="document" data-entity-id="">Display Name</span>')
+    end
+
+    it "does not produce strikethrough broken_link markers anymore" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[missing]]", combined_map)
+
+      expect(result).not_to include("~~")
+      expect(result).not_to include(".broken_link")
     end
   end
 end
