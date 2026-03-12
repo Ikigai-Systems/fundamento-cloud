@@ -201,4 +201,55 @@ RSpec.describe ObjectMentionReconciler do
       }.not_to change(ObjectMention, :count)
     end
   end
+
+  describe "Version callback integration" do
+    fixtures :organizations, :users, :documents, :spaces, :versions
+
+    it "triggers reconciliation when a version is created" do
+      doc = documents(:one)
+      uuid = SecureRandom.uuid
+      blocks = [
+        {
+          "id" => "block-1",
+          "type" => "paragraph",
+          "content" => [
+            {
+              "type" => "mention",
+              "props" => {
+                "id" => uuid,
+                "entity" => "document",
+                "entityId" => documents(:two).id,
+                "title" => "Two"
+              }
+            }
+          ],
+          "children" => []
+        }
+      ]
+
+      expect {
+        doc.versions.create!(content_blocks: blocks, created_by: users(:pawel))
+      }.to change(ObjectMention, :count).by(1)
+
+      om = ObjectMention.find(uuid)
+      expect(om.source_id).to eq(doc.id)
+      expect(om.target_id).to eq(documents(:two).id)
+      expect(om.current).to be true
+    end
+
+    it "marks removed mentions as not current on new version" do
+      doc = documents(:one)
+      uuid = SecureRandom.uuid
+
+      # First version with a mention
+      blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      doc.versions.create!(content_blocks: blocks_v1, created_by: users(:pawel))
+      expect(ObjectMention.find(uuid).current).to be true
+
+      # Second version without the mention
+      blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
+      doc.versions.create!(content_blocks: blocks_v2, created_by: users(:pawel))
+      expect(ObjectMention.find(uuid).current).to be false
+    end
+  end
 end

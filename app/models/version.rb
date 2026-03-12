@@ -20,6 +20,7 @@ class Version < ApplicationRecord
 
   before_create :set_sequential_id
 
+  after_create :reconcile_object_mentions
   after_commit :broadcast_mentions_updated, on: [:create, :update, :destroy] # does :update make sense here? [STE 30-01-2025]
 
   def broadcast_mentions_updated
@@ -32,6 +33,10 @@ class Version < ApplicationRecord
   end
 
   private
+
+  def reconcile_object_mentions
+    ObjectMentionReconciler.reconcile(document, content_blocks) if content_blocks.present?
+  end
 
   def set_sequential_id
     # Use PostgreSQL advisory lock to prevent race conditions
