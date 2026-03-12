@@ -196,7 +196,9 @@ Rails.application.routes.draw do
 
       resources :spaces, only: [:index, :show, :create]
 
-      resources :documents, only: [:index, :show, :create, :update]
+      resources :documents, only: [:index, :show, :create, :update] do
+        resources :object_mentions, only: [:index]
+      end
 
       resources :tables, only: [:show]
 
