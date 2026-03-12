@@ -31,7 +31,8 @@
   "dependencies": {
     "@blocknote/server-util": "^0.45.0",
     "@types/node": "^24.10.0",
-    "fastify": "^5.1.0"
+    "fastify": "^5.1.0",
+    "rehype-raw": "^7.0.0"
   },
   "packageManager": "npm@11.6.2"
 }

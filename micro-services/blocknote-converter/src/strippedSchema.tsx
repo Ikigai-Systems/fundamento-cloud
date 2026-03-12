@@ -103,7 +103,7 @@ const MentionInlineContent = createReactInlineContentSpec(
         default: "document"
       },
       entityId: {
-        default: -1,
+        default: "",
       },
       title: {
         default: "Untitled",
@@ -113,11 +113,20 @@ const MentionInlineContent = createReactInlineContentSpec(
   },
   {
     render: (props) => {
-      let {id, entityId, entity} = props.inlineContent.props;
-
+      let {id, entityId, entity, title} = props.inlineContent.props;
       const mentionUrl = `https://fundamento.cloud/${entity}/${entityId}`;
-
-      return <a href={mentionUrl}>{mentionUrl}</a>;
+      return <a href={mentionUrl}>{title || mentionUrl}</a>;
+    },
+    toExternalHTML: (props) => {
+      const {entity, entityId, title} = props.inlineContent.props;
+      return (
+        <span
+          data-mention={entity}
+          data-entity-id={entityId?.toString() || ""}
+        >
+          {title || "Untitled"}
+        </span>
+      );
     },
   }
 );
