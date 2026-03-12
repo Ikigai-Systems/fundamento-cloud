@@ -69,6 +69,7 @@ Rails.application.routes.draw do
     resources :documents, path: "d" do
       resources :versions, module: :documents, only: [:create, :index, :show, :update]
       resources :tags, module: :objects, only: [:create, :index]
+      resources :object_mentions, module: :documents, only: [:index]
 
       member do
         get :select_destination

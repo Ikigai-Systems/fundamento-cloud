@@ -6,6 +6,7 @@ import TablesApi from "../../../api/Tables/TablesApi";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
+import {useCurrentDocumentId, useObjectMention} from "./useObjectMentions";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -57,7 +58,7 @@ const TableMention = ({tableNpi}) => {
   )
 }
 
-const UserMention = ({mentionId, userId}: { mentionId: string, userId: number }) => {
+const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | number }) => {
   const spanElementRef = useRef<HTMLElement>();
   const spanElementId = `mention-${mentionId}`;
   const isTargeted = location.hash.split("#")[1] === spanElementId;
@@ -95,6 +96,14 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: number })
   )
 };
 
+const BrokenMention = ({title, targetType}: {title: string, targetType: string}) => {
+  return (
+    <span className="mention mention--broken" title={`Broken ${targetType.toLowerCase()} link`}>
+      @{title}
+    </span>
+  );
+};
+
 // The Mention inline content.
 const MentionInlineContent = createReactInlineContentSpec(
   {
@@ -119,8 +128,9 @@ const MentionInlineContent = createReactInlineContentSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       let {id, entityId} = props.inlineContent.props;
-      const {entity} = props.inlineContent.props;
+      const {entity, title} = props.inlineContent.props;
 
+      // Legacy migration: if entityId is -1 (old default), swap id and entityId
       useEffect(() => {
         if (entityId === -1) {
           entityId = Number(id);
@@ -142,6 +152,29 @@ const MentionInlineContent = createReactInlineContentSpec(
         return null
       }
 
+      const documentId = useCurrentDocumentId();
+      const objectMention = useObjectMention(documentId, id);
+
+      // If we have an object_mention record, use it for rendering
+      if (objectMention) {
+        if (objectMention.target_id === null) {
+          return <BrokenMention title={objectMention.title} targetType={objectMention.target_type} />;
+        }
+        // Working mention — use target_id for navigation
+        switch (entity) {
+        case "document":
+          return <DocumentMention documentNpi={objectMention.target_id}/>;
+        case "table":
+          return <TableMention tableNpi={objectMention.target_id}/>;
+        case "user":
+          return <UserMention mentionId={id} userId={objectMention.target_id}/>;
+        default:
+          return <BrokenMention title={title} targetType={entity} />;
+        }
+      }
+
+      // Fallback: no object_mention found (unmigrated doc or unsaved mention)
+      // Use existing entityId-based rendering
       switch (entity) {
       case "document":
         return <DocumentMention documentNpi={entityId}/>;
