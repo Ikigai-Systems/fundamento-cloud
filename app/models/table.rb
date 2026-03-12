@@ -25,6 +25,8 @@ class Table < ApplicationRecord
 
   scope :lexicographically, -> { order(name: :asc) }
 
+  before_destroy :nullify_object_mention_targets
+
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
   scope :recently_updated, -> { without_archived.order(updated_at: :desc).limit(50) }
@@ -222,5 +224,12 @@ class Table < ApplicationRecord
         organization_id: self.organization_id,
         )
     end
+  end
+
+  private
+
+  def nullify_object_mention_targets
+    ObjectMention.where(target_type: "Table", target_id: id, organization_id: organization_id)
+                 .update_all(target_id: nil)
   end
 end
