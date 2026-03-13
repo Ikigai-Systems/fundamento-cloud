@@ -7,6 +7,11 @@ RSpec.describe ReferencesExtractor do
   let(:space) { spaces(:is_default) }
   let(:user) { users(:pawel) }
 
+  # Generate unique IDs for mention props to avoid clashes with ObjectMentionReconciler
+  def unique_id(prefix = "id")
+    "#{prefix}_#{SecureRandom.hex(6)}"
+  end
+
   describe ".all_references" do
     context "extracting references from document versions" do
       let(:document) { documents(:one) }
@@ -16,14 +21,14 @@ RSpec.describe ReferencesExtractor do
       let(:content_with_mentions) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "paragraph",
             "content" => [
               { "type" => "text", "text" => "Check out " },
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention1",
+                  "id" => unique_id("mention"),
                   "entity" => "document",
                   "entityId" => referenced_doc_id
                 }
@@ -32,7 +37,7 @@ RSpec.describe ReferencesExtractor do
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention2",
+                  "id" => unique_id("mention"),
                   "entity" => "table",
                   "entityId" => referenced_table_id
                 }
@@ -87,7 +92,7 @@ RSpec.describe ReferencesExtractor do
       let(:content_with_advanced_table) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "advancedTable",
             "props" => {
               "tableNpi" => table_npi,
@@ -122,7 +127,7 @@ RSpec.describe ReferencesExtractor do
       let(:content_with_legacy_table) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "advancedTable",
             "props" => {
               "tableId" => table_id,
@@ -157,14 +162,14 @@ RSpec.describe ReferencesExtractor do
       let(:comment_content) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "paragraph",
             "content" => [
               { "type" => "text", "text" => "See " },
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention1",
+                  "id" => unique_id("mention"),
                   "entity" => "document",
                   "entityId" => referenced_doc_id
                 }
@@ -200,7 +205,7 @@ RSpec.describe ReferencesExtractor do
       let(:nested_content) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "paragraph",
             "content" => [
               {
@@ -210,13 +215,13 @@ RSpec.describe ReferencesExtractor do
             ],
             "children" => [
               {
-                "id" => "block2",
+                "id" => unique_id("block"),
                 "type" => "paragraph",
                 "content" => [
                   {
                     "type" => "mention",
                     "props" => {
-                      "id" => "mention1",
+                      "id" => unique_id("mention"),
                       "entity" => "document",
                       "entityId" => nested_doc_id
                     }
@@ -253,13 +258,13 @@ RSpec.describe ReferencesExtractor do
       let(:content_with_duplicate) do
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "paragraph",
             "content" => [
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention1",
+                  "id" => unique_id("mention"),
                   "entity" => "document",
                   "entityId" => doc_id
                 }
@@ -267,7 +272,7 @@ RSpec.describe ReferencesExtractor do
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention2",
+                  "id" => unique_id("mention"),
                   "entity" => "document",
                   "entityId" => doc_id
                 }
@@ -330,16 +335,16 @@ RSpec.describe ReferencesExtractor do
       end
       let(:ref_id) { "shared123" }
 
-      let(:content_with_mention) do
+      def content_with_mention
         [
           {
-            "id" => "block1",
+            "id" => unique_id("block"),
             "type" => "paragraph",
             "content" => [
               {
                 "type" => "mention",
                 "props" => {
-                  "id" => "mention1",
+                  "id" => unique_id("mention"),
                   "entity" => "document",
                   "entityId" => ref_id
                 }
@@ -402,7 +407,7 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 { "type" => "text", "text" => "Just plain text" }
@@ -421,13 +426,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "document",
                     "entityId" => ""
                   }
@@ -447,13 +452,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "document",
                     "entityId" => nil
                   }
@@ -473,7 +478,7 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "advancedTable",
               "props" => {
                 "tableNpi" => "",
@@ -493,13 +498,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "user",
                     "entityId" => "user123"
                   }
@@ -526,13 +531,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "document",
                     "entityId" => old_ref_id
                   }
@@ -551,13 +556,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention2",
+                    "id" => unique_id("mention"),
                     "entity" => "document",
                     "entityId" => new_ref_id
                   }
@@ -586,13 +591,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "document",
                     "entityId" => "doc123"
                   }
@@ -612,13 +617,13 @@ RSpec.describe ReferencesExtractor do
           document: document,
           content_blocks: [
             {
-              "id" => "block1",
+              "id" => unique_id("block"),
               "type" => "paragraph",
               "content" => [
                 {
                   "type" => "mention",
                   "props" => {
-                    "id" => "mention1",
+                    "id" => unique_id("mention"),
                     "entity" => "table",
                     "entityId" => "table123"
                   }

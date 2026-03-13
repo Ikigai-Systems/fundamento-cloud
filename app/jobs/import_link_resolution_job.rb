@@ -12,6 +12,8 @@ class ImportLinkResolutionJob < ApplicationJob
     # Build basename index for Obsidian-style [[filename]] resolution
     basename_map = build_basename_map(path_map)
 
+    @heading_maps = {}
+
     session.import_files.where(status: :completed, file_type: :document).find_each do |import_file|
       resolve_links_for_document(import_file, path_map, basename_map)
     end
@@ -43,13 +45,16 @@ class ImportLinkResolutionJob < ApplicationJob
     blocks = latest_version.content_blocks
     blocks_json = blocks.to_json
 
-    return unless blocks_json.include?("[[") || blocks_json.include?("![[")
+    # Process documents with wiki links or Obsidian block ID markers
+    has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
+    has_block_ids = blocks_json.match?(/\^\w{2,}/)
+    return unless has_wiki_links || has_block_ids
 
     resolved_markdown = nil
     import_file.file.open do |f|
       # Re-fetch original markdown to process wiki links
       # (blocks don't preserve raw [[...]] syntax — we need the original)
-      resolved_markdown = process_wiki_links_in_markdown(f.read, path_map.merge(basename_map))
+      resolved_markdown = process_wiki_links_in_markdown(f.read.force_encoding("UTF-8"), path_map.merge(basename_map))
     end
 
     return unless resolved_markdown
@@ -68,37 +73,111 @@ class ImportLinkResolutionJob < ApplicationJob
   end
 
   def process_wiki_links_in_markdown(markdown, combined_map)
-    # Replace ![[attachment]] with image/file markdown using attachment: URI
+    # Strip Obsidian block ID markers (^blockid at end of lines)
+    markdown = strip_obsidian_block_ids(markdown)
+
+    # Replace ![[embed]] with attachment image or document mention
     markdown = markdown.gsub(/!\[\[([^\]]+)\]\]/) do |match|
-      target = $1.strip
+      raw = $1.strip
+      target, alias_text = raw.split("|", 2)&.map(&:strip)
+
       attachment_uri = resolve_attachment_link(target, combined_map)
       if attachment_uri
-        "![#{target}](#{attachment_uri})"
+        display = alias_text || target
+        "![#{display}](#{attachment_uri})"
       else
-        match # leave as-is, will be a broken link
+        # Not an attachment — try document resolution (downgrade embed to mention)
+        target_base, heading = target.split("#", 2)
+        resolved_id = resolve_wiki_link(target_base, combined_map)
+        display = alias_text || target_base
+
+        if resolved_id&.start_with?("attachment:")
+          "![#{display}](#{resolved_id})"
+        elsif resolved_id
+          build_mention_span(resolved_id, display, heading)
+        else
+          match # leave as-is
+        end
       end
     end
 
-    # Replace [[wiki links]] with markdown links or broken-link markers
-    markdown.gsub(/\[\[([^\]]+)\]\]/) do |match|
+    # Replace [[wiki links]] with mention spans or attachment links
+    # Negative lookbehind prevents matching [[...]] inside ![[...]] left as-is above
+    markdown.gsub(/(?<!!)\[\[([^\]]+)\]\]/) do |match|
       raw = $1.strip
       # Handle [[target|alias]] syntax
       target, alias_text = raw.split("|", 2).map(&:strip)
       # Handle [[target#heading]] syntax
       target_base, heading = target.split("#", 2)
 
-      doc_id = resolve_wiki_link(target_base, combined_map)
+      resolved_id = resolve_wiki_link(target_base, combined_map)
+      display = alias_text || target_base
 
-      if doc_id
-        display = alias_text || target_base
-        anchor = heading ? "##{heading}" : ""
-        "[#{display}](/d/#{doc_id}#{anchor})"
+      if resolved_id&.start_with?("attachment:")
+        # Resolved to an attachment — render as image/file link
+        "![#{display}](#{resolved_id})"
+      elsif resolved_id
+        # Resolved to a document — render as mention with optional heading fragment
+        build_mention_span(resolved_id, display, heading)
+      elsif attachment_extension?(target_base)
+        # Unresolved but looks like a file (not a document) — leave original markup as-is
+        match
       else
-        # Broken link marker — preserve original text
-        display = alias_text || target
-        "~~[[#{display}]]~~{.broken_link data-original=\"#{match}\"}"
+        # Unresolved document link — broken mention
+        "<span data-mention=\"document\" data-entity-id=\"\">#{display}</span>"
       end
     end
+  end
+
+  def build_mention_span(document_id, display, heading)
+    fragment = resolve_heading_fragment(document_id, heading)
+    fragment_attr = fragment ? " data-fragment=\"#{CGI.escapeHTML(fragment)}\"" : ""
+    "<span data-mention=\"document\" data-entity-id=\"#{document_id}\"#{fragment_attr}>#{display}</span>"
+  end
+
+  def strip_obsidian_block_ids(markdown)
+    # Remove ^blockid markers at end of lines (Obsidian block reference anchors)
+    # Format: space + ^alphanumeric at end of line
+    markdown.gsub(/ \^[a-zA-Z0-9-]{2,}$/, "")
+  end
+
+  def resolve_heading_fragment(document_id, heading)
+    return nil if heading.blank?
+    return nil if heading.start_with?("^") # Block refs not yet supported
+
+    heading_map = heading_map_for(document_id)
+    heading_map[heading.strip.downcase]
+  end
+
+  def heading_map_for(document_id)
+    @heading_maps ||= {}
+    @heading_maps[document_id] ||= build_heading_map(document_id)
+  end
+
+  def build_heading_map(document_id)
+    document = Document.find_by(id: document_id)
+    return {} unless document
+
+    blocks = document.versions.last&.content_blocks
+    return {} unless blocks
+
+    map = {}
+    blocks.each do |block|
+      next unless block["type"] == "heading"
+
+      text = extract_block_text(block["content"])
+      next if text.blank?
+
+      # First heading with this text wins (case-insensitive)
+      map[text.strip.downcase] ||= block["id"]
+    end
+    map
+  end
+
+  def extract_block_text(content)
+    return "" unless content.is_a?(Array)
+
+    content.map { |c| c["text"].to_s }.join
   end
 
   def resolve_wiki_link(target, combined_map)
@@ -108,6 +187,20 @@ class ImportLinkResolutionJob < ApplicationJob
       combined_map[target.downcase] || # case-insensitive fallback
       # Basename-only fallback for Obsidian [[filename]] style (O(n) scan)
       combined_map.find { |k, _| File.basename(k, ".*") == target }&.last
+  end
+
+  ATTACHMENT_EXTENSIONS = Set.new(%w[
+    .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
+    .pdf .zip .tar .gz .rar .7z
+    .mp3 .wav .ogg .flac .aac .m4a
+    .mp4 .mov .avi .mkv .webm
+    .csv .xls .xlsx .ppt .pptx
+    .ttf .otf .woff .woff2
+  ]).freeze
+
+  def attachment_extension?(target)
+    ext = File.extname(target).downcase
+    ext.present? && ATTACHMENT_EXTENSIONS.include?(ext)
   end
 
   def resolve_attachment_link(target, combined_map)

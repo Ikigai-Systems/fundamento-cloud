@@ -6,6 +6,7 @@ import TablesApi from "../../../api/Tables/TablesApi";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
+import {useCurrentDocumentId, useObjectMention, type ObjectMentionData} from "./useObjectMentions";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -13,20 +14,21 @@ const Loading = () => {
   </span>;
 }
 
-const DocumentMention = ({documentNpi}) => {
+const DocumentMention = ({documentNpi, fragment}: {documentNpi: string, fragment?: string}) => {
   const documentQuery = useQuery({
     queryKey: ["documents", documentNpi],
     queryFn: async () => {
       return await DocumentsApi.show({id: documentNpi});
     }}, queryClient);
-  
+
   const isLoading = documentQuery.isLoading;
   const document = documentQuery.data;
   const displayName = document?.title || documentNpi;
+  const href = DocumentsApi.show.path({id: document?.id}) + (fragment ? `#${fragment}` : "");
 
   return (
     <a
-      href={DocumentsApi.show.path({id: document?.id})}
+      href={href}
       className="mention"
     >
       @{displayName}
@@ -57,7 +59,7 @@ const TableMention = ({tableNpi}) => {
   )
 }
 
-const UserMention = ({mentionId, userId}: { mentionId: string, userId: number }) => {
+const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | number }) => {
   const spanElementRef = useRef<HTMLElement>();
   const spanElementId = `mention-${mentionId}`;
   const isTargeted = location.hash.split("#")[1] === spanElementId;
@@ -95,6 +97,14 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: number })
   )
 };
 
+const BrokenMention = ({title, targetType}: {title: string, targetType: string}) => {
+  return (
+    <span className="mention mention--broken" title={`Broken ${targetType.toLowerCase()} link`}>
+      @{title}
+    </span>
+  );
+};
+
 // The Mention inline content.
 const MentionInlineContent = createReactInlineContentSpec(
   {
@@ -112,6 +122,9 @@ const MentionInlineContent = createReactInlineContentSpec(
       title: {
         default: "Untitled",
       },
+      fragment: {
+        default: "",
+      },
     },
     content: "none",
   },
@@ -119,8 +132,9 @@ const MentionInlineContent = createReactInlineContentSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       let {id, entityId} = props.inlineContent.props;
-      const {entity} = props.inlineContent.props;
+      const {entity, title, fragment} = props.inlineContent.props;
 
+      // Legacy migration: if entityId is -1 (old default), swap id and entityId
       useEffect(() => {
         if (entityId === -1) {
           entityId = Number(id);
@@ -142,9 +156,32 @@ const MentionInlineContent = createReactInlineContentSpec(
         return null
       }
 
+      const documentId = useCurrentDocumentId();
+      const objectMention = useObjectMention(documentId, id);
+
+      // If we have an object_mention record, use it for rendering
+      if (objectMention) {
+        if (objectMention.targetId === null) {
+          return <BrokenMention title={objectMention.title} targetType={objectMention.targetType} />;
+        }
+        // Working mention — use targetId for navigation
+        switch (entity) {
+        case "document":
+          return <DocumentMention documentNpi={objectMention.targetId} fragment={fragment}/>;
+        case "table":
+          return <TableMention tableNpi={objectMention.targetId}/>;
+        case "user":
+          return <UserMention mentionId={id} userId={objectMention.targetId}/>;
+        default:
+          return <BrokenMention title={title} targetType={entity} />;
+        }
+      }
+
+      // Fallback: no object_mention found (unmigrated doc or unsaved mention)
+      // Use existing entityId-based rendering
       switch (entity) {
       case "document":
-        return <DocumentMention documentNpi={entityId}/>;
+        return <DocumentMention documentNpi={entityId} fragment={fragment}/>;
       case "table":
         return <TableMention tableNpi={entityId}/>;
       case "user":

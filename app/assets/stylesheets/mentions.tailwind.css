@@ -1,5 +1,9 @@
 @layer components {
     .mention {
-        @apply border rounded p-0.5 text-sky-500
+        @apply border rounded py-0.5 px-1 text-sky-500
+    }
+
+    .mention--broken {
+        @apply border-red-400 text-red-400 bg-red-50 line-through decoration-red-400/50
     }
 }

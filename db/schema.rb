@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_10_061602) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_161629) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -353,6 +353,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_061602) do
     t.index ["organization_membership_id"], name: "index_object_comments_on_organization_membership_id"
   end
 
+  create_table "object_mentions", id: :string, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.boolean "current", default: true, null: false
+    t.string "organization_id", null: false
+    t.string "source_id", null: false
+    t.string "source_type", null: false
+    t.string "target_id"
+    t.string "target_type", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id"], name: "index_object_mentions_on_organization_id"
+    t.index ["source_type", "source_id"], name: "index_object_mentions_on_source_type_and_source_id"
+    t.index ["target_type", "target_id"], name: "index_object_mentions_on_target_type_and_target_id"
+  end
+
   create_table "object_reactions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "emoji", null: false
@@ -685,6 +700,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_10_061602) do
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "object_comments", "organization_memberships"
   add_foreign_key "object_comments", "organizations"
+  add_foreign_key "object_mentions", "organizations"
   add_foreign_key "object_reactions", "organization_memberships"
   add_foreign_key "object_reactions", "organizations"
   add_foreign_key "object_tags", "organizations"

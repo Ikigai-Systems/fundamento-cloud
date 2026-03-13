@@ -2,6 +2,7 @@ import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
 import {toHtml} from "hast-util-to-html";
 import rehypeParse from "rehype-parse";
+import rehypeRaw from "rehype-raw";
 import rehypeRemark from "rehype-remark";
 import rehypeStringify from "rehype-stringify";
 import remarkGfm from "remark-gfm";
@@ -125,6 +126,42 @@ function addSpacesToCheckboxes() {
     }
   };
   return helper;
+}
+
+/**
+ * Rehype plugin: convert <span data-mention="..."> elements to the HTML
+ * format that BlockNote's tryParseHTMLToBlocks recognizes for custom
+ * inline content (data-inline-content-type attribute).
+ */
+function convertMentionSpans() {
+  return (tree: any) => {
+    visit(tree, "element", (node: any) => {
+      if (node.tagName === "span" && node.properties?.dataMention) {
+        const entity = node.properties.dataMention;
+        const entityId = node.properties.dataEntityId || "";
+        const fragment = node.properties.dataFragment || "";
+        const title = node.children
+          ?.filter((c: any) => c.type === "text")
+          .map((c: any) => c.value)
+          .join("") || "Untitled";
+        const id = crypto.randomUUID();
+
+        // Transform to BlockNote's custom inline content HTML format
+        const props: Record<string, string> = {
+          "dataInlineContentType": "mention",
+          "dataId": id,
+          "dataEntity": entity,
+          "dataEntityId": entityId,
+          "dataTitle": title,
+        };
+        if (fragment) {
+          props["dataFragment"] = fragment;
+        }
+        node.properties = props;
+        node.tagName = "span";
+      }
+    });
+  };
 }
 
 /**
@@ -304,6 +341,8 @@ function markdownToHtml(markdown: string): string {
       },
       allowDangerousHtml: true,
     })
+    .use(rehypeRaw)
+    .use(convertMentionSpans)
     .use(rehypeStringify, {allowDangerousHtml: true})
     .processSync(markdown);
 
