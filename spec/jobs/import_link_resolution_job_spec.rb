@@ -126,7 +126,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       result = job.send(:process_wiki_links_in_markdown, "See [[missing-image.png]]", combined_map)
 
       expect(result).not_to include("data-mention")
-      expect(result).to include("missing-image.png")
+      expect(result).to include("[[missing-image.png]]")
     end
 
     it "still creates broken document mention for unresolved link without file extension" do

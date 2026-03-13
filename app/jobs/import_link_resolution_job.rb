@@ -97,8 +97,8 @@ class ImportLinkResolutionJob < ApplicationJob
         # Resolved to a document — render as mention
         "<span data-mention=\"document\" data-entity-id=\"#{resolved_id}\">#{display}</span>"
       elsif attachment_extension?(target_base)
-        # Unresolved but looks like a file (not a document) — leave as plain text
-        display
+        # Unresolved but looks like a file (not a document) — leave original markup as-is
+        match
       else
         # Unresolved document link — broken mention
         "<span data-mention=\"document\" data-entity-id=\"\">#{display}</span>"
