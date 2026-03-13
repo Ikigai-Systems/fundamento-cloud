@@ -139,6 +139,7 @@ function convertMentionSpans() {
       if (node.tagName === "span" && node.properties?.dataMention) {
         const entity = node.properties.dataMention;
         const entityId = node.properties.dataEntityId || "";
+        const fragment = node.properties.dataFragment || "";
         const title = node.children
           ?.filter((c: any) => c.type === "text")
           .map((c: any) => c.value)
@@ -146,13 +147,17 @@ function convertMentionSpans() {
         const id = crypto.randomUUID();
 
         // Transform to BlockNote's custom inline content HTML format
-        node.properties = {
+        const props: Record<string, string> = {
           "dataInlineContentType": "mention",
           "dataId": id,
           "dataEntity": entity,
           "dataEntityId": entityId,
           "dataTitle": title,
         };
+        if (fragment) {
+          props["dataFragment"] = fragment;
+        }
+        node.properties = props;
         node.tagName = "span";
       }
     });

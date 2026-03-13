@@ -14,20 +14,21 @@ const Loading = () => {
   </span>;
 }
 
-const DocumentMention = ({documentNpi}) => {
+const DocumentMention = ({documentNpi, fragment}: {documentNpi: string, fragment?: string}) => {
   const documentQuery = useQuery({
     queryKey: ["documents", documentNpi],
     queryFn: async () => {
       return await DocumentsApi.show({id: documentNpi});
     }}, queryClient);
-  
+
   const isLoading = documentQuery.isLoading;
   const document = documentQuery.data;
   const displayName = document?.title || documentNpi;
+  const href = DocumentsApi.show.path({id: document?.id}) + (fragment ? `#${fragment}` : "");
 
   return (
     <a
-      href={DocumentsApi.show.path({id: document?.id})}
+      href={href}
       className="mention"
     >
       @{displayName}
@@ -121,6 +122,9 @@ const MentionInlineContent = createReactInlineContentSpec(
       title: {
         default: "Untitled",
       },
+      fragment: {
+        default: "",
+      },
     },
     content: "none",
   },
@@ -128,7 +132,7 @@ const MentionInlineContent = createReactInlineContentSpec(
     /* eslint-disable react-hooks/rules-of-hooks */
     render: (props) => {
       let {id, entityId} = props.inlineContent.props;
-      const {entity, title} = props.inlineContent.props;
+      const {entity, title, fragment} = props.inlineContent.props;
 
       // Legacy migration: if entityId is -1 (old default), swap id and entityId
       useEffect(() => {
@@ -163,7 +167,7 @@ const MentionInlineContent = createReactInlineContentSpec(
         // Working mention — use target_id for navigation
         switch (entity) {
         case "document":
-          return <DocumentMention documentNpi={objectMention.target_id}/>;
+          return <DocumentMention documentNpi={objectMention.target_id} fragment={fragment}/>;
         case "table":
           return <TableMention tableNpi={objectMention.target_id}/>;
         case "user":
@@ -177,7 +181,7 @@ const MentionInlineContent = createReactInlineContentSpec(
       // Use existing entityId-based rendering
       switch (entity) {
       case "document":
-        return <DocumentMention documentNpi={entityId}/>;
+        return <DocumentMention documentNpi={entityId} fragment={fragment}/>;
       case "table":
         return <TableMention tableNpi={entityId}/>;
       case "user":
