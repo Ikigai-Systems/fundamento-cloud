@@ -54,7 +54,7 @@ class ImportLinkResolutionJob < ApplicationJob
     import_file.file.open do |f|
       # Re-fetch original markdown to process wiki links
       # (blocks don't preserve raw [[...]] syntax — we need the original)
-      resolved_markdown = process_wiki_links_in_markdown(f.read, path_map.merge(basename_map))
+      resolved_markdown = process_wiki_links_in_markdown(f.read.force_encoding("UTF-8"), path_map.merge(basename_map))
     end
 
     return unless resolved_markdown
