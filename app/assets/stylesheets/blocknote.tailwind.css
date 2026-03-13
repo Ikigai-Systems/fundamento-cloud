@@ -79,3 +79,8 @@
 [data-comment-editor] .bn-editor {
     @apply flex-1;
 }
+
+/* Fix BlockNote checklist checkboxes to use Tailwind forms plugin styling */
+.bn-block-content[data-content-type="checkListItem"] > input[type="checkbox"] {
+    @apply h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 dark:border-gray-500 dark:bg-gray-700;
+}
