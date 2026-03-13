@@ -11,7 +11,8 @@
 }
 
 /* Read more about styling BlockNote at https://www.blocknotejs.org/docs/styling-theming/themes */
-.bn-container[data-color-scheme] {
+.bn-container[data-color-scheme][data-document-editor],
+.bn-container[data-color-scheme][data-comment-editor] {
   --bn-border-radius: 0;
   --bn-colors-editor-background: transparent;
 }
