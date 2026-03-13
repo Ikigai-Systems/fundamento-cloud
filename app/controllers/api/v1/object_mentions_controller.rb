@@ -3,6 +3,7 @@ module Api
     class ObjectMentionsController < Api::ApiController
       def index
         document = current_organization.documents.find(params[:document_id])
+
         authorize document, :show?
 
         mentions = ObjectMention.for_source(document).current
