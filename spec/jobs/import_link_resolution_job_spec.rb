@@ -105,5 +105,42 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       expect(result).not_to include("~~")
       expect(result).not_to include(".broken_link")
     end
+
+    it "converts [[attachment.png]] resolved to attachment: URI into image markdown" do
+      combined_map = { "images/photo.png" => "attachment:42" }
+      result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png]]", combined_map)
+
+      expect(result).to include("![images/photo.png](attachment:42)")
+      expect(result).not_to include("data-mention")
+    end
+
+    it "converts [[attachment.png|alias]] resolved to attachment: URI with alias" do
+      combined_map = { "images/photo.png" => "attachment:42" }
+      result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png|My Photo]]", combined_map)
+
+      expect(result).to include("![My Photo](attachment:42)")
+    end
+
+    it "does not create broken document mention for unresolved file with attachment extension" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[missing-image.png]]", combined_map)
+
+      expect(result).not_to include("data-mention")
+      expect(result).to include("missing-image.png")
+    end
+
+    it "still creates broken document mention for unresolved link without file extension" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[some document]]", combined_map)
+
+      expect(result).to include('<span data-mention="document" data-entity-id="">some document</span>')
+    end
+
+    it "still creates broken document mention for unresolved .md link" do
+      combined_map = {}
+      result = job.send(:process_wiki_links_in_markdown, "See [[notes.md]]", combined_map)
+
+      expect(result).to include("data-mention")
+    end
   end
 end

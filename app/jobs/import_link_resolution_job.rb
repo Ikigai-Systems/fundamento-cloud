@@ -79,7 +79,7 @@ class ImportLinkResolutionJob < ApplicationJob
       end
     end
 
-    # Replace [[wiki links]] with mention spans
+    # Replace [[wiki links]] with mention spans or attachment links
     markdown.gsub(/\[\[([^\]]+)\]\]/) do |match|
       raw = $1.strip
       # Handle [[target|alias]] syntax
@@ -87,12 +87,20 @@ class ImportLinkResolutionJob < ApplicationJob
       # Handle [[target#heading]] syntax
       target_base, _heading = target.split("#", 2)
 
-      doc_id = resolve_wiki_link(target_base, combined_map)
+      resolved_id = resolve_wiki_link(target_base, combined_map)
       display = alias_text || target_base
 
-      if doc_id
-        "<span data-mention=\"document\" data-entity-id=\"#{doc_id}\">#{display}</span>"
+      if resolved_id&.start_with?("attachment:")
+        # Resolved to an attachment — render as image/file link
+        "![#{display}](#{resolved_id})"
+      elsif resolved_id
+        # Resolved to a document — render as mention
+        "<span data-mention=\"document\" data-entity-id=\"#{resolved_id}\">#{display}</span>"
+      elsif attachment_extension?(target_base)
+        # Unresolved but looks like a file (not a document) — leave as plain text
+        display
       else
+        # Unresolved document link — broken mention
         "<span data-mention=\"document\" data-entity-id=\"\">#{display}</span>"
       end
     end
@@ -105,6 +113,20 @@ class ImportLinkResolutionJob < ApplicationJob
       combined_map[target.downcase] || # case-insensitive fallback
       # Basename-only fallback for Obsidian [[filename]] style (O(n) scan)
       combined_map.find { |k, _| File.basename(k, ".*") == target }&.last
+  end
+
+  ATTACHMENT_EXTENSIONS = Set.new(%w[
+    .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
+    .pdf .zip .tar .gz .rar .7z
+    .mp3 .wav .ogg .flac .aac .m4a
+    .mp4 .mov .avi .mkv .webm
+    .csv .xls .xlsx .ppt .pptx
+    .ttf .otf .woff .woff2
+  ]).freeze
+
+  def attachment_extension?(target)
+    ext = File.extname(target).downcase
+    ext.present? && ATTACHMENT_EXTENSIONS.include?(ext)
   end
 
   def resolve_attachment_link(target, combined_map)
