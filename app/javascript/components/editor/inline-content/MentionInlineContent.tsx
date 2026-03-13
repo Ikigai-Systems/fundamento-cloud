@@ -6,7 +6,7 @@ import TablesApi from "../../../api/Tables/TablesApi";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
-import {useCurrentDocumentId, useObjectMention} from "./useObjectMentions";
+import {useCurrentDocumentId, useObjectMention, type ObjectMentionData} from "./useObjectMentions";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -161,17 +161,17 @@ const MentionInlineContent = createReactInlineContentSpec(
 
       // If we have an object_mention record, use it for rendering
       if (objectMention) {
-        if (objectMention.target_id === null) {
-          return <BrokenMention title={objectMention.title} targetType={objectMention.target_type} />;
+        if (objectMention.targetId === null) {
+          return <BrokenMention title={objectMention.title} targetType={objectMention.targetType} />;
         }
-        // Working mention — use target_id for navigation
+        // Working mention — use targetId for navigation
         switch (entity) {
         case "document":
-          return <DocumentMention documentNpi={objectMention.target_id} fragment={fragment}/>;
+          return <DocumentMention documentNpi={objectMention.targetId} fragment={fragment}/>;
         case "table":
-          return <TableMention tableNpi={objectMention.target_id}/>;
+          return <TableMention tableNpi={objectMention.targetId}/>;
         case "user":
-          return <UserMention mentionId={id} userId={objectMention.target_id}/>;
+          return <UserMention mentionId={id} userId={objectMention.targetId}/>;
         default:
           return <BrokenMention title={title} targetType={entity} />;
         }

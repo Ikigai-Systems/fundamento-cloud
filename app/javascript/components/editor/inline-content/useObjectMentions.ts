@@ -1,13 +1,21 @@
 import {useQuery} from "@tanstack/react-query";
-import ObjectMentionsApi, {ObjectMentionData} from "../../../api/Documents/ObjectMentionsApi";
+import ObjectMentionsApi from "../../../api/Documents/ObjectMentionsApi";
 import queryClient from "../../../contextes/ReactQueryClient";
+
+export interface ObjectMentionData {
+  id: string;
+  targetType: string;
+  targetId: string | null;
+  title: string;
+}
 
 export function useObjectMentions(documentId: string | undefined) {
   return useQuery<ObjectMentionData[]>({
     queryKey: ["object_mentions", documentId],
     queryFn: async () => {
       if (!documentId) return [];
-      return await ObjectMentionsApi.index({ documentId });
+      const data = await ObjectMentionsApi.index({documentId});
+      return data.objectMentions;
     },
     enabled: !!documentId,
   }, queryClient);
@@ -15,7 +23,8 @@ export function useObjectMentions(documentId: string | undefined) {
 
 export function useObjectMention(documentId: string | undefined, mentionId: string): ObjectMentionData | undefined {
   const { data: mentions } = useObjectMentions(documentId);
-  return mentions?.find(m => m.id === mentionId);
+  if (!Array.isArray(mentions)) return undefined;
+  return mentions.find(m => m.id === mentionId);
 }
 
 export function useCurrentDocumentId(): string | undefined {
