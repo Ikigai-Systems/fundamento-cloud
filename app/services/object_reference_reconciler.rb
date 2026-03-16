@@ -1,4 +1,4 @@
-class ObjectMentionReconciler
+class ObjectReferenceReconciler
   ENTITY_TO_TYPE = {
     "document" => "Document",
     "table" => "Table",
@@ -27,8 +27,8 @@ class ObjectMentionReconciler
     # Batch-fetch existing targets and their titles
     target_data = batch_fetch_targets(mention_nodes)
 
-    # Batch-fetch existing object_mentions for this source
-    existing_mentions = ObjectMention.for_source(@document).index_by(&:id)
+    # Batch-fetch existing object_references for this source
+    existing_mentions = ObjectReference.for_source(@document).index_by(&:id)
 
     # Upsert mentions
     mention_nodes.each do |node|
@@ -45,7 +45,7 @@ class ObjectMentionReconciler
       if (existing = existing_mentions[node[:id]])
         existing.update!(current: true, title: title, target_id: target_id)
       else
-        ObjectMention.create!(
+        ObjectReference.create!(
           id: node[:id],
           source: @document,
           target_type: target_type,
@@ -58,7 +58,7 @@ class ObjectMentionReconciler
     end
 
     # Mark removed mentions as not current
-    ObjectMention.for_source(@document)
+    ObjectReference.for_source(@document)
                  .where.not(id: mention_ids)
                  .where(current: true)
                  .update_all(current: false)

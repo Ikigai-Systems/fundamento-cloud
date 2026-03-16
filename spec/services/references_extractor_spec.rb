@@ -7,7 +7,7 @@ RSpec.describe ReferencesExtractor do
   let(:space) { spaces(:is_default) }
   let(:user) { users(:pawel) }
 
-  # Generate unique IDs for mention props to avoid clashes with ObjectMentionReconciler
+  # Generate unique IDs for mention props to avoid clashes with ObjectReferenceReconciler
   def unique_id(prefix = "id")
     "#{prefix}_#{SecureRandom.hex(6)}"
   end
@@ -73,10 +73,10 @@ RSpec.describe ReferencesExtractor do
         expect(table_refs.first.referenced_by).to eq(document)
       end
 
-      it "returns ObjectReference structs" do
+      it "returns DocumentReference structs" do
         references = ReferencesExtractor.all_references([document])
 
-        expect(references).to all(be_an(ObjectReference))
+        expect(references).to all(be_an(DocumentReference))
         expect(references.first).to respond_to(:referenced_type)
         expect(references.first).to respond_to(:referenced_id)
         expect(references.first).to respond_to(:referenced_by)
@@ -640,9 +640,9 @@ RSpec.describe ReferencesExtractor do
     end
   end
 
-  describe "ObjectReference" do
+  describe "DocumentReference" do
     it "has emoji extraction capability" do
-      ref = ObjectReference.new(
+      ref = DocumentReference.new(
         referenced_type: "Document",
         referenced_id: "doc123",
         referenced_by: nil,

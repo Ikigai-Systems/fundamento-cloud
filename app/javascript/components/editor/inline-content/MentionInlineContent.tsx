@@ -6,7 +6,7 @@ import TablesApi from "../../../api/Tables/TablesApi";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
-import {useCurrentDocumentId, useObjectMention, type ObjectMentionData} from "./useObjectMentions";
+import {useCurrentDocumentId, useObjectReference, type ObjectReferenceData} from "./useObjectReferences";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -157,27 +157,27 @@ const MentionInlineContent = createReactInlineContentSpec(
       }
 
       const documentId = useCurrentDocumentId();
-      const objectMention = useObjectMention(documentId, id);
+      const objectReference = useObjectReference(documentId, id);
 
-      // If we have an object_mention record, use it for rendering
-      if (objectMention) {
-        if (objectMention.targetId === null) {
-          return <BrokenMention title={objectMention.title} targetType={objectMention.targetType} />;
+      // If we have an object_reference record, use it for rendering
+      if (objectReference) {
+        if (objectReference.targetId === null) {
+          return <BrokenMention title={objectReference.title} targetType={objectReference.targetType} />;
         }
         // Working mention — use targetId for navigation
         switch (entity) {
         case "document":
-          return <DocumentMention documentNpi={objectMention.targetId} fragment={fragment}/>;
+          return <DocumentMention documentNpi={objectReference.targetId} fragment={fragment}/>;
         case "table":
-          return <TableMention tableNpi={objectMention.targetId}/>;
+          return <TableMention tableNpi={objectReference.targetId}/>;
         case "user":
-          return <UserMention mentionId={id} userId={objectMention.targetId}/>;
+          return <UserMention mentionId={id} userId={objectReference.targetId}/>;
         default:
           return <BrokenMention title={title} targetType={entity} />;
         }
       }
 
-      // Fallback: no object_mention found (unmigrated doc or unsaved mention)
+      // Fallback: no object_reference found (unmigrated doc or unsaved mention)
       // Use existing entityId-based rendering
       switch (entity) {
       case "document":

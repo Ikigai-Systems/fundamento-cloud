@@ -62,11 +62,11 @@ RSpec.describe Table, type: :model do
     end
   end
 
-  describe "object_mention cleanup on destroy" do
+  describe "object_reference cleanup on destroy" do
     let(:is_org) { organizations(:is) }
     let(:is_space) { spaces(:is_default) }
 
-    it "nullifies target_id on object_mentions pointing to deleted table" do
+    it "nullifies target_id on object_references pointing to deleted table" do
       target_table = is_org.tables.create!(
         name: "Deletable Table",
         space: is_space,
@@ -75,7 +75,7 @@ RSpec.describe Table, type: :model do
 
       source_doc = documents(:one)
 
-      om = ObjectMention.create!(
+      om = ObjectReference.create!(
         id: SecureRandom.uuid,
         source: source_doc,
         target_type: "Table",

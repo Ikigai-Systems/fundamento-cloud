@@ -1,4 +1,4 @@
-ObjectReference = Struct.new(:referenced_type, :referenced_id, :referenced_by, :referenced_path, :referenced_title) do
+DocumentReference = Struct.new(:referenced_type, :referenced_id, :referenced_by, :referenced_path, :referenced_title) do
   include EmojiExtractable
   extracts_emoji_from :referenced_title
 end
@@ -28,7 +28,7 @@ class ReferencesExtractor
         references.each do |reference|
           key = [document, reference[:object_type], reference[:object_id]]
           unless unique_references.has_key?(key)
-            unique_references[key] = ObjectReference.new(
+            unique_references[key] = DocumentReference.new(
               referenced_by: document,
               referenced_type: reference[:object_type],
               referenced_id: reference[:object_id],
@@ -49,7 +49,7 @@ class ReferencesExtractor
         references.each do |reference|
           key = [document, reference[:object_type], reference[:object_id]]
           unless unique_references.has_key?(key)
-            unique_references[key] = ObjectReference.new(
+            unique_references[key] = DocumentReference.new(
               referenced_by: document,
               referenced_type: reference[:object_type],
               referenced_id: reference[:object_id],

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe ObjectMentionReconciler do
+RSpec.describe ObjectReferenceReconciler do
   fixtures :organizations, :users, :documents, :spaces
 
   let(:organization) { organizations(:is) }
@@ -27,15 +27,15 @@ RSpec.describe ObjectMentionReconciler do
   end
 
   describe ".reconcile" do
-    it "creates object_mentions for new mention nodes" do
+    it "creates object_references for new mention nodes" do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id, title: "Two")]
 
       expect {
         described_class.reconcile(document, blocks)
-      }.to change(ObjectMention, :count).by(1)
+      }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om.source_type).to eq("Document")
       expect(om.source_id).to eq(document.id)
       expect(om.target_type).to eq("Document")
@@ -45,7 +45,7 @@ RSpec.describe ObjectMentionReconciler do
       expect(om.organization_id).to eq(organization.id)
     end
 
-    it "creates object_mentions for table mentions" do
+    it "creates object_references for table mentions" do
       uuid = SecureRandom.uuid
       table = Table.first
       skip "No tables in test database" unless table
@@ -53,26 +53,26 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om.target_type).to eq("Table")
       expect(om.target_id).to eq(table.id)
     end
 
-    it "creates object_mentions for user mentions" do
+    it "creates object_references for user mentions" do
       uuid = SecureRandom.uuid
       user = users(:stefan)
       blocks = [mention_block(id: uuid, entity: "user", entity_id: user.id, title: "Stefan")]
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om.target_type).to eq("User")
       expect(om.target_id).to eq(user.id)
     end
 
-    it "updates existing object_mention to current: true when still present" do
+    it "updates existing object_reference to current: true when still present" do
       uuid = SecureRandom.uuid
-      ObjectMention.create!(
+      ObjectReference.create!(
         id: uuid,
         source: document,
         target_type: "Document",
@@ -86,14 +86,14 @@ RSpec.describe ObjectMentionReconciler do
 
       expect {
         described_class.reconcile(document, blocks)
-      }.not_to change(ObjectMention, :count)
+      }.not_to change(ObjectReference, :count)
 
-      expect(ObjectMention.find(uuid).current).to be true
+      expect(ObjectReference.find(uuid).current).to be true
     end
 
     it "sets current: false for mentions removed from latest version" do
       uuid = SecureRandom.uuid
-      ObjectMention.create!(
+      ObjectReference.create!(
         id: uuid,
         source: document,
         target_type: "Document",
@@ -106,7 +106,7 @@ RSpec.describe ObjectMentionReconciler do
       # Empty blocks — mention was removed
       described_class.reconcile(document, [])
 
-      expect(ObjectMention.find(uuid).current).to be false
+      expect(ObjectReference.find(uuid).current).to be false
     end
 
     it "creates broken mention when entityId points to nonexistent document" do
@@ -115,7 +115,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Document")
       expect(om.target_id).to be_nil
@@ -128,7 +128,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Table")
     end
@@ -139,7 +139,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("User")
     end
@@ -150,7 +150,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om).to be_broken
       expect(om.title).to eq("Unresolved Link")
     end
@@ -161,7 +161,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om.title).to eq(documents(:two).title)
     end
 
@@ -171,7 +171,7 @@ RSpec.describe ObjectMentionReconciler do
 
       described_class.reconcile(document, blocks)
 
-      expect(ObjectMention.find(uuid).title).to eq("Original Title")
+      expect(ObjectReference.find(uuid).title).to eq("Original Title")
     end
 
     it "skips mention nodes with empty id" do
@@ -179,7 +179,7 @@ RSpec.describe ObjectMentionReconciler do
 
       expect {
         described_class.reconcile(document, blocks)
-      }.not_to change(ObjectMention, :count)
+      }.not_to change(ObjectReference, :count)
     end
 
     it "skips mention nodes with entityId of -1 (uninitialized)" do
@@ -188,7 +188,7 @@ RSpec.describe ObjectMentionReconciler do
 
       expect {
         described_class.reconcile(document, blocks)
-      }.not_to change(ObjectMention, :count)
+      }.not_to change(ObjectReference, :count)
     end
 
     it "is idempotent — running twice produces same result" do
@@ -198,7 +198,7 @@ RSpec.describe ObjectMentionReconciler do
       described_class.reconcile(document, blocks)
       expect {
         described_class.reconcile(document, blocks)
-      }.not_to change(ObjectMention, :count)
+      }.not_to change(ObjectReference, :count)
     end
   end
 
@@ -229,9 +229,9 @@ RSpec.describe ObjectMentionReconciler do
 
       expect {
         doc.versions.create!(content_blocks: blocks, created_by: users(:pawel))
-      }.to change(ObjectMention, :count).by(1)
+      }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectMention.find(uuid)
+      om = ObjectReference.find(uuid)
       expect(om.source_id).to eq(doc.id)
       expect(om.target_id).to eq(documents(:two).id)
       expect(om.current).to be true
@@ -244,12 +244,12 @@ RSpec.describe ObjectMentionReconciler do
       # First version with a mention
       blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       doc.versions.create!(content_blocks: blocks_v1, created_by: users(:pawel))
-      expect(ObjectMention.find(uuid).current).to be true
+      expect(ObjectReference.find(uuid).current).to be true
 
       # Second version without the mention
       blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
       doc.versions.create!(content_blocks: blocks_v2, created_by: users(:pawel))
-      expect(ObjectMention.find(uuid).current).to be false
+      expect(ObjectReference.find(uuid).current).to be false
     end
   end
 end
