@@ -38,10 +38,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Verify existing reaction is displayed
     cy.get(".destroy-reaction-button").should("contain", "👍");
@@ -53,10 +53,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Get initial reaction count
     cy.appEval(`Document.find('${documentId}').reactions.count`).then((initialCount) => {
@@ -103,10 +103,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Verify reaction is displayed
     cy.get(".destroy-reaction-button").should("contain", "❤️");
@@ -159,10 +159,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Verify the reaction shows count of 2
     cy.get(".destroy-reaction-button").should("contain", "🚀");
@@ -174,10 +174,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     const emojis = ["👍", "❤️", "🎉"];
 
@@ -195,7 +195,7 @@ describe("Document Reactions", function () {
     `);
 
     // Wait for the last broadcast's frame reload to complete showing all reactions
-    cy.get(".destroy-reaction-button", { timeout: 10000 }).should("have.length", emojis.length);
+    cy.get(".destroy-reaction-button", {timeout: 10000}).should("have.length", emojis.length);
 
     // Verify all reactions are visible and count is correct
     cy.appEval(`Document.find('${documentId}').reactions.pluck(:emoji)`).then((reactionsEmojis) => {
@@ -225,16 +225,16 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Hover over the reaction to show popover
     cy.get(".destroy-reaction-button").contains("👋").trigger("mouseenter");
 
     // Wait for popover to appear
-    cy.get(".popover-reaction-card", { timeout: 5000 }).should("be.visible");
+    cy.get(".popover-reaction-card", {timeout: 5000}).should("be.visible");
 
     // Verify the user's name appears in the popover
     cy.get(".popover-reaction-card").should("contain", "Pawel Wiadomski");
@@ -256,10 +256,10 @@ describe("Document Reactions", function () {
     `).then((reactionId) => {
       cy.visit(`/d/${documentId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
       // Wait for reactions frame to load
-      cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+      cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
       // Verify the reaction is visible
       cy.get(".destroy-reaction-button").should("contain", "🔥");
@@ -283,10 +283,10 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 
     // Wait for reactions frame to load
-    cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Intercept the Turbo Stream frame reload triggered by reaction creation
     cy.intercept("GET", "/reactions*").as("getReactions");
@@ -306,7 +306,7 @@ describe("Document Reactions", function () {
     cy.wait("@getReactions");
 
     // Wait for ActionCable/Turbo Stream to update the UI
-    cy.get(".destroy-reaction-button", { timeout: 10000 }).should("contain", "✨");
+    cy.get(".destroy-reaction-button", {timeout: 10000}).should("contain", "✨");
     cy.get(".reaction-count").should("contain", "1");
 
     // Try to add the same reaction again and verify it fails
