@@ -1,16 +1,16 @@
 Date,Employee,Category,Amount,Status,Notes
-2025-12-05,Elena Vasquez,Software,119.99,Reimbursed,Canva Pro annual subscription
-2025-12-12,James Rivera,Client Entertainment,87.50,Reimbursed,Client lunch - GreenLeaf team
-2025-12-18,Marcus Thompson,Photography,249.00,Reimbursed,Stock photos for UrbanFit campaign
-2026-01-08,Priya Patel,Travel,1150.00,Reimbursed,Flight and hotel for GreenLeaf on-site
-2026-01-10,Priya Patel,Client Entertainment,64.00,Reimbursed,Coffee meeting with UrbanFit brand team
-2026-01-15,Sarah Chen,Conference,450.00,Reimbursed,Social Media Marketing World ticket
-2026-01-22,James Rivera,Software,29.99,Approved,Figma team plan - monthly
-2026-01-28,Marcus Thompson,Office Supplies,42.50,Approved,Drawing tablet pen replacements
-2026-02-03,Elena Vasquez,Software,15.00,Approved,Later.com scheduling tool - monthly
-2026-02-05,James Rivera,Client Entertainment,112.00,Approved,Dinner with TechNova prospect
-2026-02-10,Sarah Chen,Travel,385.00,Approved,Train tickets for client visits
-2026-02-12,Alex Kim,Office Supplies,78.00,Pending,Ergonomic mouse and keyboard
-2026-02-14,Marcus Thompson,Photography,180.00,Pending,Product photography lighting kit rental
-2026-02-17,Elena Vasquez,Conference,295.00,Pending,Content Marketing Summit registration
-2026-02-19,Priya Patel,Client Entertainment,53.00,Pending,Lunch meeting with TechNova VP
+2025-12-05,elena@brightpath.example.com,Software,119.99,Reimbursed,Canva Pro annual subscription
+2025-12-12,james@brightpath.example.com,Client Entertainment,87.50,Reimbursed,Client lunch - GreenLeaf team
+2025-12-18,marcus@brightpath.example.com,Photography,249.00,Reimbursed,Stock photos for UrbanFit campaign
+2026-01-08,priya@brightpath.example.com,Travel,1150.00,Reimbursed,Flight and hotel for GreenLeaf on-site
+2026-01-10,priya@brightpath.example.com,Client Entertainment,64.00,Reimbursed,Coffee meeting with UrbanFit brand team
+2026-01-15,sarah@brightpath.example.com,Conference,450.00,Reimbursed,Social Media Marketing World ticket
+2026-01-22,james@brightpath.example.com,Software,29.99,Approved,Figma team plan - monthly
+2026-01-28,marcus@brightpath.example.com,Office Supplies,42.50,Approved,Drawing tablet pen replacements
+2026-02-03,elena@brightpath.example.com,Software,15.00,Approved,Later.com scheduling tool - monthly
+2026-02-05,james@brightpath.example.com,Client Entertainment,112.00,Approved,Dinner with TechNova prospect
+2026-02-10,sarah@brightpath.example.com,Travel,385.00,Approved,Train tickets for client visits
+2026-02-12,alex@brightpath.example.com,Office Supplies,78.00,Pending,Ergonomic mouse and keyboard
+2026-02-14,marcus@brightpath.example.com,Photography,180.00,Pending,Product photography lighting kit rental
+2026-02-17,elena@brightpath.example.com,Conference,295.00,Pending,Content Marketing Summit registration
+2026-02-19,priya@brightpath.example.com,Client Entertainment,53.00,Pending,Lunch meeting with TechNova VP

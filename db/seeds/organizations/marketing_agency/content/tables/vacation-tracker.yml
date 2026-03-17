@@ -1,7 +1,7 @@
 name: "Vacation Tracker"
 columns:
   - name: "Name"
-    kind: string
+    kind: people
   - name: "Start Date"
     kind: date
   - name: "End Date"

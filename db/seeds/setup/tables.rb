@@ -40,6 +40,14 @@ section :table_helpers do
 
     # Import rows from CSV, mapping values to columns by header name
     columns_by_name = table.columns.index_by(&:name)
+    people_columns = table.columns.select { |c| c.kind.in?(%w[people multi_people]) }
+    users_by_email = if people_columns.any?
+      User.where(email: CSV.read(csv_path, headers: true).flat_map { |row|
+        people_columns.map { |c| row[c.name] }
+      }.compact.uniq).index_by(&:email)
+    else
+      {}
+    end
     prev_row = nil
 
     CSV.foreach(csv_path, headers: true) do |csv_row|
@@ -52,6 +60,15 @@ section :table_helpers do
       csv_row.each do |header, value|
         col = columns_by_name[header]
         next unless col
+
+        # Resolve people column emails to user IDs
+        if col.kind.in?(%w[people multi_people]) && value.present?
+          value = if col.kind == "multi_people"
+            value.split(",").map(&:strip).filter_map { |v| users_by_email[v]&.id&.to_s }.join(",")
+          else
+            users_by_email[value]&.id&.to_s
+          end
+        end
 
         context.tables_cells.create(
           table: table,

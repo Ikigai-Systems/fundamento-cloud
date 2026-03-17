@@ -3,7 +3,7 @@ columns:
   - name: "Date"
     kind: date
   - name: "Employee"
-    kind: string
+    kind: people
   - name: "Category"
     kind: select
   - name: "Amount"

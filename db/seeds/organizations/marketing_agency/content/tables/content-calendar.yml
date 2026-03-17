@@ -9,7 +9,7 @@ columns:
   - name: "Client"
     kind: string
   - name: "Author"
-    kind: string
+    kind: people
   - name: "Status"
     kind: select
   - name: "Publish Date"
