@@ -80,7 +80,7 @@ describe("Editable Content Title", function () {
       cy.appEval("Document.find_by(title: 'One').id").then((docId) => {
         cy.visit(`/d/${docId}/edit`);
 
-        cy.contains("Loading content").should("not.be.visible");
+        cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
         cy.get("nav .editable-content-title.editable").should("contain", "One");
 

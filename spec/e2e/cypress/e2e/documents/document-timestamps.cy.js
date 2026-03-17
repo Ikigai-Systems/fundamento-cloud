@@ -31,7 +31,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "one";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -52,7 +52,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "two";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -69,7 +69,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "one";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -83,7 +83,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "one";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -102,7 +102,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "one";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -121,7 +121,7 @@ describe("Document Sidebar Timestamps", function () {
     const documentId = "one";
 
     cy.visit(`/d/${documentId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 

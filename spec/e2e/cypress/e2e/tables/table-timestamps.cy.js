@@ -30,7 +30,7 @@ describe("Table Sidebar Timestamps", function () {
     const tableId = "orders";
 
     cy.visit(`/t/${tableId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -50,7 +50,7 @@ describe("Table Sidebar Timestamps", function () {
     const tableId = "orders";
 
     cy.visit(`/t/${tableId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -69,7 +69,7 @@ describe("Table Sidebar Timestamps", function () {
     const tableId = "orders";
 
     cy.visit(`/t/${tableId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 
@@ -88,7 +88,7 @@ describe("Table Sidebar Timestamps", function () {
     const tableId = "orders";
 
     cy.visit(`/t/${tableId}`);
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     openDetailsSidebar();
 

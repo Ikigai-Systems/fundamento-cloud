@@ -35,17 +35,16 @@ describe("Document Editor", function () {
     cy.url().should("match", editPageUrl);
 
     // Verify the editor is loaded
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Type content in the editor
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("This is the first paragraph of the test document.");
+    cy.get("[data-document-editor] [role='textbox']").first().type("This is the first paragraph of the test document.");
 
     // Press Enter to create a new paragraph
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{enter}");
+    cy.get("[data-document-editor] [role='textbox']").first().type("{enter}");
 
     // Type more content
-    cy.get("[data-document-editor] [role=\"textbox\"]").last().type("This is the second paragraph.");
+    cy.get("[data-document-editor] [role='textbox']").last().type("This is the second paragraph.");
 
     // Verify content is visible
     cy.contains("This is the first paragraph of the test document.").should("be.visible");
@@ -64,11 +63,10 @@ describe("Document Editor", function () {
     cy.url().should("match", editPageUrl);
 
     // Wait for editor to load
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Type the heading text
-    cy.get("[data-document-editor] [role=\"textbox\"]").click();
+    cy.get("[data-document-editor] [role='textbox']").click();
 
     cy.focused().type("# First Heading{enter}");
     cy.focused().type("## Second Heading{enter}");
@@ -105,13 +103,12 @@ describe("Document Editor", function () {
     cy.visit(`/d/${documentId}`);
 
     // Wait for editor to load
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Get initial version count
     cy.appEval(`Document.find('${documentId}').versions.count`).then((initialVersionCount) => {
       // Make first edit
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("First version content.{enter}");
+      cy.get("[data-document-editor] [role='textbox']").first().type("First version content.{enter}");
 
       // Save the document by clicking the update button
       cy.get('[aria-label="Save document"]').click();
@@ -128,8 +125,8 @@ describe("Document Editor", function () {
 
       // Make second edit
       cy.url().should("include", `/d/${documentId}/edit`);
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Second version content.{enter}");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+      cy.get("[data-document-editor] [role='textbox']").first().type("Second version content.{enter}");
 
       // Save again
       cy.get('[aria-label="Save document"]').click();
@@ -144,8 +141,8 @@ describe("Document Editor", function () {
       cy.get('[aria-label="Edit document"]').click();
 
       cy.url().should("include", `/d/${documentId}/edit`);
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Third version content.");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+      cy.get("[data-document-editor] [role='textbox']").first().type("Third version content.");
 
       // Save again
       cy.get('[aria-label="Save document"]').click();
@@ -180,11 +177,10 @@ describe("Document Editor", function () {
     cy.visit(`/d/${documentId}/edit`);
 
     // Wait for editor to load
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Make first edit and save
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 2 content.{enter}");
+    cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 2 content.{enter}");
     cy.get('[aria-label="Save document"]').click();
 
     cy.contains("Document has been updated").should("be.visible");
@@ -192,8 +188,8 @@ describe("Document Editor", function () {
 
     // Make second edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 3 content.{enter}");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+    cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 3 content.{enter}");
     cy.get('[aria-label="Save document"]').click();
 
     cy.contains("Document has been updated").should("be.visible");
@@ -201,8 +197,8 @@ describe("Document Editor", function () {
 
     // Make third edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Version 4 content.{enter}");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+    cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 4 content.{enter}");
     cy.get('[aria-label="Save document"]').click();
 
     cy.contains("Document has been updated").should("be.visible");
@@ -273,8 +269,8 @@ describe("Document Editor", function () {
 
       // Add unique content
       const uniqueContent = `Unique content ${Date.now()}`;
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().clear();
-      cy.get("[data-document-editor] [role=\"textbox\"]").first().type(uniqueContent);
+      cy.get("[data-document-editor] [role='textbox']").first().clear();
+      cy.get("[data-document-editor] [role='textbox']").first().type(uniqueContent);
 
       // Save the document
       cy.get('[aria-label="Save document"]').click();
@@ -284,8 +280,7 @@ describe("Document Editor", function () {
       cy.reload();
 
       // Wait for editor to load again
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor]").should("exist");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Verify content persists
       cy.contains(uniqueContent).should("be.visible");
@@ -298,13 +293,12 @@ describe("Document Editor", function () {
       cy.visit(`/d/${documentId}/edit`);
 
       // Wait for editor to load
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor]").should("exist");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Get initial version count
       cy.appEval(`Document.find('${documentId}').versions.count`).then((initialCount) => {
         // Add content
-        cy.get("[data-document-editor] [role=\"textbox\"]").first().type("{selectall}Keyboard shortcut test content.{ctrl+enter}");
+        cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Keyboard shortcut test content.{ctrl+enter}");
 
         // Use keyboard shortcut to save (CTRL+Enter works on all platforms in Cypress)
         cy.document().trigger('keydown', {
@@ -337,11 +331,10 @@ describe("Document Editor", function () {
     cy.url().should("match", editPageUrl);
 
     // Wait for editor to load
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Verify editor is present with empty content
-    cy.get("[data-document-editor] [role=\"textbox\"]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']").should("exist");
 
     // Verify at least one empty block exists
     cy.get("[data-document-editor] .bn-block-outer").should("have.length.at.least", 1);
@@ -359,8 +352,7 @@ describe("Document Editor", function () {
       cy.visit(`/d/${documentId}/edit`);
 
       // Wait for editor to load
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor]").should("exist");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Find and edit the title
       const newTitle = `Updated Title ${Date.now()}`;
@@ -388,8 +380,7 @@ describe("Document Editor", function () {
     cy.url().should("match", editPageUrl);
 
     // Wait for editor to load
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Extract document ID from URL to intercept the exact PATCH request
     cy.url().then((url) => {
@@ -407,7 +398,7 @@ describe("Document Editor", function () {
     cy.wait("@updateDocument");
 
     // Click into the editor
-    cy.get("[data-document-editor] [role=\"textbox\"]").first().click();
+    cy.get("[data-document-editor] [role='textbox']").first().click();
 
     // Add a heading using slash command
     cy.focused().type("/heading");
