@@ -1,5 +1,5 @@
 _fixture:
-  model_class: ObjectMention
+  model_class: ObjectReference
 
 doc_mention_to_doc:
   id: "550e8400-e29b-41d4-a716-446655440001"

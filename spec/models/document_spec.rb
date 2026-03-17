@@ -82,13 +82,13 @@ RSpec.describe Document, type: :model do
     end
   end
 
-  describe "object_mention cleanup on destroy" do
+  describe "object_reference cleanup on destroy" do
     let(:organization) { organizations(:is) }
     let(:source_doc) { documents(:one) }
     let(:target_doc) { documents(:two) }
 
-    it "nullifies target_id on object_mentions pointing to deleted document" do
-      om = ObjectMention.create!(
+    it "nullifies target_id on object_references pointing to deleted document" do
+      om = ObjectReference.create!(
         id: SecureRandom.uuid,
         source: source_doc,
         target_type: "Document",
@@ -106,8 +106,8 @@ RSpec.describe Document, type: :model do
       expect(om.title).to eq("Target Doc")
     end
 
-    it "deletes object_mentions where deleted document is the source" do
-      om = ObjectMention.create!(
+    it "deletes object_references where deleted document is the source" do
+      om = ObjectReference.create!(
         id: SecureRandom.uuid,
         source: source_doc,
         target_type: "Document",
@@ -119,7 +119,7 @@ RSpec.describe Document, type: :model do
       source_doc.space.remove_single_item_from_hierarchy!(source_doc.id)
       source_doc.destroy!
 
-      expect(ObjectMention.exists?(om.id)).to be false
+      expect(ObjectReference.exists?(om.id)).to be false
     end
   end
 end

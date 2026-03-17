@@ -23,7 +23,7 @@ class Document < ApplicationRecord
   has_many :inline_comment_threads, dependent: :destroy
   has_many :attachments, as: :parent, dependent: :destroy
   has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :delete_all
-  has_many :source_object_mentions, class_name: "ObjectMention", as: :source, dependent: :delete_all
+  has_many :source_object_references, class_name: "ObjectReference", as: :source, dependent: :delete_all
 
   def contributors
     User.joins(organization_memberships: :editing_sessions)
@@ -33,7 +33,7 @@ class Document < ApplicationRecord
   end
 
   before_destroy :nullify_space_home_document_id
-  before_destroy :nullify_object_mention_targets
+  before_destroy :nullify_object_reference_targets
 
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
@@ -81,9 +81,9 @@ class Document < ApplicationRecord
     space.update(home_document: nil)
   end
 
-  def nullify_object_mention_targets
-    ObjectMention.where(target_type: "Document", target_id: id, organization_id: organization_id)
-                 .update_all(target_id: nil)
+  def nullify_object_reference_targets
+    ObjectReference.where(target_type: "Document", target_id: id, organization_id: organization_id)
+                   .update_all(target_id: nil)
   end
 
   def parent

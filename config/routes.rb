@@ -69,7 +69,7 @@ Rails.application.routes.draw do
     resources :documents, path: "d" do
       resources :versions, module: :documents, only: [:create, :index, :show, :update]
       resources :tags, module: :objects, only: [:create, :index]
-      resources :object_mentions, module: :documents, only: [:index]
+      resources :object_references, module: :documents, only: [:index]
 
       member do
         get :select_destination
@@ -198,7 +198,7 @@ Rails.application.routes.draw do
       resources :spaces, only: [:index, :show, :create]
 
       resources :documents, only: [:index, :show, :create, :update] do
-        resources :object_mentions, only: [:index]
+        resources :object_references, only: [:index]
       end
 
       resources :tables, only: [:show]
