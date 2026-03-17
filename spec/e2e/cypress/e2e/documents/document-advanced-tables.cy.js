@@ -27,8 +27,7 @@ describe("Advanced Table Title in Document", function () {
     cy.get('[aria-label="Create new document"]').click();
 
     cy.url().should("match", editPageUrl);
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Insert an advanced table via slash command
     cy.get("[data-document-editor] [role=\"textbox\"]").first().click();
@@ -176,8 +175,7 @@ describe("Advanced Table Title in Document", function () {
       // Reload the page
       cy.reload();
 
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor]").should("exist");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Verify the table title persists
       cy.get(".advanced-table-title").should("contain", "Persisted Title");
@@ -196,8 +194,7 @@ describe("Advanced Table Title in Document", function () {
         cy.visit(`/d/${documentId}`);
       });
 
-      cy.contains("Loading content").should("not.be.visible");
-      cy.get("[data-document-editor]").should("exist");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Table title should be visible but not editable
       cy.get(".advanced-table-title").should("exist");

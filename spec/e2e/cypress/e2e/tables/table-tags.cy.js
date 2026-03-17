@@ -29,7 +29,7 @@ describe("Table Tags", function () {
     
     cy.visit(`/t/${tableId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -63,7 +63,7 @@ describe("Table Tags", function () {
     cy.appEval("Table.first.id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -106,7 +106,7 @@ describe("Table Tags", function () {
 
         cy.visit(`/t/${tableId}`);
 
-        cy.contains("Loading content").should("not.be.visible");
+        cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
         // Open the sidebar Details tab
         cy.get("#content-sidebar").within(() => {
@@ -155,7 +155,7 @@ describe("Table Tags", function () {
 
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -205,7 +205,7 @@ describe("Table Tags", function () {
     cy.appEval("Table.first.id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -227,7 +227,7 @@ describe("Table Tags", function () {
       // Reload the page
       cy.reload();
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab again
       cy.get("#content-sidebar").within(() => {
@@ -258,7 +258,7 @@ describe("Table Tags", function () {
 
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -311,7 +311,7 @@ describe("Table Tags", function () {
     cy.appEval("Table.first.id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -371,7 +371,7 @@ describe("Table Tags", function () {
         // Now visit the table and verify the tag appears in autocomplete
         cy.visit(`/t/${tableId}`);
 
-        cy.contains("Loading content").should("not.be.visible");
+        cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
         // Open the sidebar Details tab
         cy.get("#content-sidebar").within(() => {
@@ -428,7 +428,7 @@ describe("Table Tags", function () {
     cy.appEval("Table.first.id").then((tableId) => {
       cy.visit(`/t/${tableId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {

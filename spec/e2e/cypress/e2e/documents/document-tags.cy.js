@@ -29,7 +29,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -61,7 +61,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -102,7 +102,7 @@ describe("Document Tags", function () {
 
       cy.visit(`/d/${documentId}`);
 
-      cy.contains("Loading content").should("not.be.visible");
+      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
       cy.get("#content-sidebar").within(() => {
@@ -142,7 +142,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -187,7 +187,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -208,7 +208,7 @@ describe("Document Tags", function () {
     // Reload the page
     cy.reload();
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab again
     cy.get("#content-sidebar").within(() => {
@@ -239,7 +239,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -289,7 +289,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -335,7 +335,7 @@ describe("Document Tags", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -363,7 +363,7 @@ describe("Document Tags", function () {
     cy.visit(`/d/${documentId}/edit`);
 
     // Wait for content to load
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open sidebar Details tab
     cy.get("#content-sidebar").within(() => {
@@ -395,7 +395,7 @@ describe("Document Tags", function () {
     });
 
     // Wait for content to load on show page
-    cy.contains("Loading content").should("not.be.visible");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
 
     // Open sidebar Details tab on show page
     cy.get("#content-sidebar").within(() => {

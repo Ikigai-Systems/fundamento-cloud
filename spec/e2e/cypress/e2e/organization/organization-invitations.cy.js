@@ -295,8 +295,10 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.contains("You're already a member of").should("be.visible");
         cy.contains("Ikigai Systems").should("be.visible");
 
-        // Click "Go to Ikigai Systems" button
+        // Click "Go to Ikigai Systems" button (POSTs to /organizations/*/select via Turbo)
+        cy.intercept("POST", "/organizations/*/select").as("selectOrg");
         cy.contains("Go to Ikigai Systems").click();
+        cy.wait("@selectOrg");
 
         // Verify access to organization
         cy.visit("/s/is_default");
