@@ -193,6 +193,40 @@ design_doc = documents.create_from_markdown :design_guidelines,
   space: creative_space, organization: org, author: marcus,
   created_at: t.around(t.onboarding_done), updated_at: t.around(t.steady_state)
 
+# ─── Backfill: Campaign Tracker "Brief" column ────────────────
+# Tables are created before documents (for NPI placeholders), so we
+# link campaign rows to their related docs after both exist.
+
+brief_col = campaign_tracker.columns.find_by!(name: "Brief")
+rows_by_campaign = campaign_tracker.rows.index_by { |r|
+  r.cells.find_by(column: campaign_tracker.columns.find_by!(name: "Campaign"))&.value
+}
+
+{
+  "Spring Harvest Launch"       => [gtm_doc, campaign_brief_doc],
+  "Organic Meal Kits Promo"     => [gtm_doc, campaign_brief_doc],
+  "Farm-to-Table Awareness"     => [gtm_doc],
+  "New Year Fitness Push"       => [brand_voice_doc, instagram_doc],
+  "Spring Workout Collection"   => [brand_voice_doc, instagram_doc],
+  "UrbanFit App Download Drive" => [brand_voice_doc],
+  "Athleisure Lifestyle Series" => [brand_voice_doc],
+  "TechNova Brand Awareness"    => [technova_doc],
+  "Developer Community Outreach" => [technova_doc],
+  "TechNova Product Launch"     => [technova_doc],
+}.each do |campaign_name, docs|
+  row = rows_by_campaign[campaign_name]
+  next unless row
+
+  cell = row.cells.find_or_initialize_by(column: brief_col)
+  cell.update!(
+    table: campaign_tracker,
+    value: docs.map(&:id).join(","),
+    organization: org
+  )
+end
+
+puts "  [Table] Campaign Tracker briefs linked (#{rows_by_campaign.size} rows)"
+
 # ─── Comments ───────────────────────────────────────────────────
 # ObjectComment stores content as JSON (BlockNote-style blocks)
 

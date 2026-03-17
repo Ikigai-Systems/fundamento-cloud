@@ -12,6 +12,8 @@ columns:
     kind: decimal
   - name: "Status"
     kind: select
+  - name: "Brief"
+    kind: documents
   - name: "Impressions"
     kind: number
 data: campaign-tracker.csv
