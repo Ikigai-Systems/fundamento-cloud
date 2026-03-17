@@ -181,18 +181,21 @@ describe("Document Reactions", function () {
 
     const emojis = ["👍", "❤️", "🎉"];
 
-    // Add multiple reactions
-    emojis.forEach((emoji, index) => {
-      cy.appEval(`
-        document = Document.find('${documentId}')
-        membership = OrganizationMembership.find('om_is_pawel')
+    // Create all reactions in a single appEval to avoid interleaved broadcasts
+    cy.appEval(`
+      document = Document.find('${documentId}')
+      membership = OrganizationMembership.find('om_is_pawel')
+      ${JSON.stringify(emojis)}.each do |emoji|
         document.reactions.find_or_create_by!(
           organization: document.organization,
           organization_membership: membership,
-          emoji: '${emoji}'
+          emoji: emoji
         )
-      `);
-    });
+      end
+    `);
+
+    // Wait for the last broadcast's frame reload to complete showing all reactions
+    cy.get(".destroy-reaction-button", { timeout: 10000 }).should("have.length", emojis.length);
 
     // Verify all reactions are visible and count is correct
     cy.appEval(`Document.find('${documentId}').reactions.pluck(:emoji)`).then((reactionsEmojis) => {
@@ -261,9 +264,15 @@ describe("Document Reactions", function () {
       // Verify the reaction is visible
       cy.get(".destroy-reaction-button").should("contain", "🔥");
 
+      // Intercept the Turbo Stream frame reload triggered by reaction destruction
+      cy.intercept("GET", "/reactions*").as("getReactions");
+
       cy.appEval(`
         ObjectReaction.find('${reactionId}').destroy!
       `);
+
+      // Wait for the Turbo Stream frame reload to complete
+      cy.wait("@getReactions");
 
       cy.get(".destroy-reaction-button").should("not.exist");
     });
@@ -279,6 +288,9 @@ describe("Document Reactions", function () {
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
 
+    // Intercept the Turbo Stream frame reload triggered by reaction creation
+    cy.intercept("GET", "/reactions*").as("getReactions");
+
     // Add a reaction
     cy.appEval(`
       document = Document.find('${documentId}')
@@ -289,6 +301,9 @@ describe("Document Reactions", function () {
         emoji: '✨'
       )
     `);
+
+    // Wait for the Turbo Stream frame reload to complete
+    cy.wait("@getReactions");
 
     // Wait for ActionCable/Turbo Stream to update the UI
     cy.get(".destroy-reaction-button", { timeout: 10000 }).should("contain", "✨");

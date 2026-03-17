@@ -29,8 +29,7 @@ describe("Document Editing Sessions", function () {
   // Helper to open document editor and wait for it to load
   function openEditor() {
     cy.visit(`/d/${documentId}/edit`);
-    cy.contains("Loading content").should("not.be.visible");
-    cy.get("[data-document-editor]").should("exist");
+    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
   }
 
   // Helper to type in editor
@@ -40,7 +39,9 @@ describe("Document Editing Sessions", function () {
 
   // Helper to save version and wait for confirmation
   function saveVersion() {
+    cy.intercept("POST", "/d/*/versions").as("saveVersion");
     cy.get("[aria-label=\"Save document\"]").click();
+    cy.wait("@saveVersion");
     cy.contains("Document has been updated").should("be.visible");
   }
 
