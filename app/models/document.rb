@@ -1,6 +1,8 @@
 require 'open3'
 
 class Document < ApplicationRecord
+  audited except: [:sync]
+
   include NpiOrdering
 
   include ToReactProps
