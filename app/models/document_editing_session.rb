@@ -1,4 +1,6 @@
 class DocumentEditingSession < ApplicationRecord
+  audited enabled: false
+
   include NpiOrdering
 
   belongs_to :document

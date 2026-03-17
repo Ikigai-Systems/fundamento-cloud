@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_16_204227) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_081406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -66,6 +66,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_16_204227) do
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_attachments_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_attachments_on_parent"
+  end
+
+  create_table "audits", force: :cascade do |t|
+    t.string "action"
+    t.string "associated_id"
+    t.string "associated_type"
+    t.string "auditable_id"
+    t.string "auditable_type"
+    t.jsonb "audited_changes"
+    t.string "comment"
+    t.datetime "created_at"
+    t.string "remote_address"
+    t.string "request_uuid"
+    t.string "user_id"
+    t.string "user_type"
+    t.string "username"
+    t.integer "version", default: 0
+    t.index ["associated_type", "associated_id"], name: "associated_index"
+    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
+    t.index ["created_at"], name: "index_audits_on_created_at"
+    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
+    t.index ["user_id", "user_type"], name: "user_index"
   end
 
   create_table "automation_invocations", force: :cascade do |t|

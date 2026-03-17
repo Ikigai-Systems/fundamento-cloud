@@ -77,7 +77,7 @@ Node.js services handle specialized processing:
 
 ## Git Worktrees
 
-Worktrees are stored in `.worktrees/` (gitignored). After creating a worktree, these gitignored files must be copied from the main repo and the blocknote-converter must be built before tests will pass:
+Worktrees are stored in `.worktrees/` (gitignored). After creating a worktree, these gitignored files must be copied from the main repo and build steps must be run before tests will pass:
 
 ```bash
 # Copy gitignored config files
@@ -87,6 +87,9 @@ cp dockerfiles/fontawesome-auth.secret <worktree>/dockerfiles/fontawesome-auth.s
 
 # Build the blocknote-converter micro-service (used by fixtures and model code)
 cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
+
+# Build Tailwind CSS (required for request/view specs)
+cd <worktree> && bin/rails tailwindcss:build
 ```
 
 ## Development Seeds

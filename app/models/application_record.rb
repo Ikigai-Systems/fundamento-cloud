@@ -1,6 +1,8 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
+  audited
+
   before_create :generate_id_if_needed
 
   class << self
