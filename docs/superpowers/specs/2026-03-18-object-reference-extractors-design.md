@@ -22,8 +22,8 @@ Replace both extractors with efficient DB queries against `object_references`, g
 Two new nullable columns on `object_references`:
 
 ```ruby
-add_column :object_references, :source_version_id, :string, null: true
-add_column :object_references, :source_comment_id, :string, null: true
+add_column :object_references, :source_version_id, :bigint, null: true  # matches versions.id
+add_column :object_references, :source_comment_id, :bigint, null: true  # matches object_comments.id
 
 add_index :object_references, :source_version_id, where: "source_version_id IS NOT NULL"
 add_index :object_references, :source_comment_id, where: "source_comment_id IS NOT NULL"
