@@ -35,7 +35,7 @@ class Version < ApplicationRecord
   private
 
   def reconcile_object_references
-    ObjectReferenceReconciler.reconcile(document, content_blocks) if content_blocks.present?
+    ObjectReferenceReconciler.reconcile(document, self) if content_blocks.present?
   end
 
   def set_sequential_id

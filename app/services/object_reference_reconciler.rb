@@ -11,24 +11,27 @@ class ObjectReferenceReconciler
     "User" => User
   }.freeze
 
-  def self.reconcile(document, content_blocks)
-    new(document).reconcile(content_blocks)
+  def self.reconcile(document, version)
+    new(document).reconcile(version)
   end
 
-  def initialize(document)
-    @document = document
-    @organization = document.organization
+  def initialize(source_object)
+    @source_object = source_object
+    @organization = source_object.organization
   end
 
-  def reconcile(content_blocks)
-    mention_nodes = extract_mentions(content_blocks)
+  def reconcile(version)
+    content_blocks = version.content_blocks
+    mention_nodes = extract_references(content_blocks)
     mention_ids = mention_nodes.map { |m| m[:id] }
 
     # Batch-fetch existing targets and their titles
     target_data = batch_fetch_targets(mention_nodes)
 
-    # Batch-fetch existing object_references for this source
-    existing_mentions = ObjectReference.for_source(@document).index_by(&:id)
+    # Batch-fetch existing version-sourced object_references for this source
+    existing_mentions = ObjectReference.for_source(@source_object)
+                                       .where(source_comment_id: nil)
+                                       .index_by(&:id)
 
     # Upsert mentions
     mention_nodes.each do |node|
@@ -47,18 +50,21 @@ class ObjectReferenceReconciler
       else
         ObjectReference.create!(
           id: node[:id],
-          source: @document,
+          source: @source_object,
           target_type: target_type,
           target_id: target_id,
           title: title,
           current: true,
-          organization: @organization
+          organization: @organization,
+          source_version_id: version.id,
+          created_at: version.created_at
         )
       end
     end
 
-    # Mark removed mentions as not current
-    ObjectReference.for_source(@document)
+    # Mark removed mentions as not current (only version-sourced refs)
+    ObjectReference.for_source(@source_object)
+                 .where(source_comment_id: nil)
                  .where.not(id: mention_ids)
                  .where(current: true)
                  .update_all(current: false)
@@ -66,7 +72,7 @@ class ObjectReferenceReconciler
 
   private
 
-  def extract_mentions(blocks)
+  def extract_references(blocks)
     mentions = []
     walk_blocks(blocks) do |node|
       next unless node.is_a?(Hash) && node["type"] == "mention"
