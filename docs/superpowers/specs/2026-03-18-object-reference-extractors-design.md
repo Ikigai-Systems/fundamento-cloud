@@ -24,7 +24,7 @@ Three new nullable columns on `object_references`:
 ```ruby
 add_column :object_references, :source_version_id, :string, null: true
 add_column :object_references, :source_comment_id, :string, null: true
-add_column :object_references, :first_seen_at, :datetime, null: true
+add_column :object_references, :first_reference_at, :datetime, null: true
 
 add_index :object_references, :source_version_id, where: "source_version_id IS NOT NULL"
 add_index :object_references, :source_comment_id, where: "source_comment_id IS NOT NULL"
@@ -32,15 +32,15 @@ add_index :object_references, :source_comment_id, where: "source_comment_id IS N
 
 ### Column semantics
 
-| Source | `source_version_id` | `source_comment_id` | `first_seen_at` | `current` |
+| Source | `source_version_id` | `source_comment_id` | `first_reference_at` | `current` |
 |--------|---------------------|---------------------|-----------------|-----------|
 | Version | Version ID (first seen) | NULL | `version.created_at` | true/false (managed by reconciler) |
 | Comment | NULL | Comment ID | `comment.created_at` | Always true (deleted with comment) |
 | Pre-migration (not yet backfilled) | NULL | NULL | NULL | Existing value |
 
-### `first_seen_at`
+### `first_reference_at`
 
-`ObjectReference.created_at` reflects when the DB row was created, which during backfill would be the backfill time — not when the mention first appeared. `first_seen_at` is populated from `version.created_at` (for version-sourced refs) or `comment.created_at` (for comment-sourced refs). This is critical for MentionsExtractor, which uses it for sorting and unread-count filtering. Like `source_version_id`, it is set on first create and NOT overwritten on update.
+`ObjectReference.created_at` reflects when the DB row was created, which during backfill would be the backfill time — not when the reference first appeared in content. `first_reference_at` is populated from `version.created_at` (for version-sourced refs) or `comment.created_at` (for comment-sourced refs). This is critical for MentionsExtractor, which uses it for sorting and unread-count filtering. Like `source_version_id`, it is set on first create and NOT overwritten on update.
 
 ### ALLOWED_SOURCE_TYPES expansion
 
@@ -70,7 +70,7 @@ def reconcile(version)
 end
 ```
 
-When creating a new ObjectReference, set `source_version_id: version.id` and `first_seen_at: version.created_at`. When updating an existing reference (mention still present in a newer version), do NOT overwrite `source_version_id` or `first_seen_at` — this preserves the "first seen in" semantics that MentionsExtractor needs.
+When creating a new ObjectReference, set `source_version_id: version.id` and `first_reference_at: version.created_at`. When updating an existing reference (mention still present in a newer version), do NOT overwrite `source_version_id` or `first_reference_at` — this preserves the "first seen in" semantics that MentionsExtractor needs.
 
 The existing `Version#reconcile_object_references` callback must be updated to pass `self` instead of `content_blocks`:
 
@@ -91,9 +91,9 @@ end
 ```
 
 - Extracts references from `comment.content`
-- Upserts ObjectReferences with `source = comment.object`, `source_comment_id = comment.id`, `first_seen_at = comment.created_at`
-- **ID namespacing:** Comment-sourced references use `"{comment_id}:{mention_node_id}"` as the ObjectReference primary key. This avoids PK collisions when the same mention UUID appears in both a version and a comment (e.g., copy-paste). Version-sourced refs use the raw mention node ID as before.
+- Upserts ObjectReferences with `source = comment.object`, `source_comment_id = comment.id`, `first_reference_at = comment.created_at`
 - Cleanup: `ObjectReference.where(source_comment_id: comment.id).where.not(id: extracted_ids).delete_all` — scoped to this comment only, never touches version-sourced references
+- No ID namespacing needed — BlockNote regenerates UUIDs on copy-paste (the converter calls `crypto.randomUUID()` for each mention parsed from HTML), so the same mention UUID cannot appear in both a version and a comment
 - `current` is always `true` for comment-sourced references
 
 ### ObjectComment callbacks
@@ -129,7 +129,7 @@ end
 2. Query: `ObjectReference.where(target_type: "User", target_id: user.id, source_type: "Document", source_id: docs_by_id.keys)` — both current and non-current
 3. For non-current version-sourced refs, batch-load versions by `source_version_id` for path construction
 4. Build `Mention` structs:
-   - `created_at` = `ref.first_seen_at` (NOT `ref.created_at` — see Schema Changes section)
+   - `created_at` = `ref.first_reference_at` (NOT `ref.created_at` — see Schema Changes section)
    - `object_title` = `docs_by_id[ref.source_id].title` (no eager-loading of source)
    - `object_path` — see path logic below
 5. Path logic:
