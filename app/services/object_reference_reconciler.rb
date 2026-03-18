@@ -73,26 +73,42 @@ class ObjectReferenceReconciler
   private
 
   def extract_references(blocks)
-    mentions = []
+    references = []
     walk_blocks(blocks) do |node|
-      next unless node.is_a?(Hash) && node["type"] == "mention"
+      next unless node.is_a?(Hash)
 
-      props = node["props"] || {}
-      id = props["id"].to_s
-      entity_id = props["entityId"]
+      if node["type"] == "mention"
+        props = node["props"] || {}
+        id = props["id"].to_s
+        entity_id = props["entityId"]
 
-      # Skip empty IDs and uninitialized mentions
-      next if id.blank?
-      next if entity_id == -1 || entity_id == "-1"
+        # Skip empty IDs and uninitialized mentions
+        next if id.blank?
+        next if entity_id == -1 || entity_id == "-1"
 
-      mentions << {
-        id: id,
-        entity: props["entity"].to_s,
-        entity_id: entity_id,
-        title: props["title"].to_s
-      }
+        references << {
+          id: id,
+          entity: props["entity"].to_s,
+          entity_id: entity_id,
+          title: props["title"].to_s
+        }
+      elsif node["type"] == "advancedTable"
+        props = node["props"] || {}
+        id = node["id"].to_s
+        entity_id = props["tableNpi"].presence || props["tableId"].presence
+
+        next if id.blank?
+        next if entity_id.blank?
+
+        references << {
+          id: id,
+          entity: "table",
+          entity_id: entity_id,
+          title: ""
+        }
+      end
     end
-    mentions
+    references
   end
 
   def walk_blocks(nodes, &block)

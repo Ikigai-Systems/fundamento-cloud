@@ -246,6 +246,70 @@ RSpec.describe ObjectReferenceReconciler do
     end
   end
 
+  context "advancedTable blocks" do
+    let(:space) { spaces(:is_default) }
+    let(:table) { Table.create!(name: "Test Table", organization: organization, space: space, parent: space) }
+
+    def advanced_table_block(id:, table_npi: nil, table_id: nil)
+      props = { "viewId" => "view1" }
+      props["tableNpi"] = table_npi if table_npi
+      props["tableId"] = table_id if table_id
+      {
+        "id" => id,
+        "type" => "advancedTable",
+        "props" => props,
+        "children" => []
+      }
+    end
+
+    it "creates object_reference for advancedTable block using tableNpi" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_npi: table.id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find(uuid)
+      expect(ref.target_type).to eq("Table")
+      expect(ref.target_id).to eq(table.id)
+      expect(ref.current).to be true
+    end
+
+    it "falls back to tableId when tableNpi is absent" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_id: table.id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find(uuid)
+      expect(ref.target_type).to eq("Table")
+      expect(ref.target_id).to eq(table.id)
+    end
+
+    it "skips advancedTable blocks with blank table IDs" do
+      uuid = SecureRandom.uuid
+      expect {
+        document.versions.create!(
+          content_blocks: [advanced_table_block(id: uuid, table_npi: "", table_id: "")],
+          created_by: users(:pawel)
+        )
+      }.not_to change(ObjectReference, :count)
+    end
+
+    it "creates broken reference for nonexistent table" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_npi: "nonexistent")],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find(uuid)
+      expect(ref).to be_broken
+      expect(ref.target_type).to eq("Table")
+    end
+  end
+
   describe "Version callback integration" do
     fixtures :organizations, :users, :documents, :spaces, :versions
 
