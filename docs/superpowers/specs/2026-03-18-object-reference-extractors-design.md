@@ -19,12 +19,11 @@ Replace both extractors with efficient DB queries against `object_references`, g
 
 ## Schema Changes
 
-Three new nullable columns on `object_references`:
+Two new nullable columns on `object_references`:
 
 ```ruby
 add_column :object_references, :source_version_id, :string, null: true
 add_column :object_references, :source_comment_id, :string, null: true
-add_column :object_references, :first_reference_at, :datetime, null: true
 
 add_index :object_references, :source_version_id, where: "source_version_id IS NOT NULL"
 add_index :object_references, :source_comment_id, where: "source_comment_id IS NOT NULL"
@@ -32,15 +31,15 @@ add_index :object_references, :source_comment_id, where: "source_comment_id IS N
 
 ### Column semantics
 
-| Source | `source_version_id` | `source_comment_id` | `first_reference_at` | `current` |
-|--------|---------------------|---------------------|-----------------|-----------|
-| Version | Version ID (first seen) | NULL | `version.created_at` | true/false (managed by reconciler) |
-| Comment | NULL | Comment ID | `comment.created_at` | Always true (deleted with comment) |
-| Pre-migration (not yet backfilled) | NULL | NULL | NULL | Existing value |
+| Source | `source_version_id` | `source_comment_id` | `created_at` | `current` |
+|--------|---------------------|---------------------|--------------|-----------|
+| Version | Version ID (first seen) | NULL | `version.created_at` (explicit) | true/false (managed by reconciler) |
+| Comment | NULL | Comment ID | `comment.created_at` (explicit) | Always true (deleted with comment) |
+| Pre-migration (not yet backfilled) | NULL | NULL | Existing value | Existing value |
 
-### `first_reference_at`
+### `created_at` semantics
 
-`ObjectReference.created_at` reflects when the DB row was created, which during backfill would be the backfill time — not when the reference first appeared in content. `first_reference_at` is populated from `version.created_at` (for version-sourced refs) or `comment.created_at` (for comment-sourced refs). This is critical for MentionsExtractor, which uses it for sorting and unread-count filtering. Like `source_version_id`, it is set on first create and NOT overwritten on update.
+The reconciler explicitly sets `created_at` to `version.created_at` or `comment.created_at` when creating a new ObjectReference — NOT the current time. This ensures `created_at` reflects when the reference first appeared in content, which is critical for MentionsExtractor (sorting and unread-count filtering). Like `source_version_id`, `created_at` is set on first create and NOT overwritten on update. During backfill, this means `created_at` correctly reflects the original version/comment timestamp, not the backfill run time.
 
 ### ALLOWED_SOURCE_TYPES expansion
 
@@ -70,7 +69,7 @@ def reconcile(version)
 end
 ```
 
-When creating a new ObjectReference, set `source_version_id: version.id` and `first_reference_at: version.created_at`. When updating an existing reference (mention still present in a newer version), do NOT overwrite `source_version_id` or `first_reference_at` — this preserves the "first seen in" semantics that MentionsExtractor needs.
+When creating a new ObjectReference, set `source_version_id: version.id` and `created_at: version.created_at`. When updating an existing reference (mention still present in a newer version), do NOT overwrite `source_version_id` or `created_at` — this preserves the "first seen in" semantics that MentionsExtractor needs.
 
 The existing `Version#reconcile_object_references` callback must be updated to pass `self` instead of `content_blocks`:
 
@@ -91,7 +90,7 @@ end
 ```
 
 - Extracts references from `comment.content`
-- Upserts ObjectReferences with `source = comment.object`, `source_comment_id = comment.id`, `first_reference_at = comment.created_at`
+- Upserts ObjectReferences with `source = comment.object`, `source_comment_id = comment.id`, `created_at = comment.created_at`
 - Cleanup: `ObjectReference.where(source_comment_id: comment.id).where.not(id: extracted_ids).delete_all` — scoped to this comment only, never touches version-sourced references
 - No ID namespacing needed — BlockNote regenerates UUIDs on copy-paste (the converter calls `crypto.randomUUID()` for each mention parsed from HTML), so the same mention UUID cannot appear in both a version and a comment
 - `current` is always `true` for comment-sourced references
@@ -129,7 +128,7 @@ end
 2. Query: `ObjectReference.where(target_type: "User", target_id: user.id, source_type: "Document", source_id: docs_by_id.keys)` — both current and non-current
 3. For non-current version-sourced refs, batch-load versions by `source_version_id` for path construction
 4. Build `Mention` structs:
-   - `created_at` = `ref.first_reference_at` (NOT `ref.created_at` — see Schema Changes section)
+   - `created_at` = `ref.created_at` (explicitly set to version/comment timestamp — see Schema Changes section)
    - `object_title` = `docs_by_id[ref.source_id].title` (no eager-loading of source)
    - `object_path` — see path logic below
 5. Path logic:
@@ -211,7 +210,7 @@ end
 - Running the task twice produces the same result
 - The reconciler creates new references or updates existing ones by ID
 - The `current` flag is recomputed based on latest version content
-- `source_version_id` preserves "first seen" on update (not overwritten)
+- `source_version_id` and `created_at` preserve "first seen" on update (not overwritten)
 
 ## Feature Flag
 
@@ -238,22 +237,31 @@ The reconciler runs on every version/comment create regardless of the flag. The 
 - Comments on both Documents and Tables
 
 ### MentionsExtractor specs
-- Existing specs pass with flag disabled (from_blocknote path)
-- New specs for from_object_references path:
-  - Returns same Mention structs as JSON parsing
-  - Current mentions link to document path
-  - Non-current mentions link to version path
-  - Comment mentions link to document path
-  - Uses documents collection for titles (no extra queries)
+All existing behavioral specs run in a shared example group, executed twice — once with the flag disabled (from_blocknote path) and once with the flag enabled (from_object_references path). This ensures exact feature parity:
+- User mentions extracted from document versions
+- Mention `created_at` matches first-seen version timestamp
+- Current mentions link to document path
+- Non-current mentions link to version path
+- Comment mentions link to document path
+- Multiple documents handled correctly
+- Deduplication by mention_id across versions
+
+Additional specs for the from_object_references path only:
+- Uses documents collection for titles (no extra DB queries for source)
+- Batch-loads versions only for non-current refs
 
 ### ReferencesExtractor specs
-- Existing specs pass with flag disabled (from_blocknote path)
-- New specs for from_object_references path:
-  - Returns same DocumentReference structs as JSON parsing
-  - Only current references returned
-  - Only Document/Table target types (not User)
-  - Deduplication by (source, target_type, target_id)
-  - advancedTable references included
+All existing behavioral specs run in a shared example group, executed twice — once with the flag disabled (from_blocknote path) and once with the flag enabled (from_object_references path). This ensures exact feature parity:
+- Document and table mentions extracted from latest version
+- Comment references included
+- advancedTable references included (tableNpi, tableId fallback)
+- Deduplication by (source, target_type, target_id)
+- User mentions excluded
+- Nested blocks handled
+- Edge cases (empty content, blank IDs, no versions)
+
+Additional specs for the from_object_references path only:
+- Uses documents collection for `referenced_by` (no extra DB queries)
 
 ### Rake task specs
 - Processes all document versions in order
