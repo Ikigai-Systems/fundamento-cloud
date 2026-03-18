@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_081406) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_18_163114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -392,14 +392,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_081406) do
     t.datetime "created_at", null: false
     t.boolean "current", default: true, null: false
     t.string "organization_id", null: false
+    t.bigint "source_comment_id"
     t.string "source_id", null: false
     t.string "source_type", null: false
+    t.bigint "source_version_id"
     t.string "target_id"
     t.string "target_type", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_object_references_on_organization_id"
+    t.index ["source_comment_id"], name: "index_object_references_on_source_comment_id", where: "(source_comment_id IS NOT NULL)"
     t.index ["source_type", "source_id"], name: "index_object_references_on_source_type_and_source_id"
+    t.index ["source_version_id"], name: "index_object_references_on_source_version_id", where: "(source_version_id IS NOT NULL)"
     t.index ["target_type", "target_id"], name: "index_object_references_on_target_type_and_target_id"
   end
 

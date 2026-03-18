@@ -1,5 +1,5 @@
 class ObjectReference < ApplicationRecord
-  ALLOWED_SOURCE_TYPES = %w[Document].freeze
+  ALLOWED_SOURCE_TYPES = %w[Document Table].freeze
   ALLOWED_TARGET_TYPES = %w[Document Table User].freeze
 
   belongs_to :organization
