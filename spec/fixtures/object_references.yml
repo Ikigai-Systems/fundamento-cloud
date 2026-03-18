@@ -40,3 +40,27 @@ old_version_mention:
   title: One
   current: false
   organization_id: "is"
+
+doc_mention_with_version:
+  id: "550e8400-e29b-41d4-a716-446655440010"
+  source_type: Document
+  source_id: one
+  target_type: User
+  target_id: "user_stefan"
+  title: Stefan Piotrowski
+  current: true
+  organization_id: "is"
+  source_version_id: <%= ActiveRecord::FixtureSet.identify(:two_version_1) %>
+  created_at: <%= 3.days.ago.iso8601 %>
+
+non_current_user_mention:
+  id: "550e8400-e29b-41d4-a716-446655440011"
+  source_type: Document
+  source_id: two
+  target_type: User
+  target_id: "user_stefan"
+  title: Stefan Piotrowski
+  current: false
+  organization_id: "is"
+  source_version_id: <%= ActiveRecord::FixtureSet.identify(:two_version_1) %>
+  created_at: <%= 5.days.ago.iso8601 %>
