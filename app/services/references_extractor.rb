@@ -5,6 +5,43 @@ end
 
 class ReferencesExtractor
   def self.all_references(documents)
+    if Flipper.enabled?(:object_reference_extractors)
+      from_object_references(documents)
+    else
+      from_blocknote(documents)
+    end
+  end
+
+  def self.from_object_references(documents)
+    docs_by_id = documents.index_by(&:id)
+    return [] if docs_by_id.empty?
+
+    refs = ObjectReference.where(
+      source_type: "Document",
+      source_id: docs_by_id.keys,
+      current: true,
+      target_type: ["Document", "Table"]
+    ).where.not(target_id: nil)
+
+    unique_references = {}
+
+    refs.each do |ref|
+      key = [ref.source_id, ref.target_type, ref.target_id]
+      next if unique_references.key?(key)
+
+      unique_references[key] = DocumentReference.new(
+        referenced_by: docs_by_id[ref.source_id],
+        referenced_type: ref.target_type,
+        referenced_id: ref.target_id
+      )
+    end
+
+    unique_references.values
+  end
+
+  private
+
+  def self.from_blocknote(documents)
     # We only return single reference for every object that references it
     # so they key is [referenced_by, referenced_type, referenced_id]
     unique_references = Hash.new
@@ -61,8 +98,6 @@ class ReferencesExtractor
 
     unique_references.values
   end
-
-  private
 
   def self.references_from_blocknote(blocknote_document)
     assert blocknote_document.is_a?(Array), "BlockNote document should be an Array"
