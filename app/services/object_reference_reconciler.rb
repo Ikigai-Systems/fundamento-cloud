@@ -15,6 +15,10 @@ class ObjectReferenceReconciler
     new(document).reconcile(version)
   end
 
+  def self.reconcile_comment(comment)
+    new(comment.object).reconcile_comment(comment)
+  end
+
   def initialize(source_object)
     @source_object = source_object
     @organization = source_object.organization
@@ -68,6 +72,47 @@ class ObjectReferenceReconciler
                  .where.not(id: mention_ids)
                  .where(current: true)
                  .update_all(current: false)
+  end
+
+  def reconcile_comment(comment)
+    reference_nodes = extract_references(comment.content)
+    reference_ids = reference_nodes.map { |m| m[:id] }
+
+    target_data = batch_fetch_targets(reference_nodes)
+
+    existing_refs = ObjectReference.where(source_comment_id: comment.id).index_by(&:id)
+
+    reference_nodes.each do |node|
+      target_type = ENTITY_TO_TYPE[node[:entity]]
+      next unless target_type
+
+      entity_id = node[:entity_id].to_s
+      target_info = target_data.dig(target_type, entity_id)
+      target_id = target_info ? entity_id : nil
+
+      title = target_info&.dig(:title) || node[:title].presence || "Untitled"
+
+      if (existing = existing_refs[node[:id]])
+        existing.update!(title: title, target_id: target_id)
+      else
+        ObjectReference.create!(
+          id: node[:id],
+          source: @source_object,
+          target_type: target_type,
+          target_id: target_id,
+          title: title,
+          current: true,
+          organization: @organization,
+          source_comment_id: comment.id,
+          created_at: comment.created_at
+        )
+      end
+    end
+
+    # Remove references for mentions no longer in this comment
+    ObjectReference.where(source_comment_id: comment.id)
+                 .where.not(id: reference_ids)
+                 .delete_all
   end
 
   private

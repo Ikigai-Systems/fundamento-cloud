@@ -19,6 +19,10 @@ class ObjectComment < ApplicationRecord
   validates_presence_of :object
   validates :object_type, inclusion: { in: ALLOWED_OBJECT_TYPES }
 
+  after_create :reconcile_object_references
+  after_update :reconcile_object_references
+  before_destroy :delete_object_references
+
   validates_presence_of :content
 
   def content
@@ -29,5 +33,15 @@ class ObjectComment < ApplicationRecord
     else
       content
     end
+  end
+
+  private
+
+  def reconcile_object_references
+    ObjectReferenceReconciler.reconcile_comment(self)
+  end
+
+  def delete_object_references
+    ObjectReference.where(source_comment_id: id).delete_all
   end
 end

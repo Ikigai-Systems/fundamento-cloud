@@ -310,6 +310,105 @@ RSpec.describe ObjectReferenceReconciler do
     end
   end
 
+  describe ".reconcile_comment" do
+    fixtures :organization_memberships
+
+    let(:org_membership) { organization_memberships(:om_is_pawel) }
+    let(:space) { spaces(:is_default) }
+
+    def create_comment(object:, content:)
+      ObjectComment.create!(
+        object: object,
+        organization: organization,
+        organization_membership: org_membership,
+        content: content
+      )
+    end
+
+    it "creates object_references from comment content" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      ref = ObjectReference.find(uuid)
+      expect(ref.source_type).to eq("Document")
+      expect(ref.source_id).to eq(document.id)
+      expect(ref.source_comment_id).to eq(comment.id)
+      expect(ref.source_version_id).to be_nil
+      expect(ref.target_type).to eq("Document")
+      expect(ref.target_id).to eq(documents(:two).id)
+      expect(ref.current).to be true
+    end
+
+    it "sets created_at to comment.created_at" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      ref = ObjectReference.find(uuid)
+      expect(ref.created_at).to be_within(1.second).of(comment.created_at)
+    end
+
+    it "removes references when mention is removed from comment" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      expect(ObjectReference.find_by(id: uuid)).to be_present
+
+      # Update comment to remove the mention
+      comment.update!(content: [{"id" => "block-1", "type" => "paragraph", "content" => [], "children" => []}])
+      expect(ObjectReference.find_by(id: uuid)).to be_nil
+    end
+
+    it "deletes all references when comment is destroyed" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      expect(ObjectReference.find_by(id: uuid)).to be_present
+      comment.destroy!
+      expect(ObjectReference.find_by(id: uuid)).to be_nil
+    end
+
+    it "does not touch version-sourced references for the same document" do
+      version_uuid = SecureRandom.uuid
+      comment_uuid = SecureRandom.uuid
+
+      # Create version-sourced reference
+      document.versions.create!(
+        content_blocks: [mention_block(id: version_uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel)
+      )
+
+      # Create then destroy comment
+      content = [mention_block(id: comment_uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+      comment.destroy!
+
+      # Version-sourced reference should still exist
+      expect(ObjectReference.find_by(id: version_uuid)).to be_present
+      expect(ObjectReference.find_by(id: comment_uuid)).to be_nil
+    end
+
+    it "works for comments on Tables" do
+      table = Table.create!(name: "Test Table", organization: organization, space: space, parent: space)
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = ObjectComment.create!(
+        object: table,
+        organization: organization,
+        organization_membership: org_membership,
+        content: content
+      )
+
+      ref = ObjectReference.find(uuid)
+      expect(ref.source_type).to eq("Table")
+      expect(ref.source_id).to eq(table.id)
+      expect(ref.source_comment_id).to eq(comment.id)
+    end
+  end
+
   describe "Version callback integration" do
     fixtures :organizations, :users, :documents, :spaces, :versions
 
