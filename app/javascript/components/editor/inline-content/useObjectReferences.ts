@@ -3,7 +3,7 @@ import ObjectReferencesApi from "../../../api/Documents/ObjectReferencesApi";
 import queryClient from "../../../contextes/ReactQueryClient";
 
 export interface ObjectReferenceData {
-  id: string;
+  nodeId: string;
   targetType: string;
   targetId: string | null;
   title: string;
@@ -24,7 +24,7 @@ export function useObjectReferences(documentId: string | undefined) {
 export function useObjectReference(documentId: string | undefined, mentionId: string): ObjectReferenceData | undefined {
   const { data: references } = useObjectReferences(documentId);
   if (!Array.isArray(references)) return undefined;
-  return references.find(m => m.id === mentionId);
+  return references.find(m => m.nodeId === mentionId);
 }
 
 export function useCurrentDocumentId(): string | undefined {
