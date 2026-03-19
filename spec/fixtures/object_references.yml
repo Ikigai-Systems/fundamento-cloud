@@ -2,7 +2,7 @@ _fixture:
   model_class: ObjectReference
 
 doc_mention_to_doc:
-  id: "550e8400-e29b-41d4-a716-446655440001"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440001"
   source_type: Document
   source_id: one
   target_type: Document
@@ -12,7 +12,7 @@ doc_mention_to_doc:
   organization_id: "is"
 
 doc_mention_to_user:
-  id: "550e8400-e29b-41d4-a716-446655440003"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440003"
   source_type: Document
   source_id: one
   target_type: User
@@ -22,7 +22,7 @@ doc_mention_to_user:
   organization_id: "is"
 
 broken_doc_mention:
-  id: "550e8400-e29b-41d4-a716-446655440004"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440004"
   source_type: Document
   source_id: two
   target_type: Document
@@ -32,7 +32,7 @@ broken_doc_mention:
   organization_id: "is"
 
 old_version_mention:
-  id: "550e8400-e29b-41d4-a716-446655440005"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440005"
   source_type: Document
   source_id: two
   target_type: Document
@@ -42,7 +42,7 @@ old_version_mention:
   organization_id: "is"
 
 doc_mention_with_version:
-  id: "550e8400-e29b-41d4-a716-446655440010"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440010"
   source_type: Document
   source_id: one
   target_type: User
@@ -54,7 +54,7 @@ doc_mention_with_version:
   created_at: <%= 3.days.ago.iso8601 %>
 
 non_current_user_mention:
-  id: "550e8400-e29b-41d4-a716-446655440011"
+  source_node_id: "550e8400-e29b-41d4-a716-446655440011"
   source_type: Document
   source_id: two
   target_type: User

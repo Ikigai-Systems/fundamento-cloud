@@ -39,7 +39,7 @@ class MentionsExtractor
       next unless doc
 
       Mention.new(
-        mention_id: ref.id,
+        mention_id: ref.source_node_id,
         created_at: ref.created_at,
         object_title: doc.title,
         object_path: mention_path_for(ref, doc, versions_by_id)
@@ -50,7 +50,7 @@ class MentionsExtractor
   private
 
   def self.mention_path_for(ref, doc, versions_by_id)
-    anchor = "mention-#{ref.id}"
+    anchor = "mention-#{ref.source_node_id}"
 
     if ref.current? || ref.source_comment_id.present?
       document_path(doc, anchor: anchor)

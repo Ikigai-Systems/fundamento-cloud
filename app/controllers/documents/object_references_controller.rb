@@ -14,7 +14,7 @@ class Documents::ObjectReferencesController < ApplicationController
     render json: {
       object_references: references.map { |ref|
         {
-          id: ref.id,
+          id: ref.source_node_id,
           target_type: ref.target_type,
           target_id: ref.target_id,
           title: ref.title

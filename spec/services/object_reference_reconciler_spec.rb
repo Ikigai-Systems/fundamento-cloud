@@ -39,7 +39,7 @@ RSpec.describe ObjectReferenceReconciler do
         create_version(document, blocks)
       }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.source_type).to eq("Document")
       expect(om.source_id).to eq(document.id)
       expect(om.target_type).to eq("Document")
@@ -57,7 +57,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.target_type).to eq("Table")
       expect(om.target_id).to eq(table.id)
     end
@@ -69,7 +69,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.target_type).to eq("User")
       expect(om.target_id).to eq(user.id)
     end
@@ -77,7 +77,7 @@ RSpec.describe ObjectReferenceReconciler do
     it "updates existing object_reference to current: true when still present" do
       uuid = SecureRandom.uuid
       ObjectReference.create!(
-        id: uuid,
+        source_node_id: uuid,
         source: document,
         target_type: "Document",
         target_id: documents(:two).id,
@@ -92,7 +92,7 @@ RSpec.describe ObjectReferenceReconciler do
         create_version(document, blocks)
       }.not_to change(ObjectReference, :count)
 
-      expect(ObjectReference.find(uuid).current).to be true
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
     end
 
     it "sets current: false for mentions removed from latest version" do
@@ -100,13 +100,13 @@ RSpec.describe ObjectReferenceReconciler do
       blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       create_version(document, blocks_v1)
 
-      expect(ObjectReference.find(uuid).current).to be true
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
 
       # Second version without the mention
       blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
       create_version(document, blocks_v2)
 
-      expect(ObjectReference.find(uuid).current).to be false
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be false
     end
 
     it "creates broken mention when entityId points to nonexistent document" do
@@ -115,7 +115,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Document")
       expect(om.target_id).to be_nil
@@ -128,7 +128,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Table")
     end
@@ -139,7 +139,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("User")
     end
@@ -150,7 +150,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.title).to eq("Unresolved Link")
     end
@@ -161,7 +161,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.title).to eq(documents(:two).title)
     end
 
@@ -171,7 +171,7 @@ RSpec.describe ObjectReferenceReconciler do
 
       create_version(document, blocks)
 
-      expect(ObjectReference.find(uuid).title).to eq("Original Title")
+      expect(ObjectReference.find_by!(source_node_id: uuid).title).to eq("Original Title")
     end
 
     it "skips mention nodes with empty id" do
@@ -208,7 +208,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_by: users(:pawel)
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.source_version_id).to eq(version.id)
     end
 
@@ -221,7 +221,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_at: old_time
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.created_at).to eq(old_time)
     end
 
@@ -240,7 +240,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_by: users(:pawel)
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.source_version_id).to eq(v1.id)
       expect(ref.created_at).to eq(old_time)
     end
@@ -269,7 +269,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_by: users(:pawel)
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.target_type).to eq("Table")
       expect(ref.target_id).to eq(table.id)
       expect(ref.current).to be true
@@ -282,7 +282,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_by: users(:pawel)
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.target_type).to eq("Table")
       expect(ref.target_id).to eq(table.id)
     end
@@ -304,7 +304,7 @@ RSpec.describe ObjectReferenceReconciler do
         created_by: users(:pawel)
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref).to be_broken
       expect(ref.target_type).to eq("Table")
     end
@@ -330,7 +330,7 @@ RSpec.describe ObjectReferenceReconciler do
       content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       comment = create_comment(object: document, content: content)
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.source_type).to eq("Document")
       expect(ref.source_id).to eq(document.id)
       expect(ref.source_comment_id).to eq(comment.id)
@@ -345,7 +345,7 @@ RSpec.describe ObjectReferenceReconciler do
       content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       comment = create_comment(object: document, content: content)
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.created_at).to be_within(1.second).of(comment.created_at)
     end
 
@@ -354,11 +354,11 @@ RSpec.describe ObjectReferenceReconciler do
       content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       comment = create_comment(object: document, content: content)
 
-      expect(ObjectReference.find_by(id: uuid)).to be_present
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_present
 
       # Update comment to remove the mention
       comment.update!(content: [{"id" => "block-1", "type" => "paragraph", "content" => [], "children" => []}])
-      expect(ObjectReference.find_by(id: uuid)).to be_nil
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_nil
     end
 
     it "deletes all references when comment is destroyed" do
@@ -366,9 +366,9 @@ RSpec.describe ObjectReferenceReconciler do
       content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       comment = create_comment(object: document, content: content)
 
-      expect(ObjectReference.find_by(id: uuid)).to be_present
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_present
       comment.destroy!
-      expect(ObjectReference.find_by(id: uuid)).to be_nil
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_nil
     end
 
     it "does not touch version-sourced references for the same document" do
@@ -387,8 +387,8 @@ RSpec.describe ObjectReferenceReconciler do
       comment.destroy!
 
       # Version-sourced reference should still exist
-      expect(ObjectReference.find_by(id: version_uuid)).to be_present
-      expect(ObjectReference.find_by(id: comment_uuid)).to be_nil
+      expect(ObjectReference.find_by(source_node_id: version_uuid)).to be_present
+      expect(ObjectReference.find_by(source_node_id: comment_uuid)).to be_nil
     end
 
     it "works for comments on Tables" do
@@ -402,7 +402,7 @@ RSpec.describe ObjectReferenceReconciler do
         content: content
       )
 
-      ref = ObjectReference.find(uuid)
+      ref = ObjectReference.find_by!(source_node_id: uuid)
       expect(ref.source_type).to eq("Table")
       expect(ref.source_id).to eq(table.id)
       expect(ref.source_comment_id).to eq(comment.id)
@@ -438,7 +438,7 @@ RSpec.describe ObjectReferenceReconciler do
         doc.versions.create!(content_blocks: blocks, created_by: users(:pawel))
       }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.source_id).to eq(doc.id)
       expect(om.target_id).to eq(documents(:two).id)
       expect(om.current).to be true
@@ -451,12 +451,12 @@ RSpec.describe ObjectReferenceReconciler do
       # First version with a mention
       blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       doc.versions.create!(content_blocks: blocks_v1, created_by: users(:pawel))
-      expect(ObjectReference.find(uuid).current).to be true
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
 
       # Second version without the mention
       blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
       doc.versions.create!(content_blocks: blocks_v2, created_by: users(:pawel))
-      expect(ObjectReference.find(uuid).current).to be false
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be false
     end
   end
 end

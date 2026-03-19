@@ -6,7 +6,7 @@ RSpec.describe ObjectReference, type: :model do
   describe "validations" do
     it "is valid with all required fields" do
       mention = ObjectReference.new(
-        id: SecureRandom.uuid,
+        source_node_id: SecureRandom.uuid,
         source_type: "Document",
         source_id: documents(:one).id,
         target_type: "Document",
@@ -19,7 +19,7 @@ RSpec.describe ObjectReference, type: :model do
 
     it "is valid without target_id (broken link)" do
       mention = ObjectReference.new(
-        id: SecureRandom.uuid,
+        source_node_id: SecureRandom.uuid,
         source_type: "Document",
         source_id: documents(:one).id,
         target_type: "Document",
@@ -32,36 +32,37 @@ RSpec.describe ObjectReference, type: :model do
 
     it "requires source_type" do
       mention = object_references(:doc_mention_to_doc).dup
-      mention.id = SecureRandom.uuid
       mention.source_type = nil
       expect(mention).not_to be_valid
     end
 
     it "requires source_id" do
       mention = object_references(:doc_mention_to_doc).dup
-      mention.id = SecureRandom.uuid
       mention.source_id = nil
       expect(mention).not_to be_valid
     end
 
     it "requires target_type" do
       mention = object_references(:doc_mention_to_doc).dup
-      mention.id = SecureRandom.uuid
       mention.target_type = nil
       expect(mention).not_to be_valid
     end
 
     it "requires title" do
       mention = object_references(:doc_mention_to_doc).dup
-      mention.id = SecureRandom.uuid
       mention.title = nil
       expect(mention).not_to be_valid
     end
 
     it "requires organization" do
       mention = object_references(:doc_mention_to_doc).dup
-      mention.id = SecureRandom.uuid
       mention.organization_id = nil
+      expect(mention).not_to be_valid
+    end
+
+    it "requires source_node_id" do
+      mention = object_references(:doc_mention_to_doc).dup
+      mention.source_node_id = nil
       expect(mention).not_to be_valid
     end
   end
@@ -106,10 +107,10 @@ RSpec.describe ObjectReference, type: :model do
   end
 
   describe "ID generation" do
-    it "uses the explicitly set UUID, not auto-generated NPI" do
-      uuid = SecureRandom.uuid
+    it "generates NPI id automatically, stores source_node_id separately" do
+      source_node = SecureRandom.uuid
       mention = ObjectReference.create!(
-        id: uuid,
+        source_node_id: source_node,
         source_type: "Document",
         source_id: documents(:one).id,
         target_type: "Document",
@@ -117,8 +118,9 @@ RSpec.describe ObjectReference, type: :model do
         title: "Test",
         organization: organizations(:is)
       )
-      expect(mention.id).to eq(uuid)
-      expect(mention.id.length).to eq(36) # UUID length, not NPI's 10
+      expect(mention.id).to be_present
+      expect(mention.id).not_to eq(source_node)
+      expect(mention.source_node_id).to eq(source_node)
     end
   end
 end

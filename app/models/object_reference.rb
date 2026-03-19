@@ -9,6 +9,7 @@ class ObjectReference < ApplicationRecord
   validates :source_id, presence: true
   validates :target_type, presence: true, inclusion: { in: ALLOWED_TARGET_TYPES }
   validates :title, presence: true
+  validates :source_node_id, presence: true
 
   scope :current, -> { where(current: true) }
   scope :broken, -> { where(target_id: nil) }
@@ -17,12 +18,5 @@ class ObjectReference < ApplicationRecord
 
   def broken?
     target_id.nil?
-  end
-
-  private
-
-  # Override ApplicationRecord's NPI generation — we use UUIDs from mention node props.id
-  def generate_id_if_needed
-    # no-op: id is always set explicitly from the BlockNote mention node's props.id
   end
 end

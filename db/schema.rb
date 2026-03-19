@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_163114) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_19_124549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -394,6 +394,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_163114) do
     t.string "organization_id", null: false
     t.bigint "source_comment_id"
     t.string "source_id", null: false
+    t.string "source_node_id", null: false
     t.string "source_type", null: false
     t.bigint "source_version_id"
     t.string "target_id"

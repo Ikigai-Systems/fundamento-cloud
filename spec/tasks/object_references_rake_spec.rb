@@ -58,7 +58,7 @@ RSpec.describe "object_references:backfill" do
 
     Rake::Task["object_references:backfill"].invoke
 
-    ref = ObjectReference.find_by(id: mention_id)
+    ref = ObjectReference.find_by(source_node_id: mention_id)
     expect(ref).to be_present
     expect(ref.source_id).to eq(doc.id)
     expect(ref.target_type).to eq("User")
@@ -99,7 +99,7 @@ RSpec.describe "object_references:backfill" do
 
     Rake::Task["object_references:backfill"].invoke
 
-    ref = ObjectReference.find_by(id: mention_id)
+    ref = ObjectReference.find_by(source_node_id: mention_id)
     expect(ref.created_at).to eq(old_time)
   end
 
@@ -123,7 +123,7 @@ RSpec.describe "object_references:backfill" do
 
     Rake::Task["object_references:backfill"].invoke
 
-    ref = ObjectReference.find_by(id: mention_id)
+    ref = ObjectReference.find_by(source_node_id: mention_id)
     expect(ref).to be_broken
   end
 
@@ -152,7 +152,7 @@ RSpec.describe "object_references:backfill" do
 
     Rake::Task["object_references:backfill"].invoke
 
-    ref = ObjectReference.find_by(id: mention_id)
+    ref = ObjectReference.find_by(source_node_id: mention_id)
     expect(ref).to be_present
     expect(ref.source_comment_id).to eq(comment.id)
   end
