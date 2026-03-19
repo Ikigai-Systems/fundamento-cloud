@@ -11,7 +11,7 @@ module Api
         render json: {
           object_references: references.map { |ref|
             {
-              id: ref.id,
+              node_id: ref.source_node_id,
               target_type: ref.target_type,
               target_id: ref.target_id,
               title: ref.title

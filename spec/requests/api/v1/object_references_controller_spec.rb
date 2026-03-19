@@ -22,7 +22,7 @@ RSpec.describe "Api::V1::ObjectReferences", type: :request do
   describe "GET /api/v1/documents/:document_id/object_references" do
     it "returns current object_references for a document" do
       om = ObjectReference.create!(
-        id: SecureRandom.uuid,
+        source_node_id: SecureRandom.uuid,
         source: document_one,
         target_type: "Document",
         target_id: document_two.id,
@@ -37,7 +37,7 @@ RSpec.describe "Api::V1::ObjectReferences", type: :request do
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
       expect(json["object_references"].length).to eq(1)
-      expect(json["object_references"][0]["id"]).to eq(om.id)
+      expect(json["object_references"][0]["node_id"]).to eq(om.source_node_id)
       expect(json["object_references"][0]["target_type"]).to eq("Document")
       expect(json["object_references"][0]["target_id"]).to eq(document_two.id)
       expect(json["object_references"][0]["title"]).to eq("Two")
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::ObjectReferences", type: :request do
 
     it "includes broken mentions in response" do
       ObjectReference.create!(
-        id: SecureRandom.uuid,
+        source_node_id: SecureRandom.uuid,
         source: document_one,
         target_type: "Document",
         target_id: nil,
@@ -64,7 +64,7 @@ RSpec.describe "Api::V1::ObjectReferences", type: :request do
 
     it "excludes non-current mentions" do
       ObjectReference.create!(
-        id: SecureRandom.uuid,
+        source_node_id: SecureRandom.uuid,
         source: document_one,
         target_type: "Document",
         target_id: document_two.id,

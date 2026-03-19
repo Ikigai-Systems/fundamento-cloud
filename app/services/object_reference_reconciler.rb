@@ -11,24 +11,31 @@ class ObjectReferenceReconciler
     "User" => User
   }.freeze
 
-  def self.reconcile(document, content_blocks)
-    new(document).reconcile(content_blocks)
+  def self.reconcile(document, version)
+    new(document).reconcile(version)
   end
 
-  def initialize(document)
-    @document = document
-    @organization = document.organization
+  def self.reconcile_comment(comment)
+    new(comment.object).reconcile_comment(comment)
   end
 
-  def reconcile(content_blocks)
-    mention_nodes = extract_mentions(content_blocks)
-    mention_ids = mention_nodes.map { |m| m[:id] }
+  def initialize(source_object)
+    @source_object = source_object
+    @organization = source_object.organization
+  end
+
+  def reconcile(version)
+    content_blocks = version.content_blocks
+    mention_nodes = extract_references(content_blocks)
+    node_ids = mention_nodes.map { |m| m[:id] }
 
     # Batch-fetch existing targets and their titles
     target_data = batch_fetch_targets(mention_nodes)
 
-    # Batch-fetch existing object_references for this source
-    existing_mentions = ObjectReference.for_source(@document).index_by(&:id)
+    # Batch-fetch existing version-sourced object_references for this source
+    existing_mentions = ObjectReference.for_source(@source_object)
+                                       .where(source_comment_id: nil)
+                                       .index_by(&:source_node_id)
 
     # Upsert mentions
     mention_nodes.each do |node|
@@ -46,47 +53,107 @@ class ObjectReferenceReconciler
         existing.update!(current: true, title: title, target_id: target_id)
       else
         ObjectReference.create!(
-          id: node[:id],
-          source: @document,
+          source_node_id: node[:id],
+          source: @source_object,
           target_type: target_type,
           target_id: target_id,
           title: title,
           current: true,
-          organization: @organization
+          organization: @organization,
+          source_version_id: version.id,
+          created_at: version.created_at
         )
       end
     end
 
-    # Mark removed mentions as not current
-    ObjectReference.for_source(@document)
-                 .where.not(id: mention_ids)
+    # Mark removed mentions as not current (only version-sourced refs)
+    ObjectReference.for_source(@source_object)
+                 .where(source_comment_id: nil)
+                 .where.not(source_node_id: node_ids)
                  .where(current: true)
                  .update_all(current: false)
   end
 
+  def reconcile_comment(comment)
+    reference_nodes = extract_references(comment.content)
+    node_ids = reference_nodes.map { |m| m[:id] }
+
+    target_data = batch_fetch_targets(reference_nodes)
+
+    existing_refs = ObjectReference.where(source_comment_id: comment.id).index_by(&:source_node_id)
+
+    reference_nodes.each do |node|
+      target_type = ENTITY_TO_TYPE[node[:entity]]
+      next unless target_type
+
+      entity_id = node[:entity_id].to_s
+      target_info = target_data.dig(target_type, entity_id)
+      target_id = target_info ? entity_id : nil
+
+      title = target_info&.dig(:title) || node[:title].presence || "Untitled"
+
+      if (existing = existing_refs[node[:id]])
+        existing.update!(title: title, target_id: target_id)
+      else
+        ObjectReference.create!(
+          source_node_id: node[:id],
+          source: @source_object,
+          target_type: target_type,
+          target_id: target_id,
+          title: title,
+          current: true,
+          organization: @organization,
+          source_comment_id: comment.id,
+          created_at: comment.created_at
+        )
+      end
+    end
+
+    # Remove references for mentions no longer in this comment
+    ObjectReference.where(source_comment_id: comment.id)
+                 .where.not(source_node_id: node_ids)
+                 .delete_all
+  end
+
   private
 
-  def extract_mentions(blocks)
-    mentions = []
+  def extract_references(blocks)
+    references = []
     walk_blocks(blocks) do |node|
-      next unless node.is_a?(Hash) && node["type"] == "mention"
+      next unless node.is_a?(Hash)
 
-      props = node["props"] || {}
-      id = props["id"].to_s
-      entity_id = props["entityId"]
+      if node["type"] == "mention"
+        props = node["props"] || {}
+        id = props["id"].to_s
+        entity_id = props["entityId"]
 
-      # Skip empty IDs and uninitialized mentions
-      next if id.blank?
-      next if entity_id == -1 || entity_id == "-1"
+        # Skip empty IDs and uninitialized mentions
+        next if id.blank?
+        next if entity_id == -1 || entity_id == "-1"
 
-      mentions << {
-        id: id,
-        entity: props["entity"].to_s,
-        entity_id: entity_id,
-        title: props["title"].to_s
-      }
+        references << {
+          id: id,
+          entity: props["entity"].to_s,
+          entity_id: entity_id,
+          title: props["title"].to_s
+        }
+      elsif node["type"] == "advancedTable"
+        props = node["props"] || {}
+        id = node["id"].to_s
+        entity_id = props["tableNpi"].presence || props["tableId"].presence
+
+        next if id.blank?
+        next if entity_id.blank?
+
+        references << {
+          id: id,
+          entity: "table",
+          entity_id: entity_id,
+          title: ""
+        }
+      end
     end
-    mentions
+    references
   end
 
   def walk_blocks(nodes, &block)

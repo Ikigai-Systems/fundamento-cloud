@@ -26,16 +26,20 @@ RSpec.describe ObjectReferenceReconciler do
     }
   end
 
+  def create_version(doc, blocks, created_by: users(:pawel), **attrs)
+    doc.versions.create!(content_blocks: blocks, created_by: created_by, **attrs)
+  end
+
   describe ".reconcile" do
     it "creates object_references for new mention nodes" do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id, title: "Two")]
 
       expect {
-        described_class.reconcile(document, blocks)
+        create_version(document, blocks)
       }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.source_type).to eq("Document")
       expect(om.source_id).to eq(document.id)
       expect(om.target_type).to eq("Document")
@@ -51,9 +55,9 @@ RSpec.describe ObjectReferenceReconciler do
       skip "No tables in test database" unless table
       blocks = [mention_block(id: uuid, entity: "table", entity_id: table.id, title: "Test Table")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.target_type).to eq("Table")
       expect(om.target_id).to eq(table.id)
     end
@@ -63,9 +67,9 @@ RSpec.describe ObjectReferenceReconciler do
       user = users(:stefan)
       blocks = [mention_block(id: uuid, entity: "user", entity_id: user.id, title: "Stefan")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.target_type).to eq("User")
       expect(om.target_id).to eq(user.id)
     end
@@ -73,7 +77,7 @@ RSpec.describe ObjectReferenceReconciler do
     it "updates existing object_reference to current: true when still present" do
       uuid = SecureRandom.uuid
       ObjectReference.create!(
-        id: uuid,
+        source_node_id: uuid,
         source: document,
         target_type: "Document",
         target_id: documents(:two).id,
@@ -85,37 +89,33 @@ RSpec.describe ObjectReferenceReconciler do
       blocks = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
 
       expect {
-        described_class.reconcile(document, blocks)
+        create_version(document, blocks)
       }.not_to change(ObjectReference, :count)
 
-      expect(ObjectReference.find(uuid).current).to be true
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
     end
 
     it "sets current: false for mentions removed from latest version" do
       uuid = SecureRandom.uuid
-      ObjectReference.create!(
-        id: uuid,
-        source: document,
-        target_type: "Document",
-        target_id: documents(:two).id,
-        title: "Two",
-        current: true,
-        organization: organization
-      )
+      blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      create_version(document, blocks_v1)
 
-      # Empty blocks — mention was removed
-      described_class.reconcile(document, [])
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
 
-      expect(ObjectReference.find(uuid).current).to be false
+      # Second version without the mention
+      blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
+      create_version(document, blocks_v2)
+
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be false
     end
 
     it "creates broken mention when entityId points to nonexistent document" do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: "nonexistent_npi", title: "Gone Doc")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Document")
       expect(om.target_id).to be_nil
@@ -126,9 +126,9 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "table", entity_id: "nonexistent_npi", title: "Gone Table")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("Table")
     end
@@ -137,9 +137,9 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "user", entity_id: "nonexistent_id", title: "Gone User")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.target_type).to eq("User")
     end
@@ -148,9 +148,9 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: "", title: "Unresolved Link")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om).to be_broken
       expect(om.title).to eq("Unresolved Link")
     end
@@ -159,9 +159,9 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id, title: "Old Title")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.title).to eq(documents(:two).title)
     end
 
@@ -169,16 +169,16 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: "gone", title: "Original Title")]
 
-      described_class.reconcile(document, blocks)
+      create_version(document, blocks)
 
-      expect(ObjectReference.find(uuid).title).to eq("Original Title")
+      expect(ObjectReference.find_by!(source_node_id: uuid).title).to eq("Original Title")
     end
 
     it "skips mention nodes with empty id" do
       blocks = [mention_block(id: "", entity: "document", entity_id: documents(:two).id)]
 
       expect {
-        described_class.reconcile(document, blocks)
+        create_version(document, blocks)
       }.not_to change(ObjectReference, :count)
     end
 
@@ -187,7 +187,7 @@ RSpec.describe ObjectReferenceReconciler do
       blocks = [mention_block(id: uuid, entity: "document", entity_id: -1)]
 
       expect {
-        described_class.reconcile(document, blocks)
+        create_version(document, blocks)
       }.not_to change(ObjectReference, :count)
     end
 
@@ -195,10 +195,217 @@ RSpec.describe ObjectReferenceReconciler do
       uuid = SecureRandom.uuid
       blocks = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
 
-      described_class.reconcile(document, blocks)
+      version = create_version(document, blocks)
       expect {
-        described_class.reconcile(document, blocks)
+        described_class.reconcile(document, version)
       }.not_to change(ObjectReference, :count)
+    end
+
+    it "sets source_version_id to the version's id" do
+      uuid = SecureRandom.uuid
+      version = document.versions.create!(
+        content_blocks: [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.source_version_id).to eq(version.id)
+    end
+
+    it "sets created_at to the version's created_at, not current time" do
+      uuid = SecureRandom.uuid
+      old_time = 3.days.ago.change(usec: 0)
+      version = document.versions.create!(
+        content_blocks: [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel),
+        created_at: old_time
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.created_at).to eq(old_time)
+    end
+
+    it "preserves source_version_id and created_at when mention reappears in newer version" do
+      uuid = SecureRandom.uuid
+      old_time = 3.days.ago.change(usec: 0)
+      v1 = document.versions.create!(
+        content_blocks: [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel),
+        created_at: old_time
+      )
+
+      # Newer version still has the same mention
+      document.versions.create!(
+        content_blocks: [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.source_version_id).to eq(v1.id)
+      expect(ref.created_at).to eq(old_time)
+    end
+  end
+
+  context "advancedTable blocks" do
+    let(:space) { spaces(:is_default) }
+    let(:table) { Table.create!(name: "Test Table", organization: organization, space: space, parent: space) }
+
+    def advanced_table_block(id:, table_npi: nil, table_id: nil)
+      props = { "viewId" => "view1" }
+      props["tableNpi"] = table_npi if table_npi
+      props["tableId"] = table_id if table_id
+      {
+        "id" => id,
+        "type" => "advancedTable",
+        "props" => props,
+        "children" => []
+      }
+    end
+
+    it "creates object_reference for advancedTable block using tableNpi" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_npi: table.id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.target_type).to eq("Table")
+      expect(ref.target_id).to eq(table.id)
+      expect(ref.current).to be true
+    end
+
+    it "falls back to tableId when tableNpi is absent" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_id: table.id)],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.target_type).to eq("Table")
+      expect(ref.target_id).to eq(table.id)
+    end
+
+    it "skips advancedTable blocks with blank table IDs" do
+      uuid = SecureRandom.uuid
+      expect {
+        document.versions.create!(
+          content_blocks: [advanced_table_block(id: uuid, table_npi: "", table_id: "")],
+          created_by: users(:pawel)
+        )
+      }.not_to change(ObjectReference, :count)
+    end
+
+    it "creates broken reference for nonexistent table" do
+      uuid = SecureRandom.uuid
+      document.versions.create!(
+        content_blocks: [advanced_table_block(id: uuid, table_npi: "nonexistent")],
+        created_by: users(:pawel)
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref).to be_broken
+      expect(ref.target_type).to eq("Table")
+    end
+  end
+
+  describe ".reconcile_comment" do
+    fixtures :organization_memberships
+
+    let(:org_membership) { organization_memberships(:om_is_pawel) }
+    let(:space) { spaces(:is_default) }
+
+    def create_comment(object:, content:)
+      ObjectComment.create!(
+        object: object,
+        organization: organization,
+        organization_membership: org_membership,
+        content: content
+      )
+    end
+
+    it "creates object_references from comment content" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.source_type).to eq("Document")
+      expect(ref.source_id).to eq(document.id)
+      expect(ref.source_comment_id).to eq(comment.id)
+      expect(ref.source_version_id).to be_nil
+      expect(ref.target_type).to eq("Document")
+      expect(ref.target_id).to eq(documents(:two).id)
+      expect(ref.current).to be true
+    end
+
+    it "sets created_at to comment.created_at" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.created_at).to be_within(1.second).of(comment.created_at)
+    end
+
+    it "removes references when mention is removed from comment" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_present
+
+      # Update comment to remove the mention
+      comment.update!(content: [{"id" => "block-1", "type" => "paragraph", "content" => [], "children" => []}])
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_nil
+    end
+
+    it "deletes all references when comment is destroyed" do
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_present
+      comment.destroy!
+      expect(ObjectReference.find_by(source_node_id: uuid)).to be_nil
+    end
+
+    it "does not touch version-sourced references for the same document" do
+      version_uuid = SecureRandom.uuid
+      comment_uuid = SecureRandom.uuid
+
+      # Create version-sourced reference
+      document.versions.create!(
+        content_blocks: [mention_block(id: version_uuid, entity: "document", entity_id: documents(:two).id)],
+        created_by: users(:pawel)
+      )
+
+      # Create then destroy comment
+      content = [mention_block(id: comment_uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = create_comment(object: document, content: content)
+      comment.destroy!
+
+      # Version-sourced reference should still exist
+      expect(ObjectReference.find_by(source_node_id: version_uuid)).to be_present
+      expect(ObjectReference.find_by(source_node_id: comment_uuid)).to be_nil
+    end
+
+    it "works for comments on Tables" do
+      table = Table.create!(name: "Test Table", organization: organization, space: space, parent: space)
+      uuid = SecureRandom.uuid
+      content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
+      comment = ObjectComment.create!(
+        object: table,
+        organization: organization,
+        organization_membership: org_membership,
+        content: content
+      )
+
+      ref = ObjectReference.find_by!(source_node_id: uuid)
+      expect(ref.source_type).to eq("Table")
+      expect(ref.source_id).to eq(table.id)
+      expect(ref.source_comment_id).to eq(comment.id)
     end
   end
 
@@ -231,7 +438,7 @@ RSpec.describe ObjectReferenceReconciler do
         doc.versions.create!(content_blocks: blocks, created_by: users(:pawel))
       }.to change(ObjectReference, :count).by(1)
 
-      om = ObjectReference.find(uuid)
+      om = ObjectReference.find_by!(source_node_id: uuid)
       expect(om.source_id).to eq(doc.id)
       expect(om.target_id).to eq(documents(:two).id)
       expect(om.current).to be true
@@ -244,12 +451,12 @@ RSpec.describe ObjectReferenceReconciler do
       # First version with a mention
       blocks_v1 = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       doc.versions.create!(content_blocks: blocks_v1, created_by: users(:pawel))
-      expect(ObjectReference.find(uuid).current).to be true
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be true
 
       # Second version without the mention
       blocks_v2 = [{ "id" => "block-2", "type" => "paragraph", "content" => [], "children" => [] }]
       doc.versions.create!(content_blocks: blocks_v2, created_by: users(:pawel))
-      expect(ObjectReference.find(uuid).current).to be false
+      expect(ObjectReference.find_by!(source_node_id: uuid).current).to be false
     end
   end
 end

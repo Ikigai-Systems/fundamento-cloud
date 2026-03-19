@@ -1,5 +1,5 @@
 class ObjectReference < ApplicationRecord
-  ALLOWED_SOURCE_TYPES = %w[Document].freeze
+  ALLOWED_SOURCE_TYPES = %w[Document Table].freeze
   ALLOWED_TARGET_TYPES = %w[Document Table User].freeze
 
   belongs_to :organization
@@ -17,12 +17,5 @@ class ObjectReference < ApplicationRecord
 
   def broken?
     target_id.nil?
-  end
-
-  private
-
-  # Override ApplicationRecord's NPI generation — we use UUIDs from mention node props.id
-  def generate_id_if_needed
-    # no-op: id is always set explicitly from the BlockNote mention node's props.id
   end
 end

@@ -22,6 +22,7 @@ class Table < ApplicationRecord
   has_many :comments, class_name: "ObjectComment", as: :object, dependent: :delete_all
   has_many :object_tags, as: :object, dependent: :delete_all
   has_many :tags, through: :object_tags
+  has_many :source_object_references, class_name: "ObjectReference", as: :source, dependent: :delete_all
 
   scope :lexicographically, -> { order(name: :asc) }
 
