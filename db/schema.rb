@@ -394,7 +394,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_19_124549) do
     t.string "organization_id", null: false
     t.bigint "source_comment_id"
     t.string "source_id", null: false
-    t.string "source_node_id", null: false
+    t.string "source_node_id"
     t.string "source_type", null: false
     t.bigint "source_version_id"
     t.string "target_id"

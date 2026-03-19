@@ -9,7 +9,6 @@ class ObjectReference < ApplicationRecord
   validates :source_id, presence: true
   validates :target_type, presence: true, inclusion: { in: ALLOWED_TARGET_TYPES }
   validates :title, presence: true
-  validates :source_node_id, presence: true
 
   scope :current, -> { where(current: true) }
   scope :broken, -> { where(target_id: nil) }

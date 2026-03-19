@@ -60,11 +60,6 @@ RSpec.describe ObjectReference, type: :model do
       expect(mention).not_to be_valid
     end
 
-    it "requires source_node_id" do
-      mention = object_references(:doc_mention_to_doc).dup
-      mention.source_node_id = nil
-      expect(mention).not_to be_valid
-    end
   end
 
   describe "#broken?" do
