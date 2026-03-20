@@ -32,6 +32,43 @@ section :document_helpers do
     JSON.parse(json_str)
   end
 
+  # Resolve user mention email placeholders in BlockNote blocks with actual user IDs.
+  # Uses BlocknoteBlocks.each_mention to walk the block tree looking for user mention
+  # nodes whose entityId contains an email address, then replaces with actual user NPI IDs.
+  def documents.resolve_user_mentions!(blocks, organization)
+    # First pass: collect email entityIds from user mention nodes
+    emails = []
+    BlocknoteBlocks.each_mention(blocks) do |node|
+      props = node["props"] || {}
+      next unless props["entity"] == "user"
+      entity_id = props["entityId"].to_s
+      emails << entity_id if entity_id.include?("@")
+    end
+    emails.uniq!
+
+    return blocks if emails.empty?
+
+    users_by_email = User.joins(:organization_memberships)
+                         .where(organization_memberships: { organization: organization })
+                         .where(email: emails)
+                         .index_by(&:email)
+
+    unresolved = emails - users_by_email.keys
+    unresolved.each { |email| puts "  [Warning] User mention not resolved: #{email}" }
+
+    # Second pass: replace email entityIds with user NPI IDs in-place
+    BlocknoteBlocks.each_mention(blocks) do |node|
+      props = node["props"] || {}
+      next unless props["entity"] == "user"
+      entity_id = props["entityId"].to_s
+      if (user = users_by_email[entity_id])
+        props["entityId"] = user.id
+      end
+    end
+
+    blocks
+  end
+
   # Create a document from a markdown file, converting to BlockNote/YJS.
   #
   # Options:
@@ -48,6 +85,9 @@ section :document_helpers do
 
     # Resolve table/column NPI placeholders if any tables are referenced
     blocks = resolve_placeholders!(blocks, table_placeholders) if table_placeholders.any?
+
+    # Resolve user mention email placeholders to actual user IDs
+    blocks = resolve_user_mentions!(blocks, organization)
 
     yjs_binary = BlocknoteConverterService.blocks_to_yjs(blocks)
 
