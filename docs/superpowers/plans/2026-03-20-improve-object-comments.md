@@ -21,12 +21,11 @@
 | `db/migrate/XXXXXX_add_removed_at_to_object_comments.rb` | Create | Add `removed_at` column |
 | `app/models/object_comment.rb` | Modify | Guard reconciler on soft-delete, add `removed?` helper |
 | `spec/fixtures/object_comments.yml` | Create | Test fixtures |
-| `app/controllers/comments_controller.rb` | Modify | Add `update`, `restore`, rewrite `destroy`, add `cancel` |
-| `config/routes.rb` | Modify | Add `restore` member route, `cancel` collection route |
+| `app/controllers/comments_controller.rb` | Modify | Add `update`, `restore`, rewrite `destroy` |
+| `config/routes.rb` | Modify | Add `restore` member route |
 | `spec/requests/comments_controller_spec.rb` | Create | Request specs for all actions |
-| `app/views/comments/_frames.html.erb` | Modify | Wrap button + form in Stimulus toggle controller |
-| `app/views/comments/new.html.erb` | Modify | Add Cancel button, add Stimulus action to hide Comment button |
-| `app/views/comments/cancel.html.erb` | Create | Empty frame response for cancel |
+| `app/views/comments/_frames.html.erb` | Modify | CSS sibling selector to hide button when form present |
+| `app/views/comments/new.html.erb` | Modify | Add Cancel button (client-side frame clear) |
 | `app/views/comments/_comment.html.erb` | Modify | Tombstone branch, pass props for React edit/delete |
 | `app/javascript/components/EditCommentPanel.tsx` | Modify | Add editing state, save/cancel, edit/delete buttons (React-owned) |
 | `app/javascript/components/editor/CommentEditor.tsx` | Modify | Accept reactive editable, expose editor ref via forwardRef |
@@ -221,12 +220,11 @@ git commit -m "Add removed_at column to object_comments for soft-delete"
 
 ---
 
-## Task 3: Controller actions — `update`, `destroy` (rewrite), `restore`, `cancel`
+## Task 3: Controller actions — `update`, `destroy` (rewrite), `restore`
 
 **Files:**
 - Modify: `app/controllers/comments_controller.rb`
 - Modify: `config/routes.rb:123`
-- Create: `app/views/comments/cancel.html.erb`
 - Create: `spec/requests/comments_controller_spec.rb`
 
 - [ ] **Step 1: Write request specs**
@@ -371,21 +369,10 @@ to:
 ```ruby
     resources :comments do
       post :restore, on: :member
-      get :cancel, on: :collection
     end
 ```
 
-- [ ] **Step 4: Create cancel view**
-
-Create `app/views/comments/cancel.html.erb`:
-
-```erb
-<%= turbo_frame_tag "new_object_comment" %>
-```
-
-This renders an empty Turbo Frame that clears the form.
-
-- [ ] **Step 5: Implement controller actions**
+- [ ] **Step 4: Implement controller actions**
 
 Rewrite `app/controllers/comments_controller.rb`:
 
@@ -453,10 +440,6 @@ class CommentsController < ApplicationController
     render html: "", status: :no_content
   end
 
-  def cancel
-    authorize @resource, :show?
-  end
-
   def show
     authorize @resource, :show?
 
@@ -501,16 +484,16 @@ class CommentsController < ApplicationController
 end
 ```
 
-- [ ] **Step 6: Run specs to verify they pass**
+- [ ] **Step 5: Run specs to verify they pass**
 
 Run: `bin/rspec spec/requests/comments_controller_spec.rb`
 Expected: All examples pass.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add app/controllers/comments_controller.rb config/routes.rb app/views/comments/cancel.html.erb spec/requests/comments_controller_spec.rb
-git commit -m "Add update, soft-delete, restore, and cancel actions to CommentsController"
+git add app/controllers/comments_controller.rb config/routes.rb spec/requests/comments_controller_spec.rb
+git commit -m "Add update, soft-delete, and restore actions to CommentsController"
 ```
 
 ---
@@ -522,9 +505,9 @@ git commit -m "Add update, soft-delete, restore, and cancel actions to CommentsC
 - Modify: `app/views/comments/new.html.erb`
 - Modify: `app/views/comments/_comment.html.erb`
 
-- [ ] **Step 1: Update `_frames.html.erb` — wrap in Stimulus toggle for Comment button visibility**
+- [ ] **Step 1: Update `_frames.html.erb` — CSS sibling selector for Comment button visibility**
 
-The Comment button must hide when the form opens and reappear when cancelled/submitted. Use a CSS-based approach: when the `new_object_comment` Turbo Frame has content, hide the button via CSS sibling selector; when empty, show it.
+The Comment button must hide when the form opens and reappear when cancelled/submitted. Use a CSS sibling selector: when the `new_object_comment` Turbo Frame has content, the adjacent `add_object_comment` frame is hidden. When the form clears (cancel or submit), the button reappears automatically.
 
 Replace `app/views/comments/_frames.html.erb`:
 
@@ -552,7 +535,7 @@ Replace `app/views/comments/_frames.html.erb`:
 </div>
 ```
 
-Then use CSS to hide the button when the form is present. Add to the relevant stylesheet (or inline with Tailwind):
+Add CSS rule (in the relevant stylesheet or a `<style>` tag in the partial):
 
 ```css
 turbo-frame#new_object_comment:not(:empty) + turbo-frame#add_object_comment {
@@ -560,9 +543,11 @@ turbo-frame#new_object_comment:not(:empty) + turbo-frame#add_object_comment {
 }
 ```
 
-If CSS sibling selectors don't work reliably with Turbo Frames (they should, since Turbo Frames are regular DOM elements), fall back to a minimal Stimulus controller. The implementer should test the CSS approach first.
+This works because Turbo Frames are regular DOM elements — the `:not(:empty)` pseudo-class and `+` sibling combinator apply normally. When the form loads into the frame, it becomes non-empty and the adjacent button frame hides. When the frame is cleared (cancel or successful submit), it becomes empty and the button reappears.
 
-- [ ] **Step 2: Add Cancel button to new comment form**
+- [ ] **Step 2: Add client-side Cancel button to new comment form**
+
+Cancel works entirely client-side — it just clears the `new_object_comment` Turbo Frame's content. No server round-trip needed.
 
 In `app/views/comments/new.html.erb`, change:
 
@@ -577,12 +562,15 @@ to:
 ```erb
       <div class="flex gap-2">
         <%= f.submit "Add", class: "primary-button" %>
-        <%= link_to "Cancel",
-              cancel_comments_path(object_gid: @resource.to_gid_param),
-              data: { turbo_frame: "new_object_comment" },
-              class: "secondary-button" %>
+        <button type="button"
+                class="secondary-button"
+                onclick="this.closest('turbo-frame').innerHTML = ''">
+          Cancel
+        </button>
       </div>
 ```
+
+The `onclick` finds the closest `turbo-frame` ancestor (which is `#new_object_comment`) and clears it. This triggers the CSS sibling selector to show the Comment button again.
 
 - [ ] **Step 3: Update `_comment.html.erb` — tombstone branch and edit/delete props**
 
@@ -662,7 +650,7 @@ Start the dev server (`bin/dev`) and navigate to a document with comments. Verif
 
 ```bash
 git add app/views/comments/_frames.html.erb app/views/comments/new.html.erb app/views/comments/_comment.html.erb
-git commit -m "Add cancel button, comment button toggle, tombstone, and edit/delete UI"
+git commit -m "Add client-side cancel, comment button toggle, tombstone, and edit/delete props"
 ```
 
 ---
