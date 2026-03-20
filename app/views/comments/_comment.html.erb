@@ -37,14 +37,14 @@
       </div>
     </div>
 
+    <% can_edit = policy(comment).update? %>
     <div>
       <%= react_component "EditCommentPanel", {
         object: resource.to_react_props,
-        comment: comment.content,
-        editable: false,
+        comment: { id: comment.id, content: comment.content },
+        can_edit: can_edit,
         space: space.to_react_props,
-        comment_id: (comment.id if policy(comment).update?),
-        object_gid: (resource.to_gid_param if policy(comment).update?),
+        object_gid: (resource.to_gid_param if can_edit),
       } %>
     </div>
 

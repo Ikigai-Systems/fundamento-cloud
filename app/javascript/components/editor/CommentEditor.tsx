@@ -10,7 +10,7 @@ import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 
 type CommentEditorProps = {
   objectId: number,
-  comment: any,
+  initialContent?: any,
   editable?: boolean,
 }
 
@@ -20,11 +20,11 @@ export type CommentEditorHandle = {
 }
 
 const CommentEditor = forwardRef<CommentEditorHandle, CommentEditorProps>(
-  ({objectId, comment, editable = true}, ref) => {
+  ({objectId, initialContent, editable = true}, ref) => {
     const editor = useMemo(() => {
       const commentEditor = BlockNoteEditor.create({
         schema,
-        initialContent: comment,
+        initialContent,
         uploadFile: uploadFile(objectId),
         resolveFileUrl: createFileUrlResolver(),
       });
