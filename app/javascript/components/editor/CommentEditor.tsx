@@ -1,4 +1,4 @@
-import {useMemo} from "react";
+import {useMemo, useImperativeHandle, forwardRef} from "react";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
@@ -14,32 +14,45 @@ type CommentEditorProps = {
   editable?: boolean,
 }
 
-const CommentEditor = ({objectId, comment, editable = true}: CommentEditorProps) => {
-  const editor = useMemo(() => {
-    const commentEditor = BlockNoteEditor.create({
-      schema,
-      initialContent: comment,
-      uploadFile: uploadFile(objectId),
-      resolveFileUrl: createFileUrlResolver(),
-    });
-
-    if (editable) {
-      window.commentEditor = commentEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version) + for displaying document Structure in right sidebar
-    }
-    
-    return commentEditor;
-  }, []);
-
-  if (editor === undefined) {
-    return <LoadingContent/>
-  }
-
-  return <>
-    <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable} data-comment-editor>
-      {/* Replaces the default Slash Menu. */}
-      <CommonSuggestionMenus editor={editor}/>
-    </BlockNoteView>
-  </>
+export type CommentEditorHandle = {
+  getContent: () => any;
+  replaceContent: (content: any) => void;
 }
+
+const CommentEditor = forwardRef<CommentEditorHandle, CommentEditorProps>(
+  ({objectId, comment, editable = true}, ref) => {
+    const editor = useMemo(() => {
+      const commentEditor = BlockNoteEditor.create({
+        schema,
+        initialContent: comment,
+        uploadFile: uploadFile(objectId),
+        resolveFileUrl: createFileUrlResolver(),
+      });
+
+      if (editable) {
+        window.commentEditor = commentEditor;
+      }
+
+      return commentEditor;
+    }, []);
+
+    useImperativeHandle(ref, () => ({
+      getContent: () => editor.document,
+      replaceContent: (content: any) => {
+        editor.replaceBlocks(editor.document, content);
+      },
+    }), [editor]);
+
+    if (editor === undefined) {
+      return <LoadingContent/>
+    }
+
+    return <>
+      <BlockNoteView editor={editor} slashMenu={false} sideMenu={false} editable={editable} data-comment-editor>
+        <CommonSuggestionMenus editor={editor}/>
+      </BlockNoteView>
+    </>
+  }
+);
 
 export default CommentEditor;
