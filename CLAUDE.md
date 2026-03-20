@@ -33,6 +33,8 @@ The application uses **Nanoid Public Identifiers (NPIs)** instead of sequential 
 
 All Rails models should follow the NPI pattern for consistent URL generation - primary keys should be strings (id field), not integers. Database default should be set to UUID, but models should override it to use a shorter unique identifier for cleaner URLs.
 
+**Exceptions:** Some models use default integer auto-increment IDs instead of NPIs: `ObjectComment`, `Version`, `ObjectReaction`. Don't assume all models have string IDs.
+
 ### Micro-Services Architecture
 Node.js services handle specialized processing:
 
@@ -51,6 +53,8 @@ Node.js services handle specialized processing:
 - **TailwindCSS** with custom design system (the latest 3.x version)
 - **Hotwire (Turbo/Stimulus)** for enhanced Rails views
 - **React Query** for server state management
+- **react_component** helper: snake_case props in ERB are auto-converted to camelCase in React
+- **js_from_routes**: auto-generates `app/javascript/api/*.js` from Rails routes — commit these when routes change
 
 ### Authorization & Security
 - **Pundit policies** for authorization
