@@ -15,10 +15,10 @@ Welcome to BrightPath Media! This checklist covers everything you need to comple
 - [ ] Review the BrightPath Design System and Brand Guidelines document
 - [ ] Read through the Vacation Policy and Travel Reimbursement Policy
 - [ ] Meet with each team lead for a 30-minute introduction:
-  - Sarah (company overview and culture)
-  - James (creative process and client strategy)
-  - Priya (client management and communication)
-  - Elena (content scheduling and analytics tools)
+  - <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span> (company overview and culture)
+  - <span data-mention="user" data-entity-id="james@brightpath.example.com">James</span> (creative process and client strategy)
+  - <span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya</span> (client management and communication)
+  - <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> (content scheduling and analytics tools)
 - [ ] Shadow at least two client calls to understand how we work with clients
 - [ ] Review active client briefs in the Client Projects space
 - [ ] Complete social media platform training (Instagram Business, TikTok Ads Manager, LinkedIn Campaign Manager)
@@ -27,7 +27,7 @@ Welcome to BrightPath Media! This checklist covers everything you need to comple
 
 - [ ] Get added to your assigned client project channels in Slack
 - [ ] Review the Content Calendar Template and understand the publishing workflow
-- [ ] Produce your first piece of content (with guidance from Marcus or James)
+- [ ] Produce your first piece of content (with guidance from <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> or <span data-mention="user" data-entity-id="james@brightpath.example.com">James</span>)
 - [ ] Submit your first content piece for review through the standard workflow
 - [ ] Set up analytics dashboard access for your assigned client accounts
 - [ ] Schedule a check-in with your manager to discuss your first two weeks

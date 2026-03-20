@@ -6,17 +6,17 @@ This workspace is our digital headquarters. Here you will find everything you ne
 
 ## Our Team
 
-**Sarah Chen** - Founder and CEO. Sarah oversees strategy, client relationships, and keeps the trains running. If you have questions about company direction or policies, start here.
+**<span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah Chen</span>** - Founder and CEO. Sarah oversees strategy, client relationships, and keeps the trains running. If you have questions about company direction or policies, start here.
 
-**James Rivera** - Creative Director. James leads campaign ideation and creative strategy across all accounts. He is the go-to person for briefs, messaging, and the big-picture creative vision.
+**<span data-mention="user" data-entity-id="james@brightpath.example.com">James Rivera</span>** - Creative Director. James leads campaign ideation and creative strategy across all accounts. He is the go-to person for briefs, messaging, and the big-picture creative vision.
 
-**Priya Patel** - Account Manager. Priya is the bridge between our team and our clients. She manages timelines, budgets, and makes sure deliverables meet expectations.
+**<span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya Patel</span>** - Account Manager. Priya is the bridge between our team and our clients. She manages timelines, budgets, and makes sure deliverables meet expectations.
 
-**Marcus Thompson** - Content Creator. Marcus produces the copy, visuals, and video content that powers our campaigns. Need something written or designed? He is your person.
+**<span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus Thompson</span>** - Content Creator. Marcus produces the copy, visuals, and video content that powers our campaigns. Need something written or designed? He is your person.
 
-**Elena Vasquez** - Social Media Manager. Elena handles scheduling, community management, and performance analytics. She keeps our content engine running on time.
+**<span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena Vasquez</span>** - Social Media Manager. Elena handles scheduling, community management, and performance analytics. She keeps our content engine running on time.
 
-**Alex Kim** - Junior Designer. Alex is our newest team member, bringing fresh design skills to support content production across all client accounts.
+**<span data-mention="user" data-entity-id="alex@brightpath.example.com">Alex Kim</span>** - Junior Designer. Alex is our newest team member, bringing fresh design skills to support content production across all client accounts.
 
 ## Key Resources
 

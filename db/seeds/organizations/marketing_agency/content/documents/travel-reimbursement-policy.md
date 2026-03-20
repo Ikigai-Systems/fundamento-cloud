@@ -37,7 +37,7 @@ This policy covers expense reimbursement for work-related travel, including clie
 ## Approval Chain
 
 - Expenses under $500: Approved by your direct manager
-- Expenses $500-$2,000: Approved by Sarah
+- Expenses $500-$2,000: Approved by <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span>
 - Expenses over $2,000: Requires pre-approval before travel
 
 ## What Is Not Covered
@@ -53,4 +53,4 @@ Approved expenses are reimbursed within **10 business days** via direct deposit.
 
 ## Questions
 
-Contact Sarah for policy questions or exceptions. When in doubt, ask before you spend.
+Contact <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span> for policy questions or exceptions. When in doubt, ask before you spend.

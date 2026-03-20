@@ -38,6 +38,6 @@ Raw ideas from our February brainstorm session. Nothing is finalized here -- thi
 Things that came up but need more thought:
 
 - Should we pitch a podcast series to any of our clients?
-- TikTok Shop integration for UrbanFit -- Elena to research feasibility
-- Marcus wants to experiment with AI-generated background imagery for product shots. Worth testing on a small scale first
+- TikTok Shop integration for UrbanFit -- <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> to research feasibility
+- <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> wants to experiment with AI-generated background imagery for product shots. Worth testing on a small scale first
 - Conference/event presence in spring? SXSW is too late to plan for, but there may be smaller marketing events worth attending

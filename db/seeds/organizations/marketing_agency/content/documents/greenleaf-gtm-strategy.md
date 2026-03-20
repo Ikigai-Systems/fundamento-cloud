@@ -48,7 +48,7 @@ Total quarterly budget: **$48,000**
 
 ## Next Steps
 
-- Finalize influencer shortlist with Priya by end of week
-- Marcus to produce first batch of recipe content
-- Elena to set up tracking pixels and UTM parameters
+- Finalize influencer shortlist with <span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya</span> by end of week
+- <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> to produce first batch of recipe content
+- <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> to set up tracking pixels and UTM parameters
 - Review performance after first 30 days and adjust budget split if needed

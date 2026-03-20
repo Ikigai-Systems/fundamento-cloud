@@ -5,8 +5,8 @@
 **Client**: GreenLeaf Organics
 **Campaign**: "Fresh Start" Q1 Launch
 **Duration**: January 15 - March 31
-**Lead**: James Rivera
-**Account Manager**: Priya Patel
+**Lead**: <span data-mention="user" data-entity-id="james@brightpath.example.com">James Rivera</span>
+**Account Manager**: <span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya Patel</span>
 
 ## Objective
 

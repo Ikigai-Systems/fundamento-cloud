@@ -10,7 +10,7 @@ Time off is important. We want everyone at BrightPath to take real breaks so the
 - **After 2 years**: 20 days of PTO per calendar year
 - PTO accrues on a per-pay-period basis starting from your hire date
 
-Sick leave is separate and follows local regulations. If you are unsure about your balance, check with Sarah.
+Sick leave is separate and follows local regulations. If you are unsure about your balance, check with <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span>.
 
 ## Requesting Time Off
 
@@ -23,7 +23,7 @@ For unplanned absences (illness, emergencies), notify your manager and the team 
 
 ## Blackout Dates
 
-We ask that team members avoid scheduling PTO during **major client launches** without prior manager approval. These are high-stakes windows where the full team needs to be available. If you are unsure whether a launch window applies to you, check with your account manager or Sarah.
+We ask that team members avoid scheduling PTO during **major client launches** without prior manager approval. These are high-stakes windows where the full team needs to be available. If you are unsure whether a launch window applies to you, check with your account manager or <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span>.
 
 Outside of launch windows, we do our best to accommodate all requests. If multiple people request the same dates, we handle it on a first-come, first-served basis and work together to find alternatives.
 
@@ -37,4 +37,4 @@ BrightPath observes standard US federal holidays. The full list is shared at the
 
 ## Questions
 
-If anything about this policy is unclear, reach out to Sarah. We want this to be straightforward, not a source of stress.
+If anything about this policy is unclear, reach out to <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span>. We want this to be straightforward, not a source of stress.

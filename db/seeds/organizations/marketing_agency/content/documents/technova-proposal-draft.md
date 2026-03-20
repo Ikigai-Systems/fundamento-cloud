@@ -83,5 +83,5 @@ We bring a hands-on approach that larger agencies cannot match. Your account wil
 
 ---
 
-*Prepared by James Rivera, Creative Director, BrightPath Media*
+*Prepared by <span data-mention="user" data-entity-id="james@brightpath.example.com">James Rivera</span>, Creative Director, BrightPath Media*
 *Last updated: February 2026*

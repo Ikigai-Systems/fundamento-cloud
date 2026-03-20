@@ -5,8 +5,8 @@
 **Client**: UrbanFit
 **Platform**: Instagram (Feed, Stories, Reels)
 **Duration**: March - June
-**Lead**: Elena Vasquez
-**Creative**: Marcus Thompson
+**Lead**: <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena Vasquez</span>
+**Creative**: <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus Thompson</span>
 
 ## Content Pillars
 
@@ -63,4 +63,4 @@ Give followers a look at UrbanFit's process -- product design, fabric testing, p
 
 ## Reporting
 
-Elena will compile weekly metrics snapshots in the Content Calendar and deliver a full monthly performance report to Priya for the client check-in. Any metric falling below 80% of target gets flagged immediately so we can adjust.
+<span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> will compile weekly metrics snapshots in the Content Calendar and deliver a full monthly performance report to <span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya</span> for the client check-in. Any metric falling below 80% of target gets flagged immediately so we can adjust.
