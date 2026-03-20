@@ -76,6 +76,42 @@ RSpec.describe BlocknoteBlocks do
 
       expect(yielded).to be_empty
     end
+
+    it "traverses table content (rows > cells > content)" do
+      blocks = [
+        {
+          "type" => "table",
+          "id" => "t1",
+          "content" => {
+            "type" => "tableContent",
+            "rows" => [
+              {
+                "cells" => [
+                  {
+                    "type" => "tableCell",
+                    "content" => [
+                      { "type" => "text", "text" => "Name" }
+                    ]
+                  },
+                  {
+                    "type" => "tableCell",
+                    "content" => [
+                      { "type" => "mention", "props" => { "id" => "m1", "entity" => "user", "entityId" => "u1", "title" => "Sarah" } }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "children" => []
+        }
+      ]
+
+      yielded_types = []
+      described_class.walk_blocks(blocks) { |node| yielded_types << node["type"] }
+
+      expect(yielded_types).to include("table", "text", "mention")
+    end
   end
 
   describe ".each_mention" do

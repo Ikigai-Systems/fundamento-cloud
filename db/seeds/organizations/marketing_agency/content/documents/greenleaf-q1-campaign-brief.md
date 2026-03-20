@@ -39,12 +39,12 @@ Drive awareness and trial of GreenLeaf's new organic meal kit line among health-
 
 | Deliverable | Quantity | Owner | Due Date |
 |-------------|----------|-------|----------|
-| Instagram carousel posts | 12 | Marcus | Rolling, 3/week |
-| TikTok recipe videos (30-60s) | 8 | Marcus + Elena | Bi-weekly |
-| Instagram Stories templates | 4 sets | Alex | Jan 20 |
-| Influencer brief packets | 3 | James | Jan 18 |
-| Paid ad creatives (static + video) | 6 | Marcus | Jan 25 |
-| Monthly performance reports | 3 | Elena | End of each month |
+| Instagram carousel posts | 12 | <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> | Rolling, 3/week |
+| TikTok recipe videos (30-60s) | 8 | <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> + <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> | Bi-weekly |
+| Instagram Stories templates | 4 sets | <span data-mention="user" data-entity-id="alex@brightpath.example.com">Alex</span> | Jan 20 |
+| Influencer brief packets | 3 | <span data-mention="user" data-entity-id="james@brightpath.example.com">James</span> | Jan 18 |
+| Paid ad creatives (static + video) | 6 | <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus</span> | Jan 25 |
+| Monthly performance reports | 3 | <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena</span> | End of each month |
 
 ## Timeline
 

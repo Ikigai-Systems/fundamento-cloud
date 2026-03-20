@@ -7,7 +7,17 @@ class BlocknoteBlocks
 
       yield node
 
-      walk_blocks(node["content"], &block) if node["content"].is_a?(Array)
+      content = node["content"]
+      if content.is_a?(Array)
+        walk_blocks(content, &block)
+      elsif content.is_a?(Hash) && content["type"] == "tableContent"
+        # Table blocks store content as { type: "tableContent", rows: [{ cells: [{ content: [...] }] }] }
+        content["rows"]&.each do |row|
+          row["cells"]&.each do |cell|
+            walk_blocks(cell["content"], &block) if cell["content"].is_a?(Array)
+          end
+        end
+      end
       walk_blocks(node["children"], &block) if node["children"].is_a?(Array)
     end
   end
