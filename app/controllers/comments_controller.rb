@@ -14,6 +14,12 @@ class CommentsController < ApplicationController
     @comments = load_comments
   end
 
+  def new
+    authorize @resource, :create?
+
+    @comment = @resource.comments.new
+  end
+
   def create
     @comment = @resource.comments.new(create_params)
     @comment.organization = current_organization
@@ -22,10 +28,37 @@ class CommentsController < ApplicationController
     authorize @resource, :create?
 
     if @comment.save
-      render turbo_stream: turbo_stream.update(ObjectComment.new, "")
+      render turbo_stream: turbo_stream.update("new_object_comment", "")
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def update
+    @comment = @resource.comments.find(params[:id])
+    authorize @comment
+
+    @comment.update!(update_params)
+
+    head :ok
+  end
+
+  def destroy
+    @comment = @resource.comments.find(params[:id])
+    authorize @comment
+
+    @comment.update!(removed_at: Time.current)
+
+    render html: "", status: :no_content
+  end
+
+  def restore
+    @comment = @resource.comments.find(params[:id])
+    authorize @comment
+
+    @comment.update!(removed_at: nil)
+
+    render html: "", status: :no_content
   end
 
   def show
@@ -33,20 +66,6 @@ class CommentsController < ApplicationController
 
     @reaction = @resource.comments.find(params[:id])
     @comments = @resource.comments.where(emoji: @reaction.emoji).order(created_at: :desc)
-  end
-
-  def new
-    authorize @resource, :create?
-
-    @comment = @resource.comments.new
-  end
-
-  def destroy
-    authorize @resource, :show?
-
-    @resource.comments.find_by(id: params[:id], organization_membership: current_organization_membership).destroy!
-
-    render html: "", status: :no_content
   end
 
   protected
@@ -61,6 +80,14 @@ class CommentsController < ApplicationController
 
   def create_params
     params.require(:comment).permit(:content)
+  end
+
+  def update_params
+    params.require(:comment).permit(:content)
+  end
+
+  def access_denied
+    head :forbidden
   end
 
   def load_resource
