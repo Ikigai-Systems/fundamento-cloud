@@ -14,10 +14,14 @@ class ObjectCommentPolicy < ApplicationPolicy
   end
 
   def update?
-    record.organization_membership = user_context.organization_membership
+    record.organization_membership == user_context.organization_membership
   end
 
   def destroy?
-    record.organization_membership = user_context.organization_membership
+    record.organization_membership == user_context.organization_membership
+  end
+
+  def restore?
+    record.organization_membership == user_context.organization_membership
   end
 end
