@@ -26,7 +26,7 @@ class ObjectReferenceReconciler
 
   def reconcile(version)
     content_blocks = version.content_blocks
-    mention_nodes = extract_references(content_blocks)
+    mention_nodes = BlocknoteBlocks.extract_references(content_blocks)
     node_ids = mention_nodes.map { |m| m[:id] }
 
     # Batch-fetch existing targets and their titles
@@ -75,7 +75,7 @@ class ObjectReferenceReconciler
   end
 
   def reconcile_comment(comment)
-    reference_nodes = extract_references(comment.content)
+    reference_nodes = BlocknoteBlocks.extract_references(comment.content)
     node_ids = reference_nodes.map { |m| m[:id] }
 
     target_data = batch_fetch_targets(reference_nodes)
@@ -116,58 +116,6 @@ class ObjectReferenceReconciler
   end
 
   private
-
-  def extract_references(blocks)
-    references = []
-    walk_blocks(blocks) do |node|
-      next unless node.is_a?(Hash)
-
-      if node["type"] == "mention"
-        props = node["props"] || {}
-        id = props["id"].to_s
-        entity_id = props["entityId"]
-
-        # Skip empty IDs and uninitialized mentions
-        next if id.blank?
-        next if entity_id == -1 || entity_id == "-1"
-
-        references << {
-          id: id,
-          entity: props["entity"].to_s,
-          entity_id: entity_id,
-          title: props["title"].to_s
-        }
-      elsif node["type"] == "advancedTable"
-        props = node["props"] || {}
-        id = node["id"].to_s
-        entity_id = props["tableNpi"].presence || props["tableId"].presence
-
-        next if id.blank?
-        next if entity_id.blank?
-
-        references << {
-          id: id,
-          entity: "table",
-          entity_id: entity_id,
-          title: ""
-        }
-      end
-    end
-    references
-  end
-
-  def walk_blocks(nodes, &block)
-    return unless nodes.is_a?(Array)
-
-    nodes.each do |node|
-      next unless node.is_a?(Hash)
-
-      yield node
-
-      walk_blocks(node["content"], &block) if node["content"].is_a?(Array)
-      walk_blocks(node["children"], &block) if node["children"].is_a?(Array)
-    end
-  end
 
   def batch_fetch_targets(mention_nodes)
     targets = {}
