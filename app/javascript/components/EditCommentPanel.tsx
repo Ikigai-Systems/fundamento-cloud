@@ -14,11 +14,11 @@ type EditCommentPanelProps = {
   object: Document | Table,
   space: Space,
   comment?: CommentData,
-  can_edit?: boolean,
-  object_gid?: string,
+  canEdit?: boolean,
+  objectGid?: string,
 }
 
-const EditCommentPanel = ({object, space, comment, can_edit = false, object_gid}: EditCommentPanelProps) => {
+const EditCommentPanel = ({object, space, comment, canEdit = false, objectGid}: EditCommentPanelProps) => {
   const isNewComment = !comment;
   const [editing, setEditing] = useState(isNewComment);
   const [saving, setSaving] = useState(false);
@@ -40,14 +40,14 @@ const EditCommentPanel = ({object, space, comment, can_edit = false, object_gid}
   }, []);
 
   const saveComment = useCallback(async () => {
-    if (!editorRef.current || !comment || !object_gid) return;
+    if (!editorRef.current || !comment || !objectGid) return;
 
     setSaving(true);
     try {
       const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
       const content = editorRef.current.getContent();
 
-      const response = await fetch(`/comments/${comment.id}?object_gid=${encodeURIComponent(object_gid)}`, {
+      const response = await fetch(`/comments/${comment.id}?object_gid=${encodeURIComponent(objectGid)}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -63,25 +63,25 @@ const EditCommentPanel = ({object, space, comment, can_edit = false, object_gid}
     } finally {
       setSaving(false);
     }
-  }, [comment, object_gid]);
+  }, [comment, objectGid]);
 
   const deleteComment = useCallback(async () => {
-    if (!comment || !object_gid) return;
+    if (!comment || !objectGid) return;
 
     const csrfToken = document.querySelector("meta[name='csrf-token']")?.getAttribute("content");
 
-    await fetch(`/comments/${comment.id}?object_gid=${encodeURIComponent(object_gid)}`, {
+    await fetch(`/comments/${comment.id}?object_gid=${encodeURIComponent(objectGid)}`, {
       method: "DELETE",
       headers: {
         "X-CSRF-Token": csrfToken || "",
         "Turbo-Frame": "object_comments",
       },
     });
-  }, [comment, object_gid]);
+  }, [comment, objectGid]);
 
   return <QueryClientProvider client={queryClient}>
     <CurrentSpaceContext.Provider value={{space}}>
-      {can_edit && !editing && (
+      {canEdit && !editing && (
         <div className="flex gap-2 justify-end pr-3 -mt-1 mb-1">
           <button onClick={startEditing} className="text-sm text-gray-400 hover:text-gray-600" title="Edit">
             <i className="fa fa-pencil"></i>
@@ -97,7 +97,7 @@ const EditCommentPanel = ({object, space, comment, can_edit = false, object_gid}
         editable={editing}
         initialContent={comment?.content}
       />
-      {can_edit && editing && (
+      {canEdit && editing && (
         <div className="flex gap-2 px-3 pb-3">
           <button onClick={saveComment} disabled={saving} className="primary-button text-sm">
             {saving ? "Saving..." : "Save"}
