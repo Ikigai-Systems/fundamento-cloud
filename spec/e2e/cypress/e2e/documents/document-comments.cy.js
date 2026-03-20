@@ -56,7 +56,7 @@ describe("Document Comments", function () {
       cy.get("turbo-frame#add_object_comment").should("not.be.visible");
 
       // Click Cancel
-      cy.contains("button", "Cancel").click();
+      cy.contains("Cancel").click();
 
       // Form should clear, Comment button should reappear
       cy.get("turbo-frame#new_object_comment").should("be.empty");
@@ -71,13 +71,12 @@ describe("Document Comments", function () {
 
       // Type in the BlockNote editor inside the new comment form
       cy.get("turbo-frame#new_object_comment [data-comment-editor] [role='textbox']", {timeout: 5000})
-        .click()
         .type("This is a test comment");
 
       cy.intercept("POST", "/comments*").as("createComment");
       cy.intercept("GET", "/comments*").as("getComments");
 
-      cy.contains("button", "Add").click();
+      cy.contains("Add").click();
 
       cy.wait("@createComment");
       cy.wait("@getComments");
@@ -179,8 +178,8 @@ describe("Document Comments", function () {
         cy.get("[title='Edit']").first().click();
 
         // Save/Cancel buttons should appear
-        cy.contains("button", "Save").should("be.visible");
-        cy.contains("button", "Cancel").should("be.visible");
+        cy.contains("Save").should("be.visible");
+        cy.contains("Cancel").should("be.visible");
 
         // Edit the content in the BlockNote editor
         cy.get("turbo-frame#object_comments [data-comment-editor] [role='textbox']")
@@ -190,7 +189,7 @@ describe("Document Comments", function () {
         cy.intercept("PATCH", "/comments/*").as("updateComment");
         cy.intercept("GET", "/comments*").as("getComments");
 
-        cy.contains("button", "Save").click();
+        cy.contains("Save").click();
 
         cy.wait("@updateComment");
         cy.wait("@getComments");
@@ -260,7 +259,7 @@ describe("Document Comments", function () {
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "was removed");
         cy.contains("Restore").should("be.visible");
 
-        cy.intercept("POST", "/comments/*/restore").as("restoreComment");
+        cy.intercept("POST", "/comments/*/restore?object_gid=*").as("restoreComment");
         cy.intercept("GET", "/comments*").as("getComments");
 
         cy.contains("Restore").click();
