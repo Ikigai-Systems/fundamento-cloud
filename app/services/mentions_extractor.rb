@@ -122,33 +122,12 @@ class MentionsExtractor
 
     all_mentions_ids = []
 
-    blocknote_document.each do |block|
-      each_mention(block) do |mention|
-        if mention.dig("props", "entity") == "user" && (user.nil? || mention.dig("props", "entityId") == user.id)
-          all_mentions_ids.push(mention.dig("props", "id"))
-        end
+    BlocknoteBlocks.each_mention(blocknote_document) do |mention|
+      if mention.dig("props", "entity") == "user" && (user.nil? || mention.dig("props", "entityId") == user.id)
+        all_mentions_ids.push(mention.dig("props", "id"))
       end
     end
 
     all_mentions_ids
-  end
-
-  def self.each_mention(node, &block)
-    return unless node.is_a? Hash
-
-    if node.dig("type") == "mention"
-      yield node
-    end
-    node.each do |key, value|
-      if key.is_a? Hash
-        each_mention(key, &block)
-      end
-
-      if value.is_a? Hash
-        each_mention(value, &block)
-      elsif value.is_a? Array
-        value.each { |elem| each_mention(elem, &block) }
-      end
-    end
   end
 end
