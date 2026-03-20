@@ -1,27 +1,53 @@
-<div class="rounded-xl border flex flex-col sidebar-colors pt-3">
-  <div class="flex flex-row gap-3 pl-3 pb-3 items-center">
-    <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
-
-    <div class="flex flex-col">
-      <span class="font-semibold"><%= comment.organization_membership.display_name %></span>
-
-      <time class="text-sm/6 text-gray-900 dark:text-gray-100 underline decoration-dotted"
-            datetime="<%= comment.created_at.iso8601 %>"
+<% if comment.removed? %>
+  <div class="rounded-xl border border-dashed flex flex-row gap-2 items-center px-3 py-2 text-sm text-gray-400">
+    <i class="fa fa-trash text-xs"></i>
+    <span>
+      Comment by <strong class="text-gray-500"><%= comment.organization_membership.display_name %></strong>
+      was removed
+      <time class="underline decoration-dotted"
+            datetime="<%= comment.removed_at.iso8601 %>"
             data-controller="timestamp"
-            data-timestamp-datetime-value="<%= comment.created_at.iso8601 %>">
-        <%= time_ago_in_words comment.created_at %>
+            data-timestamp-datetime-value="<%= comment.removed_at.iso8601 %>">
+        <%= time_ago_in_words comment.removed_at %> ago
       </time>
+    </span>
+
+    <% if policy(comment).restore? %>
+      <%= button_to "Restore",
+            restore_comment_path(comment, object_gid: resource.to_gid_param),
+            method: :post,
+            class: "ml-auto text-sm text-blue-600 hover:text-blue-800 underline",
+            data: { turbo_frame: "object_comments" } %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="rounded-xl border flex flex-col sidebar-colors pt-3">
+    <div class="flex flex-row gap-3 pl-3 pb-3 items-center">
+      <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
+
+      <div class="flex flex-col">
+        <span class="font-semibold"><%= comment.organization_membership.display_name %></span>
+
+        <time class="text-sm/6 text-gray-900 dark:text-gray-100 underline decoration-dotted"
+              datetime="<%= comment.created_at.iso8601 %>"
+              data-controller="timestamp"
+              data-timestamp-datetime-value="<%= comment.created_at.iso8601 %>">
+          <%= time_ago_in_words comment.created_at %>
+        </time>
+      </div>
     </div>
-  </div>
 
-  <div>
-    <%= react_component "EditCommentPanel", {
-      object: resource.to_react_props,
-      comment: comment.content,
-      editable: false,
-      space: space.to_react_props,
-    } %>
-  </div>
+    <div>
+      <%= react_component "EditCommentPanel", {
+        object: resource.to_react_props,
+        comment: comment.content,
+        editable: false,
+        space: space.to_react_props,
+        comment_id: (comment.id if policy(comment).update?),
+        object_gid: (resource.to_gid_param if policy(comment).update?),
+      } %>
+    </div>
 
-  <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>
-</div>
+    <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>
+  </div>
+<% end %>

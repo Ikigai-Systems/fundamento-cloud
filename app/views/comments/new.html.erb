@@ -26,8 +26,13 @@
         }, class: "flex flex-col flex-1" %>
       </div>
 
-      <div>
+      <div class="flex gap-2">
         <%= f.submit "Add", class: "primary-button" %>
+        <button type="button"
+                class="secondary-button"
+                onclick="this.closest('turbo-frame').innerHTML = ''">
+          Cancel
+        </button>
       </div>
     </div>
   <% end %>
