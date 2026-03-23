@@ -7,6 +7,7 @@ import CommentEditor, {CommentEditorHandle} from "./editor/CommentEditor.tsx";
 
 type CommentData = {
   id: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BlockNote document content, see CommentEditor.tsx
   content: any,
 }
 
@@ -28,6 +29,7 @@ const EditCommentPanel = ({object, space, comment, objectGid, editing = false, o
   // structuredClone is required because getContent() returns a live reference
   // to BlockNote's internal document — without cloning, edits would mutate the
   // snapshot and Cancel would have nothing to restore.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BlockNote document content, see CommentEditor.tsx
   const contentBeforeEditingRef = useRef<any>(null);
 
   // Tracks the previous value of `editing` to detect the false→true transition.

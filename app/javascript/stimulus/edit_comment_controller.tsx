@@ -14,6 +14,7 @@ export default class extends Controller {
 
   static targets = ["commentEditorRoot", "reactions"]
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- BlockNote document content, see CommentEditor.tsx
   declare commentValue: {id: number; content: any}
   declare objectValue: Document | Table
   declare spaceValue: Space
