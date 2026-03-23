@@ -30,7 +30,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y pandoc
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup SOPS with age
         uses: ./.github/actions/setup-sops
@@ -46,13 +46,13 @@ jobs:
           echo "RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/test.sops.yaml)" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           cache: "npm"
 
@@ -69,7 +69,7 @@ jobs:
       - run: npm run build --if-present
 
       # Run rspec
-      - uses: hoverkraft-tech/compose-action@v2.0.1
+      - uses: hoverkraft-tech/compose-action@v2.5.0
         with:
           services: |
             postgresql
@@ -91,7 +91,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rspec-results
           path: tmp/rspec-results.xml
@@ -99,7 +99,7 @@ jobs:
 
       - name: Publish test report
         if: always()
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: tmp/rspec-results.xml
           check_name: RSpec Test Results

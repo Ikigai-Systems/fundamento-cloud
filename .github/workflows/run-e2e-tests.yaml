@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup SOPS with age
         uses: ./.github/actions/setup-sops
@@ -59,20 +59,20 @@ jobs:
           detached: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           cache: "npm"
 
       - run: npm ci
 
-      - uses: hoverkraft-tech/compose-action@v2.0.1
+      - uses: hoverkraft-tech/compose-action@v2.5.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           project: ./spec/e2e
           install: false # already installed by `npm ci`
@@ -84,7 +84,7 @@ jobs:
 
       - name: Upload E2E test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-results
           path: tmp/cypress-results-*.xml
@@ -93,7 +93,7 @@ jobs:
 
       - name: Publish E2E test report
         if: always()
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         with:
           report_paths: 'tmp/cypress-results-*.xml'
           check_name: Cypress E2E Test Results
@@ -104,7 +104,7 @@ jobs:
 
       - name: Upload screenshots on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-screenshots
           path: log/cypress/screenshots
@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload videos on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cypress-videos
           path: log/cypress/videos
