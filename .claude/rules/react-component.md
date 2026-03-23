@@ -1,3 +1,7 @@
+---
+globs: ["app/views/**/*.html.erb", "app/components/**/*.html.erb", "app/javascript/components/**/*.tsx"]
+---
+
 # React Components from ERB
 
 ## Props naming convention
