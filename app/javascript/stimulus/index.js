@@ -14,7 +14,6 @@ import ScrollIntoViewController from "./scroll_into_view_controller.ts";
 import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
 import HotkeyController from "./hotkey_controller.ts";
 import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controller.js";
-import SerializeBlockNote from "@/stimulus/controllers/serialize_blocknote_controller.js";
 import CommandPaletteController from "./controllers/command_palette_controller.js";
 import Clipboard from '@stimulus-components/clipboard';
 import AutoSubmit from '@stimulus-components/auto-submit';
@@ -22,6 +21,8 @@ import {Multiselect} from "@wizardhealth/stimulus-multiselect";
 import MultiselectNoopAddableController from "./controllers/multiselect-noop-addable-controller.js";
 import FlashManagerController from "./controllers/flash_manager_controller";
 import ContentTitleSyncController from "./content_title_sync_controller.ts";
+import EditCommentController from "./edit_comment_controller";
+import NewCommentController from "./new_comment_controller";
 import CookieBannerController from "./cookie_banner_controller.js";
 import TwitterPixelController from "./twitter_pixel_controller.js";
 import RedditPixelController from "./reddit_pixel_controller.js";
@@ -78,8 +79,6 @@ application.register("hotkey", HotkeyController);
 
 application.register("emoji-picker", EmojiPickerController);
 
-application.register("serialize-blocknote", SerializeBlockNote);
-
 application.register("command-palette", CommandPaletteController);
 
 application.register('clipboard', Clipboard);
@@ -99,6 +98,9 @@ application.register("livechat", LivechatController);
 application.register("timestamp", TimestampController);
 
 application.register("import-upload", ImportUploadController);
+
+application.register("edit-comment", EditCommentController);
+application.register("new-comment", NewCommentController);
 
 // Configure Stimulus development experience
 application.debug = true

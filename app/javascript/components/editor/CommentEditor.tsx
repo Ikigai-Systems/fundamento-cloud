@@ -1,4 +1,4 @@
-import {useMemo, useImperativeHandle, forwardRef} from "react";
+import {useMemo, useImperativeHandle, useEffect, forwardRef} from "react";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
@@ -12,6 +12,7 @@ type CommentEditorProps = {
   objectId: number,
   initialContent?: any,
   editable?: boolean,
+  onContentChange?: (content: any) => void,
 }
 
 export type CommentEditorHandle = {
@@ -20,21 +21,19 @@ export type CommentEditorHandle = {
 }
 
 const CommentEditor = forwardRef<CommentEditorHandle, CommentEditorProps>(
-  ({objectId, initialContent, editable = true}, ref) => {
-    const editor = useMemo(() => {
-      const commentEditor = BlockNoteEditor.create({
-        schema,
-        initialContent,
-        uploadFile: uploadFile(objectId),
-        resolveFileUrl: createFileUrlResolver(),
-      });
+  ({objectId, initialContent, editable = true, onContentChange}, ref) => {
+    const editor = useMemo(() => BlockNoteEditor.create({
+      schema,
+      initialContent,
+      uploadFile: uploadFile(objectId),
+      resolveFileUrl: createFileUrlResolver(),
+    }), []);
 
-      if (editable) {
-        window.commentEditor = commentEditor;
-      }
+    useEffect(() => {
+      if (!onContentChange) return;
 
-      return commentEditor;
-    }, []);
+      return editor.onChange(() => onContentChange(editor.document));
+    }, [editor, onContentChange]);
 
     useImperativeHandle(ref, () => ({
       getContent: () => editor.document,

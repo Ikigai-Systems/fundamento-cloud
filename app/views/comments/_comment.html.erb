@@ -14,14 +14,22 @@
 
     <% if policy(comment).restore? %>
       <%= button_to "Restore",
-            restore_comment_path(comment, object_gid: resource.to_gid_param),
-            method: :post,
-            class: "ml-auto text-sm text-blue-600 hover:text-blue-800 underline",
-            data: { turbo_frame: "object_comments" } %>
+        restore_comment_path(comment, object_gid: resource.to_gid_param),
+        method: :post,
+        class: "ml-auto text-sm text-blue-600 hover:text-blue-800 underline",
+        data: { turbo_frame: "object_comments" } %>
     <% end %>
   </div>
 <% else %>
-  <div class="rounded-xl border flex flex-col sidebar-colors pt-3">
+  <% can_edit = policy(comment).update? %>
+
+  <div class="rounded-xl border flex flex-col sidebar-colors pt-3"
+       data-controller="edit-comment"
+       data-edit-comment-comment-value="<%= {id: comment.id, content: comment.content}.to_json %>"
+       data-edit-comment-object-value="<%= resource.to_react_props.to_json %>"
+       data-edit-comment-space-value="<%= space.to_react_props.to_json %>"
+       data-edit-comment-object-gid-value="<%= resource.to_gid_param %>">
+
     <div class="flex flex-row gap-3 pl-3 pb-3 items-center">
       <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
 
@@ -37,17 +45,29 @@
       </div>
     </div>
 
-    <% can_edit = policy(comment).update? %>
-    <div>
-      <%= react_component "EditCommentPanel", {
-        object: resource.to_react_props,
-        comment: { id: comment.id, content: comment.content },
-        can_edit: can_edit,
-        space: space.to_react_props,
-        object_gid: (resource.to_gid_param if can_edit),
-      } %>
-    </div>
+    <div data-edit-comment-target="commentEditorRoot"></div>
 
-    <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>
+    <div class="flex items-center justify-between px-3 pb-2" data-edit-comment-target="reactions">
+      <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>
+
+      <% if can_edit %>
+        <div class="flex gap-1 ml-auto shrink-0">
+          <button data-action="click->edit-comment#startEdit"
+                  class="text-sm text-gray-400 hover:text-gray-600 px-1"
+                  title="Edit">
+            <i class="fa fa-pencil"></i>
+          </button>
+
+          <%= button_to comment_path(comment, object_gid: resource.to_gid_param),
+              method: :delete,
+              form_class: "inline",
+              class: "text-sm text-gray-400 hover:text-red-600 px-1",
+              title: "Delete",
+              data: {turbo_frame: "object_comments"} do %>
+            <i class="fa fa-trash"></i>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   </div>
 <% end %>
