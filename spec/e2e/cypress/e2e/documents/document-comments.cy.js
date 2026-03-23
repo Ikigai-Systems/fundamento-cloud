@@ -21,10 +21,6 @@ describe("Document Comments", function () {
   });
 
   const documentId = "two";
-  const waitForEditor = () => {
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
-  };
-
   // Helper to create a comment via backend
   const createComment = (membershipId, text) => {
     return cy.appEval(`
@@ -43,7 +39,7 @@ describe("Document Comments", function () {
   describe("adding comments", function () {
     it("shows and hides the comment form with Cancel", function () {
       cy.visit(`/d/${documentId}`);
-      waitForEditor();
+      cy.waitForEditor();
 
       // Comment button should be visible
       cy.contains("Comment").should("be.visible");
@@ -66,7 +62,7 @@ describe("Document Comments", function () {
     it("adds a comment and displays it", function () {
       cy.visit(`/d/${documentId}`);
 
-      waitForEditor();
+      cy.waitForEditor();
 
       cy.contains("Comment").click();
 
@@ -93,7 +89,7 @@ describe("Document Comments", function () {
   describe("real-time updates from another user", function () {
     it("shows a new comment from another user in real-time", function () {
       cy.visit(`/d/${documentId}`);
-      waitForEditor();
+      cy.waitForEditor();
 
       // Intercept the broadcast-triggered frame reload
       cy.intercept("GET", "/comments*").as("getComments");
@@ -111,7 +107,7 @@ describe("Document Comments", function () {
       // Create a comment by stefan first
       createComment("om_is_stefan", "Original text").then((commentId) => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         // Verify original comment is displayed
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Original text");
@@ -137,7 +133,7 @@ describe("Document Comments", function () {
       // Create a comment by stefan
       createComment("om_is_stefan", "Will be deleted").then((commentId) => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         // Verify comment is displayed
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Will be deleted");
@@ -168,7 +164,7 @@ describe("Document Comments", function () {
       // Create a comment by pawel
       createComment("om_is_pawel", "My original comment").then(() => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "My original comment");
 
@@ -203,7 +199,7 @@ describe("Document Comments", function () {
     it("author can cancel editing without losing original content", function () {
       createComment("om_is_pawel", "Do not change me").then(() => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Do not change me");
 
@@ -226,7 +222,7 @@ describe("Document Comments", function () {
     it("author can delete their comment and see tombstone with Restore", function () {
       createComment("om_is_pawel", "Will delete this").then(() => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Will delete this");
 
@@ -256,7 +252,7 @@ describe("Document Comments", function () {
         cy.appEval(`ObjectComment.find('${commentId}').update!(removed_at: Time.current)`);
 
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         // Tombstone should be visible with Restore button
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "was removed");
@@ -282,7 +278,7 @@ describe("Document Comments", function () {
       // Create a comment by stefan
       createComment("om_is_stefan", "Stefan's comment").then(() => {
         cy.visit(`/d/${documentId}`);
-        waitForEditor();
+        cy.waitForEditor();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
 
@@ -298,7 +294,7 @@ describe("Document Comments", function () {
       createComment("om_is_pawel", "Pawel's comment");
 
       cy.visit(`/d/${documentId}`);
-      waitForEditor();
+      cy.waitForEditor();
 
       cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
       cy.get("turbo-frame#object_comments").should("contain", "Pawel's comment");

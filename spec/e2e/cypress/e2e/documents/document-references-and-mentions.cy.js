@@ -38,7 +38,7 @@ describe("Document References and Mentions", function () {
           // Edit source document to add a mention of target document
           cy.visit(`/d/${sourceDocId}/edit`);
 
-          cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+          cy.waitForEditor();
 
           // Type @ to trigger mention
           cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Check out @");
@@ -85,7 +85,7 @@ describe("Document References and Mentions", function () {
             // Edit document to add table reference
             cy.visit(`/d/${docId}/edit`);
 
-            cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+            cy.waitForEditor();
 
             // Type @ to trigger mention
             cy.get("[data-document-editor] [role=\"textbox\"]").first().type("See table @");
@@ -136,7 +136,7 @@ describe("Document References and Mentions", function () {
         // Edit main document to add mentions of both ref documents
         cy.visit(`/d/${mainDocId}/edit`);
 
-        cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+        cy.waitForEditor();
 
         // Add first reference
         cy.get("[data-document-editor] [role=\"textbox\"]").first().type("See @");
@@ -184,7 +184,7 @@ describe("Document References and Mentions", function () {
           // Edit source document to reference target
           cy.visit(`/d/${sourceDocId}/edit`);
 
-          cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+          cy.waitForEditor();
 
           cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Check out @");
           cy.get('.bn-suggestion-menu', { timeout: 5000 }).should('be.visible');
@@ -196,7 +196,7 @@ describe("Document References and Mentions", function () {
           // Navigate to target document
           cy.visit(`/d/${targetDocId}`);
 
-          cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+          cy.waitForEditor();
 
           // Open connections tab
           cy.get('#content-sidebar').within(() => {
@@ -230,7 +230,7 @@ describe("Document References and Mentions", function () {
           cy.appEval("Document.find_by(title: 'Source Doc 2').id").then((source2Id) => {
             // Edit Source Doc 1 to reference Target
             cy.visit(`/d/${source1Id}/edit`);
-            cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+            cy.waitForEditor();
             cy.get("[data-document-editor] [role=\"textbox\"]").first().type("See @");
             cy.get('.bn-suggestion-menu', { timeout: 5000 }).should('be.visible');
             cy.get('.bn-suggestion-menu-item').contains('Target Doc').click();
@@ -239,7 +239,7 @@ describe("Document References and Mentions", function () {
 
             // Edit Source Doc 2 to reference Target
             cy.visit(`/d/${source2Id}/edit`);
-            cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+            cy.waitForEditor();
             cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Check @");
             cy.get('.bn-suggestion-menu', { timeout: 5000 }).should('be.visible');
             cy.get('.bn-suggestion-menu-item').contains('Target Doc').click();
@@ -248,7 +248,7 @@ describe("Document References and Mentions", function () {
 
             // Navigate to target document
             cy.visit(`/d/${targetDocId}`);
-            cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+            cy.waitForEditor();
 
             // Open connections tab
             cy.get('#content-sidebar').within(() => {
@@ -272,7 +272,7 @@ describe("Document References and Mentions", function () {
       cy.get('[aria-label="Create new document"]').click();
 
       cy.url().should("match", editPageUrl);
-      cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+      cy.waitForEditor();
 
       // Save empty document
       cy.get('[aria-label="Save document"]').click();
@@ -307,7 +307,7 @@ describe("Document References and Mentions", function () {
           // Edit source document to add multiple mentions of target
           cy.visit(`/d/${sourceDocId}/edit`);
 
-          cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+          cy.waitForEditor();
 
           // Add first mention
           cy.get("[data-document-editor] [role=\"textbox\"]").first().type("First mention @");
@@ -341,7 +341,7 @@ describe("Document References and Mentions", function () {
 
           // Navigate to target document
           cy.visit(`/d/${targetDocId}`);
-          cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+          cy.waitForEditor();
 
           // Open connections tab
           cy.get('#content-sidebar').within(() => {

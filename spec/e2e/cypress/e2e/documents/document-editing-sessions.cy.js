@@ -29,7 +29,7 @@ describe("Document Editing Sessions", function () {
   // Helper to open document editor and wait for it to load
   function openEditor() {
     cy.visit(`/d/${documentId}/edit`);
-    cy.get("[data-document-editor] [role='textbox']", { timeout: 10000 }).should("exist");
+    cy.waitForEditor();
   }
 
   // Helper to type in editor
