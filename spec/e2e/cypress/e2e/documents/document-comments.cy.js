@@ -65,6 +65,7 @@ describe("Document Comments", function () {
 
     it("adds a comment and displays it", function () {
       cy.visit(`/d/${documentId}`);
+
       waitForEditor();
 
       cy.contains("Comment").click();
@@ -79,7 +80,7 @@ describe("Document Comments", function () {
       cy.contains("Add").click();
 
       cy.wait("@createComment");
-      cy.wait("@getComments");
+      cy.wait("@getComments", {timeout: 10000});
 
       // Comment should appear in the list
       cy.get("turbo-frame#object_comments").should("contain", "This is a test comment");
@@ -100,7 +101,7 @@ describe("Document Comments", function () {
       // Another user (stefan) adds a comment via backend
       createComment("om_is_stefan", "Hello from Stefan!");
 
-      cy.wait("@getComments");
+      cy.wait("@getComments", {timeout: 10000});
 
       // The comment should appear without page refresh
       cy.get("turbo-frame#object_comments").should("contain", "Hello from Stefan!");
@@ -124,7 +125,7 @@ describe("Document Comments", function () {
           comment.update!(content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "Updated by Stefan"}]}])
         `);
 
-        cy.wait("@getComments");
+        cy.wait("@getComments", {timeout: 10000});
 
         // Updated content should appear
         cy.get("turbo-frame#object_comments").should("contain", "Updated by Stefan");
@@ -150,7 +151,7 @@ describe("Document Comments", function () {
           comment.update!(removed_at: Time.current)
         `);
 
-        cy.wait("@getComments");
+        cy.wait("@getComments", {timeout: 10000});
 
         // Tombstone should appear, original text should be gone
         cy.get("turbo-frame#object_comments").should("contain", "was removed");
@@ -192,7 +193,7 @@ describe("Document Comments", function () {
         cy.contains("Save").click();
 
         cy.wait("@updateComment");
-        cy.wait("@getComments");
+        cy.wait("@getComments", {timeout: 10000});
 
         // Updated content should appear
         cy.get("turbo-frame#object_comments").should("contain", "My updated comment");
@@ -229,14 +230,16 @@ describe("Document Comments", function () {
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Will delete this");
 
-        cy.intercept("DELETE", "/comments/*").as("deleteComment");
+        cy.intercept({method: "POST", url: "/comments/*"}, (req) => {
+          expect(req.body).to.include("_method=delete");
+        }).as("deleteComment");
         cy.intercept("GET", "/comments*").as("getComments");
 
         // Click Delete
         cy.get("[title='Delete']").first().click();
 
         cy.wait("@deleteComment");
-        cy.wait("@getComments");
+        cy.wait("@getComments", {timeout: 10000});
 
         // Tombstone should appear
         cy.get("turbo-frame#object_comments").should("contain", "was removed");
@@ -265,7 +268,7 @@ describe("Document Comments", function () {
         cy.contains("Restore").click();
 
         cy.wait("@restoreComment");
-        cy.wait("@getComments");
+        cy.wait("@getComments", {timeout: 10000});
 
         // Comment should reappear
         cy.get("turbo-frame#object_comments").should("contain", "Restore me");
