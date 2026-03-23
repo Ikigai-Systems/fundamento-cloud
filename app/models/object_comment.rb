@@ -20,10 +20,14 @@ class ObjectComment < ApplicationRecord
   validates :object_type, inclusion: { in: ALLOWED_OBJECT_TYPES }
 
   after_create :reconcile_object_references
-  after_update :reconcile_object_references
+  after_update :reconcile_object_references, unless: :removed?
   before_destroy :delete_object_references
 
   validates_presence_of :content
+
+  def removed?
+    removed_at.present?
+  end
 
   def content
     # FIXME: workaround for serialization problem

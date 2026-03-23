@@ -38,7 +38,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -53,7 +53,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -103,7 +103,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -159,7 +159,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -174,7 +174,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -225,7 +225,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -256,7 +256,7 @@ describe("Document Reactions", function () {
     `).then((reactionId) => {
       cy.visit(`/d/${documentId}`);
 
-      cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+      cy.waitForEditor();
 
       // Wait for reactions frame to load
       cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
@@ -283,7 +283,7 @@ describe("Document Reactions", function () {
 
     cy.visit(`/d/${documentId}`);
 
-    cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+    cy.waitForEditor();
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");

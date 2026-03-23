@@ -203,6 +203,17 @@ Cypress.Commands.add("authenticatedDelete", (url, options = {}) => {
   });
 });
 
+/**
+ * Wait for the document editor to be ready
+ * Waits for the BlockNote editor's textbox to exist in the DOM
+ * @example
+ *   cy.visit("/d/abc123");
+ *   cy.waitForEditor();
+ */
+Cypress.Commands.add("waitForEditor", () => {
+  cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
+});
+
 // =============================================================================
 // CSRF TOKEN USAGE EXAMPLES
 // =============================================================================

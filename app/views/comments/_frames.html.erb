@@ -3,12 +3,18 @@
 
   <% if policy(resource.comments.new).create? %>
     <div>
-      <%= turbo_frame_tag ObjectComment.new %>
+      <style>
+        turbo-frame#new_object_comment:not(:empty) + turbo-frame#add_object_comment {
+          display: none;
+        }
+      </style>
+
+      <%= turbo_frame_tag "new_object_comment" %>
 
       <%= turbo_frame_tag "add_object_comment" do %>
         <%= link_to(
               new_comment_path(object_gid: resource.to_gid_param),
-              data: { turbo_frame: dom_id(ObjectComment.new) },
+              data: { turbo_frame: "new_object_comment" },
               class: "secondary-button gap-1"
             ) do
         %>

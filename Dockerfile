@@ -41,11 +41,13 @@ RUN ln -s /usr/local/bin/node /usr/local/bin/nodejs && \
 
 # Install packages needed to build gems
 # Ruby 3.4+ requires libyaml-dev for psych gem native extension
+
+# TODO: pinning npm to a specific version due to a bug that was recently introduced - https://github.com/npm/cli/issues/9133
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     --mount=target=/var/cache/apt,type=cache,sharing=locked \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libvips pkg-config libyaml-dev && \
-    npm install -g npm@latest
+    npm install -g npm@11.11.0
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
