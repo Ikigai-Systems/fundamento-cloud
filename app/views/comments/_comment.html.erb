@@ -28,7 +28,8 @@
        data-edit-comment-comment-value="<%= {id: comment.id, content: comment.content}.to_json %>"
        data-edit-comment-object-value="<%= resource.to_react_props.to_json %>"
        data-edit-comment-space-value="<%= space.to_react_props.to_json %>"
-       data-edit-comment-object-gid-value="<%= resource.to_gid_param %>">
+       data-edit-comment-object-gid-value="<%= resource.to_gid_param %>"
+       data-edit-comment-editing-class="min-h-[10rem]">
 
     <div class="flex flex-row gap-3 pl-3 pb-3 items-center">
       <%= render UserAvatar.new(organization_membership: comment.organization_membership) %>
@@ -45,7 +46,7 @@
       </div>
     </div>
 
-    <div data-edit-comment-target="commentEditorRoot"></div>
+    <div data-edit-comment-target="commentEditorRoot" class="flex flex-col"></div>
 
     <div class="flex items-center justify-between px-3 pb-2" data-edit-comment-target="reactions">
       <%= turbo_frame_tag comment, :reactions, src: reactions_path(object_gid: comment.to_gid_param), loading: "lazy" %>

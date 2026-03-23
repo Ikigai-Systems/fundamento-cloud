@@ -17,16 +17,16 @@
     <div class="flex flex-col gap-3">
       <div class="rounded-xl py-3 border min-h-[10rem] flex flex-col">
         <div data-new-comment-target="commentEditorRoot" class="flex flex-col flex-1"></div>
-      </div>
 
-      <div class="flex gap-2">
-        <%= f.submit "Add", class: "primary-button" %>
+        <div class="flex gap-2 px-3">
+          <%= f.submit "Add", class: "primary-button" %>
 
-        <button type="button"
-                class="secondary-button"
-                onclick="this.closest('turbo-frame').innerHTML = ''">
-          Cancel
-        </button>
+          <button type="button"
+                  class="secondary-button"
+                  onclick="this.closest('turbo-frame').innerHTML = ''">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   <% end %>

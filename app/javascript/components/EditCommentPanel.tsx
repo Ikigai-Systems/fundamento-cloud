@@ -92,10 +92,10 @@ const EditCommentPanel = ({object, space, comment, objectGid, editing = false, o
 
       {editing && (
         <div className="flex gap-2 px-3 pb-3">
-          <button onClick={saveComment} disabled={saving} className="primary-button text-sm">
+          <button onClick={saveComment} disabled={saving} className="primary-button">
             {saving ? "Saving..." : "Save"}
           </button>
-          <button onClick={cancelEditing} disabled={saving} className="secondary-button text-sm">
+          <button onClick={cancelEditing} disabled={saving} className="secondary-button">
             Cancel
           </button>
         </div>
