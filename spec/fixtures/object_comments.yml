@@ -1,0 +1,8 @@
+one:
+  organization_id: "is"
+  organization_membership_id: "om_is_pawel"
+  object_type: "Document"
+  object_id: "one"
+  content: '<%= [{"type":"paragraph","content":[{"type":"text","text":"Test comment"}]}].to_json %>'
+  created_at: <%= 1.hour.ago.iso8601 %>
+  updated_at: <%= 1.hour.ago.iso8601 %>

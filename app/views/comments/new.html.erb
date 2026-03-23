@@ -1,33 +1,32 @@
 <%= turbo_frame_tag "new_object_comment" do %>
   <%= form_with scope: :comment,
-    url: comments_path(object_gid: @resource.to_gid_param),
-    method: :post,
-    html: {
+      url: comments_path(object_gid: @resource.to_gid_param),
+      method: :post,
       class: "default-form mb-3",
       data: {
-        controller: "serialize-blocknote",
-        "serialize-blocknote-editor-value": "commentEditor",
-      }
+        controller: "new-comment",
+        turbo_frame: "new_object_comment",
+        new_comment_object_value: @resource.to_react_props.to_json,
+        new_comment_space_value: @resource.space.to_react_props.to_json,
+      } do |f| %>
 
-    },
-    data: { turbo_frame: "new_object_comment" } do |f|
-  %>
     <%= render "devise/shared/error_messages", resource: @comment %>
 
-    <%= f.hidden_field :content, data: { target: "serialize-blocknote.field" } %>
+    <%= f.hidden_field :content, data: {new_comment_target: "contentField"} %>
 
     <div class="flex flex-col gap-3">
       <div class="rounded-xl py-3 border min-h-[10rem] flex flex-col">
-        <%= react_component "EditCommentPanel", {
-          object: @resource.to_react_props,
-          space: @resource.space.to_react_props,
-          current_user: current_user,
-          database_id: database_id,
-        }, class: "flex flex-col flex-1" %>
-      </div>
+        <div data-new-comment-target="commentEditorRoot" class="flex flex-col flex-1"></div>
 
-      <div>
-        <%= f.submit "Add", class: "primary-button" %>
+        <div class="flex gap-2 px-3">
+          <%= f.submit "Add", class: "primary-button" %>
+
+          <button type="button"
+                  class="secondary-button"
+                  onclick="this.closest('turbo-frame').innerHTML = ''">
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   <% end %>

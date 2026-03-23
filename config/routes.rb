@@ -120,7 +120,9 @@ Rails.application.routes.draw do
     end
 
     resources :reactions, only: [:create, :index, :show, :destroy]
-    resources :comments
+    resources :comments do
+      post :restore, on: :member
+    end
 
     post "/inline_comments/threads" => "inline_comments#add_comment_thread"
     delete "inline_comments/threads/:thread_id" => "inline_comments#remove_comment_thread"
