@@ -54,7 +54,7 @@
       <% if can_edit %>
         <div class="flex gap-1 ml-auto shrink-0">
           <button data-action="click->edit-comment#startEdit"
-                  class="text-sm text-gray-400 hover:text-gray-600 px-1"
+                  class="rounded-button"
                   title="Edit">
             <i class="fa fa-pencil"></i>
           </button>
@@ -62,7 +62,7 @@
           <%= button_to comment_path(comment, object_gid: resource.to_gid_param),
               method: :delete,
               form_class: "inline",
-              class: "text-sm text-gray-400 hover:text-red-600 px-1",
+              class: "rounded-button hover:text-red-600",
               title: "Delete",
               data: {turbo_frame: "object_comments"} do %>
             <i class="fa fa-trash"></i>
