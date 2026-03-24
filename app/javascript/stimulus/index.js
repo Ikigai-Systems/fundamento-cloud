@@ -23,6 +23,7 @@ import FlashManagerController from "./controllers/flash_manager_controller";
 import ContentTitleSyncController from "./content_title_sync_controller.ts";
 import EditCommentController from "./edit_comment_controller";
 import NewCommentController from "./new_comment_controller";
+import EditorController from "./editor_controller";
 import CookieBannerController from "./cookie_banner_controller.js";
 import TwitterPixelController from "./twitter_pixel_controller.js";
 import RedditPixelController from "./reddit_pixel_controller.js";
@@ -101,6 +102,7 @@ application.register("import-upload", ImportUploadController);
 
 application.register("edit-comment", EditCommentController);
 application.register("new-comment", NewCommentController);
+application.register("editor", EditorController);
 
 // Configure Stimulus development experience
 application.debug = true
