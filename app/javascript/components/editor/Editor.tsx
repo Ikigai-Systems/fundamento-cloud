@@ -86,9 +86,13 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
       {documentId: document.id},
     );
 
-    acProvider.on("sync", (isSynced: boolean) => {
-      if (isSynced) setInitialStateReceived(true);
-    });
+    // WebsocketProvider has no .on() — poll the synced getter instead
+    const syncCheck = setInterval(() => {
+      if (acProvider.synced) {
+        setInitialStateReceived(true);
+        clearInterval(syncCheck);
+      }
+    }, 50);
 
     threadStore = new YjsThreadStore(
       currentUser.id.toString(),
