@@ -51,6 +51,7 @@ class User < ApplicationRecord
       email: email,
       firstName: first_name,
       lastName: last_name,
+      organizationRole: organization_role,
       createdAt: created_at,
       updatedAt: updated_at,
     }
