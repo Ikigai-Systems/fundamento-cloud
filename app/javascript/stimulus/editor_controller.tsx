@@ -7,7 +7,6 @@ import Editor from "../components/editor/Editor";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient";
 import {FeaturesContext} from "../contextes/FeaturesContext";
-import createFlash from "../utils/createFlash";
 import type {Document, Space, User} from "../types";
 import type schema from "../components/editor/schema";
 
@@ -74,15 +73,6 @@ export default class extends Controller {
     this.dispatch("connection-changed", {
       detail: {stale: isStale},
       bubbles: true,
-    });
-    createFlash({
-      message: isStale
-        ? "Disconnected from the server. Your changes are stored only locally."
-        : "Connection to server restored.",
-      type: isStale ? "error" : "notice",
-      replacePrevious: true,
-      key: "isStaleMessage",
-      duration: isStale ? undefined : "short",
     });
   }
 
