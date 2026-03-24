@@ -11,7 +11,13 @@
 <% end %>
 
 <% content_for :content_menu do %>
-  <div id="editor-connection-indicator"></div>
+  <div id="editor-connection-indicator"
+       data-controller="connection-indicator"
+       data-action="editor:connection-changed@window->connection-indicator#update">
+    <div data-connection-indicator-target="offlineLabel"
+         style="display: none"
+         class="font-semibold text-slate-400">Offline</div>
+  </div>
   <div id="editor-autosave-status"></div>
 
   <% if @document.versions.present? %>
@@ -24,7 +30,7 @@
   <div data-controller="popover" class="relative">
     <%= button_to document_versions_path(@document), method: :create,
       params: { content_blocks: "" },
-      onclick: "handleUpdateButton(event)",
+      data: { action: "editor#saveVersion" },
       class: "document-toolbar-button update-button",
       form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
       aria: { label: "Save document" } do
@@ -39,12 +45,6 @@
     </template>
   </div>
 
-  <script type="text/javascript">
-      window.handleUpdateButton = async (e) => {
-          e.currentTarget.form.elements['content_blocks'].value = JSON.stringify(window.blockNoteEditor?.document);
-      }
-  </script>
-
   <% add_palette_command id: "update",
     title: "Update the document",
     section: "Actions",
@@ -56,12 +56,13 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
-<article class="flex flex-col flex-1">
-  <%= react_component "EditDocumentPanel", {
-    document: @document.to_react_props,
-    space: @space.to_react_props,
-    current_user: current_user,
-    database_id: database_id,
-    features: enabled_feature_names
-  }, class: "flex flex-col flex-1" %>
+<article class="flex flex-col flex-1"
+         data-controller="editor"
+         data-editor-document-value="<%= @document.to_react_props.to_json %>"
+         data-editor-space-value="<%= @space.to_react_props.to_json %>"
+         data-editor-current-user-value="<%= current_user.as_json.to_json %>"
+         data-editor-database-id-value="<%= database_id %>"
+         data-editor-features-value="<%= enabled_feature_names.to_json %>"
+         data-editor-editor-consumer-outlet="[data-controller~='table-of-contents-panel']">
+  <div data-editor-target="editorRoot" class="flex flex-col flex-1"></div>
 </article>
