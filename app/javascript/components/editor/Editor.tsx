@@ -99,17 +99,9 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       {documentId: document.id},
     );
 
-    // hackery to determine if editor has been initialized with initial content from the action cable or not yet
-    const subscription = acConsumer.subscriptions.subscriptions[0];
-    const originalReceived = subscription.received;
-    subscription._messagesReceived = 0;
-    subscription.received = (message) => {
-      subscription._messagesReceived++;
-      if (subscription._messagesReceived == 2) {
-        setInitialStateReceived(true);
-      }
-      return originalReceived(message);
-    }
+    acProvider.on("sync", (isSynced: boolean) => {
+      if (isSynced) setInitialStateReceived(true);
+    });
 
     threadStore = new YjsThreadStore(
       currentUser.id.toString(),
