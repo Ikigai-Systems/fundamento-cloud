@@ -2,7 +2,7 @@ import '@blocknote/mantine/style.css';
 import {useEffect} from "react";
 
 type TableOfContentsPanelProps = {
-  content: unknown,
+  content: unknown[],
 }
 
 const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
