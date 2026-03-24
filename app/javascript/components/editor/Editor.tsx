@@ -86,14 +86,6 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
       {documentId: document.id},
     );
 
-    // WebsocketProvider has no .on() — poll the synced getter instead
-    const syncCheck = setInterval(() => {
-      if (acProvider.synced) {
-        setInitialStateReceived(true);
-        clearInterval(syncCheck);
-      }
-    }, 50);
-
     threadStore = new YjsThreadStore(
       currentUser.id.toString(),
       ydoc.getMap("threads"),
@@ -132,7 +124,17 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
       });
     }
 
-    onEditorReady?.(blockNoteEditor);
+    // WebsocketProvider has no .on() — poll the synced getter instead.
+    // onEditorReady is called after sync so consumers receive the actual document content,
+    // not the empty pre-sync state (important for draft documents with no versions).
+    const syncCheck = setInterval(() => {
+      if (acProvider.synced) {
+        setInitialStateReceived(true);
+        onEditorReady?.(blockNoteEditor);
+        clearInterval(syncCheck);
+      }
+    }, 50);
+
     return blockNoteEditor;
   }, [document.id]);
 
