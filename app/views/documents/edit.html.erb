@@ -29,9 +29,8 @@
 
   <div data-controller="popover" class="relative">
     <%= button_to document_versions_path(@document), method: :create,
-      params: { content_blocks: "" },
       class: "document-toolbar-button update-button",
-      form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
+      form: { id: "save-version-form", data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
       aria: { label: "Save document" } do
     %>
       <i class="fa-regular fa-floppy-disk"></i>
@@ -63,5 +62,6 @@
          data-editor-database-id-value="<%= database_id %>"
          data-editor-features-value="<%= enabled_feature_names.to_json %>"
          data-editor-table-of-contents-outlet="[data-controller~='table-of-contents']">
+  <input type="hidden" name="content_blocks" form="save-version-form" data-editor-target="contentBlocksInput">
   <div data-editor-target="editorRoot" class="flex flex-col flex-1"></div>
 </article>

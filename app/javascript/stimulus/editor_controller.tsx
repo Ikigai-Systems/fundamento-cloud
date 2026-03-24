@@ -16,7 +16,7 @@ export interface EditorConsumerController {
 
 export default class extends Controller {
   static outlets = ["table-of-contents"];
-  static targets = ["editorRoot"];
+  static targets = ["editorRoot", "contentBlocksInput"];
   static values = {
     document: Object,
     space: Object,
@@ -26,6 +26,8 @@ export default class extends Controller {
   };
 
   declare editorRootTarget: HTMLElement;
+  declare contentBlocksInputTarget: HTMLInputElement;
+  declare hasContentBlocksInputTarget: boolean;
   declare tableOfContentsOutlets: EditorConsumerController[];
   declare hasTableOfContentsOutlet: boolean;
   declare documentValue: Document;
@@ -77,8 +79,9 @@ export default class extends Controller {
   }
 
   private syncContentBlocksInput(blocks: unknown[]) {
-    const input = document.querySelector('input[name="content_blocks"]') as HTMLInputElement | null;
-    if (input) input.value = JSON.stringify(blocks);
+    if (this.hasContentBlocksInputTarget) {
+      this.contentBlocksInputTarget.value = JSON.stringify(blocks);
+    }
   }
 
   private renderComponent() {
