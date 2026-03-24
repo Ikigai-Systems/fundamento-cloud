@@ -52,8 +52,9 @@ export default class extends Controller {
   saveVersion(event: Event) {
     const form = (event.currentTarget as HTMLElement).closest("form");
     if (!form) return;
-    (form.elements.namedItem("content_blocks") as HTMLInputElement).value =
-      JSON.stringify(this.editorInstance?.document);
+    const input = form.elements.namedItem("content_blocks") as HTMLInputElement | null;
+    if (!input) return;
+    input.value = JSON.stringify(this.editorInstance?.document);
   }
 
   editorConsumerOutletConnected(outlet: EditorConsumerController) {
