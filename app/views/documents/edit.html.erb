@@ -60,7 +60,7 @@
          data-controller="editor"
          data-editor-document-value="<%= @document.to_react_props.to_json %>"
          data-editor-space-value="<%= @space.to_react_props.to_json %>"
-         data-editor-current-user-value="<%= current_user.as_json.to_json %>"
+         data-editor-current-user-value="<%= current_user.to_react_props.to_json %>"
          data-editor-database-id-value="<%= database_id %>"
          data-editor-features-value="<%= enabled_feature_names.to_json %>"
          data-editor-editor-consumer-outlet="[data-controller~='table-of-contents-panel']">
