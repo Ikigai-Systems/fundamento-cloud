@@ -36,24 +36,24 @@ export default class extends Controller {
 
   private root: Root | undefined;
   private editorInstance: BlockNoteEditor<typeof schema> | undefined;
+  private readonly handleSaveFormSubmit = (event: Event) => {
+    const form = event.target as HTMLFormElement;
+    const input = form.elements.namedItem("content_blocks") as HTMLInputElement | null;
+    if (!input) return;
+    input.value = JSON.stringify(this.editorInstance?.document);
+  };
 
   connect() {
     this.root = createRoot(this.editorRootTarget);
     this.renderComponent();
+    document.addEventListener("submit", this.handleSaveFormSubmit);
   }
 
   disconnect() {
+    document.removeEventListener("submit", this.handleSaveFormSubmit);
     this.root?.unmount();
     this.root = undefined;
     this.editorInstance = undefined;
-  }
-
-  saveVersion(event: Event) {
-    const form = (event.currentTarget as HTMLElement).closest("form");
-    if (!form) return;
-    const input = form.elements.namedItem("content_blocks") as HTMLInputElement | null;
-    if (!input) return;
-    input.value = JSON.stringify(this.editorInstance?.document);
   }
 
   tableOfContentsOutletConnected(outlet: EditorConsumerController) {

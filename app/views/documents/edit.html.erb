@@ -30,7 +30,6 @@
   <div data-controller="popover" class="relative">
     <%= button_to document_versions_path(@document), method: :create,
       params: { content_blocks: "" },
-      data: { action: "editor#saveVersion" },
       class: "document-toolbar-button update-button",
       form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
       aria: { label: "Save document" } do
