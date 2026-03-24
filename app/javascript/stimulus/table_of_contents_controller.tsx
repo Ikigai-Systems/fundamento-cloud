@@ -11,10 +11,12 @@ export default class extends Controller {
   declare contentValue: unknown[];
 
   private root: Root | undefined;
+  private pendingBlocks: unknown[] | undefined;
 
   connect() {
     this.root = createRoot(this.reactRootTarget);
-    this.renderComponent(this.contentValue || []);
+    this.renderComponent(this.pendingBlocks ?? this.contentValue ?? []);
+    this.pendingBlocks = undefined;
   }
 
   disconnect() {
@@ -23,7 +25,11 @@ export default class extends Controller {
   }
 
   receiveBlocks(blocks: unknown[]) {
-    this.renderComponent(blocks);
+    if (this.root) {
+      this.renderComponent(blocks);
+    } else {
+      this.pendingBlocks = blocks;
+    }
   }
 
   private renderComponent(blocks: unknown[]) {
