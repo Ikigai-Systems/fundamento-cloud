@@ -15,8 +15,8 @@ import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/core/comments";
-import UsersApi from "../../api/UsersApi.js";
 import tinySimpleHash from "../../utils/tinySimpleHash";
+import resolveUsers from "../../utils/resolveUsers";
 
 
 let ydoc: Y.Doc | undefined = undefined;
@@ -124,19 +124,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       comments: {
         threadStore,
       },
-      resolveUsers: async (userIds) => {
-        const fundamentoUsers = await UsersApi.index({
-          query: {
-            user_ids: userIds,
-          }
-        });
-        const blockNoteUsers = fundamentoUsers.map(({id, firstName, lastName}: User) => ({
-          id: id.toString(),
-          username: `${firstName} ${lastName}`,
-          // avatarUrl: `/users/${id}/avatar`, //uncomment when we implement user-provided avatars in backend
-        }));
-        return blockNoteUsers;
-      },
+      resolveUsers,
       collaboration: {
         provider: acProvider,
         fragment: ydoc.getXmlFragment("document-store"),
