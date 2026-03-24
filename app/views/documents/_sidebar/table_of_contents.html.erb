@@ -1,6 +1,6 @@
 <%= turbo_frame_tag :table_of_contents_sidebar_tab do %>
-  <div data-controller="table-of-contents-panel"
-       data-table-of-contents-panel-content-value="<%= (@document.versions.latest.try(:content_blocks) || []).to_json %>">
-    <div data-table-of-contents-panel-target="reactRoot"></div>
+  <div data-controller="table-of-contents"
+       data-table-of-contents-content-value="<%= (@document.versions.latest.try(:content_blocks) || []).to_json %>">
+    <div data-table-of-contents-target="reactRoot"></div>
   </div>
 <% end %>

@@ -31,7 +31,7 @@ import RedditPixelController from "./reddit_pixel_controller.js";
 import LivechatController from "./livechat_controller.js";
 import TimestampController from "./controllers/timestamp_controller.ts";
 import ImportUploadController from "./controllers/import_upload_controller.js";
-import TableOfContentsPanelController from "./table_of_contents_panel_controller";
+import TableOfContentsController from "./table_of_contents_controller";
 
 const application = Application.start()
 
@@ -106,7 +106,7 @@ application.register("edit-comment", EditCommentController);
 application.register("new-comment", NewCommentController);
 application.register("editor", EditorController);
 application.register("connection-indicator", ConnectionIndicatorController);
-application.register("table-of-contents-panel", TableOfContentsPanelController);
+application.register("table-of-contents", TableOfContentsController);
 
 // Configure Stimulus development experience
 application.debug = true

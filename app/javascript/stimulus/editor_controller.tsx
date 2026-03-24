@@ -15,7 +15,7 @@ export interface EditorConsumerController {
 }
 
 export default class extends Controller {
-  static outlets = ["editor-consumer"];
+  static outlets = ["table-of-contents"];
   static targets = ["editorRoot"];
   static values = {
     document: Object,
@@ -26,8 +26,8 @@ export default class extends Controller {
   };
 
   declare editorRootTarget: HTMLElement;
-  declare editorConsumerOutlets: EditorConsumerController[];
-  declare hasEditorConsumerOutlet: boolean;
+  declare tableOfContentsOutlets: EditorConsumerController[];
+  declare hasTableOfContentsOutlet: boolean;
   declare documentValue: Document;
   declare spaceValue: Space;
   declare currentUserValue: User;
@@ -56,7 +56,7 @@ export default class extends Controller {
     input.value = JSON.stringify(this.editorInstance?.document);
   }
 
-  editorConsumerOutletConnected(outlet: EditorConsumerController) {
+  tableOfContentsOutletConnected(outlet: EditorConsumerController) {
     if (this.editorInstance) {
       outlet.receiveBlocks(this.editorInstance.document);
     }
@@ -64,8 +64,8 @@ export default class extends Controller {
 
   private onEditorReady(editor: BlockNoteEditor<typeof schema>) {
     this.editorInstance = editor;
-    if (this.hasEditorConsumerOutlet) {
-      this.editorConsumerOutlets.forEach((o) => o.receiveBlocks(editor.document));
+    if (this.hasTableOfContentsOutlet) {
+      this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(editor.document));
     }
   }
 
@@ -77,8 +77,8 @@ export default class extends Controller {
   }
 
   private onDocumentChange(blocks: unknown[]) {
-    if (this.hasEditorConsumerOutlet) {
-      this.editorConsumerOutlets.forEach((o) => o.receiveBlocks(blocks));
+    if (this.hasTableOfContentsOutlet) {
+      this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(blocks));
     }
   }
 
