@@ -1,6 +1,6 @@
-import {useEffect, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {Document, User} from "../../types";
-import {BlockNoteEditor} from "@blocknote/core";
+import {Block, BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -9,7 +9,6 @@ import * as ActionCable from "@rails/actioncable";
 import useInterval from "../../hooks/useInterval"
 import schema from "./schema";
 import {IndexeddbPersistence} from "y-indexeddb";
-import createFlash from "../../utils/createFlash.ts"
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";
@@ -29,9 +28,12 @@ type EditorProps = {
   currentUser: User,
   document: Document,
   editable?: boolean,
+  onEditorReady?: (editor: BlockNoteEditor<typeof schema>) => void,
+  onConnectionChange?: (isStale: boolean) => void,
+  onDocumentChange?: (blocks: Block[]) => void,
 }
 
-const Editor = ({currentUser, document, editable = true, databaseId = ""}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [connectionStale, setConnestionStale] = useState(false);
 
@@ -43,26 +45,11 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
     const isStale = acConsumer?.connection.monitor.connectionIsStale();
     setConnestionStale((prevState) => {
       if (isStale !== prevState) {
-        createFlash({
-          message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
-          type: isStale ? "error" : "notice",
-          replacePrevious: true,
-          key: `isStaleMessage`,
-          duration: isStale ? undefined : "short",
-        });
+        onConnectionChange?.(isStale);
       }
       return isStale;
-    })
+    });
   }, 1000);
-
-  useEffect(() => {
-    const editorConnectionIndicatorDiv = window.document.querySelector("#editor-connection-indicator");
-    if (connectionStale) {
-      editorConnectionIndicatorDiv.innerHTML = '<div class="font-semibold text-slate-400">Offline</div>\n';
-    } else {
-      editorConnectionIndicatorDiv.innerHTML = '';
-    }
-  }, [connectionStale]);
 
   const editor = useMemo(() => {
     if (threadStore) {
@@ -135,19 +122,13 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
         headers: true,
       },
     });
-    blockNoteEditor.onChange((editor) => {
-      const block = editor.getTextCursorPosition().block;
-      if (block.type !== 'paragraph') {
-        return;
-      }
-      const currentBlockText = block?.content[0]?.["text"];
-      // if (currentBlockText === '```') {
-      //   editor.updateBlock(block, {type: "procode"} as PartialBlock);
-      //   editor.setTextCursorPosition(block);
-      // }
-    });
+    if (onDocumentChange) {
+      blockNoteEditor.onChange((editor) => {
+        onDocumentChange(editor.document);
+      });
+    }
 
-    window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version) + for displaying document Structure in right sidebar
+    onEditorReady?.(blockNoteEditor);
     return blockNoteEditor;
   }, [document.id]);
 
