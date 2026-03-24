@@ -35,7 +35,7 @@ type EditorProps = {
 
 const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
-  const [connectionStale, setConnestionStale] = useState(false);
+  const [connectionStale, setConnectionStale] = useState(false);
 
   useInterval(() => {
     if (window.document.hidden) {
@@ -43,7 +43,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
     }
     //no-ts-inspect
     const isStale = acConsumer?.connection.monitor.connectionIsStale();
-    setConnestionStale((prevState) => {
+    setConnectionStale((prevState) => {
       if (isStale !== prevState) {
         onConnectionChange?.(isStale);
       }
