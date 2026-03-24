@@ -16,20 +16,13 @@ import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/core/comments";
 import UsersApi from "../../api/UsersApi.js";
+import tinySimpleHash from "../../utils/tinySimpleHash";
 
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
 let threadStore: ThreadStore = undefined;
-
-const tinySimpleHash = (s: string) => {
-  let h = 9;
-  for (let i = 0; i < s.length;) {
-    h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
-  }
-  return h ^ h >>> 9
-}
 
 type EditorProps = {
   databaseId: string,
