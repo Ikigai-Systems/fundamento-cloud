@@ -36,21 +36,13 @@ export default class extends Controller {
 
   private root: Root | undefined;
   private editorInstance: BlockNoteEditor<typeof schema> | undefined;
-  private readonly handleSaveFormSubmit = (event: Event) => {
-    const form = event.target as HTMLFormElement;
-    const input = form.elements.namedItem("content_blocks") as HTMLInputElement | null;
-    if (!input) return;
-    input.value = JSON.stringify(this.editorInstance?.document);
-  };
 
   connect() {
     this.root = createRoot(this.editorRootTarget);
     this.renderComponent();
-    document.addEventListener("submit", this.handleSaveFormSubmit);
   }
 
   disconnect() {
-    document.removeEventListener("submit", this.handleSaveFormSubmit);
     this.root?.unmount();
     this.root = undefined;
     this.editorInstance = undefined;
@@ -64,6 +56,7 @@ export default class extends Controller {
 
   private onEditorReady(editor: BlockNoteEditor<typeof schema>) {
     this.editorInstance = editor;
+    this.syncContentBlocksInput(editor.document);
     if (this.hasTableOfContentsOutlet) {
       this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(editor.document));
     }
@@ -77,9 +70,15 @@ export default class extends Controller {
   }
 
   private onDocumentChange(blocks: unknown[]) {
+    this.syncContentBlocksInput(blocks);
     if (this.hasTableOfContentsOutlet) {
       this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(blocks));
     }
+  }
+
+  private syncContentBlocksInput(blocks: unknown[]) {
+    const input = document.querySelector('input[name="content_blocks"]') as HTMLInputElement | null;
+    if (input) input.value = JSON.stringify(blocks);
   }
 
   private renderComponent() {
