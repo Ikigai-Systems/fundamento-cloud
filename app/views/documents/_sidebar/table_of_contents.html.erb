@@ -1,5 +1,6 @@
 <%= turbo_frame_tag :table_of_contents_sidebar_tab do %>
-  <%= react_component "TableOfContentsPanel", {
-    content: @document.versions.latest.present? ? @document.versions.latest.content_blocks : [],
-  } %>
+  <div data-controller="table-of-contents"
+       data-table-of-contents-content-value="<%= (@document.versions.latest.try(:content_blocks) || []).to_json %>">
+    <div data-table-of-contents-target="reactRoot"></div>
+  </div>
 <% end %>

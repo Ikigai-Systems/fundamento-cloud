@@ -1,20 +1,11 @@
 import '@blocknote/mantine/style.css';
-import {useEffect, useState} from "react";
-import useInterval from "../hooks/useInterval.ts";
+import {useEffect} from "react";
 
 type TableOfContentsPanelProps = {
-  content: unknown,
+  content: unknown[],
 }
 
 const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
-  const [documentBlocks, setDocumentBlocks] = useState(window.blockNoteEditor?.document || content);
-
-  useInterval(() => {
-    if (window.blockNoteEditor) {
-      setDocumentBlocks(window.blockNoteEditor.document)
-    }
-  }, 1000);
-
   useEffect(() => {
     setTimeout(() => {
       const anchorBlockId = location.hash.split("#")[1];
@@ -22,7 +13,7 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
     }, 300); // this should await for BlockNote document to be loaded, for a while we simulate that with 300ms delay
   }, [])
 
-  const headerBlocks = documentBlocks.filter(block => block.type === "heading").map(block => {
+  const headerBlocks = content.filter(block => block.type === "heading").map(block => {
     return {
       ...block,
       label: block.content.reduce((acc, curr) => {

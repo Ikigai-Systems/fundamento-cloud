@@ -45,6 +45,18 @@ class User < ApplicationRecord
 
   after_commit :process_avatar_variants, on: [:create, :update]
 
+  def to_react_props
+    {
+      id: id,
+      email: email,
+      firstName: first_name,
+      lastName: last_name,
+      organizationRole: organization_role,
+      createdAt: created_at,
+      updatedAt: updated_at,
+    }
+  end
+
   def initials
     return "" if first_name.blank?
     first_initial = first_name.first(1)

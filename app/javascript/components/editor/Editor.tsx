@@ -1,6 +1,6 @@
-import {useEffect, useMemo, useState} from "react";
+import {useMemo, useState} from "react";
 import {Document, User} from "../../types";
-import {BlockNoteEditor} from "@blocknote/core";
+import {Block, BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -9,13 +9,13 @@ import * as ActionCable from "@rails/actioncable";
 import useInterval from "../../hooks/useInterval"
 import schema from "./schema";
 import {IndexeddbPersistence} from "y-indexeddb";
-import createFlash from "../../utils/createFlash.ts"
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/core/comments";
-import UsersApi from "../../api/UsersApi.js";
+import tinySimpleHash from "../../utils/tinySimpleHash";
+import resolveUsers from "../../utils/resolveUsers";
 
 
 let ydoc: Y.Doc | undefined = undefined;
@@ -23,24 +23,19 @@ let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
 let threadStore: ThreadStore = undefined;
 
-const tinySimpleHash = (s: string) => {
-  let h = 9;
-  for (let i = 0; i < s.length;) {
-    h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
-  }
-  return h ^ h >>> 9
-}
-
 type EditorProps = {
   databaseId: string,
   currentUser: User,
   document: Document,
   editable?: boolean,
+  onEditorReady?: (editor: BlockNoteEditor<typeof schema>) => void,
+  onConnectionChange?: (isStale: boolean) => void,
+  onDocumentChange?: (blocks: Block[]) => void,
 }
 
-const Editor = ({currentUser, document, editable = true, databaseId = ""}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
-  const [connectionStale, setConnestionStale] = useState(false);
+  const [connectionStale, setConnectionStale] = useState(false);
 
   useInterval(() => {
     if (window.document.hidden) {
@@ -48,28 +43,13 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
     }
     //no-ts-inspect
     const isStale = acConsumer?.connection.monitor.connectionIsStale();
-    setConnestionStale((prevState) => {
+    setConnectionStale((prevState) => {
       if (isStale !== prevState) {
-        createFlash({
-          message: isStale ? "Disconnected from the server. Your changes are stored only locally." : "Connection to server restored.",
-          type: isStale ? "error" : "notice",
-          replacePrevious: true,
-          key: `isStaleMessage`,
-          duration: isStale ? undefined : "short",
-        });
+        onConnectionChange?.(isStale);
       }
       return isStale;
-    })
+    });
   }, 1000);
-
-  useEffect(() => {
-    const editorConnectionIndicatorDiv = window.document.querySelector("#editor-connection-indicator");
-    if (connectionStale) {
-      editorConnectionIndicatorDiv.innerHTML = '<div class="font-semibold text-slate-400">Offline</div>\n';
-    } else {
-      editorConnectionIndicatorDiv.innerHTML = '';
-    }
-  }, [connectionStale]);
 
   const editor = useMemo(() => {
     if (threadStore) {
@@ -106,18 +86,6 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       {documentId: document.id},
     );
 
-    // hackery to determine if editor has been initialized with initial content from the action cable or not yet
-    const subscription = acConsumer.subscriptions.subscriptions[0];
-    const originalReceived = subscription.received;
-    subscription._messagesReceived = 0;
-    subscription.received = (message) => {
-      subscription._messagesReceived++;
-      if (subscription._messagesReceived == 2) {
-        setInitialStateReceived(true);
-      }
-      return originalReceived(message);
-    }
-
     threadStore = new YjsThreadStore(
       currentUser.id.toString(),
       ydoc.getMap("threads"),
@@ -131,19 +99,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
       comments: {
         threadStore,
       },
-      resolveUsers: async (userIds) => {
-        const fundamentoUsers = await UsersApi.index({
-          query: {
-            user_ids: userIds,
-          }
-        });
-        const blockNoteUsers = fundamentoUsers.map(({id, firstName, lastName}: User) => ({
-          id: id.toString(),
-          username: `${firstName} ${lastName}`,
-          // avatarUrl: `/users/${id}/avatar`, //uncomment when we implement user-provided avatars in backend
-        }));
-        return blockNoteUsers;
-      },
+      resolveUsers,
       collaboration: {
         provider: acProvider,
         fragment: ydoc.getXmlFragment("document-store"),
@@ -162,19 +118,23 @@ const Editor = ({currentUser, document, editable = true, databaseId = ""}: Edito
         headers: true,
       },
     });
-    blockNoteEditor.onChange((editor) => {
-      const block = editor.getTextCursorPosition().block;
-      if (block.type !== 'paragraph') {
-        return;
-      }
-      const currentBlockText = block?.content[0]?.["text"];
-      // if (currentBlockText === '```') {
-      //   editor.updateBlock(block, {type: "procode"} as PartialBlock);
-      //   editor.setTextCursorPosition(block);
-      // }
-    });
+    if (onDocumentChange) {
+      blockNoteEditor.onChange((editor) => {
+        onDocumentChange(editor.document);
+      });
+    }
 
-    window.blockNoteEditor = blockNoteEditor; // for .erb button_to hacks to work (see app/views/documents/edit.html.erb#save_this_as_version) + for displaying document Structure in right sidebar
+    // WebsocketProvider has no .on() — poll the synced getter instead.
+    // onEditorReady is called after sync so consumers receive the actual document content,
+    // not the empty pre-sync state (important for draft documents with no versions).
+    const syncCheck = setInterval(() => {
+      if (acProvider.synced) {
+        setInitialStateReceived(true);
+        onEditorReady?.(blockNoteEditor);
+        clearInterval(syncCheck);
+      }
+    }, 50);
+
     return blockNoteEditor;
   }, [document.id]);
 

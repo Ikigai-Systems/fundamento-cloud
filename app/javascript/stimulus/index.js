@@ -23,12 +23,15 @@ import FlashManagerController from "./controllers/flash_manager_controller";
 import ContentTitleSyncController from "./content_title_sync_controller.ts";
 import EditCommentController from "./edit_comment_controller";
 import NewCommentController from "./new_comment_controller";
+import EditorController from "./editor_controller";
+import ConnectionIndicatorController from "./connection_indicator_controller";
 import CookieBannerController from "./cookie_banner_controller.js";
 import TwitterPixelController from "./twitter_pixel_controller.js";
 import RedditPixelController from "./reddit_pixel_controller.js";
 import LivechatController from "./livechat_controller.js";
 import TimestampController from "./controllers/timestamp_controller.ts";
 import ImportUploadController from "./controllers/import_upload_controller.js";
+import TableOfContentsController from "./table_of_contents_controller";
 
 const application = Application.start()
 
@@ -101,6 +104,9 @@ application.register("import-upload", ImportUploadController);
 
 application.register("edit-comment", EditCommentController);
 application.register("new-comment", NewCommentController);
+application.register("editor", EditorController);
+application.register("connection-indicator", ConnectionIndicatorController);
+application.register("table-of-contents", TableOfContentsController);
 
 // Configure Stimulus development experience
 application.debug = true
