@@ -79,6 +79,6 @@
   <%= render 'spacer' %>
 
   <div class="md:my-4 mb-4">
-    Already have an account? <%= link_to "Sign in ->", new_session_path(resource_name), class: "link-button" %>
+    Already have an account? <%= link_to new_session_path(resource_name), class: "link-button" do %>Sign in &rarr;<% end %>
   </div>
 </section>
