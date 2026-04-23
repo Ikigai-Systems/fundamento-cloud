@@ -3,9 +3,7 @@
 <% content_for :focused_breadcrumbs do %>
   <li>
     <div class="flex">
-      <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-        <%= link_to "Automations", space_automations_path(@space) %>
-      </a>
+      <%= link_to "Automations", space_automations_path(@space), class: "text-sm font-medium text-gray-500 hover:text-gray-700" %>
     </div>
   </li>
 <% end %>
