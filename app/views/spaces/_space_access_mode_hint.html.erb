@@ -1,11 +1,13 @@
 <div class="form-hint">
-  <div <%= @space.access_mode != 'public' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="public">
+  <%= tag.div hidden: @space.access_mode != "public", data: { show_if_input_value_equals_target: "output", show_if_input_value_equals: "public" } do %>
     In <b>public</b> mode every document in this space will be visible and editable to anyone within organization.
-  </div>
-  <div <%= @space.access_mode != 'restricted' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="restricted">
+  <% end %>
+
+  <%= tag.div hidden: @space.access_mode != "restricted", data: { show_if_input_value_equals_target: "output", show_if_input_value_equals: "restricted" } do %>
     In <b>restricted</b> mode every document in this space will be visible to anyone within organization, but editable only to space managers or organization managers.
-  </div>
-  <div <%= @space.access_mode != 'private' ? "hidden" : "" %> data-show-if-input-value-equals-target="output" data-show-if-input-value-equals="private">
+  <% end %>
+
+  <%= tag.div hidden: @space.access_mode != "private", data: { show_if_input_value_equals_target: "output", show_if_input_value_equals: "private" } do %>
     In <b>private</b> mode every document in this space will be visible and editable only to space managers or organization managers.
-  </div>
+  <% end %>
 </div>

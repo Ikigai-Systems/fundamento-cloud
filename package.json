@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite frontend",
     "lint": "eslint app/javascript --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",
+    "herb:lint": "herb-lint",
     "preview": "vite preview frontend",
     "postinstall": "patch-package"
   },
@@ -48,6 +49,7 @@
     "yjs": "^13.6.16"
   },
   "devDependencies": {
+    "@herb-tools/linter": "^0.9.7",
     "@iconify-json/heroicons": "^1.1.22",
     "@iconify/tailwind": "^1.1.1",
     "@stimulus-components/auto-submit": "^6.0.0",

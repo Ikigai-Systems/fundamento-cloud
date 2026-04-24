@@ -1,17 +1,19 @@
 <div class="px-4 py-5 sm:p-6">
   <h3 class="text-base font-semibold leading-6">Share this document</h3>
   <div class="mt-2 max-w-xl text-sm">
-    <% if policy(public_link.object.space).update? %>
-      <p>
+    <p>
+      <% if policy(public_link.object.space).update? %>
+
         You can create a public link to share this document with others.
         Anyone with the link will be able to view the document.
-      </p>
-    <% else %>
-      <p>
+
+      <% else %>
+
         Only users with permission to update this document can create a public link.
         Anyone with the link will be able to view the document.
-      </p>
-    <% end %>
+
+      <% end %>
+    </p>
 
     <p class="mt-2">
       You can see all documents shared publicly

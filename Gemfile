@@ -65,6 +65,7 @@ gem "tailwindcss-rails", "~> 3.0"
 gem "tailwindcss-ruby", "3.4.17"
 gem "vite_rails"
 gem "view_component"
+gem "reactionview"
 
 gem "stackprof"
 gem "sentry-ruby"

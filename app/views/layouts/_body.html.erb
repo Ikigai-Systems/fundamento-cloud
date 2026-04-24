@@ -6,7 +6,7 @@
   </title>
 
   <link rel="icon" href="<%= image_path "fundamento-logo-color-flat.svg" %>" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="<%= image_path "apple-icon.png" %>" type="image/png" sizes="180x180"/>
+  <link rel="apple-touch-icon" href="<%= image_path "apple-icon.png" %>" type="image/png" sizes="180x180">
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="turbo-refresh-scroll" content="preserve">
@@ -37,7 +37,6 @@
   <script>
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
-      replaysSessionSampleRate: <%= replays_session_sample_rate %>,
       <% unless Flipper.enabled?(:standalone) %>
         posthogKey: <%= Rails.application.credentials.dig(:posthog, :api_key).to_json.html_safe %>,
         twitterPixelId: <%= Rails.application.credentials.dig(:twitter, :pixel_id).to_json.html_safe %>,

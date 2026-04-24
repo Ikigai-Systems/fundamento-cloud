@@ -13,9 +13,7 @@
 <% content_for :focused_breadcrumbs do %>
   <li>
     <div class="flex">
-      <a href="#" class="text-sm font-medium text-gray-500 hover:text-gray-700">
-        <%= link_to "Imports", import_sessions_path %>
-      </a>
+      <%= link_to "Imports", import_sessions_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700" %>
     </div>
   </li>
 <% end %>
@@ -68,8 +66,8 @@
           <td class="font-mono"><%= file.relative_path %></td>
 
           <td>
-            <% case file.status
-               when "completed" %><span class="text-green-600">✓</span>
+            <% case file.status %>
+            <% when "completed" %><span class="text-green-600">✓</span>
             <% when "failed" %><span class="text-red-600">✗</span>
             <% when "skipped" %><span class="text-gray-400">⊘</span>
             <% else %><span class="text-yellow-500">⏳</span>
