@@ -60,9 +60,6 @@ linter:
     erb-no-instance-variables-in-partials:
       enabled: false
 
-    erb-no-trailing-whitespace:
-      enabled: false
-
     erb-require-whitespace-inside-tags:
       enabled: false
 

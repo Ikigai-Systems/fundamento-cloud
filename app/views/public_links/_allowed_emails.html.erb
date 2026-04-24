@@ -1,7 +1,7 @@
 <div id="<%= dom_id(public_link, :allowed_emails) %>">
   <div class="mb-4">
     <div class="text-sm font-medium text-gray-700 mb-2">External stakeholders having access:</div>
-    
+
     <% if public_link.allowed_users.any? || public_link.pending_users.any? %>
       <div class="space-y-2">
         <!-- Existing users -->
