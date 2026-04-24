@@ -17,7 +17,7 @@
     <%= render "devise/shared/error_messages", resource: document %>
 
     <div class="form-field">
-      <%= f.label :space %><br/>
+      <%= f.label :space %><br>
       <%= f.collection_select :space_id, policy_scope(current_organization.spaces).without(document.space).order(:name), :id, :name, {}, class: "form-input" %>
     </div>
   <% end %>

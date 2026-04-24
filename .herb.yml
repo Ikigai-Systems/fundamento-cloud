@@ -59,9 +59,6 @@ linter:
     html-require-script-nonce:
       enabled: false
 
-    html-no-self-closing:
-      enabled: false
-
     html-input-require-autocomplete:
       enabled: false
 
