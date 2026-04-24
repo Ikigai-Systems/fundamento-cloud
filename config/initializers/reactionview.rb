@@ -40,6 +40,7 @@ ReActionView::Template::Handlers::ERB.prepend(Module.new do
   def local_template?(template)
     return true unless template.respond_to?(:identifier) && template.identifier
 
-    template.identifier.start_with?(Rails.root.to_s)
+    path = template.identifier
+    path.start_with?(Rails.root.to_s) && !path.include?("/vendor/bundle/")
   end
 end)
