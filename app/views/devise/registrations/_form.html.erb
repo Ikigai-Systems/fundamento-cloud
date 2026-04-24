@@ -1,14 +1,16 @@
 <section class="form-section w-full">
-  <% if !Flipper.enabled?(:standalone) %>
-    <h1 class="mt-0 max-w-75">
+  <h1 class="mt-0 max-w-75">
+    <% if !Flipper.enabled?(:standalone) %>
+
       <span class="text-4xl font-semibold block mt-3">Fundamento</span>
       <span class="text-lg font-normal">Sign up for a free account</span>
-    </h1>
-  <% else %>
-    <h1 class="mt-0 max-w-75">
+
+    <% else %>
+
       <span class="text-3xl">Create an account</span>
-    </h1>
-  <% end %>
+
+    <% end %>
+  </h1>
 
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name),
     html: { class: "default-form" }) do |f|

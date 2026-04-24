@@ -35,11 +35,13 @@
 
     <template data-popover-target="content">
       <div data-popover-target="card" class="popover-tooltip-card m-1">
-        <% if has_permission_to_edit %>
-          <p>Edit <code>E</code></p>
-        <% else %>
-          <p>You lack permission to edit this document</p>
-        <% end %>
+        <p>
+          <% if has_permission_to_edit %>
+            Edit <code>E</code>
+          <% else %>
+            You lack permission to edit this document
+          <% end %>
+        </p>
       </div>
     </template>
   </div>

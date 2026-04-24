@@ -66,9 +66,6 @@ linter:
     erb-prefer-image-tag-helper:
       enabled: false
 
-    erb-no-duplicate-branch-elements:
-      enabled: false
-
     erb-no-extra-whitespace-inside-tags:
       enabled: false
 
