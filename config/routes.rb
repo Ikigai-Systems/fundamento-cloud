@@ -205,6 +205,8 @@ Rails.application.routes.draw do
 
       resources :tables, only: [:show]
 
+      post "formulas/eval", to: "formulas#eval"
+
       resources :users, only: [:show]
 
       resources :import_sessions, only: [:create, :show, :destroy] do
