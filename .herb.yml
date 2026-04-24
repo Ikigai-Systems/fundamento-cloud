@@ -23,6 +23,7 @@ files:
   exclude:
     - 'public/**/*'
     - 'tmp/**/*'
+    - '**/node_modules/**/*'
 
 # engine:
 #   validators:
@@ -86,9 +87,6 @@ linter:
       enabled: false
 
     parser-no-errors:
-      enabled: false
-
-    html-no-unknown-tag:
       enabled: false
 
     erb-no-interpolated-class-names:
