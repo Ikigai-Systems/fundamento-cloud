@@ -121,9 +121,6 @@ linter:
     erb-no-statement-in-script:
       enabled: false
 
-    erb-no-unsafe-script-interpolation:
-      enabled: false
-
   #   # Rules can have 'include', 'only', and 'exclude' patterns
   #   some-rule:
   #     # Additional patterns to check (additive, ignored when 'only' is present)

@@ -37,7 +37,6 @@
   <script>
     window.FundamentoConfig = {
       sentryDsn: <%= Rails.application.credentials.dig(:sentry, :frontend_dsn).to_json.html_safe %>,
-      replaysSessionSampleRate: <%= replays_session_sample_rate %>,
       <% unless Flipper.enabled?(:standalone) %>
         posthogKey: <%= Rails.application.credentials.dig(:posthog, :api_key).to_json.html_safe %>,
         twitterPixelId: <%= Rails.application.credentials.dig(:twitter, :pixel_id).to_json.html_safe %>,
