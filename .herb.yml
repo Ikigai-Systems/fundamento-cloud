@@ -50,9 +50,6 @@ linter:
     erb-require-trailing-newline:
       enabled: false
 
-    html-attribute-double-quotes:
-      enabled: false
-
     html-anchor-require-href:
       enabled: false
 
