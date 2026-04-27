@@ -11,7 +11,7 @@ RSpec.describe FormulaService, type: :model do
   describe ".evaluate" do
     context "with simple arithmetic formulas" do
       it "evaluates addition" do
-        result = FormulaService.evaluate("1 + 1", space, organization_membership)
+        result = FormulaService.evaluate("1 + 1", nil, organization_membership)
 
         expect(result["result"]).to eq(2)
         expect(result["commands"]).to eq([])
@@ -19,16 +19,23 @@ RSpec.describe FormulaService, type: :model do
       end
 
       it "evaluates multiplication" do
-        result = FormulaService.evaluate("5 * 3", space, organization_membership)
+        result = FormulaService.evaluate("5 * 3", nil, organization_membership)
 
         expect(result["result"]).to eq(15)
         expect(result["commands"]).to eq([])
       end
 
       it "evaluates complex expressions" do
-        result = FormulaService.evaluate("(10 + 5) / 3", space, organization_membership)
+        result = FormulaService.evaluate("(10 + 5) / 3", nil, organization_membership)
 
         expect(result["result"]).to eq(5)
+      end
+
+      it "still works when space is provided" do
+        result = FormulaService.evaluate("1 + 1", space, organization_membership)
+
+        expect(result["result"]).to eq(2)
+        expect(result["error"]).to be_nil
       end
     end
 
@@ -36,7 +43,7 @@ RSpec.describe FormulaService, type: :model do
       it "evaluates Concatenate function" do
         result = FormulaService.evaluate(
           "Concatenate(\"Hello\", \" \", \"World\")",
-          space,
+          nil,
           organization_membership
         )
 
@@ -44,19 +51,25 @@ RSpec.describe FormulaService, type: :model do
       end
 
       it "evaluates Round function" do
-        result = FormulaService.evaluate("Round(3.14159, 2)", space, organization_membership)
+        result = FormulaService.evaluate("Round(3.14159, 2)", nil, organization_membership)
 
         expect(result["result"]).to eq(3.14)
       end
 
-      it "evaluates basic formula functions" do
+      it "evaluates Upper function" do
+        result = FormulaService.evaluate("Upper(\"hello\")", nil, organization_membership)
+
+        expect(result["result"]).to eq("HELLO")
+        expect(result["commands"]).to eq([])
+      end
+
+      it "reports an error when calling an unknown method" do
         # Test with a simple function that's more likely to work
         result = FormulaService.evaluate("Len(\"hello\")", space, organization_membership)
 
         # Should successfully evaluate or return an error
-        expect(result).to have_key("result").or have_key("error")
-        # Commands should be present if result is successful
-        expect(result["commands"]).to be_an(Array) if result["result"].present?
+        expect(result).to have_key("error")
+        expect(result["error"]).to eq("Unable to evaluate formula due to error: Undefined function: Len")
       end
     end
 
@@ -64,7 +77,7 @@ RSpec.describe FormulaService, type: :model do
       it "accepts additional context parameter" do
         result = FormulaService.evaluate(
           "1 + 1",
-          space,
+          nil,
           organization_membership,
           additional_context: { "name" => "Test User" }
         )
@@ -77,7 +90,7 @@ RSpec.describe FormulaService, type: :model do
       it "accepts ThisRow context parameter" do
         result = FormulaService.evaluate(
           "2 + 2",
-          space,
+          nil,
           organization_membership,
           additional_context: { "ThisRow" => { "age" => 25 } }
         )
@@ -85,15 +98,6 @@ RSpec.describe FormulaService, type: :model do
         # Should successfully evaluate even with ThisRow context
         expect(result["result"]).to eq(4)
         expect(result["error"]).to be_nil
-      end
-    end
-
-    context "without space" do
-      it "handles nil space gracefully" do
-        result = FormulaService.evaluate("2 + 2", nil, organization_membership)
-
-        # Should return either a result or an error, not crash
-        expect(result).to have_key("result").or have_key("error")
       end
     end
 
@@ -108,7 +112,7 @@ RSpec.describe FormulaService, type: :model do
 
     context "with invalid formula" do
       it "returns error hash" do
-        result = FormulaService.evaluate("InvalidFunction()", space, organization_membership)
+        result = FormulaService.evaluate("InvalidFunction()", nil, organization_membership)
 
         expect(result["error"]).to be_present
         expect(result["error"]).to include("Unable to evaluate formula")
@@ -116,7 +120,7 @@ RSpec.describe FormulaService, type: :model do
       end
 
       it "handles syntax errors" do
-        result = FormulaService.evaluate("1 +", space, organization_membership)
+        result = FormulaService.evaluate("1 +", nil, organization_membership)
 
         expect(result["error"]).to be_present
         expect(result["error"]).to include("Unable to evaluate formula")
@@ -132,7 +136,7 @@ RSpec.describe FormulaService, type: :model do
         { formula: "Concatenate(\"a\", \"b\")", additional_context: {} }
       ]
 
-      results = FormulaService.batch_evaluate(evaluations, space, organization_membership)
+      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
 
       expect(results).to be_an(Array)
       expect(results.length).to eq(3)
@@ -148,7 +152,7 @@ RSpec.describe FormulaService, type: :model do
         { formula: "3 + 3", additional_context: {} }
       ]
 
-      results = FormulaService.batch_evaluate(evaluations, space, organization_membership)
+      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
 
       expect(results.length).to eq(3)
       expect(results[0]["result"]).to eq(2)
@@ -164,10 +168,22 @@ RSpec.describe FormulaService, type: :model do
         { formula: "2 * 3", additional_context: { "y" => 5 } }
       ]
 
-      results = FormulaService.batch_evaluate(evaluations, space, organization_membership)
+      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
 
       expect(results[0]["result"]).to eq(2)
       expect(results[1]["result"]).to eq(6)
+    end
+
+    it "still works when space is provided" do
+      evaluations = [
+        { formula: "1 + 1", additional_context: {} },
+        { formula: "2 + 3", additional_context: {} },
+      ]
+
+      results = FormulaService.batch_evaluate(evaluations, space, organization_membership)
+
+      expect(results[0]["result"]).to eq(2)
+      expect(results[1]["result"]).to eq(5)
     end
   end
 end

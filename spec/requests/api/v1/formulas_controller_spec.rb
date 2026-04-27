@@ -24,18 +24,19 @@ RSpec.describe "Api::V1::Formulas", type: :request do
     context "with valid API token" do
       it "evaluates a simple arithmetic formula" do
         post api_v1_formulas_eval_path,
-          params: { formula: "1 + 2", space_id: is_default_space.id },
+          params: { formula: "1 + 2" },
           headers: auth_headers
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
         expect(json_response["result"]).to eq(3)
         expect(json_response["commands"]).to eq([])
+        expect(json_response["error"]).to be_nil
       end
 
       it "evaluates a string formula" do
         post api_v1_formulas_eval_path,
-          params: { formula: 'Concatenate("hello", " ", "world")', space_id: is_default_space.id },
+          params: { formula: 'Concatenate("hello", " ", "world")' },
           headers: auth_headers
 
         expect(response).to have_http_status(:ok)
@@ -43,19 +44,19 @@ RSpec.describe "Api::V1::Formulas", type: :request do
         expect(json_response["result"]).to eq("hello world")
       end
 
-      it "returns error for invalid formula" do
+      it "evaluates a formula with space_id" do
         post api_v1_formulas_eval_path,
-          params: { formula: "InvalidFunction((((", space_id: is_default_space.id },
+          params: { formula: "5 * 5", space_id: is_default_space.id },
           headers: auth_headers
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
-        expect(json_response).to have_key("error")
+        expect(json_response["result"]).to eq(25)
       end
 
-      it "returns error when space_id is missing" do
+      it "returns error for invalid formula" do
         post api_v1_formulas_eval_path,
-          params: { formula: "1 + 1" },
+          params: { formula: "InvalidFunction((((" },
           headers: auth_headers
 
         expect(response).to have_http_status(:ok)
@@ -69,6 +70,49 @@ RSpec.describe "Api::V1::Formulas", type: :request do
           headers: auth_headers
 
         expect(response).to have_http_status(:not_found)
+      end
+
+      context "with table references" do
+        fixtures "tables/tables", "tables/columns", "tables/rows", "tables/cells"
+
+        it "looks up a table by name when space_id is provided" do
+          post api_v1_formulas_eval_path,
+            params: { formula: "Table(\"Projects\")", space_id: is_default_space.id },
+            headers: auth_headers
+
+          expect(response).to have_http_status(:ok)
+          json_response = JSON.parse(response.body)
+          expect(json_response["result"]).to be_an(Array)
+        end
+
+        it "looks up a table by id" do
+          post api_v1_formulas_eval_path,
+            params: { formula: "Table(\"#{tables_tables(:projects).id}\")" },
+            headers: auth_headers
+
+          expect(response).to have_http_status(:ok)
+          json_response = JSON.parse(response.body)
+          expect(json_response["result"]).to be_an(Array)
+        end
+
+        it "returns error when table name is ambiguous across spaces (no space_id)" do
+          Table.create!(
+            id: "duplicate_projects",
+            name: tables_tables(:projects).name,
+            organization: ikigai_systems,
+            space: spaces(:is_stefans),
+            parent: spaces(:is_stefans)
+          )
+
+          post api_v1_formulas_eval_path,
+            params: { formula: "Table(\"#{tables_tables(:projects).name}\")" },
+            headers: auth_headers
+
+          expect(response).to have_http_status(:ok)
+          json_response = JSON.parse(response.body)
+          expect(json_response).to have_key("error")
+          expect(json_response["error"]).to match(/Multiple tables/i)
+        end
       end
     end
 

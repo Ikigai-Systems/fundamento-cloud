@@ -39,5 +39,36 @@ RSpec.describe Formula::Engine, type: :model do
       expect(result).to be_a(Array)
       expect(result[0]).to include("Description", "Key", "Name", "Value")
     end
+
+    context "without space" do
+      let(:space) { nil }
+
+      it "looks up a table by id across the organization" do
+        result = engine.evaluate("Table(\"#{tables_tables(:projects).id}\")")
+
+        expect(result).to be_a(Array)
+        expect(result[0]).to include("Description", "Key", "Name", "Value")
+      end
+
+      it "looks up a table by name when unique in the organization" do
+        result = engine.evaluate("Table(\"#{tables_tables(:projects).name}\")")
+
+        expect(result).to be_a(Array)
+      end
+
+      it "raises AmbiguousTable when name matches multiple tables in the organization" do
+        Table.create!(
+          id: "duplicate_projects",
+          name: tables_tables(:projects).name,
+          organization: organization,
+          space: spaces(:is_stefans),
+          parent: spaces(:is_stefans)
+        )
+
+        expect {
+          engine.evaluate("Table(\"#{tables_tables(:projects).name}\")")
+        }.to raise_error(Formula::TableLookup::AmbiguousTable, /Multiple tables/)
+      end
+    end
   end
 end

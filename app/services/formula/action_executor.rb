@@ -8,7 +8,6 @@ class Formula::ActionExecutor
     @organization_membership = organization_membership
     @additional_context = additional_context
 
-    raise ArgumentError, "space is required" unless @space
     raise ArgumentError, "organization_membership" unless @organization_membership
 
     @pundit_user = PolicyUserContext.new(@organization_membership.user, @organization_membership.organization)
@@ -230,13 +229,7 @@ class Formula::ActionExecutor
   end
 
   def find_table(table_identifier)
-    # Try to find by NPI first, then by name
-    table = @space.tables.find_by(id: table_identifier) || @space.tables.find_by(name: table_identifier)
-    
-    # Raise exception if table not found to match expected behavior
-    raise ActiveRecord::RecordNotFound, "Table not found: #{table_identifier}" unless table
-    
-    table
+    Formula::TableLookup.new(space: @space, pundit_user: @pundit_user).find!(table_identifier)
   end
 
   def build_row_context(function_context, row)
@@ -265,7 +258,7 @@ class Formula::ActionExecutor
     functions = Formula::DefaultFunctions.get_functions.dup
     
     # Add fundamento functions if available
-    if @space && @organization_membership
+    if @organization_membership
       pundit_user = PolicyUserContext.new(@organization_membership)
       fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
       functions.merge!(fundamento_functions.functions)
@@ -316,7 +309,7 @@ class Formula::ActionExecutor
       additional_functions = {}
       
       # Add fundamento functions if available
-      if @space && @organization_membership
+      if @organization_membership
         pundit_user = PolicyUserContext.new(@organization_membership)
         fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
         additional_functions.merge!(fundamento_functions.functions)
@@ -330,7 +323,7 @@ class Formula::ActionExecutor
       functions = Formula::DefaultFunctions.get_functions.dup
       
       # Add fundamento functions if available
-      if @space && @organization_membership
+      if @organization_membership
         pundit_user = PolicyUserContext.new(@organization_membership)
         fundamento_functions = Formula::FundamentoFunctions.new(pundit_user: pundit_user, space: @space)
         functions.merge!(fundamento_functions.functions)
