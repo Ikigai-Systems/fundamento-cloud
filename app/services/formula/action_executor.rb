@@ -42,17 +42,21 @@ class Formula::ActionExecutor
       'AddRow' => ->(function_context, table_id, *args) {
         values = Hash[*args]
         add_row(function_context, table_id, values)
+        true
       },
       'DeleteRows' => ->(function_context, table_id) {
         delete_rows(function_context, table_id)
+        true
       },
       'UpdateRows' => ->(function_context, table_id, condition_formula, *args) {
         values = Hash[*args]
         update_rows(function_context, table_id, condition_formula, values)
+        true
       },
       'AddOrUpdateRows' => ->(function_context, table_id, condition_formula, *args) {
         values = Hash[*args]
         add_or_update_rows(function_context, table_id, condition_formula, values)
+        true
       },
       'RunActions' => ->(function_context, *args) {
         run_actions(function_context, *args)
@@ -66,11 +70,9 @@ class Formula::ActionExecutor
 
     record_action("AddRow", tableId: table.id, values: values)
 
-    unless @dry_mode
-      execute_add_row(function_context, table, values:)
-    end
+    return nil if @dry_mode
 
-    true
+    execute_add_row(function_context, table, values:)
   end
 
   def delete_rows(function_context, table_id)
@@ -78,11 +80,9 @@ class Formula::ActionExecutor
 
     record_action("DeleteRows", tableId: table.id)
 
-    unless @dry_mode
-      execute_delete_rows(function_context, table)
-    end
+    return nil if @dry_mode
 
-    true
+    execute_delete_rows(function_context, table)
   end
 
   def update_rows(function_context, table_id, condition_formula, values = {})
@@ -90,11 +90,9 @@ class Formula::ActionExecutor
 
     record_action("UpdateRows", tableId: table.id, conditionFormula: condition_formula, values: values)
 
-    unless @dry_mode
-      execute_update_rows(function_context, table, condition_formula:, values:)
-    end
+    return [] if @dry_mode
 
-    true
+    execute_update_rows(function_context, table, condition_formula:, values:)
   end
 
   def add_or_update_rows(function_context, table_id, condition_formula, values = {})
@@ -102,11 +100,9 @@ class Formula::ActionExecutor
 
     record_action("AddOrUpdateRows", tableId: table.id, conditionFormula: condition_formula, values: values)
 
-    unless @dry_mode
-      execute_add_or_update_rows(function_context, table, condition_formula:, values:)
-    end
+    return { added: [], updated: [] } if @dry_mode
 
-    true
+    execute_add_or_update_rows(function_context, table, condition_formula:, values:)
   end
 
   def run_actions(function_context, *args)
@@ -124,7 +120,7 @@ class Formula::ActionExecutor
       organization: @organization_membership.organization,
       previous_row: table.rows_in_order.last
     )
-    
+
     values.each do |column_identifier, value|
       # Try to find column by NPI first, then by name
       column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
@@ -132,7 +128,7 @@ class Formula::ActionExecutor
 
       context = build_row_context(function_context, row)
       evaluated_value = evaluate_new_value_formula(value, context)
-      
+
       row.cells.create!(
         column: column,
         value: evaluated_value,
@@ -140,66 +136,78 @@ class Formula::ActionExecutor
         table: table
       )
     end
+
+    row
   end
 
   def execute_delete_rows(function_context, table)
     Pundit.authorize(@pundit_user, table, :update?)
-    
+
+    count = table.rows.count
+
     # Handle foreign key constraints by clearing previous_row_id references first
     table.rows.update_all(previous_row_id: nil)
     table.rows.destroy_all
+
+    count
   end
 
   def execute_update_rows(function_context, table, condition_formula:, values:)
     Pundit.authorize(@pundit_user, table, :update?)
 
+    updated_rows = []
+
     table.rows.each do |row|
       context = build_row_context(function_context, row)
-      
-      if evaluate_condition(condition_formula, context)
-        values.each do |column_identifier, value|
-          column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
-          next unless column
 
-          evaluated_value = evaluate_new_value_formula(value, context)
-          
-          cell = row.cells.find_or_create_by(column: column) do |new_cell|
-            new_cell.organization = @organization_membership.organization
-            new_cell.table = table
-          end
-          cell.update!(value: evaluated_value)
+      next unless evaluate_condition(condition_formula, context)
+
+      values.each do |column_identifier, value|
+        column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
+        next unless column
+
+        evaluated_value = evaluate_new_value_formula(value, context)
+
+        cell = row.cells.find_or_create_by(column: column) do |new_cell|
+          new_cell.organization = @organization_membership.organization
+          new_cell.table = table
         end
+        cell.update!(value: evaluated_value)
       end
+
+      updated_rows << row
     end
+
+    updated_rows
   end
 
   def execute_add_or_update_rows(function_context, table, condition_formula:, values:)
     Pundit.authorize(@pundit_user, table, :update?)
 
     matching_rows = []
-    
+
     table.rows_in_order.each do |row|
       context = build_row_context(function_context, row)
-      
+
       if evaluate_condition(condition_formula, context)
         matching_rows << row
       end
     end
-    
+
     if matching_rows.empty?
       # Add new row
       row = table.rows.create!(
         organization: @organization_membership.organization,
         previous_row: table.rows_in_order.last
       )
-      
+
       values.each do |column_identifier, value|
         column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
         context = build_row_context(function_context, row)
         evaluated_value = evaluate_new_value_formula(value, context)
-        
+
         row.cells.create!(
           column: column,
           value: evaluated_value,
@@ -207,17 +215,19 @@ class Formula::ActionExecutor
           table: table
         )
       end
+
+      { added: [row], updated: [] }
     else
       # Update existing rows
       matching_rows.each do |row|
         context = build_row_context(function_context, row)
-        
+
         values.each do |column_identifier, value|
           column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
           evaluated_value = evaluate_new_value_formula(value, context)
-          
+
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
             new_cell.organization = @organization_membership.organization
             new_cell.table = table
@@ -225,6 +235,8 @@ class Formula::ActionExecutor
           cell.update!(value: evaluated_value)
         end
       end
+
+      { added: [], updated: matching_rows }
     end
   end
 

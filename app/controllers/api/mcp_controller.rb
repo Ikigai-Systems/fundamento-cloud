@@ -14,6 +14,12 @@ class Api::McpController < Api::ApiController
         RemoveTagsTool,
         UpdateTagsTool,
         RunFormulaTool,
+        ListTablesTool,
+        DescribeTableTool,
+        ReadTableTool,
+        AddRowTool,
+        UpdateRowsTool,
+        AddOrUpdateRowsTool,
       ],
       # prompts: [MyPrompt],
       server_context: {

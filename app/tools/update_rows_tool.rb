@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+
+class UpdateRowsTool < ApplicationTool
+  description "Update cells on rows that match a condition formula. " \
+              "condition_formula is a formula returning a boolean per row (use CurrentRow(\"Column\") to access the row). " \
+              "values is a map of column NPI or column name to the new value (scalar or formula string). " \
+              "Formula syntax: https://docs.fundamento.it/formulas/reference."
+
+  input_schema(
+    properties: {
+      table_id: { type: :string, description: "Table NPI or name." },
+      space_id: { type: :string, description: "Optional space NPI to disambiguate by-name lookups." },
+      condition_formula: {
+        type: :string,
+        description: "Formula evaluated per row; rows where it returns truthy are updated. Pass an empty string to update every row."
+      },
+      values: {
+        type: :object,
+        description: "Map of column NPI (or column name) to new value. Unknown columns are ignored.",
+        additionalProperties: true
+      }
+    },
+    required: [:table_id, :condition_formula, :values]
+  )
+
+  annotations(
+    title: "Update Rows",
+    read_only_hint: false,
+  )
+
+  def self.call(table_id:, condition_formula:, values:, server_context:, space_id: nil)
+    pundit_user = pundit_user_from_context(server_context)
+
+    space = nil
+    if space_id.present?
+      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      Pundit.authorize(pundit_user, space, :show?)
+    end
+
+    executor = Formula::ActionExecutor.new(
+      dry_mode: false,
+      space: space,
+      organization_membership: pundit_user.organization_membership
+    )
+
+    updated = executor.update_rows({}, table_id, condition_formula, values || {})
+
+    MCP::Tool::Response.new(structured_content: {
+      updated_row_ids: updated.map(&:id),
+      count: updated.size
+    })
+  end
+end
