@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class UpdateRowsTool < ApplicationTool
+  extend FormulaErrorHandling
+
   description "Update cells on rows that match a condition formula. " \
               "condition_formula is a formula returning a boolean per row (use CurrentRow(\"Column\") to access the row). " \
               "values is a map of column NPI or column name to the new value (scalar or formula string). " \
@@ -47,6 +49,10 @@ class UpdateRowsTool < ApplicationTool
       updated = executor.update_rows({}, table_id, condition_formula, values || {})
     rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
       raise
+    rescue Formula::ActionExecutor::ConditionFormulaError => e
+      return condition_formula_error_response(e)
+    rescue Formula::ActionExecutor::ValueFormulaError => e
+      return value_formula_error_response(e)
     rescue => e
       return MCP::Tool::Response.new(structured_content: { error: "Unable to update rows due to error: #{e.message}" })
     end

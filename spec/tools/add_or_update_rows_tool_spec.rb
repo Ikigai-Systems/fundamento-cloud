@@ -60,7 +60,7 @@ RSpec.describe AddOrUpdateRowsTool, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "returns an error in structured_content when the condition formula is invalid" do
+    it "returns a structured condition_formula error when the condition formula is invalid" do
       response = AddOrUpdateRowsTool.call(
         table_id: table.id,
         condition_formula: "InvalidFormula(",
@@ -68,9 +68,12 @@ RSpec.describe AddOrUpdateRowsTool, type: :model do
         server_context: server_context
       )
 
-      expect(response).to be_a(MCP::Tool::Response)
-      expect(response.structured_content[:error]).to be_present
-      expect(response.structured_content[:error]).to include("Unable to upsert rows")
+      content = response.structured_content
+      expect(content[:error_type]).to eq("invalid_condition_formula")
+      expect(content[:field]).to eq("condition_formula")
+      expect(content[:formula]).to eq("InvalidFormula(")
+      expect(content[:examples]).to be_an(Array).and(be_present)
+      expect(content[:documentation_url]).to include("docs.fundamento.it")
     end
   end
 end

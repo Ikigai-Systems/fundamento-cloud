@@ -73,16 +73,19 @@ RSpec.describe AddRowTool, type: :model do
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "returns an error in structured_content when a cell value formula is invalid" do
+    it "returns a structured value_formula error when a cell value formula is invalid" do
       response = AddRowTool.call(
         table_id: table.id,
         values: { "Key" => "InvalidFormula(" },
         server_context: server_context
       )
 
-      expect(response).to be_a(MCP::Tool::Response)
-      expect(response.structured_content[:error]).to be_present
-      expect(response.structured_content[:error]).to include("Unable to add row")
+      content = response.structured_content
+      expect(content[:error_type]).to eq("invalid_value_formula")
+      expect(content[:field]).to eq("Key")
+      expect(content[:formula]).to eq("InvalidFormula(")
+      expect(content[:examples]).to be_an(Array).and(be_present)
+      expect(content[:documentation_url]).to include("docs.fundamento.it")
     end
   end
 end

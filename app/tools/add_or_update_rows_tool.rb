@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class AddOrUpdateRowsTool < ApplicationTool
+  extend FormulaErrorHandling
+
   description "Upsert rows: when no row matches condition_formula, add a new row with the given values; " \
               "otherwise update every matching row. " \
               "Formula syntax: https://docs.fundamento.it/formulas/reference."
@@ -46,6 +48,10 @@ class AddOrUpdateRowsTool < ApplicationTool
       result = executor.add_or_update_rows({}, table_id, condition_formula, values || {})
     rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
       raise
+    rescue Formula::ActionExecutor::ConditionFormulaError => e
+      return condition_formula_error_response(e)
+    rescue Formula::ActionExecutor::ValueFormulaError => e
+      return value_formula_error_response(e)
     rescue => e
       return MCP::Tool::Response.new(structured_content: { error: "Unable to upsert rows due to error: #{e.message}" })
     end

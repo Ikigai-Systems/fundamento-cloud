@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class AddRowTool < ApplicationTool
+  extend FormulaErrorHandling
+
   description "Add a single row to a table. Values is a map of column NPI or column name to the cell value. " \
               "Cell values may be plain scalars or formula strings (e.g. \"Now()\"); formula syntax is documented at " \
               "https://docs.fundamento.it/formulas/reference."
@@ -42,6 +44,8 @@ class AddRowTool < ApplicationTool
       row = executor.add_row({}, table_id, values || {})
     rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
       raise
+    rescue Formula::ActionExecutor::ValueFormulaError => e
+      return value_formula_error_response(e)
     rescue => e
       return MCP::Tool::Response.new(structured_content: { error: "Unable to add row due to error: #{e.message}" })
     end

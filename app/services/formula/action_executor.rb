@@ -1,4 +1,26 @@
 class Formula::ActionExecutor
+  # RuntimeError subclass so existing `raise_error(RuntimeError)` specs still pass.
+  class FormulaEvaluationError < RuntimeError
+    attr_reader :formula, :cause_message
+
+    def initialize(formula:, cause_message:)
+      @formula = formula
+      @cause_message = cause_message
+      super(cause_message)
+    end
+  end
+
+  class ConditionFormulaError < FormulaEvaluationError; end
+
+  class ValueFormulaError < FormulaEvaluationError
+    attr_reader :column_name
+
+    def initialize(formula:, cause_message:, column_name:)
+      @column_name = column_name
+      super(formula: formula, cause_message: cause_message)
+    end
+  end
+
   attr_reader :actions
 
   def initialize(dry_mode: true, space:, organization_membership:, additional_context: {})
@@ -127,7 +149,7 @@ class Formula::ActionExecutor
       next unless column
 
       context = build_row_context(function_context, row)
-      evaluated_value = evaluate_new_value_formula(value, context)
+      evaluated_value = evaluate_value_safely(value, context, column.name)
 
       row.cells.create!(
         column: column,
@@ -160,13 +182,13 @@ class Formula::ActionExecutor
     table.rows.each do |row|
       context = build_row_context(function_context, row)
 
-      next unless evaluate_condition(condition_formula, context)
+      next unless evaluate_condition_safely(condition_formula, context)
 
       values.each do |column_identifier, value|
         column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
         next unless column
 
-        evaluated_value = evaluate_new_value_formula(value, context)
+        evaluated_value = evaluate_value_safely(value, context, column.name)
 
         cell = row.cells.find_or_create_by(column: column) do |new_cell|
           new_cell.organization = @organization_membership.organization
@@ -189,7 +211,7 @@ class Formula::ActionExecutor
     table.rows_in_order.each do |row|
       context = build_row_context(function_context, row)
 
-      if evaluate_condition(condition_formula, context)
+      if evaluate_condition_safely(condition_formula, context)
         matching_rows << row
       end
     end
@@ -206,7 +228,7 @@ class Formula::ActionExecutor
         next unless column
 
         context = build_row_context(function_context, row)
-        evaluated_value = evaluate_new_value_formula(value, context)
+        evaluated_value = evaluate_value_safely(value, context, column.name)
 
         row.cells.create!(
           column: column,
@@ -226,7 +248,7 @@ class Formula::ActionExecutor
           column = table.columns.find_by(id: column_identifier) || table.columns.find_by(name: column_identifier)
           next unless column
 
-          evaluated_value = evaluate_new_value_formula(value, context)
+          evaluated_value = evaluate_value_safely(value, context, column.name)
 
           cell = row.cells.find_or_create_by(column: column) do |new_cell|
             new_cell.organization = @organization_membership.organization
@@ -260,6 +282,32 @@ class Formula::ActionExecutor
     
     context["currentRow"] = current_row
     context
+  end
+
+  def evaluate_condition_safely(formula, context)
+    evaluate_condition(formula, context)
+  rescue ConditionFormulaError, ValueFormulaError
+    raise
+  rescue => e
+    raise ConditionFormulaError.new(formula: formula, cause_message: sanitize_formula_error(e))
+  end
+
+  def evaluate_value_safely(value, context, column_name)
+    evaluate_new_value_formula(value, context)
+  rescue ConditionFormulaError, ValueFormulaError
+    raise
+  rescue => e
+    raise ValueFormulaError.new(formula: value, cause_message: sanitize_formula_error(e), column_name: column_name)
+  end
+
+  def sanitize_formula_error(exception)
+    message = if exception.is_a?(Parslet::ParseFailed)
+      "Parse error: #{exception.parse_failure_cause.ascii_tree.lines.first&.strip}"
+    else
+      exception.message.to_s.lines.first&.strip || exception.message.to_s
+    end
+
+    message.length > 500 ? "#{message[0, 500]}..." : message
   end
 
   def evaluate_condition(formula, context)
