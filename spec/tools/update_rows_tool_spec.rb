@@ -69,5 +69,18 @@ RSpec.describe UpdateRowsTool, type: :model do
         )
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it "returns an error in structured_content when the condition formula is invalid" do
+      response = UpdateRowsTool.call(
+        table_id: table.id,
+        condition_formula: "InvalidFormula(",
+        values: { "Description" => "X" },
+        server_context: server_context
+      )
+
+      expect(response).to be_a(MCP::Tool::Response)
+      expect(response.structured_content[:error]).to be_present
+      expect(response.structured_content[:error]).to include("Unable to update rows")
+    end
   end
 end

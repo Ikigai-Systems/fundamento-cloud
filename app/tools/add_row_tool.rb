@@ -38,7 +38,13 @@ class AddRowTool < ApplicationTool
       organization_membership: pundit_user.organization_membership
     )
 
-    row = executor.add_row({}, table_id, values || {})
+    begin
+      row = executor.add_row({}, table_id, values || {})
+    rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
+      raise
+    rescue => e
+      return MCP::Tool::Response.new(structured_content: { error: "Unable to add row due to error: #{e.message}" })
+    end
 
     MCP::Tool::Response.new(structured_content: {
       row_id: row.id,

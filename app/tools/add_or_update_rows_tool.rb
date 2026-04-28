@@ -42,7 +42,13 @@ class AddOrUpdateRowsTool < ApplicationTool
       organization_membership: pundit_user.organization_membership
     )
 
-    result = executor.add_or_update_rows({}, table_id, condition_formula, values || {})
+    begin
+      result = executor.add_or_update_rows({}, table_id, condition_formula, values || {})
+    rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
+      raise
+    rescue => e
+      return MCP::Tool::Response.new(structured_content: { error: "Unable to upsert rows due to error: #{e.message}" })
+    end
 
     MCP::Tool::Response.new(structured_content: {
       added_row_ids: result[:added].map(&:id),

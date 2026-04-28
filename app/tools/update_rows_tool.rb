@@ -43,7 +43,13 @@ class UpdateRowsTool < ApplicationTool
       organization_membership: pundit_user.organization_membership
     )
 
-    updated = executor.update_rows({}, table_id, condition_formula, values || {})
+    begin
+      updated = executor.update_rows({}, table_id, condition_formula, values || {})
+    rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
+      raise
+    rescue => e
+      return MCP::Tool::Response.new(structured_content: { error: "Unable to update rows due to error: #{e.message}" })
+    end
 
     MCP::Tool::Response.new(structured_content: {
       updated_row_ids: updated.map(&:id),
