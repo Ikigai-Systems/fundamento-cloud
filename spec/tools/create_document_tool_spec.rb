@@ -178,11 +178,11 @@ RSpec.describe CreateDocumentTool, type: :model do
       end
     end
 
-    context "with invalid space npi" do
+    context "with invalid space id" do
       it "raises RecordNotFound error" do
         expect {
           CreateDocumentTool.call(
-            space_id: "invalid-npi",
+            space_id: "invalid-id",
             parent_document_id: nil,
             title: "Test Document",
             markdown: "# Content",
@@ -192,12 +192,12 @@ RSpec.describe CreateDocumentTool, type: :model do
       end
     end
 
-    context "with invalid parent document npi" do
+    context "with invalid parent document id" do
       it "raises RecordNotFound error" do
         expect {
           CreateDocumentTool.call(
             space_id: space.id,
-            parent_document_id: "invalid-parent-npi",
+            parent_document_id: "invalid-parent-id",
             title: "Test Document",
             markdown: "# Content",
             server_context: server_context

@@ -3,17 +3,17 @@
 class AddRowTool < ApplicationTool
   extend FormulaErrorHandling
 
-  description "Add a single row to a table. Values is a map of column NPI or column name to the cell value. " \
+  description "Add a single row to a table. Values is a map of column id or column name to the cell value. " \
               "Cell values may be plain scalars or formula strings (e.g. \"Now()\"); formula syntax is documented at " \
               "https://docs.fundamento.it/formulas/reference."
 
   input_schema(
     properties: {
-      table_id: { type: :string, description: "Table NPI or name." },
-      space_id: { type: :string, description: "Optional space NPI to disambiguate by-name lookups." },
+      table_id: { type: :string, description: "Table id or name." },
+      space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." },
       values: {
         type: :object,
-        description: "Map of column NPI (or column name) to cell value. Unknown columns are ignored.",
+        description: "Map of column id (or column name) to cell value. Unknown columns are ignored.",
         additionalProperties: true
       }
     },
@@ -30,7 +30,7 @@ class AddRowTool < ApplicationTool
 
     space = nil
     if space_id.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      space = pundit_user.current_organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

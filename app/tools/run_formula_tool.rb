@@ -22,7 +22,7 @@ class RunFormulaTool < ApplicationTool
     space = nil
 
     if space_id.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      space = pundit_user.current_organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

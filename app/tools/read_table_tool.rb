@@ -3,7 +3,7 @@
 class ReadTableTool < ApplicationTool
   description "Read rows from a table. Returns paginated row data along with the column schema. " \
               "Use DescribeTable first if you only need the schema. " \
-              "Each row is keyed by column NPI; the column schema lets you map NPIs to names. " \
+              "Each row is keyed by column id; the column schema maps ids to names. " \
               "For large tables call repeatedly with offset to page through results."
 
   MAX_LIMIT = 1000
@@ -11,8 +11,8 @@ class ReadTableTool < ApplicationTool
 
   input_schema(
     properties: {
-      table_id: { type: :string, description: "Table NPI or name." },
-      space_id: { type: :string, description: "Optional space NPI to disambiguate by-name lookups." },
+      table_id: { type: :string, description: "Table id or name." },
+      space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." },
       evaluate_formulas: { type: :boolean, description: "When true (default), formula columns are evaluated; otherwise raw values are returned." },
       limit: { type: :integer, description: "Maximum rows to return. Defaults to 100, capped at 1000." },
       offset: { type: :integer, description: "Number of rows to skip. Defaults to 0." }
@@ -30,7 +30,7 @@ class ReadTableTool < ApplicationTool
 
     space = nil
     if space_id.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      space = pundit_user.current_organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

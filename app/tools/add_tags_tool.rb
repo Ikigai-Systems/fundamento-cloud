@@ -50,12 +50,12 @@ class AddTagsTool < ApplicationTool
 
   private
 
-  def self.resolve_object(npi, object_type, organization)
+  def self.resolve_object(id, object_type, organization)
     case object_type
     when "Document"
-      organization.documents.find_by_param!(npi)
+      organization.documents.find(id)
     when "Table"
-      organization.tables.find(npi)
+      organization.tables.find(id)
     else
       raise ArgumentError, "Unsupported object_type: #{object_type}"
     end

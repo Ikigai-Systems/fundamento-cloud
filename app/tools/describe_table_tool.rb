@@ -3,12 +3,12 @@
 class DescribeTableTool < ApplicationTool
   description "Return a table's schema (columns, types, row count) without loading row data. " \
               "Use this before ReadTable on tables you don't know, to understand their structure. " \
-              "table_id can be a table NPI or its name; supply space_id when names may collide across spaces."
+              "table_id accepts either the table's id or its name; supply space_id when names may collide across spaces."
 
   input_schema(
     properties: {
-      table_id: { type: :string, description: "Table NPI or name." },
-      space_id: { type: :string, description: "Optional space NPI to disambiguate by-name lookups." }
+      table_id: { type: :string, description: "Table id or name." },
+      space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." }
     },
     required: [:table_id]
   )
@@ -23,7 +23,7 @@ class DescribeTableTool < ApplicationTool
 
     space = nil
     if space_id.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      space = pundit_user.current_organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

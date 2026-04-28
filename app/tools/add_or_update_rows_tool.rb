@@ -9,15 +9,15 @@ class AddOrUpdateRowsTool < ApplicationTool
 
   input_schema(
     properties: {
-      table_id: { type: :string, description: "Table NPI or name." },
-      space_id: { type: :string, description: "Optional space NPI to disambiguate by-name lookups." },
+      table_id: { type: :string, description: "Table id or name." },
+      space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." },
       condition_formula: {
         type: :string,
         description: "Formula evaluated per row; matching rows are updated. If no row matches, a new row is added."
       },
       values: {
         type: :object,
-        description: "Map of column NPI (or column name) to value. Unknown columns are ignored.",
+        description: "Map of column id (or column name) to value. Unknown columns are ignored.",
         additionalProperties: true
       }
     },
@@ -34,7 +34,7 @@ class AddOrUpdateRowsTool < ApplicationTool
 
     space = nil
     if space_id.present?
-      space = pundit_user.current_organization.spaces.find_by_param!(space_id)
+      space = pundit_user.current_organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
     end
 

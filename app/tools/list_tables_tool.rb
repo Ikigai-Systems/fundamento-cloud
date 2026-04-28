@@ -24,7 +24,7 @@ class ListTablesTool < ApplicationTool
     scope = scope.where(archived: false) unless include_archived
 
     if space_id.present?
-      space = organization.spaces.find_by_param!(space_id)
+      space = organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
       scope = scope.where(space: space)
     end

@@ -46,7 +46,7 @@ class ListObjectsByTagsTool < ApplicationTool
 
     # Filter by space if provided
     if space_id.present?
-      space = organization.spaces.find_by_param!(space_id)
+      space = organization.spaces.find(space_id)
       Pundit.authorize(pundit_user, space, :show?)
       tag_scope = tag_scope.where(space: space)
     end
@@ -125,7 +125,7 @@ class ListObjectsByTagsTool < ApplicationTool
     case object
     when Document
       {
-        id: object.try(:npi) || object.id,
+        id: object.id,
         title: object.title,
         object_type: "Document",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,
@@ -134,7 +134,7 @@ class ListObjectsByTagsTool < ApplicationTool
       }
     when Table
       {
-        id: object.try(:npi) || object.id,
+        id: object.id,
         name: object.name,
         object_type: "Table",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,

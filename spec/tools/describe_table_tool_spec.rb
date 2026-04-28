@@ -17,7 +17,7 @@ RSpec.describe DescribeTableTool, type: :model do
   end
 
   describe ".call" do
-    it "returns table schema by NPI" do
+    it "returns table schema by id" do
       response = DescribeTableTool.call(
         table_id: table.id,
         server_context: server_context
