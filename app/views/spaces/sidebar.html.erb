@@ -11,7 +11,7 @@
         <% end %>
       </div>
 
-      <%if user_signed_in? && current_organization.present? %>
+      <% if user_signed_in? && current_organization.present? %>
         <div class="mt-2 pb-3 w-full">
           <%= render "spaces/_sidebar/spaces_menu" %>
         </div>

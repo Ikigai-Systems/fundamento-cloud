@@ -12,27 +12,27 @@
     <%= f.fields_for :user do |user_form| %>
       <div class="form-field">
         <%= user_form.label :email %>
-        <%= user_form.email_field :email, class: "form-input"  %>
+        <%= user_form.email_field :email, class: "form-input" %>
       </div>
 
       <div class="form-field">
         <%= user_form.label :first_name %>
-        <%= user_form.text_field :first_name, class: "form-input"  %>
+        <%= user_form.text_field :first_name, class: "form-input" %>
       </div>
 
       <div class="form-field">
         <%= user_form.label :last_name %>
-        <%= user_form.text_field :last_name, class: "form-input"  %>
+        <%= user_form.text_field :last_name, class: "form-input" %>
       </div>
 
       <div class="form-field">
         <%= user_form.label :password %>
-        <%= user_form.password_field :password, class: "form-input"  %>
+        <%= user_form.password_field :password, class: "form-input" %>
       </div>
 
       <div class="form-field">
         <%= user_form.label :password_confirmation %>
-        <%= user_form.password_field :password_confirmation, autocomplete: "new-password", class: "form-input"  %>
+        <%= user_form.password_field :password_confirmation, autocomplete: "new-password", class: "form-input" %>
       </div>
     <% end %>
 

@@ -97,7 +97,7 @@
       <p>
         <% if resource.invited_by.present? %><%= resource.invited_by.display_name %> invited you
         <% else %>You've been invited
-        <% end %> to collaborate in <strong><%= @organization.name %></strong> an organization on <%=link_to "Fundamento", "https://fundamento.it" %>.</p>
+        <% end %> to collaborate in <strong><%= @organization.name %></strong> an organization on <%= link_to "Fundamento", "https://fundamento.it" %>.</p>
 
       <p>Fundamento is a free collaborative workspace for teams.</p>
     </div>

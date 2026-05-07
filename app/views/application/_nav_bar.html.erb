@@ -9,7 +9,7 @@
 
       <div class="ml-6">
         <div class="flex space-x-4">
-          <%if user_signed_in? && current_organization.present? %>
+          <% if user_signed_in? && current_organization.present? %>
             <%= render "spaces_menu" %>
           <% end %>
         </div>

@@ -23,7 +23,7 @@
         <%= button_to "Delete", pack_path(@pack), form: { data: { turbo_confirm: "Are you sure? Your pack will be immediately removed!" } }, data: {"dropdown-target" => "menuItem"}, role: "menuitem", tabindex: "-1", method: :delete %>
       <% end %>
 
-      <%= render template: "application/components/button_group"%>
+      <%= render template: "application/components/button_group" %>
     </div>
   <% end %>
 <% end %>
