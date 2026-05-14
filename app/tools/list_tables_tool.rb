@@ -16,7 +16,7 @@ class ListTablesTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(server_context:, space_id: nil, include_archived: false)
+  def self.perform(server_context:, space_id: nil, include_archived: false)
     pundit_user = pundit_user_from_context(server_context)
     organization = pundit_user.current_organization
 

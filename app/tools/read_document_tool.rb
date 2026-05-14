@@ -13,7 +13,7 @@ class ReadDocumentTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(id:, server_context:)
+  def self.perform(id:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     document  = pundit_user.current_organization.documents.find(id)

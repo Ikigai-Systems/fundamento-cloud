@@ -30,7 +30,7 @@ class UpdateRowsTool < ApplicationTool
     read_only_hint: false,
   )
 
-  def self.call(table_id:, condition_formula:, values:, server_context:, space_id: nil)
+  def self.perform(table_id:, condition_formula:, values:, server_context:, space_id: nil)
     pundit_user = pundit_user_from_context(server_context)
 
     space = nil
@@ -47,14 +47,10 @@ class UpdateRowsTool < ApplicationTool
 
     begin
       updated = executor.update_rows({}, table_id, condition_formula, values || {})
-    rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
-      raise
     rescue Formula::ActionExecutor::ConditionFormulaError => e
       return condition_formula_error_response(e)
     rescue Formula::ActionExecutor::ValueFormulaError => e
       return value_formula_error_response(e)
-    rescue => e
-      return MCP::Tool::Response.new(structured_content: { error: "Unable to update rows due to error: #{e.message}" })
     end
 
     MCP::Tool::Response.new(structured_content: {

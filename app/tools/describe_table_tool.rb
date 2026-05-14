@@ -18,7 +18,7 @@ class DescribeTableTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(table_id:, server_context:, space_id: nil)
+  def self.perform(table_id:, server_context:, space_id: nil)
     pundit_user = pundit_user_from_context(server_context)
 
     space = nil

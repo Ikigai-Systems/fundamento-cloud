@@ -97,18 +97,19 @@ RSpec.describe ImportDocumentTool do
       )
     end
 
-    it "raises error for unsupported file types" do
+    it "returns an internal error response and reports to Sentry for unsupported file types" do
       file_content = file_fixture("pandoc/malware.exe").read
       base64_content = Base64.strict_encode64(file_content)
+      expect(Sentry).to receive(:capture_exception).with(anything, anything)
 
-      expect {
-        described_class.call(
-          space_id: is_default_space.id,
-          file_content: base64_content,
-          filename: "malware.exe",
-          server_context: server_context
-        )
-      }.to raise_error(PandocConverterService::ConversionError, /Unsupported file type/)
+      response = described_class.call(
+        space_id: is_default_space.id,
+        file_content: base64_content,
+        filename: "malware.exe",
+        server_context: server_context
+      )
+      expect(response.error?).to be true
+      expect(response.structured_content[:error]).to eq("internal_error")
     end
 
     it "returns DocumentBlueprint MCP response" do

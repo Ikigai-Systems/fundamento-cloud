@@ -224,14 +224,15 @@ RSpec.describe ListObjectsByTagsTool, type: :model do
         expect(json_response["missing_tags"]).to contain_exactly("#status/wip")
       end
 
-      it "raises error when space doesn't exist" do
-        expect {
-          ListObjectsByTagsTool.call(
-            tags: ["#test"],
-            space_id: "nonexistent",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when space doesn't exist" do
+        response = ListObjectsByTagsTool.call(
+          tags: ["#test"],
+          space_id: "nonexistent",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
@@ -270,51 +271,55 @@ RSpec.describe ListObjectsByTagsTool, type: :model do
         expect(json_response["objects"]).to eq([])
       end
 
-      it "raises error when user doesn't belong to the organization" do
+      it "returns not found error response when user doesn't belong to the organization" do
         invalid_context = {
           user_id: user.id,
           organization_id: organizations(:another).id
         }
 
-        expect {
-          ListObjectsByTagsTool.call(
-            tags: ["#test"],
-            server_context: invalid_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        response = ListObjectsByTagsTool.call(
+          tags: ["#test"],
+          server_context: invalid_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises error when user cannot access the specified space" do
+      it "returns unauthorized error response when user cannot access the specified space" do
         # Use Maria's context to try to access a private space she can't see
-        expect {
-          ListObjectsByTagsTool.call(
-            tags: ["#private"],
-            space_id: hc_private_space.id,
-            server_context: maria_context
-          )
-        }.to raise_error(Pundit::NotAuthorizedError)
+        response = ListObjectsByTagsTool.call(
+          tags: ["#private"],
+          space_id: hc_private_space.id,
+          server_context: maria_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("unauthorized")
       end
     end
 
     context "error cases and validation" do
-      it "raises ArgumentError for invalid object_types" do
-        expect {
-          ListObjectsByTagsTool.call(
-            tags: ["#test"],
-            object_types: ["InvalidType"],
-            server_context: server_context
-          )
-        }.to raise_error(ArgumentError, "Invalid object_types: [\"InvalidType\"]")
+      it "returns invalid input error response for invalid object_types" do
+        response = ListObjectsByTagsTool.call(
+          tags: ["#test"],
+          object_types: ["InvalidType"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
 
-      it "raises ArgumentError for mixed valid and invalid object_types" do
-        expect {
-          ListObjectsByTagsTool.call(
-            tags: ["#test"],
-            object_types: ["Document", "InvalidType"],
-            server_context: server_context
-          )
-        }.to raise_error(ArgumentError, "Invalid object_types: [\"InvalidType\"]")
+      it "returns invalid input error response for mixed valid and invalid object_types" do
+        response = ListObjectsByTagsTool.call(
+          tags: ["#test"],
+          object_types: ["Document", "InvalidType"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
 
       it "returns message about missing tags when tags don't exist" do
@@ -377,6 +382,20 @@ RSpec.describe ListObjectsByTagsTool, type: :model do
         json_response = JSON.parse(response.content.first[:text])
         expect(json_response["objects"].length).to eq(1)
         expect(json_response["objects"].first["id"]).to eq(doc.id)
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(organization).to receive(:tags).and_raise(RuntimeError, "Something went wrong")
+        allow_any_instance_of(PolicyUserContext).to receive(:current_organization).and_return(organization)
+        response = ListObjectsByTagsTool.call(
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

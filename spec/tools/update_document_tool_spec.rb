@@ -156,14 +156,15 @@ RSpec.describe UpdateDocumentTool, type: :model do
     end
 
     context "with invalid document id" do
-      it "raises RecordNotFound error" do
-        expect {
-          UpdateDocumentTool.call(
-            id: "invalid-id",
-            markdown: "# Content",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = UpdateDocumentTool.call(
+          id: "invalid-id",
+          markdown: "# Content",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
@@ -177,29 +178,31 @@ RSpec.describe UpdateDocumentTool, type: :model do
         }
       end
 
-      it "raises RecordNotFound when accessing document from different organization" do
-        expect {
-          UpdateDocumentTool.call(
-            id: document.id,
-            markdown: "# Updated Content",
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when accessing document from different organization" do
+        response = UpdateDocumentTool.call(
+          id: document.id,
+          markdown: "# Updated Content",
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
     context "when BlocknoteConverterService fails" do
-      it "raises ConversionError" do
+      it "returns an internal error response and reports to Sentry" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
           .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
+        expect(Sentry).to receive(:capture_exception).with(instance_of(BlocknoteConverterService::ConversionError), anything)
 
-        expect {
-          UpdateDocumentTool.call(
-            id: document.id,
-            markdown: "# Content",
-            server_context: server_context
-          )
-        }.to raise_error(BlocknoteConverterService::ConversionError, "Conversion failed")
+        response = UpdateDocumentTool.call(
+          id: document.id,
+          markdown: "# Content",
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
 

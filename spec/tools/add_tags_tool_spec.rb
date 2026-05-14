@@ -133,70 +133,94 @@ RSpec.describe AddTagsTool, type: :model do
     end
 
     context "authorization and error cases" do
-      it "raises RecordNotFound when document doesn't exist" do
-        expect {
-          AddTagsTool.call(
-            object_id: "nonexistent",
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when document doesn't exist" do
+        response = AddTagsTool.call(
+          object_id: "nonexistent",
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises error when user doesn't have authorization" do
+      it "returns not found error response when user doesn't have authorization" do
         unauthorized_context = {
           user_id: users(:maria).id,
           organization_id: organization.id
         }
 
-        expect {
-          AddTagsTool.call(
-            object_id: document.id,
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        response = AddTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises ArgumentError for unsupported object type" do
-        expect {
-          AddTagsTool.call(
-            object_id: document.id,
-            object_type: "UnsupportedType",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ArgumentError, "Unsupported object_type: UnsupportedType")
+      it "returns invalid input error response for unsupported object type" do
+        response = AddTagsTool.call(
+          object_id: document.id,
+          object_type: "UnsupportedType",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
 
-      it "validates tag format and raises validation error for invalid tags" do
-        expect {
-          AddTagsTool.call(
-            object_id: document.id,
-            object_type: "Document",
-            tags: ["#valid", "#invalid@tag", "#another&bad"],
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordInvalid)
+      it "returns invalid input error response for invalid tag format" do
+        response = AddTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#valid", "#invalid@tag", "#another&bad"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
     end
 
     context "transaction rollback" do
       it "rolls back all changes if any tag validation fails" do
         expect {
-          expect {
-            expect {
-              AddTagsTool.call(
-                object_id: document.id,
-                object_type: "Document",
-                tags: ["#good", "#bad@tag"],
-                server_context: server_context
-              )
-            }.to raise_error(ActiveRecord::RecordInvalid)
-          }.to_not change(Tag, :count)
+          AddTagsTool.call(
+            object_id: document.id,
+            object_type: "Document",
+            tags: ["#good", "#bad@tag"],
+            server_context: server_context
+          )
+        }.to_not change(Tag, :count)
+
+        expect {
+          AddTagsTool.call(
+            object_id: document.id,
+            object_type: "Document",
+            tags: ["#good", "#bad@tag"],
+            server_context: server_context
+          )
         }.to_not change(ObjectTag, :count)
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(TagsService).to receive(:new).and_raise(RuntimeError, "Something went wrong")
+        response = AddTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

@@ -10,7 +10,7 @@ class ListSpacesTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(server_context:)
+  def self.perform(server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     spaces = Pundit.policy_scope!(pundit_user, pundit_user.current_organization.spaces).order(:name)

@@ -40,10 +40,21 @@ RSpec.describe ListSpacesTool, type: :model do
         }
       end
 
-      it "raises not found error" do
-        expect {
-          ListSpacesTool.call(server_context: server_context)
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = ListSpacesTool.call(server_context: server_context)
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        allow(SpaceBlueprint).to receive(:render).and_raise(RuntimeError, "Something went wrong")
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        response = ListSpacesTool.call(server_context: server_context)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

@@ -15,7 +15,7 @@ class CreateDocumentTool < ApplicationTool
     title: "Create Document",
   )
 
-  def self.call(space_id:, parent_document_id:, title:, markdown:, server_context:)
+  def self.perform(space_id:, parent_document_id:, title:, markdown:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     document = DocumentService.new(pundit_user: pundit_user).create!(

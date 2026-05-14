@@ -16,7 +16,7 @@ class RunFormulaTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(formula:, space_id:, server_context:)
+  def self.perform(formula:, space_id:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     space = nil

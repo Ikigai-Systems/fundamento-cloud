@@ -47,13 +47,14 @@ RSpec.describe ListTablesTool, type: :model do
       expect(space_ids).to eq([space.id])
     end
 
-    it "raises when space does not exist" do
-      expect {
-        ListTablesTool.call(
-          server_context: server_context,
-          space_id: "nonexistent"
-        )
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "returns not found error response when space does not exist" do
+      response = ListTablesTool.call(
+        server_context: server_context,
+        space_id: "nonexistent"
+      )
+      expect(response).to be_a(MCP::Tool::Response)
+      expect(response.error?).to be true
+      expect(response.structured_content[:error]).to eq("not_found")
     end
 
     it "excludes tables from organizations the user does not belong to" do
@@ -65,6 +66,16 @@ RSpec.describe ListTablesTool, type: :model do
       response = ListTablesTool.call(server_context: other_context)
       table_ids = response.structured_content[:tables].map { |t| t[:id] }
       expect(table_ids).not_to include(tables_tables(:projects).id)
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(Tables::Row).to receive(:where).and_raise(RuntimeError, "Something went wrong")
+        response = ListTablesTool.call(server_context: server_context)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
+      end
     end
   end
 end

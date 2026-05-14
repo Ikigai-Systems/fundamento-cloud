@@ -19,7 +19,7 @@ class UpdateTagsTool < ApplicationTool
     read_only_hint: false,
   )
 
-  def self.call(object_id:, object_type:, tags:, server_context:)
+  def self.perform(object_id:, object_type:, tags:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     # Resolve the object polymorphically

@@ -22,7 +22,7 @@ class ImportDocumentTool < ApplicationTool
     title: "Import Document from File",
   )
 
-  def self.call(space_id:, file_content:, filename:, title: nil, parent_document_id: nil, server_context:)
+  def self.perform(space_id:, file_content:, filename:, title: nil, parent_document_id: nil, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     # Decode Base64 file content

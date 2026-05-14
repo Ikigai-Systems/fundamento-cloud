@@ -36,13 +36,14 @@ RSpec.describe ReadDocumentTool, type: :model do
     end
 
     context "document not found" do
-      it "raises RecordNotFound error" do
-        expect {
-          ReadDocumentTool.call(
-            id: "nonexistent",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = ReadDocumentTool.call(
+          id: "nonexistent",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
@@ -54,13 +55,27 @@ RSpec.describe ReadDocumentTool, type: :model do
         }
       end
 
-      it "raises RecordNotFound error when document belongs to different organization" do
-        expect {
-          ReadDocumentTool.call(
-            id: documents(:one).id,
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when document belongs to different organization" do
+        response = ReadDocumentTool.call(
+          id: documents(:one).id,
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(DocumentBlueprint).to receive(:render).and_raise(RuntimeError, "Something went wrong")
+        response = ReadDocumentTool.call(
+          id: documents(:one).id,
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

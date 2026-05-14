@@ -25,7 +25,7 @@ class AddRowTool < ApplicationTool
     read_only_hint: false,
   )
 
-  def self.call(table_id:, values:, server_context:, space_id: nil)
+  def self.perform(table_id:, values:, server_context:, space_id: nil)
     pundit_user = pundit_user_from_context(server_context)
 
     space = nil
@@ -42,12 +42,8 @@ class AddRowTool < ApplicationTool
 
     begin
       row = executor.add_row({}, table_id, values || {})
-    rescue ActiveRecord::RecordNotFound, Pundit::NotAuthorizedError
-      raise
     rescue Formula::ActionExecutor::ValueFormulaError => e
       return value_formula_error_response(e)
-    rescue => e
-      return MCP::Tool::Response.new(structured_content: { error: "Unable to add row due to error: #{e.message}" })
     end
 
     MCP::Tool::Response.new(structured_content: {

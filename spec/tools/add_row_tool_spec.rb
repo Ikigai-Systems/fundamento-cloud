@@ -48,29 +48,31 @@ RSpec.describe AddRowTool, type: :model do
       }.to change { table.reload.rows.count }.by(1)
     end
 
-    it "raises RecordNotFound when the table does not exist" do
-      expect {
-        AddRowTool.call(
-          table_id: "nonexistent",
-          values: { "Key" => "X" },
-          server_context: server_context
-        )
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "returns not found error response when the table does not exist" do
+      response = AddRowTool.call(
+        table_id: "nonexistent",
+        values: { "Key" => "X" },
+        server_context: server_context
+      )
+      expect(response).to be_a(MCP::Tool::Response)
+      expect(response.error?).to be true
+      expect(response.structured_content[:error]).to eq("not_found")
     end
 
-    it "raises when accessing a table in another organization" do
+    it "returns not found error response when accessing a table in another organization" do
       other_context = {
         user_id: user.id,
         organization_id: organizations(:hc).id
       }
 
-      expect {
-        AddRowTool.call(
-          table_id: table.id,
-          values: { "Key" => "X" },
-          server_context: other_context
-        )
-      }.to raise_error(ActiveRecord::RecordNotFound)
+      response = AddRowTool.call(
+        table_id: table.id,
+        values: { "Key" => "X" },
+        server_context: other_context
+      )
+      expect(response).to be_a(MCP::Tool::Response)
+      expect(response.error?).to be true
+      expect(response.structured_content[:error]).to eq("not_found")
     end
 
     it "returns a structured value_formula error when a cell value formula is invalid" do
@@ -86,6 +88,20 @@ RSpec.describe AddRowTool, type: :model do
       expect(content[:formula]).to eq("InvalidFormula(")
       expect(content[:examples]).to be_an(Array).and(be_present)
       expect(content[:documentation_url]).to include("docs.fundamento.it")
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(Formula::ActionExecutor).to receive(:new).and_raise(RuntimeError, "Something went wrong")
+        response = AddRowTool.call(
+          table_id: table.id,
+          values: { "Key" => "X" },
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
+      end
     end
   end
 end

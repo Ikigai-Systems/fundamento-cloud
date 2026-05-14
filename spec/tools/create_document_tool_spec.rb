@@ -179,30 +179,32 @@ RSpec.describe CreateDocumentTool, type: :model do
     end
 
     context "with invalid space id" do
-      it "raises RecordNotFound error" do
-        expect {
-          CreateDocumentTool.call(
-            space_id: "invalid-id",
-            parent_document_id: nil,
-            title: "Test Document",
-            markdown: "# Content",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = CreateDocumentTool.call(
+          space_id: "invalid-id",
+          parent_document_id: nil,
+          title: "Test Document",
+          markdown: "# Content",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
     context "with invalid parent document id" do
-      it "raises RecordNotFound error" do
-        expect {
-          CreateDocumentTool.call(
-            space_id: space.id,
-            parent_document_id: "invalid-parent-id",
-            title: "Test Document",
-            markdown: "# Content",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = CreateDocumentTool.call(
+          space_id: space.id,
+          parent_document_id: "invalid-parent-id",
+          title: "Test Document",
+          markdown: "# Content",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
@@ -216,33 +218,35 @@ RSpec.describe CreateDocumentTool, type: :model do
         }
       end
 
-      it "raises RecordNotFound when accessing space from different organization" do
-        expect {
-          CreateDocumentTool.call(
-            space_id: space.id,
-            parent_document_id: nil,
-            title: "Unauthorized Document",
-            markdown: "# Content",
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when accessing space from different organization" do
+        response = CreateDocumentTool.call(
+          space_id: space.id,
+          parent_document_id: nil,
+          title: "Unauthorized Document",
+          markdown: "# Content",
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
     context "when BlocknoteConverterService fails" do
-      it "raises BlocknoteConversionError" do
+      it "returns an internal error response and reports to Sentry" do
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
           .and_raise(BlocknoteConverterService::ConversionError.new("Conversion failed"))
+        expect(Sentry).to receive(:capture_exception).with(instance_of(BlocknoteConverterService::ConversionError), anything)
 
-        expect {
-          CreateDocumentTool.call(
-            space_id: space.id,
-            parent_document_id: nil,
-            title: "Test Document",
-            markdown: "# Content",
-            server_context: server_context
-          )
-        }.to raise_error(BlocknoteConverterService::ConversionError, "Conversion failed")
+        response = CreateDocumentTool.call(
+          space_id: space.id,
+          parent_document_id: nil,
+          title: "Test Document",
+          markdown: "# Content",
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

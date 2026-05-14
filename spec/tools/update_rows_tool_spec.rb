@@ -59,15 +59,16 @@ RSpec.describe UpdateRowsTool, type: :model do
       expect(response.structured_content[:count]).to eq(table.rows.count)
     end
 
-    it "raises RecordNotFound when the table does not exist" do
-      expect {
-        UpdateRowsTool.call(
-          table_id: "nonexistent",
-          condition_formula: "",
-          values: { "Description" => "X" },
-          server_context: server_context
-        )
-      }.to raise_error(ActiveRecord::RecordNotFound)
+    it "returns not found error response when the table does not exist" do
+      response = UpdateRowsTool.call(
+        table_id: "nonexistent",
+        condition_formula: "",
+        values: { "Description" => "X" },
+        server_context: server_context
+      )
+      expect(response).to be_a(MCP::Tool::Response)
+      expect(response.error?).to be true
+      expect(response.structured_content[:error]).to eq("not_found")
     end
 
     it "returns a structured condition_formula error when the condition formula is invalid" do
@@ -101,6 +102,21 @@ RSpec.describe UpdateRowsTool, type: :model do
       expect(content[:formula]).to eq("InvalidFormula(")
       expect(content[:examples]).to be_an(Array).and(be_present)
       expect(content[:documentation_url]).to include("docs.fundamento.it")
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(Formula::ActionExecutor).to receive(:new).and_raise(RuntimeError, "Something went wrong")
+        response = UpdateRowsTool.call(
+          table_id: table.id,
+          condition_formula: "",
+          values: { "Description" => "X" },
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
+      end
     end
   end
 end

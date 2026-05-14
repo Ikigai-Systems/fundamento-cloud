@@ -27,7 +27,7 @@ class ListObjectsByTagsTool < ApplicationTool
     read_only_hint: true,
   )
 
-  def self.call(tags:, object_types: nil, space_id: nil, server_context:)
+  def self.perform(tags:, object_types: nil, space_id: nil, server_context:)
     pundit_user = pundit_user_from_context(server_context)
     organization = pundit_user.current_organization
 

@@ -79,14 +79,15 @@ RSpec.describe RunFormulaTool, type: :model do
     end
 
     context "with non-existent space" do
-      it "raises not found error" do
-        expect {
-          RunFormulaTool.call(
-            formula: "1 + 1",
-            space_id: "nonexistent",
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = RunFormulaTool.call(
+          formula: "1 + 1",
+          space_id: "nonexistent",
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
     end
 
@@ -98,14 +99,29 @@ RSpec.describe RunFormulaTool, type: :model do
         }
       end
 
-      it "raises not found error" do
-        expect {
-          RunFormulaTool.call(
-            formula: "1 + 1",
-            space_id: space.id,
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response" do
+        response = RunFormulaTool.call(
+          formula: "1 + 1",
+          space_id: space.id,
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(FormulaService).to receive(:evaluate).and_raise(RuntimeError, "Something went wrong")
+        response = RunFormulaTool.call(
+          formula: "1 + 1",
+          space_id: nil,
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

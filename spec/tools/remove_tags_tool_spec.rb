@@ -177,42 +177,45 @@ RSpec.describe RemoveTagsTool, type: :model do
         ObjectTag.create!(tag: @tag, object: document, organization: organization)
       end
 
-      it "raises RecordNotFound when document doesn't exist" do
-        expect {
-          RemoveTagsTool.call(
-            object_id: "nonexistent",
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when document doesn't exist" do
+        response = RemoveTagsTool.call(
+          object_id: "nonexistent",
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises error when user doesn't have authorization" do
+      it "returns not found error response when user doesn't have authorization" do
         unauthorized_context = {
           user_id: users(:maria).id,
           organization_id: organization.id
         }
 
-        expect {
-          RemoveTagsTool.call(
-            object_id: document.id,
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        response = RemoveTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises ArgumentError for unsupported object type" do
-        expect {
-          RemoveTagsTool.call(
-            object_id: document.id,
-            object_type: "UnsupportedType",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ArgumentError, "Unsupported object_type: UnsupportedType")
+      it "returns invalid input error response for unsupported object type" do
+        response = RemoveTagsTool.call(
+          object_id: document.id,
+          object_type: "UnsupportedType",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
     end
 
@@ -236,6 +239,21 @@ RSpec.describe RemoveTagsTool, type: :model do
 
         document.reload
         expect(document.tags).to be_empty
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(TagsService).to receive(:new).and_raise(RuntimeError, "Something went wrong")
+        response = RemoveTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

@@ -21,7 +21,7 @@ RSpec.describe UpdateTagsTool, type: :model do
         # Set up existing tags on the document
         @existing_tag1 = Tag.create!(name: "old1", space: space, organization: organization)
         @existing_tag2 = Tag.create!(name: "old2", space: space, organization: organization)
-        
+
         ObjectTag.create!(tag: @existing_tag1, object: document, organization: organization)
         ObjectTag.create!(tag: @existing_tag2, object: document, organization: organization)
       end
@@ -206,53 +206,57 @@ RSpec.describe UpdateTagsTool, type: :model do
     end
 
     context "authorization and error cases" do
-      it "raises RecordNotFound when document doesn't exist" do
-        expect {
-          UpdateTagsTool.call(
-            object_id: "nonexistent",
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+      it "returns not found error response when document doesn't exist" do
+        response = UpdateTagsTool.call(
+          object_id: "nonexistent",
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises error when user doesn't have authorization" do
+      it "returns not found error response when user doesn't have authorization" do
         unauthorized_context = {
           user_id: users(:maria).id,
           organization_id: organization.id
         }
 
-        expect {
-          UpdateTagsTool.call(
-            object_id: document.id,
-            object_type: "Document",
-            tags: ["#test"],
-            server_context: unauthorized_context
-          )
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        response = UpdateTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: unauthorized_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("not_found")
       end
 
-      it "raises ArgumentError for unsupported object type" do
-        expect {
-          UpdateTagsTool.call(
-            object_id: document.id,
-            object_type: "UnsupportedType",
-            tags: ["#test"],
-            server_context: server_context
-          )
-        }.to raise_error(ArgumentError, "Unsupported object_type: UnsupportedType")
+      it "returns invalid input error response for unsupported object type" do
+        response = UpdateTagsTool.call(
+          object_id: document.id,
+          object_type: "UnsupportedType",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
 
-      it "validates tag format and raises validation error for invalid tags" do
-        expect {
-          UpdateTagsTool.call(
-            object_id: document.id,
-            object_type: "Document",
-            tags: ["#valid", "#invalid@tag"],
-            server_context: server_context
-          )
-        }.to raise_error(ActiveRecord::RecordInvalid)
+      it "returns invalid input error response for invalid tag format" do
+        response = UpdateTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#valid", "#invalid@tag"],
+          server_context: server_context
+        )
+        expect(response).to be_a(MCP::Tool::Response)
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
       end
     end
 
@@ -266,20 +270,20 @@ RSpec.describe UpdateTagsTool, type: :model do
         original_object_tag_count = ObjectTag.count
         original_tag_count = Tag.count
 
-        expect {
-          expect {
-            UpdateTagsTool.call(
-              object_id: document.id,
-              object_type: "Document",
-              tags: ["#good", "#bad@tag"],
-              server_context: server_context
-            )
-          }.to raise_error(ActiveRecord::RecordInvalid)
-        }.to_not change(Tag, :count)
+        response = UpdateTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#good", "#bad@tag"],
+          server_context: server_context
+        )
 
-        # Should still have the original ObjectTag association
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+
+        # Should not have changed tag counts
+        expect(Tag.count).to eq(original_tag_count)
         expect(ObjectTag.count).to eq(original_object_tag_count)
-        
+
         document.reload
         expect(document.tags).to contain_exactly(@existing_tag)
       end
@@ -298,6 +302,21 @@ RSpec.describe UpdateTagsTool, type: :model do
         document.reload
         expect(document.tags.pluck(:name)).to contain_exactly("new1", "new2")
         expect(document.tags).not_to include(@existing_tag)
+      end
+    end
+
+    context "when an unexpected error occurs" do
+      it "returns an internal error response and reports to Sentry" do
+        expect(Sentry).to receive(:capture_exception).with(instance_of(RuntimeError), anything)
+        allow(TagsService).to receive(:new).and_raise(RuntimeError, "Something went wrong")
+        response = UpdateTagsTool.call(
+          object_id: document.id,
+          object_type: "Document",
+          tags: ["#test"],
+          server_context: server_context
+        )
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("internal_error")
       end
     end
   end

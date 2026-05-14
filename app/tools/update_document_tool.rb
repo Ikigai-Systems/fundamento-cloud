@@ -13,7 +13,7 @@ class UpdateDocumentTool < ApplicationTool
     title: "Update Document",
   )
 
-  def self.call(id:, markdown:, server_context:)
+  def self.perform(id:, markdown:, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     document = DocumentService.new(pundit_user: pundit_user).update!(
