@@ -88,6 +88,7 @@ Worktrees are stored in `.worktrees/` (gitignored). After creating a worktree, t
 cp config/database.yml <worktree>/config/database.yml
 cp dockerfiles/sops-age-key.secret <worktree>/dockerfiles/sops-age-key.secret
 cp dockerfiles/fontawesome-auth.secret <worktree>/dockerfiles/fontawesome-auth.secret
+cp -r .bundle <worktree>/.bundle
 
 # Build the blocknote-converter micro-service (used by fixtures and model code)
 cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
