@@ -435,6 +435,13 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 
+  # ==> OmniAuth
+  google_client_id = Rails.application.credentials.dig(:google, :client_id)
+  google_client_secret = Rails.application.credentials.dig(:google, :client_secret)
+  if google_client_id.present? && google_client_secret.present?
+    config.omniauth :google_oauth2, google_client_id, google_client_secret, scope: "email,profile"
+  end
+
   # ==> Configuration for :magic_link_authenticatable
 
   # Need to use a custom Devise mailer in order to send magic links.
