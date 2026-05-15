@@ -25,16 +25,18 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
   end
 
   before do
-    OmniAuth.config.test_mode = true
-    OmniAuth.config.mock_auth[:google_oauth2] = auth_hash
+    Rails.application.env_config["omniauth.auth"] = auth_hash
   end
 
   after do
-    OmniAuth.config.test_mode = false
-    OmniAuth.config.mock_auth[:google_oauth2] = nil
+    Rails.application.env_config.delete("omniauth.auth")
   end
 
-  describe "GET /users/auth/google_oauth2/callback" do
+  def trigger_oauth
+    get user_google_oauth2_omniauth_callback_path
+  end
+
+  describe "Google OAuth callback" do
     context "when a matching UserIdentity exists (uid match)" do
       let(:existing_user) { users(:pawel) }
 
@@ -49,17 +51,12 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       end
 
       it "signs in the existing user without creating a new one" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.not_to change(User, :count)
-
+        expect { trigger_oauth }.not_to change(User, :count)
         expect(response).to redirect_to(root_path)
       end
 
       it "does not create a new identity" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.not_to change(UserIdentity, :count)
+        expect { trigger_oauth }.not_to change(UserIdentity, :count)
       end
     end
 
@@ -67,60 +64,51 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       let(:existing_user) { users(:pawel) }
 
       before do
-        OmniAuth.config.mock_auth[:google_oauth2] = auth_hash.merge(
+        Rails.application.env_config["omniauth.auth"] = auth_hash.merge(
           info: auth_hash.info.merge(email: existing_user.email)
         )
       end
 
       it "does not create a new user" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.not_to change(User, :count)
+        expect { trigger_oauth }.not_to change(User, :count)
       end
 
       it "creates a UserIdentity linked to the existing user" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.to change(UserIdentity, :count).by(1)
+        expect { trigger_oauth }.to change(UserIdentity, :count).by(1)
 
         identity = UserIdentity.find_by(provider: "google_oauth2", uid: google_uid)
         expect(identity.user).to eq(existing_user)
       end
 
       it "signs in the existing user" do
-        get user_google_oauth2_omniauth_callback_path
+        trigger_oauth
         expect(response).to redirect_to(root_path)
       end
     end
 
     context "when no user exists with this email (new sign-up)" do
       it "creates a new user" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.to change(User, :count).by(1)
+        expect { trigger_oauth }.to change(User, :count).by(1)
       end
 
       it "creates a UserIdentity for the new user" do
-        expect {
-          get user_google_oauth2_omniauth_callback_path
-        }.to change(UserIdentity, :count).by(1)
+        expect { trigger_oauth }.to change(UserIdentity, :count).by(1)
       end
 
       it "sets confirmed_at on the new user" do
-        get user_google_oauth2_omniauth_callback_path
-        user = User.find_by(email: google_email)
-        expect(user.confirmed_at).to be_present
+        trigger_oauth
+        expect(User.find_by(email: google_email).confirmed_at).to be_present
       end
 
       it "populates first and last name from Google" do
-        get user_google_oauth2_omniauth_callback_path
+        trigger_oauth
         user = User.find_by(email: google_email)
         expect(user.first_name).to eq("New")
         expect(user.last_name).to eq("User")
       end
 
       it "redirects to root after sign-in" do
-        get user_google_oauth2_omniauth_callback_path
+        trigger_oauth
         expect(response).to redirect_to(root_path)
       end
     end
@@ -130,7 +118,7 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       let(:original_first_name) { existing_user.first_name }
 
       before do
-        OmniAuth.config.mock_auth[:google_oauth2] = auth_hash.merge(
+        Rails.application.env_config["omniauth.auth"] = auth_hash.merge(
           info: auth_hash.info.merge(
             email: existing_user.email,
             first_name: "Different",
@@ -140,7 +128,7 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       end
 
       it "does not overwrite the existing user name" do
-        get user_google_oauth2_omniauth_callback_path
+        trigger_oauth
         expect(existing_user.reload.first_name).to eq(original_first_name)
       end
     end
