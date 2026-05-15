@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_20_122304) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_15_094545) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -648,6 +648,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_122304) do
     t.index ["shortcut", "organization_id"], name: "index_teams_on_shortcut_and_organization_id", unique: true
   end
 
+  create_table "user_identities", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "name"
+    t.string "provider", null: false
+    t.jsonb "token_data"
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_id", null: false
+    t.index ["provider", "uid"], name: "index_user_identities_on_provider_and_uid", unique: true
+    t.index ["user_id"], name: "index_user_identities_on_user_id"
+  end
+
   create_table "users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
@@ -765,6 +778,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_20_122304) do
   add_foreign_key "team_memberships", "organizations"
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "teams", "organizations"
+  add_foreign_key "user_identities", "users"
   add_foreign_key "versions", "documents"
   add_foreign_key "versions", "users", column: "created_by_id"
 end
