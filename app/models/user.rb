@@ -12,7 +12,8 @@ class User < ApplicationRecord
     :validatable,
     :trackable,
     :confirmable,
-    :magic_link_authenticatable
+    :magic_link_authenticatable,
+    :omniauthable, omniauth_providers: [:google_oauth2]
 
   before_create :skip_confirmation_if_not_required
   before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
@@ -23,6 +24,7 @@ class User < ApplicationRecord
     where("(first_name || ' ' || last_name) ILIKE ? OR email ILIKE ?", "%#{query}%", "%#{query}%")
   end
 
+  has_many :user_identities, dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :organizations, through: :organization_memberships
   has_many :public_links, foreign_key: :updated_by_id, dependent: :nullify

@@ -59,6 +59,8 @@ gem "y-rb_actioncable"
 gem "devise", github: "heartcombo/devise", branch: "main"
 gem "devise_invitable"
 gem "devise-passwordless"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 
 gem "tailwindcss-rails", "~> 3.0"
 # pin to tailwindcss version:
