@@ -32,10 +32,6 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
     Rails.application.env_config.delete("omniauth.auth")
   end
 
-  def trigger_oauth
-    get user_google_oauth2_omniauth_callback_path
-  end
-
   describe "Google OAuth callback" do
     context "when a matching UserIdentity exists (uid match)" do
       let(:existing_user) { users(:pawel) }
@@ -51,12 +47,12 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       end
 
       it "signs in the existing user without creating a new one" do
-        expect { trigger_oauth }.not_to change(User, :count)
+        expect { get user_google_oauth2_omniauth_callback_path }.not_to change(User, :count)
         expect(response).to redirect_to(root_path)
       end
 
       it "does not create a new identity" do
-        expect { trigger_oauth }.not_to change(UserIdentity, :count)
+        expect { get user_google_oauth2_omniauth_callback_path }.not_to change(UserIdentity, :count)
       end
     end
 
@@ -70,45 +66,45 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       end
 
       it "does not create a new user" do
-        expect { trigger_oauth }.not_to change(User, :count)
+        expect { get user_google_oauth2_omniauth_callback_path }.not_to change(User, :count)
       end
 
       it "creates a UserIdentity linked to the existing user" do
-        expect { trigger_oauth }.to change(UserIdentity, :count).by(1)
+        expect { get user_google_oauth2_omniauth_callback_path }.to change(UserIdentity, :count).by(1)
 
         identity = UserIdentity.find_by(provider: "google_oauth2", uid: google_uid)
         expect(identity.user).to eq(existing_user)
       end
 
       it "signs in the existing user" do
-        trigger_oauth
+        get user_google_oauth2_omniauth_callback_path
         expect(response).to redirect_to(root_path)
       end
     end
 
     context "when no user exists with this email (new sign-up)" do
       it "creates a new user" do
-        expect { trigger_oauth }.to change(User, :count).by(1)
+        expect { get user_google_oauth2_omniauth_callback_path }.to change(User, :count).by(1)
       end
 
       it "creates a UserIdentity for the new user" do
-        expect { trigger_oauth }.to change(UserIdentity, :count).by(1)
+        expect { get user_google_oauth2_omniauth_callback_path }.to change(UserIdentity, :count).by(1)
       end
 
       it "sets confirmed_at on the new user" do
-        trigger_oauth
+        get user_google_oauth2_omniauth_callback_path
         expect(User.find_by(email: google_email).confirmed_at).to be_present
       end
 
       it "populates first and last name from Google" do
-        trigger_oauth
+        get user_google_oauth2_omniauth_callback_path
         user = User.find_by(email: google_email)
         expect(user.first_name).to eq("New")
         expect(user.last_name).to eq("User")
       end
 
       it "redirects to root after sign-in" do
-        trigger_oauth
+        get user_google_oauth2_omniauth_callback_path
         expect(response).to redirect_to(root_path)
       end
     end
@@ -128,7 +124,7 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
       end
 
       it "does not overwrite the existing user name" do
-        trigger_oauth
+        get user_google_oauth2_omniauth_callback_path
         expect(existing_user.reload.first_name).to eq(original_first_name)
       end
     end
