@@ -1,16 +1,8 @@
 {
   "mcpServers": {
     "Fundamento": {
-      "type": "stdio",
-      "command": "mcp-proxy",
-      "args": [
-        "--headers",
-        "Authorization",
-        "Bearer ${FUNDAMENTO_API_KEY}",
-        "--transport",
-        "streamablehttp",
-        "https://fundamento.cloud/api/mcp"
-      ]
+      "type": "http",
+      "url": "https://fundamento.cloud/api/mcp"
     }
   }
 }

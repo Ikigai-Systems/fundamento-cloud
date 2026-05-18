@@ -1,4 +1,7 @@
 class Api::McpController < Api::ApiController
+  skip_before_action :authenticate_user_from_headers!
+  before_action :authenticate_mcp_request!
+
   def create
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
@@ -42,4 +45,47 @@ class Api::McpController < Api::ApiController
   end
 
   alias_method :show, :create
+
+  private
+
+  def authenticate_mcp_request!
+    # Try Doorkeeper OAuth token first (browser-based OAuth flow)
+    if authenticate_with_doorkeeper_token
+      return
+    end
+
+    # Fall back to existing API token / JWT strategies (backward compat)
+    if request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
+      return
+    end
+
+    # Neither worked — return 401 with OAuth discovery header so MCP clients
+    # know where to initiate the browser-based auth flow.
+    response.headers["WWW-Authenticate"] =
+      %(Bearer resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource")
+    head :unauthorized
+  end
+
+  def authenticate_with_doorkeeper_token
+    token_string = bearer_token
+    return false if token_string.blank?
+
+    oauth_token = Doorkeeper::AccessToken.by_token(token_string)
+    return false unless oauth_token&.accessible?
+
+    membership_id = oauth_token.organization_membership_id
+    return false if membership_id.blank?
+
+    membership = OrganizationMembership.find_by(id: membership_id)
+    return false unless membership
+
+    RequestContext.current_organization = membership.organization
+    sign_in(membership.user, scope: :user)
+    true
+  end
+
+  def bearer_token
+    auth = request.headers["Authorization"]
+    auth&.start_with?("Bearer ") ? auth[7..] : nil
+  end
 end

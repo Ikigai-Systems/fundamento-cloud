@@ -104,6 +104,7 @@ gem "random-word"
 gem "initials"
 
 gem "mcp", "~> 0.16"
+gem "doorkeeper"
 gem "audited", "~> 5.8"
 gem "blueprinter", "~> 1.1"
 gem "parslet", "~> 2.0"
