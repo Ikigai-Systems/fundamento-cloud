@@ -95,7 +95,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.8.8)
+    addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     audited (5.8.0)
       activerecord (>= 5.2, < 8.2)
@@ -121,7 +121,7 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     base64 (0.3.0)
     bcrypt (3.1.20)
-    bigdecimal (3.3.1)
+    bigdecimal (4.1.2)
     blueprinter (1.2.1)
     bootsnap (1.18.3)
       msgpack (~> 1.2)
@@ -230,10 +230,9 @@ GEM
     js_from_routes (4.0.2)
       railties (>= 5.1, < 9)
     json (2.16.0)
-    json-schema (6.0.0)
+    json-schema (6.2.0)
       addressable (~> 2.8)
-      bigdecimal (~> 3.1)
-    json_rpc_handler (0.1.1)
+      bigdecimal (>= 3.1, < 5)
     jwt (2.10.1)
       base64
     launchy (3.1.1)
@@ -259,9 +258,8 @@ GEM
       net-pop
       net-smtp
     marcel (1.1.0)
-    mcp (0.4.0)
+    mcp (0.16.0)
       json-schema (>= 4.1)
-      json_rpc_handler (~> 0.1)
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
@@ -338,7 +336,7 @@ GEM
     psych (5.2.6)
       date
       stringio
-    public_suffix (7.0.0)
+    public_suffix (7.0.5)
     puma (7.1.0)
       nio4r (~> 2.0)
     pundit (2.4.0)
@@ -573,7 +571,7 @@ DEPENDENCIES
   letter_opener
   lograge (~> 0.14.0)
   logstash-event (~> 1.2)
-  mcp
+  mcp (~> 0.16)
   nanoid
   net-http2
   oaken

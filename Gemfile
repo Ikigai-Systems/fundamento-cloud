@@ -103,7 +103,7 @@ gem "random-word"
 
 gem "initials"
 
-gem "mcp"
+gem "mcp", "~> 0.16"
 gem "audited", "~> 5.8"
 gem "blueprinter", "~> 1.1"
 gem "parslet", "~> 2.0"
