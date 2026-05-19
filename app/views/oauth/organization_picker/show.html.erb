@@ -7,6 +7,7 @@
 
   <%= form_tag oauth_pick_organization_path, method: :post do %>
     <%= hidden_field_tag :return_to, @return_to %>
+    <%= hidden_field_tag :oauth_state, @oauth_state %>
 
     <div class="space-y-2 mb-6">
       <% @memberships.each do |membership| %>

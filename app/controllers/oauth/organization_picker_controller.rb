@@ -9,6 +9,7 @@ class Oauth::OrganizationPickerController < ApplicationController
   def show
     @memberships = current_user.organization_memberships.includes(:organization).order("organizations.name")
     @return_to = params[:return_to]
+    @oauth_state = params[:oauth_state]
   end
 
   def create
@@ -16,11 +17,13 @@ class Oauth::OrganizationPickerController < ApplicationController
     membership = current_user.organization_memberships.find_by(id: membership_id)
 
     unless membership
-      redirect_to oauth_pick_organization_path(return_to: params[:return_to]), alert: "Please select an organization."
+      redirect_to oauth_pick_organization_path(return_to: params[:return_to], oauth_state: params[:oauth_state]),
+        alert: "Please select an organization."
       return
     end
 
-    session[:oauth_organization_membership_id] = membership.id
+    session["oauth_organization_membership_#{params[:oauth_state]}"] = membership.id
+
     redirect_to params[:return_to] || root_path
   end
 end
