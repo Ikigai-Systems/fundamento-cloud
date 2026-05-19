@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Oauth::AuthorizationsController < Doorkeeper::AuthorizationsController
+  layout "oauth"
+
   before_action :ensure_organization_selected!, only: [:new, :create]
 
   private
