@@ -9,28 +9,42 @@
     </div>
   </div>
 
-  <% if @applications.empty? %>
+  <% if @tokens.empty? %>
     <p class="text-gray-500 dark:text-gray-400 text-sm mt-4">No applications connected.</p>
   <% else %>
     <table class="table-list">
       <thead>
         <tr>
           <th scope="col">Application</th>
+          <th scope="col">Connected at</th>
+          <th scope="col">Used at</th>
           <th scope="col">Action</th>
         </tr>
       </thead>
       <tbody>
-        <% @applications.each do |app| %>
+        <% @tokens.each do |token| %>
           <tr>
             <th scope="row">
-              <div class="text-base font-semibold"><%= app.name %></div>
+              <div class="text-base font-semibold"><%= token.application&.name || "Unknown" %></div>
             </th>
             <td>
+              <div class="text-base font-semibold"><%= token.created_at %></div>
+              <div class="font-normal text-gray-500"><%= time_ago_in_words(token.created_at) %> ago</div>
+            </td>
+            <td>
+              <% if token.used_at %>
+                <div class="text-base font-semibold"><%= token.used_at %></div>
+                <div class="font-normal text-gray-500"><%= time_ago_in_words(token.used_at) %> ago</div>
+              <% else %>
+                <div class="text-base font-semibold">Never</div>
+              <% end %>
+            </td>
+            <td>
               <%= button_to "Revoke",
-                oauth_authorized_application_path(app),
+                oauth_authorized_application_path(token),
                 method: :delete,
                 class: "link-button",
-                form: { data: { turbo_confirm: "Revoke access for #{app.name}? The app will need to re-authorize." } }
+                form: { data: { turbo_confirm: "Revoke this token for #{token.application&.name}? The app will need to re-authorize.", turbo: false } }
               %>
             </td>
           </tr>

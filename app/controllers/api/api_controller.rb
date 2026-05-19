@@ -37,7 +37,10 @@ module Api
       membership = OrganizationMembership.find_by(id: membership_id)
       return false unless membership
 
+      oauth_token.update_column(:used_at, Time.current)
+
       RequestContext.current_organization = membership.organization
+
       sign_in(membership.user, scope: :user)
       true
     end

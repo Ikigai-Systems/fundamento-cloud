@@ -5,27 +5,23 @@ class Oauth::AuthorizedApplicationsController < ApplicationController
 
   def index
     membership = current_organization_membership
-    @applications = Doorkeeper::AccessToken
+    @tokens = Doorkeeper::AccessToken
       .where(resource_owner_id: current_user.id,
              organization_membership_id: membership.id,
              revoked_at: nil)
       .includes(:application)
-      .filter_map(&:application)
-      .uniq
+      .order(created_at: :desc)
   end
 
   def destroy
     membership = current_organization_membership
-    Doorkeeper::AccessToken
-      .where(application_id: params[:id],
-             resource_owner_id: current_user.id,
-             organization_membership_id: membership.id)
-      .update_all(revoked_at: Time.current)
-    Doorkeeper::AccessGrant
-      .where(application_id: params[:id],
-             resource_owner_id: current_user.id)
-      .update_all(revoked_at: Time.current)
+    token = Doorkeeper::AccessToken.find_by!(
+      id: params[:id],
+      resource_owner_id: current_user.id,
+      organization_membership_id: membership.id
+    )
+    token.update_column(:revoked_at, Time.current)
 
-    redirect_to oauth_authorized_applications_path, notice: "Application access has been revoked."
+    redirect_to oauth_authorized_applications_path, notice: "Access token has been revoked."
   end
 end
