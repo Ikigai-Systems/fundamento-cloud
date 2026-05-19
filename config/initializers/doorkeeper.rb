@@ -5,7 +5,13 @@ Doorkeeper.configure do
 
   # Integrate with Devise: use the current signed-in user as resource owner.
   resource_owner_authenticator do
-    current_user || redirect_to(new_user_session_url)
+    if current_user
+      current_user
+    else
+      store_location_for(:user, request.fullpath)
+
+      redirect_to new_user_session_url
+    end
   end
 
   # Only authorization code flow — the only flow required by the MCP spec.
