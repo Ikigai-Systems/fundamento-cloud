@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   use_doorkeeper do
-    controllers authorizations: "oauth/authorizations"
-    skip_controllers :applications, :authorized_applications
+    controllers authorizations: "oauth/authorizations",
+                authorized_applications: "oauth/authorized_applications"
+    skip_controllers :applications
   end
 
   # MCP OAuth 2.1 discovery endpoints
