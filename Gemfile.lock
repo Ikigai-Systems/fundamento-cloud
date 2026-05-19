@@ -152,6 +152,8 @@ GEM
     docx (0.10.0)
       nokogiri (~> 1.13, >= 1.13.0)
       rubyzip (>= 2.0, < 4)
+    doorkeeper (5.9.0)
+      railties (>= 5)
     dotenv (3.1.8)
     dotenv-rails (3.1.8)
       dotenv (= 3.1.8)
@@ -556,6 +558,7 @@ DEPENDENCIES
   devise-passwordless
   devise_invitable
   docx
+  doorkeeper
   dotenv-rails (~> 3.1)
   flipper-active_record
   flipper-api

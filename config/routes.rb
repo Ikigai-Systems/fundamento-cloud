@@ -1,4 +1,25 @@
 Rails.application.routes.draw do
+  use_doorkeeper do
+    controllers authorizations: "oauth/authorizations"
+    skip_controllers :applications, :authorized_applications
+  end
+
+  # MCP OAuth 2.1 discovery endpoints
+  # /.well-known/oauth-protected-resource — tells MCP clients where to find the auth server
+  # /.well-known/oauth-authorization-server — RFC 8414 auth server metadata (standard OAuth discovery)
+  namespace "well_known", path: ".well-known" do
+    resource :oauth_protected_resource, only: [:show], path: "oauth-protected-resource"
+    resource :oauth_authorization_server, only: [:show], path: "oauth-authorization-server"
+  end
+
+  # Dynamic Client Registration (RFC 7591) — allows Claude Desktop / Claude Code to
+  # self-register without the user manually creating an OAuth application.
+  post "/oauth/register", to: "oauth/registrations#create"
+
+  # Organization picker step within the OAuth authorization flow
+  get "/oauth/pick-organization", to: "oauth/organization_picker#show", as: :oauth_pick_organization
+  post "/oauth/pick-organization", to: "oauth/organization_picker#create"
+
   devise_for :superintendent
 
   devise_for :users, controllers: {

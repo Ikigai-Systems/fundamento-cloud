@@ -1,0 +1,22 @@
+<div class="max-w-md mx-auto mt-12 p-8 bg-white rounded-xl shadow-sm border border-gray-200">
+  <h1 class="text-xl font-semibold text-gray-900 mb-2">Choose a Workspace</h1>
+
+  <p class="text-gray-600 mb-6">
+    Select which Fundamento workspace you want to grant access to.
+  </p>
+
+  <%= form_tag oauth_pick_organization_path, method: :post do %>
+    <%= hidden_field_tag :return_to, @return_to %>
+
+    <div class="space-y-2 mb-6">
+      <% @memberships.each do |membership| %>
+        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+          <%= radio_button_tag :organization_membership_id, membership.id, false, class: "accent-blue-600" %>
+          <span class="font-medium text-gray-900"><%= membership.organization.name %></span>
+        </label>
+      <% end %>
+    </div>
+
+    <%= submit_tag "Continue", class: "w-full py-2 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 cursor-pointer" %>
+  <% end %>
+</div>

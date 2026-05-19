@@ -14,7 +14,32 @@ module Api
     protected
 
     def authenticate_user_from_headers!
-      request.env["warden"].authenticate!(:api_token, :jwt, scope: :user)
+      return if authenticate_with_doorkeeper_token
+
+      unless request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
+        response.headers["WWW-Authenticate"] =
+          %(Bearer resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource")
+        head :unauthorized
+      end
+    end
+
+    def authenticate_with_doorkeeper_token
+      token_string = request.headers["Authorization"]
+      return false unless token_string&.start_with?("Bearer ")
+
+      token_string = token_string[7..]
+      oauth_token = Doorkeeper::AccessToken.by_token(token_string)
+      return false unless oauth_token&.accessible?
+
+      membership_id = oauth_token.organization_membership_id
+      return false if membership_id.blank?
+
+      membership = OrganizationMembership.find_by(id: membership_id)
+      return false unless membership
+
+      RequestContext.current_organization = membership.organization
+      sign_in(membership.user, scope: :user)
+      true
     end
 
     def authenticate_user_from_api_token!
