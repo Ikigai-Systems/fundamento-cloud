@@ -17,6 +17,7 @@ class UpdateTagsTool < ApplicationTool
   annotations(
     title: "Update Tags",
     read_only_hint: false,
+    destructive_hint: true,
   )
 
   def self.perform(object_id:, object_type:, tags:, server_context:)

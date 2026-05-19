@@ -20,6 +20,7 @@ class ImportDocumentTool < ApplicationTool
 
   annotations(
     title: "Import Document from File",
+    destructive_hint: false,
   )
 
   def self.perform(space_id:, file_content:, filename:, title: nil, parent_document_id: nil, server_context:)

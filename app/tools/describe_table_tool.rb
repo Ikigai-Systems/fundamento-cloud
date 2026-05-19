@@ -16,6 +16,7 @@ class DescribeTableTool < ApplicationTool
   annotations(
     title: "Describe Table",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(table_id:, server_context:, space_id: nil)

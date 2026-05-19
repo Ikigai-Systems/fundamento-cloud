@@ -23,6 +23,7 @@ class ReadTableTool < ApplicationTool
   annotations(
     title: "Read Table",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(table_id:, server_context:, space_id: nil, evaluate_formulas: true, limit: nil, offset: nil)

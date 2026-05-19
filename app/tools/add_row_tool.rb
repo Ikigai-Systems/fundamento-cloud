@@ -23,6 +23,7 @@ class AddRowTool < ApplicationTool
   annotations(
     title: "Add Row",
     read_only_hint: false,
+    destructive_hint: false,
   )
 
   def self.perform(table_id:, values:, server_context:, space_id: nil)

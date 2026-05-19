@@ -11,6 +11,7 @@ class UpdateDocumentTool < ApplicationTool
 
   annotations(
     title: "Update Document",
+    destructive_hint: true,
   )
 
   def self.perform(id:, markdown:, server_context:)

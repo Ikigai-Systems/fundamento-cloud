@@ -14,6 +14,7 @@ class ListTablesTool < ApplicationTool
   annotations(
     title: "List Tables",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(server_context:, space_id: nil, include_archived: false)

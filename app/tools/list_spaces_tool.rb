@@ -8,6 +8,7 @@ class ListSpacesTool < ApplicationTool
   annotations(
     title: "List Spaces",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(server_context:)

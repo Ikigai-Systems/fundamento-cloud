@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class ApplicationTool < MCP::Tool
+  # All Fundamento tools operate only within the workspace — never open-world.
+  # Override annotations to inject this default so subclasses don't repeat it.
+  def self.annotations(hash = MCP::Tool::NOT_SET)
+    hash == MCP::Tool::NOT_SET ? super : super({ open_world_hint: false }.merge(hash))
+  end
+
   def self.call(**kwargs)
     perform(**kwargs)
   rescue ActiveRecord::RecordNotFound => e

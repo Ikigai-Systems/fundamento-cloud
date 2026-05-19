@@ -14,6 +14,7 @@ class RunFormulaTool < ApplicationTool
   annotations(
     title: "Run a formula",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(formula:, space_id:, server_context:)

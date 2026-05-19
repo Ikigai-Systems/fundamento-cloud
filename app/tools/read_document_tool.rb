@@ -11,6 +11,7 @@ class ReadDocumentTool < ApplicationTool
   annotations(
     title: "Read Document",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(id:, server_context:)

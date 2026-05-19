@@ -18,6 +18,7 @@ class AddTagsTool < ApplicationTool
   annotations(
     title: "Add Tags",
     read_only_hint: false,
+    destructive_hint: false,
   )
 
   def self.perform(object_id:, object_type:, tags:, server_context:)

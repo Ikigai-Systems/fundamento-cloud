@@ -13,6 +13,7 @@ class CreateDocumentTool < ApplicationTool
 
   annotations(
     title: "Create Document",
+    destructive_hint: false,
   )
 
   def self.perform(space_id:, parent_document_id:, title:, markdown:, server_context:)

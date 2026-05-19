@@ -28,6 +28,7 @@ class UpdateRowsTool < ApplicationTool
   annotations(
     title: "Update Rows",
     read_only_hint: false,
+    destructive_hint: true,
   )
 
   def self.perform(table_id:, condition_formula:, values:, server_context:, space_id: nil)

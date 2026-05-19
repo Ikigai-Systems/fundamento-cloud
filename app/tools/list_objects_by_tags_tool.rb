@@ -25,6 +25,7 @@ class ListObjectsByTagsTool < ApplicationTool
   annotations(
     title: "List Objects By Tags",
     read_only_hint: true,
+    destructive_hint: false,
   )
 
   def self.perform(tags:, object_types: nil, space_id: nil, server_context:)
