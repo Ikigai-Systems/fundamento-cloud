@@ -5,6 +5,7 @@
 # automatically without the user manually creating an OAuth application.
 class Oauth::RegistrationsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user!
 
   # POST /oauth/register
   def create
