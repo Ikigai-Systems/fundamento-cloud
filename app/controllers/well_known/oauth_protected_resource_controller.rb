@@ -2,6 +2,7 @@
 
 class WellKnown::OauthProtectedResourceController < ApplicationController
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user!
 
   def show
     base = request.base_url

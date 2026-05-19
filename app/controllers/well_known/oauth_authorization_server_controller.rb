@@ -4,6 +4,7 @@
 # MCP clients fetch this to discover /oauth/authorize, /oauth/token, supported grant types, etc.
 class WellKnown::OauthAuthorizationServerController < ApplicationController
   skip_before_action :verify_authenticity_token
+  skip_before_action :authenticate_user!
 
   def show
     base = request.base_url
