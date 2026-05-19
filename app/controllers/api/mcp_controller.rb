@@ -42,18 +42,4 @@ class Api::McpController < Api::ApiController
   end
 
   alias_method :show, :create
-
-  protected
-
-  # Add the MCP OAuth discovery header on 401 so clients know where to start
-  # the browser-based auth flow. Everything else is handled by the parent.
-  def authenticate_user_from_headers!
-    return if authenticate_with_doorkeeper_token
-
-    unless request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
-      response.headers["WWW-Authenticate"] =
-        %(Bearer resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource")
-      head :unauthorized
-    end
-  end
 end

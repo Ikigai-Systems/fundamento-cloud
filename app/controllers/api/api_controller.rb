@@ -16,7 +16,11 @@ module Api
     def authenticate_user_from_headers!
       return if authenticate_with_doorkeeper_token
 
-      request.env["warden"].authenticate!(:api_token, :jwt, scope: :user)
+      unless request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
+        response.headers["WWW-Authenticate"] =
+          %(Bearer resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource")
+        head :unauthorized
+      end
     end
 
     def authenticate_with_doorkeeper_token
