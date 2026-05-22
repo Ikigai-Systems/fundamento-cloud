@@ -220,7 +220,12 @@ Rails.application.routes.draw do
         resources :invocations, controller: "automation_invocations", only: [:create]
       end
 
-      resources :spaces, only: [:index, :show, :create]
+      resources :spaces, only: [:index, :show, :create] do
+        member do
+          put :archive
+          put :unarchive
+        end
+      end
 
       resources :documents, only: [:index, :show, :create, :update] do
         resources :object_references, only: [:index]
