@@ -443,6 +443,18 @@ RSpec.describe SpacesController, type: :request do
       end
     end
 
+    context "on an already-archived space" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "returns forbidden" do
+        put archive_space_path(spaces(:hc_archived))
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
     context "as a non-manager (maria)" do
       before do
         sign_in maria
