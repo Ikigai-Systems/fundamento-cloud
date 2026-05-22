@@ -4,15 +4,26 @@ RSpec.describe "Api::V1::Spaces", type: :request do
   fixtures :organizations, :users, :organization_memberships, :spaces
 
   let(:pawel) { users(:pawel) }
+  let(:stefan) { users(:stefan) }
   let(:ikigai_systems) { organizations(:is) }
   let(:is_default_space) { spaces(:is_default) }
+  let(:is_archived_space) { spaces(:is_archived) }
   let(:pawel_ikigai_systems) { organization_memberships(:om_is_pawel) }
+  let(:stefan_ikigai_systems) { organization_memberships(:om_is_stefan) }
 
   let!(:pawel_is_token) do
     ApiToken.create!(
       organization: ikigai_systems,
       organization_membership: pawel_ikigai_systems,
       title: "Test API Token for Pawel at IS"
+    )
+  end
+
+  let!(:stefan_is_token) do
+    ApiToken.create!(
+      organization: ikigai_systems,
+      organization_membership: stefan_ikigai_systems,
+      title: "Test API Token for Stefan at IS"
     )
   end
 
@@ -32,6 +43,16 @@ RSpec.describe "Api::V1::Spaces", type: :request do
         expect(first_space).to have_key("name")
         expect(first_space).to have_key("created_at")
         expect(first_space).to have_key("updated_at")
+      end
+
+      it "does not include archived spaces" do
+        get api_v1_spaces_path,
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        space_ids = json_response.map { |s| s["id"] }
+        expect(space_ids).not_to include(is_archived_space.id)
       end
     end
 
@@ -209,6 +230,68 @@ RSpec.describe "Api::V1::Spaces", type: :request do
           }
 
         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe "PUT /api/v1/spaces/:id/archive" do
+    context "with manager token" do
+      before do
+        pawel_ikigai_systems.update!(role: :manager)
+      end
+
+      it "archives the space and returns 200 with archived: true" do
+        put archive_api_v1_space_path(is_default_space.id),
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response["archived"]).to eq(true)
+        expect(is_default_space.reload.archived).to eq(true)
+      end
+    end
+
+    context "with member (non-manager) token" do
+      before do
+        stefan_ikigai_systems.update!(role: :member)
+      end
+
+      it "returns forbidden" do
+        put archive_api_v1_space_path(is_default_space.id),
+          headers: { "Authorization" => "Bearer #{stefan_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe "PUT /api/v1/spaces/:id/unarchive" do
+    context "with manager token" do
+      before do
+        pawel_ikigai_systems.update!(role: :manager)
+      end
+
+      it "unarchives an archived space and returns 200 with archived: false" do
+        put unarchive_api_v1_space_path(is_archived_space.id),
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response["archived"]).to eq(false)
+        expect(is_archived_space.reload.archived).to eq(false)
+      end
+    end
+
+    context "with member (non-manager) token" do
+      before do
+        stefan_ikigai_systems.update!(role: :member)
+      end
+
+      it "returns forbidden" do
+        put unarchive_api_v1_space_path(is_archived_space.id),
+          headers: { "Authorization" => "Bearer #{stefan_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end

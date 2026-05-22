@@ -52,3 +52,11 @@ hc_archived:
   access_mode: :public
   archived: true
   hierarchy: []
+
+is_archived:
+  id: "is_archived"
+  organization_id: "is"
+  name: "Archived IS Space"
+  access_mode: :public
+  archived: true
+  hierarchy: []
