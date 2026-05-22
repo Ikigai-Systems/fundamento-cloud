@@ -44,3 +44,11 @@ hc_administrators:
   name: "Administrators Space"
   access_mode: :private
   hierarchy: []
+
+hc_archived:
+  id: "hc_archived"
+  organization_id: "hc"
+  name: "Archived HC Space"
+  access_mode: :public
+  archived: true
+  hierarchy: []

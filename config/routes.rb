@@ -79,6 +79,8 @@ Rails.application.routes.draw do
       member do
         put :reorder_hierarchy, to: "spaces#reorder_hierarchy"
         get :sidebar
+        put :archive
+        put :unarchive
       end
 
       resources :automations
