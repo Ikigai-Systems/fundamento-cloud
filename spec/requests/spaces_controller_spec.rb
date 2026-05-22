@@ -400,7 +400,7 @@ RSpec.describe SpacesController, type: :request do
       it "allows access to the archived space (not 403)" do
         get space_path(spaces(:hc_archived))
 
-        expect(response).not_to have_http_status(:forbidden)
+        expect(response).to have_http_status(:ok)
       end
     end
   end
