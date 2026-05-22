@@ -1,7 +1,7 @@
 class SpaceBlueprint < Blueprinter::Base
   identifier :id
 
-  fields :name
+  fields :name, :archived
 
   view :mcp do
     field :documents do |space|

@@ -14,7 +14,7 @@ class ListSpacesTool < ApplicationTool
   def self.perform(server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
-    spaces = Pundit.policy_scope!(pundit_user, pundit_user.current_organization.spaces).order(:name)
+    spaces = Pundit.policy_scope!(pundit_user, pundit_user.current_organization.spaces.without_archived).order(:name)
 
     MCP::Tool::Response.new([
       {
