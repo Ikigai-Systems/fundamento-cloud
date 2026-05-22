@@ -38,14 +38,7 @@ module Api
         authorize space, :create?
 
         if space.save
-          render json: {
-            id: space.id,
-            name: space.name,
-            access_mode: space.access_mode,
-            archived: space.archived,
-            created_at: space.created_at,
-            updated_at: space.updated_at
-          }, status: :created
+          render json: space_response(space), status: :created
         else
           render json: { errors: space.errors.full_messages }, status: :unprocessable_entity
         end
@@ -55,21 +48,20 @@ module Api
         space = current_organization.spaces.find(params[:id])
         authorize space, :archive?
         space.update!(archived: true)
-        render json: {
-          id: space.id,
-          name: space.name,
-          access_mode: space.access_mode,
-          archived: space.archived,
-          created_at: space.created_at,
-          updated_at: space.updated_at
-        }
+        render json: space_response(space)
       end
 
       def unarchive
         space = current_organization.spaces.find(params[:id])
         authorize space, :unarchive?
         space.update!(archived: false)
-        render json: {
+        render json: space_response(space)
+      end
+
+      private
+
+      def space_response(space)
+        {
           id: space.id,
           name: space.name,
           access_mode: space.access_mode,
@@ -78,8 +70,6 @@ module Api
           updated_at: space.updated_at
         }
       end
-
-      private
 
       def space_params
         params.require(:space).permit(:name, :access_mode)
