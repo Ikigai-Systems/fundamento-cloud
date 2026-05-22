@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_19_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -558,6 +558,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_140000) do
 
   create_table "spaces", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "access_mode", limit: 2, default: 0, null: false
+    t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
     t.json "hierarchy", default: [], null: false
     t.string "home_document_id"
@@ -566,6 +567,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_19_140000) do
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_spaces_on_id", unique: true
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
+    t.index ["organization_id", "archived"], name: "index_spaces_on_organization_id_and_archived"
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
