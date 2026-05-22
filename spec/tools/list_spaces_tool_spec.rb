@@ -30,6 +30,17 @@ RSpec.describe ListSpacesTool, type: :model do
         expect(json_response.second["name"]).to eq("Stefan's Private Space")
         expect(json_response.second["id"]).to eq(spaces(:is_stefans).id)
       end
+
+      it "includes documents from the space hierarchy" do
+        doc = documents(:one)
+        spaces(:is_default).update!(hierarchy: [{"id" => doc.id, "children" => []}])
+
+        response = ListSpacesTool.call(server_context: server_context)
+
+        json_response = JSON.parse(response.content.first[:text])
+        default_space = json_response.find { |s| s["id"] == spaces(:is_default).id }
+        expect(default_space["documents"]).to eq([{"npi" => doc.id, "title" => doc.title, "children" => []}])
+      end
     end
 
     context "user has no authorization" do
