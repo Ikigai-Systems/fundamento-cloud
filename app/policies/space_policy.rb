@@ -44,7 +44,7 @@ class SpacePolicy < ApplicationPolicy
 
   def show?
     # Everyone can show an organization it belongs to
-    record.public_access_mode? || record.restricted_access_mode? || update?
+    record.public_access_mode? || record.restricted_access_mode? || update? || organization_membership.manager?
   end
 
   def update?
