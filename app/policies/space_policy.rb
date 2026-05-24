@@ -48,7 +48,7 @@ class SpacePolicy < ApplicationPolicy
   end
 
   def update?
-    return false if record.archived?
+    return false if record.archived? && !organization_membership.manager?
 
     record.public_access_mode? ||
     organization_membership.manager? ||
