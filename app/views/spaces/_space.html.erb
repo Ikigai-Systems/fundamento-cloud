@@ -9,6 +9,8 @@
     </div>
   </th>
   <td>
+    <%= link_to "Open", space_path(space), class: "link-button" %>
+
     <% if policy(space).update? %>
       <%= link_to "Edit", edit_space_path(space), class: "link-button" %>
     <% end %>
@@ -23,7 +25,5 @@
       <%= button_to "Unarchive", unarchive_space_path(space), method: :put,
           class: "link-button" %>
     <% end %>
-
-    <%= link_to "Open", space_path(space), class: "link-button" %>
   </td>
 </tr>
