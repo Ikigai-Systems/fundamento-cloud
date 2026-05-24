@@ -412,7 +412,7 @@ RSpec.describe SpacesController, type: :request do
         post select_organization_path(organization)
       end
 
-      it "returns 403 forbidden for archived spaces" do
+      it "allows access to the archived space" do
         patch space_path(spaces(:hc_archived)), params: {
           space: {
             name: "Attempting to update archived",
@@ -420,7 +420,7 @@ RSpec.describe SpacesController, type: :request do
           }
         }
 
-        expect(response).to have_http_status(:forbidden)
+        expect(response).to have_http_status(:see_other)
       end
     end
   end
