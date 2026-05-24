@@ -25,15 +25,15 @@ Fundamento is a collaborative workspace platform (similar to Notion/Airtable) bu
 - **Table** - Spreadsheet-like data with columns, rows, cells, and formulas
 - **Automation** - Workflow automation with formula evaluation
 
-### Unique NPI System
-The application uses **Nanoid Public Identifiers (NPIs)** instead of sequential IDs for clean, secure URLs:
+### Non-predictable IDs
+The application uses **Nanoid** to generate non-predictable IDs for models (instead of the default Rails sequential IDs) for clean, secure URLs:
 - Documents: `/d/abc123`
 - Tables: `/t/xyz789`
 - Spaces: `/s/def456`
 
-All Rails models should follow the NPI pattern for consistent URL generation - primary keys should be strings (id field), not integers. Database default should be set to UUID, but models should override it to use a shorter unique identifier for cleaner URLs.
+All new Rails models should follow this pattern for consistent URL generation - primary keys should be strings (id field), not integers. Database default should be set to UUID, but models should override it to use a shorter unique identifier for cleaner URLs.
 
-**Exceptions:** Some models use default integer auto-increment IDs instead of NPIs: `ObjectComment`, `Version`, `ObjectReaction`. Don't assume all models have string IDs.
+**Notice:** Don't assume all models have string IDs as there are still models that use the default integer auto-incremented IDs.  
 
 ### Micro-Services Architecture
 Node.js services handle specialized processing:

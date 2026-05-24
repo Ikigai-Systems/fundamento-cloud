@@ -3,7 +3,7 @@ class UnarchiveSpaceTool < ApplicationTool
 
   input_schema(
     properties: {
-      space_id: { type: "string", description: "The NPI (ID) of the space to unarchive" },
+      space_id: { type: "string", description: "ID of the space to unarchive" },
     },
     required: [:space_id]
   )

@@ -3,7 +3,7 @@ class ArchiveSpaceTool < ApplicationTool
 
   input_schema(
     properties: {
-      space_id: { type: "string", description: "The NPI (ID) of the space to archive" },
+      space_id: { type: "string", description: "ID of the space to archive" },
     },
     required: [:space_id]
   )
