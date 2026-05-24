@@ -9,7 +9,7 @@
     </div>
   </th>
   <td>
-    <%= link_to "Open", space_path(space), class: "link-button" %>
+    <%= link_to "Show", space_path(space), class: "link-button" %>
 
     <% if policy(space).update? %>
       <%= link_to "Edit", edit_space_path(space), class: "link-button" %>
