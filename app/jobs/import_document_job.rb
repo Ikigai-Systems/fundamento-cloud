@@ -11,12 +11,18 @@ class ImportDocumentJob < ApplicationJob
 
     import_file.update!(status: :processing)
     session = import_file.import_session
+    parent_id = parent_document_id(import_file, session)
+    title_fallback = File.basename(import_file.relative_path, ".*")
+
+    # Release the DB connection before slow network I/O (S3 download + two HTTP calls
+    # to BlocknoteConverter). Rails re-acquires automatically when the transaction below
+    # needs it. Without this, concurrent jobs hold idle connections during network waits
+    # and starve the Good Job Notifier (ConnectionTimeoutError).
+    ActiveRecord::Base.connection_pool.release_connection
 
     markdown = fetch_markdown(import_file)
     markdown, frontmatter = extract_frontmatter(markdown)
-    title = frontmatter&.dig("title") || File.basename(import_file.relative_path, ".*")
-
-    parent_id = parent_document_id(import_file, session)
+    title = frontmatter&.dig("title") || title_fallback
 
     blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
     sync = BlocknoteConverterService.blocks_to_yjs(blocks)
