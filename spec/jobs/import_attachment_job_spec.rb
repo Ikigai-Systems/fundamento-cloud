@@ -94,5 +94,27 @@ RSpec.describe ImportAttachmentJob, type: :job do
       attachment = Attachment.last
       expect(attachment.parent).to eq(home_doc)
     end
+
+    context "when the file is stuck in :processing (interrupted job retry)" do
+      it "processes the file instead of returning early" do
+        import_file = build_attachment_file(relative_path: "assets/photo.png")
+        import_file.update_column(:status, ImportFile.statuses[:processing])
+
+        expect {
+          described_class.perform_now(import_file)
+        }.to change(Attachment, :count).by(1)
+
+        expect(import_file.reload).to be_completed
+      end
+
+      it "does not create a duplicate attachment if already completed" do
+        import_file = build_attachment_file(relative_path: "assets/photo.png")
+        import_file.update_column(:status, ImportFile.statuses[:completed])
+
+        expect {
+          described_class.perform_now(import_file)
+        }.not_to change(Attachment, :count)
+      end
+    end
   end
 end

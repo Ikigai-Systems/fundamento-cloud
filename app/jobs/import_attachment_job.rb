@@ -2,7 +2,8 @@ class ImportAttachmentJob < ApplicationJob
   queue_as :imports
 
   def perform(import_file)
-    return unless import_file.uploaded?
+    # Allow retry from :processing — see ImportDocumentJob for explanation
+    return if import_file.completed? || import_file.failed? || import_file.skipped?
 
     import_file.update!(status: :processing)
     session = import_file.import_session

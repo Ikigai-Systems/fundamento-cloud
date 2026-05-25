@@ -100,5 +100,37 @@ RSpec.describe ImportDocumentJob, type: :job do
         described_class.perform_now(import_file)
       }.to change { session.reload.failed_files }.by(1)
     end
+
+    context "when the file is stuck in :processing (interrupted job retry)" do
+      it "processes the file instead of returning early" do
+        import_file = build_import_file(relative_path: "interrupted.md")
+        import_file.update_column(:status, ImportFile.statuses[:processing])
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+
+        expect {
+          described_class.perform_now(import_file)
+        }.to change(Document, :count).by(1)
+
+        expect(import_file.reload).to be_completed
+      end
+
+      it "does not create a duplicate document if already completed" do
+        import_file = build_import_file(relative_path: "done.md")
+        existing_doc = space.documents.create!(organization: org, title: "done")
+        import_file.update_columns(
+          status: ImportFile.statuses[:completed],
+          document_id: existing_doc.id
+        )
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+
+        expect {
+          described_class.perform_now(import_file)
+        }.not_to change(Document, :count)
+      end
+    end
   end
 end

@@ -2,7 +2,23 @@ class ImportSessionCompletionJob < ApplicationJob
   queue_as :imports
 
   def perform(session)
-    final_status = session.failed_files > 0 ? :partial : :completed
+    # Files still in :processing at this point are stuck — their jobs were interrupted
+    # and re-runs silently no-oped. Treat them as failed so the session reflects reality.
+    stuck = session.import_files.where(status: :processing)
+
+    if stuck.any?
+      stuck_count = stuck.count
+      stuck.update_all(
+        status: ImportFile.statuses[:failed],
+        error_message: "Processing interrupted unexpectedly",
+        processed_at: Time.current
+      )
+
+      ImportSession.where(id: session.id).update_all("failed_files = failed_files + #{stuck_count}")
+    end
+
+    final_status = session.reload.failed_files > 0 ? :partial : :completed
+
     session.update!(
       status: final_status,
       completed_processing_at: Time.current

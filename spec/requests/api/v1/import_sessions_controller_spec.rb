@@ -73,4 +73,68 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
       expect(ImportSession.find_by(id: session.id)).to be_nil
     end
   end
+
+  describe "POST /api/v1/import_sessions/:id/retry_failed" do
+    def build_session_with_files(statuses:)
+      session = ImportSession.create!(
+        organization: ikigai_systems,
+        space: is_default_space,
+        organization_membership: pawel_ikigai_systems,
+        status: :partial,
+        total_files: statuses.size,
+        uploaded_files: statuses.size
+      )
+      statuses.each_with_index do |status, i|
+        ImportFile.create!(
+          import_session: session,
+          relative_path: "file_#{i}.md",
+          file_type: :document,
+          format: "markdown",
+          status: status,
+          checksum: SecureRandom.hex,
+          file_size: 100
+        )
+      end
+      session
+    end
+
+    it "resets failed files to uploaded and re-triggers processing" do
+      session = build_session_with_files(statuses: [:completed, :failed])
+      session.update!(processed_files: 1, failed_files: 1)
+
+      expect {
+        post retry_api_v1_import_session_path(session), headers: auth_headers
+      }.to have_enqueued_job(ImportSessionOrchestratorJob)
+
+      expect(response).to have_http_status(:ok)
+      expect(session.import_files.where(status: :uploaded).count).to eq(1)
+      expect(session.import_files.where(status: :completed).count).to eq(1)
+    end
+
+    it "also resets files stuck in :processing (interrupted job regression)" do
+      session = build_session_with_files(statuses: [:completed, :processing, :processing])
+      session.update!(processed_files: 1, failed_files: 0)
+
+      post retry_api_v1_import_session_path(session), headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(session.import_files.where(status: :uploaded).count).to eq(2)
+      expect(session.import_files.where(status: :completed).count).to eq(1)
+    end
+
+    it "resets session status to processing and clears completed_processing_at" do
+      session = build_session_with_files(statuses: [:processing])
+      session.update!(
+        status: :completed,
+        completed_processing_at: 1.hour.ago,
+        failed_files: 0
+      )
+
+      post retry_api_v1_import_session_path(session), headers: auth_headers
+
+      session.reload
+      expect(session).to be_processing
+      expect(session.completed_processing_at).to be_nil
+    end
+  end
 end

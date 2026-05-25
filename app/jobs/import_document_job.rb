@@ -4,7 +4,10 @@ class ImportDocumentJob < ApplicationJob
   queue_as :imports
 
   def perform(import_file)
-    return unless import_file.uploaded?
+    # Allow retry from :processing — jobs interrupted mid-run (SIGTERM, OOM) leave
+    # the file in :processing. Returning early here causes the Good Job batch to
+    # fire on_finish without the file ever being processed.
+    return if import_file.completed? || import_file.failed? || import_file.skipped?
 
     import_file.update!(status: :processing)
     session = import_file.import_session
