@@ -52,6 +52,15 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
       expect(session.reload).to be_partial
     end
 
+    it "does not notify Sentry when all files processed cleanly" do
+      create_import_file(relative_path: "a.md", status: :completed)
+      session.update!(processed_files: 1)
+
+      expect(Sentry).not_to receive(:capture_message)
+
+      described_class.perform_now(session)
+    end
+
     context "when files are stuck in :processing (interrupted job, silent retry)" do
       it "marks stuck files as failed" do
         create_import_file(relative_path: "done.md", status: :completed)
@@ -85,6 +94,22 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
         described_class.perform_now(session)
 
         expect(session.reload.failed_files).to eq(2)
+      end
+
+      it "sends a Sentry warning with session context" do
+        create_import_file(relative_path: "stuck.md", status: :processing)
+
+        expect(Sentry).to receive(:capture_message).with(
+          "Import session completed with stuck files",
+          level: :warning,
+          extra: hash_including(
+            session_id: session.id,
+            stuck_count: 1,
+            total_files: session.total_files
+          )
+        )
+
+        described_class.perform_now(session)
       end
     end
   end
