@@ -63,7 +63,7 @@ class ImportSessionsController < ApplicationController
   end
 
   def updatable_spaces
-    policy_scope(current_organization.spaces).select do |space|
+    policy_scope(current_organization.spaces.without_archived).select do |space|
       policy(space).update?
     end
   end

@@ -5,6 +5,13 @@ is_stefans_membership_1:
   member_type: OrganizationMembership
   role: :manager
 
+is_archived_membership_2:
+  organization_id: "is"
+  space_id: is_archived
+  member_id: om_is_stefan
+  member_type: OrganizationMembership
+  role: :manager
+
 hc_pawels_membership_1:
   organization_id: "hc"
   space_id: hc_pawels

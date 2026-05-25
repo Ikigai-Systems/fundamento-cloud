@@ -12,9 +12,12 @@ class Api::McpController < Api::ApiController
         Tables are identified by a short non-predictable string ID (URLs like /t/<id>); use DescribeTable before reading or writing rows.
         RunFormula evaluates Excel-like formulas against the workspace data — see https://docs.fundamento.it/formulas/reference.
         All write operations (CreateDocument, UpdateDocument, AddRow, UpdateRows, AddOrUpdateRows) are permanent.
+        Use ArchiveSpace and UnarchiveSpace to archive or unarchive spaces (manager role required).
       INSTRUCTIONS
       tools: [
         ListSpacesTool,
+        ArchiveSpaceTool,
+        UnarchiveSpaceTool,
         ReadDocumentTool,
         CreateDocumentTool,
         UpdateDocumentTool,

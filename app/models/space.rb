@@ -28,6 +28,9 @@ class Space < ApplicationRecord
 
   enum :access_mode, [:public, :restricted, :private], suffix: true, validate: true
 
+  scope :archived, -> { where(archived: true) }
+  scope :without_archived, -> { where(archived: false) }
+
   def title
     name
   end

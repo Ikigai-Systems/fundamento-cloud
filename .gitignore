@@ -74,3 +74,4 @@ tasks.json
 # Git worktrees
 .worktrees/
 
+.worktrees

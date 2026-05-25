@@ -3,13 +3,27 @@
     <div class="text-base font-semibold truncate">
       <%= render ObjectIcon.new(object: space) %>
       <%= space.try(:title_emojiless) || space.try(:title) %>
+      <% if space.archived? %>
+        <span class="text-sm text-gray-400 font-normal">(archived)</span>
+      <% end %>
     </div>
   </th>
   <td>
+    <%= link_to "Show", space_path(space), class: "link-button" %>
+
     <% if policy(space).update? %>
       <%= link_to "Edit", edit_space_path(space), class: "link-button" %>
     <% end %>
 
-    <%= link_to "Open", space_path(space), class: "link-button" %>
+    <% if policy(space).archive? %>
+      <%= button_to "Archive", archive_space_path(space), method: :put,
+          form: { data: { turbo_confirm: "Archive this space? It will be hidden from all navigation. Documents and tables inside will become read-only." } },
+          class: "link-button" %>
+    <% end %>
+
+    <% if policy(space).unarchive? %>
+      <%= button_to "Unarchive", unarchive_space_path(space), method: :put,
+          class: "link-button" %>
+    <% end %>
   </td>
 </tr>

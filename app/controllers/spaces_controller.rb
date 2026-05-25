@@ -61,10 +61,22 @@ class SpacesController < ApplicationController
     if @space.update(space_params.without(:space_memberships))
       update_space_memberships!(@space, space_params[:space_memberships])
 
-      redirect_to spaces_path, notice: 'Space was successfully updated.', status: :see_other
+      redirect_to spaces_path, notice: "Space was successfully updated.", status: :see_other
     else
       render :edit
     end
+  end
+
+  def archive
+    authorize @space, :archive?
+    @space.update!(archived: true)
+    redirect_to spaces_path, notice: "Space was successfully archived.", status: :see_other
+  end
+
+  def unarchive
+    authorize @space, :unarchive?
+    @space.update!(archived: false)
+    redirect_to spaces_path, notice: "Space was successfully unarchived.", status: :see_other
   end
 
   def reorder_hierarchy

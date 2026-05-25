@@ -39,7 +39,7 @@ RSpec.describe ListSpacesTool, type: :model do
 
         json_response = JSON.parse(response.content.first[:text])
         default_space = json_response.find { |s| s["id"] == spaces(:is_default).id }
-        expect(default_space["documents"]).to eq([{"npi" => doc.id, "title" => doc.title, "children" => []}])
+        expect(default_space["documents"]).to eq([{"id" => doc.id, "npi" => doc.id, "title" => doc.title, "children" => []}])
       end
     end
 

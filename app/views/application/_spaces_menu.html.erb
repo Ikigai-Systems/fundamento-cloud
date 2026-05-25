@@ -29,7 +29,7 @@
   >
     <div class="dropdown-container w-56">
       <% if current_organization.present? %>
-        <% policy_scope(current_organization.spaces).order(:name).filter(&:persisted?).each do |space| %>
+        <% policy_scope(current_organization.spaces.without_archived).order(:name).filter(&:persisted?).each do |space| %>
           <%= link_to space_path(space),
             data: {"dropdown-target" => "menuItem"},
             class: "truncate",

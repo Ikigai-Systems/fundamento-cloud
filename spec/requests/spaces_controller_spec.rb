@@ -358,6 +358,155 @@ RSpec.describe SpacesController, type: :request do
     end
   end
 
+  describe "GET #index" do
+    let(:archived_space) { spaces(:hc_archived) }
+
+    context "as a manager" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "includes archived spaces in the listing" do
+        get spaces_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include(archived_space.name)
+      end
+    end
+
+    context "as a non-manager (maria)" do
+      before do
+        sign_in maria
+        post select_organization_path(organization)
+      end
+
+      it "does not include archived spaces in the listing" do
+        get spaces_path
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include(archived_space.name)
+      end
+    end
+  end
+
+  describe "GET #show" do
+    context "as a manager viewing an archived space" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "allows access to the archived space (not 403)" do
+        get space_path(spaces(:hc_archived))
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
+  describe "PUT #update on archived space" do
+    context "as a manager" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "allows access to the archived space" do
+        patch space_path(spaces(:hc_archived)), params: {
+          space: {
+            name: "Attempting to update archived",
+            space_memberships: [""]
+          }
+        }
+
+        expect(response).to have_http_status(:see_other)
+      end
+    end
+  end
+
+  describe "PUT #archive" do
+    context "as a manager" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "archives a non-archived space and redirects" do
+        put archive_space_path(public_space)
+
+        expect(response).to redirect_to(spaces_path)
+        expect(flash[:notice]).to eq("Space was successfully archived.")
+
+        public_space.reload
+        expect(public_space.archived?).to be true
+      end
+    end
+
+    context "on an already-archived space" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "returns forbidden" do
+        put archive_space_path(spaces(:hc_archived))
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    context "as a non-manager (maria)" do
+      before do
+        sign_in maria
+        post select_organization_path(organization)
+      end
+
+      it "returns 403 forbidden when trying to archive a private space" do
+        put archive_space_path(private_space)
+
+        expect(response).to have_http_status(:forbidden)
+      end
+
+      it "returns 403 forbidden when trying to archive a public space" do
+        put archive_space_path(public_space)
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe "PUT #unarchive" do
+    context "as a manager" do
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "unarchives an archived space and redirects" do
+        put unarchive_space_path(spaces(:hc_archived))
+
+        expect(response).to redirect_to(spaces_path)
+        expect(flash[:notice]).to eq("Space was successfully unarchived.")
+
+        spaces(:hc_archived).reload
+        expect(spaces(:hc_archived).archived?).to be false
+      end
+    end
+
+    context "as a non-manager (maria)" do
+      before do
+        sign_in maria
+        post select_organization_path(organization)
+      end
+
+      it "returns 403 forbidden when trying to unarchive a space" do
+        put unarchive_space_path(spaces(:hc_archived))
+
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+  end
+
   describe "PUT #reorder_hierarchy" do
     let(:space) { spaces(:is_default) }
     let!(:doc1) { space.documents.create!(title: "Document 1", organization: organizations(:is)) }

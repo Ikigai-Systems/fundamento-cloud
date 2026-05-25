@@ -21,7 +21,7 @@ RSpec.describe SpacePolicy, type: :model do
       let(:organization_membership) { organization_memberships(:om_is_pawel) }
 
       it "sees all spaces" do
-        expect(policy.resolve.order(:name).map(&:name)).to eq(["Default IS", "Stefan's Private Space"])
+        expect(policy.resolve.order(:name).map(&:name)).to eq(["Archived IS Space", "Default IS", "Stefan's Private Space"])
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe SpacePolicy, type: :model do
       let(:organization_membership) { organization_memberships(:om_hc_pawel) }
 
       it "sees all spaces" do
-        expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Default HC", "Pawel's Private Space", "Restricted HC"])
+        expect(policy.resolve.order(:name).map(&:name)).to eq(["Administrators Space", "Archived HC Space", "Default HC", "Pawel's Private Space", "Restricted HC"])
       end
     end
 
@@ -97,6 +97,16 @@ RSpec.describe SpacePolicy, type: :model do
 
     it "grants access if user is a member of the space" do
       expect(subject).to permit(PolicyUserContext.new(organization_memberships(:om_hc_stefan)), spaces(:hc_administrators))
+    end
+
+    context "archived space" do
+      it "grants access if user is a manager in the organization" do
+        expect(subject).to permit(PolicyUserContext.new(organization_memberships(:om_is_pawel)), spaces(:is_archived))
+      end
+
+      it "denies access if user is a member of the space" do
+        expect(subject).not_to permit(PolicyUserContext.new(organization_memberships(:om_is_stefan)), spaces(:is_archived))
+      end
     end
   end
 end

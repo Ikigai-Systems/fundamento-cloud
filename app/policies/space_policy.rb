@@ -29,7 +29,7 @@ class SpacePolicy < ApplicationPolicy
 
         scope.where(id: scope.where(id: spaces_available_to_anyone).
           or(scope.where(id: spaces_available_to_user)).
-          or(scope.where(id: spaces_available_to_team)).select(:id).distinct)
+          or(scope.where(id: spaces_available_to_team)).select(:id).distinct).without_archived
       end
     end
   end
@@ -44,10 +44,12 @@ class SpacePolicy < ApplicationPolicy
 
   def show?
     # Everyone can show an organization it belongs to
-    record.public_access_mode? || record.restricted_access_mode? || update?
+    record.public_access_mode? || record.restricted_access_mode? || update? || organization_membership.manager?
   end
 
   def update?
+    return false if record.archived? && !organization_membership.manager?
+
     record.public_access_mode? ||
     organization_membership.manager? ||
       record.space_memberships.where(member: organization_membership).exists? ||
@@ -62,5 +64,13 @@ class SpacePolicy < ApplicationPolicy
 
   def destroy?
     update?
+  end
+
+  def archive?
+    !record.archived? && organization_membership.manager?
+  end
+
+  def unarchive?
+    record.archived? && organization_membership.manager?
   end
 end
