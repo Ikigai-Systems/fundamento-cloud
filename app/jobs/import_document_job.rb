@@ -1,5 +1,11 @@
 class ImportDocumentJob < ApplicationJob
   include MarkdownFrontmatter
+  include GoodJob::ActiveJobExtensions::Concurrency
+
+  good_job_control_concurrency_with(
+    perform_limit: -> { ENV.fetch("IMPORT_DOCUMENT_JOB_CONCURRENCY", 4).to_i },
+    key: "import_document"
+  )
 
   queue_as :imports
 
