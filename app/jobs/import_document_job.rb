@@ -58,17 +58,20 @@ class ImportDocumentJob < ApplicationJob
         TagsService.new(object: document, organization: session.organization)
           .update_tags(frontmatter["tags"])
       end
+
+      # Mark completed inside the transaction so an InterruptError after commit
+      # leaves the file in :completed state, preventing duplicate document creation
+      # on retry (the guard at the top of perform returns early for :completed files).
+      import_file.update!(
+        status: :completed,
+        document: document,
+        processed_at: Time.current,
+        error_message: nil
+      )
+
+      session.merge_path_map!(import_file.relative_path, document.id)
+      session.increment_counter!(:processed_files)
     end
-
-    import_file.update!(
-      status: :completed,
-      document: document,
-      processed_at: Time.current,
-      error_message: nil
-    )
-
-    session.merge_path_map!(import_file.relative_path, document.id)
-    session.increment_counter!(:processed_files)
 
   rescue StandardError => e
     import_file.update!(

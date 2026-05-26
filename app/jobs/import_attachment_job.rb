@@ -10,23 +10,28 @@ class ImportAttachmentJob < ApplicationJob
 
     parent_document = find_parent_document(import_file, session)
 
-    attachment = Attachment.create!(
-      organization: session.organization,
-      parent: parent_document,
-      filename: import_file.filename,
-      mime_type: import_file.file.blob.content_type
-    )
-    attachment.file.attach(import_file.file.blob)
+    attachment = nil
+    ActiveRecord::Base.transaction do
+      attachment = Attachment.create!(
+        organization: session.organization,
+        parent: parent_document,
+        filename: import_file.filename,
+        mime_type: import_file.file.blob.content_type
+      )
+      attachment.file.attach(import_file.file.blob)
 
-    import_file.update!(
-      status: :completed,
-      document: parent_document.is_a?(Document) ? parent_document : nil,
-      processed_at: Time.current
-    )
+      # Mark completed inside the transaction — same rationale as ImportDocumentJob:
+      # prevents duplicate attachment creation when a worker is interrupted mid-job.
+      import_file.update!(
+        status: :completed,
+        document: parent_document.is_a?(Document) ? parent_document : nil,
+        processed_at: Time.current
+      )
 
-    # Store as "attachment:<id>" so BlockNote nodes can reference via createFileUrlResolver
-    session.merge_path_map!(import_file.relative_path, "attachment:#{attachment.id}")
-    session.increment_counter!(:processed_files)
+      # Store as "attachment:<id>" so BlockNote nodes can reference via createFileUrlResolver
+      session.merge_path_map!(import_file.relative_path, "attachment:#{attachment.id}")
+      session.increment_counter!(:processed_files)
+    end
 
   rescue StandardError => e
     import_file.update!(
