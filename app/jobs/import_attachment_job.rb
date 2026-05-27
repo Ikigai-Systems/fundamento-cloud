@@ -10,8 +10,11 @@ class ImportAttachmentJob < ApplicationJob
 
     parent_document = find_parent_document(import_file, session)
 
-    attachment = nil
     ActiveRecord::Base.transaction do
+      # Serialize concurrent threads — same rationale as ImportDocumentJob.
+      locked_file = ImportFile.lock.find(import_file.id)
+      raise ActiveRecord::Rollback if locked_file.completed? || locked_file.failed? || locked_file.skipped?
+
       attachment = Attachment.create!(
         organization: session.organization,
         parent: parent_document,
@@ -20,9 +23,7 @@ class ImportAttachmentJob < ApplicationJob
       )
       attachment.file.attach(import_file.file.blob)
 
-      # Mark completed inside the transaction — same rationale as ImportDocumentJob:
-      # prevents duplicate attachment creation when a worker is interrupted mid-job.
-      import_file.update!(
+      locked_file.update!(
         status: :completed,
         document: parent_document.is_a?(Document) ? parent_document : nil,
         processed_at: Time.current

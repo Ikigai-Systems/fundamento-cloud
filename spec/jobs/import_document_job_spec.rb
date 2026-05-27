@@ -55,7 +55,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
       described_class.perform_now(import_file)
 
-      expect(import_file.document.title).to eq("my-note")
+      expect(import_file.reload.document.title).to eq("my-note")
     end
 
     it "uses frontmatter title when present" do
@@ -66,7 +66,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
       described_class.perform_now(import_file)
 
-      expect(import_file.document.title).to eq("My Custom Title")
+      expect(import_file.reload.document.title).to eq("My Custom Title")
     end
 
     it "marks as failed and records error on conversion failure" do

@@ -27,8 +27,14 @@ class ImportDocumentJob < MemoryIntensiveJob
     blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
     sync = BlocknoteConverterService.blocks_to_yjs(blocks)
 
-    document = nil
     ActiveRecord::Base.transaction do
+      # Serialize concurrent threads: GoodJob can dispatch the same job to multiple
+      # threads simultaneously (e.g., during rolling deployments). SELECT FOR UPDATE
+      # ensures only one thread proceeds past this point per file — the others will
+      # wait, then see :completed and roll back without creating a duplicate document.
+      locked_file = ImportFile.lock.find(import_file.id)
+      raise ActiveRecord::Rollback if locked_file.completed? || locked_file.failed? || locked_file.skipped?
+
       document = session.space.documents.create!(
         organization: session.organization,
         title: title
@@ -53,10 +59,7 @@ class ImportDocumentJob < MemoryIntensiveJob
           .update_tags(frontmatter["tags"])
       end
 
-      # Mark completed inside the transaction so an InterruptError after commit
-      # leaves the file in :completed state, preventing duplicate document creation
-      # on retry (the guard at the top of perform returns early for :completed files).
-      import_file.update!(
+      locked_file.update!(
         status: :completed,
         document: document,
         processed_at: Time.current,
