@@ -1,32 +1,38 @@
-<% content_for :focused_header do %>
-  Import — <%= @session.space.name %>
-<% end %>
+<%= turbo_stream_from ["import_session", @session] %>
 
-<% content_for :focused_header_buttons do %>
-  <% if @session.failed_files > 0 %>
-    <%= button_to "Retry Failed", retry_api_v1_import_session_path(@session),
-      method: :post, class: "secondary-button",
-      data: { turbo: false } %>
-  <% end %>
-<% end %>
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:mt-8">
+  <nav class="flex mb-2" aria-label="Breadcrumb">
+    <ol role="list" class="flex items-center space-x-4">
+      <li>
+        <div class="flex">
+          <%= link_to "Imports", import_sessions_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700" %>
+        </div>
+      </li>
+    </ol>
+  </nav>
 
-<% content_for :focused_breadcrumbs do %>
-  <li>
-    <div class="flex">
-      <%= link_to "Imports", import_sessions_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700" %>
+  <div class="md:flex md:items-center md:justify-between mb-6">
+    <div class="min-w-0 flex-1">
+      <h1 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
+        Import &mdash; <%= @session.space.name %>
+      </h1>
     </div>
-  </li>
-<% end %>
 
-<% content_for :focused_content do %>
-  <%= turbo_stream_from ["import_session", @session] %>
+    <div class="mt-4 md:mt-0 md:ml-4">
+      <% if @session.failed_files > 0 %>
+        <%= button_to "Retry Failed", retry_api_v1_import_session_path(@session),
+          method: :post, class: "secondary-button",
+          data: { turbo: false } %>
+      <% end %>
+    </div>
+  </div>
 
   <div class="mb-6">
     <%= render "import_sessions/session_status", session: @session %>
 
     <div class="grid grid-cols-4 gap-4 mt-4 text-center">
       <div class="bg-gray-50 rounded p-3">
-        <div class="text-2xl font-bold"><%= @session.total_files %></div>
+        <div class="text-2xl font-bold dark:text-black"><%= @session.total_files %></div>
         <div class="text-xs text-gray-500">Total</div>
       </div>
       <div class="bg-green-50 rounded p-3">
@@ -44,7 +50,7 @@
     </div>
   </div>
 
-  <div class="import-log">
+  <div class="bg-white dark:bg-gray-800 rounded-md shadow-sm">
     <div class="table-legend">
       <div class="table-legend-description">
         <h1>Import Log</h1>
@@ -53,41 +59,50 @@
 
     <table class="table-list">
       <thead>
-      <tr>
-        <th scope="col">Path</th>
-        <th scope="col">Status</th>
-        <th scope="col">Result</th>
-      </tr>
+        <tr>
+          <th scope="col">Path</th>
+          <th scope="col" class="w-20 text-center">Status</th>
+          <th scope="col">Result</th>
+        </tr>
       </thead>
 
       <tbody>
-      <% @import_files.each do |file| %>
-        <tr>
-          <td class="font-mono"><%= file.relative_path %></td>
+        <% @import_files.each do |file| %>
+          <tr>
+            <td class="font-mono min-w-0">
+              <% dir = File.dirname(file.relative_path) %>
+              <% name = File.basename(file.relative_path) %>
 
-          <td>
-            <% case file.status %>
-            <% when "completed" %><span class="text-green-600">✓</span>
-            <% when "failed" %><span class="text-red-600">✗</span>
-            <% when "skipped" %><span class="text-gray-400">⊘</span>
-            <% else %><span class="text-yellow-500">⏳</span>
-            <% end %>
-          </td>
+              <% if dir == "." %>
+                <span><%= name %></span>
+              <% else %>
+                <div class="flex min-w-0">
+                  <span class="truncate text-gray-500 min-w-0"><%= dir %>/</span><span class="shrink-0"><%= name %></span>
+                </div>
+              <% end %>
+            </td>
 
-          <td class="font-mono">
-            <% if file.document_id %>
-              <%= link_to file.document_id, "/d/#{file.document_id}", class: "default-link" %>
-            <% elsif file.error_message %>
-                <span class="text-red-600 truncate max-w-xs inline-block" title="<%= file.error_message %>">
-                  <%= file.error_message.truncate(80) %>
+            <td class="w-20 text-center">
+              <% case file.status %>
+              <% when "completed" %><span class="text-green-600">✓</span>
+              <% when "failed" %><span class="text-red-600">✗</span>
+              <% when "skipped" %><span class="text-gray-400">⊘</span>
+              <% else %><span class="text-yellow-500">⏳</span>
+              <% end %>
+            </td>
+
+            <td class="font-mono">
+              <% if file.document_id %>
+                <%= link_to file.document_id, "/d/#{file.document_id}", class: "default-link" %>
+              <% elsif file.error_message %>
+                <span class="text-red-600" title="<%= file.error_message %>">
+                  <%= file.error_message.truncate(120) %>
                 </span>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>
-<% end %>
-
-<%= render "focused_section" %>
+</div>
