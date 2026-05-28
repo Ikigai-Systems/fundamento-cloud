@@ -65,6 +65,33 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       result = subject.send(:process_wiki_links_in_markdown, markdown, path_map)
       expect(result).to include("attachment:42")
     end
+
+    it "rewrites standard markdown ![alt](path) to attachment URI" do
+      path_map = { "Pliki/photo.png" => "attachment:42" }
+      result = subject.send(:process_wiki_links_in_markdown, "See ![a photo](Pliki/photo.png) here", path_map)
+      expect(result).to include("![a photo](attachment:42)")
+    end
+
+    it "rewrites standard markdown ![alt](<path with spaces>) to attachment URI" do
+      path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99" }
+      result = subject.send(:process_wiki_links_in_markdown,
+        "![2022-12-09 02.29.53 video.mp4](<Pliki/2022-12-09 02.29.53 video.mp4>)",
+        path_map)
+      expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99)")
+    end
+
+    it "leaves external URLs in standard markdown image syntax unchanged" do
+      result = subject.send(:process_wiki_links_in_markdown,
+        "See ![photo](https://example.com/photo.png)", {})
+      expect(result).to include("![photo](https://example.com/photo.png)")
+    end
+
+    it "leaves already-resolved attachment URIs unchanged" do
+      path_map = {}
+      result = subject.send(:process_wiki_links_in_markdown,
+        "See ![photo](attachment:42)", path_map)
+      expect(result).to include("![photo](attachment:42)")
+    end
   end
 
   describe "process_wiki_links_in_markdown with mention spans" do
@@ -246,6 +273,112 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         expect(result).not_to include("data-fragment")
         expect(result).to include('data-entity-id="doc_abc"')
+      end
+    end
+
+    describe "standard markdown media reference rewriting" do
+      it "rewrites standard markdown image reference with plain path" do
+        path_map = { "assets/photo.png" => "attachment:42" }
+        result = job.send(:process_wiki_links_in_markdown, "See ![my photo](assets/photo.png) here", path_map)
+        expect(result).to include("![my photo](attachment:42)")
+      end
+
+      it "rewrites standard markdown video reference with angle-bracket path (filename with spaces)" do
+        path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99" }
+        result = job.send(:process_wiki_links_in_markdown,
+          "![2022-12-09 02.29.53 video.mp4](<Pliki/2022-12-09 02.29.53 video.mp4>)",
+          path_map)
+        expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99)")
+      end
+
+      it "does not rewrite external image URLs" do
+        result = job.send(:process_wiki_links_in_markdown, "![img](https://example.com/img.png)", {})
+        expect(result).to include("![img](https://example.com/img.png)")
+      end
+    end
+
+    describe "integration: standard markdown media references in full job run" do
+      let(:job) { ImportLinkResolutionJob.new }
+      let(:video_path) { "Pliki/2022-12-09 02.29.53 video.mp4" }
+      let(:video_markdown) { "![2022-12-09 02.29.53 video.mp4](<#{video_path}>)" }
+
+      def make_import_file(document:, path:, markdown:)
+        file = import_file_with_content(document, path, markdown)
+        file
+      end
+
+      # Creates an ImportFile backed by an in-memory StringIO so no S3 call is needed
+      def import_file_with_content(document, path, markdown)
+        import_file = session.import_files.create!(
+          relative_path: path,
+          format: "markdown",
+          file_type: :document,
+          status: :completed,
+          document: document
+        )
+        # Attach an in-memory file so import_file.file.open works
+        import_file.file.attach(
+          io: StringIO.new(markdown),
+          filename: File.basename(path),
+          content_type: "text/markdown"
+        )
+        import_file
+      end
+
+      it "resolves standard markdown video reference in a document without any wiki links" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "block-1", "type" => "video",
+              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: video_markdown)
+        session.merge_path_map!(video_path, "attachment:99")
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+
+        job.perform(batch)
+
+        new_blocks = doc.versions.last.content_blocks
+        expect(new_blocks.first.dig("props", "url")).to eq("attachment:99")
+      end
+
+      it "resolves the same attachment referenced from two separate documents" do
+        doc_a = Document.create!(organization: org, space: space, title: "Doc A")
+        doc_a.versions.create!(
+          content_blocks: [
+            { "id" => "block-a", "type" => "video",
+              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc_a, path: "DocA.md", markdown: video_markdown)
+
+        doc_b = Document.create!(organization: org, space: space, title: "Doc B")
+        doc_b.versions.create!(
+          content_blocks: [
+            { "id" => "block-b", "type" => "video",
+              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc_b, path: "DocB.md", markdown: video_markdown)
+
+        session.merge_path_map!(video_path, "attachment:99")
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+
+        job.perform(batch)
+
+        expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
+        expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
       end
     end
 

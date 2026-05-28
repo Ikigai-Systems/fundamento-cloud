@@ -45,10 +45,12 @@ class ImportLinkResolutionJob < ApplicationJob
     blocks = latest_version.content_blocks
     blocks_json = blocks.to_json
 
-    # Process documents with wiki links or Obsidian block ID markers
+    # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
     has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
     has_block_ids = blocks_json.match?(/\^\w{2,}/)
-    return unless has_wiki_links || has_block_ids
+    attachment_paths = path_map.filter_map { |k, v| k if v.to_s.start_with?("attachment:") }
+    has_local_attachment_refs = attachment_paths.any? { |p| blocks_json.include?(p) }
+    return unless has_wiki_links || has_block_ids || has_local_attachment_refs
 
     resolved_markdown = nil
     import_file.file.open do |f|
@@ -75,6 +77,18 @@ class ImportLinkResolutionJob < ApplicationJob
   def process_wiki_links_in_markdown(markdown, combined_map)
     # Strip Obsidian block ID markers (^blockid at end of lines)
     markdown = strip_obsidian_block_ids(markdown)
+
+    # Rewrite standard markdown ![alt](path) and ![alt](<path with spaces>) to attachment URIs.
+    # Handles Obsidian exports that use angle-bracket syntax for filenames with spaces.
+    # Must run before wiki-link gsubs to avoid double-processing.
+    markdown = markdown.gsub(/!\[([^\]]*)\]\((<[^>]+>|[^)\s]+)\)/) do |match|
+      alt      = $1
+      url_part = $2
+      raw_url  = url_part.start_with?("<") ? url_part[1..-2] : url_part
+
+      attachment_uri = resolve_attachment_link(raw_url, combined_map)
+      attachment_uri ? "![#{alt}](#{attachment_uri})" : match
+    end
 
     # Replace ![[embed]] with attachment image or document mention
     markdown = markdown.gsub(/!\[\[([^\]]+)\]\]/) do |match|
