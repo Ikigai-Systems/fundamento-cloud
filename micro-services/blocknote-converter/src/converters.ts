@@ -236,13 +236,7 @@ const AUDIO_EXTENSIONS = ["mp3", "wav", "flac", "aac", "m4a"];
 const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "ico", "tiff"];
 
 function extractExtension(url: string): string {
-  let path = url;
-  try {
-    path = new URL(url).pathname;
-  } catch {
-    // relative path or custom URI — use as-is
-  }
-  const filename = path.split("/").pop() || "";
+  const filename = url.split("/").pop() || "";
   const dotIndex = filename.lastIndexOf(".");
   return dotIndex === -1 ? "" : filename.slice(dotIndex + 1).toLowerCase();
 }
