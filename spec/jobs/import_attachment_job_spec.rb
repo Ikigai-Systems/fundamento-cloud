@@ -44,12 +44,12 @@ RSpec.describe ImportAttachmentJob, type: :job do
       expect(import_file).to be_completed
     end
 
-    it "writes relative_path → attachment_id to session path_map" do
+    it "writes relative_path → attachment_id with extension to session path_map" do
       import_file = build_attachment_file(relative_path: "assets/photo.png")
       described_class.perform_now(import_file)
 
       attachment = Attachment.last
-      expect(session.reload.path_map["assets/photo.png"]).to eq("attachment:#{attachment.id}")
+      expect(session.reload.path_map["assets/photo.png"]).to eq("attachment:#{attachment.id}.png")
     end
 
     it "increments session processed_files counter" do
