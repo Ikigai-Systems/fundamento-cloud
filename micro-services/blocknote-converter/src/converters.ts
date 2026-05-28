@@ -233,7 +233,7 @@ function htmlToMarkdown(html: string): string {
 
 const VIDEO_EXTENSIONS = ["mp4", "webm", "ogg", "mov", "mkv", "flv", "avi", "wmv", "m4v"];
 const AUDIO_EXTENSIONS = ["mp3", "wav", "flac", "aac", "m4a"];
-const FILE_EXTENSIONS = ["pdf", "zip", "tar", "gz", "rar", "7z", "csv", "xls", "xlsx", "doc", "docx", "ppt", "pptx", "ttf", "otf", "woff", "woff2"];
+const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "ico", "tiff"];
 
 function extractExtension(url: string): string {
   let path = url;
@@ -242,7 +242,9 @@ function extractExtension(url: string): string {
   } catch {
     // relative path or custom URI — use as-is
   }
-  return (path.split("/").pop() || "").split(".").pop()?.toLowerCase() || "";
+  const filename = path.split("/").pop() || "";
+  const dotIndex = filename.lastIndexOf(".");
+  return dotIndex === -1 ? "" : filename.slice(dotIndex + 1).toLowerCase();
 }
 
 function isVideoUrl(url: string): boolean {
@@ -253,8 +255,16 @@ function isAudioUrl(url: string): boolean {
   return AUDIO_EXTENSIONS.includes(extractExtension(url));
 }
 
+function isImageUrl(url: string): boolean {
+  return IMAGE_EXTENSIONS.includes(extractExtension(url));
+}
+
+// Any URL with a recognized extension that isn't video/audio/image is a generic file.
+// URLs with no extension (e.g. attachment:ID) return "" from extractExtension and fall through
+// to the image handler, letting the Ruby import layer correct the type via fix_media_block_types!.
 function isNonImageFileUrl(url: string): boolean {
-  return FILE_EXTENSIONS.includes(extractExtension(url));
+  const ext = extractExtension(url);
+  return ext !== "" && !VIDEO_EXTENSIONS.includes(ext) && !AUDIO_EXTENSIONS.includes(ext) && !IMAGE_EXTENSIONS.includes(ext);
 }
 
 /**
