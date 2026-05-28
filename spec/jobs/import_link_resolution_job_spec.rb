@@ -278,17 +278,17 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
     describe "standard markdown media reference rewriting" do
       it "rewrites standard markdown image reference with plain path" do
-        path_map = { "assets/photo.png" => "attachment:42" }
+        path_map = { "assets/photo.png" => "attachment:42.png" }
         result = job.send(:process_wiki_links_in_markdown, "See ![my photo](assets/photo.png) here", path_map)
-        expect(result).to include("![my photo](attachment:42)")
+        expect(result).to include("![my photo](attachment:42.png)")
       end
 
       it "rewrites standard markdown video reference with angle-bracket path (filename with spaces)" do
-        path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99" }
+        path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99.mp4" }
         result = job.send(:process_wiki_links_in_markdown,
           "![2022-12-09 02.29.53 video.mp4](<Pliki/2022-12-09 02.29.53 video.mp4>)",
           path_map)
-        expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99)")
+        expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99.mp4)")
       end
 
       it "does not rewrite external image URLs" do
@@ -339,15 +339,20 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: video_markdown)
-        session.merge_path_map!(vault_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+        resolved_block = { "id" => "block-1", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         job.perform(batch)
 
-        new_blocks = doc.versions.last.content_blocks
-        expect(new_blocks.first.dig("props", "url")).to eq("attachment:99")
+        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
       end
 
       it "resolves the same attachment referenced from two separate documents" do
@@ -373,18 +378,27 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         )
         make_import_file(document: doc_b, path: "DocB.md", markdown: video_markdown)
 
-        session.merge_path_map!(vault_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+        resolved_block_a = { "id" => "block-a", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        resolved_block_b = { "id" => "block-b", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block_a], [resolved_block_b])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         job.perform(batch)
 
-        expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
-        expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
+        expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
+        expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
       end
 
-      it "produces a video block when the referenced file is a video" do
+      it "passes attachment URI with extension to the converter for a video" do
         doc = Document.create!(organization: org, space: space, title: "Notes")
         doc.versions.create!(
           content_blocks: [
@@ -395,23 +409,19 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: "![clip.mp4](<Pliki/clip.mp4>)")
-        session.merge_path_map!("Vault/Pliki/clip.mp4", "attachment:55")
+        session.merge_path_map!("Vault/Pliki/clip.mp4", "attachment:55.mp4")
 
-        video_block = { "id" => "b1", "type" => "image",
-          "props" => { "url" => "attachment:55", "name" => "clip.mp4", "caption" => "" },
-          "content" => [], "children" => [] }
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([video_block])
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
-        allow(ImportSessionCompletionJob).to receive(:perform_later)
         job.perform(batch)
 
-        expect(doc.versions.last.content_blocks.first["type"]).to eq("video")
-        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:55")
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:55.mp4"))
       end
 
-      it "produces an audio block when the referenced file is audio" do
+      it "passes attachment URI with extension to the converter for audio" do
         doc = Document.create!(organization: org, space: space, title: "Notes")
         doc.versions.create!(
           content_blocks: [
@@ -422,23 +432,19 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: "![track.mp3](<Pliki/track.mp3>)")
-        session.merge_path_map!("Vault/Pliki/track.mp3", "attachment:56")
+        session.merge_path_map!("Vault/Pliki/track.mp3", "attachment:56.mp3")
 
-        audio_block = { "id" => "b1", "type" => "image",
-          "props" => { "url" => "attachment:56", "name" => "track.mp3", "caption" => "" },
-          "content" => [], "children" => [] }
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([audio_block])
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
-        allow(ImportSessionCompletionJob).to receive(:perform_later)
         job.perform(batch)
 
-        expect(doc.versions.last.content_blocks.first["type"]).to eq("audio")
-        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:56")
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:56.mp3"))
       end
 
-      it "produces a file block when the referenced file is a PDF" do
+      it "passes attachment URI with extension to the converter for a PDF" do
         doc = Document.create!(organization: org, space: space, title: "Notes")
         doc.versions.create!(
           content_blocks: [
@@ -449,20 +455,16 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: "![report.pdf](<Pliki/report.pdf>)")
-        session.merge_path_map!("Vault/Pliki/report.pdf", "attachment:57")
+        session.merge_path_map!("Vault/Pliki/report.pdf", "attachment:57.pdf")
 
-        file_block = { "id" => "b1", "type" => "image",
-          "props" => { "url" => "attachment:57", "name" => "report.pdf", "caption" => "" },
-          "content" => [], "children" => [] }
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([file_block])
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
-        allow(ImportSessionCompletionJob).to receive(:perform_later)
         job.perform(batch)
 
-        expect(doc.versions.last.content_blocks.first["type"]).to eq("file")
-        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:57")
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:57.pdf"))
       end
     end
 
@@ -513,73 +515,14 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       end
 
       it "still resolves ![[attachment.png]] as image" do
-        combined_map = { "assets/photo.png" => "attachment:42" }
+        combined_map = { "assets/photo.png" => "attachment:42.png" }
 
         result = job.send(:process_wiki_links_in_markdown, "Here ![[photo.png]]", combined_map)
 
-        expect(result).to include("![photo.png](attachment:42)")
+        expect(result).to include("![photo.png](attachment:42.png)")
         expect(result).not_to include("data-mention")
       end
     end
   end
 
-  describe "#fix_media_block_types!" do
-    subject { described_class.new }
-
-    let(:path_map) do
-      {
-        "Pliki/video.mp4" => "attachment:10",
-        "Pliki/audio.mp3" => "attachment:11",
-        "Pliki/doc.pdf"   => "attachment:12",
-        "Pliki/photo.png" => "attachment:13",
-      }
-    end
-
-    def image_block(url, id: "block-1")
-      { "id" => id, "type" => "image", "props" => { "url" => url, "name" => "file", "caption" => "", "showPreview" => true }, "children" => [] }
-    end
-
-    it "changes video attachment to video block type" do
-      blocks = [image_block("attachment:10")]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("video")
-    end
-
-    it "changes audio attachment to audio block type" do
-      blocks = [image_block("attachment:11")]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("audio")
-    end
-
-    it "changes PDF attachment to file block type" do
-      blocks = [image_block("attachment:12")]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("file")
-    end
-
-    it "leaves image attachment as image block type" do
-      blocks = [image_block("attachment:13")]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("image")
-    end
-
-    it "ignores blocks that are not image type" do
-      blocks = [{ "id" => "b1", "type" => "paragraph", "content" => [], "children" => [] }]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("paragraph")
-    end
-
-    it "ignores image blocks with non-attachment URLs" do
-      blocks = [image_block("https://example.com/photo.jpg")]
-      subject.send(:fix_media_block_types!, blocks, path_map)
-      expect(blocks.first["type"]).to eq("image")
-    end
-
-    it "processes blocks nested in children" do
-      inner = image_block("attachment:10", id: "inner")
-      outer = { "id" => "outer", "type" => "paragraph", "content" => [], "children" => [inner] }
-      subject.send(:fix_media_block_types!, [outer], path_map)
-      expect(inner["type"]).to eq("video")
-    end
-  end
 end

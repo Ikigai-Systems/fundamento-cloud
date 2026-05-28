@@ -29,8 +29,9 @@ class ImportAttachmentJob < ApplicationJob
         processed_at: Time.current
       )
 
-      # Store as "attachment:<id>" so BlockNote nodes can reference via createFileUrlResolver
-      session.merge_path_map!(import_file.relative_path, "attachment:#{attachment.id}")
+      # Store as "attachment:<id>.<ext>" so BlockNote can detect the media type from the extension
+      ext = File.extname(import_file.relative_path)
+      session.merge_path_map!(import_file.relative_path, "attachment:#{attachment.id}#{ext}")
       session.increment_counter!(:processed_files)
     end
 
