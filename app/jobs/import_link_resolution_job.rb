@@ -205,11 +205,18 @@ class ImportLinkResolutionJob < ApplicationJob
       combined_map.find { |k, _| File.basename(k, ".*") == target }&.last
   end
 
-  DOCUMENT_EXTENSIONS = %w[.md .docx .odt .doc].freeze
+  ATTACHMENT_EXTENSIONS = Set.new(%w[
+    .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
+    .pdf .zip .tar .gz .rar .7z
+    .mp3 .wav .flac .aac .m4a
+    .mp4 .mov .avi .mkv .webm .ogg .flv .wmv .m4v
+    .csv .xls .xlsx .ppt .pptx
+    .ttf .otf .woff .woff2
+  ]).freeze
 
   def attachment_extension?(target)
     ext = File.extname(target).downcase
-    ext.present? && !DOCUMENT_EXTENSIONS.include?(ext)
+    ext.present? && ATTACHMENT_EXTENSIONS.include?(ext)
   end
 
   def resolve_attachment_link(target, combined_map)
