@@ -299,8 +299,11 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
     describe "integration: standard markdown media references in full job run" do
       let(:job) { ImportLinkResolutionJob.new }
-      let(:video_path) { "Pliki/2022-12-09 02.29.53 video.mp4" }
-      let(:video_markdown) { "![2022-12-09 02.29.53 video.mp4](<#{video_path}>)" }
+      # vault_path: full path as stored in path_map (relative to vault root)
+      # doc_relative_path: how the document references the file (relative to document's folder)
+      let(:vault_path) { "Zaimportowane/Instagram/Redpill/Pliki/2022-12-09 02.29.53 video.mp4" }
+      let(:doc_relative_path) { "Pliki/2022-12-09 02.29.53 video.mp4" }
+      let(:video_markdown) { "![2022-12-09 02.29.53 video.mp4](<#{doc_relative_path}>)" }
 
       def make_import_file(document:, path:, markdown:)
         file = import_file_with_content(document, path, markdown)
@@ -330,13 +333,13 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         doc.versions.create!(
           content_blocks: [
             { "id" => "block-1", "type" => "video",
-              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "props" => { "url" => doc_relative_path, "name" => "video.mp4", "caption" => "" },
               "content" => [], "children" => [] }
           ],
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: video_markdown)
-        session.merge_path_map!(video_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
@@ -352,7 +355,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         doc_a.versions.create!(
           content_blocks: [
             { "id" => "block-a", "type" => "video",
-              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "props" => { "url" => doc_relative_path, "name" => "video.mp4", "caption" => "" },
               "content" => [], "children" => [] }
           ],
           created_by: membership.user
@@ -363,14 +366,14 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         doc_b.versions.create!(
           content_blocks: [
             { "id" => "block-b", "type" => "video",
-              "props" => { "url" => video_path, "name" => "video.mp4", "caption" => "" },
+              "props" => { "url" => doc_relative_path, "name" => "video.mp4", "caption" => "" },
               "content" => [], "children" => [] }
           ],
           created_by: membership.user
         )
         make_import_file(document: doc_b, path: "DocB.md", markdown: video_markdown)
 
-        session.merge_path_map!(video_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)

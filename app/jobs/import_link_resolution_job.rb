@@ -49,7 +49,9 @@ class ImportLinkResolutionJob < ApplicationJob
     has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
     has_block_ids = blocks_json.match?(/\^\w{2,}/)
     attachment_paths = path_map.filter_map { |k, v| k if v.to_s.start_with?("attachment:") }
-    has_local_attachment_refs = attachment_paths.any? { |p| blocks_json.include?(p) }
+    has_local_attachment_refs = attachment_paths.any? { |p|
+      blocks_json.include?(p) || blocks_json.include?(File.basename(p))
+    }
     return unless has_wiki_links || has_block_ids || has_local_attachment_refs
 
     resolved_markdown = nil
@@ -219,6 +221,11 @@ class ImportLinkResolutionJob < ApplicationJob
 
   def resolve_attachment_link(target, combined_map)
     combined_map[target] ||
-      combined_map.find { |path, _| File.basename(path) == target }&.last
+      combined_map.find { |path, _|
+        # Suffix match: vault path "A/B/Pliki/video.mp4" matches doc-relative target "Pliki/video.mp4"
+        path.end_with?("/#{target}") ||
+          # Basename match: wiki-link style target is just "video.mp4"
+          File.basename(path) == target
+      }&.last
   end
 end
