@@ -54,7 +54,7 @@ export function convertToYjs(blocks: any) {
 function convertVideoToMarkdown() {
   return (tree: any) => {
     visit(tree, "element", (node: any, index: number | undefined, parent: any) => {
-      if (parent && node.tagName === "video") {
+      if (parent && (node.tagName === "video" || node.tagName === "audio")) {
         const src = node.properties?.src || node.properties?.dataUrl || "";
         const name = node.properties?.title || node.properties?.dataName || "";
         parent.children[index!] = {
@@ -232,15 +232,29 @@ function htmlToMarkdown(html: string): string {
 // ---------------------------------------------------------------------------
 
 const VIDEO_EXTENSIONS = ["mp4", "webm", "ogg", "mov", "mkv", "flv", "avi", "wmv", "m4v"];
+const AUDIO_EXTENSIONS = ["mp3", "wav", "flac", "aac", "m4a"];
+const FILE_EXTENSIONS = ["pdf", "zip", "tar", "gz", "rar", "7z", "csv", "xls", "xlsx", "doc", "docx", "ppt", "pptx", "ttf", "otf", "woff", "woff2"];
+
+function extractExtension(url: string): string {
+  let path = url;
+  try {
+    path = new URL(url).pathname;
+  } catch {
+    // relative path or custom URI — use as-is
+  }
+  return (path.split("/").pop() || "").split(".").pop()?.toLowerCase() || "";
+}
 
 function isVideoUrl(url: string): boolean {
-  try {
-    const pathname = new URL(url).pathname;
-    const ext = pathname.split(".").pop()?.toLowerCase() || "";
-    return VIDEO_EXTENSIONS.includes(ext);
-  } catch {
-    return false;
-  }
+  return VIDEO_EXTENSIONS.includes(extractExtension(url));
+}
+
+function isAudioUrl(url: string): boolean {
+  return AUDIO_EXTENSIONS.includes(extractExtension(url));
+}
+
+function isNonImageFileUrl(url: string): boolean {
+  return FILE_EXTENSIONS.includes(extractExtension(url));
 }
 
 /**
@@ -305,6 +319,52 @@ function videoHandler(state: any, node: any) {
 }
 
 /**
+ * remarkRehype handler for audio nodes (image nodes with audio URLs).
+ */
+function audioHandler(state: any, node: any) {
+  const url = String(node?.url || "");
+  const title = node?.title ? String(node.title) : undefined;
+
+  let result: any = {
+    type: "element",
+    tagName: "audio",
+    properties: {
+      src: url,
+      "data-name": title,
+      "data-url": url,
+      controls: true,
+    },
+    children: [],
+  };
+  state.patch?.(node, result);
+  result = state.applyData ? state.applyData(node, result) : result;
+  return result;
+}
+
+/**
+ * remarkRehype handler for generic file nodes (image nodes with non-image, non-video, non-audio URLs).
+ * Emits <div data-content-type="file"> which BlockNote parses as a file block.
+ */
+function fileHandler(state: any, node: any) {
+  const url = String(node?.url || "");
+  const name = node?.title || node?.alt || (url.split("/").pop() || url);
+
+  let result: any = {
+    type: "element",
+    tagName: "div",
+    properties: {
+      "data-content-type": "file",
+      "data-name": name,
+      "data-url": url,
+    },
+    children: [],
+  };
+  state.patch?.(node, result);
+  result = state.applyData ? state.applyData(node, result) : result;
+  return result;
+}
+
+/**
  * Convert a markdown string to HTML, preserving raw HTML blocks (which may
  * contain custom BlockNote elements) by passing `allowDangerousHtml` through
  * the pipeline.
@@ -323,6 +383,10 @@ function markdownToHtml(markdown: string): string {
           const url = String(node?.url || "");
           if (isVideoUrl(url)) {
             return videoHandler(state, node);
+          } else if (isAudioUrl(url)) {
+            return audioHandler(state, node);
+          } else if (isNonImageFileUrl(url)) {
+            return fileHandler(state, node);
           } else {
             return remarkRehypeDefaultHandlers.image(state, node);
           }

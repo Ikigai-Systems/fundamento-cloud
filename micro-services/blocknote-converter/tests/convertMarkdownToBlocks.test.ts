@@ -138,4 +138,28 @@ This is a paragraph with **bold** text.
 
     expect(result[0].content.length).toBeGreaterThan(1);
   });
+
+  it("should convert relative-path video to video block", async () => {
+    const result = await convertMarkdownToBlocks("![clip](Pliki/video.mp4)");
+    expect(result[0].type).toBe("video");
+    expect(result[0].props.url).toBe("Pliki/video.mp4");
+  });
+
+  it("should convert relative-path audio to audio block", async () => {
+    const result = await convertMarkdownToBlocks("![clip](Pliki/audio.mp3)");
+    expect(result[0].type).toBe("audio");
+    expect(result[0].props.url).toBe("Pliki/audio.mp3");
+  });
+
+  it("should convert relative-path PDF to file block", async () => {
+    const result = await convertMarkdownToBlocks("![doc](Pliki/report.pdf)");
+    expect(result[0].type).toBe("file");
+    expect(result[0].props.url).toBe("Pliki/report.pdf");
+  });
+
+  it("should keep relative-path image as image block", async () => {
+    const result = await convertMarkdownToBlocks("![pic](Pliki/photo.jpg)");
+    expect(result[0].type).toBe("image");
+    expect(result[0].props.url).toBe("Pliki/photo.jpg");
+  });
 });
