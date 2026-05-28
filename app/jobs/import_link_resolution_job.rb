@@ -210,14 +210,12 @@ class ImportLinkResolutionJob < ApplicationJob
   AUDIO_BLOCK_EXTENSIONS = %w[mp3 wav flac aac m4a].freeze
   IMAGE_BLOCK_EXTENSIONS = %w[png jpg jpeg gif svg webp bmp ico tiff].freeze
 
-  ATTACHMENT_EXTENSIONS = Set.new(%w[
-    .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
-    .pdf .zip .tar .gz .rar .7z
-    .mp3 .wav .flac .aac .m4a
-    .mp4 .mov .avi .mkv .webm .ogg .flv .wmv .m4v
-    .csv .xls .xlsx .ppt .pptx
-    .ttf .otf .woff .woff2
-  ]).freeze
+  OTHER_ATTACHMENT_EXTENSIONS = %w[pdf zip tar gz rar 7z csv xls xlsx ppt pptx ttf otf woff woff2].freeze
+
+  ATTACHMENT_EXTENSIONS = Set.new(
+    (IMAGE_BLOCK_EXTENSIONS + VIDEO_BLOCK_EXTENSIONS + AUDIO_BLOCK_EXTENSIONS + OTHER_ATTACHMENT_EXTENSIONS)
+      .map { |ext| ".#{ext}" }
+  ).freeze
 
   def attachment_extension?(target)
     ext = File.extname(target).downcase
