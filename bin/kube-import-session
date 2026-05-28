@@ -1,0 +1,292 @@
+#!/usr/bin/env bash
+# Diagnose import session issues in production (Kubernetes).
+#
+# Usage:
+#   bin/import-session-debug                              # list 20 most recent sessions
+#   bin/import-session-debug <session_id>                 # full diagnostic for one session
+#   bin/import-session-debug <session_id> --memory 256Mi  # override pod resource limits
+#
+# Options: --memory, --cpu, --timeout (same as kube-console)
+#
+# Requires: kubectl configured for the fundamento-cloud cluster.
+
+set -euo pipefail
+
+source "$(dirname "$0")/lib/kube-pod-options.sh"
+
+# Override defaults — psql is lightweight
+MEMORY="${MEMORY:-128Mi}"
+CPU="${CPU:-500m}"
+
+parse_kube_pod_options "$@"
+SESSION_ID="${REMAINING_ARGS[0]:-}"
+TMPFILE=$(mktemp /tmp/import-debug-XXXXXX.sql)
+trap "rm -f $TMPFILE" EXIT
+
+# ---------------------------------------------------------------------------
+# Build the SQL to run
+# ---------------------------------------------------------------------------
+
+if [[ -z "$SESSION_ID" ]]; then
+  cat > "$TMPFILE" <<'SQL'
+\pset pager off
+\pset format aligned
+
+SELECT
+  s.id                                                          AS session_id,
+  CASE s.status
+    WHEN 0 THEN 'pending'   WHEN 1 THEN 'uploading'
+    WHEN 2 THEN 'processing' WHEN 3 THEN 'completed'
+    WHEN 4 THEN 'failed'    WHEN 5 THEN 'partial'
+  END                                                           AS status,
+  s.total_files,
+  s.processed_files,
+  s.failed_files,
+  s.total_files - s.processed_files - s.failed_files           AS pending,
+  s.created_at::timestamptz(0)                                 AS started,
+  sp.name                                                       AS space
+FROM import_sessions s
+JOIN spaces sp ON sp.id = s.space_id
+ORDER BY s.created_at DESC
+LIMIT 20;
+SQL
+
+else
+  # SESSION_ID is a shell variable — interpolated below (note: no $ signs in SQL itself)
+  cat > "$TMPFILE" <<SQL
+\pset pager off
+\pset format aligned
+
+\echo ''
+\echo '=== SESSION OVERVIEW ==='
+SELECT
+  s.id,
+  CASE s.status
+    WHEN 0 THEN 'pending'    WHEN 1 THEN 'uploading'
+    WHEN 2 THEN 'processing' WHEN 3 THEN 'completed'
+    WHEN 4 THEN 'failed'     WHEN 5 THEN 'partial'
+  END                            AS status,
+  s.total_files,
+  s.processed_files,
+  s.failed_files,
+  s.total_files - s.processed_files - s.failed_files  AS pending,
+  s.created_at::timestamptz(0)   AS created,
+  s.updated_at::timestamptz(0)   AS updated,
+  sp.name                        AS space,
+  u.email                        AS triggered_by
+FROM import_sessions s
+JOIN spaces sp ON sp.id = s.space_id
+JOIN organization_memberships om ON om.id = s.organization_membership_id
+JOIN users u ON u.id = om.user_id
+WHERE s.id = '${SESSION_ID}';
+
+\echo ''
+\echo '=== FILE STATUS BREAKDOWN ==='
+SELECT
+  CASE status
+    WHEN 0 THEN 'pending'    WHEN 1 THEN 'uploading' WHEN 2 THEN 'uploaded'
+    WHEN 3 THEN 'processing' WHEN 4 THEN 'completed'
+    WHEN 5 THEN 'failed'     WHEN 6 THEN 'skipped'
+  END                                  AS status,
+  COUNT(*)                             AS count,
+  MIN(created_at)::timestamptz(0)      AS first_created,
+  MAX(processed_at)::timestamptz(0)    AS last_processed
+FROM import_files
+WHERE import_session_id = '${SESSION_ID}'
+GROUP BY status
+ORDER BY status;
+
+\echo ''
+\echo '=== FAILED FILES ==='
+SELECT
+  id,
+  relative_path,
+  LEFT(error_message, 120)             AS error,
+  processed_at::timestamptz(0)         AS failed_at
+FROM import_files
+WHERE import_session_id = '${SESSION_ID}'
+  AND status = 5
+ORDER BY processed_at;
+
+\echo ''
+\echo '=== FILES STUCK IN :processing ==='
+SELECT
+  id,
+  relative_path,
+  updated_at::timestamptz(0)           AS stuck_since
+FROM import_files
+WHERE import_session_id = '${SESSION_ID}'
+  AND status = 3
+ORDER BY updated_at;
+
+\echo ''
+\echo '=== JOB EXECUTION COUNTS (files run more than once) ==='
+SELECT
+  f.id                 AS file_id,
+  f.relative_path,
+  CASE f.status
+    WHEN 0 THEN 'pending'    WHEN 1 THEN 'uploading' WHEN 2 THEN 'uploaded'
+    WHEN 3 THEN 'processing' WHEN 4 THEN 'completed'
+    WHEN 5 THEN 'failed'     WHEN 6 THEN 'skipped'
+  END                  AS status,
+  COUNT(e.id)          AS total_executions,
+  SUM(CASE WHEN e.error IS NULL                                THEN 1 ELSE 0 END) AS succeeded,
+  SUM(CASE WHEN e.error LIKE '%InterruptError%'               THEN 1 ELSE 0 END) AS interrupted,
+  SUM(CASE WHEN e.error LIKE '%ConcurrencyExceeded%'          THEN 1 ELSE 0 END) AS concurrency_blocked,
+  SUM(CASE WHEN e.error IS NOT NULL
+       AND e.error NOT LIKE '%InterruptError%'
+       AND e.error NOT LIKE '%ConcurrencyExceeded%'           THEN 1 ELSE 0 END) AS other_errors
+FROM import_files f
+JOIN good_jobs gj
+  ON gj.serialized_params::text LIKE '%' || f.id || '%'
+  AND gj.job_class IN ('ImportDocumentJob', 'ImportAttachmentJob')
+JOIN good_job_executions e ON e.active_job_id = gj.active_job_id
+WHERE f.import_session_id = '${SESSION_ID}'
+GROUP BY f.id, f.relative_path, f.status
+HAVING COUNT(e.id) > 1
+ORDER BY total_executions DESC;
+
+\echo ''
+\echo '=== CONCURRENT EXECUTION ANOMALIES (same job ran >1 time, excluding ConcurrencyExceeded) ==='
+SELECT
+  gj.active_job_id,
+  gj.job_class,
+  COUNT(e.id)                              AS execution_count,
+  array_agg(DISTINCT e.process_id::text)   AS process_ids,
+  MIN(e.created_at)::timestamptz(0)        AS first_started,
+  MAX(e.created_at)::timestamptz(0)        AS last_started
+FROM import_files f
+JOIN good_jobs gj
+  ON gj.serialized_params::text LIKE '%' || f.id || '%'
+  AND gj.job_class IN ('ImportDocumentJob', 'ImportAttachmentJob')
+JOIN good_job_executions e ON e.active_job_id = gj.active_job_id
+  AND (e.error IS NULL OR e.error NOT LIKE '%ConcurrencyExceeded%')
+WHERE f.import_session_id = '${SESSION_ID}'
+GROUP BY gj.active_job_id, gj.job_class
+HAVING COUNT(e.id) > 1
+ORDER BY execution_count DESC;
+
+\echo ''
+\echo '=== PENDING / SCHEDULED JOBS ==='
+SELECT
+  gj.id,
+  gj.active_job_id,
+  gj.job_class,
+  gj.executions_count,
+  gj.scheduled_at::timestamptz(0)     AS retry_at,
+  LEFT(gj.error, 100)                 AS last_error
+FROM import_files f
+JOIN good_jobs gj
+  ON gj.serialized_params::text LIKE '%' || f.id || '%'
+  AND gj.job_class IN ('ImportDocumentJob', 'ImportAttachmentJob')
+WHERE f.import_session_id = '${SESSION_ID}'
+  AND gj.finished_at IS NULL
+ORDER BY gj.scheduled_at NULLS FIRST;
+
+\echo ''
+\echo '=== DOCUMENT INTEGRITY (space total vs linked to import_files) ==='
+WITH linked AS (
+  SELECT DISTINCT document_id
+  FROM import_files
+  WHERE import_session_id = '${SESSION_ID}'
+    AND document_id IS NOT NULL
+),
+space_docs AS (
+  SELECT d.id
+  FROM documents d
+  JOIN import_sessions s ON s.space_id = d.space_id
+  WHERE s.id = '${SESSION_ID}'
+)
+SELECT
+  (SELECT COUNT(*) FROM space_docs)                                          AS total_docs_in_space,
+  (SELECT COUNT(*) FROM linked)                                              AS docs_linked_to_files,
+  (SELECT COUNT(*) FROM space_docs WHERE id NOT IN (SELECT document_id FROM linked)) AS orphan_docs;
+
+\echo ''
+\echo '=== GOODJOB WORKER PROCESSES ==='
+SELECT
+  id,
+  state->>'hostname'       AS hostname,
+  (state->>'pid')::int     AS pid,
+  created_at::timestamptz(0) AS started,
+  updated_at::timestamptz(0) AS last_heartbeat
+FROM good_job_processes
+ORDER BY created_at;
+
+\echo ''
+\echo '=== ACTIVE CONCURRENCY SEMAPHORES (memory_intensive) ==='
+SELECT key, value, updated_at::timestamptz(0) AS updated
+FROM good_job_settings
+WHERE key LIKE 'memory_intensive%'
+ORDER BY key;
+SQL
+
+fi
+
+# ---------------------------------------------------------------------------
+# Run via ephemeral psql pod in the cluster
+# ---------------------------------------------------------------------------
+# We avoid `kubectl run -i` stdin piping — kubectl attaches before the container
+# is ready, causing a race that leaves the pod idle. Instead we store the SQL in
+# a ConfigMap, mount it as a file, and let psql read it with -f (no stdin needed).
+
+SUFFIX=$(date +%s)
+CM_NAME="import-debug-sql-${SUFFIX}"
+POD_NAME="import-session-debug-${SUFFIX}"
+
+# Upload SQL as a ConfigMap and clean it up on exit regardless of outcome.
+kubectl create configmap "$CM_NAME" \
+  --from-file=query.sql="$TMPFILE" \
+  --namespace=fundamento-cloud
+trap "kubectl delete configmap $CM_NAME -n fundamento-cloud --ignore-not-found 2>/dev/null; rm -f $TMPFILE" EXIT
+
+# Pull serviceAccountName and imagePullSecrets from the website deployment so
+# the pod passes admission control and inherits the cluster's image pull config.
+SERVICE_ACCOUNT=$(kubectl get deployment website -n fundamento-cloud \
+  -o jsonpath='{.spec.template.spec.serviceAccountName}')
+IMAGE_PULL_SECRETS=$(kubectl get deployment website -n fundamento-cloud \
+  -o json | jq -r '.spec.template.spec.imagePullSecrets // []')
+
+POD_SPEC=$(cat <<EOF
+{
+  "spec": {
+    "serviceAccountName": "$SERVICE_ACCOUNT",
+    "imagePullSecrets": $IMAGE_PULL_SECRETS,
+    "restartPolicy": "Never",
+    "volumes": [{
+      "name": "sql",
+      "configMap": { "name": "$CM_NAME" }
+    }],
+    "containers": [{
+      "name": "import-session-debug",
+      "image": "postgres:16-alpine",
+      "command": ["sh", "-c", "psql \"\$DATABASE_URL\" -f /sql/query.sql"],
+      "resources": {
+        "requests": { "memory": "64Mi",    "cpu": "100m" },
+        "limits":   { "memory": "$MEMORY", "cpu": "$CPU" }
+      },
+      "volumeMounts": [{
+        "name": "sql",
+        "mountPath": "/sql"
+      }],
+      "env": [{
+        "name": "DATABASE_URL",
+        "valueFrom": {
+          "secretKeyRef": {
+            "name": "app-secrets",
+            "key": "DATABASE_URL"
+          }
+        }
+      }]
+    }]
+  }
+}
+EOF
+)
+
+kubectl run "$POD_NAME" --rm --restart=Never \
+  --image=postgres:16-alpine \
+  --namespace=fundamento-cloud \
+  --pod-running-timeout="$POD_RUNNING_TIMEOUT" \
+  --overrides="$POD_SPEC" \
+  --attach

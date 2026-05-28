@@ -1,32 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Default values
+source "$(dirname "$0")/lib/kube-pod-options.sh"
+
 NAMESPACE="fundamento-cloud"
 DEPLOYMENT="website"
-MEMORY="${MEMORY:-512Mi}"
-CPU="${CPU:-1000m}"
-POD_RUNNING_TIMEOUT="${POD_RUNNING_TIMEOUT:-5m}"
+POD_RUNNING_TIMEOUT="${POD_RUNNING_TIMEOUT:-5m}"  # longer default for interactive console
 SHELL_MODE=false
 
-# Parse command line arguments
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    --memory)
-      MEMORY="$2"
-      shift 2
-      ;;
-    --cpu)
-      CPU="$2"
-      shift 2
-      ;;
+parse_kube_pod_options "$@"
+
+for arg in "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"; do
+  case $arg in
     --shell)
       SHELL_MODE=true
-      shift
-      ;;
-    --timeout)
-      POD_RUNNING_TIMEOUT="$2"
-      shift 2
       ;;
     --help|-h)
       echo "Usage: $0 [OPTIONS]"
@@ -54,7 +41,7 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     *)
-      echo "Unknown option: $1"
+      echo "Unknown option: $arg"
       echo "Use --help for usage information"
       exit 1
       ;;
