@@ -383,6 +383,87 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
         expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
       end
+
+      it "produces a video block when the referenced file is a video" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/clip.mp4", "name" => "clip.mp4", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![clip.mp4](<Pliki/clip.mp4>)")
+        session.merge_path_map!("Vault/Pliki/clip.mp4", "attachment:55")
+
+        video_block = { "id" => "b1", "type" => "image",
+          "props" => { "url" => "attachment:55", "name" => "clip.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([video_block])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+        job.perform(batch)
+
+        expect(doc.versions.last.content_blocks.first["type"]).to eq("video")
+        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:55")
+      end
+
+      it "produces an audio block when the referenced file is audio" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/track.mp3", "name" => "track.mp3", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![track.mp3](<Pliki/track.mp3>)")
+        session.merge_path_map!("Vault/Pliki/track.mp3", "attachment:56")
+
+        audio_block = { "id" => "b1", "type" => "image",
+          "props" => { "url" => "attachment:56", "name" => "track.mp3", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([audio_block])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+        job.perform(batch)
+
+        expect(doc.versions.last.content_blocks.first["type"]).to eq("audio")
+        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:56")
+      end
+
+      it "produces a file block when the referenced file is a PDF" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/report.pdf", "name" => "report.pdf", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![report.pdf](<Pliki/report.pdf>)")
+        session.merge_path_map!("Vault/Pliki/report.pdf", "attachment:57")
+
+        file_block = { "id" => "b1", "type" => "image",
+          "props" => { "url" => "attachment:57", "name" => "report.pdf", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([file_block])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+        job.perform(batch)
+
+        expect(doc.versions.last.content_blocks.first["type"]).to eq("file")
+        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:57")
+      end
     end
 
     describe "![[doc]] embed downgrade to mention" do
