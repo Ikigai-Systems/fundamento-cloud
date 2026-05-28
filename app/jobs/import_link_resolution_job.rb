@@ -64,6 +64,7 @@ class ImportLinkResolutionJob < ApplicationJob
     return unless resolved_markdown
 
     new_blocks = BlocknoteConverterService.markdown_to_blocks(resolved_markdown)
+    fix_media_block_types!(new_blocks, path_map)
     new_sync = BlocknoteConverterService.blocks_to_yjs(new_blocks)
 
     document.versions.create!(
@@ -205,6 +206,10 @@ class ImportLinkResolutionJob < ApplicationJob
       combined_map.find { |k, _| File.basename(k, ".*") == target }&.last
   end
 
+  VIDEO_BLOCK_EXTENSIONS = %w[mp4 webm ogg mov mkv flv avi wmv m4v].freeze
+  AUDIO_BLOCK_EXTENSIONS = %w[mp3 wav flac aac m4a].freeze
+  IMAGE_BLOCK_EXTENSIONS = %w[png jpg jpeg gif svg webp bmp ico tiff].freeze
+
   ATTACHMENT_EXTENSIONS = Set.new(%w[
     .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
     .pdf .zip .tar .gz .rar .7z
@@ -227,5 +232,30 @@ class ImportLinkResolutionJob < ApplicationJob
           # Basename match: wiki-link style target is just "video.mp4"
           File.basename(path) == target
       }&.last
+  end
+
+  def fix_media_block_types!(blocks, path_map)
+    reverse_map = path_map.each_with_object({}) do |(path, value), map|
+      map[value.to_s] = path if value.to_s.start_with?("attachment:")
+    end
+
+    BlocknoteBlocks.walk_blocks(blocks) do |node|
+      next unless node["type"] == "image"
+      url = node.dig("props", "url").to_s
+      next unless url.start_with?("attachment:")
+      original_path = reverse_map[url]
+      next unless original_path
+
+      ext = File.extname(original_path).delete_prefix(".").downcase
+      node["type"] = if VIDEO_BLOCK_EXTENSIONS.include?(ext)
+        "video"
+      elsif AUDIO_BLOCK_EXTENSIONS.include?(ext)
+        "audio"
+      elsif !IMAGE_BLOCK_EXTENSIONS.include?(ext)
+        "file"
+      else
+        next
+      end
+    end
   end
 end

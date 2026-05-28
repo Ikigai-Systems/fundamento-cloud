@@ -441,4 +441,64 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       end
     end
   end
+
+  describe "#fix_media_block_types!" do
+    subject { described_class.new }
+
+    let(:path_map) do
+      {
+        "Pliki/video.mp4" => "attachment:10",
+        "Pliki/audio.mp3" => "attachment:11",
+        "Pliki/doc.pdf"   => "attachment:12",
+        "Pliki/photo.png" => "attachment:13",
+      }
+    end
+
+    def image_block(url, id: "block-1")
+      { "id" => id, "type" => "image", "props" => { "url" => url, "name" => "file", "caption" => "", "showPreview" => true }, "children" => [] }
+    end
+
+    it "changes video attachment to video block type" do
+      blocks = [image_block("attachment:10")]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("video")
+    end
+
+    it "changes audio attachment to audio block type" do
+      blocks = [image_block("attachment:11")]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("audio")
+    end
+
+    it "changes PDF attachment to file block type" do
+      blocks = [image_block("attachment:12")]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("file")
+    end
+
+    it "leaves image attachment as image block type" do
+      blocks = [image_block("attachment:13")]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("image")
+    end
+
+    it "ignores blocks that are not image type" do
+      blocks = [{ "id" => "b1", "type" => "paragraph", "content" => [], "children" => [] }]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("paragraph")
+    end
+
+    it "ignores image blocks with non-attachment URLs" do
+      blocks = [image_block("https://example.com/photo.jpg")]
+      subject.send(:fix_media_block_types!, blocks, path_map)
+      expect(blocks.first["type"]).to eq("image")
+    end
+
+    it "processes blocks nested in children" do
+      inner = image_block("attachment:10", id: "inner")
+      outer = { "id" => "outer", "type" => "paragraph", "content" => [], "children" => [inner] }
+      subject.send(:fix_media_block_types!, [outer], path_map)
+      expect(inner["type"]).to eq("video")
+    end
+  end
 end
