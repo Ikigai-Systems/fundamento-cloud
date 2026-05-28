@@ -253,14 +253,6 @@ function isImageUrl(url: string): boolean {
   return IMAGE_EXTENSIONS.includes(extractExtension(url));
 }
 
-// Any URL with a recognized extension that isn't video/audio/image is a generic file.
-// URLs with no extension (e.g. attachment:ID) return "" from extractExtension and fall through
-// to the image handler, letting the Ruby import layer correct the type via fix_media_block_types!.
-function isNonImageFileUrl(url: string): boolean {
-  const ext = extractExtension(url);
-  return ext !== "" && !VIDEO_EXTENSIONS.includes(ext) && !AUDIO_EXTENSIONS.includes(ext) && !IMAGE_EXTENSIONS.includes(ext);
-}
-
 /**
  * remarkRehype handler for code blocks.
  * Uses `data-language` attribute instead of CSS class (BlockNote convention).
@@ -385,15 +377,10 @@ function markdownToHtml(markdown: string): string {
         ...(remarkRehypeDefaultHandlers as any),
         image: (state: any, node: any) => {
           const url = String(node?.url || "");
-          if (isVideoUrl(url)) {
-            return videoHandler(state, node);
-          } else if (isAudioUrl(url)) {
-            return audioHandler(state, node);
-          } else if (isNonImageFileUrl(url)) {
-            return fileHandler(state, node);
-          } else {
-            return remarkRehypeDefaultHandlers.image(state, node);
-          }
+          if (isVideoUrl(url)) return videoHandler(state, node);
+          if (isAudioUrl(url)) return audioHandler(state, node);
+          if (isImageUrl(url)) return remarkRehypeDefaultHandlers.image(state, node);
+          return fileHandler(state, node);
         },
         code: codeHandler,
         blockquote: (state: any, node: any) => {
