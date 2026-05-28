@@ -208,8 +208,8 @@ class ImportLinkResolutionJob < ApplicationJob
   ATTACHMENT_EXTENSIONS = Set.new(%w[
     .png .jpg .jpeg .gif .svg .webp .bmp .ico .tiff
     .pdf .zip .tar .gz .rar .7z
-    .mp3 .wav .ogg .flac .aac .m4a
-    .mp4 .mov .avi .mkv .webm
+    .mp3 .wav .flac .aac .m4a
+    .mp4 .mov .avi .mkv .webm .ogg .flv .wmv .m4v
     .csv .xls .xlsx .ppt .pptx
     .ttf .otf .woff .woff2
   ]).freeze
@@ -228,4 +228,5 @@ class ImportLinkResolutionJob < ApplicationJob
           File.basename(path) == target
       }&.last
   end
+
 end

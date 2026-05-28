@@ -278,17 +278,17 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
     describe "standard markdown media reference rewriting" do
       it "rewrites standard markdown image reference with plain path" do
-        path_map = { "assets/photo.png" => "attachment:42" }
+        path_map = { "assets/photo.png" => "attachment:42.png" }
         result = job.send(:process_wiki_links_in_markdown, "See ![my photo](assets/photo.png) here", path_map)
-        expect(result).to include("![my photo](attachment:42)")
+        expect(result).to include("![my photo](attachment:42.png)")
       end
 
       it "rewrites standard markdown video reference with angle-bracket path (filename with spaces)" do
-        path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99" }
+        path_map = { "Pliki/2022-12-09 02.29.53 video.mp4" => "attachment:99.mp4" }
         result = job.send(:process_wiki_links_in_markdown,
           "![2022-12-09 02.29.53 video.mp4](<Pliki/2022-12-09 02.29.53 video.mp4>)",
           path_map)
-        expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99)")
+        expect(result).to include("![2022-12-09 02.29.53 video.mp4](attachment:99.mp4)")
       end
 
       it "does not rewrite external image URLs" do
@@ -339,15 +339,20 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
           created_by: membership.user
         )
         make_import_file(document: doc, path: "Notes.md", markdown: video_markdown)
-        session.merge_path_map!(vault_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+        resolved_block = { "id" => "block-1", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         job.perform(batch)
 
-        new_blocks = doc.versions.last.content_blocks
-        expect(new_blocks.first.dig("props", "url")).to eq("attachment:99")
+        expect(doc.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
       end
 
       it "resolves the same attachment referenced from two separate documents" do
@@ -373,15 +378,93 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         )
         make_import_file(document: doc_b, path: "DocB.md", markdown: video_markdown)
 
-        session.merge_path_map!(vault_path, "attachment:99")
+        session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+        resolved_block_a = { "id" => "block-a", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        resolved_block_b = { "id" => "block-b", "type" => "video",
+          "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
+          "content" => [], "children" => [] }
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block_a], [resolved_block_b])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         job.perform(batch)
 
-        expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
-        expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99")
+        expect(doc_a.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
+        expect(doc_b.versions.last.content_blocks.first.dig("props", "url")).to eq("attachment:99.mp4")
+      end
+
+      it "passes attachment URI with extension to the converter for a video" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/clip.mp4", "name" => "clip.mp4", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![clip.mp4](<Pliki/clip.mp4>)")
+        session.merge_path_map!("Vault/Pliki/clip.mp4", "attachment:55.mp4")
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        job.perform(batch)
+
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:55.mp4"))
+      end
+
+      it "passes attachment URI with extension to the converter for audio" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/track.mp3", "name" => "track.mp3", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![track.mp3](<Pliki/track.mp3>)")
+        session.merge_path_map!("Vault/Pliki/track.mp3", "attachment:56.mp3")
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        job.perform(batch)
+
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:56.mp3"))
+      end
+
+      it "passes attachment URI with extension to the converter for a PDF" do
+        doc = Document.create!(organization: org, space: space, title: "Notes")
+        doc.versions.create!(
+          content_blocks: [
+            { "id" => "b1", "type" => "image",
+              "props" => { "url" => "Pliki/report.pdf", "name" => "report.pdf", "caption" => "" },
+              "content" => [], "children" => [] }
+          ],
+          created_by: membership.user
+        )
+        make_import_file(document: doc, path: "Notes.md", markdown: "![report.pdf](<Pliki/report.pdf>)")
+        session.merge_path_map!("Vault/Pliki/report.pdf", "attachment:57.pdf")
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(ImportSessionCompletionJob).to receive(:perform_later)
+
+        batch = double("batch", properties: { import_session_id: session.id })
+        job.perform(batch)
+
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:57.pdf"))
       end
     end
 
@@ -432,13 +515,14 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       end
 
       it "still resolves ![[attachment.png]] as image" do
-        combined_map = { "assets/photo.png" => "attachment:42" }
+        combined_map = { "assets/photo.png" => "attachment:42.png" }
 
         result = job.send(:process_wiki_links_in_markdown, "Here ![[photo.png]]", combined_map)
 
-        expect(result).to include("![photo.png](attachment:42)")
+        expect(result).to include("![photo.png](attachment:42.png)")
         expect(result).not_to include("data-mention")
       end
     end
   end
+
 end
