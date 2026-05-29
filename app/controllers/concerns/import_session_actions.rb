@@ -106,7 +106,7 @@ module ImportSessionActions
     import_file.save!
 
     file_json(import_file).merge(
-      direct_upload_url: blob.service_url_for_direct_upload,
+      direct_upload_url: blob.service_url_for_direct_upload(expires_in: 24.hours),
       direct_upload_headers: blob.service.headers_for_direct_upload(
         blob.key, content_type: blob.content_type, checksum: blob.checksum
       ).compact,
