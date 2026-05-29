@@ -29,7 +29,20 @@ module ImportSessionActions
     end
 
     file_entries = Array(params[:files])
-    results = file_entries.map { |entry| process_manifest_entry(session, entry) }
+
+    # Pre-fetch to avoid N+1: one query for existing files in this session, one for
+    # files already completed in previous sessions for the same space.
+    existing_files = session.import_files.index_by(&:relative_path)
+    completed_elsewhere = ImportFile
+      .joins(:import_session)
+      .where(import_sessions: { space_id: session.space_id }, status: ImportFile.statuses[:completed])
+      .where.not(import_session_id: session.id)
+      .pluck(:relative_path, :checksum)
+      .to_set
+
+    results = file_entries.map { |entry|
+      process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
+    }
 
     session.update!(
       total_files: session.import_files.count,
@@ -56,10 +69,9 @@ module ImportSessionActions
     nil
   end
 
-  def process_manifest_entry(session, entry)
-    import_file = session.import_files.find_or_initialize_by(
-      relative_path: entry[:relative_path]
-    )
+  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: Set.new)
+    import_file = existing_files[entry[:relative_path]] ||
+      session.import_files.build(relative_path: entry[:relative_path])
 
     if import_file.persisted? &&
         import_file.uploaded? &&
@@ -68,12 +80,7 @@ module ImportSessionActions
     end
 
     # Skip files already imported in a previous session for this space
-    already_imported = ImportFile
-      .joins(:import_session)
-      .where(import_sessions: { space_id: session.space_id })
-      .where(relative_path: entry[:relative_path], checksum: entry[:checksum], status: :completed)
-      .where.not(import_session_id: session.id)
-      .exists?
+    already_imported = completed_elsewhere.include?([entry[:relative_path], entry[:checksum]])
 
     if already_imported
       import_file.assign_attributes(status: :skipped)
