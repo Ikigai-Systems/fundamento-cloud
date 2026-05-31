@@ -69,17 +69,19 @@
       <tbody>
         <% @import_files.each do |file| %>
           <tr>
-            <td class="font-mono min-w-0">
+            <td class="font-mono w-full max-w-0">
               <% dir = File.dirname(file.relative_path) %>
               <% name = File.basename(file.relative_path) %>
-
-              <% if dir == "." %>
-                <span><%= name %></span>
+              <% suffix_length = 18 %>
+              <% if name.length > suffix_length + 5 %>
+                <% name_prefix = name[0...-suffix_length] %>
+                <% name_suffix = name[-suffix_length..] %>
               <% else %>
-                <div class="flex min-w-0">
-                  <span class="truncate text-gray-500 min-w-0"><%= dir %>/</span><span class="shrink-0"><%= name %></span>
-                </div>
+                <% name_prefix = name %>
+                <% name_suffix = nil %>
               <% end %>
+
+              <div class="flex min-w-0" title="<%= file.relative_path %>"><span class="truncate min-w-0"><% if dir != "." %><span class="text-gray-500"><%= dir %>/</span><% end %><%= name_prefix %></span><% if name_suffix %><span class="shrink-0"><%= name_suffix %></span><% end %></div>
             </td>
 
             <td class="w-20 text-center">
