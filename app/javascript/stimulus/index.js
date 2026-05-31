@@ -31,6 +31,7 @@ import RedditPixelController from "./reddit_pixel_controller.js";
 import LivechatController from "./livechat_controller.js";
 import TimestampController from "./controllers/timestamp_controller.ts";
 import ImportUploadController from "./controllers/import_upload_controller.js";
+import ImportLogFilterController from "./controllers/import_log_filter_controller.js";
 import TableOfContentsController from "./table_of_contents_controller";
 
 const application = Application.start()
@@ -101,6 +102,7 @@ application.register("livechat", LivechatController);
 application.register("timestamp", TimestampController);
 
 application.register("import-upload", ImportUploadController);
+application.register("import-log-filter", ImportLogFilterController);
 
 application.register("edit-comment", EditCommentController);
 application.register("new-comment", NewCommentController);

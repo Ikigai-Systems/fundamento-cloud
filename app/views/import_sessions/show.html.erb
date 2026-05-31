@@ -1,6 +1,6 @@
 <%= turbo_stream_from ["import_session", @session] %>
 
-<div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:mt-8">
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-6 md:mt-8" data-controller="import-log-filter">
   <nav class="flex mb-2" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-4">
       <li>
@@ -31,22 +31,42 @@
     <%= render "import_sessions/session_status", session: @session %>
 
     <div class="grid grid-cols-4 gap-4 mt-4 text-center">
-      <div class="bg-gray-50 rounded p-3">
+      <button type="button"
+              data-import-log-filter-target="button"
+              data-action="import-log-filter#filter"
+              data-filter="all"
+              aria-pressed="true"
+              class="bg-gray-50 rounded p-3 ring-2 ring-transparent aria-pressed:ring-gray-400 hover:bg-gray-100 transition">
         <div class="text-2xl font-bold dark:text-black"><%= @session.total_files %></div>
         <div class="text-xs text-gray-500">Total</div>
-      </div>
-      <div class="bg-green-50 rounded p-3">
+      </button>
+      <button type="button"
+              data-import-log-filter-target="button"
+              data-action="import-log-filter#filter"
+              data-filter="completed"
+              aria-pressed="false"
+              class="bg-green-50 rounded p-3 ring-2 ring-transparent aria-pressed:ring-green-400 hover:bg-green-100 transition">
         <div class="text-2xl font-bold text-green-700"><%= @session.processed_files %></div>
         <div class="text-xs text-gray-500">Processed</div>
-      </div>
-      <div class="bg-red-50 rounded p-3">
+      </button>
+      <button type="button"
+              data-import-log-filter-target="button"
+              data-action="import-log-filter#filter"
+              data-filter="failed"
+              aria-pressed="false"
+              class="bg-red-50 rounded p-3 ring-2 ring-transparent aria-pressed:ring-red-400 hover:bg-red-100 transition">
         <div class="text-2xl font-bold text-red-700"><%= @session.failed_files %></div>
         <div class="text-xs text-gray-500">Failed</div>
-      </div>
-      <div class="bg-yellow-50 rounded p-3">
+      </button>
+      <button type="button"
+              data-import-log-filter-target="button"
+              data-action="import-log-filter#filter"
+              data-filter="skipped"
+              aria-pressed="false"
+              class="bg-yellow-50 rounded p-3 ring-2 ring-transparent aria-pressed:ring-yellow-400 hover:bg-yellow-100 transition">
         <div class="text-2xl font-bold text-yellow-700"><%= @session.skipped_files %></div>
         <div class="text-xs text-gray-500">Skipped</div>
-      </div>
+      </button>
     </div>
   </div>
 
@@ -68,7 +88,7 @@
 
       <tbody>
         <% @import_files.each do |file| %>
-          <tr>
+          <tr data-import-log-filter-target="row" data-status="<%= file.status %>">
             <td class="font-mono w-full max-w-0">
               <% dir = File.dirname(file.relative_path) %>
               <% name = File.basename(file.relative_path) %>
