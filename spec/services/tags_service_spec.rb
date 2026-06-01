@@ -278,6 +278,14 @@ RSpec.describe TagsService, type: :model do
       expect(document.tags.pluck(:name)).to contain_exactly("business", "marketing", "business/strategy")
     end
 
+    it "deduplicates tags that normalize to the same value" do
+      new_tags = service.update_tags(["#GlashuetteOriginal", "#glashuetteoriginal"])
+      expect(new_tags.map(&:name)).to contain_exactly("glashuetteoriginal")
+
+      document.reload
+      expect(document.tags.pluck(:name)).to contain_exactly("glashuetteoriginal")
+    end
+
     it "skips empty tag names" do
       new_tags = service.update_tags(["#valid", "", "#", "#another_valid"])
       expect(new_tags.map(&:name)).to contain_exactly("valid", "another_valid")

@@ -143,7 +143,7 @@ class TagsService
   end
 
   def normalize_tag_names(tag_names)
-    Array(tag_names).map { |name| self.class.normalize_tag_name(name) }
+    Array(tag_names).map { |name| self.class.normalize_tag_name(name) }.uniq
   end
 
   def find_or_create_tag(tag_name)
