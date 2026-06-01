@@ -55,8 +55,10 @@ class ImportDocumentJob < MemoryIntensiveJob
       document.update!(sync: sync)
 
       if frontmatter&.dig("tags").is_a?(Array)
+        valid_tags = frontmatter["tags"].select { |t| TagsService.valid_tag_name?(t.to_s) }
+
         TagsService.new(object: document, organization: session.organization)
-          .update_tags(frontmatter["tags"])
+          .update_tags(valid_tags)
       end
 
       locked_file.update!(

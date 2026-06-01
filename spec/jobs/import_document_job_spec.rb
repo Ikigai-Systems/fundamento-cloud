@@ -101,6 +101,48 @@ RSpec.describe ImportDocumentJob, type: :job do
       }.to change { session.reload.failed_files }.by(1)
     end
 
+    context "when frontmatter contains tags" do
+      before do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      end
+
+      it "applies valid tags to the document" do
+        content = "---\ntags:\n  - project\n  - work/2024\n---\n\nBody"
+        import_file = build_import_file(relative_path: "tagged.md", content: content)
+
+        described_class.perform_now(import_file)
+
+        expect(import_file.reload.document.tags.pluck(:name)).to contain_exactly("project", "work/2024")
+      end
+
+      it "silently skips invalid tags and still imports the document" do
+        content = "---\ntags:\n  - valid-tag\n  - \"invalid tag with spaces\"\n  - another@invalid\n---\n\nBody"
+        import_file = build_import_file(relative_path: "mixed-tags.md", content: content)
+
+        expect {
+          described_class.perform_now(import_file)
+        }.to change(Document, :count).by(1)
+
+        import_file.reload
+        expect(import_file).to be_completed
+        expect(import_file.document.tags.pluck(:name)).to contain_exactly("valid-tag")
+      end
+
+      it "succeeds with no tags when all tags are invalid" do
+        content = "---\ntags:\n  - \"bad tag!\"\n  - \"another bad one\"\n---\n\nBody"
+        import_file = build_import_file(relative_path: "all-invalid-tags.md", content: content)
+
+        expect {
+          described_class.perform_now(import_file)
+        }.to change(Document, :count).by(1)
+
+        import_file.reload
+        expect(import_file).to be_completed
+        expect(import_file.document.tags).to be_empty
+      end
+    end
+
     context "when the file is stuck in :processing (interrupted job retry)" do
       it "processes the file instead of returning early" do
         import_file = build_import_file(relative_path: "interrupted.md")
