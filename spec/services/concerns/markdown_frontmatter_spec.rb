@@ -43,6 +43,25 @@ RSpec.describe MarkdownFrontmatter do
       expect(content).to eq(markdown)
     end
 
+    it "parses date values without raising" do
+      markdown = <<~MD
+        ---
+        title: Zettelkasten
+        clipped: 2024-05-05
+        tags:
+          - clippings
+        ---
+        # Content
+      MD
+
+      content, data = instance.extract_frontmatter(markdown)
+
+      expect(data["title"]).to eq("Zettelkasten")
+      expect(data["clipped"]).to eq(Date.new(2024, 5, 5))
+      expect(data["tags"]).to eq(["clippings"])
+      expect(content).to eq("# Content")
+    end
+
     context "with Obsidian template variables" do
       it "parses key-value pairs containing {{...}} as literal strings" do
         markdown = "---\nutworzono: {{date}} {{time}}\n---\n# Content"

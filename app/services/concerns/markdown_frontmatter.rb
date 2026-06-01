@@ -7,7 +7,7 @@ module MarkdownFrontmatter
     if markdown.start_with?("---\n")
       parts = markdown.split(/^---\s*$/m, 3)
       if parts.length >= 3
-        frontmatter_data = YAML.safe_load(quote_template_variables(parts[1]))
+        frontmatter_data = YAML.safe_load(quote_template_variables(parts[1]), permitted_classes: [Date, Time])
         markdown = parts[2].strip
       end
     end
