@@ -4,7 +4,7 @@ class ImportSessionsController < ApplicationController
 
   after_action :verify_authorized
 
-  before_action :set_session, only: [:show, :manifest, :trigger_processing]
+  before_action :set_session, only: [:show, :manifest, :trigger_processing, :retry_failed]
 
   def index
     @sessions = policy_scope(current_organization.import_sessions).recent
@@ -54,6 +54,25 @@ class ImportSessionsController < ApplicationController
     end
 
     render json: session_json(@session)
+  end
+
+  def retry_failed
+    authorize @session, :update?
+
+    retryable = @session.import_files.where(status: [:failed, :processing])
+    retryable_count = retryable.count
+    retryable.update_all(status: ImportFile.statuses[:uploaded], error_message: nil, processed_at: nil)
+
+    @session.update!(
+      status: :processing,
+      completed_processing_at: nil,
+      failed_files: [0, @session.failed_files - retryable_count].max,
+      processed_files: [0, @session.processed_files - retryable_count].max
+    )
+
+    ImportSessionOrchestratorJob.perform_later(@session)
+
+    redirect_to import_session_path(@session), notice: "Retrying #{retryable_count} failed files."
   end
 
   private

@@ -20,9 +20,8 @@
 
     <div class="mt-4 md:mt-0 md:ml-4">
       <% if @session.failed_files > 0 %>
-        <%= button_to "Retry Failed", retry_api_v1_import_session_path(@session),
-          method: :post, class: "secondary-button",
-          data: { turbo: false } %>
+        <%= button_to "Retry Failed", retry_import_session_path(@session),
+          method: :post, class: "secondary-button" %>
       <% end %>
     </div>
   </div>

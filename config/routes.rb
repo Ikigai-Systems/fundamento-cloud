@@ -252,6 +252,7 @@ Rails.application.routes.draw do
     member do
       post :manifest
       post :process, action: :trigger_processing
+      post :retry, action: :retry_failed
     end
     resources :import_files, only: [:update]
   end
