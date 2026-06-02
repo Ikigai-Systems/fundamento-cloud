@@ -69,7 +69,6 @@ class ImportDocumentJob < MemoryIntensiveJob
       )
 
       session.merge_path_map!(import_file.relative_path, document.id)
-      session.increment_counter!(:processed_files)
     end
 
   rescue StandardError => e
@@ -78,7 +77,6 @@ class ImportDocumentJob < MemoryIntensiveJob
       error_message: e.message,
       processed_at: Time.current
     )
-    session.increment_counter!(:failed_files)
   end
 
   private

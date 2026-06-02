@@ -32,9 +32,14 @@ class ImportSession < ApplicationRecord
     import_files.where.not(status: ImportFile.statuses.slice(:uploaded, :completed, :skipped).values).none?
   end
 
-  def increment_counter!(counter)
-    self.class.where(id: id).update_all("#{counter} = #{counter} + 1")
-    reload
+  def total_files    = import_files.count
+  def uploaded_files = status_count(:uploaded)
+  def processed_files = status_count(:completed)
+  def failed_files   = status_count(:failed)
+  def skipped_files  = status_count(:skipped)
+
+  def preload_status_counts(counts_by_session_and_status)
+    @preloaded_counts = counts_by_session_and_status
   end
 
   def merge_path_map!(relative_path, object_id)
@@ -44,6 +49,14 @@ class ImportSession < ApplicationRecord
   end
 
   private
+
+  def status_count(status_key)
+    if @preloaded_counts
+      @preloaded_counts.fetch([id, ImportFile.statuses[status_key]], 0)
+    else
+      import_files.where(status: status_key).count
+    end
+  end
 
   def set_expires_at
     self.expires_at ||= 7.days.from_now

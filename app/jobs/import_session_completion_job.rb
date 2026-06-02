@@ -14,8 +14,6 @@ class ImportSessionCompletionJob < ApplicationJob
         processed_at: Time.current
       )
 
-      ImportSession.where(id: session.id).update_all("failed_files = failed_files + #{stuck_count}")
-
       Sentry.capture_message(
         "Import session completed with stuck files",
         level: :warning,
@@ -29,7 +27,7 @@ class ImportSessionCompletionJob < ApplicationJob
       )
     end
 
-    final_status = session.reload.failed_files > 0 ? :partial : :completed
+    final_status = session.import_files.where(status: :failed).exists? ? :partial : :completed
 
     session.update!(
       status: final_status,

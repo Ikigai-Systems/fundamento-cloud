@@ -32,7 +32,6 @@ class ImportAttachmentJob < ApplicationJob
       # Store as "attachment:<id>.<ext>" so BlockNote can detect the media type from the extension
       ext = File.extname(import_file.relative_path)
       session.merge_path_map!(import_file.relative_path, "attachment:#{attachment.id}#{ext}")
-      session.increment_counter!(:processed_files)
     end
 
   rescue StandardError => e
@@ -41,7 +40,6 @@ class ImportAttachmentJob < ApplicationJob
       error_message: e.message,
       processed_at: Time.current
     )
-    session.increment_counter!(:failed_files)
   end
 
   private

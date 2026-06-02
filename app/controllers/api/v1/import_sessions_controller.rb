@@ -56,15 +56,9 @@ module Api
 
         # Include :processing files — they may be stuck from interrupted jobs
         retryable = @session.import_files.where(status: [:failed, :processing])
-        retryable_count = retryable.count
         retryable.update_all(status: ImportFile.statuses[:uploaded], error_message: nil, processed_at: nil)
 
-        @session.update!(
-          status: :processing,
-          completed_processing_at: nil,
-          failed_files: [0, @session.failed_files - retryable_count].max,
-          processed_files: [0, @session.processed_files - retryable_count].max
-        )
+        @session.update!(status: :processing, completed_processing_at: nil)
 
         ImportSessionOrchestratorJob.perform_later(@session)
 

@@ -80,9 +80,7 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
         organization: ikigai_systems,
         space: is_default_space,
         organization_membership: pawel_ikigai_systems,
-        status: :partial,
-        total_files: statuses.size,
-        uploaded_files: statuses.size
+        status: :partial
       )
       statuses.each_with_index do |status, i|
         ImportFile.create!(
@@ -100,7 +98,6 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
 
     it "resets failed files to uploaded and re-triggers processing" do
       session = build_session_with_files(statuses: [:completed, :failed])
-      session.update!(processed_files: 1, failed_files: 1)
 
       expect {
         post retry_api_v1_import_session_path(session), headers: auth_headers
@@ -113,7 +110,6 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
 
     it "also resets files stuck in :processing (interrupted job regression)" do
       session = build_session_with_files(statuses: [:completed, :processing, :processing])
-      session.update!(processed_files: 1, failed_files: 0)
 
       post retry_api_v1_import_session_path(session), headers: auth_headers
 
@@ -124,11 +120,7 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
 
     it "resets session status to processing and clears completed_processing_at" do
       session = build_session_with_files(statuses: [:processing])
-      session.update!(
-        status: :completed,
-        completed_processing_at: 1.hour.ago,
-        failed_files: 0
-      )
+      session.update!(status: :completed, completed_processing_at: 1.hour.ago)
 
       post retry_api_v1_import_session_path(session), headers: auth_headers
 

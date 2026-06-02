@@ -42,14 +42,32 @@ RSpec.describe ImportSession, type: :model do
     end
   end
 
-  describe "#increment_counter!" do
-    it "atomically increments the given counter" do
-      session = ImportSession.create!(
-        organization: org, space: space,
-        organization_membership: membership
-      )
-      session.increment_counter!(:uploaded_files)
-      expect(session.reload.uploaded_files).to eq(1)
+  describe "live counter methods" do
+    let(:session) do
+      ImportSession.create!(organization: org, space: space, organization_membership: membership)
+    end
+
+    it "returns 0 when no files exist" do
+      expect(session.total_files).to eq(0)
+      expect(session.processed_files).to eq(0)
+      expect(session.failed_files).to eq(0)
+    end
+
+    it "counts files by status" do
+      ImportFile.create!(import_session: session, relative_path: "a.md", file_type: :document, format: "markdown", status: :completed, checksum: "c1", file_size: 1)
+      ImportFile.create!(import_session: session, relative_path: "b.md", file_type: :document, format: "markdown", status: :completed, checksum: "c2", file_size: 1)
+      ImportFile.create!(import_session: session, relative_path: "c.md", file_type: :document, format: "markdown", status: :failed, checksum: "c3", file_size: 1)
+
+      expect(session.total_files).to eq(3)
+      expect(session.processed_files).to eq(2)
+      expect(session.failed_files).to eq(1)
+    end
+
+    it "uses preloaded counts when available" do
+      counts = { [session.id, ImportFile.statuses[:completed]] => 5 }
+      session.preload_status_counts(counts)
+
+      expect(session.processed_files).to eq(5)
     end
   end
 

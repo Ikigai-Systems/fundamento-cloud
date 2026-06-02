@@ -10,9 +10,7 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
     ImportSession.create!(
       organization: org, space: space,
       organization_membership: membership,
-      status: :processing,
-      total_files: 3,
-      uploaded_files: 3
+      status: :processing
     )
   end
 
@@ -33,7 +31,6 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
       create_import_file(relative_path: "a.md", status: :completed)
       create_import_file(relative_path: "b.md", status: :completed)
       create_import_file(relative_path: "c.md", status: :completed)
-      session.update!(processed_files: 3)
 
       described_class.perform_now(session)
 
@@ -45,7 +42,6 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
       create_import_file(relative_path: "a.md", status: :completed)
       create_import_file(relative_path: "b.md", status: :failed)
       create_import_file(relative_path: "c.md", status: :completed)
-      session.update!(processed_files: 2, failed_files: 1)
 
       described_class.perform_now(session)
 
@@ -54,7 +50,6 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
 
     it "does not notify Sentry when all files processed cleanly" do
       create_import_file(relative_path: "a.md", status: :completed)
-      session.update!(processed_files: 1)
 
       expect(Sentry).not_to receive(:capture_message)
 
@@ -66,7 +61,6 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
         create_import_file(relative_path: "done.md", status: :completed)
         stuck1 = create_import_file(relative_path: "stuck1.md", status: :processing)
         stuck2 = create_import_file(relative_path: "stuck2.md", status: :processing)
-        session.update!(processed_files: 1)
 
         described_class.perform_now(session)
 
@@ -79,21 +73,19 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
       it "marks session as partial (not completed) when stuck files are present" do
         create_import_file(relative_path: "done.md", status: :completed)
         create_import_file(relative_path: "stuck.md", status: :processing)
-        session.update!(processed_files: 1, failed_files: 0)
 
         described_class.perform_now(session)
 
         expect(session.reload).to be_partial
       end
 
-      it "increments failed_files counter for each stuck file" do
+      it "reflects stuck files as failed in live failed_files count" do
         create_import_file(relative_path: "stuck1.md", status: :processing)
         create_import_file(relative_path: "stuck2.md", status: :processing)
-        session.update!(failed_files: 0)
 
         described_class.perform_now(session)
 
-        expect(session.reload.failed_files).to eq(2)
+        expect(session.failed_files).to eq(2)
       end
 
       it "sends a Sentry warning with session context" do

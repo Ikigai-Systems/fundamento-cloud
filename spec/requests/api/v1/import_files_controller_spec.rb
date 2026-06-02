@@ -26,12 +26,12 @@ RSpec.describe "Api::V1::ImportFiles", type: :request do
       expect(pending_file.uploaded_at).to be_present
     end
 
-    it "increments the session uploaded_files counter" do
+    it "reflects the upload in the session's live uploaded_files count" do
       expect {
         patch api_v1_import_session_import_file_path(session, pending_file),
           params: { status: "uploaded" },
           headers: auth_headers
-      }.to change { session.reload.uploaded_files }.by(1)
+      }.to change { session.uploaded_files }.by(1)
     end
   end
 end

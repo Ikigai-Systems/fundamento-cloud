@@ -10,6 +10,12 @@ class ImportSessionsController < ApplicationController
     @sessions = policy_scope(current_organization.import_sessions).recent
                   .includes(:space, :organization_membership)
 
+    counts = ImportFile
+      .where(import_session_id: @sessions.map(&:id))
+      .group(:import_session_id, :status)
+      .count
+    @sessions.each { |s| s.preload_status_counts(counts) }
+
     authorize ImportSession, :index?
   end
 
@@ -63,12 +69,7 @@ class ImportSessionsController < ApplicationController
     retryable_count = retryable.count
     retryable.update_all(status: ImportFile.statuses[:uploaded], error_message: nil, processed_at: nil)
 
-    @session.update!(
-      status: :processing,
-      completed_processing_at: nil,
-      failed_files: [0, @session.failed_files - retryable_count].max,
-      processed_files: [0, @session.processed_files - retryable_count].max
-    )
+    @session.update!(status: :processing, completed_processing_at: nil)
 
     ImportSessionOrchestratorJob.perform_later(@session)
 

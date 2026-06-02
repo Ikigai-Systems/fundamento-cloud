@@ -44,11 +44,7 @@ module ImportSessionActions
       process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
     }
 
-    session.update!(
-      total_files: session.import_files.count,
-      skipped_files: session.import_files.where(status: :skipped).count,
-      status: :uploading
-    )
+    session.update!(status: :uploading)
 
     results
   end

@@ -11,7 +11,6 @@ module ImportFileActions
       end
 
       import_file.update!(status: :uploaded, uploaded_at: Time.current)
-      session.increment_counter!(:uploaded_files)
     end
   end
 end
