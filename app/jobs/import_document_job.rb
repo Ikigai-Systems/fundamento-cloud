@@ -86,7 +86,7 @@ class ImportDocumentJob < MemoryIntensiveJob
       case import_file.format
       when "markdown"
         temp_file.read
-      when "docx", "odt", "doc"
+      when "docx", "odt"
         PandocConverterService.file_to_markdown(temp_file.path, import_file.format)
       else
         raise "Unsupported document format: #{import_file.format}"

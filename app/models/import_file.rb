@@ -20,7 +20,7 @@ class ImportFile < ApplicationRecord
     skipped: 6
   }
 
-  SUPPORTED_DOCUMENT_FORMATS = %w[markdown docx odt doc].freeze
+  SUPPORTED_DOCUMENT_FORMATS = %w[markdown docx odt].freeze
   SUPPORTED_ATTACHMENT_FORMATS = %w[image pdf video other].freeze
 
   scope :needing_upload, -> {

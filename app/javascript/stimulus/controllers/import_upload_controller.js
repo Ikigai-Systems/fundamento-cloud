@@ -267,7 +267,7 @@ export default class extends Controller {
 
   #detectFormat(filename) {
     const ext = filename.split(".").pop().toLowerCase()
-    const docFormats = {md: "markdown", docx: "docx", odt: "odt", doc: "doc"}
+    const docFormats = {md: "markdown", docx: "docx", odt: "odt"}
     const attachFormats = {
       png: "image", jpg: "image", jpeg: "image", gif: "image",
       webp: "image", svg: "image", pdf: "pdf",
@@ -278,7 +278,7 @@ export default class extends Controller {
 
   #isAttachment(filename) {
     const attachExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "pdf", "mp4", "mov", "avi",
-      "zip", "tar", "gz", "xlsx", "csv"]
+      "zip", "tar", "gz", "xlsx", "csv", "doc"]
     const ext = filename.split(".").pop().toLowerCase()
     return attachExts.includes(ext)
   }

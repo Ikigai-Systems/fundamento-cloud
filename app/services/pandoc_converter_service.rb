@@ -41,7 +41,7 @@ module PandocConverterService
     # Validate the file type
     ext = File.extname(uploaded_file.original_filename).downcase
 
-    unless [".docx", ".doc", ".odt"].include?(ext)
+    unless [".docx", ".odt"].include?(ext)
       raise ConversionError.new("Unsupported file type: #{ext}")
     end
 
