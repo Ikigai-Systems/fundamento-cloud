@@ -5,7 +5,7 @@ class DocumentBlueprint < Blueprinter::Base
 
   view :mcp do
     field :content do |document|
-      if document.versions.empty?
+      if document.draft?
         BlocknoteConverterService.blocks_to_markdown(document.to_blocks)
       else
         BlocknoteConverterService.blocks_to_markdown(document.versions.last.content_blocks)

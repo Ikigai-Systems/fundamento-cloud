@@ -59,7 +59,7 @@ module Api
         document = current_organization.documents.find(params[:id])
         authorize document
 
-        blocks = if document.versions.empty?
+        blocks = if document.draft?
           document.to_blocks
         else
           document.versions.last.content_blocks

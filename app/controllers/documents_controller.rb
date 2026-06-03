@@ -81,7 +81,7 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.json { render json: @document, :except => [:sync] }
       format.html do
-        if @document.versions.empty?
+        if @document.draft?
           redirect_to edit_document_path(@document)
           return
         end
