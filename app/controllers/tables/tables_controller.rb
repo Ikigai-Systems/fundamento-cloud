@@ -136,7 +136,7 @@ class Tables::TablesController < ApplicationController
       format.html do
         @tables = @space.tables.lexicographically
 
-        render "tables/show", layout: "content_two_sidebars"
+        render "tables/show", layout: content_layout
       end
     end
   end
@@ -146,7 +146,7 @@ class Tables::TablesController < ApplicationController
 
     @tables = @space.tables.lexicographically
 
-    render "tables/edit", layout: "content_two_sidebars"
+    render "tables/edit", layout: content_layout
   end
 
   def update
@@ -302,6 +302,10 @@ class Tables::TablesController < ApplicationController
   end
 
   private
+
+  def content_layout
+    request.headers["Turbo-Frame"] == "content" ? "content_frame" : "content_two_sidebars"
+  end
 
   def table_params
     params.require(:table).permit(:name, :archived, :csv_file)

@@ -3,7 +3,7 @@
   class: container_classes,
   data: {"visibility-target" => visibility_target_attribute },
 ) do %>
-  <%= link_to polymorphic_path([@document]), class: "content-link" do %>
+  <%= link_to polymorphic_path([@document]), class: "content-link", data: { turbo_frame: "content" } do %>
     <%= tag.div(
       style: "--level: #{@level}",
       class: "document-padding-left flex items-center w-full",
@@ -56,7 +56,8 @@
         class: {
           "content-link-button" => true,
           "selected" => @selected,
-        } do %>
+        },
+        data: { turbo_frame: "content" } do %>
         <i class="fa-regular fa-pencil"></i>
       <% end %>
     <% end %>
