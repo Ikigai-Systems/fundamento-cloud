@@ -110,4 +110,53 @@ RSpec.describe DocumentsController, type: :request do
       end
     end
   end
+
+  describe "GET /d/:id/edit with Turbo-Frame: document_view header" do
+    context "when authenticated" do
+      before do
+        sign_in pawel
+        post select_organization_path(ikigai_systems)
+      end
+
+      it "renders the document_view_frame layout (contains frame tag, no left sidebar)" do
+        get edit_document_path(document_one),
+          headers: { "Turbo-Frame" => "document_view" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="document_view"')
+        expect(response.body).not_to include('id="space-sidebar"')
+      end
+
+      it "includes the content_sidebar frame for the document" do
+        get edit_document_path(document_one),
+          headers: { "Turbo-Frame" => "document_view" }
+
+        expect(response.body).to include('id="content_sidebar"')
+      end
+    end
+  end
+
+  describe "GET /d/:id/edit without Turbo-Frame: document_view header" do
+    context "when authenticated" do
+      before do
+        sign_in pawel
+        post select_organization_path(ikigai_systems)
+      end
+
+      it "renders full layout including left sidebar on direct access" do
+        get edit_document_path(document_one)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="space-sidebar"')
+      end
+
+      it "does not use document_view_frame layout for other frame requests" do
+        get hierarchy_document_path(document_one),
+          headers: { "Turbo-Frame" => "document_hierarchy_#{document_one.id}" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include('id="document_view"')
+      end
+    end
+  end
 end

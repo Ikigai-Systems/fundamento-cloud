@@ -1,0 +1,82 @@
+<%# Rendered when navigating between documents/tables via the document_view Turbo Frame.
+    Wraps columns 2 + 3 of the content_two_sidebars grid — no left sidebar, no outer chrome.
+    TODO: extract the right sidebar into a shared partial (_right_sidebar.html.erb) to remove the duplication with content_two_sidebars. %>
+
+<%= turbo_frame_tag "document_view", class: "contents" do %>
+
+  <%# Column 2: main content %>
+  <div class="h-screen content-container flex flex-col relative">
+    <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+      <div class="flex-1 min-w-0">
+        <%= content_for :content_title %>
+      </div>
+
+      <div class="flex gap-1 items-center">
+        <%= content_for :content_menu %>
+      </div>
+    </nav>
+
+    <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
+      <%= yield %>
+    </div>
+  </div>
+
+  <%# Column 3: right sidebar — reloads with the new document/table %>
+  <%
+    is_collapsed = cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false"
+
+    if defined?(@document)
+      object = @document
+    elsif defined?(@table)
+      object = @table
+    end
+  %>
+
+  <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
+       data-controller="cookie-controlled-toggle"
+       data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
+       data-cookie-controlled-toggle-target="toggleable"
+       data-toggle-class="collapsed"
+       data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
+
+    <%# Spacer creates layout space on desktop grid %>
+    <div class="sidebar-spacer"></div>
+
+    <aside id="content-sidebar" class="sidebar right-side">
+
+      <%# The visible panel with background and shadow %>
+      <div class="sidebar-panel right-side">
+
+        <div class="sidebar-trigger-area right-side"
+             data-controller="hotkey popover"
+             data-hotkey="]"
+             data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+
+          <div class="sidebar-trigger-button right-side">
+            <span class="icon-[heroicons--chevron-right-16-solid] size-4 block group-[.collapsed]/collapser:hidden"></span>
+            <span class="icon-[heroicons--chevron-left-16-solid] size-4 hidden group-[.collapsed]/collapser:block"></span>
+          </div>
+
+          <template data-popover-target="content">
+            <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center right-5 group-[.collapsed]/collapser:right-14 top-1/2 -translate-y-1/2">
+              <p class="block group-[.collapsed]/collapser:hidden">Collapse <code>]</code></p>
+              <p class="hidden group-[.collapsed]/collapser:block">Expand <code>]</code></p>
+            </div>
+          </template>
+        </div>
+
+        <div class="sidebar-content">
+          <% if content_for?(:content_sidebar) %>
+            <%= content_for :content_sidebar %>
+          <% else %>
+            <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
+              <%= render Object::SidebarLoadingComponent.new %>
+            <% end %>
+          <% end %>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+
+<% end %>
