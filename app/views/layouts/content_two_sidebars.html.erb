@@ -6,7 +6,7 @@
       <%# Left sidebar with spacer %>
       <%= render "application/left_sidebar" %>
 
-      <%= turbo_frame_tag "document_view", class: "contents", data: { turbo_action: "advance" } do %>
+      <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
 
         <%# Column 2: main content area %>
         <div class="h-screen content-container flex flex-col relative">

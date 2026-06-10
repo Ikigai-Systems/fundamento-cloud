@@ -9,8 +9,8 @@ class DocumentsController < ApplicationController
   include TrackObjectVisit.for_instance_variable(:@document)
 
   layout -> {
-    if request.headers["Turbo-Frame"] == "document_view"
-      "document_view_frame"
+    if request.headers["Turbo-Frame"] == "content"
+      "content_frame"
     elsif turbo_frame_request?
       "turbo_rails/frame"
     else

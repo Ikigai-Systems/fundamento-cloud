@@ -1,8 +1,8 @@
-<%# Rendered when navigating between documents/tables via the document_view Turbo Frame.
+<%# Rendered when navigating between documents/tables via the content Turbo Frame.
     Wraps columns 2 + 3 of the content_two_sidebars grid — no left sidebar, no outer chrome.
     TODO: extract the right sidebar into a shared partial (_right_sidebar.html.erb) to remove the duplication with content_two_sidebars. %>
 
-<%= turbo_frame_tag "document_view", class: "contents" do %>
+<%= turbo_frame_tag "content", class: "contents" do %>
 
   <%# Column 2: main content %>
   <div class="h-screen content-container flex flex-col relative">
