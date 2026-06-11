@@ -46,7 +46,7 @@
 
       <%# Scrollable content area %>
       <div class="sidebar-content">
-        <%= turbo_frame_tag "space_sidebar", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
+        <%= turbo_frame_tag "space_sidebar", src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
           <%= render Object::SidebarLoadingComponent.new %>
         <% end %>
       </div>
