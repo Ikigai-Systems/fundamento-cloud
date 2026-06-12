@@ -14,11 +14,20 @@ RSpec.describe OrganizationsController, type: :request do
         sign_in maria
       end
 
-      it "redirects to first space with success notice" do
+      it "redirects to first non-archived space (alphabetical) with success notice" do
+        expected_space = hc_org.spaces.without_archived.order(:name).first
+
         post select_organization_path(hc_org)
 
-        expect(response).to redirect_to(space_path(hc_org.spaces.first))
+        expect(response).to redirect_to(space_path(expected_space))
         expect(flash[:notice]).to eq("You've been switched to #{hc_org.name}.")
+      end
+
+      it "does not redirect to an archived space" do
+        post select_organization_path(hc_org)
+
+        landed_space_id = response.location.split("/s/").last
+        expect(Space.find(landed_space_id).archived?).to be false
       end
     end
 
@@ -67,11 +76,11 @@ RSpec.describe OrganizationsController, type: :request do
 
       it "successfully switches from one organization to another" do
         post select_organization_path(is_org)
-        expect(response).to redirect_to(space_path(is_org.spaces.first))
+        expect(response).to redirect_to(space_path(is_org.spaces.without_archived.order(:name).first))
         expect(flash[:notice]).to eq("You've been switched to #{is_org.name}.")
 
         post select_organization_path(hc_org)
-        expect(response).to redirect_to(space_path(hc_org.spaces.first))
+        expect(response).to redirect_to(space_path(hc_org.spaces.without_archived.order(:name).first))
         expect(flash[:notice]).to eq("You've been switched to #{hc_org.name}.")
       end
     end

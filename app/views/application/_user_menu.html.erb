@@ -19,18 +19,22 @@
     aria-orientation="vertical"
     aria-labelledby="user-dropdown"
   >
+    <%# User menu links navigate to pages that don't have the content turbo
+        frame (account, organizations, teams, etc.). The menu itself renders
+        inside the content frame, so without turbo-frame="_top" links would
+        try (and fail) to update #content with a frame-less response. %>
     <div class="dropdown-container w-32">
-      <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem"} %>
+      <%= link_to "Account", edit_user_registration_path, data: {"dropdown-target" => "menuItem", "turbo-frame" => "_top"} %>
 
-      <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem"} %>
+      <%= link_to "Organizations", organizations_path, data: {"dropdown-target" => "menuItem", "turbo-frame" => "_top"} %>
 
-      <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem"} %>
+      <%= link_to "Teams", teams_path, data: {"dropdown-target" => "menuItem", "turbo-frame" => "_top"} %>
 
-      <%= link_to "API Tokens", user_api_tokens_path(current_user), data: {"dropdown-target" => "menuItem"} %>
+      <%= link_to "API Tokens", user_api_tokens_path(current_user), data: {"dropdown-target" => "menuItem", "turbo-frame" => "_top"} %>
 
       <hr class="border-t dark:border-gray-500">
 
-      <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem"} %>
+      <%= button_to "Sign out", destroy_user_session_path, method: :delete, data: {"dropdown-target" => "menuItem", "turbo-frame" => "_top"} %>
     </div>
   </div>
 </div>

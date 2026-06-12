@@ -67,7 +67,12 @@ class OrganizationsController < ApplicationController
 
     cookies.encrypted[:organization_id] = @organization.id
 
-    redirect_to space_path(@organization.spaces.first), notice: "You've been switched to #{@organization.name}."
+    # Pick a stable, non-archived space to land on. Falls back to any space
+    # (extreme edge case where every space is archived).
+    default_space = @organization.spaces.without_archived.order(:name).first ||
+                    @organization.spaces.order(:name).first
+
+    redirect_to space_path(default_space), notice: "You've been switched to #{@organization.name}."
   end
 
   def destroy
