@@ -13,17 +13,17 @@ export default class extends Controller<HTMLElement> {
 
   declare pendingTargets: HTMLElement[]
 
-  connect() {
-    // Process any server-rendered flash data elements on page load
-    this.pendingTargets.forEach(el => {
-      this.show({
-        type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
-        message: el.dataset.flashMessage || "",
-        duration: el.dataset.flashDuration as FlashOptions["duration"]
-      })
-
-      el.remove()
+  // Fires on initial connect for server-rendered elements, AND when new
+  // pending elements arrive later (e.g. appended via turbo-stream after a
+  // frame swap). Stimulus uses a MutationObserver under the hood.
+  pendingTargetConnected(el: HTMLElement) {
+    this.show({
+      type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
+      message: el.dataset.flashMessage || "",
+      duration: el.dataset.flashDuration as FlashOptions["duration"]
     })
+
+    el.remove()
   }
 
   // Public method called from createFlash.ts or via Stimulus actions

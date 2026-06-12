@@ -5,6 +5,14 @@
 
 <%= turbo_frame_tag "content", class: "contents" do %>
 
+  <%# Lift flash messages out to the page-level #flashes container so they
+      survive the frame swap. %>
+  <% if flash.any? %>
+    <%= turbo_stream.append "flashes" do %>
+      <%= render "application/flash_messages_as_alerts" %>
+    <% end %>
+  <% end %>
+
   <%# Column 2: full-width content area %>
   <div class="h-screen overflow-y-auto content-container">
     <nav class="w-full flex justify-end p-3 gap-1 items-center">

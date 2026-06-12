@@ -100,6 +100,24 @@ RSpec.describe Documents::VersionsController, type: :request do
     end
   end
 
+  describe "flash messages survive Turbo Frame swaps" do
+    it "lifts flash messages out via a turbo-stream tag inside the content frame" do
+      # After save, the controller redirects with a flash message. When the
+      # follow-up GET is made inside the content frame, the rendered layout
+      # must emit a turbo-stream so the flash survives the frame extraction.
+      post document_versions_path(document),
+        params: { content_blocks: "[]" },
+        headers: { "Turbo-Frame" => "content" }
+
+      expect(response).to redirect_to(document_path(document))
+
+      get document_path(document), headers: { "Turbo-Frame" => "content" }
+
+      expect(response.body).to include('<turbo-stream action="append" target="flashes"')
+      expect(response.body).to include("Document has been updated")
+    end
+  end
+
   describe "GET /d/:document_id/versions (history list)" do
     before do
       document.versions.create!(content_blocks: [], created_by: pawel)

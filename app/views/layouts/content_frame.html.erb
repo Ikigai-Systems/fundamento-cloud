@@ -3,6 +3,15 @@
 
 <%= turbo_frame_tag "content", class: "contents" do %>
 
+  <%# Lift flash messages out to the page-level #flashes container so they
+      survive the frame swap (the layout's outer flash render is discarded
+      by Turbo's frame extraction). %>
+  <% if flash.any? %>
+    <%= turbo_stream.append "flashes" do %>
+      <%= render "application/flash_messages_as_alerts" %>
+    <% end %>
+  <% end %>
+
   <%# Column 2: main content %>
   <div class="h-screen content-container flex flex-col relative">
     <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
