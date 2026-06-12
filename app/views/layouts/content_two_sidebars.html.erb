@@ -32,7 +32,7 @@
         </div>
 
         <%# Column 3: right sidebar with spacer %>
-        <%= render "application/right_sidebar" %>
+        <%= render "application/right_sidebar", object: @document || @table %>
 
       <% end %>
 

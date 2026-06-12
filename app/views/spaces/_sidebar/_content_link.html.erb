@@ -42,22 +42,6 @@
   <% end %>
 
   <div class="content-link-buttons-container">
-    <% if local_assigns.fetch(:hierarchical, false) && policy(content.space).update? %>
-      <%= button_to polymorphic_path([content.class]),
-        method: :post,
-        params: {
-          "space_id": @space.id,
-          "document": { title: "" },
-          "parent_type": content.class,
-          "parent_id": content.id,
-        },
-        form_class: "flex items-center",
-        class: { "content-link-button" => true, "selected" => selected } do
-      %>
-        <i class="fa-regular fa-plus"></i>
-      <% end %>
-    <% end %>
-
     <% if policy(content.space).update? %>
       <%= link_to polymorphic_path([:edit, content]),
         class: {

@@ -69,13 +69,15 @@ export default class extends Controller<HTMLElement> {
     const autoDismissAttr = durationMs
       ? `data-alert-dismiss-after-value="${durationMs}"`
       : ""
-    const keyAttr = options.key ? `data-flash-key="${options.key}"` : ""
 
-    // Build HTML directly in TypeScript (single source of truth)
+    // Build HTML directly in TypeScript (single source of truth).
+    // NOTE: do NOT interpolate options.key (or any user-supplied string) into
+    // the template — set it via setAttribute below after parsing. The key is
+    // server-rendered from the flash message text, which can contain quotes
+    // or HTML metacharacters.
     const html = `
       <div data-controller="alert"
            ${autoDismissAttr}
-           ${keyAttr}
            data-transition-enter="transition-position ease-in-out duration-500"
            data-transition-enter-from="left-96"
            data-transition-enter-to="-left-8"
@@ -108,7 +110,11 @@ export default class extends Controller<HTMLElement> {
 
     const temp = document.createElement("div")
     temp.innerHTML = html.trim()
-    return temp.firstElementChild as HTMLElement
+    const element = temp.firstElementChild as HTMLElement
+    if (options.key) {
+      element.dataset.flashKey = options.key
+    }
+    return element
   }
 
   private escapeHtml(text: string): string {

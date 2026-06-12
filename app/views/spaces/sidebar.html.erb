@@ -25,6 +25,9 @@
             Documents
           </div>
 
+          <%# Full page reload so the sidebar (which now includes the new
+              document) is re-rendered; see sidebar_tree_item_component for the
+              same reasoning on the per-item add-child button. %>
           <%= button_to documents_path(space_id: @space.id),
             params: { "document": { title: "" } },
             disabled: !policy(@space).update?,

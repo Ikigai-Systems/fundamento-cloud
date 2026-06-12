@@ -31,7 +31,9 @@ export default class extends Controller<HTMLElement> {
       container.classList.toggle("selected", isSelected)
     })
 
+    // `instant` for consistency with scroll_into_view_controller and to avoid a
+    // visible animation each time the user rapidly clicks through sidebar items.
     const selected = this.element.querySelector<HTMLElement>(".content-link-container.selected")
-    selected?.scrollIntoView({block: "nearest", behavior: "smooth"})
+    selected?.scrollIntoView({block: "nearest", behavior: "instant"})
   }
 }

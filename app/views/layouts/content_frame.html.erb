@@ -30,6 +30,6 @@
   </div>
 
   <%# Column 3: right sidebar — reloads with the new document/table %>
-  <%= render "application/right_sidebar" %>
+  <%= render "application/right_sidebar", object: @document || @table %>
 
 <% end %>
