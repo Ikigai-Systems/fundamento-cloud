@@ -27,7 +27,7 @@ describe("Content frame navigation — sidebar stability", function () {
     cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
     // Click the second document in the sidebar
-    cy.get("[data-document-id='two'] a.content-link").click();
+    cy.get("#space-sidebar a.content-link[href='/d/two']").click();
 
     // Content frame should update
     cy.get("#content").should("exist");
@@ -36,13 +36,13 @@ describe("Content frame navigation — sidebar stability", function () {
     cy.url().should("include", "/d/two");
 
     // The sidebar must NOT have been reloaded
-    cy.get("@sidebarReload").should("not.have.been.called");
+    cy.get("@sidebarReload.all").should("have.length", 0);
   });
 
   it("marks the navigated-to document as selected in the sidebar", function () {
     cy.visit("/d/one");
 
-    cy.get("[data-document-id='two'] a.content-link").click();
+    cy.get("#space-sidebar a.content-link[href='/d/two']").click();
     cy.url().should("include", "/d/two");
 
     cy.get("[data-document-id='two']")

@@ -36,6 +36,9 @@
 
   <div class="content-link-buttons-container">
     <% if can_update_space? %>
+      <%# Skip Turbo for this button: the create action redirects to the new
+          document's edit page, and we want a full page reload so the sidebar
+          (which now includes the new child) is re-rendered. %>
       <%= button_to polymorphic_path([@document.class]),
         method: :post,
         params: {
@@ -45,6 +48,7 @@
           "parent_id": @document.id,
         },
         form_class: "flex items-center",
+        data: { turbo: false },
         class: { "content-link-button" => true, "selected" => @selected } do
       %>
         <i class="fa-regular fa-plus"></i>

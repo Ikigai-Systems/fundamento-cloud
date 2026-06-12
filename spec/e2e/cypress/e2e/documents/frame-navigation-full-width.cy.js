@@ -35,11 +35,11 @@ describe("Content frame navigation on full-width pages", function () {
       cy.get("#space-sidebar").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-      cy.get("[data-document-id='one'] a.content-link").click();
+      cy.get("#space-sidebar a.content-link[href='/d/one']").click();
 
       cy.get("#content").should("exist");
       cy.url().should("include", "/d/one");
-      cy.get("@sidebarReload").should("not.have.been.called");
+      cy.get("@sidebarReload.all").should("have.length", 0);
     });
 
     it("renders both sidebars and the content frame on direct access", function () {
@@ -57,11 +57,11 @@ describe("Content frame navigation on full-width pages", function () {
       cy.get("#space-sidebar").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-      cy.get("[data-document-id='two'] a.content-link").click();
+      cy.get("#space-sidebar a.content-link[href='/d/two']").click();
 
       cy.get("#content").should("exist");
       cy.url().should("include", "/d/two");
-      cy.get("@sidebarReload").should("not.have.been.called");
+      cy.get("@sidebarReload.all").should("have.length", 0);
     });
 
     it("renders sidebar and content frame on direct access", function () {

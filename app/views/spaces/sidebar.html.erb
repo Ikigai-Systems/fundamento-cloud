@@ -30,6 +30,7 @@
             disabled: !policy(@space).update?,
             form_class: "flex items-center",
             class: "secondary-button",
+            data: { turbo: false },
             aria: { label: "Create new document" } do
           %>
             <i class="fa-regular fa-plus"></i>
@@ -59,6 +60,7 @@
           <%= link_to_with_disable new_table_path(space_id: @space.id),
             disabled: !policy(@space).update?,
             class: "secondary-button",
+            data: { turbo: false },
             aria: { label: "Create new table" } do
           %>
             <i class="fa-regular fa-plus"></i>

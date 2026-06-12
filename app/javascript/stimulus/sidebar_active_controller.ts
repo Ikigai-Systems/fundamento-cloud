@@ -24,7 +24,10 @@ export default class extends Controller<HTMLElement> {
     this.element.querySelectorAll<HTMLElement>(".content-link-container").forEach((container) => {
       const link = container.querySelector<HTMLAnchorElement>("a.content-link")
       if (!link) return
-      const isSelected = new URL(link.href, window.location.origin).pathname === currentPath
+      const linkPath = new URL(link.href, window.location.origin).pathname
+      // Prefix match on a path boundary, so /d/two also matches /d/two/edit and
+      // /d/two/versions (draft documents redirect from /d/X to /d/X/edit).
+      const isSelected = currentPath === linkPath || currentPath.startsWith(linkPath + "/")
       container.classList.toggle("selected", isSelected)
     })
 
