@@ -116,6 +116,17 @@ RSpec.describe Documents::VersionsController, type: :request do
       expect(response.body).to include('<turbo-stream action="append" target="flashes"')
       expect(response.body).to include("Document has been updated")
     end
+
+    it "renders flash markers with dedup attributes (key + replace-previous)" do
+      post document_versions_path(document),
+        params: { content_blocks: "[]" },
+        headers: { "Turbo-Frame" => "content" }
+
+      get document_path(document), headers: { "Turbo-Frame" => "content" }
+
+      expect(response.body).to include('data-flash-key="Document has been updated."')
+      expect(response.body).to include('data-flash-replace-previous="true"')
+    end
   end
 
   describe "GET /d/:document_id/versions (history list)" do

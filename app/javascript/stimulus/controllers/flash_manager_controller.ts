@@ -17,20 +17,29 @@ export default class extends Controller<HTMLElement> {
   // pending elements arrive later (e.g. appended via turbo-stream after a
   // frame swap). Stimulus uses a MutationObserver under the hood.
   pendingTargetConnected(el: HTMLElement) {
-    this.show({
+    const options: FlashOptions = {
       type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
       message: el.dataset.flashMessage || "",
-      duration: el.dataset.flashDuration as FlashOptions["duration"]
-    })
+      duration: el.dataset.flashDuration as FlashOptions["duration"],
+      key: el.dataset.flashKey,
+      replacePrevious: el.dataset.flashReplacePrevious === "true",
+    }
 
+    // Remove the pending marker before dedup so it can't match its own key.
     el.remove()
+
+    this.show(options)
   }
 
   // Public method called from createFlash.ts or via Stimulus actions
   show(options: FlashOptions) {
-    // Handle deduplication
+    // Handle deduplication. Iterate children rather than querySelector so the
+    // key can be any string (including server-rendered message text with
+    // characters that would need CSS escaping).
     if (options.key) {
-      const existing = this.element.querySelector(`[data-flash-key="${options.key}"]`)
+      const existing = Array.from(this.element.children).find((child): child is HTMLElement => {
+        return child instanceof HTMLElement && child.dataset.flashKey === options.key
+      })
       if (existing) {
         if (options.replacePrevious) {
           existing.remove()
