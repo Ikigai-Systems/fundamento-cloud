@@ -53,6 +53,21 @@ class ApplicationController < ActionController::Base
       status: :forbidden
   end
 
+  # Returns the right layout for pages whose content area participates in the
+  # `content` Turbo Frame. Three cases:
+  #   - sidebar navigation (Turbo-Frame: content header)  → frame layout
+  #   - any other Turbo frame inside the page             → turbo_rails/frame
+  #   - regular full-page request                         → full layout
+  def content_layout(full: "content_two_sidebars", frame: "content_frame")
+    if request.headers["Turbo-Frame"] == "content"
+      frame
+    elsif turbo_frame_request?
+      "turbo_rails/frame"
+    else
+      full
+    end
+  end
+
   def capture_reddit_click_id
     return unless params[:rdt_cid].present?
     session[:reddit_click_id] = params[:rdt_cid]

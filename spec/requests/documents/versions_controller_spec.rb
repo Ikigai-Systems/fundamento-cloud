@@ -99,4 +99,27 @@ RSpec.describe Documents::VersionsController, type: :request do
       expect(version.editor_sessions.first.member).to eq(organization_memberships(:om_is_pawel))
     end
   end
+
+  describe "GET /d/:document_id/versions (history list)" do
+    before do
+      document.versions.create!(content_blocks: [], created_by: pawel)
+    end
+
+    it "renders full layout including left sidebar and content frame on direct access" do
+      get document_versions_path(document)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('id="space-sidebar"')
+      expect(response.body).to include('id="content"')
+    end
+
+    it "renders the frame-only layout when Turbo-Frame: content header is present" do
+      get document_versions_path(document),
+        headers: { "Turbo-Frame" => "content" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('id="content"')
+      expect(response.body).not_to include('id="space-sidebar"')
+    end
+  end
 end

@@ -1,7 +1,7 @@
 class Documents::VersionsController < ApplicationController
   include EnsureOrganization
 
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
+  layout -> { content_layout }
 
   include LoadDocument.from_param(:document_id)
 
@@ -57,7 +57,7 @@ class Documents::VersionsController < ApplicationController
 
     @versions = @document.versions.includes(:created_by, editing_sessions: { member: :user }).order('created_at DESC')
 
-    render layout: "full_width_application"
+    render layout: content_layout(full: "full_width_application", frame: "full_width_frame")
   end
 
   def show

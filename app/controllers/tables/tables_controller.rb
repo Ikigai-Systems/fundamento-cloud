@@ -303,10 +303,6 @@ class Tables::TablesController < ApplicationController
 
   private
 
-  def content_layout
-    request.headers["Turbo-Frame"] == "content" ? "content_frame" : "content_two_sidebars"
-  end
-
   def table_params
     params.require(:table).permit(:name, :archived, :csv_file)
   end

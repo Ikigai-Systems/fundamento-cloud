@@ -3,19 +3,21 @@
     <div class="grid grid-cols-[min-content,minmax(300px,_3fr)]">
       <%= render "application/left_sidebar" %>
 
-      <div class="h-screen overflow-y-auto content-container">
-        <nav class="w-full flex justify-end p-3 gap-1 items-center">
-          <%= content_for :content_menu %>
+      <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
+        <div class="h-screen overflow-y-auto content-container">
+          <nav class="w-full flex justify-end p-3 gap-1 items-center">
+            <%= content_for :content_menu %>
 
-          <%= render "application/notifications_menu" %>
+            <%= render "application/notifications_menu" %>
 
-          <div class="ml-3">
-            <%= render "application/user_menu" %>
-          </div>
-        </nav>
+            <div class="ml-3">
+              <%= render "application/user_menu" %>
+            </div>
+          </nav>
 
-        <%= yield %>
-      </div>
+          <%= yield %>
+        </div>
+      <% end %>
     </div>
   </div>
 <% end %>
