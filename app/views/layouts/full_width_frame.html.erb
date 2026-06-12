@@ -1,7 +1,11 @@
 <%# Rendered when navigating to a full-width page (empty space, document history)
-    via the content Turbo Frame. Returns just the content column. %>
+    via the content Turbo Frame. The frame contents include an empty column 3
+    placeholder so that the grid layout stays consistent — see
+    full_width_application for the rationale. %>
 
 <%= turbo_frame_tag "content", class: "contents" do %>
+
+  <%# Column 2: full-width content area %>
   <div class="h-screen overflow-y-auto content-container">
     <nav class="w-full flex justify-end p-3 gap-1 items-center">
       <%= content_for :content_menu %>
@@ -9,4 +13,8 @@
 
     <%= yield %>
   </div>
+
+  <%# Column 3: empty placeholder (see full_width_application) %>
+  <div></div>
+
 <% end %>
