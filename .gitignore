@@ -71,7 +71,7 @@ config/database.yml
 tasks.json
 .taskmaster/tasks/
 
-# Git worktrees
+# Git worktrees (see CLAUDE.md — kept inside .claude/ so worktree shells
+# inherit the project's permission allow-list)
+.claude/worktrees/
 .worktrees/
-
-.worktrees

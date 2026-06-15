@@ -81,7 +81,9 @@ Node.js services handle specialized processing:
 
 ## Git Worktrees
 
-Worktrees are stored in `.worktrees/` (gitignored). After creating a worktree, these gitignored files must be copied from the main repo and build steps must be run before tests will pass:
+Worktrees are stored in `.claude/worktrees/` (gitignored). The path matters: anything outside `.claude/` doesn't inherit this project's `.claude/settings.local.json` permission allow-list when Claude is launched from inside the worktree, leading to repeated permission prompts for commands that should be auto-allowed.
+
+After creating a worktree, these gitignored files must be copied from the main repo and build steps must be run before tests will pass:
 
 ```bash
 # Copy gitignored config files
