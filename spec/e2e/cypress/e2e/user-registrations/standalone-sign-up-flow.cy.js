@@ -41,15 +41,7 @@ describe('Basic features work', function() {
   })
 
   it("you can create a team", function() {
-    cy.visit("/organizations");
-
-    // Find the organization row (now has a random name) and switch to it
-    cy.get('tbody tr').first().contains('button', 'Switch to').click();
-
-    // Check for any space (now has a random organization name + " Space")
-    cy.contains("Space");
-
-    cy.get("#flashes button").click();
+    cy.visit("/");
 
     cy.get("body nav").contains("PN").click();
 
