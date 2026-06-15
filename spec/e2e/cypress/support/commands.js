@@ -211,6 +211,11 @@ Cypress.Commands.add("authenticatedDelete", (url, options = {}) => {
  *   cy.waitForEditor();
  */
 Cypress.Commands.add("waitForEditor", () => {
+  // Wait for the editor controller to set data-editor-ready="true", which
+  // happens after the React Editor mounts AND Y.js completes its initial
+  // sync from the server. Typing earlier races the sync and can leave the
+  // hidden content_blocks input empty or stale.
+  cy.get("[data-document-editor][data-editor-ready='true']", {timeout: 10000}).should("exist");
   cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 });
 
