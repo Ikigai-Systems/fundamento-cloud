@@ -1,6 +1,11 @@
+<%# Server-rendered flashes default to dedup-by-message-text and replace-previous,
+    so identical messages (e.g. "Document has been updated." fired twice in quick
+    succession) collapse into a single alert with a refreshed auto-dismiss timer. %>
 <% flash.each do |type, msg| %>
   <div data-flash-manager-target="pending"
        data-flash-type="<%= type %>"
-       data-flash-message="<%= msg %>">
+       data-flash-message="<%= msg %>"
+       data-flash-key="<%= msg %>"
+       data-flash-replace-previous="true">
   </div>
 <% end %>

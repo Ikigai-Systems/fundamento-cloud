@@ -1,21 +1,36 @@
-<%= render "layouts/body" do %>
+<%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
   <div class="h-screen">
-    <div class="grid grid-cols-[min-content,minmax(300px,_3fr)]">
+    <%# Grid template MUST match content_two_sidebars so that turbo-frame swaps
+        producing 2 children (content column + right sidebar) fit consistently
+        across navigations. Column 3 is `auto`, so the empty placeholder we
+        render below takes 0 width and the page looks full-width. %>
+    <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
+
       <%= render "application/left_sidebar" %>
 
-      <div class="h-screen overflow-y-auto content-container">
-        <nav class="w-full flex justify-end p-3 gap-1 items-center">
-          <%= content_for :content_menu %>
+      <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
 
-          <%= render "application/notifications_menu" %>
+        <%# Column 2: full-width content area %>
+        <div class="h-screen overflow-y-auto content-container">
+          <nav class="w-full flex justify-end p-3 gap-1 items-center">
+            <%= content_for :content_menu %>
 
-          <div class="ml-3">
-            <%= render "application/user_menu" %>
-          </div>
-        </nav>
+            <%= render "application/notifications_menu" %>
 
-        <%= yield %>
-      </div>
+            <div class="ml-3">
+              <%= render "application/user_menu" %>
+            </div>
+          </nav>
+
+          <%= yield %>
+        </div>
+
+        <%# Column 3: empty placeholder — keeps the grid structure consistent
+            so that navigating to a document/table (which fills col 3 with the
+            right sidebar) doesn't break the layout. %>
+        <div></div>
+
+      <% end %>
     </div>
   </div>
 <% end %>

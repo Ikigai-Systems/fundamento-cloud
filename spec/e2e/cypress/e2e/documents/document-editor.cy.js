@@ -24,6 +24,16 @@ describe("Document Editor", function () {
     cy.setCookie("organization_id", isOrganizationCookie);
   });
 
+  // Helper: click Save and wait for the POST to complete. Required because the
+  // save now does a Turbo Frame swap (not a full page reload), so cy.contains
+  // on the success flash can match a stale "Document has been updated." from a
+  // previous save and let subsequent DB assertions race the in-flight POST.
+  function saveDocument() {
+    cy.intercept("POST", "/d/*/versions").as("saveVersion");
+    cy.get('[aria-label="Save document"]').click();
+    cy.wait("@saveVersion");
+  }
+
   it("creates a new document and updates its content", function () {
     // Navigate to the space
     cy.visit("/s/is_default");
@@ -111,10 +121,7 @@ describe("Document Editor", function () {
       cy.get("[data-document-editor] [role='textbox']").first().type("First version content.{enter}");
 
       // Save the document by clicking the update button
-      cy.get('[aria-label="Save document"]').click();
-
-      // Wait for save confirmation
-      cy.contains("Document has been updated").should("be.visible");
+      saveDocument();
 
       // Verify version was created
       cy.appEval(`Document.find('${documentId}').versions.count`).then((newCount) => {
@@ -129,8 +136,7 @@ describe("Document Editor", function () {
       cy.get("[data-document-editor] [role='textbox']").first().type("Second version content.{enter}");
 
       // Save again
-      cy.get('[aria-label="Save document"]').click();
-      cy.contains("Document has been updated").should("be.visible");
+      saveDocument();
 
       // Verify another version was created
       cy.appEval(`Document.find('${documentId}').versions.count`).then((finalCount) => {
@@ -145,12 +151,7 @@ describe("Document Editor", function () {
       cy.get("[data-document-editor] [role='textbox']").first().type("Third version content.");
 
       // Save again
-      cy.get('[aria-label="Save document"]').click();
-
-      cy.get("#flashes").within(() => {
-        cy.contains("Document has been updated").should("be.visible");
-        cy.get('[aria-label="Close"]').click();
-      });
+      saveDocument();
 
       // Verify third version was created
       cy.appEval(`Document.find('${documentId}').versions.count`).then((thirdCount) => {
@@ -181,27 +182,21 @@ describe("Document Editor", function () {
 
     // Make first edit and save
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 2 content.{enter}");
-    cy.get('[aria-label="Save document"]').click();
-
-    cy.contains("Document has been updated").should("be.visible");
+    saveDocument();
     cy.get('[aria-label="Edit document"]').click();
 
     // Make second edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
     cy.waitForEditor();
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 3 content.{enter}");
-    cy.get('[aria-label="Save document"]').click();
-
-    cy.contains("Document has been updated").should("be.visible");
+    saveDocument();
     cy.get('[aria-label="Edit document"]').click();
 
     // Make third edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
     cy.waitForEditor();
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 4 content.{enter}");
-    cy.get('[aria-label="Save document"]').click();
-
-    cy.contains("Document has been updated").should("be.visible");
+    saveDocument();
 
     // Navigate to versions page
     cy.visit(`/d/${documentId}/versions`);
@@ -273,8 +268,7 @@ describe("Document Editor", function () {
       cy.get("[data-document-editor] [role='textbox']").first().type(uniqueContent);
 
       // Save the document
-      cy.get('[aria-label="Save document"]').click();
-      cy.contains("Document has been updated").should("be.visible");
+      saveDocument();
 
       // Reload the page
       cy.reload();
@@ -297,6 +291,8 @@ describe("Document Editor", function () {
 
       // Get initial version count
       cy.appEval(`Document.find('${documentId}').versions.count`).then((initialCount) => {
+        cy.intercept("POST", `/d/${documentId}/versions`).as("saveVersion");
+
         // Add content
         cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Keyboard shortcut test content.{ctrl+enter}");
 
@@ -310,9 +306,10 @@ describe("Document Editor", function () {
           bubbles: true
         });
 
-        // Wait for save confirmation
+        // Wait for the POST to complete before asserting DB state.
+        cy.wait("@saveVersion");
+
         cy.url().should("include", `/d/${documentId}`);
-        cy.contains("Document has been updated").should("be.visible");
 
         // Verify version was created
         cy.appEval(`Document.find('${documentId}').versions.count`).then((newCount) => {
@@ -340,8 +337,7 @@ describe("Document Editor", function () {
     cy.get("[data-document-editor] .bn-block-outer").should("have.length.at.least", 1);
 
     // Save empty document
-    cy.get('[aria-label="Save document"]').click();
-    cy.contains("Document has been updated").should("be.visible");
+    saveDocument();
   });
 
   it("allows editing document title inline", function () {
@@ -445,8 +441,7 @@ describe("Document Editor", function () {
     cy.get("[data-document-editor] .bn-block-outer").should("have.length.at.least", 5);
 
     // Save the document
-    cy.get('[aria-label="Save document"]').click();
-    cy.contains("Document has been updated").should("be.visible");
+    saveDocument();
 
     // Reload and verify structure persists
     cy.contains(documentTitle).should("be.visible");

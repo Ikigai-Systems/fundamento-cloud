@@ -6,86 +6,35 @@
       <%# Left sidebar with spacer %>
       <%= render "application/left_sidebar" %>
 
-      <%# Main content area %>
-      <div class="h-screen content-container flex flex-col relative">
-        <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
-          <div class="flex-1 min-w-0">
-            <%= content_for :content_title %>
-          </div>
+      <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
 
-          <div class="flex gap-1 items-center">
-            <%= content_for :content_menu %>
-
-            <%= render "application/notifications_menu" %>
-
-            <div class="mx-1">
-              <%= render "application/user_menu" %>
+        <%# Column 2: main content area %>
+        <div class="h-screen content-container flex flex-col relative">
+          <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+            <div class="flex-1 min-w-0">
+              <%= content_for :content_title %>
             </div>
-          </div>
-        </nav>
 
-        <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
-          <%= yield %>
-        </div>
-      </div>
+            <div class="flex gap-1 items-center">
+              <%= content_for :content_menu %>
 
-      <%# Right sidebar with spacer %>
-      <%
-        is_collapsed = cookies["ikigai_userPreferences_contentSideBarExpanded"] == "false"
+              <%= render "application/notifications_menu" %>
 
-        if defined?(@document)
-          object = @document
-        elsif defined?(@table)
-          object = @table
-        end
-      %>
-
-      <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
-           data-controller="cookie-controlled-toggle"
-           data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
-           data-cookie-controlled-toggle-target="toggleable"
-           data-toggle-class="collapsed"
-           data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
-
-        <%# Spacer creates layout space on desktop grid %>
-        <div class="sidebar-spacer"></div>
-
-        <aside id="content-sidebar" class="sidebar right-side">
-
-          <%# The visible panel with background and shadow %>
-          <div class="sidebar-panel right-side">
-
-            <div class="sidebar-trigger-area right-side"
-                 data-controller="hotkey popover"
-                 data-hotkey="]"
-                 data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
-
-              <div class="sidebar-trigger-button right-side">
-                <span class="icon-[heroicons--chevron-right-16-solid] size-4 block group-[.collapsed]/collapser:hidden"></span>
-                <span class="icon-[heroicons--chevron-left-16-solid] size-4 hidden group-[.collapsed]/collapser:block"></span>
+              <div class="mx-1">
+                <%= render "application/user_menu" %>
               </div>
-
-              <template data-popover-target="content">
-                <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center right-5 group-[.collapsed]/collapser:right-14 top-1/2 -translate-y-1/2">
-                  <p class="block group-[.collapsed]/collapser:hidden">Collapse <code>]</code></p>
-                  <p class="hidden group-[.collapsed]/collapser:block">Expand <code>]</code></p>
-                </div>
-              </template>
             </div>
+          </nav>
 
-            <div class="sidebar-content">
-              <% if content_for?(:content_sidebar) %>
-                <%= content_for :content_sidebar %>
-              <% else %>
-                <%= turbo_frame_tag "content_sidebar", data: { turbo: false }, src: polymorphic_path([:sidebar, object]) do %>
-                  <%= render Object::SidebarLoadingComponent.new %>
-                <% end %>
-              <% end %>
-            </div>
-
+          <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
+            <%= yield %>
           </div>
-        </aside>
-      </div>
+        </div>
+
+        <%# Column 3: right sidebar with spacer %>
+        <%= render "application/right_sidebar", object: @document || @table %>
+
+      <% end %>
 
     </div>
   </div>

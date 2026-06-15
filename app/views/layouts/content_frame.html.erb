@@ -1,0 +1,35 @@
+<%# Rendered when navigating between documents/tables via the content Turbo Frame.
+    Wraps columns 2 + 3 of the content_two_sidebars grid — no left sidebar, no outer chrome. %>
+
+<%= turbo_frame_tag "content", class: "contents" do %>
+
+  <%# Lift flash messages out to the page-level #flashes container so they
+      survive the frame swap (the layout's outer flash render is discarded
+      by Turbo's frame extraction). %>
+  <% if flash.any? %>
+    <%= turbo_stream.append "flashes" do %>
+      <%= render "application/flash_messages_as_alerts" %>
+    <% end %>
+  <% end %>
+
+  <%# Column 2: main content %>
+  <div class="h-screen content-container flex flex-col relative">
+    <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+      <div class="flex-1 min-w-0">
+        <%= content_for :content_title %>
+      </div>
+
+      <div class="flex gap-1 items-center">
+        <%= content_for :content_menu %>
+      </div>
+    </nav>
+
+    <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
+      <%= yield %>
+    </div>
+  </div>
+
+  <%# Column 3: right sidebar — reloads with the new document/table %>
+  <%= render "application/right_sidebar", object: @document || @table %>
+
+<% end %>

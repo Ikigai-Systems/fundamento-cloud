@@ -5,9 +5,12 @@
     loading: "lazy" do %>
 
     <%# Make sure when updating link style you also update one in app/views/root/notifications.html.erb %>
+    <%# Navigates to the notifications page (application layout, no content
+        frame) — break out of the content frame the user menu sits inside. %>
     <%= link_to root_path(:anchor => "mentions"),
       title: "Notifications",
-      class: "document-toolbar-button" do %>
+      class: "document-toolbar-button",
+      data: { "turbo-frame" => "_top" } do %>
       <span class="icon-[heroicons--bell] size-5" aria-hidden="true"></span>
       <span class="sr-only">Notifications</span>
     <% end %>

@@ -13,24 +13,33 @@ export default class extends Controller<HTMLElement> {
 
   declare pendingTargets: HTMLElement[]
 
-  connect() {
-    // Process any server-rendered flash data elements on page load
-    this.pendingTargets.forEach(el => {
-      this.show({
-        type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
-        message: el.dataset.flashMessage || "",
-        duration: el.dataset.flashDuration as FlashOptions["duration"]
-      })
+  // Fires on initial connect for server-rendered elements, AND when new
+  // pending elements arrive later (e.g. appended via turbo-stream after a
+  // frame swap). Stimulus uses a MutationObserver under the hood.
+  pendingTargetConnected(el: HTMLElement) {
+    const options: FlashOptions = {
+      type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
+      message: el.dataset.flashMessage || "",
+      duration: el.dataset.flashDuration as FlashOptions["duration"],
+      key: el.dataset.flashKey,
+      replacePrevious: el.dataset.flashReplacePrevious === "true",
+    }
 
-      el.remove()
-    })
+    // Remove the pending marker before dedup so it can't match its own key.
+    el.remove()
+
+    this.show(options)
   }
 
   // Public method called from createFlash.ts or via Stimulus actions
   show(options: FlashOptions) {
-    // Handle deduplication
+    // Handle deduplication. Iterate children rather than querySelector so the
+    // key can be any string (including server-rendered message text with
+    // characters that would need CSS escaping).
     if (options.key) {
-      const existing = this.element.querySelector(`[data-flash-key="${options.key}"]`)
+      const existing = Array.from(this.element.children).find((child): child is HTMLElement => {
+        return child instanceof HTMLElement && child.dataset.flashKey === options.key
+      })
       if (existing) {
         if (options.replacePrevious) {
           existing.remove()
@@ -60,13 +69,15 @@ export default class extends Controller<HTMLElement> {
     const autoDismissAttr = durationMs
       ? `data-alert-dismiss-after-value="${durationMs}"`
       : ""
-    const keyAttr = options.key ? `data-flash-key="${options.key}"` : ""
 
-    // Build HTML directly in TypeScript (single source of truth)
+    // Build HTML directly in TypeScript (single source of truth).
+    // NOTE: do NOT interpolate options.key (or any user-supplied string) into
+    // the template — set it via setAttribute below after parsing. The key is
+    // server-rendered from the flash message text, which can contain quotes
+    // or HTML metacharacters.
     const html = `
       <div data-controller="alert"
            ${autoDismissAttr}
-           ${keyAttr}
            data-transition-enter="transition-position ease-in-out duration-500"
            data-transition-enter-from="left-96"
            data-transition-enter-to="-left-8"
@@ -99,7 +110,11 @@ export default class extends Controller<HTMLElement> {
 
     const temp = document.createElement("div")
     temp.innerHTML = html.trim()
-    return temp.firstElementChild as HTMLElement
+    const element = temp.firstElementChild as HTMLElement
+    if (options.key) {
+      element.dataset.flashKey = options.key
+    }
+    return element
   }
 
   private escapeHtml(text: string): string {

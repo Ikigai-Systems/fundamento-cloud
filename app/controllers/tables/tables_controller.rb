@@ -136,7 +136,7 @@ class Tables::TablesController < ApplicationController
       format.html do
         @tables = @space.tables.lexicographically
 
-        render "tables/show", layout: "content_two_sidebars"
+        render "tables/show", layout: content_layout
       end
     end
   end
@@ -146,7 +146,7 @@ class Tables::TablesController < ApplicationController
 
     @tables = @space.tables.lexicographically
 
-    render "tables/edit", layout: "content_two_sidebars"
+    render "tables/edit", layout: content_layout
   end
 
   def update

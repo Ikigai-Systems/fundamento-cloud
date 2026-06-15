@@ -3,7 +3,7 @@
   class: container_classes,
   data: {"visibility-target" => visibility_target_attribute },
 ) do %>
-  <%= link_to polymorphic_path([@document]), class: "content-link" do %>
+  <%= link_to polymorphic_path([@document]), class: "content-link", data: { turbo_frame: "content" } do %>
     <%= tag.div(
       style: "--level: #{@level}",
       class: "document-padding-left flex items-center w-full",
@@ -36,6 +36,9 @@
 
   <div class="content-link-buttons-container">
     <% if can_update_space? %>
+      <%# Skip Turbo for this button: the create action redirects to the new
+          document's edit page, and we want a full page reload so the sidebar
+          (which now includes the new child) is re-rendered. %>
       <%= button_to polymorphic_path([@document.class]),
         method: :post,
         params: {
@@ -45,6 +48,7 @@
           "parent_id": @document.id,
         },
         form_class: "flex items-center",
+        data: { turbo: false },
         class: { "content-link-button" => true, "selected" => @selected } do
       %>
         <i class="fa-regular fa-plus"></i>
@@ -56,7 +60,8 @@
         class: {
           "content-link-button" => true,
           "selected" => @selected,
-        } do %>
+        },
+        data: { turbo_frame: "content" } do %>
         <i class="fa-regular fa-pencil"></i>
       <% end %>
     <% end %>

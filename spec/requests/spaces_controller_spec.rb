@@ -403,6 +403,32 @@ RSpec.describe SpacesController, type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "on a space with no home document (empty space landing page)" do
+      let(:empty_space) { spaces(:hc_default).tap { |s| s.update!(home_document: nil) } }
+
+      before do
+        sign_in manager
+        post select_organization_path(organization)
+      end
+
+      it "renders full layout including left sidebar and content frame on direct access" do
+        get space_path(empty_space)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="space-sidebar"')
+        expect(response.body).to include('id="content"')
+      end
+
+      it "renders the frame-only layout when Turbo-Frame: content header is present" do
+        get space_path(empty_space),
+          headers: { "Turbo-Frame" => "content" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="content"')
+        expect(response.body).not_to include('id="space-sidebar"')
+      end
+    end
   end
 
   describe "PUT #update on archived space" do

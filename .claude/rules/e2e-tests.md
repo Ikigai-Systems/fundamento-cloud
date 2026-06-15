@@ -54,6 +54,19 @@ cy.contains("Go to Organization").click();
 cy.wait("@selectOrg");
 ```
 
+## Don't rely on flash text for sync after a Turbo Frame save
+
+Saves that swap the content frame (instead of doing a full page load) leave the previous flash visible in `#flashes` because it lives outside the frame. A naive `cy.contains("Document has been updated").should("be.visible")` will match the stale flash from the previous save and let the next `cy.appEval` race the in-flight POST.
+
+Use `cy.intercept` + `cy.wait` on the POST instead — that's the only reliable sync point. Pattern:
+```js
+function saveDocument() {
+  cy.intercept("POST", "/d/*/versions").as("saveVersion");
+  cy.get('[aria-label="Save document"]').click();
+  cy.wait("@saveVersion");
+}
+```
+
 ## Stability verification
 
 A test is considered stable if it passes 10 consecutive solo runs:

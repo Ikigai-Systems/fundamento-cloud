@@ -19,7 +19,7 @@
   <div class="sidebar-spacer"></div>
 
   <%# Sidebar floats above the spacer, always fixed positioned %>
-  <aside id="space-sidebar" class="sidebar left-side" data-turbo-keep-scroll data-controller="content-title-sync">
+  <aside id="space-sidebar" class="sidebar left-side" data-turbo-keep-scroll data-controller="content-title-sync sidebar-active">
 
     <%# The visible panel with background and shadow %>
     <div class="sidebar-panel left-side">
@@ -46,7 +46,7 @@
 
       <%# Scrollable content area %>
       <div class="sidebar-content">
-        <%= turbo_frame_tag "space_sidebar", data: { turbo: false }, src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
+        <%= turbo_frame_tag "space_sidebar", src: sidebar_space_path(@space, object: { type: object&.class, id: object&.id }) do %>
           <%= render Object::SidebarLoadingComponent.new %>
         <% end %>
       </div>

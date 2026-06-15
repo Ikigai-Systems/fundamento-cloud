@@ -27,7 +27,7 @@ class SpacesController < ApplicationController
       redirect_to document_url(@space.home_document)
     else
       @documents = @space.documents_from_hierarchy
-      render layout: "full_width_application"
+      render layout: content_layout(full: "full_width_application", frame: "full_width_frame")
     end
   end
 

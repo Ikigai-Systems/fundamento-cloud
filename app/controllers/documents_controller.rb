@@ -8,7 +8,7 @@ class DocumentsController < ApplicationController
 
   include TrackObjectVisit.for_instance_variable(:@document)
 
-  layout -> { turbo_frame_request? ? "turbo_rails/frame" : "content_two_sidebars" }
+  layout -> { content_layout }
 
   after_action :verify_authorized_or_index_scoped
 

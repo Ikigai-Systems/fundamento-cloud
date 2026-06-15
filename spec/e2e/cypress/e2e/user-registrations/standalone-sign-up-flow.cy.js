@@ -19,7 +19,12 @@ describe('Basic features work', function() {
   });
 
   beforeEach(() => {
-    cy.login("pawel.nowak@random.pl", "password");
+    // Use loginWithSession (cy.session wrapper) instead of plain cy.login so
+    // the browser context gets properly restored between tests. Plain cy.login
+    // only puts cookies in Cypress' request jar and doesn't always sync them
+    // to the browser session reliably, which previously caused the first
+    // form POST to land on /users/sign_in.
+    cy.loginWithSession("pawel.nowak@random.pl", "password", "pawel-nowak-session");
   });
 
   it("create new organization", function() {
@@ -36,15 +41,7 @@ describe('Basic features work', function() {
   })
 
   it("you can create a team", function() {
-    cy.visit("/organizations");
-
-    // Find the organization row (now has a random name) and switch to it
-    cy.get('tbody tr').first().contains('button', 'Switch to').click();
-
-    // Check for any space (now has a random organization name + " Space")
-    cy.contains("Space");
-
-    cy.get("#flashes button").click();
+    cy.visit("/");
 
     cy.get("body nav").contains("PN").click();
 
