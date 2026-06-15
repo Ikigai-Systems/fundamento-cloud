@@ -62,11 +62,6 @@ export default class extends Controller {
     if (this.hasTableOfContentsOutlet) {
       this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(editor.document));
     }
-    // Marker for tests: by this point Y.js has finished its initial sync from
-    // the server and the hidden content_blocks input reflects the latest
-    // document state. Without this, tests that type immediately after a frame
-    // swap can race the sync and submit empty content.
-    this.element.dataset.editorReady = "true";
   }
 
   private onConnectionChange(isStale: boolean) {

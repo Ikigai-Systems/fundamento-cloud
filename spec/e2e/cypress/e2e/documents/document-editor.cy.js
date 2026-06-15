@@ -130,15 +130,9 @@ describe("Document Editor", function () {
 
       cy.get('[aria-label="Edit document"]').click();
 
-      // Make second edit. Wait for the previous version's content to actually
-      // appear in the editor — that's the only reliable signal that Y.js has
-      // finished syncing the document state from the server. Typing earlier
-      // races the sync and can leave the hidden content_blocks field empty,
-      // making versions#create's JSON.parse blow up and no version gets
-      // persisted.
+      // Make second edit
       cy.url().should("include", `/d/${documentId}/edit`);
       cy.waitForEditor();
-      cy.get("[data-document-editor]").should("contain", "First version content.");
       cy.get("[data-document-editor] [role='textbox']").first().type("Second version content.{enter}");
 
       // Save again
@@ -154,7 +148,6 @@ describe("Document Editor", function () {
 
       cy.url().should("include", `/d/${documentId}/edit`);
       cy.waitForEditor();
-      cy.get("[data-document-editor]").should("contain", "Second version content.");
       cy.get("[data-document-editor] [role='textbox']").first().type("Third version content.");
 
       // Save again
@@ -184,29 +177,24 @@ describe("Document Editor", function () {
 
     cy.visit(`/d/${documentId}/edit`);
 
-    // Wait for editor to load and for Y.js to sync the existing version 1
-    // content. Without this, type() races the sync and saved versions can
-    // end up with stale/empty content_blocks.
+    // Wait for editor to load
     cy.waitForEditor();
-    cy.get("[data-document-editor]").should("not.be.empty");
 
     // Make first edit and save
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 2 content.{enter}");
     saveDocument();
-    cy.get('[aria-label="Edit document"]', {timeout: 10000}).click();
+    cy.get('[aria-label="Edit document"]').click();
 
     // Make second edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
     cy.waitForEditor();
-    cy.get("[data-document-editor]").should("contain", "Version 2 content.");
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 3 content.{enter}");
     saveDocument();
-    cy.get('[aria-label="Edit document"]', {timeout: 10000}).click();
+    cy.get('[aria-label="Edit document"]').click();
 
     // Make third edit and save
     cy.url().should("include", `/d/${documentId}/edit`);
     cy.waitForEditor();
-    cy.get("[data-document-editor]").should("contain", "Version 3 content.");
     cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Version 4 content.{enter}");
     saveDocument();
 

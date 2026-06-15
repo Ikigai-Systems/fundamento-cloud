@@ -54,17 +54,6 @@ cy.contains("Go to Organization").click();
 cy.wait("@selectOrg");
 ```
 
-## Editor readiness (Y.js sync)
-
-`cy.waitForEditor()` waits for `data-editor-ready="true"` on the editor container. The Stimulus editor controller sets this attribute inside `onEditorReady`, which the React Editor fires *after* Y.js has completed its initial sync from the server. Use this command — never type into the editor purely on DOM presence of the `[role="textbox"]`, especially after a Turbo Frame swap, because the form's hidden `content_blocks` input is empty until Y.js syncs, and a Save submitted in the meantime crashes the server's JSON.parse.
-
-For multi-step edits (frame-swap → type → save → frame-swap → type → save), also assert that the *previous* version's content is visible before typing — this is a stronger sync check than `waitForEditor` alone, because Y.js can briefly look "ready" before the latest server state has propagated:
-```js
-cy.waitForEditor();
-cy.get("[data-document-editor]").should("contain", "Previous version content.");
-cy.get("[data-document-editor] [role='textbox']").first().type("Next version content.");
-```
-
 ## Don't rely on flash text for sync after a Turbo Frame save
 
 Saves that swap the content frame (instead of doing a full page load) leave the previous flash visible in `#flashes` because it lives outside the frame. A naive `cy.contains("Document has been updated").should("be.visible")` will match the stale flash from the previous save and let the next `cy.appEval` race the in-flight POST.
