@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Signed-off-by trailer on all commits
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const baseRef = context.payload.pull_request.base.ref;
