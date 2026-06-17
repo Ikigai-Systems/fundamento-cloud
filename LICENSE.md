@@ -6,7 +6,7 @@ FSL-1.1-ALv2
 
 ## Notice
 
-Copyright 2026 Ikigai Systems
+Copyright 2026 Paweł Niewiadomski / Ikigai Systems
 
 ## Terms and Conditions
 
