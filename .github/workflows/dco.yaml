@@ -18,12 +18,17 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const { data: commits } = await github.rest.pulls.listCommits({
+            const baseRef = context.payload.pull_request.base.ref;
+            const headSha = context.payload.pull_request.head.sha;
+
+            const { data: comparison } = await github.rest.repos.compareCommitsWithBasehead({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number,
+              basehead: `${baseRef}...${headSha}`,
               per_page: 250,
             });
+
+            const commits = comparison.commits;
 
             const trailer = /^Signed-off-by:\s+(.+?)\s+<(.+?)>\s*$/m;
             const failures = [];
