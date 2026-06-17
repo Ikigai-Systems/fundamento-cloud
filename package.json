@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "license": "FSL-1.1-Apache-2.0",
   "scripts": {
     "dev": "vite frontend",
     "lint": "eslint app/javascript --ext ts,tsx,js,jsx --report-unused-disable-directives --max-warnings 0",

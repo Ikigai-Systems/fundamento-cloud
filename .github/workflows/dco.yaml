@@ -1,0 +1,73 @@
+name: DCO
+
+on:
+  pull_request:
+    branches: ["*"]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  dco-check:
+    name: DCO check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Signed-off-by trailer on all commits
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const baseRef = context.payload.pull_request.base.ref;
+            const headSha = context.payload.pull_request.head.sha;
+
+            const { data: comparison } = await github.rest.repos.compareCommitsWithBasehead({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              basehead: `${baseRef}...${headSha}`,
+              per_page: 250,
+            });
+
+            const commits = comparison.commits;
+
+            const trailer = /^Signed-off-by:\s+(.+?)\s+<(.+?)>\s*$/m;
+            const failures = [];
+
+            for (const c of commits) {
+              if (c.parents.length > 1) continue;
+
+              const author = c.commit.author;
+              const match = c.commit.message.match(trailer);
+              const sha = c.sha.substring(0, 7);
+
+              if (!match) {
+                failures.push(`  - ${sha} (${author.name} <${author.email}>): missing Signed-off-by trailer`);
+                continue;
+              }
+
+              const signedEmail = match[2].trim().toLowerCase();
+              if (signedEmail !== author.email.toLowerCase()) {
+                failures.push(`  - ${sha} (${author.name} <${author.email}>): Signed-off-by email (${match[2].trim()}) does not match author email`);
+              }
+            }
+
+            if (failures.length === 0) {
+              core.info(`All ${commits.length} commit(s) passed the DCO check.`);
+              return;
+            }
+
+            core.setFailed([
+              "DCO check failed for the following commits:",
+              "",
+              ...failures,
+              "",
+              "Every commit must carry a `Signed-off-by: Your Name <your.email@example.com>` trailer matching the commit author.",
+              "By signing off, you certify the contribution per the Developer Certificate of Origin (https://developercertificate.org/).",
+              "",
+              "Fix existing commits:",
+              "  - Last commit only:    git commit --amend --signoff && git push --force-with-lease",
+              "  - All PR commits:      git rebase --signoff master && git push --force-with-lease",
+              "",
+              "Configure git to sign off automatically:",
+              "  git config --global format.signOff true",
+            ].join("\n"));
