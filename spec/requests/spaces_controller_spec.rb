@@ -580,6 +580,52 @@ RSpec.describe SpacesController, type: :request do
         expect(response.body).to include("Show archived")
       end
     end
+
+    context "tab=starred" do
+      fixtures :organization_memberships, :favorites
+
+      it "renders starred items for this space" do
+        # is_favorite_1 favorites documents(:one) which is in spaces(:is_default)
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("starred_sidebar_tab")
+        expect(response.body).to include(documents(:one).title)
+      end
+
+      it "does not render starred items from other spaces" do
+        # Create a favorite for a document in a DIFFERENT space (is_stefans, not is_default)
+        other_space_doc = Document.create!(
+          title: "Other Space Doc",
+          organization: organizations(:is),
+          space: spaces(:is_stefans)
+        )
+        membership = organization_memberships(:om_is_pawel)
+        membership.favorites.create!(object: other_space_doc)
+
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("Other Space Doc")
+      end
+
+      it "renders empty state when no favorites exist in this space" do
+        # Remove the fixture favorite before the request
+        Favorite.where(organization_membership: organization_memberships(:om_is_pawel)).delete_all
+
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("No starred items")
+      end
+
+      it "renders turbo_stream_from subscription tag" do
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-cable-stream-source")
+      end
+    end
   end
 
   describe "PUT #reorder_hierarchy" do

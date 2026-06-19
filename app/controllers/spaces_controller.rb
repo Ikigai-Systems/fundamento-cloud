@@ -169,7 +169,11 @@ class SpacesController < ApplicationController
       @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
       render template: "spaces/_sidebar/hierarchy"
     when "starred"
-      @favorites = []
+      membership = pundit_user.organization_membership
+      @favorites = membership.favorites
+        .where(object_type: %w[Document Table])
+        .order(created_at: :desc)
+        .select { |f| f.object.try(:space_id) == @space.id }
       render template: "spaces/_sidebar/starred"
     else
       # renders spaces/sidebar.html.erb (tab shell) — no data needed
