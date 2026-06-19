@@ -40,7 +40,7 @@
         <%# Hierarchy panel: no loading: lazy so it fetches immediately (first tab) %>
         <div data-tabs-target="panel" class="hidden max-h-0 h-full">
           <%= turbo_frame_tag "hierarchy_sidebar_tab",
-              src: sidebar_space_path(@space, tab: :hierarchy, object: params[:object]),
+              src: sidebar_space_path(@space, tab: :hierarchy, object: params[:object]&.to_unsafe_h),
               data: { turbo: false } do %>
             <%= render Object::SidebarLoadingComponent.new %>
           <% end %>
