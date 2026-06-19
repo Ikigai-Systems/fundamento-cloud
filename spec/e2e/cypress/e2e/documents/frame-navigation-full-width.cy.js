@@ -32,7 +32,7 @@ describe("Content frame navigation on full-width pages", function () {
     it("navigates to a sidebar document without reloading the sidebar", function () {
       cy.visit("/s/is_default");
 
-      cy.get("#space-sidebar").should("exist");
+      cy.get("#space-sidebar a.content-link").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
       cy.get("#space-sidebar a.content-link[href='/d/one']").click();
@@ -54,7 +54,7 @@ describe("Content frame navigation on full-width pages", function () {
     it("navigates to a sidebar document without reloading the sidebar", function () {
       cy.visit("/d/one/versions");
 
-      cy.get("#space-sidebar").should("exist");
+      cy.get("#space-sidebar a.content-link").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
       cy.get("#space-sidebar a.content-link[href='/d/two']").click();

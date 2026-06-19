@@ -34,6 +34,7 @@ import ImportUploadController from "./controllers/import_upload_controller.js";
 import ImportLogFilterController from "./controllers/import_log_filter_controller.js";
 import TableOfContentsController from "./table_of_contents_controller"
 import SidebarActiveController from "./sidebar_active_controller"
+import SidebarNavigationController from "./sidebar_navigation_controller"
 
 const application = Application.start()
 
@@ -93,6 +94,7 @@ application.register("flash-manager", FlashManagerController);
 application.register("content-title-sync", ContentTitleSyncController);
 
 application.register("sidebar-active", SidebarActiveController);
+application.register("sidebar-navigation", SidebarNavigationController);
 
 application.register("cookie-banner", CookieBannerController);
 

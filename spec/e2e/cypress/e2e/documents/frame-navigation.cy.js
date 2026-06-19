@@ -22,20 +22,13 @@ describe("Content frame navigation — sidebar stability", function () {
   it("does not reload the space sidebar when clicking a document link", function () {
     cy.visit("/d/one");
 
-    // Intercept sidebar requests after the initial page load completes
-    cy.get("#space-sidebar").should("exist");
+    cy.get("#space-sidebar a.content-link").should("exist");
     cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-    // Click the second document in the sidebar
     cy.get("#space-sidebar a.content-link[href='/d/two']").click();
 
-    // Content frame should update
     cy.get("#content").should("exist");
-
-    // URL should update to the second document
     cy.url().should("include", "/d/two");
-
-    // The sidebar must NOT have been reloaded
     cy.get("@sidebarReload.all").should("have.length", 0);
   });
 
