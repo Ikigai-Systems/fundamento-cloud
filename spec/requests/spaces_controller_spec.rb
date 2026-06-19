@@ -533,6 +533,55 @@ RSpec.describe SpacesController, type: :request do
     end
   end
 
+  describe "GET #sidebar" do
+    fixtures :organizations, :users, :organization_memberships, :spaces, :documents
+
+    let(:user) { users(:pawel) }
+    let(:organization) { organizations(:is) }
+    let(:space) { spaces(:is_default) }
+
+    before do
+      sign_in user
+      post select_organization_path(organization)
+    end
+
+    context "tab shell (no tab param)" do
+      it "renders tab navigation with Hierarchy and Starred buttons" do
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Hierarchy")
+        expect(response.body).to include("Starred")
+        expect(response.body).to include("hierarchy_sidebar_tab")
+        expect(response.body).to include("starred_sidebar_tab")
+      end
+
+      it "redirects when not a turbo frame request" do
+        get sidebar_space_path(space)
+
+        expect(response).to redirect_to(space_path(space))
+      end
+    end
+
+    context "tab=hierarchy" do
+      it "renders the document and table hierarchy" do
+        get sidebar_space_path(space, tab: "hierarchy"), headers: { "Turbo-Frame" => "hierarchy_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Documents")
+        expect(response.body).to include("Tables")
+        expect(response.body).to include("hierarchy_sidebar_tab")
+      end
+
+      it "renders Show archived toggle" do
+        get sidebar_space_path(space, tab: "hierarchy"), headers: { "Turbo-Frame" => "hierarchy_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Show archived")
+      end
+    end
+  end
+
   describe "PUT #reorder_hierarchy" do
     let(:space) { spaces(:is_default) }
     let!(:doc1) { space.documents.create!(title: "Document 1", organization: organizations(:is)) }
