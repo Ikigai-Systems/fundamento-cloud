@@ -163,9 +163,21 @@ class SpacesController < ApplicationController
   def sidebar
     authorize @space, :show?
 
-    # documents_from_hierarchy uses with_has_versions so let's use draft? here to use the optimal approach to version discovery
-    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || !document.draft? }
-    @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+    case params[:tab]
+    when "hierarchy"
+      @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || !document.draft? }
+      @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+      render template: "spaces/_sidebar/hierarchy"
+    when "starred"
+      membership = pundit_user.organization_membership
+      @favorites = membership.favorites
+        .where(object_type: %w[Document Table])
+        .order(created_at: :desc)
+        .select { |f| f.object.try(:space_id) == @space.id }
+      render template: "spaces/_sidebar/starred"
+    else
+      # renders spaces/sidebar.html.erb (tab shell) — no data needed
+    end
   end
 
   private

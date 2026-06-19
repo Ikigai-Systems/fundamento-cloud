@@ -1,8 +1,7 @@
 <%= turbo_frame_tag "space_sidebar", data: { turbo_action: "advance" } do %>
-  <div
-    class="flex flex-col h-full overflow-hidden"
-    data-controller="visibility" data-action="toggle-button:change->visibility#onChange"
-  >
+  <div class="flex flex-col h-full overflow-hidden"
+       data-controller="sidebar-navigation"
+       data-action="click->sidebar-navigation#navigate">
     <div class="flex flex-col px-3 border-b">
       <div class="mt-2">
         <%= link_to root_path, class: "flex items-center py-2" do %>
@@ -18,85 +17,44 @@
       <% end %>
     </div>
 
-    <div class="flex flex-col grow overflow-y-auto">
-        <div class="section-header-container">
-          <div class="section-header-title">
-            <%= render ObjectIcon.new(type: Document) %>
-            Documents
-          </div>
+    <div
+      class="flex flex-col flex-1 min-h-0"
+      data-controller="tabs"
+      data-tabs-active-tab-class="active-tab"
+    >
+      <div class="shrink-0 border-b">
+        <nav data-tabs-target="list" aria-label="Space sidebar tabs">
+          <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab"
+                  class="flex flex-row items-center gap-1">
+            <i class="fa-regular fa-sitemap"></i>
+            Hierarchy
+          </button>
 
-          <%# Full page reload so the sidebar (which now includes the new
-              document) is re-rendered; see sidebar_tree_item_component for the
-              same reasoning on the per-item add-child button. %>
-          <%= button_to documents_path(space_id: @space.id),
-            params: { "document": { title: "" } },
-            disabled: !policy(@space).update?,
-            form_class: "flex items-center",
-            class: "secondary-button",
-            data: { turbo: false },
-            aria: { label: "Create new document" } do
-          %>
-            <i class="fa-regular fa-plus"></i>
+          <button id="starred" data-action="click->tabs#change" data-tabs-target="tab"
+                  class="flex flex-row items-center gap-1">
+            <i class="fa-regular fa-star"></i>
+            Starred
+          </button>
+        </nav>
+      </div>
+
+      <div class="flex-1 min-h-0 overflow-hidden">
+        <%# Hierarchy panel: no loading: lazy so it fetches immediately (first tab) %>
+        <div data-tabs-target="panel" class="hidden h-full">
+          <%= turbo_frame_tag "hierarchy_sidebar_tab",
+              src: sidebar_space_path(@space, tab: :hierarchy, object: params[:object]&.to_unsafe_h) do %>
+            <%= render Object::SidebarLoadingComponent.new %>
           <% end %>
         </div>
 
-        <div class="section-content-container">
-          <div class="section-empty hidden">No documents in this space</div>
-
-          <ul class="section-content-list" data-controller="draggable" data-space-id="<%= @space.id %>">
-            <%= render Space::SidebarTreeComponent.new(
-              node: @space.hierarchy,
-              documents: @documents,
-              space: @space,
-              params: params,
-              level: 0
-            ) %>
-          </ul>
-        </div>
-
-        <div class="section-header-container">
-          <div class="section-header-title">
-            <%= render ObjectIcon.new(type: Table) %>
-            Tables
-          </div>
-
-          <%= link_to_with_disable new_table_path(space_id: @space.id),
-            disabled: !policy(@space).update?,
-            class: "secondary-button",
-            data: { turbo: false },
-            aria: { label: "Create new table" } do
-          %>
-            <i class="fa-regular fa-plus"></i>
+        <%# Starred panel: lazy — only fetches when user clicks the tab %>
+        <div data-tabs-target="panel" class="hidden h-full">
+          <%= turbo_frame_tag "starred_sidebar_tab",
+              loading: "lazy",
+              src: sidebar_space_path(@space, tab: :starred) do %>
+            <%= render Object::SidebarLoadingComponent.new %>
           <% end %>
         </div>
-
-        <div class="section-content-container">
-          <div class="section-empty hidden">No tables in this space</div>
-
-          <ul class="section-content-list">
-            <% @tables.each do |table| %>
-              <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
-                <% selected = true %>
-              <% end %>
-
-              <li class="section-content-node-container" data-controller="<%= selected ? "scroll-into-view" : "" %>">
-                <%=
-                  render partial: "spaces/_sidebar/content_link",
-                    locals: {
-                      content: table,
-                      selected: selected
-                    }
-                %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-    </div>
-
-    <div class="mt-auto w-full self-end px-3 border-t flex justify-end">
-      <div class="flex items-center my-3">
-        <span class="mr-2">Show archived:</span>
-        <%= render partial: "application/components/toggle_button", locals: { checked: cookies["ikigai_userPreferences_showArchived"] == "true" } %>
       </div>
     </div>
   </div>
