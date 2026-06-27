@@ -12,9 +12,9 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@blocknote/core": "^0.45.0",
-    "@blocknote/mantine": "^0.45.0",
-    "@blocknote/react": "^0.45.0",
+    "@blocknote/core": "^0.51.4",
+    "@blocknote/mantine": "^0.51.4",
+    "@blocknote/react": "^0.51.4",
     "@floating-ui/react": "^0.26.28",
     "@github/hotkey": "^3.1.1",
     "@hotwired/stimulus": "^3.2.2",
