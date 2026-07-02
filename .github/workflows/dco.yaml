@@ -36,6 +36,9 @@ jobs:
             for (const c of commits) {
               if (c.parents.length > 1) continue;
 
+              // Skip bot-authored commits (e.g. Dependabot) — bots can't add a DCO sign-off.
+              if (c.author?.type === "Bot" || /\[bot\]$/.test(c.commit.author.name)) continue;
+
               const author = c.commit.author;
               const match = c.commit.message.match(trailer);
               const sha = c.sha.substring(0, 7);
