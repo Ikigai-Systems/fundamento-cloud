@@ -41,16 +41,18 @@ jobs:
 
       - name: Decrypt and export secrets
         run: |
-          # Extract FontAwesome token and create secret file for Docker
-          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > dockerfiles/fontawesome-auth.secret
+          # Decrypt into variables FIRST so a missing/invalid age key fails the step
+          # loudly. Never wrap sops in `echo "$(...)"` — echo exits 0 and swallows
+          # sops's non-zero exit, silently continuing with empty secrets.
+          FONTAWESOME_TOKEN=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml)
+          RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/e2e.sops.yaml)
+
+          # FontAwesome token: env var for bundle install + secret file for Docker build
+          echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
+          echo "${FONTAWESOME_TOKEN}" > dockerfiles/fontawesome-auth.secret
           chmod 600 dockerfiles/fontawesome-auth.secret
 
-          # Extract Rails master key for credential decryption
-          RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/e2e.sops.yaml)
           echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
-
-          # Export FontAwesome token for bundle install
-          echo "BUNDLE_DL__FONTAWESOME__COM=$(cat dockerfiles/fontawesome-auth.secret)" >> $GITHUB_ENV
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
