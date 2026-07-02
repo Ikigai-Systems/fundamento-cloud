@@ -67,7 +67,7 @@ jobs:
 
       - run: npm ci
 
-      - uses: hoverkraft-tech/compose-action@v2.5.0
+      - uses: hoverkraft-tech/compose-action@v3.0.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
