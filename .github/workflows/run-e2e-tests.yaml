@@ -47,16 +47,16 @@ jobs:
           FONTAWESOME_TOKEN=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml)
           RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/e2e.sops.yaml)
 
+          echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
+          echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
+
           # FontAwesome token: env var for bundle install + secret file for Docker build.
           # Use printf (not echo) for the secret file: the Docker build injects the file
           # verbatim as BUNDLE_DL__FONTAWESOME__COM via --mount=type=secret,env=..., and a
           # trailing newline in the credential makes Bundler 4 fail with "Please CGI escape
-          # your usernames and passwords" (exit 17).
-          echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
+          # your usernames and passwords" (exit 17).          
           printf '%s' "${FONTAWESOME_TOKEN}" > dockerfiles/fontawesome-auth.secret
           chmod 600 dockerfiles/fontawesome-auth.secret
-
-          echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
