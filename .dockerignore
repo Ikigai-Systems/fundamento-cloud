@@ -19,8 +19,12 @@
 /config/credentials/*.key
 /config/secrets/
 
-# Ignore npm modules as they will be installed (cleanly)
-/node_modules/
+# Ignore npm modules as they will be installed (cleanly).
+# Use **/ so nested node_modules (e.g. micro-services/*/node_modules) are also
+# excluded — a bare "node_modules/" only matches the top level in .dockerignore.
+# Otherwise host-platform binaries (e.g. esbuild) overwrite the ones installed
+# in-container and fail with "Exec format error".
+**/node_modules
 
 # Ignore bundler packages
 /vendor/bundle/
