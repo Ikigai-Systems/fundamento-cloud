@@ -116,7 +116,7 @@ const MentionInlineContent = createReactInlineContentSpec(
   },
   {
     render: (props) => {
-      let {id, entityId, entity, title, fragment} = props.inlineContent.props;
+      const {id, entityId, entity, title, fragment} = props.inlineContent.props;
       const mentionUrl = `https://fundamento.cloud/${entity}/${entityId}`;
       return <a href={mentionUrl}>{title || mentionUrl}</a>;
     },
