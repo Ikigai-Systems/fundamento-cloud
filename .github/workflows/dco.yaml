@@ -30,6 +30,14 @@ jobs:
 
             const commits = comparison.commits;
 
+            // Contributors exempt from the DCO sign-off requirement, matched by GitHub
+            // login (case-insensitive). Matching by login rather than email covers people
+            // who commit under multiple addresses. Add a login here to waive sign-off for
+            // that account's commits.
+            const EXEMPT_LOGINS = new Set([
+              "pawelniewie",
+            ].map((login) => login.toLowerCase()));
+
             const trailer = /^Signed-off-by:\s+(.+?)\s+<(.+?)>\s*$/m;
             const failures = [];
 
@@ -38,6 +46,9 @@ jobs:
 
               // Skip bot-authored commits (e.g. Dependabot) — bots can't add a DCO sign-off.
               if (c.author?.type === "Bot" || /\[bot\]$/.test(c.commit.author.name)) continue;
+
+              // Skip contributors on the exemption allowlist (matched by resolved GitHub login).
+              if (c.author?.login && EXEMPT_LOGINS.has(c.author.login.toLowerCase())) continue;
 
               const author = c.commit.author;
               const match = c.commit.message.match(trailer);
@@ -71,6 +82,9 @@ jobs:
               "  - Last commit only:    git commit --amend --signoff && git push --force-with-lease",
               "  - All PR commits:      git rebase --signoff master && git push --force-with-lease",
               "",
-              "Configure git to sign off automatically:",
-              "  git config --global format.signOff true",
+              "Sign off future commits with the -s flag:",
+              "  git commit -s",
+              "",
+              "Note: git has no config to add Signed-off-by to `git commit` automatically;",
+              "to automate it, add a prepare-commit-msg hook that appends the trailer.",
             ].join("\n"));
