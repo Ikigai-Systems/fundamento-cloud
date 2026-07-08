@@ -15,8 +15,27 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
+      # Keep the React family bumping together so a partial bump can't create
+      # an unresolvable peer-dependency conflict (react/react-dom ship in lockstep).
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
       npm-minor-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # React 18 -> 19 is a deliberate, breaking migration, not an auto-merge.
+      # Remove these entries when doing the React 19 upgrade.
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     directory: "/micro-services/blocknote-converter"
