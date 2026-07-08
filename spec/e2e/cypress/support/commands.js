@@ -80,7 +80,7 @@ Cypress.Commands.add("login", (email, password) => {
     }).then((response) => {
       expect(response.status).to.eq(200);
       expect(response.body).to.not.include("Invalid password");
-      expect(response.body).to.not.include("Invalid Email or password");
+      expect(response.body).to.not.include("Invalid email or password");
     });
   });
 });

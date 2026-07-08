@@ -24,7 +24,9 @@ export default class CommandPaletteController extends Controller {
       icon: command.icon,
       hotkey: command.hotkey,
       handler: () => {
-        eval(command.handler);
+        // Indirect eval (runs in global scope) — avoids Vite/rolldown's direct-eval warning.
+        // Handlers are server-generated DOM strings that only reference globals (e.g. document).
+        (0, eval)(command.handler);
       }
     })));
   }
