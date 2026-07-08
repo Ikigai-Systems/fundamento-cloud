@@ -17,7 +17,7 @@
     "@fastify/request-context": "^6.2.1",
     "@sentry/node": "^10.64.0",
     "@vitest/ui": "^3.2.6",
-    "commander": "^13.0.0",
+    "commander": "^15.0.0",
     "concurrently": "^9.1.0",
     "esbuild": "^0.28.1",
     "esbuild-register": "^3.6.0",
