@@ -23,6 +23,17 @@ updates:
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+      # Keep the whole ESLint toolchain bumping together — a lone plugin or a
+      # partial monorepo bump breaks peer resolution (see PRs #56/#57/#60).
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+          - "@stylistic/*"
+          - "eslint-plugin-*"
+          - "@tanstack/eslint-plugin-*"
       npm-minor-patch:
         update-types: ["minor", "patch"]
     ignore:
@@ -43,6 +54,14 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+          - "@stylistic/*"
+          - "eslint-plugin-*"
       vitest:
         patterns:
           - "vitest"
