@@ -3,13 +3,29 @@ import Fastify from "fastify";
 import FormBodyPlugin from "@fastify/formbody";
 import {fastifyRequestContext, /* requestContext */} from '@fastify/request-context';
 import {convertToBlocks, convertToYjs, convertMarkdownToBlocks, convertBlocksToMarkdown} from "./converters";
-import type {FastifyReply, FastifyRequest} from "fastify";
+import type {FastifyReply, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression} from "fastify";
+import type {Http2Server} from "node:http2";
 import type {Block} from "@blocknote/core";
 import {Buffer} from "buffer";
 
-type RouteHandler = (request: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
+// The server is created with `http2: true`, so requests/replies use the HTTP/2
+// raw types rather than Fastify's HTTP/1 defaults. Parameterize over the route
+// body so each handler gets a typed `request.body`.
+type Http2Request<Body> = FastifyRequest<
+  {Body: Body},
+  Http2Server,
+  RawRequestDefaultExpression<Http2Server>
+>;
+type Http2Reply = FastifyReply<
+  {Body: unknown},
+  Http2Server,
+  RawRequestDefaultExpression<Http2Server>,
+  RawReplyDefaultExpression<Http2Server>
+>;
 
-function withErrorHandling(handler: RouteHandler): RouteHandler {
+type RouteHandler<Body> = (request: Http2Request<Body>, reply: Http2Reply) => Promise<unknown>;
+
+function withErrorHandling<Body>(handler: RouteHandler<Body>): RouteHandler<Body> {
   return async (request, reply) => {
     return Sentry.withScope(async scope => {
       scope.clearBreadcrumbs();
@@ -42,8 +58,8 @@ export async function startServer(port: number, host: string) {
   Sentry.setupFastifyErrorHandler(fastify);
 
   // Convert YJS to Blocks
-  fastify.post("/convert/yjs/blocks", withErrorHandling(async (request, reply) => {
-    const body = request.body as {yjs?: string};
+  fastify.post("/convert/yjs/blocks", withErrorHandling<{yjs?: string}>(async (request, reply) => {
+    const body = request.body;
 
     if (!body.yjs) {
       return reply.status(400).send({
@@ -57,8 +73,8 @@ export async function startServer(port: number, host: string) {
   }));
 
   // Convert Blocks to YJS
-  fastify.post("/convert/blocks/yjs", withErrorHandling(async (request, reply) => {
-    const body = request.body as {blocks?: Block[]};
+  fastify.post("/convert/blocks/yjs", withErrorHandling<{blocks?: Block[]}>(async (request, reply) => {
+    const body = request.body;
 
     if (!body.blocks) {
       return reply.status(400).send({
@@ -73,8 +89,8 @@ export async function startServer(port: number, host: string) {
   }));
 
   // Convert Markdown to Blocks
-  fastify.post("/convert/markdown/blocks", withErrorHandling(async (request, reply) => {
-    const body = request.body as {markdown?: string};
+  fastify.post("/convert/markdown/blocks", withErrorHandling<{markdown?: string}>(async (request, reply) => {
+    const body = request.body;
 
     if (!body.markdown) {
       return reply.status(400).send({
@@ -88,8 +104,8 @@ export async function startServer(port: number, host: string) {
   }));
 
   // Convert Blocks to Markdown
-  fastify.post("/convert/blocks/markdown", withErrorHandling(async (request, reply) => {
-    const body = request.body as {blocks?: Block[]};
+  fastify.post("/convert/blocks/markdown", withErrorHandling<{blocks?: Block[]}>(async (request, reply) => {
+    const body = request.body;
 
     if (!body.blocks) {
       return reply.status(400).send({

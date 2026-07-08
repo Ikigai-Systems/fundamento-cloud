@@ -1,5 +1,4 @@
 import {Controller} from "@hotwired/stimulus"
-import React from "react"
 import ReactDOM, {Root} from "react-dom/client"
 import EditCommentPanel from "../components/EditCommentPanel"
 import {Document, Space, Table} from "../types"

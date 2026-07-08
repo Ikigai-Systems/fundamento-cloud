@@ -1,14 +1,19 @@
 // Slash menu item to insert a Chart block
 
+import schema from "../schema.ts";
+
 const ChartBlockMenuItem = () => ({
   title: "Chart",
   subtext: "Visualize your data in a combination of different charts",
-  onItemClick: (editor) => {
+  onItemClick: (editor: typeof schema.BlockNoteEditor) => {
     const currentBlock = editor.getTextCursorPosition().block;
     editor.insertBlocks([{
       type: "chartBlock",
     }], currentBlock, "after");
-    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
+    const nextBlock = editor.getTextCursorPosition().nextBlock;
+    if (nextBlock) {
+      editor.setTextCursorPosition(nextBlock, "start");
+    }
   },
   aliases: [
     "piechart",

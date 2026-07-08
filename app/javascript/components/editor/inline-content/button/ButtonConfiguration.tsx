@@ -1,11 +1,34 @@
-import React from "react";
 import SelectButtonSize from "./SelectButtonSize.tsx";
 import SelectButtonColor from "./SelectButtonColor.tsx";
+
+export type ButtonSize = "Small" | "Medium" | "Large";
+export type ButtonColor =
+  | "green"
+  | "orange"
+  | "blue"
+  | "yellow"
+  | "red"
+  | "black"
+  | "white"
+  | "pink"
+  | "violet";
+
+type ButtonConfigurationValue = {
+  formula: string;
+  label: string;
+  size: ButtonSize;
+  color: ButtonColor;
+};
+
+type ButtonConfigurationProps = {
+  configuration: ButtonConfigurationValue;
+  setConfiguration: (configuration: ButtonConfigurationValue) => void;
+};
 
 function ButtonConfiguration({
   configuration,
   setConfiguration,
-}) {
+}: ButtonConfigurationProps) {
   return (<>
     <div className="shadow-md border rounded rounded-2 text-sm max-w-[400px] min-w-[300px] bg-gray-100 dark:bg-gray-700">
       <div className="p-2 pt-4 uppercase font-medium text-xs dark:text-gray-100">

@@ -41,7 +41,7 @@ program
   .name("blocknote-converter")
   .description("CLI tool for converting YJS to blocknote and reverse");
 
-function createInputStream(input) {
+function createInputStream(input?: string) {
   const inputStream = input
     ? fs.createReadStream(path.resolve(input))
     : process.stdin;
@@ -57,7 +57,7 @@ function createInputStream(input) {
   return inputStream;
 }
 
-function createOutputStream(output) {
+function createOutputStream(output?: string) {
   const outputStream = output
     ? fs.createWriteStream(path.resolve(output))
     : process.stdout;
@@ -73,13 +73,18 @@ function createOutputStream(output) {
   return outputStream;
 }
 
+interface ConversionOptions {
+  input?: string;
+  output?: string;
+}
+
 // Generic handler for processing stream data with error handling
-function handleStreamConversion(options, converterFn: (data: Buffer) => unknown | Promise<unknown>, outputIsJson: boolean = true) {
+function handleStreamConversion(options: ConversionOptions, converterFn: (data: Buffer) => unknown | Promise<unknown>, outputIsJson: boolean = true) {
   const inputStream = createInputStream(options.input);
   const outputStream = createOutputStream(options.output);
-  const chunks = [];
+  const chunks: Buffer[] = [];
 
-  inputStream.on('data', (chunk) => {
+  inputStream.on('data', (chunk: Buffer) => {
     chunks.push(chunk);
   });
 
@@ -91,14 +96,14 @@ function handleStreamConversion(options, converterFn: (data: Buffer) => unknown 
       if (outputIsJson) {
         outputStream.write(JSON.stringify(convertedData));
       } else {
-        outputStream.write(convertedData);
+        outputStream.write(convertedData as string | Buffer);
       }
 
       if (!options.output) {
         outputStream.end();
       }
     } catch (error) {
-      console.error(`Conversion error: ${error.message}`);
+      console.error(`Conversion error: ${error instanceof Error ? error.message : String(error)}`);
       Sentry.captureException(error);
       Sentry.close(2000).then(() => {
         process.exit(1);

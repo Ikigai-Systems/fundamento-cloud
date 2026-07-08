@@ -1,9 +1,26 @@
-import React from "react";
 import AsyncSelect from "react-select/async";
+import {SingleValue} from "react-select";
 import UsersApi from "../../../api/UsersApi.js";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
+import {User} from "../../../types.ts";
+
+type FocusState = "none" | "focused" | "editing";
+
+type UserOption = {
+  value: number | undefined;
+  initials: string;
+  displayName: string;
+};
+
+type PeopleSelectCellProps = {
+  data: string | null;
+  setData: (value: number | undefined) => void;
+  focusState: FocusState;
+  setFocus: (focusState: FocusState) => void;
+  isViewOnly: boolean;
+};
 
 function PeopleSelectCell({
   data,
@@ -11,12 +28,12 @@ function PeopleSelectCell({
   focusState,
   setFocus,
   isViewOnly,
-}) {
-  const usersQuery = useQuery({queryKey: ["users"], queryFn: async () => {
+}: PeopleSelectCellProps) {
+  const usersQuery = useQuery<User[]>({queryKey: ["users"], queryFn: async () => {
     return (await UsersApi.index());
   }}, queryClient);
   const userId = data;
-  const userQuery = useQuery({queryKey: ["users", userId], queryFn: async () => {
+  const userQuery = useQuery<User | null>({queryKey: ["users", userId], queryFn: async () => {
     if (!userId) {
       return null;
     }
@@ -43,8 +60,8 @@ function PeopleSelectCell({
           </div>
         </>);
       } else {
-        const initials = userQuery.data ? `${userQuery.data.firstName[0]}${userQuery.data.lastName[0]}` : userId;
-        const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : userId;
+        const initials = userQuery.data ? `${userQuery.data.firstName[0]}${userQuery.data.lastName[0]}` : userId ?? undefined;
+        const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : userId ?? undefined;
         return (<>
           <div className="flex flex-row items-center flex-grow" onClick={() => {}}>
             <div title={displayName} className="w-6 h-6 m-1 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
@@ -82,11 +99,12 @@ function PeopleSelectCell({
           cacheOptions
           defaultOptions
           // value={{value: userId, initials: selectedUser.firstName[0] + selectedUser.lastName[0], displayName: `${selectedUser.firstName} ${selectedUser.lastName}`}}
-          loadOptions={async (_query) => {
-            return [{
+          loadOptions={async (_query): Promise<UserOption[]> => {
+            const emptyOption: UserOption = {
               value: undefined, initials: "n/a", displayName: "leave empty",
-            }].concat(
-              usersQuery.data.map(user => ({
+            };
+            return [emptyOption].concat(
+              (usersQuery.data ?? []).map((user): UserOption => ({
                 value: user.id,
                 initials: user.firstName[0] + user.lastName[0],
                 displayName: `${user.firstName} ${user.lastName}`
@@ -106,8 +124,8 @@ function PeopleSelectCell({
               </div>
             )}
           }
-          onChange={(newOption) => {
-            setData(newOption.value);
+          onChange={(newOption: SingleValue<UserOption>) => {
+            setData(newOption?.value);
             setFocus("focused");
           }}
         />

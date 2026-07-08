@@ -1,4 +1,5 @@
 import {BlockNoteView} from "@blocknote/mantine";
+import {PartialBlock} from "@blocknote/core";
 import '@blocknote/mantine/style.css';
 import schema from "./editor/schema";
 import PublicApi from "../api/PublicApi.js";
@@ -19,7 +20,12 @@ type PublicDocumentViewerProps = {
 const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerProps) => {
   const editor = useCreateBlockNote({
     schema,
-    initialContent: version.contentBlocks,
+    // contentBlocks is persisted BlockNote JSON (typed `unknown` on Version).
+    initialContent: version.contentBlocks as PartialBlock<
+      typeof schema.blockSchema,
+      typeof schema.inlineContentSchema,
+      typeof schema.styleSchema
+    >[],
     resolveFileUrl: createFileUrlResolver(PublicApi.attachment.path)
   });
 

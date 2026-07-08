@@ -1,12 +1,13 @@
 import {createReactBlockSpec} from "@blocknote/react";
-import React, {useContext, useState} from "react";
+import {useContext, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
+import type {SingleValue} from "react-select";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
-import ReactApexChart from 'react-apexcharts'
+import ReactApexChart, {Props as ReactApexChartProps} from 'react-apexcharts'
 import type {ApexOptions} from "apexcharts";
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
@@ -18,11 +19,32 @@ const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar
 
 type CellValue = string | number | null;
 type TableRow = Record<string, CellValue>;
+type ChartType = ReactApexChartProps["type"];
+type TableColumn = {
+  npi: string;
+  name: string;
+};
+type TableData = {
+  rows: TableRow[];
+  columns: TableColumn[];
+};
 type ChartConfig = {
-  type: string;
+  type: ChartType;
   options: ApexOptions;
   series: ApexOptions["series"];
 };
+type SelectOption = {
+  value: string;
+  label: string;
+};
+type TableIndexItem = {
+  id: string;
+  name: string;
+};
+type TableShowResponse = {
+  data: TableData;
+};
+type TableQueryData = (TableShowResponse & {forceRerenderUuid: string}) | null;
 
 
 export const createChartBlock = createReactBlockSpec(
@@ -47,10 +69,11 @@ export const createChartBlock = createReactBlockSpec(
       }
     },
     content: "none",
-    isSelectable: false,
   },
   {
     /* eslint-disable react-hooks/rules-of-hooks */
+    // `isSelectable` moved to `meta.selectable` in the current @blocknote/core version.
+    meta: {selectable: false},
     render: (props) => {
       const blockProps = props.block.props;
       const editor = props.editor;
@@ -58,7 +81,7 @@ export const createChartBlock = createReactBlockSpec(
       const {tableNpi, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
       const [xAxisDataset, setXAxisDataset] = useState<CellValue[] | undefined>(undefined);
       const [yAxisDataset, setYAxisDataset] = useState<CellValue[] | undefined>(undefined);
-      const tableQuery = useQuery({queryKey: ["tables", space?.id, tableNpi], queryFn: async () => {
+      const tableQuery = useQuery({queryKey: ["tables", space?.id, tableNpi], queryFn: async (): Promise<TableQueryData> => {
         if (tableNpi === "") {
           return null;
         }
@@ -66,7 +89,7 @@ export const createChartBlock = createReactBlockSpec(
         Config.deserializeData = (val => val);
         const promiseData = TablesApi.show({id: tableNpi});
         Config.deserializeData = currentDataDeserializer;
-        const data = await promiseData;
+        const data = await promiseData as TableShowResponse;
         return {...data, forceRerenderUuid: crypto.randomUUID()}
       }}, queryClient);
       const {isLoading, isError} = tableQuery;
@@ -77,7 +100,7 @@ export const createChartBlock = createReactBlockSpec(
         if (useFormula) {
           const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableNpi}), Dig(CurrentValue, "${xAxisColumnNpi}"))`}});
           handleFormulaResultCommands(formulaResult, space);
-          setXAxisDataset(formulaResult.result);
+          setXAxisDataset(formulaResult.result as CellValue[]);
         } else {
           const xAxisColumnValues = tableQuery?.data?.data?.rows.map((row: TableRow) => row[xAxisColumnNpi]);
           setXAxisDataset(xAxisColumnValues);
@@ -88,7 +111,7 @@ export const createChartBlock = createReactBlockSpec(
         if (useFormula) {
           const formulaResult = await FormulasApi.eval({data: {formula: `ForEach(Table(${tableNpi}), Dig(CurrentValue, "${yAxisColumnNpi}"))`}});
           handleFormulaResultCommands(formulaResult, space);
-          setYAxisDataset(formulaResult.result);
+          setYAxisDataset(formulaResult.result as CellValue[]);
         } else {
           const yAxisColumnValues = tableQuery?.data?.data?.rows.map((row: TableRow) => row[yAxisColumnNpi]);
           setYAxisDataset(yAxisColumnValues);
@@ -129,7 +152,7 @@ export const createChartBlock = createReactBlockSpec(
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
-                    const tables = await TablesApi.index({
+                    const tables: TableIndexItem[] = await TablesApi.index({
                       query: {
                         space_id: space?.id,
                         query,
@@ -137,11 +160,13 @@ export const createChartBlock = createReactBlockSpec(
                     });
                     return tables.map(table => ({value: table.id, label: table.name}));
                   }}
-                  onChange={(newOption : {value: string, label : string}) => {
+                  onChange={(newOption: SingleValue<SelectOption>) => {
+                    if (newOption === null) {
+                      return;
+                    }
                     editor.updateBlock(props.block, {
                       props: {
                         tableNpi: newOption.value,
-                        tableId: newOption.value,
                         title: `Chart for ${newOption.label}`,
                         chartType: "line",
                       },
@@ -180,7 +205,7 @@ export const createChartBlock = createReactBlockSpec(
                   cacheOptions
                   defaultOptions
                   loadOptions={async (query) => {
-                    const tables = await TablesApi.index({
+                    const tables: TableIndexItem[] = await TablesApi.index({
                       params: {
                         space_id: space?.id,
                         query,
@@ -188,11 +213,13 @@ export const createChartBlock = createReactBlockSpec(
                     });
                     return tables.map(table => ({value: table.id, label: table.name}));
                   }}
-                  onChange={(newOption : {value: string, label : string}) => {
+                  onChange={(newOption: SingleValue<SelectOption>) => {
+                    if (newOption === null) {
+                      return;
+                    }
                     editor.updateBlock(props.block, {
                       props: {
                         tableNpi: newOption.value,
-                        tableId: newOption.value,
                       },
                     });
                   }}
@@ -203,9 +230,13 @@ export const createChartBlock = createReactBlockSpec(
         </>)
       }
 
+      if (tableQuery.data === null || tableQuery.data === undefined) {
+        return null;
+      }
+
       const {columns} = tableQuery.data.data;
 
-      const valueToSeriesPoint = (invalidValue: CellValue = null) => (value: CellValue) => {
+      const valueToSeriesPoint = <T extends CellValue = null>(invalidValue: T = null as T) => (value: CellValue): number | T => {
         if (value !== null && value !== '') {
           const number = Number(value);
           if (isNaN(number)) {
@@ -218,6 +249,8 @@ export const createChartBlock = createReactBlockSpec(
         }
       }
 
+      const toCategory = (data: CellValue): string => data === null ? "" : String(data);
+
       let chart: ChartConfig | undefined = undefined;
       if (chartType !== "" && xAxisDataset !== undefined && yAxisDataset !== undefined) {
         switch (chartType) {
@@ -225,122 +258,127 @@ export const createChartBlock = createReactBlockSpec(
           case "area":
           case "bar":
           case "radar":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType
+            chart = {
+              type: chartType,
+              options: {
+                chart: {
+                  type: chartType
+                },
+                xaxis: {
+                  categories: xAxisDataset.map(toCategory),
+                }
               },
-              xaxis: {
-                categories: xAxisDataset.map((data) => data === null ? "" : data),
-              }
+              series: [{
+                name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+                data: yAxisDataset.map(valueToSeriesPoint<null>())
+              }] satisfies ApexAxisChartSeries,
             };
-            chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
-              data: yAxisDataset.map(valueToSeriesPoint())
-            }];
             break;
           case "funnel":
-            chart = {};
-            chart.type = "bar";
-            chart.options = {
-              chart: {
-                dropShadow: {
+            chart = {
+              type: "bar",
+              options: {
+                chart: {
+                  dropShadow: {
+                    enabled: true,
+                  },
+                },
+                plotOptions: {
+                  bar: {
+                    borderRadius: 0,
+                    horizontal: true,
+                    barHeight: '80%',
+                    isFunnel: true,
+                  },
+                },
+                dataLabels: {
                   enabled: true,
+                  formatter: function (val, opt) {
+                    return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                  },
+                  dropShadow: {
+                    enabled: true,
+                  },
+                },
+                xaxis: {
+                  categories: xAxisDataset.map(toCategory),
+                },
+                legend: {
+                  show: false,
                 },
               },
-              plotOptions: {
-                bar: {
-                  borderRadius: 0,
-                  horizontal: true,
-                  barHeight: '80%',
-                  isFunnel: true,
-                },
-              },
-              dataLabels: {
-                enabled: true,
-                formatter: function (val, opt) {
-                  return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
-                },
-                dropShadow: {
-                  enabled: true,
-                },
-              },
-              xaxis: {
-                categories: xAxisDataset.map((data) => data === null ? "" : data),
-              },
-              legend: {
-                show: false,
-              },
+              series: [{
+                name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+                data: yAxisDataset.map(valueToSeriesPoint<null>())
+              }] satisfies ApexAxisChartSeries,
             };
-            chart.series = [{
-              name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
-              data: yAxisDataset.map(valueToSeriesPoint())
-            }];
             break;
           case "pie":
           case "donut":
           case "radialBar":
           case "polarArea":
-            chart = {};
-            chart.type = chartType;
-            chart.series = yAxisDataset.map(valueToSeriesPoint(chartType === "polarArea" ? "" : null));
-            chart.options = {
-              chart: {
-                type: chartType,
+            chart = {
+              type: chartType,
+              series: yAxisDataset.map(valueToSeriesPoint(0)),
+              options: {
+                chart: {
+                  type: chartType,
+                },
+                labels: xAxisDataset.map(toCategory),
               },
-              labels: xAxisDataset.map((data) => data === null ? "" : data),
             };
             break;
           case "scatter":
           case "heatmap":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType,
-              },
-              xaxis: {
-                labels: {
-                  formatter: function(val) {
-                    return parseFloat(val).toFixed(1)
+            chart = {
+              type: chartType,
+              options: {
+                chart: {
+                  type: chartType,
+                },
+                xaxis: {
+                  labels: {
+                    formatter: function(val) {
+                      return parseFloat(val).toFixed(1)
+                    }
                   }
-                }
-              },
-              yaxis: {
-                labels: {
-                  formatter: function(val) {
-                    return parseFloat(val).toFixed(1)
+                },
+                yaxis: {
+                  labels: {
+                    formatter: function(val) {
+                      return val.toFixed(1)
+                    }
                   }
-                }
+                },
               },
+              series: [{
+                name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
+                data: yAxisDataset.map((yValue, index): [number, number | null] => {
+                  return [valueToSeriesPoint<null>()(yValue) ?? 0, valueToSeriesPoint<null>()(xAxisDataset[index])];
+                }),
+              }] satisfies ApexAxisChartSeries,
             };
-            chart.series = [{
-              name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
-              data: yAxisDataset.map((yValue, index) => {
-                return [valueToSeriesPoint()(yValue), valueToSeriesPoint()(xAxisDataset[index])];
-              }),
-            }];
             break;
           case "treemap":
-            chart = {};
-            chart.type = chartType;
-            chart.options = {
-              chart: {
-                type: chartType,
-              }
+            chart = {
+              type: chartType,
+              options: {
+                chart: {
+                  type: chartType,
+                }
+              },
+              series: [{
+                data: yAxisDataset.map((yValue, index) => {
+                  return {x: xAxisDataset[index] !== null ? xAxisDataset[index] : "", y: valueToSeriesPoint<null>()(yValue)}
+                }),
+              }] satisfies ApexAxisChartSeries,
             };
-            chart.series = [{
-              data: yAxisDataset.map((yValue, index) => {
-                return {x: xAxisDataset[index] !== null ? xAxisDataset[index] : "", y: valueToSeriesPoint()(yValue)}
-              }),
-            }];
             break;
         }
       }
 
       return (<div className="flex flex-col w-full">
-        <BlockTitle isEditable={editor.isEditable} placeholder="Untitled chart" defaultValue={title} onChange={(value) => {
+        <BlockTitle isEditable={editor.isEditable} placeholder="Untitled chart" defaultValue={title} onChange={async (value) => {
           editor.updateBlock(props.block, {
             props: {
               title: value,
@@ -354,11 +392,11 @@ export const createChartBlock = createReactBlockSpec(
             {editor.isEditable && <SelectButton
               value={xAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
-              onChange={(option) => {
+              onChange={async (option) => {
                 setXAxisDataset(undefined);
                 editor.updateBlock(props.block, {
                   props: {
-                    xAxisColumnNpi: option?.value,
+                    xAxisColumnNpi: typeof option === "object" ? option.value : option,
                   },
                 });
               }}
@@ -372,11 +410,11 @@ export const createChartBlock = createReactBlockSpec(
             {editor.isEditable && <SelectButton
               value={yAxisColumnNpi}
               options={columns.map(column => ({value: column.npi, label: column.name}))}
-              onChange={(option) => {
+              onChange={async (option) => {
                 setYAxisDataset(undefined);
                 editor.updateBlock(props.block, {
                   props: {
-                    yAxisColumnNpi: option?.value,
+                    yAxisColumnNpi: typeof option === "object" ? option.value : option,
                   },
                 });
               }}
@@ -395,10 +433,10 @@ export const createChartBlock = createReactBlockSpec(
                   label: type === "radialBar" ? "radial bar" : type === "polarArea" ? "polar area" : type
                 }
               })}
-              onChange={(option) => {
+              onChange={async (option) => {
                 editor.updateBlock(props.block, {
                   props: {
-                    chartType: option.value,
+                    chartType: typeof option === "object" ? option.value : option,
                   },
                 });
               }}

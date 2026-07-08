@@ -1,5 +1,6 @@
 import {
   BlockColorsItem,
+  DefaultReactSuggestionItem,
   DragHandleMenu,
   getDefaultReactSlashMenuItems,
   RemoveBlockItem,
@@ -14,33 +15,52 @@ import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMen
 import FormulaInlineContentMenuItem from "./inline-content/FormulaInlineContentMenuItem.tsx";
 import {getMentionMenuItems} from "./inline-content/mentionMenuItems.ts";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
+import schema from "./schema.ts";
 
-export function CommonSuggestionMenus({editor}) {
+type Editor = typeof schema.BlockNoteEditor;
+
+// The default slash menu items returned by `getDefaultReactSlashMenuItems` carry
+// a `key` at runtime (used to identify built-in blocks such as the table), but
+// BlockNote's public type omits it. We re-expose it here to detect the table item.
+type DefaultSlashItem = DefaultReactSuggestionItem & {key?: string};
+
+// Custom slash menu items receive the editor when clicked (BlockNote invokes
+// `onItemClick(editor)` at runtime). Adapting them to `DefaultReactSuggestionItem`,
+// whose `onItemClick` takes no arguments, keeps the whole list uniformly typed.
+function adaptItem(
+  editor: Editor,
+  item: {title: string; onItemClick: (editor: Editor) => void} & Omit<DefaultReactSuggestionItem, "title" | "onItemClick">
+): DefaultReactSuggestionItem {
+  return {...item, onItemClick: () => item.onItemClick(editor)};
+}
+
+export function CommonSuggestionMenus({editor}: {editor: Editor}) {
   return <>
     <SuggestionMenuController
       triggerCharacter={"/"}
-      getItems={async (query) => {
+      getItems={async (query): Promise<DefaultReactSuggestionItem[]> => {
         // Gets all default slash menu items and `insertAlert` item.
-        let defaultTableMenuItem = undefined;
-        const itemsWithoutTable = getDefaultReactSlashMenuItems(editor).filter(defaultMenuItem => {
-          if (defaultMenuItem.key === 'table') {
-            defaultTableMenuItem = defaultMenuItem;
-            return false;
-          } else {
-            return true;
-          }
-        });
-        defaultTableMenuItem.title = "Grid table";
-        defaultTableMenuItem.subtext = "Simple rows and columns formatting";
+        const defaultItems = getDefaultReactSlashMenuItems(editor) as DefaultSlashItem[];
+        const itemsWithoutTable = defaultItems.filter(defaultMenuItem => defaultMenuItem.key !== "table");
+        const defaultTableMenuItem = defaultItems.find(defaultMenuItem => defaultMenuItem.key === "table");
+
+        const tableItems: DefaultReactSuggestionItem[] = [];
+        if (defaultTableMenuItem) {
+          tableItems.push({
+            ...defaultTableMenuItem,
+            title: "Grid table",
+            subtext: "Simple rows and columns formatting",
+          });
+        }
 
         return filterSuggestionItems(
           [
             ...itemsWithoutTable,
-            defaultTableMenuItem,
-            AdvancedTableMenuItem(),
-            ChartBlockMenuItem(),
-            ButtonInlineContentMenuItem(),
-            FormulaInlineContentMenuItem(),
+            ...tableItems,
+            adaptItem(editor, AdvancedTableMenuItem()),
+            adaptItem(editor, ChartBlockMenuItem()),
+            adaptItem(editor, ButtonInlineContentMenuItem()),
+            adaptItem(editor, FormulaInlineContentMenuItem()),
           ],
           query
         )

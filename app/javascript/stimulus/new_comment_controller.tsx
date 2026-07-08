@@ -1,5 +1,4 @@
 import {Controller} from "@hotwired/stimulus"
-import React from "react"
 import ReactDOM, {Root} from "react-dom/client"
 import {QueryClientProvider} from "@tanstack/react-query"
 import {Document, Space, Table} from "../types"

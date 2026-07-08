@@ -1,6 +1,5 @@
-import EditableTableWithRowstack from "./tables/EditableTableWithRowstack.tsx";
+import EditableTableWithRowstack, {TableData} from "./tables/EditableTableWithRowstack.tsx";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext.tsx";
-import {TableData} from "tables/EditableTableWithRowstack.tsx"
 import {Space, Table} from "../types.ts"
 import {useQuery} from "@tanstack/react-query";
 import {Config} from "@js-from-routes/client";
@@ -32,10 +31,13 @@ const EditTablePanel = ({table, data, space}: EditTablePanelProps) => {
   return <CurrentSpaceContext.Provider value={{space}}>
     <div className="flex flex-col">
       <div className="content-editor-padding min-h-72">
-        {!isLoading && !isError && <EditableTableWithRowstack
+        {!isLoading && !isError && tableQuery.data && <EditableTableWithRowstack
           table={tableQuery.data.table}
           data={tableQuery.data.data}
-          forceRerenderUuid={tableQuery.data.forceRerenderUuid}/>
+          forceRerenderUuid={tableQuery.data.forceRerenderUuid}
+          isEditable={true}
+          initialViewProps={{columns: {}}}
+          onViewPropsChange={() => {}}/>
         }
       </div>
     </div>

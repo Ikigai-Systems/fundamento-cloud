@@ -12,6 +12,7 @@ export default class extends Controller<HTMLElement> {
   }
 
   declare root: Root | undefined;
+  declare _disconnectedAlready: boolean;
   declare propsAutoConvertedToCamelCaseValue: object;
   declare propsNoConversionValue: object;
   declare componentValue: string;

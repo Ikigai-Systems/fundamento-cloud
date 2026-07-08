@@ -1,18 +1,20 @@
 import {Controller} from "@hotwired/stimulus";
-import React from "react";
+import {ComponentProps} from "react";
 import {createRoot, Root} from "react-dom/client";
 import {QueryClientProvider} from "@tanstack/react-query";
-import {BlockNoteEditor} from "@blocknote/core";
 import Editor from "../components/editor/Editor";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient";
 import {FeaturesContext} from "../contextes/FeaturesContext";
 import type {Document, Space, User} from "../types";
-import type schema from "../components/editor/schema";
 
 export interface EditorConsumerController {
   receiveBlocks(blocks: unknown[]): void;
 }
+
+// Derive the editor instance type from Editor's own onEditorReady prop so this
+// controller always matches Editor's schema typing.
+type EditorInstance = Parameters<NonNullable<ComponentProps<typeof Editor>["onEditorReady"]>>[0];
 
 // Stimulus controller file, not a fast-refresh React module — the default export is a controller class, not a component.
 // eslint-disable-next-line react-refresh/only-export-components
@@ -39,7 +41,7 @@ export default class extends Controller {
   declare featuresValue: string[];
 
   private root: Root | undefined;
-  private editorInstance: BlockNoteEditor<typeof schema> | undefined;
+  private editorInstance: EditorInstance | undefined;
 
   connect() {
     this.root = createRoot(this.editorRootTarget);
@@ -58,7 +60,7 @@ export default class extends Controller {
     }
   }
 
-  private onEditorReady(editor: BlockNoteEditor<typeof schema>) {
+  private onEditorReady(editor: EditorInstance) {
     this.editorInstance = editor;
     this.syncContentBlocksInput(editor.document);
     if (this.hasTableOfContentsOutlet) {

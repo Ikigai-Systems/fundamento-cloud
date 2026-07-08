@@ -1,14 +1,19 @@
 // Slash menu item to insert an Advanced table block
 
+import schema from "../schema.ts";
+
 const AdvancedTableMenuItem = () => ({
   title: "Advanced table",
   subtext: "Store and reference data in a structured way",
-  onItemClick: (editor) => {
+  onItemClick: (editor: typeof schema.BlockNoteEditor) => {
     const currentBlock = editor.getTextCursorPosition().block;
     editor.insertBlocks([{
       type: "advancedTable",
     }], currentBlock, "after");
-    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
+    const nextBlock = editor.getTextCursorPosition().nextBlock;
+    if (nextBlock) {
+      editor.setTextCursorPosition(nextBlock, "start");
+    }
   },
   aliases: [
     "database",

@@ -37,7 +37,7 @@ const DocumentMention = ({documentNpi, fragment}: {documentNpi: string, fragment
   )
 }
 
-const TableMention = ({tableNpi}) => {
+const TableMention = ({tableNpi}: {tableNpi: string}) => {
   const contentQuery = useQuery({
     queryKey: ["tables", tableNpi],
     queryFn: async () => {
@@ -60,7 +60,7 @@ const TableMention = ({tableNpi}) => {
 }
 
 const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | number }) => {
-  const spanElementRef = useRef<HTMLElement>();
+  const spanElementRef = useRef<HTMLElement>(null);
   const spanElementId = `mention-${mentionId}`;
   const isTargeted = location.hash.split("#")[1] === spanElementId;
 
@@ -117,7 +117,7 @@ const MentionInlineContent = createReactInlineContentSpec(
         default: "document"
       },
       entityId: {
-        default: -1,
+        default: "",
       },
       title: {
         default: "Untitled",
@@ -134,12 +134,15 @@ const MentionInlineContent = createReactInlineContentSpec(
       let {id, entityId} = props.inlineContent.props;
       const {entity, title, fragment} = props.inlineContent.props;
 
-      // Legacy migration: if entityId is -1 (old default), swap id and entityId
+      // Legacy migration: entityId "-1" (old default, historically the number -1)
+      // means the real id was stored in `id`; swap id and entityId.
+      const isLegacyEntityId = String(entityId) === "-1";
+
       useEffect(() => {
-        if (entityId === -1) {
+        if (isLegacyEntityId) {
           // Intentional local reassignment: the migrated values are persisted via updateInlineContent below.
           // eslint-disable-next-line react-hooks/exhaustive-deps
-          entityId = Number(id);
+          entityId = id;
           // eslint-disable-next-line react-hooks/exhaustive-deps
           id = crypto.randomUUID();
           setTimeout(() => {
@@ -155,7 +158,7 @@ const MentionInlineContent = createReactInlineContentSpec(
         }
       }, [entityId])
 
-      if (entityId === -1) {
+      if (isLegacyEntityId) {
         return null
       }
 
@@ -184,9 +187,9 @@ const MentionInlineContent = createReactInlineContentSpec(
       // Use existing entityId-based rendering
       switch (entity) {
         case "document":
-          return <DocumentMention documentNpi={entityId} fragment={fragment}/>;
+          return <DocumentMention documentNpi={String(entityId)} fragment={fragment}/>;
         case "table":
-          return <TableMention tableNpi={entityId}/>;
+          return <TableMention tableNpi={String(entityId)}/>;
         case "user":
           return <UserMention mentionId={id} userId={entityId}/>;
         default:

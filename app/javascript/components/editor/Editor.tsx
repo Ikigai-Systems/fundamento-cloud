@@ -1,6 +1,6 @@
 import {useMemo, useState} from "react";
 import {Document, User} from "../../types";
-import {Block, BlockNoteEditor} from "@blocknote/core";
+import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
 import '@blocknote/mantine/style.css';
 import * as Y from "yjs";
@@ -17,20 +17,32 @@ import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/co
 import tinySimpleHash from "../../utils/tinySimpleHash";
 import resolveUsers from "../../utils/resolveUsers";
 
+// The @types/rails__actioncable definitions omit `connectionIsStale`, which exists at runtime
+// (see @rails/actioncable ConnectionMonitor). Augment the type so we can call it type-safely.
+declare module "@rails/actioncable" {
+  // The type parameter must match the original class declaration exactly for merging to apply.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ConnectionMonitor<C = Consumer> {
+    connectionIsStale(): boolean;
+  }
+}
+
+type EditorInstance = typeof schema.BlockNoteEditor;
+type EditorBlock = typeof schema.Block;
 
 let ydoc: Y.Doc | undefined = undefined;
 let acConsumer: ActionCable.Consumer | undefined = undefined;
 let acProvider: WebsocketProvider | undefined = undefined;
-let threadStore: ThreadStore = undefined;
+let threadStore: ThreadStore | undefined = undefined;
 
 type EditorProps = {
   databaseId: string,
   currentUser: User,
   document: Document,
   editable?: boolean,
-  onEditorReady?: (editor: BlockNoteEditor<typeof schema>) => void,
+  onEditorReady?: (editor: EditorInstance) => void,
   onConnectionChange?: (isStale: boolean) => void,
-  onDocumentChange?: (blocks: Block[]) => void,
+  onDocumentChange?: (blocks: EditorBlock[]) => void,
 }
 
 const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
@@ -41,8 +53,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
     if (window.document.hidden) {
       return; //user is on another tab/window
     }
-    //no-ts-inspect
-    const isStale = acConsumer?.connection.monitor.connectionIsStale();
+    const isStale = acConsumer?.connection.monitor.connectionIsStale() ?? false;
     setConnectionStale((prevState) => {
       if (isStale !== prevState) {
         onConnectionChange?.(isStale);
@@ -128,7 +139,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
     // onEditorReady is called after sync so consumers receive the actual document content,
     // not the empty pre-sync state (important for draft documents with no versions).
     const syncCheck = setInterval(() => {
-      if (acProvider.synced) {
+      if (acProvider?.synced) {
         setInitialStateReceived(true);
         onEditorReady?.(blockNoteEditor);
         clearInterval(syncCheck);

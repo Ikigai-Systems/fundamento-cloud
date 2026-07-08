@@ -16,8 +16,9 @@ import {
 } from "@floating-ui/react";
 import type { Placement } from "@floating-ui/react";
 import {colorNameToClass} from "./buttonColorUtils.ts";
+import type {ButtonColor} from "./ButtonConfiguration.tsx";
 
-const colors = [
+const colors: Array<{name: ButtonColor}> = [
   {
     name: "green",
   },
@@ -75,14 +76,19 @@ const Option = forwardRef<HTMLDivElement, OptionProps>(function Option(
   );
 });
 
+type SelectButtonColorProps = {
+  value: ButtonColor;
+  onChange: (color: ButtonColor) => void;
+};
+
 export default function SelectButtonColor({
   value, onChange
-}) {
+}: SelectButtonColorProps) {
   const [open, setOpen] = useState(false);
-  const [selectedColor, setSelectedColor] = useState<string | null>(value);
+  const [selectedColor, setSelectedColor] = useState<ButtonColor | null>(value);
 
   useEffect(() => {
-    onChange(selectedColor);
+    onChange(selectedColor ?? value);
     // onChange is an inline parent callback; depend only on selectedColor to fire on selection change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor]);
@@ -98,7 +104,7 @@ export default function SelectButtonColor({
     refs,
     floatingStyles,
     context,
-  } = useFloating({
+  } = useFloating<HTMLElement>({
     placement: "bottom-start" as Placement,
     open,
     onOpenChange: setOpen,
@@ -173,20 +179,20 @@ export default function SelectButtonColor({
                   role="listbox"
                   id={listboxId}
                 >
-                  {colors.map(({name, color}, index) => (
+                  {colors.map(({name}, index) => (
                     <Option
                       key={name}
                       name={name}
                       ref={(node) => {
                         listRef.current[index] = node;
                       }}
-                      selected={selectedColor === color}
+                      selected={selectedColor === name}
                       active={activeIndex === index}
                       {...getItemProps({
                         onClick: () => handleColorClick(index)
                       })}
                     >
-                      {color}
+                      {name}
                     </Option>
                   ))}
                 </div>

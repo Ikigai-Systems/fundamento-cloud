@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
   autoUpdate,
   flip,
@@ -15,22 +15,28 @@ import {
   useTypeahead,
 } from "@floating-ui/react";
 import {Placement} from "@floating-ui/utils";
+import type {ButtonSize} from "./ButtonConfiguration.tsx";
 
-const options = [
+const options: ButtonSize[] = [
   "Small",
   "Medium",
   "Large",
 ];
 
+type SelectButtonSizeProps = {
+  value: ButtonSize;
+  onChange: (size: ButtonSize) => void;
+};
+
 export default function SelectButtonSize({
   value, onChange
-}) {
+}: SelectButtonSizeProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(options.indexOf(value));
 
   useEffect(() => {
-    onChange(options[selectedIndex]);
+    onChange(selectedIndex !== null && options[selectedIndex] !== undefined ? options[selectedIndex] : value);
     // onChange is an inline parent callback; depend only on selectedIndex to fire on selection change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex]);

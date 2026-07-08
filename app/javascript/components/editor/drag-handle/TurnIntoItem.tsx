@@ -25,7 +25,7 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
     [block, availableItems]
   );
 
-  if (!shouldShow) {
+  if (!shouldShow || !Components || block === undefined) {
     return null;
   }
 
@@ -49,7 +49,7 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
         {availableItems.map(item => {
           const Icon = item.icon;
           const isSelected = block.type === item.type
-              && (item.type !== "heading" || (block.props?.level === item.props.level && block.props?.isToggleable === item.props.isToggleable));
+              && (item.type !== "heading" || (block.props?.level === item.props?.level && block.props?.isToggleable === item.props?.isToggleable));
 
           return (
             <Components.Generic.Menu.Item

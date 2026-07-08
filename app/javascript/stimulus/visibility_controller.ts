@@ -6,7 +6,7 @@ export default class extends Controller<HTMLElement> {
 
   declare hideableTargets: HTMLElement[];
 
-  onChange(event) {
+  onChange(event: CustomEvent<{value: boolean}>) {
     this.hideableTargets.forEach(element => {
       element.hidden = !event.detail.value;
     })

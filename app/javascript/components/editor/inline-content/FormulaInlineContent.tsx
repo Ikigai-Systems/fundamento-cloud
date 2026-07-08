@@ -54,7 +54,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       const {refs, floatingStyles, context} = useFloating({
         whileElementsMounted: autoUpdate,
         open: isConfigurationOpen,
-        onOpenChange: (open, event, reason) => {
+        onOpenChange: (open, _event, reason) => {
           setIsConfigurationOpen(open);
           if (reason === "escape-key") {
             return;
@@ -91,7 +91,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
           } catch (e) {
             createFlash({
               type: "error",
-              message: e.message,
+              message: e instanceof Error ? e.message : String(e),
             });
           }
         }
