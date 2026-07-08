@@ -228,6 +228,21 @@ The workflows will:
 4. Extract FontAwesome token for bundler/npm auth
 5. Rails then boots normally using standard encrypted credentials
 
+### Dependabot (separate secret store)
+
+GitHub runs Dependabot-triggered `pull_request` workflows against a **separate**
+secret store from Actions. `SOPS_AGE_KEY` is therefore configured **twice**:
+
+- **Actions store** → the build/CI key (`age18p3re8…`), a recipient on every SOPS file.
+- **Dependabot store** → a dedicated, lower-privilege key (`age1et3r…`) that is a
+  recipient on **`build`/`test`/`e2e` only**. A Dependabot job runs untrusted
+  updated-dependency code, so it must never be able to decrypt production. This key
+  cannot — in any commit — because it was never a production recipient.
+
+If you add a new SOPS file that Dependabot CI must read, add the dependabot key as a
+recipient in `.sops.yaml` and run `sops updatekeys config/secrets/<file>.sops.yaml`.
+Never add it to `production.sops.yaml` or `development.sops.yaml`.
+
 ## Key Rotation
 
 ### Rotating the Age Key (SOPS)

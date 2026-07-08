@@ -49,7 +49,7 @@ jobs:
       - name: Decrypt secrets for Docker build
         if: matrix.needs-secrets
         run: |
-          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/production.sops.yaml > /tmp/fontawesome-auth.secret
+          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > /tmp/fontawesome-auth.secret
           echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
 
       - name: Docker build setup

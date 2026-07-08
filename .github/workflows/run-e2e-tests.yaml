@@ -42,7 +42,7 @@ jobs:
       - name: Decrypt and export secrets
         run: |
           # Extract FontAwesome token and create secret file for Docker
-          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/test.sops.yaml > dockerfiles/fontawesome-auth.secret
+          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > dockerfiles/fontawesome-auth.secret
           chmod 600 dockerfiles/fontawesome-auth.secret
 
           # Extract Rails master key for credential decryption

@@ -40,7 +40,7 @@ jobs:
       - name: Decrypt and export secrets
         run: |
           # Extract FontAwesome token and set as environment variable
-          echo "BUNDLE_DL__FONTAWESOME__COM=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/test.sops.yaml)" >> $GITHUB_ENV
+          echo "BUNDLE_DL__FONTAWESOME__COM=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml)" >> $GITHUB_ENV
 
           # Extract Rails master key for credential decryption
           echo "RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/test.sops.yaml)" >> $GITHUB_ENV

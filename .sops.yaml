@@ -1,9 +1,33 @@
 # SOPS configuration for fundamento-cloud
 # This file defines encryption rules for secrets in this repository
+#
+# Age recipients:
+#   age193z7... — admin/owner key (recovery; held privately, never in CI)
+#   age18p3re8... — build/CI key (Actions SOPS_AGE_KEY, dockerfiles/sops-age-key.secret)
+#   age1et3rc4... — dependabot key (Dependabot SOPS_AGE_KEY; scoped to non-prod only)
+#
+# IMPORTANT: creation_rules are first-match. The scoped rules below MUST stay
+# above the generic ones. The dependabot key is deliberately NOT a recipient on
+# production or development, so a Dependabot job can never decrypt those (in any
+# commit). Do not add it there.
 
 creation_rules:
-  # Encrypt all files in config/secrets/ directory with .sops.yaml extension
-  # Multiple age keys allow both local developers and CI to decrypt
+  # Production & development: build/CI key + admin only (never the Dependabot key)
+  - path_regex: config/secrets/(production|development)\.sops\.yaml$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+
+  # CI-facing non-prod secrets: build key + admin + Dependabot key.
+  # These are the only files a Dependabot job ever decrypts (test/e2e master
+  # keys, build.sops.yaml FontAwesome token).
+  - path_regex: config/secrets/(test|e2e|build)\.sops\.yaml$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
+      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s,
+      age1et3rc4fv40lc4czn9ug7ryvcmw2gfs2mls8c5ca0xcr2pvv9tdys4p0yv7
+
+  # Fallback for any other file in config/secrets/: build key + admin
   - path_regex: config/secrets/.*\.sops\.yaml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
