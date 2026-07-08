@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@blocknote/server-util": "^0.51.4",
-    "@types/node": "^24.10.0",
+    "@types/node": "^26.1.1",
     "fastify": "^5.10.0",
     "hast-util-to-html": "^9.0.5",
     "rehype-parse": "^9.0.1",
