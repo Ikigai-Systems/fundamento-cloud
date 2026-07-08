@@ -53,7 +53,7 @@ describe('Cloud sign-in flow', function () {
       cy.get('input[type=submit]').contains('Sign in with password').click();
 
       // Should see error
-      cy.contains('Invalid Email or password');
+      cy.contains('Invalid email or password');
       cy.url().should('include', '/users/sign_in');
 
       cy.get('input[name="user[password]"]').should("be.visible");

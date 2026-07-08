@@ -41,7 +41,7 @@ describe('Standalone sign-in flow', function () {
     cy.get('input[type=submit]').click();
 
     // Should see Devise error
-    cy.contains('Invalid Email or password');
+    cy.contains('Invalid email or password');
     cy.url().should('include', '/users/sign_in');
 
     cy.get('input[name="user[password]"]').should('have.value', '');
