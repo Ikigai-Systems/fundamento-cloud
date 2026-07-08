@@ -34,7 +34,7 @@ export default class extends Controller<HTMLElement> {
           const controller = this.application.getControllerForElementAndIdentifier(
             closestCollapsible,
             "collapsible"
-          ) as any;
+          ) as (Controller & {expand(): void}) | null;
           controller?.expand();
         }
 
@@ -53,7 +53,7 @@ export default class extends Controller<HTMLElement> {
 
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortstart
       // This event is triggered when the user starts sorting and the DOM position has not yet changed.
-      item.addEventListener('sortstart', (e: CustomEvent) => {
+      item.addEventListener('sortstart', () => {
         // Continuously update placeholder state during drag
         updatePlaceholderInterval = setInterval(() => {
           this.updatePlaceholder();
@@ -71,7 +71,7 @@ export default class extends Controller<HTMLElement> {
 
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortstop
       // This event is triggered when the user stops sorting and the DOM position has not yet changed.
-      item.addEventListener('sortstop', (e: CustomEvent) => {
+      item.addEventListener('sortstop', () => {
         clearInterval(updatePlaceholderInterval);
 
         // Update has-children state and clean up empty markers

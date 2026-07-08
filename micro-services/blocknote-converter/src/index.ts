@@ -74,7 +74,7 @@ function createOutputStream(output) {
 }
 
 // Generic handler for processing stream data with error handling
-function handleStreamConversion(options, converterFn: (data: Buffer) => any | Promise<any>, outputIsJson: boolean = true) {
+function handleStreamConversion(options, converterFn: (data: Buffer) => unknown | Promise<unknown>, outputIsJson: boolean = true) {
   const inputStream = createInputStream(options.input);
   const outputStream = createOutputStream(options.output);
   const chunks = [];

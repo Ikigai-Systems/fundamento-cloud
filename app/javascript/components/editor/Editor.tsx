@@ -35,7 +35,7 @@ type EditorProps = {
 
 const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
   const [initialStateReceived, setInitialStateReceived] = useState(false);
-  const [connectionStale, setConnectionStale] = useState(false);
+  const [, setConnectionStale] = useState(false);
 
   useInterval(() => {
     if (window.document.hidden) {
@@ -136,6 +136,8 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
     }, 50);
 
     return blockNoteEditor;
+    // Editor is intentionally recreated only when the document changes; other props are read once at creation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [document.id]);
 
   if (editor === undefined || !initialStateReceived) {

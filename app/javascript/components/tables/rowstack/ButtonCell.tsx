@@ -6,13 +6,7 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 
 function ButtonCell({
-  data,
-  setData,
-  focusState,
-  setFocus,
-  isViewOnly,
   columnConfiguration,
-  tableConfiguration,
   rowId,
 }) {
   const {space} = useContext(CurrentSpaceContext);

@@ -13,22 +13,24 @@ export function setupDOM() {
     height: 768,
   });
 
+  const globalObj = global as unknown as Record<string, unknown>;
+
   // Set up global DOM objects
-  (global as any).window = window;
-  (global as any).document = window.document;
+  globalObj.window = window;
+  globalObj.document = window.document;
   Object.defineProperty(global, "navigator", {value: window.navigator, writable: true, configurable: true});
-  (global as any).HTMLElement = window.HTMLElement;
-  (global as any).Element = window.Element;
-  (global as any).Node = window.Node;
-  (global as any).DocumentFragment = window.DocumentFragment;
-  (global as any).Text = window.Text;
-  (global as any).Comment = window.Comment;
+  globalObj.HTMLElement = window.HTMLElement;
+  globalObj.Element = window.Element;
+  globalObj.Node = window.Node;
+  globalObj.DocumentFragment = window.DocumentFragment;
+  globalObj.Text = window.Text;
+  globalObj.Comment = window.Comment;
 
   // Mock requestIdleCallback and cancelIdleCallback for React
-  (global as any).requestIdleCallback = (cb: any) => {
+  globalObj.requestIdleCallback = (cb: (deadline: {didTimeout: boolean; timeRemaining: () => number}) => void) => {
     return setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 1);
   };
-  (global as any).cancelIdleCallback = clearTimeout;
+  globalObj.cancelIdleCallback = clearTimeout;
 
   isSetup = true;
 }

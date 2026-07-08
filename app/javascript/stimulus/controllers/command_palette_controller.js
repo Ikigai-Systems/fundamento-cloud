@@ -80,7 +80,7 @@ export default class CommandPaletteController extends Controller {
     this._cachedResults = true;
   }
 
-  handleSelected(e) {
+  handleSelected() {
   }
 }
 

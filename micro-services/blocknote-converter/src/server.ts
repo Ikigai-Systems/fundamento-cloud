@@ -3,9 +3,11 @@ import Fastify from "fastify";
 import FormBodyPlugin from "@fastify/formbody";
 import {fastifyRequestContext, /* requestContext */} from '@fastify/request-context';
 import {convertToBlocks, convertToYjs, convertMarkdownToBlocks, convertBlocksToMarkdown} from "./converters";
+import type {FastifyReply, FastifyRequest} from "fastify";
+import type {Block} from "@blocknote/core";
 import {Buffer} from "buffer";
 
-type RouteHandler = (request: any, reply: any) => Promise<any>;
+type RouteHandler = (request: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 
 function withErrorHandling(handler: RouteHandler): RouteHandler {
   return async (request, reply) => {
@@ -56,7 +58,7 @@ export async function startServer(port: number, host: string) {
 
   // Convert Blocks to YJS
   fastify.post("/convert/blocks/yjs", withErrorHandling(async (request, reply) => {
-    const body = request.body as {blocks?: any};
+    const body = request.body as {blocks?: Block[]};
 
     if (!body.blocks) {
       return reply.status(400).send({
@@ -87,7 +89,7 @@ export async function startServer(port: number, host: string) {
 
   // Convert Blocks to Markdown
   fastify.post("/convert/blocks/markdown", withErrorHandling(async (request, reply) => {
-    const body = request.body as {blocks?: any};
+    const body = request.body as {blocks?: Block[]};
 
     if (!body.blocks) {
       return reply.status(400).send({

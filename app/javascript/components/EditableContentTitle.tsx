@@ -6,6 +6,8 @@ import TablesApi from "../api/Tables/TablesApi.js";
 
 export const UNTITLED_CONTENT = "Untitled";
 
+// Shared helper exported alongside the component; imported elsewhere, so it stays here despite fast-refresh.
+// eslint-disable-next-line react-refresh/only-export-components
 export async function saveTableTitle(tableId: string, name: string): Promise<void> {
   await TablesApi.update({
     params: {id: tableId},
@@ -16,6 +18,8 @@ export async function saveTableTitle(tableId: string, name: string): Promise<voi
   }));
 }
 
+// Shared helper exported alongside the component; imported elsewhere, so it stays here despite fast-refresh.
+// eslint-disable-next-line react-refresh/only-export-components
 export function handleTitleSaveError(e: unknown, fallbackMessage?: string): void {
   const err = e as {response?: {data?: {errors?: Record<string, string>}}};
   const errorMessage = err.response?.data?.errors

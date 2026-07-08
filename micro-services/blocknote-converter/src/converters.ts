@@ -1,6 +1,11 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
+import type {Block} from "@blocknote/core";
 import {toHtml} from "hast-util-to-html";
+import type {Element as HastElement, ElementContent, Nodes as HastNodes, Parents as HastParents} from "hast";
+import type {State as H2mState} from "hast-util-to-mdast";
+import type {State as M2hState} from "mdast-util-to-hast";
+import type {Blockquote, Code, Image} from "mdast";
 import rehypeParse from "rehype-parse";
 import rehypeRaw from "rehype-raw";
 import rehypeRemark from "rehype-remark";
@@ -36,7 +41,7 @@ function createServerBlockNoteEditor() {
   });
 }
 
-export function convertToYjs(blocks: any) {
+export function convertToYjs(blocks: Block[]) {
   const serverBlockNoteEditor = createServerBlockNoteEditor();
 
   return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
@@ -52,8 +57,8 @@ export function convertToYjs(blocks: any) {
  * Replicated from @blocknote/core internals.
  */
 function convertVideoToMarkdown() {
-  return (tree: any) => {
-    visit(tree, "element", (node: any, index: number | undefined, parent: any) => {
+  return (tree: HastNodes) => {
+    visit(tree, "element", (node: HastElement, index: number | undefined, parent: HastParents | undefined) => {
       if (parent && (node.tagName === "video" || node.tagName === "audio")) {
         const src = node.properties?.src || node.properties?.dataUrl || "";
         const name = node.properties?.title || node.properties?.dataName || "";
@@ -72,7 +77,7 @@ function convertVideoToMarkdown() {
  * Replicated from @blocknote/core internals.
  */
 function removeUnderlines() {
-  const helper = (tree: any) => {
+  const helper = (tree: HastParents) => {
     if (!tree.children?.length) return;
 
     let numChildren = tree.children.length;
@@ -104,7 +109,7 @@ function removeUnderlines() {
  * Replicated from @blocknote/core internals.
  */
 function addSpacesToCheckboxes() {
-  const helper = (tree: any) => {
+  const helper = (tree: HastParents) => {
     if (!tree.children?.length) return;
 
     for (let i = tree.children.length - 1; i >= 0; i--) {
@@ -134,15 +139,15 @@ function addSpacesToCheckboxes() {
  * inline content (data-inline-content-type attribute).
  */
 function convertMentionSpans() {
-  return (tree: any) => {
-    visit(tree, "element", (node: any) => {
+  return (tree: HastNodes) => {
+    visit(tree, "element", (node: HastElement) => {
       if (node.tagName === "span" && node.properties?.dataMention) {
         const entity = node.properties.dataMention;
         const entityId = node.properties.dataEntityId || "";
         const fragment = node.properties.dataFragment || "";
         const title = node.children
-          ?.filter((c: any) => c.type === "text")
-          .map((c: any) => c.value)
+          ?.filter((c): c is Extract<ElementContent, {type: "text"}> => c.type === "text")
+          .map((c) => c.value)
           .join("") || "Untitled";
         const id = crypto.randomUUID();
 
@@ -169,11 +174,11 @@ function convertMentionSpans() {
  * content-type attribute. Used to decide whether an element should be
  * preserved as raw HTML in the markdown output.
  */
-function hasCustomContentType(node: any): boolean {
-  if (node.properties?.dataContentType) return true;
-  if (node.properties?.dataInlineContentType) return true;
-  if (!node.children) return false;
-  return node.children.some((child: any) => hasCustomContentType(child));
+function hasCustomContentType(node: HastNodes): boolean {
+  if ("properties" in node && node.properties?.dataContentType) return true;
+  if ("properties" in node && node.properties?.dataInlineContentType) return true;
+  if (!("children" in node) || !node.children) return false;
+  return node.children.some((child) => hasCustomContentType(child));
 }
 
 /**
@@ -182,11 +187,13 @@ function hasCustomContentType(node: any): boolean {
  * raw HTML mdast nodes, while falling back to the provided default handler
  * for ordinary elements of the same tag.
  */
-function makeCustomBlockHandler(defaultHandler: (state: any, node: any, parent: any) => any) {
-  return (state: any, element: any, parent: any) => {
+function makeCustomBlockHandler(
+  defaultHandler: (state: H2mState, node: HastElement, parent: HastParents | undefined) => unknown,
+) {
+  return (state: H2mState, element: HastElement, parent: HastParents | undefined) => {
     if (hasCustomContentType(element)) {
       const html = toHtml(element);
-      const result = {type: "html", value: html};
+      const result = {type: "html" as const, value: html};
       state.patch(element, result);
       return result;
     }
@@ -199,8 +206,8 @@ function makeCustomBlockHandler(defaultHandler: (state: any, node: any, parent: 
 // ---------------------------------------------------------------------------
 
 // Default hast-util-to-mdast handlers we need to wrap
-function defaultDivHandler(state: any, node: any) { return state.toFlow(state.all(node)); }
-function defaultSpanHandler(state: any, node: any) { return state.all(node); }
+function defaultDivHandler(state: H2mState, node: HastElement) { return state.toFlow(state.all(node)); }
+function defaultSpanHandler(state: H2mState, node: HastElement) { return state.all(node); }
 
 /**
  * Convert an HTML string (produced by blocksToHTMLLossy) to GitHub-Flavored
@@ -220,7 +227,7 @@ function htmlToMarkdown(html: string): string {
     })
     .use(remarkGfm)
     .use(remarkStringify, {
-      handlers: {text: (node: any) => node.value},
+      handlers: {text: (node: {value: string}) => node.value},
     })
     .processSync(html);
 
@@ -258,15 +265,15 @@ function isImageUrl(url: string): boolean {
  * Uses `data-language` attribute instead of CSS class (BlockNote convention).
  * Replicated from @blocknote/core internals.
  */
-function codeHandler(state: any, node: any) {
+function codeHandler(state: M2hState, node: Code) {
   const value = node.value ? node.value : "";
-  const properties: any = {};
+  const properties: HastElement["properties"] = {};
 
   if (node.lang) {
     properties["data-language"] = node.lang;
   }
 
-  let result: any = {
+  let result: HastElement = {
     type: "element",
     tagName: "code",
     properties,
@@ -294,11 +301,11 @@ function codeHandler(state: any, node: any) {
  * remarkRehype handler for video nodes (image nodes with video URLs).
  * Replicated from @blocknote/core internals.
  */
-function videoHandler(state: any, node: any) {
+function videoHandler(state: M2hState, node: Image) {
   const url = String(node?.url || "");
   const title = node?.title ? String(node.title) : undefined;
 
-  let result: any = {
+  let result: HastElement = {
     type: "element",
     tagName: "video",
     properties: {
@@ -317,11 +324,11 @@ function videoHandler(state: any, node: any) {
 /**
  * remarkRehype handler for audio nodes (image nodes with audio URLs).
  */
-function audioHandler(state: any, node: any) {
+function audioHandler(state: M2hState, node: Image) {
   const url = String(node?.url || "");
   const title = node?.title ? String(node.title) : undefined;
 
-  let result: any = {
+  let result: HastElement = {
     type: "element",
     tagName: "audio",
     properties: {
@@ -341,11 +348,11 @@ function audioHandler(state: any, node: any) {
  * remarkRehype handler for generic file nodes (image nodes with non-image, non-video, non-audio URLs).
  * Emits <div data-content-type="file"> which BlockNote parses as a file block.
  */
-function fileHandler(state: any, node: any) {
+function fileHandler(state: M2hState, node: Image) {
   const url = String(node?.url || "");
   const name = node?.title || node?.alt || (url.split("/").pop() || url);
 
-  let result: any = {
+  let result: HastElement = {
     type: "element",
     tagName: "div",
     properties: {
@@ -374,8 +381,8 @@ function markdownToHtml(markdown: string): string {
     .use(remarkGfm)
     .use(remarkRehype, {
       handlers: {
-        ...(remarkRehypeDefaultHandlers as any),
-        image: (state: any, node: any) => {
+        ...remarkRehypeDefaultHandlers,
+        image: (state: M2hState, node: Image) => {
           const url = String(node?.url || "");
           if (isVideoUrl(url)) return videoHandler(state, node);
           if (isAudioUrl(url)) return audioHandler(state, node);
@@ -383,7 +390,7 @@ function markdownToHtml(markdown: string): string {
           return fileHandler(state, node);
         },
         code: codeHandler,
-        blockquote: (state: any, node: any) => {
+        blockquote: (state: M2hState, node: Blockquote) => {
           const result = {
             type: "element",
             tagName: "blockquote",
@@ -408,7 +415,7 @@ function markdownToHtml(markdown: string): string {
 // Public API
 // ---------------------------------------------------------------------------
 
-export async function convertBlocksToMarkdown(blocks: any) {
+export async function convertBlocksToMarkdown(blocks: Block[]) {
   const editor = createServerBlockNoteEditor();
   const html = await editor.blocksToHTMLLossy(blocks);
   return htmlToMarkdown(html);

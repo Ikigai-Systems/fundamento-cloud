@@ -7,6 +7,8 @@ import CommentEditor from "../components/editor/CommentEditor"
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext"
 import queryClient from "../contextes/ReactQueryClient"
 
+// Stimulus controller file, not a fast-refresh React module — the default export is a controller class, not a component.
+// eslint-disable-next-line react-refresh/only-export-components
 export default class extends Controller {
   static values = {
     object: Object,

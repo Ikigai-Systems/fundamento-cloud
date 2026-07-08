@@ -82,7 +82,7 @@ function PeopleSelectCell({
           cacheOptions
           defaultOptions
           // value={{value: userId, initials: selectedUser.firstName[0] + selectedUser.lastName[0], displayName: `${selectedUser.firstName} ${selectedUser.lastName}`}}
-          loadOptions={async (query) => {
+          loadOptions={async (_query) => {
             return [{
               value: undefined, initials: "n/a", displayName: "leave empty",
             }].concat(

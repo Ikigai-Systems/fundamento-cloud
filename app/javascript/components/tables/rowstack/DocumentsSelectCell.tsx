@@ -85,7 +85,7 @@ function DocumentsSelectCell({
           defaultOptions
           isMulti={true}
           value={selectedDocuments.map(document => ({ value: document.id, title: document.title }))}
-          loadOptions={async (query) =>
+          loadOptions={async (_query) =>
             documentsQuery.data.map(document => ({
               value: document.id,
               title: document.title,

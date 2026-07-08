@@ -39,6 +39,8 @@ export default function SelectButton({
     } else {
       onChange(options[selectedIndex]);
     }
+    // Fire onChange only when the selection changes; adding onChange/options would re-fire on every parent render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex]);
 
   const { refs, floatingStyles, context } = useFloating<HTMLElement>({

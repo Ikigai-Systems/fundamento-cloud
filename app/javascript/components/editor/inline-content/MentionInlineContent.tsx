@@ -6,7 +6,7 @@ import TablesApi from "../../../api/Tables/TablesApi";
 import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
-import {useCurrentDocumentId, useObjectReference, type ObjectReferenceData} from "./useObjectReferences";
+import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -137,7 +137,10 @@ const MentionInlineContent = createReactInlineContentSpec(
       // Legacy migration: if entityId is -1 (old default), swap id and entityId
       useEffect(() => {
         if (entityId === -1) {
+          // Intentional local reassignment: the migrated values are persisted via updateInlineContent below.
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           entityId = Number(id);
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           id = crypto.randomUUID();
           setTimeout(() => {
             props.updateInlineContent({

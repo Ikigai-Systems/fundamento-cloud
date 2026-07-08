@@ -19,7 +19,7 @@ type ShowVersionPanelProps = {
   features?: Features,
 }
 
-const ShowDocumentVersionPanel = ({version, document, space, currentUser, features}: ShowVersionPanelProps) => {
+const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     initialContent: version.contentBlocks,
