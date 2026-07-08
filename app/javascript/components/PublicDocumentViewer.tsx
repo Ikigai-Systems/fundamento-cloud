@@ -11,9 +11,9 @@ import {useCreateBlockNote} from "@blocknote/react";
 import {UNTITLED_CONTENT} from "./EditableContentTitle.tsx";
 
 type PublicDocumentViewerProps = {
-    document: Document,
-    version: Version,
-    space: Space,
+  document: Document,
+  version: Version,
+  space: Space,
 }
 
 const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerProps) => {

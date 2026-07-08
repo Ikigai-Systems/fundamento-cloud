@@ -46,34 +46,34 @@ type Kind =
 
 const toType = (kind: Kind) => {
   switch (kind) {
-  case "number":
-    return "number";
-  case "long_text":
-    return "longText";
-  case "select":
-    return "select";
-  case "date":
-    return "date";
-  case "datetime":
-    return "datetime";
-  case "multi_select":
-    return "multiSelect";
-  case "url":
-    return "url";
-  case "checkbox":
-    return "checkbox";
-  case "formula":
-    return "formula";
-  case "people": //todo: maybe rename it later to "person", also in the backend
-    return "people";
-  case "multi_people":
-    return "multiPeople";
-  case "documents":
-    return "documents";
-  case "button":
-    return "button";
-  default:
-    return "text";
+    case "number":
+      return "number";
+    case "long_text":
+      return "longText";
+    case "select":
+      return "select";
+    case "date":
+      return "date";
+    case "datetime":
+      return "datetime";
+    case "multi_select":
+      return "multiSelect";
+    case "url":
+      return "url";
+    case "checkbox":
+      return "checkbox";
+    case "formula":
+      return "formula";
+    case "people": //todo: maybe rename it later to "person", also in the backend
+      return "people";
+    case "multi_people":
+      return "multiPeople";
+    case "documents":
+      return "documents";
+    case "button":
+      return "button";
+    default:
+      return "text";
   }
 }
 
@@ -392,21 +392,21 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
               let dateDayJs;
               switch (columnConfiguration?.dateStoredFormat) {
-              case 0:
-                dateDayJs = dayjs(value, ["M/D/YYYY HH:mm", "M/D/YYYY"]);
-                break;
-              case 1:
-                dateDayJs = dayjs(value, ["D/M/YYYY HH:mm", "D/M/YYYY"]);
-                break;
-              case 2:
-                dateDayJs = dayjs(value, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY"]);
-                break;
-              case 3:
-                dateDayJs = dayjs(value, ["YYYY-MM-DD HH:mm", "YYYY-MM-DD"]);
-                break;
-              default:
-                dateDayJs = dayjs(value);
-                break;
+                case 0:
+                  dateDayJs = dayjs(value, ["M/D/YYYY HH:mm", "M/D/YYYY"]);
+                  break;
+                case 1:
+                  dateDayJs = dayjs(value, ["D/M/YYYY HH:mm", "D/M/YYYY"]);
+                  break;
+                case 2:
+                  dateDayJs = dayjs(value, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY"]);
+                  break;
+                case 3:
+                  dateDayJs = dayjs(value, ["YYYY-MM-DD HH:mm", "YYYY-MM-DD"]);
+                  break;
+                default:
+                  dateDayJs = dayjs(value);
+                  break;
               }
               const date = dateDayJs.toDate();
               if (!dateDayJs.isValid()) {
@@ -424,16 +424,16 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
               const dayDate = dayjs(parsedData);
               switch (columnConfiguration?.dateStoredFormat) {
-              case 0:
-                return dayDate.format("M/D/YYYY");
-              case 1:
-                return dayDate.format("D/MM/YYYY");
-              case 2:
-                return dayDate.format("DD.MM.YYYY");
-              case 3:
-                return dayDate.format("YYYY-MM-DD");
-              default:
-                return dayDate.format("L");
+                case 0:
+                  return dayDate.format("M/D/YYYY");
+                case 1:
+                  return dayDate.format("D/MM/YYYY");
+                case 2:
+                  return dayDate.format("DD.MM.YYYY");
+                case 3:
+                  return dayDate.format("YYYY-MM-DD");
+                default:
+                  return dayDate.format("L");
               }
             },
             formatDisplayDate: (parsedData, columnConfiguration) => {
@@ -442,44 +442,44 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
               const dayDate = dayjs(parsedData);
               switch (columnConfiguration?.dateDisplayFormat) {
-              case 0:
-                return dayDate.format("M/D/YYYY");
-              case 1:
-                return dayDate.format("M/D/YY");
-              case 2:
-                return dayDate.format("M/D");
-              case 3:
-                return dayDate.format("MMMM D, YYYY");
-              case 4:
-                return dayDate.format("MMM D, YYYY");
-              case 5:
-                return dayDate.format("MMM D");
-              case 6:
-                return dayDate.format("ddd, MMM D");
-              case 7:
-                return dayDate.format("ddd, MMM D, YYYY");
-              case 8:
-                return dayDate.format("DD/MM/YYYY");
-              case 9:
-                return dayDate.format("DD.MM.YYYY");
-              case 10:
-                return dayDate.format("DD.MM");
-              case 11:
-                return dayDate.format("YYYY-MM-DD");
-              case 12:
-                return dayDate.format("MMMM YYYY");
-              case 13:
-                return dayDate.format("dddd");
-              case 14:
-                return dayDate.format("D");
-              case 15:
-                return dayDate.format("MMMM");
-              case 16:
-                return dayDate.format("YYYY");
-              case 17:
-                return dayDate.format("MMM YYYY");
-              default:
-                return dayDate.format("L");
+                case 0:
+                  return dayDate.format("M/D/YYYY");
+                case 1:
+                  return dayDate.format("M/D/YY");
+                case 2:
+                  return dayDate.format("M/D");
+                case 3:
+                  return dayDate.format("MMMM D, YYYY");
+                case 4:
+                  return dayDate.format("MMM D, YYYY");
+                case 5:
+                  return dayDate.format("MMM D");
+                case 6:
+                  return dayDate.format("ddd, MMM D");
+                case 7:
+                  return dayDate.format("ddd, MMM D, YYYY");
+                case 8:
+                  return dayDate.format("DD/MM/YYYY");
+                case 9:
+                  return dayDate.format("DD.MM.YYYY");
+                case 10:
+                  return dayDate.format("DD.MM");
+                case 11:
+                  return dayDate.format("YYYY-MM-DD");
+                case 12:
+                  return dayDate.format("MMMM YYYY");
+                case 13:
+                  return dayDate.format("dddd");
+                case 14:
+                  return dayDate.format("D");
+                case 15:
+                  return dayDate.format("MMMM");
+                case 16:
+                  return dayDate.format("YYYY");
+                case 17:
+                  return dayDate.format("MMM YYYY");
+                default:
+                  return dayDate.format("L");
               }
             },
             parseNumber: (value, columnConfiguration) => {
@@ -488,12 +488,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
 
               switch (columnConfiguration?.numberStoredFormat) {
-              case "0.01":
-                return Number(value);
-              case "0,01":
-                return Number(value.replaceAll(",","."));
-              default:
-                return Number(value);
+                case "0.01":
+                  return Number(value);
+                case "0,01":
+                  return Number(value.replaceAll(",","."));
+                default:
+                  return Number(value);
               }
             },
             formatDisplayNumber: (parsedData, columnConfiguration) => {
@@ -506,12 +506,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
 
               switch (columnConfiguration?.numberDisplayFormat) {
-              case "0.01":
-                return parsedData.toLocaleString("en-US", {maximumFractionDigits: 100});
-              case "0,01":
-                return parsedData.toLocaleString("pt-BR", {maximumFractionDigits: 100});
-              default:
-                return parsedData.toString();
+                case "0.01":
+                  return parsedData.toLocaleString("en-US", {maximumFractionDigits: 100});
+                case "0,01":
+                  return parsedData.toLocaleString("pt-BR", {maximumFractionDigits: 100});
+                default:
+                  return parsedData.toString();
               }
             }
           }}

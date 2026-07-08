@@ -19,21 +19,21 @@ function DateTimeCell({
     const dayjsDate = dayjs(parsedDate);
     dateChunk = tableConfiguration.formatDisplayDate(parsedDate, columnConfiguration);
     switch (columnConfiguration?.timeDisplayFormat) {
-    case "None":
-      break;
-    case "11:00:00 PM":
-      timeChunk = dayjsDate.format("hh:mm:ss A");
-      break;
-    case "11:00 PM":
-      timeChunk = dayjsDate.format("hh:mm A");
-      break;
-    case "23:00:00":
-      timeChunk = dayjsDate.format("HH:mm:ss");
-      break;
-    case "11:00":
-    default:
-      timeChunk = dayjsDate.format("HH:mm");
-      break;
+      case "None":
+        break;
+      case "11:00:00 PM":
+        timeChunk = dayjsDate.format("hh:mm:ss A");
+        break;
+      case "11:00 PM":
+        timeChunk = dayjsDate.format("hh:mm A");
+        break;
+      case "23:00:00":
+        timeChunk = dayjsDate.format("HH:mm:ss");
+        break;
+      case "11:00":
+      default:
+        timeChunk = dayjsDate.format("HH:mm");
+        break;
     }
   }
 

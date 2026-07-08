@@ -166,28 +166,28 @@ const MentionInlineContent = createReactInlineContentSpec(
         }
         // Working mention — use targetId for navigation
         switch (entity) {
-        case "document":
-          return <DocumentMention documentNpi={objectReference.targetId} fragment={fragment}/>;
-        case "table":
-          return <TableMention tableNpi={objectReference.targetId}/>;
-        case "user":
-          return <UserMention mentionId={id} userId={objectReference.targetId}/>;
-        default:
-          return <BrokenMention title={title} targetType={entity} />;
+          case "document":
+            return <DocumentMention documentNpi={objectReference.targetId} fragment={fragment}/>;
+          case "table":
+            return <TableMention tableNpi={objectReference.targetId}/>;
+          case "user":
+            return <UserMention mentionId={id} userId={objectReference.targetId}/>;
+          default:
+            return <BrokenMention title={title} targetType={entity} />;
         }
       }
 
       // Fallback: no object_reference found (unmigrated doc or unsaved mention)
       // Use existing entityId-based rendering
       switch (entity) {
-      case "document":
-        return <DocumentMention documentNpi={entityId} fragment={fragment}/>;
-      case "table":
-        return <TableMention tableNpi={entityId}/>;
-      case "user":
-        return <UserMention mentionId={id} userId={entityId}/>;
-      default:
-        throw new Error(`Unhandled content type ${entity}`);
+        case "document":
+          return <DocumentMention documentNpi={entityId} fragment={fragment}/>;
+        case "table":
+          return <TableMention tableNpi={entityId}/>;
+        case "user":
+          return <UserMention mentionId={id} userId={entityId}/>;
+        default:
+          throw new Error(`Unhandled content type ${entity}`);
       }
     },
   }

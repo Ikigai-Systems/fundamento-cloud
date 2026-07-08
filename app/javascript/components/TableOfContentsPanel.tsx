@@ -30,9 +30,9 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
 
   const markerStyle = (level) => {
     switch (level) {
-    case 1: return "list-disc";
-    case 2: return "list-[circle]";
-    case 3: default: return "list-[square]";
+      case 1: return "list-disc";
+      case 2: return "list-[circle]";
+      case 3: default: return "list-[square]";
     }
   };
 
