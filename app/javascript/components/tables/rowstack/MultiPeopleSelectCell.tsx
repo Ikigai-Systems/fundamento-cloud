@@ -89,7 +89,7 @@ function MultiPeopleSelectCell({
           defaultOptions
           isMulti={true}
           value={selectedUsers.map((user: User) => ({ value: user.id, initials: user.firstName[0] + user.lastName[0], displayName: `${user.firstName} ${user.lastName}`}))}
-          loadOptions={async (query) => {
+          loadOptions={async (_query) => {
             return usersQuery.data.map(user => ({
               value: user.id,
               initials: user.firstName[0] + user.lastName[0],

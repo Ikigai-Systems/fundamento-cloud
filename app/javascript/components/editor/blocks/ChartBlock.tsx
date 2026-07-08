@@ -7,6 +7,7 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import ReactApexChart from 'react-apexcharts'
+import type {ApexOptions} from "apexcharts";
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
 import FormulasApi from "../../../api/FormulasApi";
@@ -14,6 +15,14 @@ import handleFormulaResultCommands from "../../formulas/handleFormulaResultComma
 import useAsyncEffect from "use-async-effect";
 
 const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar", "scatter", "heatmap", "radar", "polarArea", "treemap"];
+
+type CellValue = string | number | null;
+type TableRow = Record<string, CellValue>;
+type ChartConfig = {
+  type: string;
+  options: ApexOptions;
+  series: ApexOptions["series"];
+};
 
 
 export const createChartBlock = createReactBlockSpec(
@@ -47,8 +56,8 @@ export const createChartBlock = createReactBlockSpec(
       const editor = props.editor;
       const {space} = useContext(CurrentSpaceContext);
       const {tableNpi, title, chartType, xAxisColumnNpi, yAxisColumnNpi} = blockProps;
-      const [xAxisDataset, setXAxisDataset] = useState<any>(undefined);
-      const [yAxisDataset, setYAxisDataset] = useState<any>(undefined);
+      const [xAxisDataset, setXAxisDataset] = useState<CellValue[] | undefined>(undefined);
+      const [yAxisDataset, setYAxisDataset] = useState<CellValue[] | undefined>(undefined);
       const tableQuery = useQuery({queryKey: ["tables", space?.id, tableNpi], queryFn: async () => {
         if (tableNpi === "") {
           return null;
@@ -70,7 +79,7 @@ export const createChartBlock = createReactBlockSpec(
           handleFormulaResultCommands(formulaResult, space);
           setXAxisDataset(formulaResult.result);
         } else {
-          const xAxisColumnValues = tableQuery?.data?.data?.rows.map((row: Array<any>) => row[xAxisColumnNpi]);
+          const xAxisColumnValues = tableQuery?.data?.data?.rows.map((row: TableRow) => row[xAxisColumnNpi]);
           setXAxisDataset(xAxisColumnValues);
         }
       }, [xAxisColumnNpi, tableQuery.data]);
@@ -81,7 +90,7 @@ export const createChartBlock = createReactBlockSpec(
           handleFormulaResultCommands(formulaResult, space);
           setYAxisDataset(formulaResult.result);
         } else {
-          const yAxisColumnValues = tableQuery?.data?.data?.rows.map((row: Array<any>) => row[yAxisColumnNpi]);
+          const yAxisColumnValues = tableQuery?.data?.data?.rows.map((row: TableRow) => row[yAxisColumnNpi]);
           setYAxisDataset(yAxisColumnValues);
         }
       }, [yAxisColumnNpi, tableQuery.data]);
@@ -194,9 +203,9 @@ export const createChartBlock = createReactBlockSpec(
         </>)
       }
 
-      const {columns, rows} = tableQuery.data.data;
+      const {columns} = tableQuery.data.data;
 
-      const valueToSeriesPoint = (invalidValue = null) => (value) => {
+      const valueToSeriesPoint = (invalidValue: CellValue = null) => (value: CellValue) => {
         if (value !== null && value !== '') {
           const number = Number(value);
           if (isNaN(number)) {
@@ -209,7 +218,7 @@ export const createChartBlock = createReactBlockSpec(
         }
       }
 
-      let chart: any = undefined;
+      let chart: ChartConfig | undefined = undefined;
       if (chartType !== "" && xAxisDataset !== undefined && yAxisDataset !== undefined) {
         switch (chartType) {
           case "line":
@@ -223,7 +232,7 @@ export const createChartBlock = createReactBlockSpec(
                 type: chartType
               },
               xaxis: {
-                categories: xAxisDataset.map((data: any) => data === null ? "" : data),
+                categories: xAxisDataset.map((data) => data === null ? "" : data),
               }
             };
             chart.series = [{
@@ -258,7 +267,7 @@ export const createChartBlock = createReactBlockSpec(
                 },
               },
               xaxis: {
-                categories: xAxisDataset.map((data: any) => data === null ? "" : data),
+                categories: xAxisDataset.map((data) => data === null ? "" : data),
               },
               legend: {
                 show: false,
@@ -280,7 +289,7 @@ export const createChartBlock = createReactBlockSpec(
               chart: {
                 type: chartType,
               },
-              labels: xAxisDataset.map((data: any) => data === null ? "" : data),
+              labels: xAxisDataset.map((data) => data === null ? "" : data),
             };
             break;
           case "scatter":

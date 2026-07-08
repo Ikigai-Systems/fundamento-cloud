@@ -1,49 +1,9 @@
-import React, {useState} from "react";
-import Select from 'react-select'
-import {StateManagerProps} from "react-select/dist/declarations/src/useStateManager";
-import SelectButtonSize from "./SelectButtonSize.tsx";
-import SelectButtonColor from "./SelectButtonColor.tsx";
+import React from "react";
 
 function FormulaConfiguration({
   configuration,
   setConfiguration,
 }) {
-  const [advancedSectionExpanded, setAdvancedSectionExpanded] = useState<boolean>(false);
-
-  const StyledSelect = (props: StateManagerProps) => <Select
-    {...props}
-    styles={{
-      control: (base) => ({
-        ...base,
-        minHeight: 32,
-      }),
-      dropdownIndicator: (base) => ({
-        ...base,
-        paddingTop: 0,
-        paddingBottom: 0,
-      }),
-      clearIndicator: (base) => ({
-        ...base,
-        paddingTop: 0,
-        paddingBottom: 0,
-      }),
-      group: (base) => ({
-        ...base,
-        borderBottom: "solid #e2e8f0 1px",
-      }),
-      menu: (base) => ({
-        ...base,
-        width: "calc(100% - 16px)",
-      }),
-      input: (base) => ({
-        ...base,
-        "input:focus": {
-          boxShadow: "none",
-        }
-      }),
-    }}
-  />
-
   return (<>
     <div className="border rounded text-sm max-w-[400px] min-w-[300px] dark:!bg-gray-700 dark:border-gray-600">
       <div className="p-2 pt-4 uppercase font-medium text-xs">

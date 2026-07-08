@@ -43,6 +43,9 @@ const sampleColumns = [
   },
 ];
 
+// This module intentionally exports the createAdvancedTable block-spec factory (imported by the editor
+// schema) alongside this internal component, so fast-refresh's component-only rule does not apply.
+// eslint-disable-next-line react-refresh/only-export-components
 const SelectOrCreateTableContainer = ({space, editor, block}) => {
   const inputFile = useRef<HTMLInputElement | undefined>(undefined);
   const [isCreating, setIsCreating] = useState(false);
@@ -158,8 +161,8 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
             onChange={(newOption) => {
               editor.updateBlock(block, {
                 props: {
-                  tableNpi: (newOption as { value: any }).value,
-                  tableId: (newOption as { value: any }).value,
+                  tableNpi: (newOption as { value: string }).value,
+                  tableId: (newOption as { value: string }).value,
                 },
               });
             }}
@@ -205,6 +208,8 @@ export const createAdvancedTable = createReactBlockSpec(
             },
           });
         }
+        // Persist only when viewProps change; editor/props.block are stable within this render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [viewProps])
 
       const editor = props.editor;

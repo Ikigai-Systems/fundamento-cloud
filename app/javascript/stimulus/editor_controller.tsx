@@ -14,6 +14,8 @@ export interface EditorConsumerController {
   receiveBlocks(blocks: unknown[]): void;
 }
 
+// Stimulus controller file, not a fast-refresh React module — the default export is a controller class, not a component.
+// eslint-disable-next-line react-refresh/only-export-components
 export default class extends Controller {
   static outlets = ["table-of-contents"];
   static targets = ["editorRoot", "contentBlocksInput"];

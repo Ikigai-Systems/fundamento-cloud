@@ -4,6 +4,8 @@ import ReactDOM, {Root} from "react-dom/client"
 import EditCommentPanel from "../components/EditCommentPanel"
 import {Document, Space, Table} from "../types"
 
+// Stimulus controller file, not a fast-refresh React module — the default export is a controller class, not a component.
+// eslint-disable-next-line react-refresh/only-export-components
 export default class extends Controller {
   static values = {
     comment: Object,

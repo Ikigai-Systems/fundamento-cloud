@@ -55,7 +55,7 @@ type OptionProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 const Option = forwardRef<HTMLDivElement, OptionProps>(function Option(
-  { name, active, selected, children, ...props },
+  { name, active, selected, ...props },
   ref
 ) {
   const id = useId();
@@ -79,18 +79,18 @@ export default function SelectButtonColor({
   value, onChange
 }) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [selectedColor, setSelectedColor] = useState<string | null>(value);
 
   useEffect(() => {
     onChange(selectedColor);
+    // onChange is an inline parent callback; depend only on selectedColor to fire on selection change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor]);
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
 
-  const noResultsId = useId();
   const buttonId = useId();
   const listboxId = useId();
 
@@ -116,7 +116,6 @@ export default function SelectButtonColor({
   // Handles the list navigation where the reference is the inner input, not
   // the button that opens the floating element.
   const {
-    getReferenceProps: getInputProps,
     getFloatingProps: getListFloatingProps,
     getItemProps
   } = useInteractions([
@@ -138,21 +137,9 @@ export default function SelectButtonColor({
     setOpen(false);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter" && activeIndex !== null) {
-      event.preventDefault();
-      handleColorClick(activeIndex);
-    }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setActiveIndex(null);
-    setSearch(event.target.value);
-  };
-
   // Prevent input losing focus on Firefox VoiceOver
   const {
-    "aria-activedescendant": ignoreAria,
+    "aria-activedescendant": _ignoreAria,
     ...floatingProps
   } = getFloatingProps(getListFloatingProps());
 

@@ -23,6 +23,10 @@ export default tseslint.config(
       "@stylistic": stylistic,
     },
     rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrors: "none" },
+      ],
       "@stylistic/indent": ["error", 2],
     },
   },

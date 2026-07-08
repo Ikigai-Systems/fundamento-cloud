@@ -1,8 +1,11 @@
 import queryClient from "../../contextes/ReactQueryClient.tsx";
 import {Space} from "../../types.ts";
 
-export default (formulaResult: {result: any, commands: Array<any>}, space: Space | undefined) => {
-  const tableIdsToInvalidate: any = {};
+type FormulaCommand = {type: string, tableId: string};
+type FormulaResult = {result: unknown, commands?: FormulaCommand[]};
+
+export default (formulaResult: FormulaResult, space: Space | undefined) => {
+  const tableIdsToInvalidate: Record<string, boolean> = {};
 
   formulaResult.commands?.forEach(command => {
     switch(command.type) {

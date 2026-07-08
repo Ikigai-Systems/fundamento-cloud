@@ -1,14 +1,10 @@
 import React, {useEffect, useRef, useState} from "react";
-import Select from 'react-select'
-import {StateManagerProps} from "react-select/dist/declarations/src/useStateManager";
 
 
 function EditButtonPopup({
   column,
   setColumn,
   close,
-  rows,
-  table,
 }) {
   const [formula, setFormula] = useState<string>(column.configuration?.buttonFormula || "");
   const componentWillUnmount = useRef(false);
@@ -26,6 +22,7 @@ function EditButtonPopup({
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- save-on-unmount cleanup reads latest column.configuration; adding it as a dep would re-run cleanup on every config change
   }, [formula, setColumn, column.fundamentoFormula]);
 
   return (<>

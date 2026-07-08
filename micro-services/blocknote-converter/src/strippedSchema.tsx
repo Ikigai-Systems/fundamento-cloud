@@ -85,12 +85,6 @@ const createChartBlock = createReactBlockSpec(
 );
 
 
-const Loading = () => {
-  return <span className="relative top-1">
-    <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
-  </span>;
-}
-
 // The Mention inline content.
 const MentionInlineContent = createReactInlineContentSpec(
   {
@@ -116,7 +110,7 @@ const MentionInlineContent = createReactInlineContentSpec(
   },
   {
     render: (props) => {
-      const {id, entityId, entity, title, fragment} = props.inlineContent.props;
+      const {entityId, entity, title} = props.inlineContent.props;
       const mentionUrl = `https://fundamento.cloud/${entity}/${entityId}`;
       return <a href={mentionUrl}>{title || mentionUrl}</a>;
     },

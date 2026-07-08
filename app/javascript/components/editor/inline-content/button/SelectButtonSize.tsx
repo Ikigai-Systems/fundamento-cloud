@@ -31,6 +31,8 @@ export default function SelectButtonSize({
 
   useEffect(() => {
     onChange(options[selectedIndex]);
+    // onChange is an inline parent callback; depend only on selectedIndex to fire on selection change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIndex]);
 
   const { refs, floatingStyles, context } = useFloating<HTMLElement>({

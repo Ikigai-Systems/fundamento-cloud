@@ -5,7 +5,6 @@ function DateTimeCell({
   data,
   setData,
   focusState,
-  setFocus,
   isViewOnly,
   columnConfiguration,
   tableConfiguration,

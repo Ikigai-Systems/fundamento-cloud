@@ -2,9 +2,10 @@ import {BlockTypeSelectItem, useExtensionState} from '@blocknote/react'
 import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, useDictionary} from '@blocknote/react'
 import {ReactNode, useMemo} from "react";
 import {SideMenuExtension} from "@blocknote/core/extensions";
+import type {PartialBlock} from "@blocknote/core";
 
 const TurnIntoItem = (props: { children: ReactNode }) => {
-  const editor = useBlockNoteEditor<any, any, any>();
+  const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const dictionary = useDictionary();
 
@@ -56,10 +57,12 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
               checked={isSelected}
               icon={<Icon size={16}/>}
               onClick={() => {
+                // item.type is a plain string from the dictionary; updateBlock expects a
+                // discriminated union keyed on the concrete block type, so widen to PartialBlock.
                 editor.updateBlock(block, {
-                  type: item.type as any,
-                  props: item.props as any,
-                });
+                  type: item.type,
+                  props: item.props,
+                } as PartialBlock);
               }}
             >
               {item.name}

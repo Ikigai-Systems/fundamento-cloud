@@ -82,19 +82,117 @@ export interface EditableTableContextType {
   table: Table | undefined,
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- dev-only HMR warning; context is imported by rowstack cells and must stay co-located with this component
 export const EditableTableContext = createContext<EditableTableContextType>({
   space: undefined,
   table: undefined,
 });
 
 export interface EditableTableRowsContextType {
-  rows: any[] | undefined,
+  rows: Row[] | undefined,
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- dev-only HMR warning; context is imported by rowstack cells and must stay co-located with this component
 export const EditableTableRowsContext = createContext<EditableTableRowsContextType>({
   rows: undefined,
 });
 
+
+type ColumnHeaderPopupProps = Record<string, unknown>;
+
+const FormulaEditPopup = (popupProps: ColumnHeaderPopupProps) => {
+  const {space, table} = useContext(EditableTableContext);
+  const {rows} = useContext(EditableTableRowsContext);
+
+  return <EditFormulaPopup rows={rows} space={space} table={table} {...popupProps}/>;
+};
+
+type ColumnHeaderMenuItemProps = {
+  column: {id: string, type: string, [key: string]: unknown},
+  showPopup: () => void,
+};
+
+const MoveColumnLeftMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
+  const {space, table} = useContext(EditableTableContext);
+
+  return (
+    <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
+      onClick={async () => {
+        const spaceId = space.id;
+        const tableId = table.id;
+
+        await TablesApi.moveColumnLeft({
+          params: {id: tableId},
+          data: {colId: column.id}
+        });
+
+        queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
+      }}
+    >
+      <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
+      Move column left
+    </div>
+  );
+};
+
+const MoveColumnRightMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
+  const {space, table} = useContext(EditableTableContext);
+
+  return (
+    <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
+      onClick={async () => {
+        const spaceId = space.id;
+        const tableId = table.id;
+
+        await TablesApi.moveColumnRight({
+          params: {id: tableId},
+          data: {colId: column.id}
+        });
+
+        queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
+      }}
+    >
+      <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
+      Move column right
+    </div>
+  );
+};
+
+const DownloadCsvToolbarItem = ({table}: {table: Table}) => {
+  const [isDownloadingAsCsv, setIsDownloadingAsCsv] = useState(false);
+
+  return (<>
+    <button style={{marginLeft: "auto"}} className="secondary-button p-2" title="Download as CSV"
+      disabled={isDownloadingAsCsv}
+      onClick={async () => {
+        setIsDownloadingAsCsv(true);
+        try {
+          const currentDataDeserializer = Config.deserializeData;
+          Config.deserializeData = (val => val);
+          const promiseData = TablesApi.show({id: table.id});
+          Config.deserializeData = currentDataDeserializer;
+          const tableData = await promiseData;
+
+          const {columns, rows} = tableData.data;
+          const csvConfig = mkConfig({
+            columnHeaders: columns.map((column: Column) => ({key: column.id, displayLabel: column.name})),
+            filename: `${tableData.table.name}_${dayjs().toISOString()}`,
+            useBom: false,
+          });
+          const csv = generateCsv(csvConfig)(rows.map((row: Row) => {
+            const obj: Record<string, unknown> = {};
+            Object.entries(row).map(([key, value]) => obj[key] = (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value !== null ? value : "");
+            return obj;
+          }));
+          download(csvConfig)(csv);
+        } finally {
+          setIsDownloadingAsCsv(false);
+        }
+      }}>
+      <div className="bg-slate-500 size-5 icon-[heroicons--arrow-down-tray]"></div>
+    </button>
+  </>);
+};
 
 const extraColumnHeaderPopupActions = [{
   section: "main",
@@ -112,12 +210,7 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => {
-    const {space, table} = useContext(EditableTableContext);
-    const {rows} = useContext(EditableTableRowsContext);
-
-    return <EditFormulaPopup rows={rows} space={space} table={table} {...popupProps}/>;
-  }
+  popup: (popupProps) => <FormulaEditPopup {...popupProps} />
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
@@ -200,52 +293,10 @@ const extraColumnHeaderPopupActions = [{
   popup: (popupProps) => <EditNumberStoredFormatPopup {...popupProps}/>
 }, {
   section: "actions2",
-  menuItem: ({column, showPopup}) => {
-    const {space, table} = useContext(EditableTableContext);
-
-    return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
-        onClick={async () => {
-          const spaceId = space.id;
-          const tableId = table.id;
-
-          await TablesApi.moveColumnLeft({
-            params: {id: tableId},
-            data: {colId: column.id}
-          });
-
-          queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
-        }}
-      >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
-        Move column left
-      </div>
-    );
-  },
+  menuItem: (menuItemProps) => <MoveColumnLeftMenuItem {...menuItemProps} />,
 }, {
   section: "actions2",
-  menuItem: ({column, showPopup}) => {
-    const {space, table} = useContext(EditableTableContext);
-
-    return (
-      <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
-        onClick={async () => {
-          const spaceId = space.id;
-          const tableId = table.id;
-
-          await TablesApi.moveColumnRight({
-            params: {id: tableId},
-            data: {colId: column.id}
-          });
-
-          queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
-        }}
-      >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
-        Move column right
-      </div>
-    );
-  },
+  menuItem: (menuItemProps) => <MoveColumnRightMenuItem {...menuItemProps} />,
 }, {
   section: "main",
   menuItem: ({column, showPopup}) => {
@@ -332,41 +383,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             }],
             extraColumnHeaderPopupActions: extraColumnHeaderPopupActions,
             extraToolbarItems: [{
-              render: () => {
-                const [isDownloadingAsCsv, setIsDownloadingAsCsv] = useState(false);
-
-                return (<>
-                  <button style={{marginLeft: "auto"}} className="secondary-button p-2" title="Download as CSV"
-                    disabled={isDownloadingAsCsv}
-                    onClick={async () => {
-                      setIsDownloadingAsCsv(true);
-                      try {
-                        const currentDataDeserializer = Config.deserializeData;
-                        Config.deserializeData = (val => val);
-                        const promiseData = TablesApi.show({id: table.id});
-                        Config.deserializeData = currentDataDeserializer;
-                        const tableData = await promiseData;
-
-                        const {columns, rows} = tableData.data;
-                        const csvConfig = mkConfig({
-                          columnHeaders: columns.map((column: any) => ({key: column.id, displayLabel: column.name})),
-                          filename: `${tableData.table.name}_${dayjs().toISOString()}`,
-                          useBom: false,
-                        });
-                        const csv = generateCsv(csvConfig)(rows.map((row: any) => {
-                          const obj = {};
-                          Object.entries(row).map(([key, value]) => obj[key] = (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value !== null ? value : "");
-                          return obj;
-                        }));
-                        download(csvConfig)(csv);
-                      } finally {
-                        setIsDownloadingAsCsv(false);
-                      }
-                    }}>
-                    <div className="bg-slate-500 size-5 icon-[heroicons--arrow-down-tray]"></div>
-                  </button>
-                </>)
-              }
+              render: () => <DownloadCsvToolbarItem table={table} />
             }, {
               render: () => {
                 return (<>
@@ -543,7 +560,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
                 queryClient.invalidateQueries({queryKey: ["tables", space.id, table.id]});
               }
-            } catch (e) {
+            } catch {
               //todo: Sentry.capture(e)
               createFlash({
                 key: "table_update_failed",
@@ -568,8 +585,8 @@ type Column = {
   name: string,
   kind: Kind,
   formula: string,
-  configuration: any,
-  options: any,
+  configuration: unknown,
+  options: unknown,
 }
 
 export type TableData = {

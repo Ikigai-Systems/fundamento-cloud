@@ -8,7 +8,7 @@ export function createFileUrlResolver(showAttachmentPath = AttachmentsApi.show.p
       return showAttachmentPath({id: attachmentId});
     }
 
-    const onboardingContent = fileUrl.match(/^onboardingContent:([a-zA-Z0-9%\-\/.]+)$/)?.[1];
+    const onboardingContent = fileUrl.match(/^onboardingContent:([a-zA-Z0-9%\-/.]+)$/)?.[1];
 
     if (onboardingContent) {
       return `/onboarding_contents/${onboardingContent}`
