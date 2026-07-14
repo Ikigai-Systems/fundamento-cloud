@@ -1,5 +1,5 @@
 diff --git a/node_modules/@github/hotkey/dist/index.js b/node_modules/@github/hotkey/dist/index.js
-index ce8fa83..e098eb0 100644
+index 26330ca..00eb4a2 100644
 --- a/node_modules/@github/hotkey/dist/index.js
 +++ b/node_modules/@github/hotkey/dist/index.js
 @@ -311,6 +311,7 @@ function isFormField(element) {
