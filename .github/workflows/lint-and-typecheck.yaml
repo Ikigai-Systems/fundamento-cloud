@@ -1,0 +1,54 @@
+name: Lint & Typecheck
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ "*" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip-tests]')"
+
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: root
+            dir: .
+          - name: blocknote-converter
+            dir: micro-services/blocknote-converter
+
+    name: ${{ matrix.name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".tool-versions"
+          cache: "npm"
+          cache-dependency-path: ${{ matrix.dir }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ matrix.dir }}
+
+      - name: Lint
+        run: npm run lint
+        working-directory: ${{ matrix.dir }}
+
+      # typecheck lands with PR #69 (add-tsc-typecheck); --if-present skips
+      # cleanly until that script exists, then enforces automatically.
+      - name: Typecheck
+        run: npm run typecheck --if-present
+        working-directory: ${{ matrix.dir }}
