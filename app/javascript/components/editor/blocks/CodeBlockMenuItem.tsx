@@ -1,12 +1,17 @@
+import schema from "../schema.ts";
+
 const CodeBlockMenuItem = () => ({
   title: "Code",
   subtext: "Section containing multi-line code",
-  onItemClick: (editor) => {
+  onItemClick: (editor: typeof schema.BlockNoteEditor) => {
     const currentBlock = editor.getTextCursorPosition().block;
     editor.insertBlocks([{
       type: "procode",
     }], currentBlock, "after");
-    editor.setTextCursorPosition(editor.getTextCursorPosition().nextBlock, "start");
+    const nextBlock = editor.getTextCursorPosition().nextBlock;
+    if (nextBlock) {
+      editor.setTextCursorPosition(nextBlock, "start");
+    }
   },
   aliases: [
     "code",

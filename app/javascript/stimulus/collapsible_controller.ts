@@ -12,10 +12,10 @@ export default class extends Controller<HTMLElement> {
 
   declare contentTarget: HTMLElement;
   declare triggerTarget: HTMLElement;
+  declare hasTriggerTarget: boolean;
   declare collapsedValue: boolean;
   declare expandToThisValue: boolean;
   declare hasChildrenValue: boolean;
-  declare element: HTMLElement;
   declare readonly hasCollapsedClass: boolean;
   declare readonly hasExpandedClass: boolean;
   declare readonly hasLeafClass: boolean;

@@ -1,4 +1,14 @@
-import React, {useEffect, useRef} from "react";
+import {useEffect, useRef} from "react";
+
+type ColumnConfiguration = {
+  timeDisplayFormat?: string,
+};
+
+type EditTimeDisplayFormatPopupProps = {
+  column: {configuration?: ColumnConfiguration},
+  setColumn: (attributes: {configuration: ColumnConfiguration}) => void,
+  close: () => void,
+};
 
 const formats = [[
   "None",
@@ -12,8 +22,8 @@ function EditTimeDisplayFormatPopup({
   column,
   setColumn,
   close,
-}) {
-  const selectedDivRef = useRef();
+}: EditTimeDisplayFormatPopupProps) {
+  const selectedDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const {current} = selectedDivRef;

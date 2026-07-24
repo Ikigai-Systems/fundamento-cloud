@@ -1,4 +1,4 @@
-export const colorNameToClass = (colorName) => {
+export const colorNameToClass = (colorName: string) => {
   switch(colorName) {
     case "green":
       return "!bg-green-500 !text-white"
@@ -22,7 +22,7 @@ export const colorNameToClass = (colorName) => {
   }
 }
 
-export const colorNameToHoverAndActiveClass = (colorName) => {
+export const colorNameToHoverAndActiveClass = (colorName: string) => {
   switch(colorName) {
     case "green":
       return "hover:!bg-green-600"

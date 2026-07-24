@@ -1,4 +1,14 @@
-import React, {useEffect, useRef} from "react";
+import {useEffect, useRef} from "react";
+
+type ColumnConfiguration = {
+  numberDisplayFormat?: string,
+};
+
+type EditNumberDisplayFormatPopupProps = {
+  column: {configuration?: ColumnConfiguration},
+  setColumn: (attributes: {configuration: ColumnConfiguration}) => void,
+  close: () => void,
+};
 
 const formats = [[
   "0.01",
@@ -9,8 +19,8 @@ function EditNumberDisplayFormatPopup({
   column,
   setColumn,
   close,
-}) {
-  const selectedDivRef = useRef();
+}: EditNumberDisplayFormatPopupProps) {
+  const selectedDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const {current} = selectedDivRef;

@@ -1,7 +1,9 @@
+import schema from "../schema.ts";
+
 const ButtonInlineContentMenuItem = () => ({
   title: "Formula",
   subtext: "Display result of the custom calculation",
-  onItemClick: (editor) => {
+  onItemClick: (editor: typeof schema.BlockNoteEditor) => {
     editor.insertInlineContent([{
       type: "formula"
     }]);

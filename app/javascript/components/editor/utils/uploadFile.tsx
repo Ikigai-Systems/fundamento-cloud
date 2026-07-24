@@ -1,7 +1,7 @@
 import {request} from "@js-from-routes/axios";
 import AttachmentsApi from "../../../api/AttachmentsApi";
 
-export function uploadFile(documentId: number) {
+export function uploadFile(documentId: string) {
   return async (file: string | Blob) => {
     const body = new FormData();
 

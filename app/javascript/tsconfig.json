@@ -9,10 +9,19 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+
+    /* Path aliases (mirror vite.config.ts + vite-plugin-ruby sourceCodeDir) */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "rowstack": ["../../vendor/javascript/rowstack/main.js"]
+    },
 
     /* Linting */
     "strict": true,

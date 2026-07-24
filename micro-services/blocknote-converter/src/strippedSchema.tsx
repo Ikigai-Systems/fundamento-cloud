@@ -35,8 +35,8 @@ const createAdvancedTable = createReactBlockSpec(
       }
     },
     content: "none",
-    isSelectable: false,
   }, {
+    meta: {selectable: false},
     render: (props) => {
       const {tableNpi} = props.block.props;
 
@@ -73,8 +73,8 @@ const createChartBlock = createReactBlockSpec(
       }
     },
     content: "none",
-    isSelectable: false,
   }, {
+    meta: {selectable: false},
     render: () => {
       return <p>Chart</p>;
     },

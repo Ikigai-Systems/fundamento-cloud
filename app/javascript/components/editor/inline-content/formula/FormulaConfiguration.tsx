@@ -1,9 +1,16 @@
-import React from "react";
+type FormulaConfigurationValue = {
+  formula: string;
+};
+
+type FormulaConfigurationProps = {
+  configuration: FormulaConfigurationValue;
+  setConfiguration: (configuration: FormulaConfigurationValue) => void;
+};
 
 function FormulaConfiguration({
   configuration,
   setConfiguration,
-}) {
+}: FormulaConfigurationProps) {
   return (<>
     <div className="border rounded text-sm max-w-[400px] min-w-[300px] dark:!bg-gray-700 dark:border-gray-600">
       <div className="p-2 pt-4 uppercase font-medium text-xs">

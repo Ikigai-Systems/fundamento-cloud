@@ -1,5 +1,5 @@
-import React from "react";
 import AsyncSelect from "react-select/async";
+import {MultiValue} from "react-select";
 import {useQueries, useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
@@ -7,18 +7,34 @@ import {join} from "lodash";
 import UsersApi from "../../../api/UsersApi.js";
 import {User} from "../../../types.ts";
 
+type FocusState = "none" | "focused" | "editing";
+
+type UserOption = {
+  value: number;
+  initials: string;
+  displayName: string;
+};
+
+type MultiPeopleSelectCellProps = {
+  data: string | null;
+  setData: (value: string) => void;
+  focusState: FocusState;
+  setFocus: (focusState: FocusState) => void;
+  isViewOnly: boolean;
+};
+
 function MultiPeopleSelectCell({
   data,
   setData,
   focusState,
   setFocus,
   isViewOnly,
-}) {
-  const usersQuery = useQuery<User>({queryKey: ["users"], queryFn: async () => {
+}: MultiPeopleSelectCellProps) {
+  const usersQuery = useQuery<User[]>({queryKey: ["users"], queryFn: async () => {
     return (await UsersApi.index());
   }}, queryClient);
 
-  const userIds: number[] = data ? data.split(",") : [];
+  const userIds: string[] = data ? data.split(",") : [];
 
   const userQueries = useQueries({
     queries: userIds.map(userId => ({
@@ -88,9 +104,9 @@ function MultiPeopleSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          value={selectedUsers.map((user: User) => ({ value: user.id, initials: user.firstName[0] + user.lastName[0], displayName: `${user.firstName} ${user.lastName}`}))}
-          loadOptions={async (_query) => {
-            return usersQuery.data.map(user => ({
+          value={selectedUsers.flatMap((user): UserOption[] => user ? [{ value: user.id, initials: user.firstName[0] + user.lastName[0], displayName: `${user.firstName} ${user.lastName}`}] : [])}
+          loadOptions={async (_query): Promise<UserOption[]> => {
+            return (usersQuery.data ?? []).map((user): UserOption => ({
               value: user.id,
               initials: user.firstName[0] + user.lastName[0],
               displayName: `${user.firstName} ${user.lastName}`
@@ -109,8 +125,8 @@ function MultiPeopleSelectCell({
               </div>
             )}
           }
-          onChange={(newOption) => {
-            const userIds = Array.from(newOption.values().map(value => value.value));
+          onChange={(newOption: MultiValue<UserOption>) => {
+            const userIds = newOption.map(option => option.value);
 
             setData(join(userIds));
             setFocus("focused");

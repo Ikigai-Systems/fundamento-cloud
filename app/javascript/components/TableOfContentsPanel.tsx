@@ -1,9 +1,29 @@
 import '@blocknote/mantine/style.css';
 import {useEffect} from "react";
 
+type InlineContent = {
+  text?: string,
+  content?: InlineContent[],
+};
+
+type HeadingBlock = {
+  id: string,
+  type: "heading",
+  props: {level: number},
+  content: InlineContent[],
+};
+
 type TableOfContentsPanelProps = {
   content: unknown[],
 }
+
+const isHeadingBlock = (block: unknown): block is HeadingBlock => {
+  if (typeof block !== "object" || block === null) {
+    return false;
+  }
+  const candidate = block as {type?: unknown, content?: unknown};
+  return candidate.type === "heading" && Array.isArray(candidate.content);
+};
 
 const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
   useEffect(() => {
@@ -13,10 +33,10 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
     }, 300); // this should await for BlockNote document to be loaded, for a while we simulate that with 300ms delay
   }, [])
 
-  const headerBlocks = content.filter(block => block.type === "heading").map(block => {
+  const headerBlocks = content.filter(isHeadingBlock).map(block => {
     return {
       ...block,
-      label: block.content.reduce((acc, curr) => {
+      label: block.content.reduce((acc: string, curr) => {
         let toAdd = "";
         if (curr.text) {
           toAdd += curr.text;
@@ -28,7 +48,7 @@ const TableOfContentsPanel = ({content}: TableOfContentsPanelProps) => {
     }
   }).filter(block => block.label !== "");
 
-  const markerStyle = (level) => {
+  const markerStyle = (level: number) => {
     switch (level) {
       case 1: return "list-disc";
       case 2: return "list-[circle]";

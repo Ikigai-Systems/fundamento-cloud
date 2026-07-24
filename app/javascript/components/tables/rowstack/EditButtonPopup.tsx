@@ -1,11 +1,25 @@
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
+type ColumnConfiguration = {
+  buttonFormula?: string,
+  buttonLabel?: string,
+};
+
+type EditButtonPopupProps = {
+  column: {
+    configuration?: ColumnConfiguration,
+    options?: {formula?: string},
+    fundamentoFormula?: string,
+  },
+  setColumn: (attributes: {configuration: ColumnConfiguration}) => void,
+  close: () => void,
+};
 
 function EditButtonPopup({
   column,
   setColumn,
   close,
-}) {
+}: EditButtonPopupProps) {
   const [formula, setFormula] = useState<string>(column.configuration?.buttonFormula || "");
   const componentWillUnmount = useRef(false);
   const saveFormulaUponClose = useRef(true);

@@ -1,7 +1,9 @@
+import schema from "../schema.ts";
+
 const ButtonInlineContentMenuItem = () => ({
   title: "Button",
   subtext: "Add custom interactions to your document with the click of a button",
-  onItemClick: (editor) => {
+  onItemClick: (editor: typeof schema.BlockNoteEditor) => {
     editor.insertInlineContent([{
       type: "button"
     }]);

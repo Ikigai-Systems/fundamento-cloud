@@ -1,4 +1,14 @@
-import React, {useEffect, useRef} from "react";
+import {useEffect, useRef} from "react";
+
+type ColumnConfiguration = {
+  dateDisplayFormat?: number,
+};
+
+type EditDateDisplayFormatPopupProps = {
+  column: {configuration?: ColumnConfiguration},
+  setColumn: (attributes: {configuration: ColumnConfiguration}) => void,
+  close: () => void,
+};
 
 const formats = [[
   "1/31/2024",
@@ -29,8 +39,8 @@ function EditDateDisplayFormatPopup({
   column,
   setColumn,
   close,
-}) {
-  const selectedDivRef = useRef();
+}: EditDateDisplayFormatPopupProps) {
+  const selectedDivRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const {current} = selectedDivRef;

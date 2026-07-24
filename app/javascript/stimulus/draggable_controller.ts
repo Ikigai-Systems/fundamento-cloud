@@ -2,17 +2,26 @@ import {Controller} from "@hotwired/stimulus"
 import sortable from "html5sortable/dist/html5sortable.es.js"
 import SpacesApi from "../api/SpacesApi.js"
 
+// Shape of the `detail` payload dispatched by html5sortable's `sortupdate` event.
+// See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortupdate
+interface SortUpdateDetail {
+  item: HTMLElement;
+  destination: {
+    container: HTMLElement;
+    index: number;
+  };
+}
+
 // Connects to data-controller="draggable"
 export default class extends Controller<HTMLElement> {
   static targets = ["item"];
 
   declare itemTargets: HTMLElement[];
-  declare element: HTMLElement;
 
   private readonly draggableSelector = '[data-controller~="draggable"]';
 
   connect() {
-    let updatePlaceholderInterval = undefined;
+    let updatePlaceholderInterval: ReturnType<typeof setInterval> | undefined = undefined;
 
     sortable(this.element, {
       acceptFrom: this.draggableSelector,
@@ -20,17 +29,19 @@ export default class extends Controller<HTMLElement> {
     }).forEach((item: HTMLElement) => {
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortupdate
       // This event is triggered when the user stopped sorting and the DOM position has changed.
-      item.addEventListener('sortupdate', async (e: CustomEvent) => {
+      item.addEventListener('sortupdate', async (event: Event) => {
+        const detail = (event as CustomEvent<SortUpdateDetail>).detail;
+
         // Update level for all nested items after drop
-        e.detail.item.querySelectorAll(".document-padding-left").forEach(element => {
+        detail.item.querySelectorAll<HTMLElement>(".document-padding-left").forEach(element => {
           const level = this.calculateDepth(element.closest("ul")) - 1;
           element.style.setProperty("--level", level.toString());
         });
 
         // Auto-expand destination container if it has collapsible controller
-        const container = e.detail.destination.container;
-        const closestCollapsible = container.closest("[data-controller~='collapsible']") as HTMLElement;
-        if (closestCollapsible) {
+        const container = detail.destination.container;
+        const closestCollapsible = container.closest("[data-controller~='collapsible']");
+        if (closestCollapsible instanceof HTMLElement) {
           const controller = this.application.getControllerForElementAndIdentifier(
             closestCollapsible,
             "collapsible"
@@ -40,13 +51,14 @@ export default class extends Controller<HTMLElement> {
 
         // Persist the reorder to the backend
         const spaceId = this.element.dataset.spaceId;
+        const documentElement = detail.item.querySelector<HTMLElement>("div[data-document-id]");
 
         await SpacesApi.reorderHierarchy({
           params: {id: spaceId},
           data: {
-            documentId: e.detail.item.querySelector("div[data-document-id]").dataset.documentId,
+            documentId: documentElement?.dataset.documentId,
             parentId: item.dataset.documentId,
-            position: e.detail.destination.index
+            position: detail.destination.index
           }
         });
       });
@@ -91,17 +103,18 @@ export default class extends Controller<HTMLElement> {
     });
   }
 
-  private calculateDepth(element: HTMLElement): number {
+  private calculateDepth(element: Element | null): number {
     let accumulator = 0;
-    while (element) {
+    let current = element;
+    while (current) {
       accumulator++;
-      element = element.parentElement.closest(this.draggableSelector);
+      current = current.parentElement?.closest(this.draggableSelector) ?? null;
     }
     return accumulator;
   }
 
   private updatePlaceholder() {
-    const placeholder: HTMLElement = document.querySelector('.sortable-placeholder');
+    const placeholder = document.querySelector<HTMLElement>('.sortable-placeholder');
 
     if (!placeholder) return;
 
@@ -113,7 +126,8 @@ export default class extends Controller<HTMLElement> {
     placeholder.style.setProperty("--level", level.toString());
 
     // Mark whether placeholder is surrounding an empty container (CSS handles styling)
-    const isEmpty = container.querySelectorAll("li:not(.sortable-placeholder)").length === 0;
+    const isEmpty = container === null
+      || container.querySelectorAll("li:not(.sortable-placeholder)").length === 0;
     placeholder.dataset.surround = isEmpty.toString();
   }
 }

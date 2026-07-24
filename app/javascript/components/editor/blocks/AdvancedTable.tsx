@@ -1,5 +1,7 @@
-import {createReactBlockSpec} from "@blocknote/react";
+import {createReactBlockSpec, ReactCustomBlockRenderProps} from "@blocknote/react";
+import {BlockConfig} from "@blocknote/core";
 import {useContext, useEffect, useRef, useState} from "react";
+import {Space} from "../../../types.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
@@ -10,6 +12,33 @@ import EditableTableWithRowstack from "../../tables/EditableTableWithRowstack.ts
 import {request} from "@js-from-routes/axios";
 import deepmerge from "deepmerge";
 import AdvancedTableTitle from "./AdvancedTableTitle.tsx";
+
+type AdvancedTableConfig = BlockConfig<
+  "advancedTable",
+  {
+    tableId: {default: -1},
+    tableNpi: {default: ""},
+    viewProps: {default: string},
+  },
+  "none"
+>;
+
+type AdvancedTableRenderProps = ReactCustomBlockRenderProps<AdvancedTableConfig>;
+
+type SelectOrCreateTableContainerProps = {
+  space: Space | undefined,
+  editor: AdvancedTableRenderProps["editor"],
+  block: AdvancedTableRenderProps["block"],
+};
+
+type TableListItem = {
+  id: string,
+  name: string,
+};
+
+type TableViewProps = {
+  columns: Record<string, {width?: number}>,
+};
 
 const sampleRows = [
   {
@@ -46,8 +75,8 @@ const sampleColumns = [
 // This module intentionally exports the createAdvancedTable block-spec factory (imported by the editor
 // schema) alongside this internal component, so fast-refresh's component-only rule does not apply.
 // eslint-disable-next-line react-refresh/only-export-components
-const SelectOrCreateTableContainer = ({space, editor, block}) => {
-  const inputFile = useRef<HTMLInputElement | undefined>(undefined);
+const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTableContainerProps) => {
+  const inputFile = useRef<HTMLInputElement | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
   return (
@@ -102,6 +131,9 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
             setIsCreating(true);
             try {
               const file = e.target?.files?.[0];
+              if (!file) {
+                return;
+              }
               const body = new FormData();
               body.append('table[csv_file]', file);
 
@@ -150,19 +182,25 @@ const SelectOrCreateTableContainer = ({space, editor, block}) => {
             cacheOptions
             defaultOptions
             loadOptions={async (query) => {
-              const tables = await TablesApi.index({
+              const tables = await TablesApi.index<TableListItem[]>({
                 query: {
-                  space_id: space.id,
+                  space_id: space?.id,
                   query,
                 }
               });
-              return tables.map(table => ({value: table.id, label: table.name}));
+              return tables.map((table) => ({value: table.id, label: table.name}));
             }}
             onChange={(newOption) => {
+              if (!newOption) {
+                return;
+              }
+              // Note: the deprecated `tableId` prop (schema type `number`) is intentionally not
+              // written here — `tableNpi` is always set, so the backend never falls back to `tableId`
+              // (see references_extractor.rb / blocknote_blocks.rb). The create handlers still write
+              // it via the untyped API for backwards compatibility.
               editor.updateBlock(block, {
                 props: {
-                  tableNpi: (newOption as { value: string }).value,
-                  tableId: (newOption as { value: string }).value,
+                  tableNpi: newOption.value,
                 },
               });
             }}
@@ -189,13 +227,14 @@ export const createAdvancedTable = createReactBlockSpec(
       }
     },
     content: "none",
-    isSelectable: false,
   },
   {
     /* eslint-disable react-hooks/rules-of-hooks */
+    // `isSelectable` moved to `meta.selectable` in the current @blocknote/core version.
+    meta: {selectable: false},
     render: (props) => {
       const blockProps = props.block.props;
-      const [viewProps, setViewProps] = useState(JSON.parse(blockProps.viewProps));
+      const [viewProps, setViewProps] = useState<TableViewProps>(JSON.parse(blockProps.viewProps));
       const initialRender = useRef(true);
 
       useEffect(() => {
@@ -216,7 +255,7 @@ export const createAdvancedTable = createReactBlockSpec(
       const {space} = useContext(CurrentSpaceContext);
       const tableId = blockProps.tableNpi;
       const tableQuery = useQuery({
-        queryKey: ["tables", space.id, tableId], queryFn: async () => {
+        queryKey: ["tables", space?.id, tableId], queryFn: async () => {
           if (tableId === "") {
             return null;
           }

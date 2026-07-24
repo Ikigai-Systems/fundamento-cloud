@@ -3,8 +3,8 @@ import {ServerBlockNoteEditor} from "@blocknote/server-util";
 import type {Block} from "@blocknote/core";
 import {toHtml} from "hast-util-to-html";
 import type {Element as HastElement, ElementContent, Nodes as HastNodes, Parents as HastParents} from "hast";
-import type {State as H2mState} from "hast-util-to-mdast";
-import type {State as M2hState} from "mdast-util-to-hast";
+import type {Handle as H2mHandle, Options as H2mOptions} from "hast-util-to-mdast";
+import type {Options as M2hOptions, State as M2hState} from "mdast-util-to-hast";
 import type {Blockquote, Code, Image} from "mdast";
 import rehypeParse from "rehype-parse";
 import rehypeRaw from "rehype-raw";
@@ -125,7 +125,7 @@ function addSpacesToCheckboxes() {
       ) {
         nextChild.tagName = "span";
         nextChild.children.splice(0, 0, {type: "text", value: " "});
-      } else {
+      } else if (child.type === "element") {
         helper(child);
       }
     }
@@ -142,9 +142,9 @@ function convertMentionSpans() {
   return (tree: HastNodes) => {
     visit(tree, "element", (node: HastElement) => {
       if (node.tagName === "span" && node.properties?.dataMention) {
-        const entity = node.properties.dataMention;
-        const entityId = node.properties.dataEntityId || "";
-        const fragment = node.properties.dataFragment || "";
+        const entity = String(node.properties.dataMention);
+        const entityId = node.properties.dataEntityId ? String(node.properties.dataEntityId) : "";
+        const fragment = node.properties.dataFragment ? String(node.properties.dataFragment) : "";
         const title = node.children
           ?.filter((c): c is Extract<ElementContent, {type: "text"}> => c.type === "text")
           .map((c) => c.value)
@@ -187,10 +187,8 @@ function hasCustomContentType(node: HastNodes): boolean {
  * raw HTML mdast nodes, while falling back to the provided default handler
  * for ordinary elements of the same tag.
  */
-function makeCustomBlockHandler(
-  defaultHandler: (state: H2mState, node: HastElement, parent: HastParents | undefined) => unknown,
-) {
-  return (state: H2mState, element: HastElement, parent: HastParents | undefined) => {
+function makeCustomBlockHandler(defaultHandler: H2mHandle): H2mHandle {
+  return (state, element, parent) => {
     if (hasCustomContentType(element)) {
       const html = toHtml(element);
       const result = {type: "html" as const, value: html};
@@ -206,8 +204,8 @@ function makeCustomBlockHandler(
 // ---------------------------------------------------------------------------
 
 // Default hast-util-to-mdast handlers we need to wrap
-function defaultDivHandler(state: H2mState, node: HastElement) { return state.toFlow(state.all(node)); }
-function defaultSpanHandler(state: H2mState, node: HastElement) { return state.all(node); }
+const defaultDivHandler: H2mHandle = (state, node) => state.toFlow(state.all(node));
+const defaultSpanHandler: H2mHandle = (state, node) => state.all(node);
 
 /**
  * Convert an HTML string (produced by blocksToHTMLLossy) to GitHub-Flavored
@@ -223,7 +221,7 @@ function htmlToMarkdown(html: string): string {
       handlers: {
         div: makeCustomBlockHandler(defaultDivHandler),
         span: makeCustomBlockHandler(defaultSpanHandler),
-      },
+      } satisfies H2mOptions["handlers"],
     })
     .use(remarkGfm)
     .use(remarkStringify, {
@@ -281,7 +279,11 @@ function codeHandler(state: M2hState, node: Code) {
   };
 
   if (node.meta) {
-    result.data = {meta: node.meta};
+    // `position` is a (structurally) required field on the augmented hast
+    // `ElementData` (contributed by hast-util-from-parse5); its sub-fields are
+    // all optional, so an empty object satisfies the type without affecting
+    // runtime behavior.
+    result.data = {meta: node.meta, position: {}};
   }
 
   state.patch(node, result);
@@ -380,8 +382,9 @@ function markdownToHtml(markdown: string): string {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, {
+      // hast-util-to-mdast (used under remark-rehype) already merges these
+      // handlers on top of its defaults, so only the overrides are listed.
       handlers: {
-        ...remarkRehypeDefaultHandlers,
         image: (state: M2hState, node: Image) => {
           const url = String(node?.url || "");
           if (isVideoUrl(url)) return videoHandler(state, node);
@@ -391,7 +394,7 @@ function markdownToHtml(markdown: string): string {
         },
         code: codeHandler,
         blockquote: (state: M2hState, node: Blockquote) => {
-          const result = {
+          const result: HastElement = {
             type: "element",
             tagName: "blockquote",
             properties: {},
@@ -400,7 +403,7 @@ function markdownToHtml(markdown: string): string {
           state.patch(node, result);
           return state.applyData(node, result);
         },
-      },
+      } satisfies M2hOptions["handlers"],
       allowDangerousHtml: true,
     })
     .use(rehypeRaw)

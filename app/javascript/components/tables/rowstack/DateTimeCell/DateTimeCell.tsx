@@ -1,5 +1,25 @@
 import dayjs from "dayjs";
-import React from "react";
+
+type FocusState = "none" | "focused" | "editing";
+
+type ColumnConfiguration = {
+  timeDisplayFormat?: string;
+} & Record<string, unknown>;
+
+type TableConfiguration = {
+  parseDate: (value: string, columnConfiguration: ColumnConfiguration) => Date | null;
+  formatDisplayDate: (parsedDate: Date | null, columnConfiguration: ColumnConfiguration) => string;
+  formatStoredDate: (value: string, columnConfiguration: ColumnConfiguration) => string;
+};
+
+type DateTimeCellProps = {
+  data: string | null;
+  setData: (value: string) => void;
+  focusState: FocusState;
+  isViewOnly: boolean;
+  columnConfiguration: ColumnConfiguration;
+  tableConfiguration: TableConfiguration;
+};
 
 function DateTimeCell({
   data,
@@ -8,7 +28,7 @@ function DateTimeCell({
   isViewOnly,
   columnConfiguration,
   tableConfiguration,
-}) {
+}: DateTimeCellProps) {
   //todo: convert to useMemo
   let dateChunk = null;
   let timeChunk = null;

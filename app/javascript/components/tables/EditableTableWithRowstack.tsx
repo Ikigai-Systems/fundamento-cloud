@@ -1,4 +1,5 @@
-import Rowstack from "rowstack";
+import RowstackImport from "rowstack";
+import type {ComponentType} from "react";
 import {createContext, useContext, useState} from "react";
 import createFlash from "../../utils/createFlash.ts"
 import CurrentSpaceContext from "../../contextes/CurrentSpaceContext.tsx";
@@ -77,6 +78,55 @@ const toType = (kind: Kind) => {
   }
 }
 
+type ColumnConfiguration = {
+  dateStoredFormat?: number,
+  dateDisplayFormat?: number,
+  numberStoredFormat?: string,
+  numberDisplayFormat?: string,
+} | null | undefined;
+
+// Rowstack signals invalid dates by attaching these fields to a native Date instance
+type AnnotatedDate = Date & {
+  _isValid?: boolean,
+  _originalValue?: string,
+};
+
+type RowstackColumn = {
+  isViewOnly: boolean,
+  id: string,
+  name: string,
+  type: string,
+  options: unknown,
+  fundamentoFormula: string,
+  configuration: unknown,
+  width?: number,
+  formula?: (row: Row) => string | undefined,
+};
+
+type RowstackChangeEvent = {
+  type: string,
+  colId: string,
+  update: {
+    width?: number,
+    isSelected?: boolean,
+    fundamentoFormula?: string,
+    [key: string]: unknown,
+  },
+};
+
+type RowstackProps = {
+  key?: string,
+  columns: RowstackColumn[],
+  data: Row[],
+  config: Record<string, unknown>,
+  onChange: (event: RowstackChangeEvent) => void | Promise<void>,
+};
+
+// The vendored rowstack module resolves to its .js build (not its .d.ts), so the
+// default export's props are inferred loosely (e.g. onChange is inferred as
+// `() => null`). Re-type it against the real runtime props used below.
+const Rowstack = RowstackImport as unknown as ComponentType<RowstackProps>;
+
 export interface EditableTableContextType {
   space: Space | undefined,
   table: Table | undefined,
@@ -98,7 +148,28 @@ export const EditableTableRowsContext = createContext<EditableTableRowsContextTy
 });
 
 
-type ColumnHeaderPopupProps = Record<string, unknown>;
+type ColumnHeaderColumn = {
+  id: string,
+  type: string,
+  configuration?: {
+    dateStoredFormat?: number,
+    dateDisplayFormat?: number,
+    numberStoredFormat?: string,
+    numberDisplayFormat?: string,
+    timeDisplayFormat?: string,
+    buttonFormula?: string,
+    buttonLabel?: string,
+  },
+  options?: {formula?: string},
+  fundamentoFormula?: string,
+};
+
+type ColumnHeaderPopupProps = {
+  column: ColumnHeaderColumn,
+  setColumn: (update: Record<string, unknown>) => void,
+  close: () => void,
+  [key: string]: unknown,
+};
 
 const FormulaEditPopup = (popupProps: ColumnHeaderPopupProps) => {
   const {space, table} = useContext(EditableTableContext);
@@ -108,7 +179,7 @@ const FormulaEditPopup = (popupProps: ColumnHeaderPopupProps) => {
 };
 
 type ColumnHeaderMenuItemProps = {
-  column: {id: string, type: string, [key: string]: unknown},
+  column: ColumnHeaderColumn,
   showPopup: () => void,
 };
 
@@ -118,6 +189,7 @@ const MoveColumnLeftMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
   return (
     <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
       onClick={async () => {
+        if (!space || !table) return;
         const spaceId = space.id;
         const tableId = table.id;
 
@@ -141,6 +213,7 @@ const MoveColumnRightMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
   return (
     <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
       onClick={async () => {
+        if (!space || !table) return;
         const spaceId = space.id;
         const tableId = table.id;
 
@@ -196,7 +269,7 @@ const DownloadCsvToolbarItem = ({table}: {table: Table}) => {
 
 const extraColumnHeaderPopupActions = [{
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "formula") {
       return null;
     }
@@ -210,10 +283,10 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <FormulaEditPopup {...popupProps} />
+  popup: (popupProps: ColumnHeaderPopupProps) => <FormulaEditPopup {...popupProps} />
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "date" && column.type !== "datetime") {
       return null;
     }
@@ -226,10 +299,10 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditDateDisplayFormatPopup {...popupProps}/>
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "datetime") {
       return null;
     }
@@ -242,10 +315,10 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditTimeDisplayFormatPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditTimeDisplayFormatPopup {...popupProps}/>
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "date" && column.type !== "datetime") {
       return null;
     }
@@ -258,10 +331,10 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditDateStoredFormatPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditDateStoredFormatPopup {...popupProps}/>
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "number") {
       return null;
     }
@@ -274,10 +347,10 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditNumberDisplayFormatPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditNumberDisplayFormatPopup {...popupProps}/>
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "number") {
       return null;
     }
@@ -290,16 +363,16 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditNumberStoredFormatPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditNumberStoredFormatPopup {...popupProps}/>
 }, {
   section: "actions2",
-  menuItem: (menuItemProps) => <MoveColumnLeftMenuItem {...menuItemProps} />,
+  menuItem: (menuItemProps: ColumnHeaderMenuItemProps) => <MoveColumnLeftMenuItem {...menuItemProps} />,
 }, {
   section: "actions2",
-  menuItem: (menuItemProps) => <MoveColumnRightMenuItem {...menuItemProps} />,
+  menuItem: (menuItemProps: ColumnHeaderMenuItemProps) => <MoveColumnRightMenuItem {...menuItemProps} />,
 }, {
   section: "main",
-  menuItem: ({column, showPopup}) => {
+  menuItem: ({column, showPopup}: ColumnHeaderMenuItemProps) => {
     if (column.type !== "button") {
       return null;
     }
@@ -312,7 +385,7 @@ const extraColumnHeaderPopupActions = [{
       </div>
     );
   },
-  popup: (popupProps) => <EditButtonPopup {...popupProps}/>
+  popup: (popupProps: ColumnHeaderPopupProps) => <EditButtonPopup {...popupProps}/>
 }];
 
 // we had played with three other libraries for rendering tables (aside Rowstack), you can find working PoC by following fulll git-blame on this comment line
@@ -320,7 +393,7 @@ const extraColumnHeaderPopupActions = [{
 const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerenderUuid, initialViewProps, onViewPropsChange = () => {}}: EditableTableWithRowstackProps) => {
   const {space} = useContext(CurrentSpaceContext);
 
-  const columns = data.columns.map(({id, name, kind, options, formula, configuration}) => ({
+  const columns: RowstackColumn[] = data.columns.map(({id, name, kind, options, formula, configuration}) => ({
     isViewOnly: !isEditable,
     id,
     name,
@@ -332,7 +405,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
   }));
 
   columns.filter(({type}) => type === "formula").forEach(column => {
-    column.formula = (row) => {
+    column.formula = (row: Row) => {
       const formulaResult = row[column.id];
       if (typeof formulaResult === 'object' && formulaResult !== null) {
         return JSON.stringify(formulaResult);
@@ -403,7 +476,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 </>)
               }
             }],
-            parseDate: (value, columnConfiguration) => {
+            parseDate: (value: string, columnConfiguration: ColumnConfiguration) => {
               if (!value) {
                 return null;
               }
@@ -425,19 +498,19 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                   dateDayJs = dayjs(value);
                   break;
               }
-              const date = dateDayJs.toDate();
+              const date: AnnotatedDate = dateDayJs.toDate();
               if (!dateDayJs.isValid()) {
                 date._isValid = false;
                 date._originalValue = value;
               }
               return date;
             },
-            formatStoredDate: (parsedData, columnConfiguration) => {
+            formatStoredDate: (parsedData: AnnotatedDate | null, columnConfiguration: ColumnConfiguration) => {
               if (parsedData === null) {
                 return "";
               }
               if (parsedData?._isValid === false) {
-                return parsedData._originalValue;
+                return parsedData._originalValue ?? "";
               }
               const dayDate = dayjs(parsedData);
               switch (columnConfiguration?.dateStoredFormat) {
@@ -453,7 +526,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                   return dayDate.format("L");
               }
             },
-            formatDisplayDate: (parsedData, columnConfiguration) => {
+            formatDisplayDate: (parsedData: AnnotatedDate, columnConfiguration: ColumnConfiguration) => {
               if (parsedData._isValid === false) {
                 return "Invalid Date";
               }
@@ -499,7 +572,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                   return dayDate.format("L");
               }
             },
-            parseNumber: (value, columnConfiguration) => {
+            parseNumber: (value: string | null | undefined, columnConfiguration: ColumnConfiguration) => {
               if (!value) {
                 return null;
               }
@@ -508,12 +581,12 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
                 case "0.01":
                   return Number(value);
                 case "0,01":
-                  return Number(value.replaceAll(",","."));
+                  return Number(value.replace(/,/g, "."));
                 default:
                   return Number(value);
               }
             },
-            formatDisplayNumber: (parsedData, columnConfiguration) => {
+            formatDisplayNumber: (parsedData: number | null, columnConfiguration: ColumnConfiguration) => {
               if (parsedData === null) {
                 return "";
               }
@@ -532,7 +605,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               }
             }
           }}
-          onChange={async (event) => {
+          onChange={async (event: RowstackChangeEvent) => {
             if (event.type === "update_column" && event.update?.width !== undefined) {
               onViewPropsChange({columns: {[event.colId]: {width: event.update.width}}});
             }
@@ -557,7 +630,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               });
               Config.serializeData = currentDataSerializer;
               await promise;
-              if (event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
+              if (space && event.type === "update_column" && event.update?.fundamentoFormula !== undefined) {
                 queryClient.invalidateQueries({queryKey: ["tables", space.id, table.id]});
               }
             } catch {
@@ -594,13 +667,21 @@ export type TableData = {
   columns: Array<Column>,
 }
 
+type ColumnViewProps = {
+  width?: number,
+};
+
+type ViewProps = {
+  columns: Record<string, ColumnViewProps>,
+};
+
 type EditableTableWithRowstackProps = {
   isEditable: boolean,
   table: Table,
   data: TableData,
   forceRerenderUuid: string,
-  initialViewProps: TableData,
-  onViewPropsChange: (any) => void,
+  initialViewProps: ViewProps,
+  onViewPropsChange: (viewProps: ViewProps) => void,
 }
 
 export default EditableTableWithRowstack;

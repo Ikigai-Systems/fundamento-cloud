@@ -1,6 +1,29 @@
-import React, {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef} from "react";
 import Spinner from "../../spinners/Spinner.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
+
+type FormulaColumn = {
+  fundamentoFormula?: string,
+  options?: {formula?: string},
+};
+
+type FormulaRow = {
+  id: string,
+};
+
+type PreviewResponse = {
+  result: string | number | undefined,
+  error: string | undefined,
+};
+
+type EditFormulaPopupProps = {
+  column: FormulaColumn,
+  setColumn: (update: {fundamentoFormula: string}) => void,
+  close: () => void,
+  rows: FormulaRow[] | undefined,
+  space: {id: string} | undefined,
+  table: {id: string} | undefined,
+};
 
 function EditFormulaPopup({
   column,
@@ -9,11 +32,11 @@ function EditFormulaPopup({
   rows,
   space,
   table,
-}) {
+}: EditFormulaPopupProps) {
   const [formula, setFormula] = useState<string>(column.fundamentoFormula || "")
   const [previewRow, setPreviewRow] = useState<number>(0);
   const [previewIsLoading, setPreviewIsLoading] = useState<boolean>(false);
-  const [previewResponse, setPreviewResponse] = useState({
+  const [previewResponse, setPreviewResponse] = useState<PreviewResponse>({
     result: undefined,
     error: undefined,
   })
@@ -36,11 +59,15 @@ function EditFormulaPopup({
   }, [formula, setColumn, column.fundamentoFormula]);
 
   useEffect(() => {
+    const row = rows?.[previewRow];
+    if (!table || !row) {
+      return;
+    }
     const fetchPreview = async () => {
       setPreviewIsLoading(true);
       setPreviewResponse({result: undefined, error: undefined});
       try {
-        const response = await TablesApi.previewFormula({params: {id: table.id}, data: {formula, rowId: rows[previewRow].id}});
+        const response: PreviewResponse = await TablesApi.previewFormula({params: {id: table.id}, data: {formula, rowId: row.id}});
         setPreviewResponse(response);
       } finally {
         setPreviewIsLoading(false);
@@ -48,7 +75,7 @@ function EditFormulaPopup({
     }
 
     fetchPreview();
-  }, [formula, previewRow, rows, space.id, table.id]);
+  }, [formula, previewRow, rows, space?.id, table]);
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
@@ -85,18 +112,18 @@ function EditFormulaPopup({
         </div>
         <div className="flex flex-row items-center">
           <div className="border-l ml-2 px-2">
-            Row {1 + previewRow} of {rows.length}
+            Row {1 + previewRow} of {rows?.length ?? 0}
           </div>
           <div className="flex items-center justify-center size-6 hover:bg-neutral-200 dark:hover:bg-gray-600 active:bg-neutral-300 dark:active:bg-gray-500"
             onClick={() => {
-              setPreviewRow(previewValue => (previewValue + 1) % rows.length);
+              setPreviewRow(previewValue => (previewValue + 1) % (rows?.length ?? 1));
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-down]"></div>
           </div>
           <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 dark:hover:bg-gray-600 active:bg-neutral-300 dark:active:bg-gray-500"
             onClick={() => {
-              setPreviewRow(previewRow => (rows.length + previewRow - 1) % rows.length);
+              setPreviewRow(previewRow => ((rows?.length ?? 1) + previewRow - 1) % (rows?.length ?? 1));
             }}
           >
             <div className="size-4 icon-[heroicons--chevron-up]"></div>

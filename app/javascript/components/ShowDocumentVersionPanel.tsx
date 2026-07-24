@@ -4,6 +4,7 @@ import CurrentSpaceContext from ".././contextes/CurrentSpaceContext";
 import queryClient from ".././contextes/ReactQueryClient.tsx";
 import {useCreateBlockNote} from "@blocknote/react";
 import {BlockNoteView} from "@blocknote/mantine";
+import {PartialBlock} from "@blocknote/core";
 import '@blocknote/mantine/style.css';
 import schema from "./editor/schema.ts";
 
@@ -22,7 +23,12 @@ type ShowVersionPanelProps = {
 const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
-    initialContent: version.contentBlocks,
+    // contentBlocks is persisted BlockNote JSON (typed `unknown` on Version).
+    initialContent: version.contentBlocks as PartialBlock<
+      typeof schema.blockSchema,
+      typeof schema.inlineContentSchema,
+      typeof schema.styleSchema
+    >[],
     resolveFileUrl: createFileUrlResolver(),
   });
 

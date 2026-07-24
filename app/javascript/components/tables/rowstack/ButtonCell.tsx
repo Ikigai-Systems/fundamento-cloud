@@ -1,14 +1,22 @@
-import React, {useContext, useState} from "react";
+import {useContext, useState} from "react";
 import FormulasApi from "../../../api/FormulasApi";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import createFlash from "../../../utils/createFlash.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 
+type ButtonCellProps = {
+  columnConfiguration?: {
+    buttonFormula?: string,
+    buttonLabel?: string,
+  },
+  rowId: string,
+};
+
 function ButtonCell({
   columnConfiguration,
   rowId,
-}) {
+}: ButtonCellProps) {
   const {space} = useContext(CurrentSpaceContext);
   const [isExecuting, setIsExecuting] = useState(false);
 
@@ -42,7 +50,7 @@ function ButtonCell({
     } catch (e) {
       createFlash({
         type: "error",
-        message: e.message,
+        message: e instanceof Error ? e.message : String(e),
       });
     } finally {
       setIsExecuting(false);

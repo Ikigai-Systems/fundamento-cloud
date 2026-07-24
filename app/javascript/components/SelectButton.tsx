@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {
   autoUpdate,
   flip,
@@ -18,6 +18,12 @@ import {Placement} from "@floating-ui/utils";
 
 type OptionOrString = string | {value: string, label: string}
 
+const optionValue = (option: OptionOrString): string =>
+  typeof option === "string" ? option : option.value;
+
+const optionLabel = (option: OptionOrString): string =>
+  typeof option === "string" ? option : option.label;
+
 type SelectButtonProps = {
   value: string,
   onChange?: (value: OptionOrString) => Promise<void>,
@@ -29,15 +35,15 @@ export default function SelectButton({
 }: SelectButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(options.findIndex(option => (option?.value || option) === value));
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(options.findIndex(option => optionValue(option) === value));
 
   const initialRender = useRef(true);
 
   useEffect(() => {
     if (initialRender.current === true) {
       initialRender.current = false;
-    } else {
-      onChange(options[selectedIndex]);
+    } else if (selectedIndex !== null) {
+      onChange?.(options[selectedIndex]);
     }
     // Fire onChange only when the selection changes; adding onChange/options would re-fire on every parent render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +70,7 @@ export default function SelectButton({
   });
 
   const listRef = useRef<Array<HTMLElement | null>>([]);
-  const listContentRef = useRef(options);
+  const listContentRef = useRef<Array<string | null>>(options.map(optionLabel));
   const isTypingRef = useRef(false);
 
   const click = useClick(context, { event: "mousedown" });
@@ -98,7 +104,9 @@ export default function SelectButton({
   };
 
   const selectedItemLabel =
-    selectedIndex !== null ? options[selectedIndex]?.label || options[selectedIndex] : undefined;
+    selectedIndex !== null && options[selectedIndex] !== undefined
+      ? optionLabel(options[selectedIndex])
+      : undefined;
 
   return (
     <>
@@ -124,7 +132,7 @@ export default function SelectButton({
             >
               {options.map((option, i) => (
                 <div
-                  key={option?.value || option}
+                  key={optionValue(option)}
                   ref={(node) => {
                     listRef.current[i] = node;
                   }}
@@ -151,7 +159,7 @@ export default function SelectButton({
                     },
                   })}
                 >
-                  {option?.label || option}
+                  {optionLabel(option)}
                 </div>
               ))}
             </div>

@@ -12,7 +12,7 @@ import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 // through every consumer. Using any here is intentional until we adopt BlockNote's full type system.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type CommentEditorProps = {
-  objectId: number,
+  objectId: string,
   initialContent?: any,
   editable?: boolean,
   onContentChange?: (content: any) => void,
