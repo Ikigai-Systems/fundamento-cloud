@@ -13,7 +13,8 @@ import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
-import {DefaultThreadStoreAuth, ThreadStore, YjsThreadStore} from "@blocknote/core/comments";
+import {DefaultThreadStoreAuth, ThreadStore} from "@blocknote/core/comments";
+import {YjsThreadStore} from "@blocknote/core/yjs";
 import tinySimpleHash from "../../utils/tinySimpleHash";
 import resolveUsers from "../../utils/resolveUsers";
 
