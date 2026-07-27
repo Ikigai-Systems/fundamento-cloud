@@ -1,13 +1,24 @@
 #!/bin/bash -e
 
-# Auto-generate credentials for standalone on first boot
+# Auto-generate credentials for standalone on first boot.
+#
+# Serialize generation with flock: several containers (website, jobs) start at
+# once sharing the credentials volume, so without a lock they all see the file
+# missing and run credentials:edit concurrently. Interleaved writes leave the
+# standalone.key from one run paired with the standalone.yml.enc from another,
+# which fails to decrypt with ActiveSupport::MessageEncryptor::InvalidMessage and
+# aborts boot. The lock lets one container generate while the others wait, then
+# skip because the file now exists.
 if [ "$RAILS_ENV" = "standalone" ]; then
   CREDENTIALS_FILE=config/credentials/standalone.yml.enc
 
-  if [ ! -f "$CREDENTIALS_FILE" ]; then
-    echo "First boot detected — generating standalone credentials..."
-    EDITOR="true" ./bin/rails credentials:edit --environment standalone
-  fi
+  (
+    flock 9
+    if [ ! -f "$CREDENTIALS_FILE" ]; then
+      echo "First boot detected — generating standalone credentials..."
+      EDITOR="true" ./bin/rails credentials:edit --environment standalone
+    fi
+  ) 9>config/credentials/.standalone-credentials.lock
 fi
 
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
