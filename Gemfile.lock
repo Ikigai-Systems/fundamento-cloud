@@ -408,7 +408,6 @@ GEM
       zeitwerk (~> 2.6)
     rake (13.4.2)
     rake-compiler-dock (1.12.0)
-    random-word (2.1.1)
     rb_sys (0.9.128)
       rake-compiler-dock (= 1.12.0)
     rbs (4.0.3)
@@ -606,7 +605,6 @@ DEPENDENCIES
   rails (~> 8.1.1)
   rails-controller-testing
   rails-static-router
-  random-word
   reactionview
   recaptcha
   redis (>= 4.0.1)

@@ -99,8 +99,6 @@ gem "flipper-ui"
 gem "flipper-api"
 gem "recaptcha"
 
-gem "random-word"
-
 gem "initials"
 
 gem "mcp", "~> 0.16"
