@@ -51,12 +51,6 @@ module EnsureOrganization
   private
 
   def generate_organization_name
-    # Take a sample of words and pick randomly to avoid fiber threading issues
-    # Using Thread.current to store enumerators causes "fiber called across threads" error
-    # in multi-threaded environments (like production with Puma)
-    adjective = RandomWord.adjs.take(100).sample.capitalize
-    noun = RandomWord.nouns.take(100).sample.capitalize
-
-    "#{adjective} #{noun}"
+    OrganizationNameGenerator.generate
   end
 end

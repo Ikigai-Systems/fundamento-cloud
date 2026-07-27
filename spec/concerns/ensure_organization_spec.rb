@@ -18,8 +18,8 @@ RSpec.describe EnsureOrganization do
       name = test_instance.generate_organization_name
 
       expect(name).to be_a(String)
-      # Format: "Capitalized word Capitalized word" (may contain underscores)
-      expect(name).to match(/\A[A-Z][a-z_]+ [A-Z][a-z_]+\z/)
+      # Format: "Capitalized word Capitalized word"
+      expect(name).to match(/\A[A-Z][a-z]+ [A-Z][a-z]+\z/)
     end
 
     it "generates different names on subsequent calls" do
@@ -61,38 +61,6 @@ RSpec.describe EnsureOrganization do
         expect(results_queue.size).to eq(10)
         results_array = results_queue.size.times.map { results_queue.pop }
         expect(results_array).to all(be_a(String))
-      end
-
-      it "does not cause fiber called across threads error when reusing Thread.current storage" do
-        # This specifically tests the original bug where Thread.current[:random_word_adjs]
-        # stored an Enumerator that couldn't be used across threads
-
-        errors = Queue.new
-
-        # First thread creates and uses the enumerator
-        thread1 = Thread.new do
-          begin
-            instance = test_class.new
-            instance.generate_organization_name
-          rescue => e
-            errors << e
-          end
-        end
-        thread1.join
-
-        # Second thread tries to use the same Thread.current storage
-        # (in the old implementation, this would fail)
-        thread2 = Thread.new do
-          begin
-            instance = test_class.new
-            instance.generate_organization_name
-          rescue => e
-            errors << e
-          end
-        end
-        thread2.join
-
-        expect(errors.size).to eq(0)
       end
     end
   end
