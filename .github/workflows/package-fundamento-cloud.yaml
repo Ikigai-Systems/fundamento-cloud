@@ -35,6 +35,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write # assume the AWS ECS deploy role via OIDC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -88,3 +89,20 @@ jobs:
             type=gha,scope=${{ matrix.image-name }}
             type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}:master
           cache-to: type=gha,mode=max,scope=${{ matrix.image-name }}
+
+      # Deploy the newly pushed fundamento-cloud image to ECS (website + jobs),
+      # running DB migrations first. Only the fundamento-cloud image on master.
+      - name: Configure AWS credentials
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::471112519766:role/prod-github-actions-ecs-deploy-role
+          aws-region: us-east-1
+
+      - name: Deploy to ECS
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        uses: ikigai-systems/fundamento-infra/.github/actions/ecs-deploy@master
+        with:
+          services: "fundamento-cloud-website fundamento-cloud-jobs"
+          image-tag: ${{ steps.build-setup.outputs.timestamp }}
+          run-migrations: "true"
