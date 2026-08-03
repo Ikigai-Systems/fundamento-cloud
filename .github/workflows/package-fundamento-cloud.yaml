@@ -101,8 +101,43 @@ jobs:
 
       - name: Deploy to ECS
         if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
-        uses: ikigai-systems/fundamento-infra/.github/actions/ecs-deploy@master
-        with:
-          services: "fundamento-cloud-website fundamento-cloud-jobs"
-          image-tag: ${{ steps.build-setup.outputs.timestamp }}
-          run-migrations: "true"
+        env:
+          IMAGE_TAG: ${{ steps.build-setup.outputs.timestamp }}
+        run: |
+          set -euo pipefail
+          CLUSTER=prod-ecs
+
+          # Register a new task-def revision for a service with the new image; prints the new ARN.
+          register_new() {
+            local full="prod-$1" container="$1" td cur new reg
+            td=$(aws ecs describe-task-definition --task-definition "$full" --query 'taskDefinition')
+            cur=$(jq -r --arg c "$container" '.containerDefinitions[]|select(.name==$c)|.image' <<<"$td")
+            new="${cur%:*}:${IMAGE_TAG}"
+            reg=$(jq --arg c "$container" --arg img "$new" \
+              '.containerDefinitions |= map(if .name==$c then .image=$img else . end)
+               | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)' <<<"$td")
+            aws ecs register-task-definition --cli-input-json "$reg" --query 'taskDefinition.taskDefinitionArn' --output text
+          }
+
+          WEB_ARN=$(register_new fundamento-cloud-website)
+          JOBS_ARN=$(register_new fundamento-cloud-jobs)
+          echo "new website: $WEB_ARN"
+          echo "new jobs:    $JOBS_ARN"
+
+          # Run DB migrations with the NEW image (run-task) before shifting traffic.
+          echo "Running db:migrate..."
+          NETCFG=$(aws ecs describe-services --cluster "$CLUSTER" --services prod-fundamento-cloud-website --query 'services[0].networkConfiguration' --output json)
+          OV=$(jq -nc '{containerOverrides:[{name:"fundamento-cloud-website",command:["bin/rails","db:migrate"]}]}')
+          TASK=$(aws ecs run-task --cluster "$CLUSTER" --task-definition "$WEB_ARN" --launch-type FARGATE \
+            --network-configuration "$NETCFG" --overrides "$OV" --query 'tasks[0].taskArn' --output text)
+          aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK"
+          CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" \
+            --query "tasks[0].containers[?name=='fundamento-cloud-website'].exitCode | [0]" --output text)
+          [ "$CODE" = "0" ] || { echo "Migration failed (exit $CODE)"; exit 1; }
+          echo "Migration OK"
+
+          # Shift traffic: update both services to the new revisions.
+          aws ecs update-service --cluster "$CLUSTER" --service prod-fundamento-cloud-website --task-definition "$WEB_ARN" >/dev/null
+          aws ecs update-service --cluster "$CLUSTER" --service prod-fundamento-cloud-jobs --task-definition "$JOBS_ARN" >/dev/null
+          aws ecs wait services-stable --cluster "$CLUSTER" --services prod-fundamento-cloud-website prod-fundamento-cloud-jobs
+          echo "Deployed website + jobs"
