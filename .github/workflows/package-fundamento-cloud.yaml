@@ -105,6 +105,10 @@ jobs:
           IMAGE_TAG: ${{ steps.build-setup.outputs.timestamp }}
         run: |
           set -euo pipefail
+          # The timestamp may contain colons; docker/metadata-action sanitizes them
+          # to dashes for the pushed tag, so match that here (else ECS can't
+          # normalize the image reference).
+          IMAGE_TAG="${IMAGE_TAG//:/-}"
           CLUSTER=prod-ecs
 
           # Register a new task-def revision for a service with the new image; prints the new ARN.
