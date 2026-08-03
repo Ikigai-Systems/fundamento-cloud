@@ -19,19 +19,6 @@ jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
     if: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
-    strategy:
-      matrix:
-        include:
-          - image-name: fundamento-cloud
-            context: .
-            needs-secrets: true
-            rails-env: production
-            build-target: production
-          - image-name: blocknote-converter
-            context: micro-services/blocknote-converter
-            needs-secrets: false
-            rails-env: ''
-            build-target: ''
     permissions:
       contents: read
       packages: write
@@ -41,14 +28,12 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup SOPS with age
-        if: matrix.needs-secrets
         uses: ./.github/actions/setup-sops
         with:
           age-key: ${{ secrets.SOPS_AGE_KEY }}
           sops-version: ${{ env.SOPS_VERSION }}
 
       - name: Decrypt secrets for Docker build
-        if: matrix.needs-secrets
         run: |
           sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > /tmp/fontawesome-auth.secret
           echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
@@ -59,12 +44,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Tags for CI/CD consumption (FluxCD picks up timestamp tags)
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento-cloud
           tags: |
             type=raw,value=${{ steps.build-setup.outputs.timestamp }},enable={{is_default_branch}}
             type=sha
@@ -75,25 +59,25 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: ${{ matrix.context }}
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             NODE_MAJOR=${{ env.NODE_MAJOR }}
-            ${{ matrix.rails-env && format('RAILS_ENV={0}', matrix.rails-env) || '' }}
-          target: ${{ matrix.build-target || '' }}
+            RAILS_ENV=production
+          target: production
           secret-files: |
-            ${{ matrix.needs-secrets && format('"fontawesome-auth={0}"', env.FONTAWESOME_SECRET_FILE) || '' }}
+            "fontawesome-auth=${{ env.FONTAWESOME_SECRET_FILE }}"
           cache-from: |
-            type=gha,scope=${{ matrix.image-name }}
-            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-name }}:master
-          cache-to: type=gha,mode=max,scope=${{ matrix.image-name }}
+            type=gha,scope=fundamento-cloud
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/fundamento-cloud:master
+          cache-to: type=gha,mode=max,scope=fundamento-cloud
 
-      # Deploy the newly pushed fundamento-cloud image to ECS (website + jobs),
-      # running DB migrations first. Only the fundamento-cloud image on master.
+      # Deploy the newly pushed image to ECS (website + jobs), running DB
+      # migrations first. Master only.
       - name: Configure AWS credentials
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::471112519766:role/prod-github-actions-ecs-deploy-role
@@ -102,20 +86,20 @@ jobs:
       # The timestamp may contain colons; docker/metadata-action sanitizes them to
       # dashes for the pushed tag, so match that here.
       - name: Compute image tag
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         id: imgtag
         env:
           TS: ${{ steps.build-setup.outputs.timestamp }}
         run: echo "tag=${TS//:/-}" >> "$GITHUB_OUTPUT"
 
       - name: Fetch task definitions
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         run: |
           aws ecs describe-task-definition --task-definition prod-fundamento-cloud-website --query taskDefinition > web-td.json
           aws ecs describe-task-definition --task-definition prod-fundamento-cloud-jobs --query taskDefinition > jobs-td.json
 
       - name: Render website task definition
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         id: render-web
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -124,7 +108,7 @@ jobs:
           image: ghcr.io/ikigai-systems/fundamento-cloud:${{ steps.imgtag.outputs.tag }}
 
       - name: Render jobs task definition
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         id: render-jobs
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
@@ -135,7 +119,7 @@ jobs:
       # Run DB migrations with the NEW image before shifting traffic. Register the
       # rendered website task-def (stripped of read-only fields) and run it once.
       - name: Run database migrations
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         env:
           RENDERED: ${{ steps.render-web.outputs.task-definition }}
         run: |
@@ -159,7 +143,7 @@ jobs:
           [ "$CODE" = "0" ] || { echo "::error::db:migrate failed (exit ${CODE})"; exit 1; }
 
       - name: Deploy website
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.render-web.outputs.task-definition }}
@@ -168,7 +152,7 @@ jobs:
           wait-for-service-stability: true
 
       - name: Deploy jobs
-        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        if: github.event.workflow_run.head_branch == 'master'
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.render-jobs.outputs.task-definition }}
