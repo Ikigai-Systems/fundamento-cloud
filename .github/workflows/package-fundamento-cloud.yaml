@@ -99,49 +99,79 @@ jobs:
           role-to-assume: arn:aws:iam::471112519766:role/prod-github-actions-ecs-deploy-role
           aws-region: us-east-1
 
-      - name: Deploy to ECS
+      # The timestamp may contain colons; docker/metadata-action sanitizes them to
+      # dashes for the pushed tag, so match that here.
+      - name: Compute image tag
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        id: imgtag
+        env:
+          TS: ${{ steps.build-setup.outputs.timestamp }}
+        run: echo "tag=${TS//:/-}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch task definitions
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        run: |
+          aws ecs describe-task-definition --task-definition prod-fundamento-cloud-website --query taskDefinition > web-td.json
+          aws ecs describe-task-definition --task-definition prod-fundamento-cloud-jobs --query taskDefinition > jobs-td.json
+
+      - name: Render website task definition
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        id: render-web
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: web-td.json
+          container-name: fundamento-cloud-website
+          image: ghcr.io/ikigai-systems/fundamento-cloud:${{ steps.imgtag.outputs.tag }}
+
+      - name: Render jobs task definition
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        id: render-jobs
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: jobs-td.json
+          container-name: fundamento-cloud-jobs
+          image: ghcr.io/ikigai-systems/fundamento-cloud:${{ steps.imgtag.outputs.tag }}
+
+      # Run DB migrations with the NEW image before shifting traffic. Register the
+      # rendered website task-def (stripped of read-only fields) and run it once.
+      - name: Run database migrations
         if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
         env:
-          IMAGE_TAG: ${{ steps.build-setup.outputs.timestamp }}
+          RENDERED: ${{ steps.render-web.outputs.task-definition }}
         run: |
           set -euo pipefail
-          # The timestamp may contain colons; docker/metadata-action sanitizes them
-          # to dashes for the pushed tag, so match that here (else ECS can't
-          # normalize the image reference).
-          IMAGE_TAG="${IMAGE_TAG//:/-}"
           CLUSTER=prod-ecs
-
-          # Register a new task-def revision for a service with the new image; prints the new ARN.
-          register_new() {
-            local full="prod-$1" container="$1" td cur new reg
-            td=$(aws ecs describe-task-definition --task-definition "$full" --query 'taskDefinition')
-            cur=$(jq -r --arg c "$container" '.containerDefinitions[]|select(.name==$c)|.image' <<<"$td")
-            new="${cur%:*}:${IMAGE_TAG}"
-            reg=$(jq --arg c "$container" --arg img "$new" \
-              '.containerDefinitions |= map(if .name==$c then .image=$img else . end)
-               | del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)' <<<"$td")
-            aws ecs register-task-definition --cli-input-json "$reg" --query 'taskDefinition.taskDefinitionArn' --output text
-          }
-
-          WEB_ARN=$(register_new fundamento-cloud-website)
-          JOBS_ARN=$(register_new fundamento-cloud-jobs)
-          echo "new website: $WEB_ARN"
-          echo "new jobs:    $JOBS_ARN"
-
-          # Run DB migrations with the NEW image (run-task) before shifting traffic.
-          echo "Running db:migrate..."
-          NETCFG=$(aws ecs describe-services --cluster "$CLUSTER" --services prod-fundamento-cloud-website --query 'services[0].networkConfiguration' --output json)
+          jq 'del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)' \
+            "$RENDERED" > web-register.json
+          WEB_ARN=$(aws ecs register-task-definition --cli-input-json file://web-register.json \
+            --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "migration task-def: $WEB_ARN"
+          NETCFG=$(aws ecs describe-services --cluster "$CLUSTER" --services prod-fundamento-cloud-website \
+            --query 'services[0].networkConfiguration' --output json)
           OV=$(jq -nc '{containerOverrides:[{name:"fundamento-cloud-website",command:["bin/rails","db:migrate"]}]}')
           TASK=$(aws ecs run-task --cluster "$CLUSTER" --task-definition "$WEB_ARN" --launch-type FARGATE \
             --network-configuration "$NETCFG" --overrides "$OV" --query 'tasks[0].taskArn' --output text)
+          echo "migration run-task: ${TASK##*/}"
           aws ecs wait tasks-stopped --cluster "$CLUSTER" --tasks "$TASK"
           CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" \
             --query "tasks[0].containers[?name=='fundamento-cloud-website'].exitCode | [0]" --output text)
-          [ "$CODE" = "0" ] || { echo "Migration failed (exit $CODE)"; exit 1; }
-          echo "Migration OK"
+          echo "migration exit code: $CODE"
+          [ "$CODE" = "0" ] || { echo "::error::db:migrate failed (exit ${CODE})"; exit 1; }
 
-          # Shift traffic: update both services to the new revisions.
-          aws ecs update-service --cluster "$CLUSTER" --service prod-fundamento-cloud-website --task-definition "$WEB_ARN" >/dev/null
-          aws ecs update-service --cluster "$CLUSTER" --service prod-fundamento-cloud-jobs --task-definition "$JOBS_ARN" >/dev/null
-          aws ecs wait services-stable --cluster "$CLUSTER" --services prod-fundamento-cloud-website prod-fundamento-cloud-jobs
-          echo "Deployed website + jobs"
+      - name: Deploy website
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-web.outputs.task-definition }}
+          service: prod-fundamento-cloud-website
+          cluster: prod-ecs
+          wait-for-service-stability: true
+
+      - name: Deploy jobs
+        if: matrix.image-name == 'fundamento-cloud' && github.event.workflow_run.head_branch == 'master'
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render-jobs.outputs.task-definition }}
+          service: prod-fundamento-cloud-jobs
+          cluster: prod-ecs
+          wait-for-service-stability: true
