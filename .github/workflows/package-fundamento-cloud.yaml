@@ -149,7 +149,7 @@ jobs:
           task-definition: ${{ steps.render-web.outputs.task-definition }}
           service: prod-fundamento-cloud-website
           cluster: prod-ecs
-          wait-for-service-stability: true
+          wait-for-service-stability: false
 
       - name: Deploy jobs
         if: github.event.workflow_run.head_branch == 'master'
@@ -158,4 +158,32 @@ jobs:
           task-definition: ${{ steps.render-jobs.outputs.task-definition }}
           service: prod-fundamento-cloud-jobs
           cluster: prod-ecs
-          wait-for-service-stability: true
+          wait-for-service-stability: false
+
+      # The two deploys above start their rollouts without blocking, so website
+      # and jobs stabilize concurrently. Poll both together and fail loudly if
+      # either rollout fails (the deployment circuit breaker rolls it back).
+      - name: Wait for rollout
+        if: github.event.workflow_run.head_branch == 'master'
+        run: |
+          set -euo pipefail
+          CLUSTER=prod-ecs
+          for i in $(seq 1 40); do
+            done=1
+            for svc in prod-fundamento-cloud-website prod-fundamento-cloud-jobs; do
+              line=$(aws ecs describe-services --cluster "$CLUSTER" --services "$svc" \
+                --query "services[0].[deployments[?status=='PRIMARY']|[0].rolloutState, runningCount, desiredCount]" \
+                --output text) || line=""
+              read -r state run des <<<"$line"
+              echo "  [$((i * 15))s] $svc rollout=${state:-?} running=${run:-?}/${des:-?}"
+              if [ "$state" = "FAILED" ]; then
+                echo "::error::$svc deployment FAILED (circuit breaker rolled back)"
+                exit 1
+              fi
+              [ "$state" = "COMPLETED" ] || done=0
+            done
+            [ "$done" = "1" ] && { echo "Both services stable."; exit 0; }
+            sleep 15
+          done
+          echo "::error::Timed out waiting for services to stabilize"
+          exit 1
