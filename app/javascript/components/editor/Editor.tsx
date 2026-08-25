@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Document, User} from "../../types";
 import {BlockNoteEditor} from "@blocknote/core";
 import {BlockNoteView} from "@blocknote/mantine";
@@ -13,7 +13,7 @@ import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
 import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
-import {DefaultThreadStoreAuth, ThreadStore} from "@blocknote/core/comments";
+import {DefaultThreadStoreAuth} from "@blocknote/core/comments";
 import {YjsThreadStore, withCollaboration} from "@blocknote/core/yjs";
 import tinySimpleHash from "../../utils/tinySimpleHash";
 import resolveUsers from "../../utils/resolveUsers";
@@ -31,11 +31,6 @@ declare module "@rails/actioncable" {
 type EditorInstance = typeof schema.BlockNoteEditor;
 type EditorBlock = typeof schema.Block;
 
-let ydoc: Y.Doc | undefined = undefined;
-let acConsumer: ActionCable.Consumer | undefined = undefined;
-let acProvider: WebsocketProvider | undefined = undefined;
-let threadStore: ThreadStore | undefined = undefined;
-
 type EditorProps = {
   databaseId: string,
   currentUser: User,
@@ -47,14 +42,19 @@ type EditorProps = {
 }
 
 const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
+  const [editor, setEditor] = useState<EditorInstance | undefined>(undefined);
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [, setConnectionStale] = useState(false);
+
+  // Per-instance, not module-level: two Editor lifecycles (e.g. a fast unmount
+  // racing a remount) must never share or clobber each other's connection.
+  const acConsumerRef = useRef<ActionCable.Consumer | undefined>(undefined);
 
   useInterval(() => {
     if (window.document.hidden) {
       return; //user is on another tab/window
     }
-    const isStale = acConsumer?.connection.monitor.connectionIsStale() ?? false;
+    const isStale = acConsumerRef.current?.connection.monitor.connectionIsStale() ?? false;
     setConnectionStale((prevState) => {
       if (isStale !== prevState) {
         onConnectionChange?.(isStale);
@@ -63,42 +63,34 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
     });
   }, 1000);
 
-  const editor = useMemo(() => {
-    if (threadStore) {
-      threadStore = undefined;
-    }
-
-    if (ydoc) {
-      ydoc.destroy();
-      ydoc = undefined;
-    }
-    if (acConsumer) {
-      acConsumer.disconnect();
-      acConsumer = undefined;
-    }
-    if (acProvider) {
-      acProvider.destroy();
-      acProvider = undefined;
-    }
+  // Creation lives in useEffect (not useMemo) so teardown is tied to React's
+  // actual unmount/dependency-change signal via the returned cleanup function,
+  // instead of happening as a side effect of the *next* Editor's creation —
+  // previously the ActionCable connection was never explicitly closed on
+  // unmount, it just leaked until something else happened to replace it.
+  useEffect(() => {
+    setInitialStateReceived(false);
+    setEditor(undefined);
 
     if (!document.id) {
-      return undefined;
+      return;
     }
 
-    ydoc = new Y.Doc();
+    const ydoc = new Y.Doc();
     new IndexeddbPersistence(`databases/${"" + databaseId}/documents/${document.id}`, ydoc);
 
     const websocketBaseUrl = new URL(window.location.origin);
     websocketBaseUrl.protocol = websocketBaseUrl.protocol === "http:" ? "ws" : "wss";
-    acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
-    acProvider = new WebsocketProvider(
+    const acConsumer = ActionCable.createConsumer(`${websocketBaseUrl.toString().replace(/\/$/, "")}/cable`);
+    acConsumerRef.current = acConsumer;
+    const acProvider = new WebsocketProvider(
       ydoc,
       acConsumer,
       "DocumentChannel",
       {documentId: document.id},
     );
 
-    threadStore = new YjsThreadStore(
+    const threadStore = new YjsThreadStore(
       currentUser.id.toString(),
       ydoc.getMap("threads"),
       new DefaultThreadStoreAuth(currentUser.id.toString(), editable ? "editor" : "comment"),
@@ -139,19 +131,26 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
         onDocumentChange(editor.document);
       });
     }
+    setEditor(blockNoteEditor);
 
     // WebsocketProvider has no .on() — poll the synced getter instead.
     // onEditorReady is called after sync so consumers receive the actual document content,
     // not the empty pre-sync state (important for draft documents with no versions).
     const syncCheck = setInterval(() => {
-      if (acProvider?.synced) {
+      if (acProvider.synced) {
         setInitialStateReceived(true);
         onEditorReady?.(blockNoteEditor);
         clearInterval(syncCheck);
       }
     }, 50);
 
-    return blockNoteEditor;
+    return () => {
+      clearInterval(syncCheck);
+      acConsumerRef.current = undefined;
+      ydoc.destroy();
+      acConsumer.disconnect();
+      acProvider.destroy();
+    };
     // Editor is intentionally recreated only when the document changes; other props are read once at creation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [document.id]);
