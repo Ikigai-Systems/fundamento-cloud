@@ -78,7 +78,7 @@ jobs:
       # migrations first. Master only.
       - name: Configure AWS credentials
         if: github.event.workflow_run.head_branch == 'master'
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::471112519766:role/prod-github-actions-ecs-deploy-role
           aws-region: us-east-1
