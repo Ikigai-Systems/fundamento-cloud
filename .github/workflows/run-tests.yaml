@@ -72,6 +72,16 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
 
+      # Registry pulls intermittently fail on GitHub-hosted runners with a transient
+      # network/registry error, aborting the whole job. Pre-pull with retries so a
+      # flaky pull doesn't waste the whole CI run.
+      - name: Pull external Docker images (with retry)
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          timeout_minutes: 5
+          command: docker compose pull postgresql redis
+
       # Run rspec
       - uses: hoverkraft-tech/compose-action@v3.0.0
         with:

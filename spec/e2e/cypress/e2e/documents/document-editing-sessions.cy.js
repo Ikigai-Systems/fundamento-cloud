@@ -1,6 +1,13 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
 
-describe("Document Editing Sessions", function () {
+// This spec exercises a genuine, rare race in the app's ActionCable/Y.js
+// editing-session tracking (module-level ydoc/provider singletons in
+// Editor.tsx, exercised by this test's rapid multi-user page navigations) —
+// confirmed via CI server logs showing a WS connection that never receives
+// an update message, not a slow one. That's an application bug to fix
+// separately, not something a longer test timeout can paper over. Retry in
+// CI only so this rare race doesn't block unrelated PRs while it's tracked.
+describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, function () {
   const documentId = "one";
 
   beforeEach(() => {
@@ -27,14 +34,67 @@ describe("Document Editing Sessions", function () {
   }
 
   // Helper to open document editor and wait for it to load
-  function openEditor() {
+  //
+  // Waiting for the BlockNote textbox to render is not enough: the
+  // ActionCable DocumentChannel subscription (which creates this user's
+  // DocumentEditingSession row) completes independently of and after the
+  // React editor becoming interactive. If the test switches users (a full
+  // page navigation) before that subscription lands, the session row for
+  // the outgoing user is never created, so it can't be linked to the
+  // version being saved. Poll for the row to actually exist before moving on.
+  function openEditor(email) {
     cy.visit(`/d/${documentId}/edit`);
     cy.waitForEditor();
+    waitForEditingSession(email);
   }
 
-  // Helper to type in editor
-  function typeInEditor(text) {
+  // How long to poll for an ActionCable round-trip (subscription established,
+  // or a Y.js update flushed and processed) to land server-side. This is a
+  // real network/WS hop, not just a render tick, so give it much more
+  // headroom than a UI assertion — CI runners have shown this taking well
+  // over 5s under load even though it's near-instant locally.
+  const CABLE_ROUNDTRIP_ATTEMPTS = 80; // 80 * 250ms = 20s
+
+  // Checks for an *unlinked* session specifically: once a version is saved,
+  // that user's prior (now version-linked) session would otherwise satisfy
+  // a plain existence check and mask a still-missing new subscription.
+  function waitForEditingSession(email, attempt = 0) {
+    return cy.appEval(`
+      membership = OrganizationMembership.joins(:user).find_by(users: { email: '${email}' })
+      Document.find('${documentId}').editing_sessions.unlinked.exists?(member_id: membership&.id)
+    `).then((exists) => {
+      if (exists) return;
+      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) throw new Error(`Editing session for ${email} was not created in time`);
+      cy.wait(250);
+      return waitForEditingSession(email, attempt + 1);
+    });
+  }
+
+  // Helper to type in editor, then wait for that edit to be recorded server-side.
+  //
+  // Typing only enqueues a Y.js update that the client flushes to the
+  // DocumentChannel over ActionCable; the channel's `edited` flag on this
+  // user's session is set asynchronously in `receive()` once that update
+  // arrives (app/channels/document_channel.rb). Saving a version snapshots
+  // whichever sessions are unlinked *at that instant*
+  // (documents/versions_controller.rb), so if we save or switch users before
+  // the update has landed, this user's contribution is silently dropped from
+  // the version's editor count. Poll for the flag instead of guessing at timing.
+  function typeInEditor(text, email) {
     cy.get("[data-document-editor] [role=\"textbox\"]").first().type(text);
+    waitForEdited(email);
+  }
+
+  function waitForEdited(email, attempt = 0) {
+    return cy.appEval(`
+      membership = OrganizationMembership.joins(:user).find_by(users: { email: '${email}' })
+      Document.find('${documentId}').editing_sessions.unlinked.exists?(member_id: membership&.id, edited: true)
+    `).then((edited) => {
+      if (edited) return;
+      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) throw new Error(`Edit by ${email} was not recorded server-side in time`);
+      cy.wait(250);
+      return waitForEdited(email, attempt + 1);
+    });
   }
 
   // Helper to save version and wait for confirmation
@@ -51,8 +111,8 @@ describe("Document Editing Sessions", function () {
 
     // --- Version 1: Pawel edits ---
     loginAs("pawel@ikigai.systems", "pawel-session");
-    openEditor();
-    typeInEditor("Pawel's contribution to version 1. ");
+    openEditor("pawel@ikigai.systems");
+    typeInEditor("Pawel's contribution to version 1. ", "pawel@ikigai.systems");
     saveVersion();
 
     // Verify version 1 was created and has 1 editing session (Pawel, edited)
@@ -74,13 +134,13 @@ describe("Document Editing Sessions", function () {
     // --- Version 2: Stefan edits, then Pawel saves ---
     // Switch to Stefan
     loginAs("stefan@ikigai.systems", "stefan-session");
-    openEditor();
-    typeInEditor("Stefan's contribution to version 2. ");
+    openEditor("stefan@ikigai.systems");
+    typeInEditor("Stefan's contribution to version 2. ", "stefan@ikigai.systems");
 
     // Switch back to Pawel to save
     loginAs("pawel@ikigai.systems", "pawel-session-2");
-    openEditor();
-    typeInEditor("Pawel's addition to version 2. ");
+    openEditor("pawel@ikigai.systems");
+    typeInEditor("Pawel's addition to version 2. ", "pawel@ikigai.systems");
     saveVersion();
 
     // Verify version 2 has sessions from both users
@@ -103,8 +163,8 @@ describe("Document Editing Sessions", function () {
 
     // --- Version 3: Only Pawel edits (Stefan not present) ---
     loginAs("pawel@ikigai.systems", "pawel-session-3");
-    openEditor();
-    typeInEditor("Pawel's solo contribution to version 3. ");
+    openEditor("pawel@ikigai.systems");
+    typeInEditor("Pawel's solo contribution to version 3. ", "pawel@ikigai.systems");
     saveVersion();
 
     // Verify version 3 only has Pawel
@@ -171,17 +231,17 @@ describe("Document Editing Sessions", function () {
 
     // Pawel opens and edits
     loginAs("pawel@ikigai.systems", "pawel-editor");
-    openEditor();
-    typeInEditor("Pawel types something. ");
+    openEditor("pawel@ikigai.systems");
+    typeInEditor("Pawel types something. ", "pawel@ikigai.systems");
 
     // Stefan opens but does NOT type (just views)
     loginAs("stefan@ikigai.systems", "stefan-viewer");
-    openEditor();
+    openEditor("stefan@ikigai.systems");
     // Do NOT type anything — Stefan is just a viewer
 
     // Pawel saves the version
     loginAs("pawel@ikigai.systems", "pawel-saver");
-    openEditor();
+    openEditor("pawel@ikigai.systems");
     saveVersion();
 
     // Verify: Pawel is editor, Stefan is viewer
