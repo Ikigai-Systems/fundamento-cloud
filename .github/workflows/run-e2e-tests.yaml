@@ -85,7 +85,7 @@ jobs:
           timeout_minutes: 5
           command: docker compose pull postgresql redis minio minio-initialization
 
-      - uses: hoverkraft-tech/compose-action@v3.0.0
+      - uses: hoverkraft-tech/compose-action@v3.1.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
