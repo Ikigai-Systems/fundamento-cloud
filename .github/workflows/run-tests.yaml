@@ -83,7 +83,7 @@ jobs:
           command: docker compose pull postgresql redis
 
       # Run rspec
-      - uses: hoverkraft-tech/compose-action@v3.0.0
+      - uses: hoverkraft-tech/compose-action@v3.1.0
         with:
           services: |
             postgresql
