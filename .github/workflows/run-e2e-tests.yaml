@@ -74,6 +74,17 @@ jobs:
 
       - run: npm ci
 
+      # Registry pulls (postgres/redis/minio) intermittently fail on GitHub-hosted
+      # runners with a transient network/registry error, aborting the whole job
+      # before Cypress ever runs. Pre-pull with retries so a flaky pull doesn't
+      # waste the whole CI run; compose-action's later `up` reuses the cached images.
+      - name: Pull external Docker images (with retry)
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          timeout_minutes: 5
+          command: docker compose pull postgresql redis minio minio-initialization
+
       - uses: hoverkraft-tech/compose-action@v3.0.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}

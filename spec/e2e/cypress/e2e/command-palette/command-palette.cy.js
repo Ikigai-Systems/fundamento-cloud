@@ -1,31 +1,24 @@
 import {isOrganizationCookie} from "../../support/organization-cookies";
 
 // Helper function to find and click a command by title
-// Uses Cypress retry-ability by waiting for ninja-action elements to exist
+// The results list re-renders asynchronously after a search, so the matching
+// title may not be present yet even once ninja-action elements exist. The
+// lookup itself must be inside .should() so Cypress retries it until a match
+// shows up (a .then() callback only runs once and would not retry).
 function clickCommand(title) {
+  const isMatch = (text) => title instanceof RegExp ? title.test(text) : text === title;
+  const titleOf = (action) => action.shadowRoot?.querySelector(".ninja-title")?.textContent?.trim();
+
   cy.get("ninja-keys")
     .shadow()
     .find("ninja-action")
-    .should("have.length.at.least", 1)
+    .should($actions => {
+      const found = [...$actions].some(action => isMatch(titleOf(action)));
+      expect(found, `command with title: ${title}`).to.be.true;
+    })
     .then($actions => {
-      for (const action of $actions) {
-        const actionShadow = action.shadowRoot;
-        const titleEl = actionShadow?.querySelector(".ninja-title");
-        const text = titleEl?.textContent?.trim();
-
-        const isMatch = title instanceof RegExp
-          ? title.test(text)
-          : text === title;
-
-        if (isMatch) {
-          const clickableEl = actionShadow?.querySelector(".ninja-action");
-          if (clickableEl) {
-            clickableEl.click();
-            return;
-          }
-        }
-      }
-      throw new Error(`Could not find command with title: ${title}`);
+      const action = [...$actions].find(action => isMatch(titleOf(action)));
+      action.shadowRoot.querySelector(".ninja-action").click();
     });
 }
 

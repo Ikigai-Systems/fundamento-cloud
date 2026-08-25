@@ -102,9 +102,14 @@ describe("Table CRUD Operations", function () {
 
         cy.wait("@updateTable");
 
-        // Wait for the UI to reflect the new row count
+        // Wait for the UI to reflect the new row count. Adding a row auto-focuses
+        // the new (often off-screen) row's cell, which can scroll the page rather
+        // than Rowstack's own internal container (this project's
+        // rowstack-styles.css overrides Rowstack's overflow-hidden to overflow:
+        // visible), pushing the row-count toolbar out of the viewport —
+        // scrollIntoView it back, same as the "clipped elements" workaround above.
         const newRowText = `${initialCount + 1} rows`;
-        cy.contains(newRowText).should("be.visible");
+        cy.contains(newRowText).scrollIntoView().should("be.visible");
 
         // Verify row count increased in the database
         cy.appEval("Table.find(:projects).rows.count").then((newCount) => {
