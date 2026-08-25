@@ -41,6 +41,13 @@ describe("Document Editing Sessions", function () {
     waitForEditingSession(email);
   }
 
+  // How long to poll for an ActionCable round-trip (subscription established,
+  // or a Y.js update flushed and processed) to land server-side. This is a
+  // real network/WS hop, not just a render tick, so give it much more
+  // headroom than a UI assertion — CI runners have shown this taking well
+  // over 5s under load even though it's near-instant locally.
+  const CABLE_ROUNDTRIP_ATTEMPTS = 80; // 80 * 250ms = 20s
+
   // Checks for an *unlinked* session specifically: once a version is saved,
   // that user's prior (now version-linked) session would otherwise satisfy
   // a plain existence check and mask a still-missing new subscription.
@@ -50,7 +57,7 @@ describe("Document Editing Sessions", function () {
       Document.find('${documentId}').editing_sessions.unlinked.exists?(member_id: membership&.id)
     `).then((exists) => {
       if (exists) return;
-      if (attempt >= 20) throw new Error(`Editing session for ${email} was not created in time`);
+      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) throw new Error(`Editing session for ${email} was not created in time`);
       cy.wait(250);
       return waitForEditingSession(email, attempt + 1);
     });
@@ -77,7 +84,7 @@ describe("Document Editing Sessions", function () {
       Document.find('${documentId}').editing_sessions.unlinked.exists?(member_id: membership&.id, edited: true)
     `).then((edited) => {
       if (edited) return;
-      if (attempt >= 20) throw new Error(`Edit by ${email} was not recorded server-side in time`);
+      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) throw new Error(`Edit by ${email} was not recorded server-side in time`);
       cy.wait(250);
       return waitForEdited(email, attempt + 1);
     });
