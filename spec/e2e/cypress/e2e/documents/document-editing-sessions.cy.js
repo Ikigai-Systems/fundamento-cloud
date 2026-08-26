@@ -3,6 +3,26 @@ import {isOrganizationCookie} from "../../support/organization-cookies.js";
 describe("Document Editing Sessions", function () {
   const documentId = "one";
 
+  // TEMPORARY diagnostic instrumentation to distinguish "client never
+  // transmitted" from "transmitted promptly but arrived late/was processed
+  // late" for the intermittent CI failure being investigated. Purely
+  // observational — wraps WebSocket#send to record when the client believed
+  // it sent bytes and what readyState the socket was in at that moment.
+  // Re-applied on every page load since it's registered per-test via cy.on.
+  Cypress.on("window:before:load", (win) => {
+    win.__wsSendLog = [];
+    const origSend = win.WebSocket.prototype.send;
+    win.WebSocket.prototype.send = function (data) {
+      win.__wsSendLog.push({
+        t: Date.now(),
+        readyState: this.readyState,
+        url: this.url,
+        size: typeof data === "string" ? data.length : (data && data.byteLength) || null,
+      });
+      return origSend.call(this, data);
+    };
+  });
+
   beforeEach(() => {
     cy.app("clean");
 
@@ -84,7 +104,14 @@ describe("Document Editing Sessions", function () {
       Document.find('${documentId}').editing_sessions.unlinked.exists?(member_id: membership&.id, edited: true)
     `).then((edited) => {
       if (edited) return;
-      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) throw new Error(`Edit by ${email} was not recorded server-side in time`);
+      if (attempt >= CABLE_ROUNDTRIP_ATTEMPTS) {
+        // TEMPORARY diagnostic: was WebSocket#send ever called for this page,
+        // and what did the socket's readyState look like at that moment?
+        return cy.window().then((win) => {
+          const log = JSON.stringify(win.__wsSendLog || []);
+          throw new Error(`Edit by ${email} was not recorded server-side in time. now=${Date.now()} wsSendLog=${log}`);
+        });
+      }
       cy.wait(250);
       return waitForEdited(email, attempt + 1);
     });
