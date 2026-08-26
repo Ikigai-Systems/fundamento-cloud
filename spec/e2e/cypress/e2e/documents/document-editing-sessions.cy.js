@@ -1,12 +1,15 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
 
-// This spec exercises a genuine, rare race in the app's ActionCable/Y.js
-// editing-session tracking (module-level ydoc/provider singletons in
-// Editor.tsx, exercised by this test's rapid multi-user page navigations) —
-// confirmed via CI server logs showing a WS connection that never receives
-// an update message, not a slow one. That's an application bug to fix
-// separately, not something a longer test timeout can paper over. Retry in
-// CI only so this rare race doesn't block unrelated PRs while it's tracked.
+// Two independent CI failures were traced (via temporary WebSocket#send
+// instrumentation, since removed) to a client that behaved correctly:
+// every keystroke's Y.js update was sent immediately with the socket
+// already OPEN, but the byte's arrival at the server lagged the send by
+// ~17s in both cases — consistent with Linux's default TCP retransmission
+// backoff (1s, 2s, 4s, 8s, ~16s) after a dropped packet on the CI runner's
+// contended Docker network, entirely below the WebSocket/ActionCable layer.
+// Server logs corroborate this: the connection never disconnected or
+// reconnected during the gap. Retry absorbs this rather than papering over
+// a real bug — there isn't one to fix in app or test code here.
 describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, function () {
   const documentId = "one";
 
