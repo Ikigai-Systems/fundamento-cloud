@@ -8,7 +8,7 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
 import ReactApexChart, {Props as ReactApexChartProps} from 'react-apexcharts'
-import type {ApexOptions} from "apexcharts";
+import type {ApexOptions, ApexAxisChartSeries} from "apexcharts";
 import {BlockTitle} from "../BlockTitle.tsx";
 import SelectButton from "../../SelectButton.tsx";
 import FormulasApi from "../../../api/FormulasApi";
@@ -293,8 +293,10 @@ export const createChartBlock = createReactBlockSpec(
                 },
                 dataLabels: {
                   enabled: true,
+                  // `opt` is typed as optional as of apexcharts v6, but ApexCharts always
+                  // passes it for this formatter; the fallback only satisfies the type.
                   formatter: function (val, opt) {
-                    return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val
+                    return opt ? opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val : `${val}`;
                   },
                   dropShadow: {
                     enabled: true,
@@ -339,7 +341,7 @@ export const createChartBlock = createReactBlockSpec(
                 xaxis: {
                   labels: {
                     formatter: function(val) {
-                      return parseFloat(val).toFixed(1)
+                      return parseFloat(val.toString()).toFixed(1)
                     }
                   }
                 },
