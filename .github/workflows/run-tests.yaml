@@ -76,7 +76,7 @@ jobs:
       # network/registry error, aborting the whole job. Pre-pull with retries so a
       # flaky pull doesn't waste the whole CI run.
       - name: Pull external Docker images (with retry)
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           max_attempts: 3
           timeout_minutes: 5
