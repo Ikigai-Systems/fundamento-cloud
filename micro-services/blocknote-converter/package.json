@@ -18,7 +18,7 @@
     "@eslint/js": "^10.0.1",
     "@fastify/formbody": "^8.0.1",
     "@fastify/request-context": "^7.0.0",
-    "@sentry/node": "^10.70.0",
+    "@sentry/node": "^10.71.0",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/ui": "^4.1.11",
     "commander": "^15.0.0",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@blocknote/server-util": "^0.54.0",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.3.0",
     "fastify": "^5.12.1",
     "hast-util-to-html": "^9.0.5",
     "rehype-parse": "^9.0.1",
