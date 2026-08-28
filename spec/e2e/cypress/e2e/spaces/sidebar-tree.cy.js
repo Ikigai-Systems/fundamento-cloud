@@ -155,6 +155,31 @@ describe("Space sidebar tree", function () {
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
   });
 
+  it("keeps root-level items draggable after expanding and collapsing", function () {
+    cy.visit("/d/one");
+
+    // html5sortable only stamps draggable="true"/role="option" on the children a list had when it
+    // initialised, so a re-render that replaces them silently makes them undraggable. Assert on
+    // the attribute, not on a synthetic drag: cy.trigger("dragstart") fires regardless of it.
+    cy.get("#space-sidebar [data-sidebar-tree-target='root'] > ul > li[data-node-id='one']")
+      .should("have.attr", "draggable", "true")
+      .and("have.attr", "role", "option");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+
+    cy.get("#space-sidebar [data-sidebar-tree-target='root'] > ul > li[data-node-id='one']")
+      .should("have.attr", "draggable", "true")
+      .and("have.attr", "role", "option");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
+
+    cy.get("#space-sidebar [data-sidebar-tree-target='root'] > ul > li[data-node-id='one']")
+      .should("have.attr", "draggable", "true")
+      .and("have.attr", "role", "option");
+  });
+
   it("nests a document under another via drag and drop", function () {
     cy.appEval(`
       space = Space.find("is_default")

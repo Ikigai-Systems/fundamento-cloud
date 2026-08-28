@@ -26,8 +26,8 @@
           </div>
 
           <%# Full page reload so the sidebar (which now includes the new
-              document) is re-rendered; see sidebar_tree_item_component for the
-              same reasoning on the per-item add-child button. %>
+              document) is re-rendered from fresh JSON; app/javascript/sidebar/tree_item.ts
+              renders the per-item add-child button with data-turbo="false" for the same reason. %>
           <%= button_to documents_path(space_id: @space.id),
             params: { "document": { title: "" } },
             disabled: !policy(@space).update?,
@@ -53,10 +53,11 @@
             type: "application/json",
             data: { "sidebar-tree-target" => "data" } %>
 
-          <ul class="section-content-list"
-            data-sidebar-tree-target="root"
-            data-controller="draggable"
-            data-space-id="<%= @space.id %>"></ul>
+          <%# Just the mount point. The <ul data-controller="draggable"> itself is created by
+              sidebar_tree_controller on every render, exactly like the nested lists: a list that
+              lived here would be persistent, so Stimulus would never re-connect `draggable` on it
+              and html5sortable would keep the root items it stamped at first init. %>
+          <div data-sidebar-tree-target="root"></div>
         </div>
 
         <div class="section-header-container">

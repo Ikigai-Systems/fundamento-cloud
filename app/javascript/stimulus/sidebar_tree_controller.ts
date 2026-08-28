@@ -112,9 +112,19 @@ export default class extends Controller<HTMLElement> {
     return this.selectedIdValue || null;
   }
 
+  // The root list is created fresh on every render, exactly like the nested lists, so that
+  // Stimulus disconnects the old `draggable` instance and connects a new one. html5sortable only
+  // stamps draggable="true"/role="option" on the children present when it initialises, so a
+  // persistent list in ERB (which Stimulus never re-connects) left root-level items undraggable
+  // after the first expand or collapse.
   private render() {
-    this.rootTarget.replaceChildren();
-    this.renderInto(this.rootTarget, this.payload.nodes, 0);
+    const list = document.createElement("ul");
+    list.className = "section-content-list";
+    list.dataset.controller = "draggable";
+    list.dataset.spaceId = this.spaceIdValue;
+
+    this.renderInto(list, this.payload.nodes, 0);
+    this.rootTarget.replaceChildren(list);
     this.updateEmptyState();
     this.applyArchivedVisibility();
   }
