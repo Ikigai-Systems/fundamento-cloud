@@ -35,9 +35,9 @@ class Space < ApplicationRecord
     name
   end
 
-  def documents_from_hierarchy(starting_node = hierarchy)
+  def documents_from_hierarchy(starting_node = hierarchy, scope: nil)
     ids = traverse_hierarchy(starting_node)
-    documents_in_db = self.documents.with_has_versions.where(id: ids)
+    documents_in_db = (scope || self.documents.with_has_versions).where(id: ids)
     (ids - documents_in_db.map(&:id)).each do |missing_id|
       remove_single_item_from_hierarchy!(missing_id)
     end
