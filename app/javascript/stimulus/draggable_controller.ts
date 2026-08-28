@@ -100,6 +100,16 @@ export default class extends Controller<HTMLElement> {
     });
   }
 
+  // html5sortable keeps a module-level `stores` Map keyed by element (plus one entry per item) and
+  // only clears it in `destroy`. The sidebar tree recreates every list on each expand/collapse, so
+  // without this the map would grow with detached elements for the lifetime of the page. Verified
+  // against html5sortable 0.14.0: `sortable.destroy(el)` -> `destroySortable`, which calls
+  // `removeStoreData` for both the container and its items, and is a safe no-op on an element that
+  // was never initialised.
+  disconnect() {
+    sortable.destroy(this.element);
+  }
+
   private calculateDepth(element: Element | null): number {
     let accumulator = 0;
     let current = element;
