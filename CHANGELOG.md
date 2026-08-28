@@ -10,6 +10,13 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.1.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.0.0...v1.1.0) (2026-08-28)
+
+
+### Features
+
+* **version:** report the running release at /version ([#129](https://github.com/Ikigai-Systems/fundamento-cloud/issues/129)) ([052c6d7](https://github.com/Ikigai-Systems/fundamento-cloud/commit/052c6d708c0a0edc09a81c179d33914b20343039))
+
 ## 2026-08 (unreleased)
 
 ### Bug Fixes
