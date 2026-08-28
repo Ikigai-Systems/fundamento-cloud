@@ -34,6 +34,7 @@ import ImportUploadController from "./controllers/import_upload_controller.js";
 import ImportLogFilterController from "./controllers/import_log_filter_controller.js";
 import TableOfContentsController from "./table_of_contents_controller"
 import SidebarActiveController from "./sidebar_active_controller"
+import SidebarTreeController from "./sidebar_tree_controller.ts";
 
 const application = Application.start()
 
@@ -112,6 +113,7 @@ application.register("new-comment", NewCommentController);
 application.register("editor", EditorController);
 application.register("connection-indicator", ConnectionIndicatorController);
 application.register("table-of-contents", TableOfContentsController);
+application.register("sidebar-tree", SidebarTreeController);
 
 // Configure Stimulus development experience
 application.debug = true
