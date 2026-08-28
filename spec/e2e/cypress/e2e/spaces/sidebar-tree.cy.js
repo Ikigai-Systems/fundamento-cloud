@@ -41,6 +41,9 @@ describe("Space sidebar tree", function () {
     cy.visit("/d/one");
 
     cy.get("#space-sidebar li[data-node-id='one']").should("exist");
-    cy.get("#space-sidebar li.section-content-node-container").should("have.length", 1);
+    // Scoped to the sidebar-tree's own root — the Tables section below it reuses
+    // .section-content-node-container, so an unscoped selector would pass vacuously
+    // whenever no table fixtures are loaded.
+    cy.get("#space-sidebar [data-sidebar-tree-target='root'] li.section-content-node-container").should("have.length", 1);
   });
 });

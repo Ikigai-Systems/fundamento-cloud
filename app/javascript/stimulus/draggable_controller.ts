@@ -38,17 +38,6 @@ export default class extends Controller<HTMLElement> {
           element.style.setProperty("--level", level.toString());
         });
 
-        // Auto-expand destination container if it has collapsible controller
-        const container = detail.destination.container;
-        const closestCollapsible = container.closest("[data-controller~='collapsible']");
-        if (closestCollapsible instanceof HTMLElement) {
-          const controller = this.application.getControllerForElementAndIdentifier(
-            closestCollapsible,
-            "collapsible"
-          ) as (Controller & {expand(): void}) | null;
-          controller?.expand();
-        }
-
         // Persist the reorder to the backend
         const spaceId = this.element.dataset.spaceId;
         const documentElement = detail.item.querySelector<HTMLElement>("div[data-document-id]");
@@ -61,6 +50,14 @@ export default class extends Controller<HTMLElement> {
             position: detail.destination.index
           }
         });
+
+        // The sidebar tree only holds the JSON payload it was rendered with at page load, so a
+        // successful reorder leaves it stale. Tell sidebar-tree which node the item was dropped
+        // into (so it can stay expanded) and let it reload the sidebar frame from the server,
+        // which is now the source of truth. This also replaces the old collapsible-expand call
+        // above: the destination node's own controller instance is gone once the frame reloads.
+        const destinationParentId = detail.destination.container.dataset.documentId;
+        this.dispatch("reordered", {detail: {parentId: destinationParentId}, bubbles: true});
       });
 
       // See https://github.com/lukasoppermann/html5sortable?tab=readme-ov-file#sortstart

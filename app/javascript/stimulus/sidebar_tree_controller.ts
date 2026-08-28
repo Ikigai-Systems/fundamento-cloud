@@ -24,6 +24,19 @@ export default class extends Controller<HTMLElement> {
   private expanded!: Set<string>;
   private byId = new Map<string, TreeNode>();
 
+  private handleReordered = (event: Event) => {
+    const detail = (event as CustomEvent<{parentId?: string}>).detail;
+    if (!detail?.parentId) return;
+
+    // The client only holds the tree as it was at page load; a successful drag-and-drop just
+    // changed the source of truth on the server. Persist the destination as expanded and reload
+    // the sidebar frame so fresh JSON arrives and the tree re-renders from it (this also
+    // restores drop-to-expand-a-collapsed-node, since that node will render expanded).
+    this.expanded.add(detail.parentId);
+    saveExpanded(this.spaceIdValue, this.expanded);
+    this.reloadFrame();
+  };
+
   connect() {
     this.payload = JSON.parse(this.dataTarget.textContent || "{}") as TreePayload;
     this.payload.nodes ||= [];
@@ -32,6 +45,16 @@ export default class extends Controller<HTMLElement> {
     this.expandAncestorsOfSelected();
     this.render();
     this.scrollSelectedIntoView();
+    this.element.addEventListener("draggable:reordered", this.handleReordered);
+  }
+
+  disconnect() {
+    this.element.removeEventListener("draggable:reordered", this.handleReordered);
+  }
+
+  private reloadFrame() {
+    const frame = document.getElementById("space_sidebar") as (HTMLElement & {reload?: () => void}) | null;
+    frame?.reload?.();
   }
 
   toggle(event: Event) {
@@ -74,9 +97,19 @@ export default class extends Controller<HTMLElement> {
     return {
       spaceId: this.spaceIdValue,
       canUpdateSpace: this.canUpdateSpaceValue,
-      selectedId: this.selectedIdValue || null,
+      selectedId: this.currentSelectedId(),
       csrfToken: document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? "",
     };
+  }
+
+  // The Stimulus value is only accurate as of the page load that rendered this frame. The
+  // content frame navigates via Turbo's "advance" action (a real URL change without a full page
+  // load), so once the user clicks through to another document the URL — not the stale value —
+  // is the source of truth for which row should be highlighted on the next re-render.
+  private currentSelectedId(): string | null {
+    const match = window.location.pathname.match(/^\/d\/([^/]+)/);
+    if (match) return match[1];
+    return this.selectedIdValue || null;
   }
 
   private render() {
