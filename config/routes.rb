@@ -56,6 +56,10 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Reports the running release. Used by self-hosted operators to confirm which
+  # version a deployment is on.
+  get "version" => "version#show", as: :app_version
+
   # Defines the root path route ("/")
   # authenticated :superintendent do
   #   root "construction/root#index", as: :construction_root

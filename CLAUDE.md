@@ -142,6 +142,17 @@ npx agent-browser --remote-debugging-port=$(cat tmp/browser-sessions/sarah@brigh
 
 Requires the Rails dev server running (`bin/dev`) and uses the `?as=<email>` backdoor (dev-only middleware) for instant login.
 
+## Releases and changelog
+
+Versions and `CHANGELOG.md` are automated. `version.txt` is the single source of truth
+for the app version (exposed as `Fundamento::VERSION`, `GET /version`, and the Sentry
+release); **release-please owns that file — never edit it by hand.**
+
+Every PR carries its own changelog entry in its title and description. See
+`.claude/rules/changelog.md` for the conventions, and run `/changelog` to classify a
+change. Merging the `chore(main): release X.Y.Z` PR tags the release, which builds
+semver-tagged images from `.github/workflows/package-*.yaml`.
+
 ## Code formatting
 
 Whenever possible, use the following rules:

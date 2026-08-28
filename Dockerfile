@@ -105,7 +105,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 RUN useradd rails --create-home --shell /bin/bash
 
 # Copy built artifacts: gems, application
-COPY --from=build /rails/config.ru /rails/Rakefile ./
+COPY --from=build /rails/config.ru /rails/Rakefile /rails/version.txt ./
 COPY --from=build /rails/public ./public
 COPY --from=build /rails/lib ./lib
 COPY --from=build /rails/bin ./bin

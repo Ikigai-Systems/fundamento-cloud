@@ -7,6 +7,15 @@ require "rails/all"
 Bundler.require(*Rails.groups)
 
 module Fundamento
+  # The released version, owned by release-please (see release-please-config.json).
+  # Defined here rather than in an initializer so it is available to every initializer,
+  # including Sentry. Falls back to "dev" for working copies without a build.
+  VERSION = begin
+    File.read(File.expand_path("../version.txt", __dir__)).strip
+  rescue Errno::ENOENT
+    "dev"
+  end
+
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
