@@ -78,6 +78,30 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["archived"]).to be(true)
   end
 
+  it "omits fields that are at their default" do
+    space.update!(hierarchy: [node(one)])
+
+    payload = described_class.new(space: space, can_update_space: true).as_json
+    leaf = payload["nodes"].first
+
+    expect(leaf).not_to have_key("children")
+    expect(leaf).not_to have_key("emoji")
+    expect(leaf).not_to have_key("archived")
+    expect(leaf).to have_key("id")
+    expect(leaf).to have_key("title")
+  end
+
+  it "still emits fields that are not at their default" do
+    one.update!(title: "🔥 Hot", archived: true)
+    space.update!(hierarchy: [node(one, [node(two)])])
+
+    leaf = described_class.new(space: space, can_update_space: true).as_json["nodes"].first
+
+    expect(leaf["emoji"]).to eq("🔥")
+    expect(leaf["archived"]).to be(true)
+    expect(leaf["children"].map { _1["id"] }).to eq([two.id])
+  end
+
   it "does not load the sync blob when building the tree" do
     space.update!(hierarchy: [node(one)])
 

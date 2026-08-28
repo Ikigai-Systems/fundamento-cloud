@@ -81,7 +81,7 @@ export default class extends Controller<HTMLElement> {
     if (!id) return;
 
     const node = this.byId.get(id);
-    if (!node || node.children.length === 0) return;
+    if (!node || (node.children ?? []).length === 0) return;
 
     if (this.expanded.has(id)) {
       this.expanded.delete(id);
@@ -96,7 +96,7 @@ export default class extends Controller<HTMLElement> {
     for (const node of nodes) {
       this.byId.set(node.id, node);
       this.parentOf.set(node.id, parentId);
-      this.index(node.children, node.id);
+      this.index(node.children ?? [], node.id);
     }
   }
 
@@ -166,9 +166,10 @@ export default class extends Controller<HTMLElement> {
       this.applyTriggerState(li, node);
       container.appendChild(li);
 
-      if (node.children.length > 0 && this.expanded.has(node.id)) {
+      const children = node.children ?? [];
+      if (children.length > 0 && this.expanded.has(node.id)) {
         const childContainer = li.querySelector<HTMLElement>('ul[data-sidebar-tree-children="true"]');
-        if (childContainer) this.renderInto(childContainer, node.children, level + 1);
+        if (childContainer) this.renderInto(childContainer, children, level + 1);
       }
     }
   }
@@ -177,7 +178,7 @@ export default class extends Controller<HTMLElement> {
     const trigger = li.querySelector<HTMLElement>(".collapsible-trigger");
     if (!trigger) return;
 
-    if (node.children.length === 0) {
+    if ((node.children ?? []).length === 0) {
       trigger.classList.add("is-leaf");
     } else if (this.expanded.has(node.id)) {
       trigger.classList.add("is-expanded");

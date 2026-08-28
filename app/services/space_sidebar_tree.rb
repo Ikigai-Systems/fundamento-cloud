@@ -42,18 +42,21 @@ class SpaceSidebarTree
       # Drafts are invisible to anyone who cannot update the space, and so is their subtree.
       next [] if document.draft? && !@can_update_space
 
-      [{
+      built_children = build(children)
+
+      node = {
         "id" => document.id,
         # No `.presence` here on purpose: `title_emojiless` returns "" for an emoji-only title
         # and "" is truthy in Ruby, so the old server-rendered component labelled such a node with
         # an empty string. Falling back to the full title instead would render the emoji twice —
         # once as the icon, once as the label.
         "title" => document.title_emojiless || document.title,
-        "emoji" => document.title_emoji,
-        "archived" => document.archived?,
-        "draft" => document.draft?,
-        "children" => build(children),
-      }]
+      }
+      node["emoji"] = document.title_emoji if document.title_emoji
+      node["archived"] = true if document.archived?
+      node["draft"] = true if document.draft?
+      node["children"] = built_children if built_children.any?
+      [node]
     end
   end
 end

@@ -1,10 +1,10 @@
 export interface TreeNode {
   id: string;
   title: string;
-  emoji: string | null;
-  archived: boolean;
-  draft: boolean;
-  children: TreeNode[];
+  emoji?: string | null;
+  archived?: boolean;
+  draft?: boolean;
+  children?: TreeNode[];
 }
 
 export interface TreePayload {
