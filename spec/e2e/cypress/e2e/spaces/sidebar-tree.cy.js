@@ -60,4 +60,37 @@ describe("Space sidebar tree", function () {
     cy.get("#space-sidebar li[data-node-id='two'] .content-link-container")
       .should("be.visible");
   });
+
+  it("remembers which nodes are expanded across a reload", function () {
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+
+    cy.reload();
+
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+  });
+
+  it("remembers a collapse across a reload", function () {
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
+
+    cy.reload();
+
+    cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
+  });
+
+  it("keeps expansion state separate per space", function () {
+    cy.visit("/d/one");
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+
+    cy.window().then((win) => {
+      expect(win.localStorage.getItem("fundamento:sidebar:expanded:is_default")).to.contain("one");
+      expect(win.localStorage.getItem("fundamento:sidebar:expanded:hc_default")).to.equal(null);
+    });
+  });
 });
