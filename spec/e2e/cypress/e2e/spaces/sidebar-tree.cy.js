@@ -180,6 +180,32 @@ describe("Space sidebar tree", function () {
       .and("have.attr", "role", "option");
   });
 
+  it("keeps a renamed title after an expand and a collapse", function () {
+    cy.visit("/d/one");
+
+    // The child combinator matters: once "one" is expanded its children are <li>s nested inside
+    // it, so a plain descendant selector would also match their labels.
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "One");
+
+    // The same event EditableContentTitle dispatches once a rename has been persisted.
+    cy.window().then((win) => {
+      win.dispatchEvent(new win.CustomEvent("content-title-updated", {
+        detail: {id: "one", title: "Renamed One"},
+      }));
+    });
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
+
+    // Re-rendering from the JSON payload frozen at frame load would restore the stale title here.
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
+  });
+
   it("nests a document under another via drag and drop", function () {
     cy.appEval(`
       space = Space.find("is_default")

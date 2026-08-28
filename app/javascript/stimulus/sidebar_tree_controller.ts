@@ -37,6 +37,21 @@ export default class extends Controller<HTMLElement> {
     this.reloadFrame();
   };
 
+  // content_title_sync_controller patches the rendered <span> when a document is renamed, but the
+  // JSON this controller renders from is frozen at frame load, so the very next render would put
+  // the stale title back. Update the in-memory node too and re-render from it.
+  private handleTitleUpdated = (event: Event) => {
+    const {id, title} = (event as CustomEvent<{id: string; title: string}>).detail ?? {};
+    if (!id) return;
+
+    // The same event is fired for tables, which are not part of this tree.
+    const node = this.byId.get(id);
+    if (!node) return;
+
+    node.title = title;
+    this.render();
+  };
+
   connect() {
     this.payload = JSON.parse(this.dataTarget.textContent || "{}") as TreePayload;
     this.payload.nodes ||= [];
@@ -46,10 +61,12 @@ export default class extends Controller<HTMLElement> {
     this.render();
     this.scrollSelectedIntoView();
     this.element.addEventListener("draggable:reordered", this.handleReordered);
+    window.addEventListener("content-title-updated", this.handleTitleUpdated);
   }
 
   disconnect() {
     this.element.removeEventListener("draggable:reordered", this.handleReordered);
+    window.removeEventListener("content-title-updated", this.handleTitleUpdated);
   }
 
   private reloadFrame() {
