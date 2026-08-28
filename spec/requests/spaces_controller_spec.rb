@@ -749,4 +749,31 @@ RSpec.describe SpacesController, type: :request do
       end
     end
   end
+
+  describe "GET #sidebar" do
+    fixtures :organizations, :users, :organization_memberships, :spaces, :documents
+
+    let(:user) { users(:pawel) }
+    let(:organization) { organizations(:is) }
+    let(:space) { spaces(:is_default) }
+
+    before do
+      sign_in user
+      post select_organization_path(organization)
+      space.update!(hierarchy: [{ "id" => documents(:one).id, "children" => [] }])
+    end
+
+    it "ships the tree as JSON rather than rendered tree items" do
+      get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("data-sidebar-tree-target=\"data\"")
+      expect(response.body).not_to include("section-content-node-container")
+
+      json = Nokogiri::HTML(response.body).at("script[data-sidebar-tree-target='data']").text
+      payload = JSON.parse(json)
+      expect(payload["nodes"].map { _1["id"] }).to eq([documents(:one).id])
+      expect(payload["canUpdateSpace"]).to be(true)
+    end
+  end
 end

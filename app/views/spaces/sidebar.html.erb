@@ -40,18 +40,23 @@
           <% end %>
         </div>
 
-        <div class="section-content-container">
+        <div class="section-content-container"
+          data-controller="sidebar-tree"
+          data-sidebar-tree-space-id-value="<%= @space.id %>"
+          data-sidebar-tree-selected-id-value="<%= params.dig(:object, :id) %>"
+          data-sidebar-tree-selected-type-value="<%= params.dig(:object, :type) %>"
+          data-sidebar-tree-can-update-space-value="<%= @can_update_space %>"
+        >
           <div class="section-empty hidden">No documents in this space</div>
 
-          <ul class="section-content-list" data-controller="draggable" data-space-id="<%= @space.id %>">
-            <%= render Space::SidebarTreeComponent.new(
-              node: @space.hierarchy,
-              documents: @documents,
-              space: @space,
-              params: params,
-              level: 0
-            ) %>
-          </ul>
+          <%= tag.script json_escape(@tree.to_json).html_safe,
+            type: "application/json",
+            data: { "sidebar-tree-target" => "data" } %>
+
+          <ul class="section-content-list"
+            data-sidebar-tree-target="root"
+            data-controller="draggable"
+            data-space-id="<%= @space.id %>"></ul>
         </div>
 
         <div class="section-header-container">

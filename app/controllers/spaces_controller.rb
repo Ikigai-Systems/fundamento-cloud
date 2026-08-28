@@ -163,8 +163,10 @@ class SpacesController < ApplicationController
   def sidebar
     authorize @space, :show?
 
-    # documents_from_hierarchy uses with_has_versions so let's use draft? here to use the optimal approach to version discovery
-    @documents = @space.documents_from_hierarchy.filter { |document| policy(document).update? || !document.draft? }
+    # DocumentPolicy#update? delegates to SpacePolicy#update? on the document's space, and every
+    # document here belongs to @space — so this is the same answer for all of them, computed once.
+    @can_update_space = policy(@space).update?
+    @tree = SpaceSidebarTree.new(space: @space, can_update_space: @can_update_space).as_json
     @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
   end
 
