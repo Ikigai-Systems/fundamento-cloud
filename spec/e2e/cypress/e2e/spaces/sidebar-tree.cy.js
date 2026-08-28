@@ -93,4 +93,30 @@ describe("Space sidebar tree", function () {
       expect(win.localStorage.getItem("fundamento:sidebar:expanded:hc_default")).to.equal(null);
     });
   });
+
+  it("expands the ancestor path of the open document", function () {
+    cy.visit("/d/two");
+
+    // "two" is nested under "one" and must be revealed without any interaction.
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+    cy.get("#space-sidebar li[data-node-id='two'] .content-link-container")
+      .should("have.class", "selected");
+  });
+
+  it("scrolls the open document into view", function () {
+    cy.visit("/d/two");
+
+    cy.get("#space-sidebar li[data-node-id='two'] .content-link-container.selected")
+      .should("be.visible");
+  });
+
+  it("expands to the open document even when the stored state has it collapsed", function () {
+    cy.visit("/d/one");
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
+
+    cy.visit("/d/two");
+
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+  });
 });
