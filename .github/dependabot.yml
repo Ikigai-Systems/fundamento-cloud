@@ -1,6 +1,12 @@
 version: 2
+
+# Every ecosystem prefixes its commits with `deps`, which release-please-config.json
+# marks hidden — so dependency bumps never reach CHANGELOG.md. Bot pull requests are
+# also skipped by .github/workflows/changelog.yml.
 updates:
   - package-ecosystem: bundler
+    commit-message:
+      prefix: deps
     directory: "/"
     schedule:
       interval: weekly
@@ -10,6 +16,8 @@ updates:
         update-types: ["minor", "patch"]
 
   - package-ecosystem: npm
+    commit-message:
+      prefix: deps
     directory: "/"
     schedule:
       interval: weekly
@@ -49,6 +57,8 @@ updates:
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
+    commit-message:
+      prefix: deps
     directory: "/micro-services/blocknote-converter"
     schedule:
       interval: weekly
@@ -70,6 +80,8 @@ updates:
         update-types: ["minor", "patch"]
 
   - package-ecosystem: github-actions
+    commit-message:
+      prefix: deps
     directory: "/"
     schedule:
       interval: weekly

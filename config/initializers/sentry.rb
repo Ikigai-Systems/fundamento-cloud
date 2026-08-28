@@ -4,6 +4,10 @@ if sentry_dsn.present?
   Sentry.init do |config|
     config.dsn = sentry_dsn
 
+    # Ties events to a release so regressions can be traced to the version that
+    # introduced them. See version.txt, owned by release-please.
+    config.release = Fundamento::VERSION
+
     # get breadcrumbs from logs
     config.breadcrumbs_logger = [:active_support_logger, :http_logger]
 
