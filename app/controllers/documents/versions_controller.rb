@@ -53,8 +53,6 @@ class Documents::VersionsController < ApplicationController
   def index
     authorize @document, :show?
 
-    @documents = @space.documents_from_hierarchy
-
     @versions = @document.versions.includes(:created_by, editing_sessions: { member: :user }).order('created_at DESC')
 
     render layout: content_layout(full: "full_width_application", frame: "full_width_frame")
@@ -69,8 +67,6 @@ class Documents::VersionsController < ApplicationController
       @version = @document.versions.find_by(sequential_id: params[:id])
     end
     raise ActionController::RoutingError, 'Not Found' if @version.blank?
-
-    @documents = @space.documents_from_hierarchy
 
     @versions = @document.versions.includes(editing_sessions: { member: :user }).order('created_at DESC')
   end

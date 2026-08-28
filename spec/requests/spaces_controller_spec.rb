@@ -429,6 +429,25 @@ RSpec.describe SpacesController, type: :request do
         expect(response.body).not_to include('id="space-sidebar"')
       end
     end
+
+    context "on a space with no home document and a document in the hierarchy" do
+      fixtures :organizations, :users, :organization_memberships, :spaces, :documents
+
+      let(:space) { spaces(:is_default) }
+
+      before do
+        sign_in users(:pawel)
+        post select_organization_path(organizations(:is))
+      end
+
+      it "renders a space with no home document without loading the whole tree" do
+        space.update!(home_document: nil, hierarchy: [{ "id" => documents(:one).id, "children" => [] }])
+
+        get space_path(space)
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "PUT #update on archived space" do
