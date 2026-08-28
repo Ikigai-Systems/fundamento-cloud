@@ -77,4 +77,19 @@ RSpec.describe SpaceSidebarTree do
 
     expect(result["nodes"].first["archived"]).to be(true)
   end
+
+  it "does not load the sync blob when building the tree" do
+    space.update!(hierarchy: [node(one)])
+
+    selected = nil
+    ActiveSupport::Notifications.subscribed(->(*, payload) {
+      selected = payload[:sql] if payload[:sql].to_s.include?("FROM \"documents\"")
+    }, "sql.active_record") do
+      described_class.new(space: space, can_update_space: true).as_json
+    end
+
+    expect(selected).to be_present
+    expect(selected).not_to include("documents\".\"sync")
+    expect(selected).not_to match(/SELECT\s+"?documents"?\.\*/)
+  end
 end

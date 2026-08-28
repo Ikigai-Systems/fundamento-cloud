@@ -20,8 +20,14 @@ class SpaceSidebarTree
 
   private
 
+  # Only what the tree renders. Notably NOT `sync`, the Y.js CRDT blob — it is
+  # multiple megabytes per space and the sidebar never looks at it.
+  SELECTED_COLUMNS = "documents.id, documents.title, documents.archived"
+
   def documents_by_id
-    @documents_by_id ||= @space.documents.with_has_versions.index_by(&:id)
+    @documents_by_id ||= @space.documents
+      .select("#{SELECTED_COLUMNS}, EXISTS (SELECT 1 FROM versions WHERE versions.document_id = documents.id) AS has_versions")
+      .index_by(&:id)
   end
 
   def build(nodes)
