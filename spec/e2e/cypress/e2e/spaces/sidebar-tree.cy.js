@@ -119,4 +119,30 @@ describe("Space sidebar tree", function () {
 
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
   });
+
+  it("still persists a reorder via drag and drop", function () {
+    cy.appEval(`
+      space = Space.find("is_default")
+      space.update!(hierarchy: [
+        { "id" => "one", "children" => [] },
+        { "id" => "two", "children" => [] }
+      ])
+    `);
+    cy.visit("/d/one");
+
+    cy.intercept("PUT", /\/s\/.*\/reorder_hierarchy/).as("reorder");
+    cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
+
+    const dataTransfer = new DataTransfer();
+    cy.get("#space-sidebar li[data-node-id='two']").trigger("dragstart", {dataTransfer});
+    cy.get("#space-sidebar li[data-node-id='one']").trigger("dragenter", {dataTransfer});
+    cy.get("#space-sidebar li[data-node-id='one']").trigger("dragover", {dataTransfer});
+    // html5sortable positions the drop placeholder via a debounced (0ms) handler; give the
+    // browser's event loop a tick to run it before dropping.
+    cy.wait(100);
+    cy.get("#space-sidebar li[data-node-id='one']").trigger("drop", {dataTransfer});
+    cy.get("#space-sidebar li[data-node-id='two']").trigger("dragend", {dataTransfer});
+
+    cy.wait("@reorder").its("response.statusCode").should("be.oneOf", [200, 204]);
+  });
 });
