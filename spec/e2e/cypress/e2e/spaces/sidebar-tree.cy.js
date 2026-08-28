@@ -46,4 +46,18 @@ describe("Space sidebar tree", function () {
     // whenever no table fixtures are loaded.
     cy.get("#space-sidebar [data-sidebar-tree-target='root'] li.section-content-node-container").should("have.length", 1);
   });
+
+  it("keeps archived documents hidden until the toggle is switched on", function () {
+    cy.appEval(`Document.find("two").update!(archived: true)`);
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two'] .content-link-container")
+      .should("not.be.visible");
+
+    cy.contains("Show archived:").parent().find("button[role='switch']").click();
+
+    cy.get("#space-sidebar li[data-node-id='two'] .content-link-container")
+      .should("be.visible");
+  });
 });

@@ -116,6 +116,20 @@ export default class extends Controller<HTMLElement> {
     this.rootTarget.replaceChildren();
     this.renderInto(this.rootTarget, this.payload.nodes, 0);
     this.updateEmptyState();
+    this.applyArchivedVisibility();
+  }
+
+  // The server-rendered toggle sets the "ikigai_userPreferences_showArchived" cookie and the
+  // "visibility" controller on the sidebar wrapper reacts to its change event for elements
+  // already in the DOM. But every expand/collapse re-renders the tree from scratch, so freshly
+  // created archived nodes need to pick up the current toggle state themselves.
+  private get showArchived(): boolean {
+    return document.cookie.split("; ").some(c => c === "ikigai_userPreferences_showArchived=true");
+  }
+
+  private applyArchivedVisibility() {
+    this.rootTarget.querySelectorAll<HTMLElement>('[data-visibility-target="hideable"]')
+      .forEach(el => { el.hidden = !this.showArchived; });
   }
 
   private renderInto(container: HTMLElement, nodes: TreeNode[], level: number) {
