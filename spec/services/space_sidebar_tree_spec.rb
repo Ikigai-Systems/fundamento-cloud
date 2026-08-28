@@ -33,6 +33,18 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["emoji"]).to eq("🔥")
   end
 
+  it "labels an emoji-only title with an empty string so the emoji is not rendered twice" do
+    one.update!(title: "\u{1F525}")
+    space.update!(hierarchy: [node(one)])
+
+    result = described_class.new(space: space, can_update_space: true).as_json
+
+    # The emoji is already shown as the node's icon; using it as the label as well (which is what
+    # a `.presence` fallback to the full title would do) duplicates it.
+    expect(result["nodes"].first["title"]).to eq("")
+    expect(result["nodes"].first["emoji"]).to eq("\u{1F525}")
+  end
+
   it "promotes children of a hierarchy entry whose document no longer exists" do
     space.update!(hierarchy: [{ "id" => "does-not-exist", "children" => [node(two)] }])
 

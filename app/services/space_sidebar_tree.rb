@@ -38,7 +38,11 @@ class SpaceSidebarTree
 
       [{
         "id" => document.id,
-        "title" => document.title_emojiless.presence || document.title,
+        # No `.presence` here on purpose: `title_emojiless` returns "" for an emoji-only title
+        # and "" is truthy in Ruby, so the old server-rendered component labelled such a node with
+        # an empty string. Falling back to the full title instead would render the emoji twice —
+        # once as the icon, once as the label.
+        "title" => document.title_emojiless || document.title,
         "emoji" => document.title_emoji,
         "archived" => document.archived?,
         "draft" => document.draft?,
