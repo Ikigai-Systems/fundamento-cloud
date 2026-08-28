@@ -69,6 +69,15 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["draft"]).to be(true)
   end
 
+  it "omits the draft key once a document has a version" do
+    one.versions.create!(content_blocks: [])
+    space.update!(hierarchy: [node(one)])
+
+    result = described_class.new(space: space, can_update_space: true).as_json
+
+    expect(result["nodes"].first).not_to have_key("draft")
+  end
+
   it "marks archived documents" do
     one.update!(archived: true)
     space.update!(hierarchy: [node(one)])

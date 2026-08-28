@@ -44,7 +44,7 @@ class SpaceSidebarTree
 
       built_children = build(children)
 
-      node = {
+      payload_node = {
         "id" => document.id,
         # No `.presence` here on purpose: `title_emojiless` returns "" for an emoji-only title
         # and "" is truthy in Ruby, so the old server-rendered component labelled such a node with
@@ -52,11 +52,11 @@ class SpaceSidebarTree
         # once as the icon, once as the label.
         "title" => document.title_emojiless || document.title,
       }
-      node["emoji"] = document.title_emoji if document.title_emoji
-      node["archived"] = true if document.archived?
-      node["draft"] = true if document.draft?
-      node["children"] = built_children if built_children.any?
-      [node]
+      payload_node["emoji"] = document.title_emoji if document.title_emoji
+      payload_node["archived"] = true if document.archived?
+      payload_node["draft"] = true if document.draft?
+      payload_node["children"] = built_children if built_children.any?
+      [payload_node]
     end
   end
 end
