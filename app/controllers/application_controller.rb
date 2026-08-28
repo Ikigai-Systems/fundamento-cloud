@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    PolicyUserContext.new(current_user, current_organization)
+    @pundit_user ||= PolicyUserContext.new(current_user, current_organization)
   end
 
   # TODO: In the future implement this as devise scope, the same way we handle Superintendents

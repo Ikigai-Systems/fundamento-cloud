@@ -801,5 +801,18 @@ RSpec.describe SpacesController, type: :request do
       expect(payload["nodes"].map { _1["id"] }).to eq([documents(:one).id])
       expect(payload["canUpdateSpace"]).to be(true)
     end
+
+    it "builds the policy user context once per request" do
+      contexts = 0
+      allow(PolicyUserContext).to receive(:new).and_wrap_original do |original, *args|
+        contexts += 1
+        original.call(*args)
+      end
+
+      get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+      expect(response).to have_http_status(:ok)
+      expect(contexts).to eq(1)
+    end
   end
 end
