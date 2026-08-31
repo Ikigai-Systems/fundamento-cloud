@@ -13,44 +13,47 @@
         &[data-collapsible-collapsed-value="false"] > [data-collapsible-target="content"] {
             @apply max-h-none;
         }
+    }
 
-        /* Collapsible trigger states - managed by controller via classes API */
-        .collapsible-trigger {
-            @apply flex justify-center items-center w-5 shrink-0;
+    /* Collapsible trigger states - managed either by the collapsible controller (via its
+       classes API) or, in the sidebar tree, by sidebar_tree_controller.ts setting the same
+       is-collapsed/is-expanded/is-leaf classes directly on .collapsible-trigger without a
+       [data-controller~="collapsible"] ancestor. Keep this un-nested so both paths style it. */
+    .collapsible-trigger {
+        @apply flex justify-center items-center w-5 shrink-0;
 
-            /* Hide both icons by default until controller sets state */
-            .collapsible-icon,
-            .collapsible-dot {
-                @apply hidden;
-            }
+        /* Hide both icons by default until controller sets state */
+        .collapsible-icon,
+        .collapsible-dot {
+            @apply hidden;
+        }
 
+        .collapsible-icon {
+            @apply transition-transform duration-150 ease-in-out w-full;
+        }
+
+        /* Collapsed state - show chevron pointing right */
+        &.is-collapsed {
             .collapsible-icon {
-                @apply transition-transform duration-150 ease-in-out w-full;
+                @apply flex rotate-0;
+            }
+        }
+
+        /* Expanded state - show chevron pointing down */
+        &.is-expanded {
+            .collapsible-icon {
+                @apply flex rotate-90;
+            }
+        }
+
+        /* Leaf state (no children) - show dot instead */
+        &.is-leaf {
+            .collapsible-dot {
+                @apply block;
             }
 
-            /* Collapsed state - show chevron pointing right */
-            &.is-collapsed {
-                .collapsible-icon {
-                    @apply flex rotate-0;
-                }
-            }
-
-            /* Expanded state - show chevron pointing down */
-            &.is-expanded {
-                .collapsible-icon {
-                    @apply flex rotate-90;
-                }
-            }
-
-            /* Leaf state (no children) - show dot instead */
-            &.is-leaf {
-                .collapsible-dot {
-                    @apply block;
-                }
-
-                /* Make non-interactive */
-                @apply cursor-default pointer-events-none;
-            }
+            /* Make non-interactive */
+            @apply cursor-default pointer-events-none;
         }
     }
 }

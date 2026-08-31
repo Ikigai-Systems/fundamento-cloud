@@ -6,7 +6,14 @@ declare module "html5sortable/dist/html5sortable.es.js" {
     placeholderClass?: string;
   }
 
-  function sortable(element: HTMLElement, options?: SortableConfiguration): HTMLElement[];
+  interface Sortable {
+    (element: HTMLElement, options?: SortableConfiguration): HTMLElement[];
+    // Tears the sortable down and drops the element (and its items) from the library's
+    // module-level `stores` Map, which nothing else ever clears.
+    destroy(element: HTMLElement): void;
+  }
+
+  const sortable: Sortable;
 
   export default sortable;
 }
