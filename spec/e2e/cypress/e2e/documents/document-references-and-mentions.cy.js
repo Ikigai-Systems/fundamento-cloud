@@ -581,4 +581,71 @@ describe("Document References and Mentions", function () {
       });
     });
   });
+
+  describe("Object icons on mentions", function () {
+    // The scenario has to run before anything can look the documents up.
+    function createDocuments() {
+      cy.appScenario("create_two_documents", {space_id: "is_default", organization_id: "is"});
+    }
+
+    function giveTargetAnIcon() {
+      cy.appEval(`Document.find_by(title: "Target Document").update!(title: "⭐ Target Document")`);
+    }
+
+    function openMentionMenu() {
+      cy.appEval("Document.find_by(title: 'Source Document').id").then((sourceDocId) => {
+        cy.visit(`/d/${sourceDocId}/edit`);
+        cy.waitForEditor();
+        cy.get("[data-document-editor] [role=\"textbox\"]").first().type("Check out @");
+        cy.get(".bn-suggestion-menu", {timeout: 10000}).should("be.visible");
+      });
+    }
+
+    const targetItem = () =>
+      cy.get(".bn-suggestion-menu-item").filter(":contains('Target Document')");
+
+    it("shows the object's icon in the @ menu", function () {
+      createDocuments();
+      giveTargetAnIcon();
+      openMentionMenu();
+
+      targetItem().find(".object-icon").should("have.text", "⭐");
+    });
+
+    // The emoji used to live in the title, so once titles were stripped it
+    // vanished from mentions entirely until the icon was rendered beside them.
+    it("keeps the icon on the mention once it is inserted", function () {
+      createDocuments();
+      giveTargetAnIcon();
+      openMentionMenu();
+
+      targetItem().click();
+
+      cy.get("a.mention").filter(":contains('Target Document')").as("mention");
+      cy.get("@mention").find(".object-icon").should("have.text", "⭐");
+      cy.get("@mention").should("not.contain", "⭐ Target Document");
+    });
+
+    // The menu is a list, so an icon-less row keeps the type's default glyph --
+    // otherwise rows with and without an icon would not line up.
+    it("falls back to the document glyph in the menu", function () {
+      createDocuments();
+      openMentionMenu();
+
+      targetItem().find(".object-icon i.fa-file-lines").should("exist");
+    });
+
+    // Inline is the opposite: a generic file glyph dropped into the middle of a
+    // sentence is noise, so an icon-less mention renders no slot at all.
+    it("renders no glyph on an inline mention of an object without an icon", function () {
+      createDocuments();
+      openMentionMenu();
+
+      targetItem().click();
+
+      cy.get("a.mention").filter(":contains('Target Document')").as("mention");
+      cy.get("@mention").should("exist");
+      cy.get("@mention").find(".object-icon").should("not.exist");
+    });
+  });
 });

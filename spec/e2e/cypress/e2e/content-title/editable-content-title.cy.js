@@ -144,4 +144,47 @@ describe("Editable Content Title", function () {
       });
     });
   });
+
+  describe("Object icon in the heading", function () {
+    it("shows the icon in its own slot and keeps it out of the title text", function () {
+      cy.appEval(`Document.find_by(title: "One").update!(title: "⭐ Roadmap")`);
+      cy.visit("/d/one");
+
+      cy.get("nav .editable-content-title .object-icon").should("have.text", "⭐");
+      cy.get("nav .editable-content-title").should("contain", "Roadmap");
+    });
+
+    it("shows no icon slot at all when the document has none", function () {
+      cy.visit("/d/one");
+
+      cy.get("nav .editable-content-title").should("contain", "One");
+      cy.get("nav .editable-content-title .object-icon").should("not.exist");
+    });
+
+    // The title field is still the only way to set an icon, so it has to show
+    // one. Binding the input to the stored (stripped) title would hide the icon
+    // from the user and then clear it the moment they saved.
+    it("puts the emoji back into the edit field so it can be changed", function () {
+      cy.appEval(`Document.find_by(title: "One").update!(title: "⭐ Roadmap")`);
+      cy.visit("/d/one");
+
+      cy.get("nav .editable-content-title.editable").click();
+      cy.get("nav .editable-content-title input").should("have.value", "⭐ Roadmap");
+    });
+
+    it("moves a newly typed emoji into the icon slot on save", function () {
+      cy.visit("/d/one");
+
+      cy.intercept("PATCH", "/d/one").as("rename");
+      cy.get("nav .editable-content-title.editable").click();
+      cy.get("nav .editable-content-title input").clear();
+      cy.get("nav .editable-content-title input").type("⭐ Roadmap");
+      cy.get("nav .editable-content-title input").blur();
+      cy.wait("@rename");
+
+      cy.get("nav .editable-content-title .object-icon").should("have.text", "⭐");
+      cy.get("nav .editable-content-title").should("not.contain", "⭐ Roadmap");
+      cy.get("nav .editable-content-title").should("contain", "Roadmap");
+    });
+  });
 });
