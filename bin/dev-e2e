@@ -133,6 +133,8 @@ class DevE2E < Thor
     puts "Extracting RAILS_MASTER_KEY from SOPS for e2e environment..."
     puts ""
 
+    configure_sops_age_key!
+
     key = `sops -d --extract '["rails"]["master_key"]' #{sops_file} 2>/dev/null`.strip
 
     if $?.success? && !key.empty?
@@ -141,9 +143,28 @@ class DevE2E < Thor
       abort <<~MSG
         Error: Failed to extract rails master key from #{sops_file}
 
-        Ensure your age key is configured at ~/.config/sops/age/keys.txt
+        sops needs the age private key. Any one of these works:
+          - SOPS_AGE_KEY_FILE pointing at it
+          - #{REPO_AGE_KEY_PATH} (run bin/setup to create it)
+          - ~/.config/sops/age/keys.txt
       MSG
     end
+  end
+
+  # Where this repo keeps its own copy of the age key. bin/setup writes it here, and the CI
+  # workflows and Docker builds read it from here — but sops itself only looks in
+  # ~/.config/sops/age/keys.txt unless it is told otherwise, so a checkout that followed
+  # bin/setup would still fail here without this.
+  REPO_AGE_KEY_PATH = File.join("dockerfiles", "sops-age-key.secret")
+
+  def configure_sops_age_key!
+    return if ENV["SOPS_AGE_KEY_FILE"].to_s != ""
+
+    repo_key = File.join(Dir.pwd, REPO_AGE_KEY_PATH)
+    return unless File.exist?(repo_key)
+
+    puts "Using age key at #{REPO_AGE_KEY_PATH}"
+    ENV["SOPS_AGE_KEY_FILE"] = repo_key
   end
 
   def warn_build_cache_size!
