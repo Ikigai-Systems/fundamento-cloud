@@ -18,12 +18,12 @@ class Tables::TablesController < ApplicationController
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
-    @tables = @tables.select(:id, :name) if params[:mention].to_b
+    @tables = @tables.select(:id, :name, :icon_type, :icon_value) if params[:mention].to_b
 
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: @tables, only: [:id, :name]
+          render json: @tables, only: [:id, :name, :icon_type, :icon_value]
         else
           render json: @tables
         end
@@ -128,7 +128,7 @@ class Tables::TablesController < ApplicationController
       # ad json format: as an exception, frontend won't use camelCase -> snake_case deserialization of response payload from this endpoint
       format.json do
         render json: {
-          table: @table.attributes,
+          table: @table.as_json,
           data: TableDataBlueprint.render(@table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership))
         }
       end
@@ -164,7 +164,7 @@ class Tables::TablesController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @table.as_json.merge(@table.icon_attributes_for_json) }
+      format.json { render json: @table.as_json.merge("title_for_editing" => @table.title_for_editing) }
       format.html { render action: 'edit' }
     end
   rescue ActiveRecord::RecordNotUnique => e

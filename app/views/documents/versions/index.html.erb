@@ -6,8 +6,8 @@
 
 <article class="flex flex-col">
   <div class="px-[3.4rem]">
-    <h1 class="mt-1 text-4xl text-slate-800">
-      Document history - <%= @document.title %>
+    <h1 class="mt-1 text-4xl text-slate-800 flex items-center gap-2">
+      Document history - <%= render ObjectIcon.new(object: @document) %><%= @document.title %>
     </h1>
 
     <div class="mt-4">

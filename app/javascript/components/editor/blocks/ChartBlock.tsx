@@ -3,6 +3,8 @@ import {useContext, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
+import ObjectIcon from "../../ObjectIcon.tsx";
+import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import type {SingleValue} from "react-select";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
@@ -36,10 +38,12 @@ type ChartConfig = {
 type SelectOption = {
   value: string;
   label: string;
+  icon?: ObjectIconValue | null;
 };
 type TableIndexItem = {
   id: string;
   name: string;
+  icon?: ObjectIconValue | null;
 };
 type TableShowResponse = {
   data: TableData;
@@ -158,8 +162,14 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name}));
+                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon}));
                   }}
+                  formatOptionLabel={({label, icon}: SelectOption) => (
+                    <div className="flex flex-row items-center gap-1">
+                      <ObjectIcon type="Table" icon={icon}/>
+                      {label}
+                    </div>
+                  )}
                   onChange={(newOption: SingleValue<SelectOption>) => {
                     if (newOption === null) {
                       return;
@@ -211,8 +221,14 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name}));
+                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon}));
                   }}
+                  formatOptionLabel={({label, icon}: SelectOption) => (
+                    <div className="flex flex-row items-center gap-1">
+                      <ObjectIcon type="Table" icon={icon}/>
+                      {label}
+                    </div>
+                  )}
                   onChange={(newOption: SingleValue<SelectOption>) => {
                     if (newOption === null) {
                       return;

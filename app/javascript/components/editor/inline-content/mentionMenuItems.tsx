@@ -4,11 +4,13 @@ import DocumentsApi from "../../../api/DocumentsApi.js";
 import UsersApi from "../../../api/UsersApi.js";
 import TablesApi from "../../../api/Tables/TablesApi";
 import schema from "../schema.ts";
+import ObjectIcon from "../../ObjectIcon.tsx";
 
-function createMentionItem(entity: string, entityId: string | number, title: string) {
+function createMentionItem(entity: string, entityId: string | number, title: string, icon?: JSX.Element) {
   return {
     // TODO: Change SuggestionMenu.tsx in blocknote to use - key: `${entity}/${id}`,
     title,
+    icon,
     onItemClick: (editor: typeof schema.BlockNoteEditor) => {
       editor.insertInlineContent([
         {
@@ -34,9 +36,15 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
     UsersApi.index({query: { mention: true }})
   ]);
 
-  const documentMenuItems = documents.map((document: Document) => createMentionItem("document", document.id, document.title));
-  const tableMenuItems = tables.map((table: Table) => createMentionItem("table", table.id, table.name));
-  const userMenuItems = users.map((user: User) => createMentionItem("user", user.id, `${user.firstName} ${user.lastName}`));
+  // Titles no longer carry the emoji, so without the icon the menu would have
+  // lost it entirely. Users get a glyph too, or the rows would not line up.
+  const documentMenuItems = documents.map((document: Document) =>
+    createMentionItem("document", document.id, document.title, <ObjectIcon type="Document" icon={document.icon}/>));
+  const tableMenuItems = tables.map((table: Table) =>
+    createMentionItem("table", table.id, table.name, <ObjectIcon type="Table" icon={table.icon}/>));
+  const userMenuItems = users.map((user: User) =>
+    createMentionItem("user", user.id, `${user.firstName} ${user.lastName}`,
+      <span className="object-icon"><i className="fa-regular fa-user"/></span>));
 
   const menuItems = [...documentMenuItems, ...tableMenuItems, ...userMenuItems];
   return menuItems;

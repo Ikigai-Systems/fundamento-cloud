@@ -25,6 +25,7 @@ class SearchesController < ApplicationController
         object: {
           id: document.id,
           title: document.title,
+          icon: document.icon,
           parent_path: parent_path,
           type: document.class.to_s,
         },
@@ -48,6 +49,7 @@ class SearchesController < ApplicationController
         object: {
           id: table.id,
           title: table.name,
+          icon: table.icon,
           parent_path: parent_path,
           type: table.class.to_s,
         },

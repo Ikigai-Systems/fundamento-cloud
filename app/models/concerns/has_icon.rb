@@ -62,11 +62,16 @@ module HasIcon
     [icon_value, read_attribute(self.class.icon_source_attribute).presence].compact.join(" ")
   end
 
-  # What a JSON response must carry after a save so the client can update a
-  # renamed row in place. The server has already decided what is title and what
-  # is icon; sending both means no other language has to work it out again.
-  def icon_attributes_for_json
-    {"icon" => icon, "title_for_editing" => title_for_editing}
+  # The friendly nested shape rides along with the two columns it is built from,
+  # so any endpoint that already serializes the record gets it for free and every
+  # consumer sees one icon shape. Keying off icon_type means `only:`, `except:`
+  # and narrow selects keep working: the key appears only where icon_type would
+  # have been serialized anyway.
+  def as_json(options = nil)
+    json = super
+    return json unless json.is_a?(Hash) && json.key?("icon_type")
+
+    json.merge("icon" => icon&.as_json)
   end
 
   private
