@@ -336,4 +336,29 @@ RSpec.describe Space, type: :model do
       expect(Space.new.get_all_descendant_ids("doc_666", hierarchy)).to eq []
     end
   end
+
+  describe "#documents_from_hierarchy" do
+    fixtures :organizations, :users, :organization_memberships, :spaces, :documents
+
+    let(:space) { spaces(:is_default) }
+
+    it "still removes orphaned hierarchy entries when given a custom scope" do
+      space.update!(hierarchy: [
+        { "id" => "does-not-exist", "children" => [{ "id" => documents(:one).id, "children" => [] }] }
+      ])
+
+      space.documents_from_hierarchy(scope: space.documents.select(:id, :title))
+
+      expect(space.hierarchy.map { _1["id"] }).to eq([documents(:one).id])
+    end
+
+    it "uses the given scope for the lookup" do
+      space.update!(hierarchy: [{ "id" => documents(:one).id, "children" => [] }])
+
+      result = space.documents_from_hierarchy(scope: space.documents.select(:id, :title))
+
+      expect(result.map(&:id)).to eq([documents(:one).id])
+      expect { result.first.archived }.to raise_error(ActiveModel::MissingAttributeError)
+    end
+  end
 end

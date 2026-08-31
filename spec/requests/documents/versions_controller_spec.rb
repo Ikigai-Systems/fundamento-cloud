@@ -151,4 +151,14 @@ RSpec.describe Documents::VersionsController, type: :request do
       expect(response.body).not_to include('id="space-sidebar"')
     end
   end
+
+  describe "GET /d/:document_id/versions/:id (single version)" do
+    let!(:version) { document.versions.create!(content_blocks: [], created_by: pawel) }
+
+    it "renders without loading the whole document tree" do
+      get document_version_path(document, version.sequential_id)
+
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end

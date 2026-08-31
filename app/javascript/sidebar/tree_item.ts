@@ -12,14 +12,18 @@ export function renderTreeItem(
 ): HTMLLIElement {
   const li = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
 
+  // The payload omits these fields when they are at their default, so read them defensively.
   const selected = ctx.selectedId === node.id;
+  const hasChildren = (node.children ?? []).length > 0;
+  const archived = node.archived ?? false;
+  const draft = node.draft ?? false;
 
   li.dataset.nodeId = node.id;
   li.dataset.level = String(level);
-  if (node.children.length > 0) li.dataset.hasChildren = "true";
+  if (hasChildren) li.dataset.hasChildren = "true";
 
   const container = li.querySelector<HTMLElement>(".content-link-container")!;
-  if (node.archived) {
+  if (archived) {
     container.classList.add("archived");
     // The "visibility" controller on the sidebar wrapper toggles these; sidebar_tree_controller
     // applies the current cookie state after each render, since re-rendered nodes are new.
@@ -48,7 +52,7 @@ export function renderTreeItem(
       .replaceWith(document.createTextNode(node.emoji));
   }
 
-  if (!node.draft) li.querySelector(".draft-lozenge")!.remove();
+  if (!draft) li.querySelector(".draft-lozenge")!.remove();
 
   const actions = li.querySelector<HTMLElement>(".content-link-buttons-container")!;
   if (ctx.canUpdateSpace) {

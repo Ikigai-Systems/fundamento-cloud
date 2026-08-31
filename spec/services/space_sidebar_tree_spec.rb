@@ -69,6 +69,15 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["draft"]).to be(true)
   end
 
+  it "omits the draft key once a document has a version" do
+    one.versions.create!(content_blocks: [])
+    space.update!(hierarchy: [node(one)])
+
+    result = described_class.new(space: space, can_update_space: true).as_json
+
+    expect(result["nodes"].first).not_to have_key("draft")
+  end
+
   it "marks archived documents" do
     one.update!(archived: true)
     space.update!(hierarchy: [node(one)])
@@ -76,5 +85,44 @@ RSpec.describe SpaceSidebarTree do
     result = described_class.new(space: space, can_update_space: true).as_json
 
     expect(result["nodes"].first["archived"]).to be(true)
+  end
+
+  it "omits fields that are at their default" do
+    space.update!(hierarchy: [node(one)])
+
+    payload = described_class.new(space: space, can_update_space: true).as_json
+    leaf = payload["nodes"].first
+
+    expect(leaf).not_to have_key("children")
+    expect(leaf).not_to have_key("emoji")
+    expect(leaf).not_to have_key("archived")
+    expect(leaf).to have_key("id")
+    expect(leaf).to have_key("title")
+  end
+
+  it "still emits fields that are not at their default" do
+    one.update!(title: "🔥 Hot", archived: true)
+    space.update!(hierarchy: [node(one, [node(two)])])
+
+    leaf = described_class.new(space: space, can_update_space: true).as_json["nodes"].first
+
+    expect(leaf["emoji"]).to eq("🔥")
+    expect(leaf["archived"]).to be(true)
+    expect(leaf["children"].map { _1["id"] }).to eq([two.id])
+  end
+
+  it "does not load the sync blob when building the tree" do
+    space.update!(hierarchy: [node(one)])
+
+    selected = nil
+    ActiveSupport::Notifications.subscribed(->(*, payload) {
+      selected = payload[:sql] if payload[:sql].to_s.include?("FROM \"documents\"")
+    }, "sql.active_record") do
+      described_class.new(space: space, can_update_space: true).as_json
+    end
+
+    expect(selected).to be_present
+    expect(selected).not_to include("documents\".\"sync")
+    expect(selected).not_to match(/SELECT\s+"?documents"?\.\*/)
   end
 end

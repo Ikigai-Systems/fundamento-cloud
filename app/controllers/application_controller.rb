@@ -31,7 +31,13 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    PolicyUserContext.new(current_user, current_organization)
+    # Argument order matters: current_user must be evaluated before current_organization.
+    # Warden's JWT/API-token strategies (config/initializers/devise.rb) assign
+    # RequestContext.current_organization as a side effect of authenticating the user, so
+    # current_organization only has the right value once current_user has run. Ruby evaluates
+    # method arguments left-to-right, which makes this safe — but reordering these two
+    # arguments would silently break authorization.
+    @pundit_user ||= PolicyUserContext.new(current_user, current_organization)
   end
 
   # TODO: In the future implement this as devise scope, the same way we handle Superintendents
