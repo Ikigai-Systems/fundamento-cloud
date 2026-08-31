@@ -79,6 +79,11 @@ gem "nanoid"
 gem "pundit"
 gem "activerecord-like"
 
+# Up-to-date RGI emoji regex, generated from the Unicode data files. Ruby has no
+# \p{RGI_Emoji} property, so this is the only reliable way to detect a leading
+# emoji exactly the way the browser's /\p{RGI_Emoji}/v does.
+gem "unicode-emoji"
+
 gem "lograge", "~> 0.14.0"
 gem "logstash-event", "~> 1.2"
 

@@ -1,0 +1,11 @@
+@layer components {
+    /*
+     * An emoji icon occupies the slot a Font Awesome <i> would otherwise fill.
+     * Emoji glyphs are wider than the icon font's, so without a fixed advance
+     * width the labels in a list would not line up between objects that have an
+     * icon and objects that fall back to the default glyph.
+     */
+    .object-icon {
+        @apply inline-flex shrink-0 items-center justify-center w-[1.125em] leading-none;
+    }
+}

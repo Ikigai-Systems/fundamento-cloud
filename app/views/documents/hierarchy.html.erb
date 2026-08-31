@@ -4,7 +4,7 @@
     <% @children.each do |child| %>
       <%= link_to document_path(child), class: "rounded-md border p-1 px-2 max-w-[10em] truncate" do %>
         <%= render ObjectIcon.new(object: child) %>
-        <%= child.try(:title_emojiless) || child.try(:title) %>
+        <%= child.title %>
       <% end %>
     <% end %>
   </div>

@@ -8,7 +8,7 @@ type AdvancedTableTitleProps = {
 };
 
 const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
-  const initialTitle = table.name || UNTITLED_CONTENT;
+  const initialTitle = table.titleForEditing || table.name || UNTITLED_CONTENT;
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(initialTitle);
   const [originalTitle, setOriginalTitle] = useState(initialTitle);
@@ -26,9 +26,9 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
     const titleToSave = trimmed || UNTITLED_CONTENT;
 
     try {
-      await saveTableTitle(table.id, titleToSave);
-      setTitle(titleToSave);
-      setOriginalTitle(titleToSave);
+      const saved = await saveTableTitle(table.id, titleToSave);
+      setTitle(saved);
+      setOriginalTitle(saved);
     } catch (e: unknown) {
       handleTitleSaveError(e);
       setTitle(originalTitle);

@@ -1,4 +1,5 @@
 import DocumentsApi from "../api/DocumentsApi.js"
+import {applyObjectIcon} from "./object_icon"
 import {RenderContext, TreeNode} from "./types"
 
 // The markup lives in a <template> in app/views/spaces/sidebar.html.erb — see the comment there.
@@ -45,12 +46,8 @@ export function renderTreeItem(
   label.textContent = node.title;
   label.parentElement!.dataset.documentId = node.id;
 
-  // ObjectIcon renders a bare <i> for documents; a node with an emoji shows the emoji instead,
-  // as a text node, matching what ObjectIcon itself emits when the title carries one.
-  if (node.emoji) {
-    li.querySelector(".document-padding-left i")!
-      .replaceWith(document.createTextNode(node.emoji));
-  }
+  // The template carries the type's default <i>; swap in the object's own icon when it has one.
+  applyObjectIcon(label.parentElement!, node.icon);
 
   if (!draft) li.querySelector(".draft-lozenge")!.remove();
 

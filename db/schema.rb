@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_123120) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -145,6 +145,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_123120) do
   create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false
     t.datetime "created_at", null: false
+    t.string "icon_type"
+    t.string "icon_value"
     t.string "organization_id"
     t.string "space_id"
     t.binary "sync"
@@ -557,6 +559,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_123120) do
     t.datetime "created_at", null: false
     t.json "hierarchy", default: [], null: false
     t.string "home_document_id"
+    t.string "icon_type"
+    t.string "icon_value"
     t.string "name"
     t.string "organization_id"
     t.datetime "updated_at", null: false
@@ -640,6 +644,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_123120) do
   create_table "tables", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
+    t.string "icon_type"
+    t.string "icon_value"
     t.string "name", null: false
     t.string "organization_id", null: false
     t.string "parent_id", null: false

@@ -23,26 +23,26 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["children"].map { _1["id"] }).to eq([two.id])
   end
 
-  it "splits the emoji out of the title" do
+  it "sends the stored title and icon straight through" do
     one.update!(title: "🔥 Hot Topic")
     space.update!(hierarchy: [node(one)])
 
     result = described_class.new(space: space, can_update_space: true).as_json
 
     expect(result["nodes"].first["title"]).to eq("Hot Topic")
-    expect(result["nodes"].first["emoji"]).to eq("🔥")
+    expect(result["nodes"].first["icon"].as_json).to eq({type: "emoji", value: "🔥"})
   end
 
-  it "labels an emoji-only title with an empty string so the emoji is not rendered twice" do
+  it "labels an emoji-only title with the emoji itself" do
+    # HasIcon leaves these alone rather than stripping the title to nothing, so
+    # there is no icon to render and the emoji is simply the label.
     one.update!(title: "\u{1F525}")
     space.update!(hierarchy: [node(one)])
 
     result = described_class.new(space: space, can_update_space: true).as_json
 
-    # The emoji is already shown as the node's icon; using it as the label as well (which is what
-    # a `.presence` fallback to the full title would do) duplicates it.
-    expect(result["nodes"].first["title"]).to eq("")
-    expect(result["nodes"].first["emoji"]).to eq("\u{1F525}")
+    expect(result["nodes"].first["title"]).to eq("\u{1F525}")
+    expect(result["nodes"].first).not_to have_key("icon")
   end
 
   it "promotes children of a hierarchy entry whose document no longer exists" do
@@ -94,7 +94,7 @@ RSpec.describe SpaceSidebarTree do
     leaf = payload["nodes"].first
 
     expect(leaf).not_to have_key("children")
-    expect(leaf).not_to have_key("emoji")
+    expect(leaf).not_to have_key("icon")
     expect(leaf).not_to have_key("archived")
     expect(leaf).to have_key("id")
     expect(leaf).to have_key("title")
@@ -106,7 +106,7 @@ RSpec.describe SpaceSidebarTree do
 
     leaf = described_class.new(space: space, can_update_space: true).as_json["nodes"].first
 
-    expect(leaf["emoji"]).to eq("🔥")
+    expect(leaf["icon"].as_json).to eq({type: "emoji", value: "🔥"})
     expect(leaf["archived"]).to be(true)
     expect(leaf["children"].map { _1["id"] }).to eq([two.id])
   end

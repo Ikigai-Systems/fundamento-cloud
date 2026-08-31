@@ -683,19 +683,20 @@ RSpec.describe ReferencesExtractor do
   end
 
   describe "DocumentReference" do
-    it "has emoji extraction capability" do
+    # Both fields are filled in by SidebarConnectionsTab#with_link_details, which
+    # is where the referenced record is loaded; nothing is derived here.
+    it "carries the referenced object's title and icon" do
       ref = DocumentReference.new(
         referenced_type: "Document",
         referenced_id: "doc123",
         referenced_by: nil,
         referenced_path: "/documents/doc123",
-        referenced_title: "\u{1F4DD} My Document"
+        referenced_title: "My Document",
+        referenced_icon: Icon.emoji("\u{1F4DD}")
       )
 
-      expect(ref).to respond_to(:referenced_title_emoji)
-      expect(ref).to respond_to(:referenced_title_emojiless)
-      expect(ref.referenced_title_emoji).to eq("\u{1F4DD}")
-      expect(ref.referenced_title_emojiless).to eq("My Document")
+      expect(ref.referenced_title).to eq("My Document")
+      expect(ref.referenced_icon).to eq(Icon.emoji("\u{1F4DD}"))
     end
   end
 end

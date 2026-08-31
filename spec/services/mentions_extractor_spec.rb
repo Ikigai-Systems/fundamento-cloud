@@ -231,8 +231,9 @@ RSpec.describe MentionsExtractor do
       end
     end
 
-    it "returns Mention structs with EmojiExtractable" do
+    it "returns Mention structs carrying the document's stored title and icon" do
       document = documents(:one)
+      document.update!(title: "📝 My Document")
       mention_id = unique_id("mention")
       document.versions.create!(
         content_blocks: mention_content(mention_id, entity: "user", entity_id: user.id),
@@ -241,8 +242,8 @@ RSpec.describe MentionsExtractor do
 
       mentions = described_class.get_all_mentions([document], user)
       expect(mentions.first).to be_a(Mention)
-      expect(mentions.first).to respond_to(:object_title_emoji)
-      expect(mentions.first).to respond_to(:object_title_emojiless)
+      expect(mentions.first.object_title).to eq("My Document")
+      expect(mentions.first.object_icon).to eq(Icon.emoji("📝"))
     end
   end
 

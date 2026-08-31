@@ -164,7 +164,7 @@ class Tables::TablesController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @table }
+      format.json { render json: @table.as_json.merge(@table.icon_attributes_for_json) }
       format.html { render action: 'edit' }
     end
   rescue ActiveRecord::RecordNotUnique => e

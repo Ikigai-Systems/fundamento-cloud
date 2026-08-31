@@ -22,7 +22,7 @@ class SpaceSidebarTree
 
   # Only what the tree renders. Notably NOT `sync`, the Y.js CRDT blob — it is
   # multiple megabytes per space and the sidebar never looks at it.
-  SELECTED_COLUMNS = "documents.id, documents.title, documents.archived"
+  SELECTED_COLUMNS = "documents.id, documents.title, documents.archived, documents.icon_type, documents.icon_value"
 
   def documents_by_id
     @documents_by_id ||= @space.documents
@@ -46,13 +46,9 @@ class SpaceSidebarTree
 
       payload_node = {
         "id" => document.id,
-        # No `.presence` here on purpose: `title_emojiless` returns "" for an emoji-only title
-        # and "" is truthy in Ruby, so the old server-rendered component labelled such a node with
-        # an empty string. Falling back to the full title instead would render the emoji twice —
-        # once as the icon, once as the label.
-        "title" => document.title_emojiless || document.title,
+        "title" => document.title,
       }
-      payload_node["emoji"] = document.title_emoji if document.title_emoji
+      payload_node["icon"] = document.icon if document.icon
       payload_node["archived"] = true if document.archived?
       payload_node["draft"] = true if document.draft?
       payload_node["children"] = built_children if built_children.any?

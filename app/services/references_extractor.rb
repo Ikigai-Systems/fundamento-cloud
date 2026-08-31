@@ -1,7 +1,9 @@
-DocumentReference = Struct.new(:referenced_type, :referenced_id, :referenced_by, :referenced_path, :referenced_title) do
-  include EmojiExtractable
-  extracts_emoji_from :referenced_title
-end
+# referenced_title and referenced_icon are both filled in by
+# SidebarConnectionsTab#with_link_details, which is where the referenced record
+# is actually loaded.
+DocumentReference = Struct.new(
+  :referenced_type, :referenced_id, :referenced_by, :referenced_path, :referenced_title, :referenced_icon
+)
 
 class ReferencesExtractor
   def self.all_references(documents)

@@ -508,6 +508,7 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.13)
@@ -621,6 +622,7 @@ DEPENDENCIES
   tailwindcss-ruby (= 3.4.17)
   turbo-rails
   tzinfo-data
+  unicode-emoji
   view_component
   vite_rails
   wannabe_bool
