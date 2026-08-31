@@ -768,9 +768,16 @@ RSpec.describe SpacesController, type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("data-sidebar-tree-target=\"data\"")
-      expect(response.body).not_to include("section-content-node-container")
 
-      json = Nokogiri::HTML(response.body).at("script[data-sidebar-tree-target='data']").text
+      html = Nokogiri::HTML(response.body)
+
+      # A single <template> blueprint is rendered for the client to clone. What must NOT appear is
+      # markup for an actual document: no link to one, and no per-document id anywhere.
+      expect(html.css("template[data-sidebar-tree-target='itemTemplate']").count).to eq(1)
+      expect(response.body).not_to include(document_path(documents(:one)))
+      expect(response.body).not_to include("data-document-id")
+
+      json = html.at("script[data-sidebar-tree-target='data']").text
       payload = JSON.parse(json)
       expect(payload["nodes"].map { _1["id"] }).to eq([documents(:one).id])
       expect(payload["canUpdateSpace"]).to be(true)

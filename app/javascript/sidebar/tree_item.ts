@@ -1,74 +1,74 @@
-import {RenderContext, TreeNode} from "./types";
+import DocumentsApi from "../api/DocumentsApi.js"
+import {RenderContext, TreeNode} from "./types"
 
-function escapeHtml(value: string): string {
-  const div = document.createElement("div");
-  div.textContent = value;
-  return div.innerHTML;
-}
+// The markup lives in a <template> in app/views/spaces/sidebar.html.erb — see the comment there.
+// Everything below either fills a value in or removes a part that does not apply, so a document
+// title reaches the DOM as text and can never be parsed as markup.
+export function renderTreeItem(
+  template: HTMLTemplateElement,
+  node: TreeNode,
+  ctx: RenderContext,
+  level: number,
+): HTMLLIElement {
+  const li = template.content.firstElementChild!.cloneNode(true) as HTMLLIElement;
 
-// escapeHtml only escapes &, <, > — safe for text content, but not for interpolating into a
-// quoted attribute value, where a stray " or ' would break out of the attribute.
-function escapeAttr(value: string): string {
-  return escapeHtml(value).replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-
-function iconHtml(node: TreeNode): string {
-  return node.emoji ? escapeHtml(node.emoji) : `<i class="fa-regular fa-file-lines"></i>`;
-}
-
-function actionsHtml(node: TreeNode, ctx: RenderContext, selected: boolean): string {
-  if (!ctx.canUpdateSpace) return "";
-  const selectedClass = selected ? " selected" : "";
-
-  // Mirrors button_to: a real form POST with data-turbo="false" so the page fully reloads.
-  return `
-    <form class="flex items-center" method="post" action="/d" data-turbo="false">
-      <input type="hidden" name="authenticity_token" value="${escapeAttr(ctx.csrfToken)}">
-      <input type="hidden" name="space_id" value="${escapeAttr(ctx.spaceId)}">
-      <input type="hidden" name="document[title]" value="">
-      <input type="hidden" name="parent_type" value="Document">
-      <input type="hidden" name="parent_id" value="${escapeAttr(node.id)}">
-      <button type="submit" class="content-link-button${selectedClass}"><i class="fa-regular fa-plus"></i></button>
-    </form>
-    <a class="content-link-button${selectedClass}" href="/d/${encodeURIComponent(node.id)}/edit" data-turbo-frame="content"><i class="fa-regular fa-pencil"></i></a>
-  `;
-}
-
-export function renderTreeItem(node: TreeNode, ctx: RenderContext, level: number): HTMLLIElement {
   const selected = ctx.selectedId === node.id;
-  const hasChildren = node.children.length > 0;
 
-  const li = document.createElement("li");
-  li.className = "section-content-node-container";
   li.dataset.nodeId = node.id;
   li.dataset.level = String(level);
-  if (hasChildren) li.dataset.hasChildren = "true";
+  if (node.children.length > 0) li.dataset.hasChildren = "true";
 
-  const containerClasses = ["content-link-container", "group"];
-  if (node.archived) containerClasses.push("archived");
-  if (selected) containerClasses.push("selected");
+  const container = li.querySelector<HTMLElement>(".content-link-container")!;
+  if (node.archived) {
+    container.classList.add("archived");
+    // The "visibility" controller on the sidebar wrapper toggles these; sidebar_tree_controller
+    // applies the current cookie state after each render, since re-rendered nodes are new.
+    container.dataset.visibilityTarget = "hideable";
+  }
+  if (selected) container.classList.add("selected");
 
-  li.innerHTML = `
-    <div class="${containerClasses.join(" ")}"${node.archived ? ` data-visibility-target="hideable"` : ""}>
-      <a class="content-link" href="/d/${encodeURIComponent(node.id)}" data-turbo-frame="content">
-        <div class="document-padding-left flex items-center w-full" style="--level: ${level}">
-          <button type="button" class="collapsible-trigger flex items-center justify-center"
-                  data-action="click->sidebar-tree#toggle:prevent" data-node-id="${escapeAttr(node.id)}">
-            <div class="collapsible-icon icon-[heroicons--chevron-right-16-solid] size-4"></div>
-            <div class="collapsible-dot">•</div>
-          </button>
-          <div data-document-id="${escapeAttr(node.id)}" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
-            ${iconHtml(node)}
-            <span class="truncate">${escapeHtml(node.title)}</span>
-            ${node.draft ? `<span class="draft-lozenge">Draft</span>` : ""}
-          </div>
-        </div>
-      </a>
-      <div class="content-link-buttons-container">${actionsHtml(node, ctx, selected)}</div>
-    </div>
-    <ul data-controller="draggable" data-space-id="${escapeAttr(ctx.spaceId)}" data-document-id="${escapeAttr(node.id)}"></ul>
-    <ul data-controller="draggable" data-sidebar-tree-children="true" data-space-id="${escapeAttr(ctx.spaceId)}" data-document-id="${escapeAttr(node.id)}"></ul>
-  `;
+  li.querySelector<HTMLAnchorElement>("a.content-link")!.href =
+    DocumentsApi.show.path({id: node.id});
+
+  li.querySelector<HTMLElement>(".document-padding-left")!
+    .style.setProperty("--level", String(level));
+
+  li.querySelector<HTMLElement>(".collapsible-trigger")!.dataset.nodeId = node.id;
+
+  // The <span class="truncate"> and the icon share a parent, which is the element
+  // content_title_sync_controller looks up by data-document-id when a document is renamed.
+  const label = li.querySelector<HTMLElement>("span.truncate")!;
+  label.textContent = node.title;
+  label.parentElement!.dataset.documentId = node.id;
+
+  // ObjectIcon renders a bare <i> for documents; a node with an emoji shows the emoji instead,
+  // as a text node, matching what ObjectIcon itself emits when the title carries one.
+  if (node.emoji) {
+    li.querySelector(".document-padding-left i")!
+      .replaceWith(document.createTextNode(node.emoji));
+  }
+
+  if (!node.draft) li.querySelector(".draft-lozenge")!.remove();
+
+  const actions = li.querySelector<HTMLElement>(".content-link-buttons-container")!;
+  if (ctx.canUpdateSpace) {
+    actions.querySelector<HTMLInputElement>('input[name="parent_id"]')!.value = node.id;
+
+    const editLink = actions.querySelector<HTMLAnchorElement>("a.content-link-button")!;
+    editLink.href = DocumentsApi.edit.path({id: node.id});
+
+    if (selected) {
+      actions.querySelectorAll(".content-link-button")
+        .forEach(button => button.classList.add("selected"));
+    }
+  } else {
+    actions.replaceChildren();
+  }
+
+  li.querySelectorAll<HTMLElement>(":scope > ul").forEach(list => {
+    list.dataset.spaceId = ctx.spaceId;
+    list.dataset.documentId = node.id;
+  });
 
   return li;
 }

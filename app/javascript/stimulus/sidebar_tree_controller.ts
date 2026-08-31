@@ -5,7 +5,7 @@ import {RenderContext, TreeNode, TreePayload} from "../sidebar/types"
 
 // Connects to data-controller="sidebar-tree"
 export default class extends Controller<HTMLElement> {
-  static targets = ["data", "root"];
+  static targets = ["data", "root", "itemTemplate"];
   static values = {
     spaceId: String,
     selectedId: String,
@@ -15,6 +15,7 @@ export default class extends Controller<HTMLElement> {
 
   declare dataTarget: HTMLScriptElement;
   declare rootTarget: HTMLElement;
+  declare itemTemplateTarget: HTMLTemplateElement;
   declare spaceIdValue: string;
   declare selectedIdValue: string;
   declare selectedTypeValue: string;
@@ -115,7 +116,6 @@ export default class extends Controller<HTMLElement> {
       spaceId: this.spaceIdValue,
       canUpdateSpace: this.canUpdateSpaceValue,
       selectedId: this.currentSelectedId(),
-      csrfToken: document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content ?? "",
     };
   }
 
@@ -162,7 +162,7 @@ export default class extends Controller<HTMLElement> {
   private renderInto(container: HTMLElement, nodes: TreeNode[], level: number) {
     const ctx = this.renderContext;
     for (const node of nodes) {
-      const li = renderTreeItem(node, ctx, level);
+      const li = renderTreeItem(this.itemTemplateTarget, node, ctx, level);
       this.applyTriggerState(li, node);
       container.appendChild(li);
 

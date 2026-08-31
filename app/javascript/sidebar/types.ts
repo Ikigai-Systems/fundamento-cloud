@@ -17,5 +17,4 @@ export interface RenderContext {
   spaceId: string;
   canUpdateSpace: boolean;
   selectedId: string | null;
-  csrfToken: string;
 }
