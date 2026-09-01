@@ -3,7 +3,7 @@
 
   <%# The empty state lives inside the list so that a broadcast prepend hides it on its own:
       once an item arrives the placeholder is no longer the only child. %>
-  <div id="space_starred_list">
+  <div id="space_starred_list" class="section-content-container">
     <% @favorites.each do |favorite| %>
       <%= render partial: "spaces/_sidebar/starred_item", locals: { favorite: favorite } %>
     <% end %>
