@@ -1,7 +1,10 @@
 <%= turbo_frame_tag "space_sidebar", data: { turbo_action: "advance" } do %>
+  <%# Links in the tabs below live in a nested frame but target the "content" frame, which Turbo's
+      own interception cannot handle — see sidebar_navigation_controller. %>
   <div
     class="flex flex-col h-full overflow-hidden"
-    data-controller="visibility" data-action="toggle-button:change->visibility#onChange"
+    data-controller="sidebar-navigation"
+    data-action="click->sidebar-navigation#navigate"
   >
     <div class="flex flex-col px-3 border-b">
       <div class="mt-2">
@@ -18,138 +21,44 @@
       <% end %>
     </div>
 
-    <div class="flex flex-col grow overflow-y-auto">
-        <div class="section-header-container">
-          <div class="section-header-title">
-            <%= render ObjectIcon.new(type: Document) %>
-            Documents
-          </div>
+    <div
+      class="content-sidebar-tabs flex-1 min-h-0"
+      data-controller="tabs"
+      data-tabs-active-tab-class="active-tab"
+    >
+      <div class="shrink-0 border-b">
+        <nav data-tabs-target="list" aria-label="Space sidebar tabs">
+          <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab"
+                  class="flex flex-row items-center gap-1">
+            <i class="fa-regular fa-sitemap"></i>
+            Hierarchy
+          </button>
 
-          <%# Full page reload so the sidebar (which now includes the new
-              document) is re-rendered from fresh JSON; app/javascript/sidebar/tree_item.ts
-              renders the per-item add-child button with data-turbo="false" for the same reason. %>
-          <%= button_to documents_path(space_id: @space.id),
-            params: { "document": { title: "" } },
-            disabled: !policy(@space).update?,
-            form_class: "flex items-center",
-            class: "secondary-button",
-            data: { turbo: false },
-            aria: { label: "Create new document" } do
-          %>
-            <i class="fa-regular fa-plus"></i>
+          <button id="starred" data-action="click->tabs#change" data-tabs-target="tab"
+                  class="flex flex-row items-center gap-1">
+            <i class="fa-regular fa-star"></i>
+            Starred
+          </button>
+        </nav>
+      </div>
+
+      <div class="flex-1 min-h-0 overflow-hidden">
+        <%# The first tab is the one that opens, so it carries no loading: lazy and fetches at once.
+            The object params tell it which row to select and which ancestors to expand. %>
+        <div data-tabs-target="panel" class="hidden h-full py-0">
+          <%= turbo_frame_tag "hierarchy_sidebar_tab",
+              src: sidebar_space_path(@space, tab: :hierarchy, object: params[:object]&.permit(:id, :type)) do %>
+            <%= render Object::SidebarLoadingComponent.new %>
           <% end %>
         </div>
 
-        <div class="section-content-container"
-          data-controller="sidebar-tree"
-          data-sidebar-tree-space-id-value="<%= @space.id %>"
-          data-sidebar-tree-selected-id-value="<%= params.dig(:object, :id) %>"
-          data-sidebar-tree-selected-type-value="<%= params.dig(:object, :type) %>"
-          data-sidebar-tree-can-update-space-value="<%= @can_update_space %>"
-        >
-          <div class="section-empty hidden">No documents in this space</div>
-
-          <%= tag.script json_escape(@tree.to_json).html_safe,
-            type: "application/json",
-            data: { "sidebar-tree-target" => "data" } %>
-
-          <%# Blueprint for one row of the tree. sidebar_tree_controller clones this per node
-              (see app/javascript/sidebar/tree_item.ts) rather than building HTML in TypeScript:
-              the markup stays here with the rest of the app's views, Rails generates the
-              CSRF-bearing form, and a document title can never be interpolated into markup.
-              Everything that varies per node — hrefs, ids, the title, the parent_id — is filled
-              in on the clone. Parts that are conditional (the draft lozenge, the action buttons)
-              are rendered here and removed when they do not apply. %>
-          <template data-sidebar-tree-target="itemTemplate">
-            <li class="section-content-node-container">
-              <div class="content-link-container group">
-                <a class="content-link" data-turbo-frame="content">
-                  <div class="document-padding-left flex items-center w-full">
-                    <button type="button" class="collapsible-trigger flex items-center justify-center"
-                      data-action="click->sidebar-tree#toggle:prevent">
-                      <div class="collapsible-icon icon-[heroicons--chevron-right-16-solid] size-4"></div>
-                      <div class="collapsible-dot">•</div>
-                    </button>
-
-                    <div class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
-                      <%= render ObjectIcon.new(type: Document) %>
-                      <span class="truncate"></span>
-                      <span class="draft-lozenge">Draft</span>
-                    </div>
-                  </div>
-                </a>
-
-                <div class="content-link-buttons-container">
-                  <%= button_to documents_path,
-                    params: { space_id: @space.id, "document": { title: "" }, parent_type: Document.to_s, parent_id: "" },
-                    form_class: "flex items-center",
-                    class: "content-link-button",
-                    data: { turbo: false } do
-                  %>
-                    <i class="fa-regular fa-plus"></i>
-                  <% end %>
-
-                  <a class="content-link-button" data-turbo-frame="content"><i class="fa-regular fa-pencil"></i></a>
-                </div>
-              </div>
-
-              <%# The first list is intentionally empty: it is the drop target that lets an item be
-                  dropped onto a collapsed node. The second holds the children. %>
-              <ul data-controller="draggable"></ul>
-              <ul data-controller="draggable" data-sidebar-tree-children="true"></ul>
-            </li>
-          </template>
-
-          <%# Just the mount point. The <ul data-controller="draggable"> itself is created by
-              sidebar_tree_controller on every render, exactly like the nested lists: a list that
-              lived here would be persistent, so Stimulus would never re-connect `draggable` on it
-              and html5sortable would keep the root items it stamped at first init. %>
-          <div data-sidebar-tree-target="root"></div>
-        </div>
-
-        <div class="section-header-container">
-          <div class="section-header-title">
-            <%= render ObjectIcon.new(type: Table) %>
-            Tables
-          </div>
-
-          <%= link_to_with_disable new_table_path(space_id: @space.id),
-            disabled: !policy(@space).update?,
-            class: "secondary-button",
-            data: { turbo: false },
-            aria: { label: "Create new table" } do
-          %>
-            <i class="fa-regular fa-plus"></i>
+        <div data-tabs-target="panel" class="hidden h-full py-0 overflow-y-auto">
+          <%= turbo_frame_tag "starred_sidebar_tab",
+              loading: "lazy",
+              src: sidebar_space_path(@space, tab: :starred) do %>
+            <%= render Object::SidebarLoadingComponent.new %>
           <% end %>
         </div>
-
-        <div class="section-content-container">
-          <div class="section-empty hidden">No tables in this space</div>
-
-          <ul class="section-content-list">
-            <% @tables.each do |table| %>
-              <% if table.id.to_s == params.dig(:object, :id) && table.class.to_s == params.dig(:object, :type) %>
-                <% selected = true %>
-              <% end %>
-
-              <li class="section-content-node-container" data-controller="<%= selected ? "scroll-into-view" : "" %>">
-                <%=
-                  render partial: "spaces/_sidebar/content_link",
-                    locals: {
-                      content: table,
-                      selected: selected
-                    }
-                %>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-    </div>
-
-    <div class="mt-auto w-full self-end px-3 border-t flex justify-end">
-      <div class="flex items-center my-3">
-        <span class="mr-2">Show archived:</span>
-        <%= render partial: "application/components/toggle_button", locals: { checked: cookies["ikigai_userPreferences_showArchived"] == "true" } %>
       </div>
     </div>
   </div>

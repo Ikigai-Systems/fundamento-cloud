@@ -2,7 +2,7 @@ import DocumentsApi from "../api/DocumentsApi.js"
 import {applyObjectIcon} from "./object_icon"
 import {RenderContext, TreeNode} from "./types"
 
-// The markup lives in a <template> in app/views/spaces/sidebar.html.erb — see the comment there.
+// The markup lives in a <template> in app/views/spaces/_sidebar/hierarchy.html.erb — see the comment there.
 // Everything below either fills a value in or removes a part that does not apply, so a document
 // title reaches the DOM as text and can never be parsed as markup.
 export function renderTreeItem(

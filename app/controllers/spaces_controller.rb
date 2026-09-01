@@ -159,17 +159,47 @@ class SpacesController < ApplicationController
     render json: (@organization_memberships + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
 
+  # Without a tab the response is just the tab shell; each tab then fetches its own content into
+  # its own frame, so the Starred tab costs nothing until it is opened.
   def sidebar
     authorize @space, :show?
 
-    # DocumentPolicy#update? delegates to SpacePolicy#update? on the document's space, and every
-    # document here belongs to @space — so this is the same answer for all of them, computed once.
-    @can_update_space = policy(@space).update?
-    @tree = SpaceSidebarTree.new(space: @space, can_update_space: @can_update_space).as_json
-    @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+    case params[:tab]
+    when "hierarchy"
+      # DocumentPolicy#update? delegates to SpacePolicy#update? on the document's space, and every
+      # document here belongs to @space — so this is the same answer for all of them, computed once.
+      @can_update_space = policy(@space).update?
+      @tree = SpaceSidebarTree.new(space: @space, can_update_space: @can_update_space).as_json
+      @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
+      render template: "spaces/_sidebar/hierarchy"
+    when "starred"
+      @favorites = space_favorites
+      render template: "spaces/_sidebar/starred"
+    end
   end
 
   private
+
+  # The membership's favorites that point at something in this space. Scoped in SQL rather than
+  # by loading every favorite and asking each object for its space_id, which is an N+1 over a
+  # list that grows without bound.
+  def space_favorites
+    favorites = pundit_user.organization_membership.favorites
+
+    favorites
+      .where(object_type: "Document", object_id: starrable_document_ids)
+      .or(favorites.where(object_type: "Table", object_id: @space.tables.select(:id)))
+      .order(created_at: :desc)
+      .includes(:object)
+  end
+
+  # Drafts are invisible to anyone who cannot update the space, exactly as in SpaceSidebarTree.
+  def starrable_document_ids
+    documents = @space.documents.select(:id)
+    return documents if policy(@space).update?
+
+    documents.where("EXISTS (SELECT 1 FROM versions WHERE versions.document_id = documents.id)")
+  end
 
   def space_memberships_to_multiselect_value(space)
     space.space_memberships.map do |membership|

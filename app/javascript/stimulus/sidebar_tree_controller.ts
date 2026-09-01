@@ -72,8 +72,10 @@ export default class extends Controller<HTMLElement> {
     window.removeEventListener("content-title-updated", this.handleTitleUpdated);
   }
 
+  // Only the hierarchy tab's own frame, not the whole sidebar: reloading "space_sidebar" would
+  // rebuild the tab shell and throw away which tab the user has open.
   private reloadFrame() {
-    const frame = document.getElementById("space_sidebar") as (HTMLElement & {reload?: () => void}) | null;
+    const frame = document.getElementById("hierarchy_sidebar_tab") as (HTMLElement & {reload?: () => void}) | null;
     frame?.reload?.();
   }
 
