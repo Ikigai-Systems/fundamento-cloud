@@ -24,6 +24,11 @@
 module HasIcon
   extend ActiveSupport::Concern
 
+  # The columns #icon is built from. Queries that narrow their SELECT for
+  # performance -- the sidebar tree, connection rows -- have to name them, so the
+  # list belongs to the concern rather than being restated at each call site.
+  COLUMNS = %i[icon_type icon_value].freeze
+
   class_methods do
     # `derived_from` must be the real column. Table#title and Space#title are
     # read-only aliases for `name`, with no matching writer.

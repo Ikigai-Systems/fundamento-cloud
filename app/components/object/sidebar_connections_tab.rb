@@ -28,19 +28,17 @@ class SidebarConnectionsTab < ViewComponent::Base
 
   protected
 
-  ICON_COLUMNS = [:icon_type, :icon_value].freeze
-
   def with_link_details(reference)
     reference.tap do |reference|
       organization = @pundit_user.current_organization
 
       case reference.referenced_type
       when "Table"
-        referenced = organization.tables.select(:name, *ICON_COLUMNS).find_by_param!(reference.referenced_id)
+        referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
         reference.referenced_title = referenced.name
         reference.referenced_path = table_path(reference.referenced_id)
       when "Document"
-        referenced = organization.documents.select(:title, *ICON_COLUMNS).find_by_param!(reference.referenced_id)
+        referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
         reference.referenced_title = referenced.title
         reference.referenced_path = document_path(reference.referenced_id)
       else

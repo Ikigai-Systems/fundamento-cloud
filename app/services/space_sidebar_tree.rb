@@ -22,7 +22,10 @@ class SpaceSidebarTree
 
   # Only what the tree renders. Notably NOT `sync`, the Y.js CRDT blob — it is
   # multiple megabytes per space and the sidebar never looks at it.
-  SELECTED_COLUMNS = "documents.id, documents.title, documents.archived, documents.icon_type, documents.icon_value"
+  SELECTED_COLUMNS = [
+    "documents.id", "documents.title", "documents.archived",
+    *HasIcon::COLUMNS.map { |column| "documents.#{column}" }
+  ].join(", ")
 
   def documents_by_id
     @documents_by_id ||= @space.documents
