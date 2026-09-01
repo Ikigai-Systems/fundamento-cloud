@@ -49,7 +49,7 @@
             a frame would cost a second round-trip before the tree could appear. %>
         <%# "hidden" wins over "flex" while the tab is closed — Tailwind emits it last — so the panel
             becomes the flex column that pins the archived toggle to the bottom only once it opens. %>
-        <div data-tabs-target="panel" class="hidden flex flex-col h-full py-0">
+        <div data-tabs-target="panel" class="hidden flex flex-col h-full">
           <div class="flex flex-col grow overflow-y-auto">
               <div class="section-header-container">
                 <div class="section-header-title">
@@ -186,7 +186,7 @@
           </div>
         </div>
 
-        <div data-tabs-target="panel" class="hidden h-full py-0 overflow-y-auto">
+        <div data-tabs-target="panel" class="hidden h-full overflow-y-auto">
           <%= turbo_frame_tag "starred_sidebar_tab",
               loading: "lazy",
               src: sidebar_space_path(@space, tab: :starred) do %>

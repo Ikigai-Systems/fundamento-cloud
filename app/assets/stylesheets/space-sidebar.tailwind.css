@@ -26,6 +26,14 @@
             @apply text-slate-400 mx-2 p-2 only:block;
         }
 
+        /* Each tab here is a full-height layout that pins the archived toggle to the bottom
+           edge, not a block of content — the generic tabs padding would lift it off that edge
+           and push the sticky section headers down. Scoped selector: the utility class alone
+           loses to `div[data-controller="tabs"] div[data-tabs-target="panel"]` on specificity. */
+        div[data-controller="tabs"] div[data-tabs-target="panel"] {
+            @apply py-0;
+        }
+
         .section-content-container {
             .section-content-node-container {
                 @apply relative w-full scroll-mt-10;

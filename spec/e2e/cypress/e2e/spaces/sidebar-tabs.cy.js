@@ -21,6 +21,14 @@ describe("Space sidebar tabs", function () {
     cy.get("#space-sidebar #hierarchy").should("have.attr", "aria-selected", "true");
     cy.get("#space-sidebar li[data-node-id='one']").should("exist");
     cy.get("#space-sidebar #space_starred_list").should("not.exist");
+
+    // The archived toggle sits on the panel's bottom edge. The tabs stylesheet pads every panel
+    // by default, and that padding outranks a utility class, so it would lift the toggle away.
+    cy.get("#space-sidebar [data-tabs-target='panel']:not(.hidden)").then(($panel) => {
+      const panel = $panel[0].getBoundingClientRect();
+      const toggle = $panel[0].querySelector(".mt-auto").getBoundingClientRect();
+      expect(Math.round(panel.bottom - toggle.bottom)).to.equal(0);
+    });
   });
 
   it("names the tabs with a tooltip rather than visible text", function () {
