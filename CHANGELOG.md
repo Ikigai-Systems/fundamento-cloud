@@ -10,6 +10,30 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.2.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.1.0...v1.2.0) (2026-09-01)
+
+
+### Features
+
+* **sidebar:** remember expanded folders per space ([485005b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/485005bf8aacb86dc36ea472f077998ae12d3a98))
+
+
+### Bug Fixes
+
+* **icons:** keep symbols like ✓ and ✂ in titles ([e7f99ca](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e7f99ca0f6a3adbb0e6272fbefef4a95e520e997))
+* **icons:** recognize every emoji as a document or table icon ([#137](https://github.com/Ikigai-Systems/fundamento-cloud/issues/137)) ([e7f99ca](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e7f99ca0f6a3adbb0e6272fbefef4a95e520e997))
+* **icons:** show object icons everywhere a title appears ([#138](https://github.com/Ikigai-Systems/fundamento-cloud/issues/138)) ([c28a1a9](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c28a1a9a3cc1a5b105a35bde487ff638121a56dd))
+* **icons:** update the sidebar icon immediately on rename ([e7f99ca](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e7f99ca0f6a3adbb0e6272fbefef4a95e520e997))
+* **palette:** follow the OS theme when it changes mid-session ([9dcc8b4](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9dcc8b4269369a5c78930b3ca86e4f7ff8187dfb))
+
+
+### Performance
+
+* **api:** faster space document-tree responses for large spaces ([45b5c2d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/45b5c2d01a284f92a9ffec2186ef8b2bb1e57666))
+* **sidebar:** eliminate multi-second lag in large spaces ([#132](https://github.com/Ikigai-Systems/fundamento-cloud/issues/132)) ([485005b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/485005bf8aacb86dc36ea472f077998ae12d3a98))
+* **sidebar:** speed up sidebar loading in large spaces ([#133](https://github.com/Ikigai-Systems/fundamento-cloud/issues/133)) ([45b5c2d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/45b5c2d01a284f92a9ffec2186ef8b2bb1e57666))
+* version history no longer loads the entire document tree ([45b5c2d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/45b5c2d01a284f92a9ffec2186ef8b2bb1e57666))
+
 ## [1.1.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.0.0...v1.1.0) (2026-08-28)
 
 
