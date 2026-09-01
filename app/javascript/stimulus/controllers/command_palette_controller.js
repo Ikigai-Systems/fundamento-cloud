@@ -38,6 +38,12 @@ export default class CommandPaletteController extends Controller {
     this.element.addEventListener("change", debounce(this.handleChange.bind(this), 300));
     this.element.addEventListener("selected", this.handleSelected);
 
+    // ninja-keys renders into its own shadow root, so the app's dark-mode CSS
+    // never reaches it and the palette has to be told the scheme explicitly.
+    this.darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    this.darkScheme.addEventListener("change", this.syncColorScheme);
+    this.syncColorScheme();
+
     const commands = this.commandsValue || [];
 
     this.element.data = defaultCommands.concat(commands.map(command => ({
@@ -99,6 +105,19 @@ export default class CommandPaletteController extends Controller {
       };
     }));
     this._cachedResults = true;
+  }
+
+  disconnect() {
+    this.darkScheme?.removeEventListener("change", this.syncColorScheme);
+  }
+
+  // Assigns rather than toggles, on purpose. Turbo caches the page body with
+  // this class already applied, so a restoration visit (browser Back) restores
+  // an element that is already dark and a toggle would turn it light again.
+  // Setting it is idempotent, so every path -- first load, Drive visit,
+  // restoration, and the OS switching theme mid-session -- lands correctly.
+  syncColorScheme = () => {
+    this.element.classList.toggle("dark", this.darkScheme.matches);
   }
 
   handleSelected() {

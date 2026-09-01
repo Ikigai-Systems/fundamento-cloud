@@ -1,21 +1,12 @@
 module CommandPaletteHelper
   def command_palette(**args)
-    ninja_keys_tag = content_tag("ninja-keys", nil, data: {
+    # ninja-keys paints itself inside its own shadow root, which the app's
+    # dark-mode CSS cannot reach, so the palette has to be told the colour
+    # scheme. That is the command-palette controller's job -- see its
+    # #syncColorScheme -- rather than an inline script's.
+    content_tag("ninja-keys", nil, data: {
       controller: "command-palette",
       command_palette_commands_value: palette_commands
     })
-    ninja_keys_init_theme_js = javascript_tag <<~EOF
-      window.onload = function() {
-        document.addEventListener('turbo:load', function() {
-          if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.querySelector("ninja-keys").classList.toggle("dark");
-          }
-        });
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.querySelector("ninja-keys").classList.toggle("dark");
-        }
-      }
-    EOF
-    ninja_keys_tag + ninja_keys_init_theme_js
   end
 end
