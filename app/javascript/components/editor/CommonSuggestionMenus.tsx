@@ -13,7 +13,7 @@ import AdvancedTableMenuItem from "./blocks/AdvancedTableMenuItem.tsx";
 import ChartBlockMenuItem from "./blocks/ChartBlockMenuItem.tsx";
 import ButtonInlineContentMenuItem from "./inline-content/ButtonInlineContentMenuItem.tsx";
 import FormulaInlineContentMenuItem from "./inline-content/FormulaInlineContentMenuItem.tsx";
-import {getMentionMenuItems} from "./inline-content/mentionMenuItems.ts";
+import {getMentionMenuItems} from "./inline-content/mentionMenuItems.tsx";
 import TurnIntoItem from "./drag-handle/TurnIntoItem.tsx";
 import schema from "./schema.ts";
 

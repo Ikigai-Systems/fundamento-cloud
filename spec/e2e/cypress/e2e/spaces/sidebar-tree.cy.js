@@ -243,4 +243,65 @@ describe("Space sidebar tree", function () {
       ]);
     });
   });
+
+  describe("object icons", function () {
+    // ⭐ is deliberate on two counts: the codepoint ranges this replaced never
+    // matched it, and it sits in the BMP so cy.type() can send it as one unit.
+    it("renders a stored icon in its own slot, not in the label", function () {
+      cy.appEval(`Document.find("one").update!(title: "⭐ Roadmap")`);
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon").should("have.text", "⭐");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Roadmap");
+    });
+
+    it("falls back to the document glyph when there is no icon", function () {
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon").should("have.text", "");
+    });
+
+    // The bug this whole change set exists for: the sidebar used to keep the old
+    // icon and paste the raw new title next to it, showing the emoji twice.
+    it("swaps the icon live when the document is renamed", function () {
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+
+      cy.intercept("PATCH", "/d/one").as("rename");
+      cy.get("nav .editable-content-title.editable").click();
+      cy.get("nav .editable-content-title input").clear();
+      cy.get("nav .editable-content-title input").type("⭐ Roadmap");
+      cy.get("nav .editable-content-title input").blur();
+      cy.wait("@rename");
+
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon").should("have.text", "⭐");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Roadmap");
+    });
+
+    it("restores the default glyph when the emoji is taken out again", function () {
+      cy.appEval(`Document.find("one").update!(title: "⭐ Roadmap")`);
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon").should("have.text", "⭐");
+
+      cy.intercept("PATCH", "/d/one").as("rename");
+      cy.get("nav .editable-content-title.editable").click();
+      cy.get("nav .editable-content-title input").clear();
+      cy.get("nav .editable-content-title input").type("Roadmap");
+      cy.get("nav .editable-content-title input").blur();
+      cy.wait("@rename");
+
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Roadmap");
+    });
+
+    // A dingbat is not an emoji; the old ranges matched several and ate them.
+    it("leaves a leading symbol that is not an emoji in the title", function () {
+      cy.appEval(`Document.find("one").update!(title: "✓ Reviewed")`);
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "✓ Reviewed");
+    });
+  });
 });

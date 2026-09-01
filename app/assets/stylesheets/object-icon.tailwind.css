@@ -8,4 +8,14 @@
     .object-icon {
         @apply inline-flex shrink-0 items-center justify-center w-[1.125em] leading-none;
     }
+
+    /*
+     * Most slots sit in a flex row that already supplies a gap. Inline contexts
+     * -- a heading, a mention inside a sentence -- have nothing to lean on, so
+     * the slot carries its own spacing there.
+     */
+    .editable-content-title > .object-icon,
+    .mention > .object-icon {
+        @apply mr-1;
+    }
 }

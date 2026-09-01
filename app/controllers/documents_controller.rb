@@ -20,7 +20,8 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: policy_scope(current_organization.documents).select(:id, :title), only: [:id, :title]
+          render json: policy_scope(current_organization.documents).select(:id, :title, :icon_type, :icon_value),
+            only: [:id, :title, :icon_type, :icon_value]
         else
           render json: policy_scope(current_organization.documents), :except => [:sync]
         end
@@ -113,7 +114,7 @@ class DocumentsController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @document.as_json(except: [:sync]).merge(@document.icon_attributes_for_json) }
+      format.json { render json: @document.as_json(except: [:sync]).merge("title_for_editing" => @document.title_for_editing) }
       format.html { render action: 'edit' }
     end
   end

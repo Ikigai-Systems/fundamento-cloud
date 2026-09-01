@@ -337,4 +337,61 @@ describe("Command Palette (Ctrl+K)", () => {
         });
     });
   });
+
+  describe("Object icons in search results", () => {
+    // This file cleans once in before(), so the fixtures are shared across
+    // tests. Create a document rather than renaming one the earlier tests
+    // still look for.
+    const createIconedDocument = () => cy.appEval(`
+      Document.create!(
+        id: "iconsearch", title: "⭐ Palette Roadmap",
+        organization_id: "is", space_id: "is_default"
+      ).id
+    `);
+
+    const searchFor = (term) => {
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+      cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search").as("iconSearch");
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type(term);
+      cy.wait("@iconSearch");
+    };
+
+    const resultMatching = (text) => (actions) =>
+      [...actions].find(action =>
+        action.shadowRoot?.querySelector(".ninja-title")?.textContent?.includes(text));
+
+    // Before icons were stored, the palette showed a generic glyph *and* the
+    // emoji inline in the title -- the same emoji twice on one row.
+    it("uses the object's own icon and keeps the emoji out of the title", () => {
+      createIconedDocument();
+      searchFor("Palette Roadmap");
+
+      cy.get("ninja-keys").shadow().find("ninja-action").should($actions => {
+        const result = resultMatching("Palette Roadmap")($actions);
+        expect(result, "a result for Palette Roadmap").to.exist;
+
+        const shadow = result.shadowRoot;
+        expect(shadow.querySelector(".ninja-icon").textContent.trim()).to.equal("⭐");
+        expect(shadow.querySelector(".ninja-title").textContent).to.not.include("⭐");
+      });
+    });
+
+    it("falls back to a generic glyph when the object has no icon", () => {
+      searchFor("One");
+
+      cy.get("ninja-keys").shadow().find("ninja-action").should($actions => {
+        const result = resultMatching("One")($actions);
+        expect(result, "a result for One").to.exist;
+
+        // ninja-keys renders into a shadow root the app stylesheet cannot reach,
+        // so the fallback is an inline SVG rather than the Font Awesome <i>.
+        expect(result.shadowRoot.querySelector("svg"), "fallback glyph").to.exist;
+      });
+    });
+  });
 });

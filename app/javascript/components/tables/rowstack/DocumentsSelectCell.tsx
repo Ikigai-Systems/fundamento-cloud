@@ -5,13 +5,15 @@ import {useQueries, useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 import {join} from "lodash";
-import {Document} from "../../../types.ts";
+import {Document, ObjectIcon as ObjectIconValue} from "../../../types.ts";
+import ObjectIcon from "../../ObjectIcon.tsx";
 
 type FocusState = "none" | "focused" | "editing";
 
 type DocumentOption = {
   value: string;
   title: string;
+  icon?: ObjectIconValue | null;
 };
 
 type DocumentsSelectCellProps = {
@@ -68,7 +70,7 @@ function DocumentsSelectCell({
         const title = documentQuery.data ? documentQuery.data.title : undefined;
         return (
           <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({id: documentQuery.data?.id})}>
-            <i className="fa-regular fa-file-lines"></i>
+            <ObjectIcon type="Document" icon={documentQuery.data?.icon}/>
             {title}
           </a>
         );
@@ -100,15 +102,17 @@ function DocumentsSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          value={selectedDocuments.flatMap((document): DocumentOption[] => document ? [{ value: document.id, title: document.title }] : [])}
+          value={selectedDocuments.flatMap((document): DocumentOption[] => document ? [{ value: document.id, title: document.title, icon: document.icon }] : [])}
           loadOptions={async (_query): Promise<DocumentOption[]> =>
             (documentsQuery.data ?? []).map((document): DocumentOption => ({
               value: document.id,
               title: document.title,
+              icon: document.icon,
             }))}
-          formatOptionLabel={({title}) => {
+          formatOptionLabel={({title, icon}) => {
             return (
-              <div className="flex flex-row items-center">
+              <div className="flex flex-row items-center gap-1">
+                <ObjectIcon type="Document" icon={icon}/>
                 {title}
               </div>
             )}

@@ -201,4 +201,55 @@ describe("Advanced Table Title in Document", function () {
       cy.get(".advanced-table-title.editable").should("not.exist");
     });
   });
+
+  describe("Object icons in the existing-table picker", function () {
+    function openNewTableDialog() {
+      cy.visit("/s/is_default");
+      cy.get('[aria-label="Create new document"]').click();
+
+      cy.url().should("match", editPageUrl);
+      cy.waitForEditor();
+
+      cy.get("[data-document-editor] [role=\"textbox\"]").first().click();
+      cy.focused().type("/table");
+
+      cy.get(".bn-suggestion-menu").should("be.visible");
+      cy.get(".bn-suggestion-menu-item").contains("Advanced table").click();
+      cy.contains("New table").should("be.visible");
+    }
+
+    it("shows a table's icon beside its name", function () {
+      cy.appEval(`
+        Table.create!(
+          id: "icontable", name: "⭐ Metrics", organization_id: "is",
+          space_id: "is_default", parent_id: "is_default", parent_type: "Space"
+        ).id
+      `);
+
+      openNewTableDialog();
+
+      cy.get(".fundamento-react-select-container").first().click();
+      cy.get(".fundamento-react-select__option", {timeout: 10000})
+        .filter(":contains('Metrics')")
+        .find(".object-icon")
+        .should("have.text", "⭐");
+    });
+
+    it("falls back to the table glyph when a table has no icon", function () {
+      cy.appEval(`
+        Table.create!(
+          id: "plaintable", name: "Plain Metrics", organization_id: "is",
+          space_id: "is_default", parent_id: "is_default", parent_type: "Space"
+        ).id
+      `);
+
+      openNewTableDialog();
+
+      cy.get(".fundamento-react-select-container").first().click();
+      cy.get(".fundamento-react-select__option", {timeout: 10000})
+        .filter(":contains('Plain Metrics')")
+        .find(".object-icon i.fa-table")
+        .should("exist");
+    });
+  });
 });

@@ -27,8 +27,8 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
 
     try {
       const saved = await saveTableTitle(table.id, titleToSave);
-      setTitle(saved);
-      setOriginalTitle(saved);
+      setTitle(saved.titleForEditing);
+      setOriginalTitle(saved.titleForEditing);
     } catch (e: unknown) {
       handleTitleSaveError(e);
       setTitle(originalTitle);

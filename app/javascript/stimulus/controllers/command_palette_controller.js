@@ -6,6 +6,29 @@ import SearchesApi from "@/api/SearchesApi.js";
 import TablesApi from "~/api/Tables/TablesApi.js";
 
 // Connects to data-controller="command-palette"
+// ninja-keys is a Lit element, so these are injected with unsafeHTML into its
+// shadow root -- where the app's Font Awesome stylesheet does not reach. Hence
+// inline SVG for the defaults rather than the <i> the rest of the app renders.
+// An emoji is plain text and needs no stylesheet, so it works either way.
+const DOCUMENT_GLYPH_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9"/></svg>';
+const TABLE_GLYPH_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 512 512"><path d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>';
+
+// The icon value can only ever be an RGI emoji, but it is interpolated into
+// markup here, so escape it rather than rely on that.
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character]);
+}
+
+function paletteIcon(object) {
+  if (object.icon) {
+    return `<span class="ninja-icon">${escapeHtml(object.icon.value)}</span>`;
+  }
+
+  return object.type === "Document" ? DOCUMENT_GLYPH_SVG : TABLE_GLYPH_SVG;
+}
+
 export default class CommandPaletteController extends Controller {
   static values = {
     commands: Array,
@@ -65,9 +88,7 @@ export default class CommandPaletteController extends Controller {
         value: object.title,
         title: displayTitle,
         section: "Documents and tables",
-        icon: (object.type === "Document")
-          ? '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9"/></svg>'
-          : '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 512 512"><path d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>' ,
+        icon: paletteIcon(object),
         handler: () => {
           if (object.type === "Document") {
             Turbo.visit(DocumentsApi.show.path({id: object?.id}));

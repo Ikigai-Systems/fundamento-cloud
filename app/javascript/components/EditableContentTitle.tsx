@@ -1,5 +1,6 @@
 import {useState, useRef, useEffect} from "react";
-import {Document, ObjectIcon, Table} from "../types.js";
+import {Document, ObjectIcon as ObjectIconValue, Table} from "../types.js";
+import ObjectIcon, {ObjectType} from "./ObjectIcon.tsx";
 import createFlash from "../utils/createFlash.ts";
 import DocumentsApi from "../api/DocumentsApi.js";
 import TablesApi from "../api/Tables/TablesApi.js";
@@ -9,7 +10,7 @@ export const UNTITLED_CONTENT = "Untitled";
 type RenameResponse = {
   title?: string;
   name?: string;
-  icon?: ObjectIcon | null;
+  icon?: ObjectIconValue | null;
   titleForEditing?: string;
 };
 
@@ -18,21 +19,26 @@ type RenameResponse = {
 // response rather than the input, which is why no code on this side needs to
 // know what an emoji is.
 //
-// Returns what the edit field should now show; the sidebar gets the split-out
-// label and icon through the event.
-function announceRename(id: string, response: RenameResponse, typedTitle: string): string {
+// Returns the split the server settled on; the sidebar gets the same thing
+// through the event.
+export type RenameResult = {
+  title: string;
+  icon: ObjectIconValue | null;
+  titleForEditing: string;
+};
+
+function announceRename(id: string, response: RenameResponse, typedTitle: string): RenameResult {
   const title = response.title ?? response.name ?? typedTitle;
+  const icon = response.icon ?? null;
 
-  window.dispatchEvent(new CustomEvent("content-title-updated", {
-    detail: {id, title, icon: response.icon ?? null},
-  }));
+  window.dispatchEvent(new CustomEvent("content-title-updated", {detail: {id, title, icon}}));
 
-  return response.titleForEditing ?? title;
+  return {title, icon, titleForEditing: response.titleForEditing ?? title};
 }
 
 // Shared helper exported alongside the component; imported elsewhere, so it stays here despite fast-refresh.
 // eslint-disable-next-line react-refresh/only-export-components
-export async function saveTableTitle(tableId: string, name: string): Promise<string> {
+export async function saveTableTitle(tableId: string, name: string): Promise<RenameResult> {
   const response = await TablesApi.update({
     params: {id: tableId},
     data: {name},
@@ -58,23 +64,31 @@ type EditableContentTitleProps = {
   | {contentType: "table"; table: Table}
 );
 
-// The icon is shown as part of the title here, exactly as it was before icons
-// were split out of the stored title. Giving the header its own icon slot is a
-// separate change; until then this keeps the emoji visible and, more importantly,
-// keeps it in the edit field -- editing a title with the emoji already stripped
-// away would silently clear the icon on save.
-const getTitle = (props: EditableContentTitleProps): string => {
-  if (props.contentType === "document") {
-    return props.document.titleForEditing || props.document.title || UNTITLED_CONTENT;
-  }
-  return props.table.titleForEditing || props.table.name || UNTITLED_CONTENT;
+const contentOf = (props: EditableContentTitleProps) =>
+  props.contentType === "document" ? props.document : props.table;
+
+const objectTypeOf = (props: EditableContentTitleProps): ObjectType =>
+  props.contentType === "document" ? "Document" : "Table";
+
+// What the heading shows: the icon in its own slot, then the plain title.
+const getDisplayTitle = (props: EditableContentTitleProps): string => {
+  const content = contentOf(props);
+  return ("title" in content ? content.title : content.name) || UNTITLED_CONTENT;
 };
 
+// What the input holds. The icon goes back on the front while editing, because
+// the title field is still the only way to set one -- binding the input to the
+// stripped title would hide the icon and then clear it on save.
+const getEditingTitle = (props: EditableContentTitleProps): string =>
+  contentOf(props).titleForEditing || getDisplayTitle(props);
+
 const EditableContentTitle = (props: EditableContentTitleProps) => {
-  const initialTitle = getTitle(props);
+  const initialEditingTitle = getEditingTitle(props);
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(initialTitle);
-  const [originalTitle, setOriginalTitle] = useState(initialTitle);
+  const [icon, setIcon] = useState<ObjectIconValue | null>(contentOf(props).icon ?? null);
+  const [displayTitle, setDisplayTitle] = useState(getDisplayTitle(props));
+  const [title, setTitle] = useState(initialEditingTitle);
+  const [originalTitle, setOriginalTitle] = useState(initialEditingTitle);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -89,7 +103,7 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
     const titleToSave = trimmed || UNTITLED_CONTENT;
 
     try {
-      let saved: string;
+      let saved: RenameResult;
 
       if (props.contentType === "document") {
         const response = await DocumentsApi.update({
@@ -101,8 +115,10 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
         saved = await saveTableTitle(props.table.id, titleToSave);
       }
 
-      setTitle(saved);
-      setOriginalTitle(saved);
+      setIcon(saved.icon);
+      setDisplayTitle(saved.title || UNTITLED_CONTENT);
+      setTitle(saved.titleForEditing);
+      setOriginalTitle(saved.titleForEditing);
     } catch (e: unknown) {
       handleTitleSaveError(e);
       setTitle(originalTitle);
@@ -125,10 +141,14 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
     }
   };
 
+  // fallback={false}: most objects have no icon, and a generic file glyph beside
+  // every heading in the app would be noise rather than information.
+  const iconSlot = <ObjectIcon type={objectTypeOf(props)} icon={icon} fallback={false}/>;
+
   if (!props.editable) {
     return (
       <div className="editable-content-title">
-        {title}
+        {iconSlot}{displayTitle}
       </div>
     );
   }
@@ -154,7 +174,7 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
       className="editable-content-title editable"
       onClick={() => setIsEditing(true)}
     >
-      {title}
+      {iconSlot}{displayTitle}
     </div>
   );
 };

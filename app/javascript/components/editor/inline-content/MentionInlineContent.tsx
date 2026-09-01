@@ -7,6 +7,7 @@ import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
 import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
+import ObjectIcon from "../../ObjectIcon.tsx";
 
 const Loading = () => {
   return <span className="relative top-1">
@@ -31,7 +32,7 @@ const DocumentMention = ({documentNpi, fragment}: {documentNpi: string, fragment
       href={href}
       className="mention"
     >
-      @{displayName}
+      @<ObjectIcon type="Document" icon={document?.icon} fallback={false}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )
@@ -53,7 +54,7 @@ const TableMention = ({tableNpi}: {tableNpi: string}) => {
       href={TablesApi.show.path({id: content?.table?.id})}
       className="mention"
     >
-      @{displayName}
+      @<ObjectIcon type="Table" icon={content?.table?.icon} fallback={false}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )

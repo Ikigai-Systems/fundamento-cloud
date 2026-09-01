@@ -5,6 +5,8 @@ import {Space} from "../../../types.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
+import ObjectIcon from "../../ObjectIcon.tsx";
+import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
@@ -34,6 +36,7 @@ type SelectOrCreateTableContainerProps = {
 type TableListItem = {
   id: string,
   name: string,
+  icon?: ObjectIconValue | null,
 };
 
 type TableViewProps = {
@@ -188,8 +191,14 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
                   query,
                 }
               });
-              return tables.map((table) => ({value: table.id, label: table.name}));
+              return tables.map((table) => ({value: table.id, label: table.name, icon: table.icon}));
             }}
+            formatOptionLabel={({label, icon}) => (
+              <div className="flex flex-row items-center gap-1">
+                <ObjectIcon type="Table" icon={icon}/>
+                {label}
+              </div>
+            )}
             onChange={(newOption) => {
               if (!newOption) {
                 return;

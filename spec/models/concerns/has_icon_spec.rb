@@ -164,6 +164,47 @@ RSpec.describe HasIcon do
     end
   end
 
+  describe "#as_json" do
+    # Every endpoint that already serializes a record should hand the client one
+    # icon shape, without each controller having to remember to add it.
+    it "includes the nested icon alongside the columns it is built from" do
+      document = new_document("🔥 Roadmap")
+      document.save!
+
+      expect(document.as_json["icon"]).to eq({type: "emoji", value: "🔥"})
+    end
+
+    it "includes a nil icon when the object has none" do
+      document = new_document("Roadmap")
+      document.save!
+
+      expect(document.as_json).to include("icon" => nil)
+    end
+
+    # The key rides along with icon_type, so narrowing the payload still works.
+    it "omits the icon when the icon columns were not requested" do
+      document = new_document("🔥 Roadmap")
+      document.save!
+
+      expect(document.as_json(only: [:id, :title])).not_to have_key("icon")
+    end
+
+    it "omits the icon when the icon columns were not selected" do
+      new_document("🔥 Roadmap").save!
+
+      narrow = Document.select(:id, :title).first
+
+      expect(narrow.as_json).not_to have_key("icon")
+    end
+
+    it "still honours except:" do
+      document = new_document("🔥 Roadmap")
+      document.save!
+
+      expect(document.as_json(except: [:icon_type])).not_to have_key("icon")
+    end
+  end
+
   describe "#title_for_editing" do
     it "puts the emoji back so the edit field shows what the user typed" do
       document = new_document("🔥 Hot Topic")
