@@ -79,6 +79,14 @@ describe("Space sidebar tabs", function () {
     cy.get("#space_starred_list a.content-link[href='/d/one']").should("exist");
     cy.contains("No starred items").should("not.be.visible");
 
+    // The row is two lines tall; the icon centres on the title's line, not on the row's top edge.
+    cy.get("#space_starred_list .content-link-container").then(($row) => {
+      const icon = $row[0].querySelector(".object-icon").getBoundingClientRect();
+      const title = $row[0].querySelector(".font-semibold").getBoundingClientRect();
+      const centre = (box) => box.top + box.height / 2;
+      expect(Math.round(centre(title) - centre(icon))).to.equal(0);
+    });
+
     cy.get("#space_starred_list form button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
