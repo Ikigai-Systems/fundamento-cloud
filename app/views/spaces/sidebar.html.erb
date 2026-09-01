@@ -28,16 +28,16 @@
     >
       <div class="shrink-0 border-b">
         <nav data-tabs-target="list" aria-label="Space sidebar tabs">
-          <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab"
-                  class="flex flex-row items-center gap-1">
-            <i class="fa-regular fa-sitemap"></i>
-            Hierarchy
+          <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab">
+            <%= render Object::SidebarTabIcon.new(label: "Hierarchy") do %>
+              <i class="fa-regular fa-sitemap"></i>
+            <% end %>
           </button>
 
-          <button id="starred" data-action="click->tabs#change" data-tabs-target="tab"
-                  class="flex flex-row items-center gap-1">
-            <i class="fa-regular fa-star"></i>
-            Starred
+          <button id="starred" data-action="click->tabs#change" data-tabs-target="tab">
+            <%= render Object::SidebarTabIcon.new(label: "Starred") do %>
+              <i class="fa-regular fa-star"></i>
+            <% end %>
           </button>
         </nav>
       </div>
