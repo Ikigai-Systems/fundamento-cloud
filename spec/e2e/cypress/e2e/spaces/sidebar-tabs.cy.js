@@ -87,7 +87,9 @@ describe("Space sidebar tabs", function () {
       expect(Math.round(centre(title) - centre(icon))).to.equal(0);
     });
 
-    cy.get("#space_starred_list form button").click();
+    // The button fades in on hover like the tree row buttons, and Cypress cannot produce a real
+    // CSS :hover state — so it reads as invisible and has to be clicked through.
+    cy.get("#space_starred_list form button").click({force: true});
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
     cy.contains("No starred items").should("be.visible");

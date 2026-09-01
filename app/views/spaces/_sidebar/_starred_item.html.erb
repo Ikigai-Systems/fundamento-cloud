@@ -21,13 +21,16 @@
       </div>
     <% end %>
 
-    <%= button_to favorite_path(favorite),
-      method: :delete,
-      form_class: "flex items-center shrink-0 mr-2",
-      class: "secondary-button",
-      aria: { label: "Remove #{object.title} from starred" } do
-    %>
-      <i class="fa-regular fa-trash-can"></i>
-    <% end %>
+    <%# Same affordance as the tree rows: revealed on hover, over the row's right edge. %>
+    <div class="content-link-buttons-container">
+      <%= button_to favorite_path(favorite),
+        method: :delete,
+        form_class: "flex items-center",
+        class: "content-link-button",
+        aria: { label: "Remove #{object.title} from starred" } do
+      %>
+        <i class="fa-regular fa-trash-can"></i>
+      <% end %>
+    </div>
   </div>
 </div>
