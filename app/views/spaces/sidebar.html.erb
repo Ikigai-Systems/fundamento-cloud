@@ -26,7 +26,9 @@
       data-controller="tabs"
       data-tabs-active-tab-class="active-tab"
     >
-      <div class="shrink-0 border-b">
+      <%# Above the panels: the Documents and Tables headers below are sticky with z-10, and
+          being later in the DOM they would paint over a tab's tooltip at the same level. %>
+      <div class="shrink-0 border-b relative z-20">
         <nav data-tabs-target="list" aria-label="Space sidebar tabs">
           <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab">
             <%= render Object::SidebarTabIcon.new(label: "Hierarchy") do %>

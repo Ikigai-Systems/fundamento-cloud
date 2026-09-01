@@ -23,6 +23,26 @@ describe("Space sidebar tabs", function () {
     cy.get("#space-sidebar #space_starred_list").should("not.exist");
   });
 
+  it("names the tabs with a tooltip rather than visible text", function () {
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar #hierarchy").should("not.contain.text", "Hierarchy");
+
+    cy.get("#space-sidebar #starred [data-controller='popover']").trigger("mouseenter");
+
+    cy.get("#space-sidebar .popover-tooltip-card").should("contain", "Starred");
+
+    // The tooltip hangs over the Documents header, which is sticky with z-10 and comes later in
+    // the DOM — so "visible" is not enough, the tooltip has to be the element actually on top.
+    cy.get("#space-sidebar .popover-tooltip-card").then(($card) => {
+      const {left, top, width, height} = $card[0].getBoundingClientRect();
+      cy.document().then((doc) => {
+        const onTop = doc.elementFromPoint(left + width / 2, top + height / 2);
+        expect($card[0].contains(onTop)).to.be.true;
+      });
+    });
+  });
+
   it("does not fetch the Starred tab until it is opened", function () {
     cy.intercept("GET", /\/s\/.*\/sidebar\?.*tab=starred/).as("starredTab");
     cy.visit("/d/one");
