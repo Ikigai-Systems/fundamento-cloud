@@ -159,23 +159,23 @@ class SpacesController < ApplicationController
     render json: (@organization_memberships + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
 
-  # Without a tab the response is just the tab shell; each tab then fetches its own content into
-  # its own frame, so the Starred tab costs nothing until it is opened.
+  # The default response carries the Hierarchy tab inline — it is the tab that opens, and giving
+  # it a frame of its own would put a second round-trip in front of every page load. Starred is
+  # a lazy frame, so it costs nothing until someone opens it.
   def sidebar
     authorize @space, :show?
 
-    case params[:tab]
-    when "hierarchy"
-      # DocumentPolicy#update? delegates to SpacePolicy#update? on the document's space, and every
-      # document here belongs to @space — so this is the same answer for all of them, computed once.
-      @can_update_space = policy(@space).update?
-      @tree = SpaceSidebarTree.new(space: @space, can_update_space: @can_update_space).as_json
-      @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
-      render template: "spaces/_sidebar/hierarchy"
-    when "starred"
+    if params[:tab] == "starred"
       @favorites = space_favorites
       render template: "spaces/_sidebar/starred"
+      return
     end
+
+    # DocumentPolicy#update? delegates to SpacePolicy#update? on the document's space, and every
+    # document here belongs to @space — so this is the same answer for all of them, computed once.
+    @can_update_space = policy(@space).update?
+    @tree = SpaceSidebarTree.new(space: @space, can_update_space: @can_update_space).as_json
+    @tables = policy_scope(@space.tables.lexicographically, policy_scope_class: DocumentPolicy::Scope)
   end
 
   private

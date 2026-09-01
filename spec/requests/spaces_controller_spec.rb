@@ -783,27 +783,8 @@ RSpec.describe SpacesController, type: :request do
     end
 
     context "without a tab" do
-      it "renders the tab shell and nothing else" do
-        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Hierarchy")
-        expect(response.body).to include("Starred")
-        expect(response.body).to include("hierarchy_sidebar_tab")
-        expect(response.body).to include("starred_sidebar_tab")
-        expect(response.body).not_to include("data-sidebar-tree-target=\"data\"")
-      end
-
-      it "redirects when not a turbo frame request" do
-        get sidebar_space_path(space)
-
-        expect(response).to redirect_to(space_path(space))
-      end
-    end
-
-    context "tab=hierarchy" do
       it "ships the tree as JSON rather than rendered tree items" do
-        get sidebar_space_path(space, tab: "hierarchy"), headers: { "Turbo-Frame" => "hierarchy_sidebar_tab" }
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("data-sidebar-tree-target=\"data\"")
@@ -822,13 +803,32 @@ RSpec.describe SpacesController, type: :request do
         expect(payload["canUpdateSpace"]).to be(true)
       end
 
-      it "renders the documents and tables sections with the archived toggle" do
-        get sidebar_space_path(space, tab: "hierarchy"), headers: { "Turbo-Frame" => "hierarchy_sidebar_tab" }
+      it "renders both tabs, with the Hierarchy content inline and Starred behind a lazy frame" do
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
 
         expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Hierarchy")
+        expect(response.body).to include("Starred")
         expect(response.body).to include("Documents")
         expect(response.body).to include("Tables")
         expect(response.body).to include("Show archived")
+        expect(response.body).to include("starred_sidebar_tab")
+      end
+
+      # The whole point of rendering Hierarchy inline: the tree must not cost a second request.
+      it "does not load the starred list" do
+        expect_any_instance_of(described_class).not_to receive(:space_favorites)
+
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("space_starred_list")
+      end
+
+      it "redirects when not a turbo frame request" do
+        get sidebar_space_path(space)
+
+        expect(response).to redirect_to(space_path(space))
       end
 
       it "builds the policy user context once per request" do
@@ -838,7 +838,7 @@ RSpec.describe SpacesController, type: :request do
           original.call(*args)
         end
 
-        get sidebar_space_path(space, tab: "hierarchy"), headers: { "Turbo-Frame" => "hierarchy_sidebar_tab" }
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
 
         expect(response).to have_http_status(:ok)
         expect(contexts).to eq(1)
@@ -878,6 +878,13 @@ RSpec.describe SpacesController, type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("No starred items")
+      end
+
+      it "does not build the document tree" do
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("data-sidebar-tree-target")
       end
 
       it "subscribes to the space-scoped favorites stream" do
