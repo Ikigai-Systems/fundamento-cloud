@@ -5,10 +5,10 @@ class Space < ApplicationRecord
 
   include ToReactProps
   # Keep it in sync with app/javascript/types.ts
-  set_react_props :id, :name, :hierarchy
+  set_react_props :id, :name, :icon, :hierarchy
 
-  include EmojiExtractable
-  extracts_emoji_from :title
+  include HasIcon
+  has_icon derived_from: :name
 
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy

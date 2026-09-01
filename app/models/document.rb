@@ -6,10 +6,10 @@ class Document < ApplicationRecord
   include NpiOrdering
 
   include ToReactProps
-  set_react_props :id, :title
+  set_react_props :id, :title, :icon, :title_for_editing
 
-  include EmojiExtractable
-  extracts_emoji_from :title
+  include HasIcon
+  has_icon derived_from: :title
 
   belongs_to :organization
   belongs_to :space

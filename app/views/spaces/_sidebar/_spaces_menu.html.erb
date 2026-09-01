@@ -13,7 +13,7 @@
 
       <span class="truncate">
         <%= render ObjectIcon.new(object: @space) %>
-        <%= @space.try(:title_emojiless) || @space.try(:title) %>
+        <%= @space.title %>
       </span>
 
       <svg class="-mr-1 h-5 w-5 text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -46,7 +46,7 @@
             tabindex: "-1" do
           %>
             <%= render ObjectIcon.new(object: space) %>
-            <%= space.try(:title_emojiless) || space.try(:title) %>
+            <%= space.title %>
           <% end %>
         <% end %>
       <% end %>

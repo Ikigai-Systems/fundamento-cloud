@@ -31,7 +31,7 @@
         <%= render ObjectIcon.new(object: content) %>
 
         <span class="truncate">
-          <%= content.try(:title_emojiless) || content.try(:title) %>
+          <%= content.title %>
         </span>
 
         <% if content.try(:draft?) %>

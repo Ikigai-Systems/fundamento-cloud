@@ -1,7 +1,6 @@
-Mention = Struct.new(:mention_id, :object_title, :object_path, :created_at) do
-  include EmojiExtractable
-  extracts_emoji_from :object_title
-end
+# object_icon comes straight off the already-loaded record. The title is stored
+# clean, so there is nothing to derive here any more.
+Mention = Struct.new(:mention_id, :object_title, :object_icon, :object_path, :created_at)
 
 class MentionsExtractor
   extend Rails.application.routes.url_helpers
@@ -42,6 +41,7 @@ class MentionsExtractor
         mention_id: ref.source_node_id,
         created_at: ref.created_at,
         object_title: doc.title,
+        object_icon: doc.icon,
         object_path: mention_path_for(ref, doc, versions_by_id)
       )
     end.compact
@@ -86,6 +86,7 @@ class MentionsExtractor
               mention_id: mention_id,
               created_at: version.created_at,
               object_title: document.title,
+              object_icon: document.icon,
               object_path: version  == document_versions.last ?
                   document_path(document, anchor: "mention-#{mention_id}") :
                   document_version_path(document, version, anchor: "mention-#{mention_id}")
@@ -103,6 +104,7 @@ class MentionsExtractor
               mention_id: mention_id,
               created_at: comment.created_at,
               object_title: document.title,
+              object_icon: document.icon,
               object_path: document_path(document, anchor: "mention-#{mention_id}")
             )
           end

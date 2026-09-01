@@ -2,7 +2,7 @@
   <th scope="row">
     <div class="text-base font-semibold truncate">
       <%= render ObjectIcon.new(object: space) %>
-      <%= space.try(:title_emojiless) || space.try(:title) %>
+      <%= space.title %>
       <% if space.archived? %>
         <span class="text-sm text-gray-400 font-normal">(archived)</span>
       <% end %>

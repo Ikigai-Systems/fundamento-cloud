@@ -16,6 +16,7 @@
 @import "./collapsible.tailwind.css";
 @import "./flash.tailwind.css";
 @import "./badge.tailwind.css";
+@import "./object-icon.tailwind.css";
 
 @tailwind base;
 @tailwind components;

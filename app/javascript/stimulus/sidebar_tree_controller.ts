@@ -1,7 +1,7 @@
 import {Controller} from "@hotwired/stimulus"
 import {loadExpanded, saveExpanded} from "../sidebar/expansion_store"
 import {renderTreeItem} from "../sidebar/tree_item"
-import {RenderContext, TreeNode, TreePayload} from "../sidebar/types"
+import {ObjectIcon, RenderContext, TreeNode, TreePayload} from "../sidebar/types"
 
 // Connects to data-controller="sidebar-tree"
 export default class extends Controller<HTMLElement> {
@@ -42,7 +42,8 @@ export default class extends Controller<HTMLElement> {
   // JSON this controller renders from is frozen at frame load, so the very next render would put
   // the stale title back. Update the in-memory node too and re-render from it.
   private handleTitleUpdated = (event: Event) => {
-    const {id, title} = (event as CustomEvent<{id: string; title: string}>).detail ?? {};
+    const {id, title, icon} =
+      (event as CustomEvent<{id: string; title: string; icon?: ObjectIcon | null}>).detail ?? {};
     if (!id) return;
 
     // The same event is fired for tables, which are not part of this tree.
@@ -50,6 +51,7 @@ export default class extends Controller<HTMLElement> {
     if (!node) return;
 
     node.title = title;
+    node.icon = icon ?? null;
     this.render();
   };
 

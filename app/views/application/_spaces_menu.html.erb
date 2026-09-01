@@ -37,7 +37,7 @@
             tabindex: "-1" do
           %>
             <%= render ObjectIcon.new(object: space) %>
-            <%= space.try(:title_emojiless) || space.try(:title) %>
+            <%= space.title %>
           <% end %>
         <% end %>
       <% end %>

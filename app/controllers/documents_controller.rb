@@ -113,7 +113,7 @@ class DocumentsController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @document, :except => [:sync] }
+      format.json { render json: @document.as_json(except: [:sync]).merge(@document.icon_attributes_for_json) }
       format.html { render action: 'edit' }
     end
   end
