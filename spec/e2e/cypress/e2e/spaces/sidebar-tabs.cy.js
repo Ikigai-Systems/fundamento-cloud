@@ -42,8 +42,11 @@ describe("Space sidebar tabs", function () {
     cy.get("#space-sidebar #starred").click();
     cy.contains("No starred items").should("be.visible");
 
-    // The star button in the content header — the broadcast is what puts the row in the list.
-    cy.get("#content form[action='/favorites'] button").click();
+    // Starred from elsewhere (the fixture document opens in edit mode, which has no star
+    // button); what this asserts is that the broadcast alone fills the open list.
+    cy.appEval(`
+      OrganizationMembership.find("om_is_pawel").favorites.create!(object: Document.find("one"))
+    `);
 
     cy.get("#space_starred_list a.content-link[href='/d/one']").should("exist");
     cy.contains("No starred items").should("not.be.visible");
