@@ -394,4 +394,52 @@ describe("Command Palette (Ctrl+K)", () => {
       });
     });
   });
+
+  describe("Colour scheme", () => {
+    // Emulated at the browser level rather than by stubbing matchMedia: a JS stub
+    // does not survive the restoration visit this suite needs to exercise, which
+    // would make the Back test pass or fail for the wrong reason.
+    const preferColorScheme = (value) =>
+      cy.wrap(
+        Cypress.automation("remote:debugger:protocol", {
+          command: "Emulation.setEmulatedMedia",
+          params: {features: [{name: "prefers-color-scheme", value}]},
+        }),
+        {log: false},
+      );
+
+    afterEach(() => preferColorScheme(""));
+
+    it("marks the palette dark when the OS prefers dark", () => {
+      preferColorScheme("dark");
+      cy.visit("/");
+
+      cy.get("ninja-keys").should("have.class", "dark");
+    });
+
+    it("leaves the palette light when the OS prefers light", () => {
+      preferColorScheme("light");
+      cy.visit("/");
+
+      cy.get("ninja-keys").should("not.have.class", "dark");
+    });
+
+    // The palette paints inside its own shadow root, which the app's dark-mode
+    // CSS never reaches, so the controller sets the class itself. It used to
+    // *toggle* it: Turbo caches the body with the class already applied, so a
+    // restoration visit restored an already-dark palette and toggled it light.
+    it("stays dark through a Turbo visit and the browser Back button", () => {
+      preferColorScheme("dark");
+      cy.visit("/");
+      cy.get("ninja-keys").should("have.class", "dark");
+
+      cy.window().then(win => win.Turbo.visit("/s"));
+      cy.url().should("include", "/s");
+      cy.get("ninja-keys").should("have.class", "dark");
+
+      cy.go("back");
+      cy.url().should("not.include", "/s");
+      cy.get("ninja-keys").should("have.class", "dark");
+    });
+  });
 });
