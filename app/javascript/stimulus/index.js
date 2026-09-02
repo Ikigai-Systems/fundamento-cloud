@@ -35,7 +35,6 @@ import ImportLogFilterController from "./controllers/import_log_filter_controlle
 import TableOfContentsController from "./table_of_contents_controller"
 import SidebarActiveController from "./sidebar_active_controller"
 import SidebarTreeController from "./sidebar_tree_controller.ts";
-import SidebarNavigationController from "./sidebar_navigation_controller"
 
 const application = Application.start()
 
@@ -95,7 +94,6 @@ application.register("flash-manager", FlashManagerController);
 application.register("content-title-sync", ContentTitleSyncController);
 
 application.register("sidebar-active", SidebarActiveController);
-application.register("sidebar-navigation", SidebarNavigationController);
 
 application.register("cookie-banner", CookieBannerController);
 
