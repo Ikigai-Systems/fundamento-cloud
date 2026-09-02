@@ -1,0 +1,36 @@
+<% object = favorite.object %>
+
+<%# The row is the link, as in the hierarchy tree: an inline anchor around a wrapped title leaves
+    most of the row — and the gap between its two lines — dead to a click. %>
+<div id="<%= dom_id(favorite) %>" class="section-content-node-container">
+  <div class="content-link-container group flex items-center w-full">
+    <%= link_to polymorphic_path([object]), class: "content-link min-w-0", data: { turbo_frame: "content" } do %>
+      <div class="flex flex-grow min-w-0 gap-2 p-2 items-start">
+        <%# The row is two lines tall, so the icon needs a box as tall as the title's line to
+            centre against it — .object-icon is leading-none and would otherwise ride high. %>
+        <span class="flex items-center h-6 shrink-0">
+          <%= render ObjectIcon.new(object: object) %>
+        </span>
+
+        <div class="min-w-0">
+          <div class="font-semibold truncate"><%= object.title %></div>
+          <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
+            Last updated <%= time_ago_in_words object.updated_at %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Same affordance as the tree rows: revealed on hover, over the row's right edge. %>
+    <div class="content-link-buttons-container">
+      <%= button_to favorite_path(favorite),
+        method: :delete,
+        form_class: "flex items-center",
+        class: "content-link-button",
+        aria: { label: "Remove #{object.title} from starred" } do
+      %>
+        <i class="fa-regular fa-trash-can"></i>
+      <% end %>
+    </div>
+  </div>
+</div>

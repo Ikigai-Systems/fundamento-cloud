@@ -782,37 +782,131 @@ RSpec.describe SpacesController, type: :request do
       space.update!(hierarchy: [{ "id" => documents(:one).id, "children" => [] }])
     end
 
-    it "ships the tree as JSON rather than rendered tree items" do
-      get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+    context "without a tab" do
+      it "ships the tree as JSON rather than rendered tree items" do
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
 
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("data-sidebar-tree-target=\"data\"")
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("data-sidebar-tree-target=\"data\"")
 
-      html = Nokogiri::HTML(response.body)
+        html = Nokogiri::HTML(response.body)
 
-      # A single <template> blueprint is rendered for the client to clone. What must NOT appear is
-      # markup for an actual document: no link to one, and no per-document id anywhere.
-      expect(html.css("template[data-sidebar-tree-target='itemTemplate']").count).to eq(1)
-      expect(response.body).not_to include(document_path(documents(:one)))
-      expect(response.body).not_to include("data-document-id")
+        # A single <template> blueprint is rendered for the client to clone. What must NOT appear is
+        # markup for an actual document: no link to one, and no per-document id anywhere.
+        expect(html.css("template[data-sidebar-tree-target='itemTemplate']").count).to eq(1)
+        expect(response.body).not_to include(document_path(documents(:one)))
+        expect(response.body).not_to include("data-document-id")
 
-      json = html.at("script[data-sidebar-tree-target='data']").text
-      payload = JSON.parse(json)
-      expect(payload["nodes"].map { _1["id"] }).to eq([documents(:one).id])
-      expect(payload["canUpdateSpace"]).to be(true)
-    end
-
-    it "builds the policy user context once per request" do
-      contexts = 0
-      allow(PolicyUserContext).to receive(:new).and_wrap_original do |original, *args|
-        contexts += 1
-        original.call(*args)
+        json = html.at("script[data-sidebar-tree-target='data']").text
+        payload = JSON.parse(json)
+        expect(payload["nodes"].map { _1["id"] }).to eq([documents(:one).id])
+        expect(payload["canUpdateSpace"]).to be(true)
       end
 
-      get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+      it "renders both tabs, with the Hierarchy content inline and Starred behind a lazy frame" do
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
 
-      expect(response).to have_http_status(:ok)
-      expect(contexts).to eq(1)
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("Hierarchy")
+        expect(response.body).to include("Starred")
+        expect(response.body).to include("Documents")
+        expect(response.body).to include("Tables")
+        expect(response.body).to include("Show archived")
+        expect(response.body).to include("starred_sidebar_tab")
+      end
+
+      # The whole point of rendering Hierarchy inline: the tree must not cost a second request.
+      it "does not load the starred list" do
+        expect_any_instance_of(described_class).not_to receive(:space_favorites)
+
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("space_starred_list")
+      end
+
+      it "redirects when not a turbo frame request" do
+        get sidebar_space_path(space)
+
+        expect(response).to redirect_to(space_path(space))
+      end
+
+      it "builds the policy user context once per request" do
+        contexts = 0
+        allow(PolicyUserContext).to receive(:new).and_wrap_original do |original, *args|
+          contexts += 1
+          original.call(*args)
+        end
+
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+        expect(response).to have_http_status(:ok)
+        expect(contexts).to eq(1)
+      end
+    end
+
+    context "tab=starred" do
+      fixtures :favorites
+
+      it "renders the membership's starred items from this space" do
+        # is_favorite_1 favorites documents(:one), which lives in spaces(:is_default).
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("starred_sidebar_tab")
+        expect(response.body).to include(documents(:one).title)
+      end
+
+      it "does not render starred items from another space" do
+        other_space_doc = Document.create!(
+          title: "Other Space Doc",
+          organization: organizations(:is),
+          space: spaces(:is_stefans)
+        )
+        organization_memberships(:om_is_pawel).favorites.create!(object: other_space_doc)
+
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("Other Space Doc")
+      end
+
+      it "renders the empty state when nothing in this space is starred" do
+        Favorite.where(organization_membership: organization_memberships(:om_is_pawel)).delete_all
+
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("No starred items")
+      end
+
+      it "does not build the document tree" do
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).not_to include("data-sidebar-tree-target")
+      end
+
+      it "subscribes to the space-scoped favorites stream" do
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-cable-stream-source")
+      end
+
+      it "loads the starred items without an N+1 over the membership's favorites" do
+        queries = 0
+        subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+          queries += 1 if payload[:sql].include?("FROM \"favorites\"")
+        end
+
+        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
+
+        ActiveSupport::Notifications.unsubscribe(subscriber)
+
+        expect(response).to have_http_status(:ok)
+        expect(queries).to eq(1)
+      end
     end
   end
 end
