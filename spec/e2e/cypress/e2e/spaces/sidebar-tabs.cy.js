@@ -5,7 +5,7 @@ describe("Space sidebar tabs", function () {
     cy.app("clean");
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
-      fixtures: ["organizations", "users", "organization_memberships", "spaces", "documents"],
+      fixtures: ["organizations", "users", "organization_memberships", "spaces", "documents", "versions"],
     });
     cy.appEval(`
       space = Space.find("is_default")
@@ -90,6 +90,45 @@ describe("Space sidebar tabs", function () {
     // The button fades in on hover like the tree row buttons, and Cypress cannot produce a real
     // CSS :hover state — so it reads as invisible and has to be clicked through.
     cy.get("#space_starred_list form button").click({force: true});
+
+    cy.get("#space_starred_list a.content-link").should("not.exist");
+    cy.contains("No starred items").should("be.visible");
+  });
+
+  it("adds and removes the row as the document's own star button is clicked", function () {
+    // documents(:two) has a version fixture, so it renders in show mode with a star button —
+    // a draft would redirect to /edit, which has none.
+    cy.visit("/d/two");
+    cy.get("#space-sidebar #starred").click();
+    cy.contains("No starred items").should("be.visible");
+
+    // The form keeps its dom_id across the star/unstar swap, so one selector covers both.
+    cy.get("#favorite_document_two button").click();
+
+    cy.get("#space_starred_list a.content-link[href='/d/two']").should("exist");
+    cy.contains("No starred items").should("not.be.visible");
+
+    cy.get("#favorite_document_two button").click();
+
+    cy.get("#space_starred_list a.content-link").should("not.exist");
+    cy.contains("No starred items").should("be.visible");
+  });
+
+  it("adds and removes the row as a table's own star button is clicked", function () {
+    cy.appEval(`
+      Table.create!(id: "startable", name: "Starrable Table", organization_id: "is",
+                    space_id: "is_default", parent: Space.find("is_default")).id
+    `);
+
+    cy.visit("/t/startable");
+    cy.get("#space-sidebar #starred").click();
+    cy.contains("No starred items").should("be.visible");
+
+    cy.get("#favorite_table_startable button").click();
+
+    cy.get("#space_starred_list a.content-link[href='/t/startable']").should("exist");
+
+    cy.get("#favorite_table_startable button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
     cy.contains("No starred items").should("be.visible");
