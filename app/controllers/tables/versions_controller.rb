@@ -12,7 +12,7 @@ class Tables::VersionsController < ApplicationController
 
   before_action :load_table
   before_action :ensure_versioning_enabled
-  before_action :load_version, only: [:show, :restore]
+  before_action :load_version, only: [:restore]
 
   def index
     authorize @table, :show?
@@ -24,6 +24,13 @@ class Tables::VersionsController < ApplicationController
 
   def show
     authorize @table, :show?
+
+    @version = resolve_version
+
+    # The history menu item is always clickable, so "latest" can land here before the
+    # first version exists. The list explains what is coming; a 404 would not.
+    return redirect_to table_versions_path(@table) if @version.nil? && params[:id] == "latest"
+    raise ActionController::RoutingError, "Not Found" if @version.nil?
 
     @versions = @table.versions.includes(:created_by).most_recent_first
     @data = TableDataBlueprint.render(@version.reader.to_table_data) if @version.previewable?
@@ -43,14 +50,15 @@ class Tables::VersionsController < ApplicationController
   private
 
   def load_version
-    @version =
-      if params[:id] == "latest"
-        @table.latest_version
-      else
-        @table.versions.find_by(sequential_id: params[:id])
-      end
+    @version = resolve_version
 
     raise ActionController::RoutingError, "Not Found" if @version.blank?
+  end
+
+  def resolve_version
+    return @table.latest_version if params[:id] == "latest"
+
+    @table.versions.find_by(sequential_id: params[:id])
   end
 
   def ensure_versioning_enabled

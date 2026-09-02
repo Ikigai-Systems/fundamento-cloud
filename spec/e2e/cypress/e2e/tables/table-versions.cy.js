@@ -100,6 +100,19 @@ describe("Table Versions", function () {
     cy.contains("AFTER").should("be.visible");
   });
 
+  // The menu entry is always clickable, so a table with no versions has to land somewhere
+  // that explains itself rather than on a 404.
+  it("explains what will create the first version when there is none", function () {
+    cy.visit("/t/projects");
+    cy.get("#content_menu_button").click();
+    cy.contains("Table history").should("be.visible").click();
+
+    cy.url().should("include", "/t/projects/versions");
+    cy.get("[data-testid='no-versions-notice']").should("be.visible");
+    cy.contains("No versions yet").should("be.visible");
+    cy.contains("a few minutes after this table changes").should("be.visible");
+  });
+
   it("hides the history when the feature is off", function () {
     cy.appFlipper({flags: []});
 

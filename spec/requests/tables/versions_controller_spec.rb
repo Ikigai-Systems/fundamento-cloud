@@ -37,12 +37,14 @@ RSpec.describe Tables::VersionsController, type: :request do
         expect(response.body).to include("Baseline")
       end
 
-      it "says so when there is no history yet" do
+      it "explains what will create the first version when there is no history yet" do
         table.versions.destroy_all
 
         get table_versions_path(table)
 
-        expect(response.body).to include("No history yet")
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("No versions yet")
+        expect(response.body).to include("saved automatically a few minutes after this table changes")
       end
     end
 
@@ -59,6 +61,16 @@ RSpec.describe Tables::VersionsController, type: :request do
         get table_version_path(table, "latest")
 
         expect(response).to have_http_status(:ok)
+      end
+
+      # The history menu item is always clickable, so this is a link users are invited to
+      # follow before any version exists. It has to land somewhere that explains itself.
+      it "sends 'latest' to the list when the table has no versions yet" do
+        table.versions.destroy_all
+
+        get table_version_path(table, "latest")
+
+        expect(response).to redirect_to(table_versions_path(table))
       end
 
       it "404s on a version that does not exist" do

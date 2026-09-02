@@ -11,18 +11,34 @@
     </h1>
 
     <div class="mt-4">
-      <div class="sm:flex sm:items-center">
-        <div class="sm:flex-auto">
-          <h1 class="text-base font-semibold text-xl leading-6 text-slate-900">Versions</h1>
+      <%# The empty state carries its own heading, so this one would just stack on top. %>
+      <% if @versions.any? %>
+        <div class="sm:flex sm:items-center">
+          <div class="sm:flex-auto">
+            <h1 class="text-base font-semibold text-xl leading-6 text-slate-900">Versions</h1>
+          </div>
         </div>
-      </div>
+      <% end %>
       <div class="mt-4 flow-root">
         <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <% if @versions.empty? %>
-              <p class="text-sm text-slate-500 py-4">
-                No history yet. A version is saved automatically shortly after the table is edited.
-              </p>
+              <div class="py-4 max-w-2xl" data-testid="no-versions-notice">
+                <h2 class="text-base font-semibold text-slate-900">No versions yet</h2>
+
+                <p class="mt-2 text-sm text-slate-600">
+                  A version is saved automatically a few minutes after this table changes.
+                  Editing a cell, adding or deleting a row, and adding, renaming, retyping
+                  or removing a column all count &mdash; a burst of edits is saved as one
+                  version rather than one per keystroke.
+                </p>
+
+                <p class="mt-2 text-sm text-slate-600">
+                  Once the first version is saved it appears here, and you can view the
+                  table as it was and restore it. Nothing is overwritten: restoring saves
+                  the current state as its own version first.
+                </p>
+              </div>
             <% else %>
               <table class="min-w-full divide-y divide-gray-300">
                 <thead>
