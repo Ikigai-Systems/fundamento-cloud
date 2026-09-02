@@ -119,6 +119,14 @@ class Tables::TablesController < ApplicationController
       format.json { render json: @table, status: :unprocessable_content }
       format.html { render "tables/new" }
     end
+  rescue Table::TooLarge => e
+    # The import rolled back, so the table is empty; keeping it would leave a stray.
+    @table.destroy if @table.persisted?
+    @table.errors.add(:base, e.message)
+    respond_to do |format|
+      format.json { render json: @table, status: :unprocessable_content }
+      format.html { render "tables/new" }
+    end
   end
 
   def show
@@ -194,43 +202,54 @@ class Tables::TablesController < ApplicationController
     when "update_row"
       row = @table.rows.find(event["rowId"])
 
-      event["update"].each do |column_id, new_cell_value|
-        @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
+      @table.transaction do
+        event["update"].each do |column_id, new_cell_value|
+          @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
+        end
       end
     when "update_rows"
-      event["rows"].each do |event_row|
-        row = @table.rows.find(event_row["rowId"])
-        event_row["update"].each do |column_id, new_cell_value|
-          @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
+      @table.transaction do
+        event["rows"].each do |event_row|
+          row = @table.rows.find(event_row["rowId"])
+          event_row["update"].each do |column_id, new_cell_value|
+            @table.columns.find(column_id).cells.find_by(row_id: row).update(value: new_cell_value)
+          end
         end
       end
     when "add_row"
       row_id = event["rowId"]
       @table.add_row(row_id)
     when "delete_rows"
-      event["rows"][0].each do |row_id|
-        row = @table.rows.find(row_id)
-        next_row = row.next_row
-        next_row.update(previous_row: row.previous_row) unless next_row.nil?
-        row.destroy
+      @table.transaction do
+        event["rows"][0].each do |row_id|
+          row = @table.rows.find(row_id)
+          next_row = row.next_row
+          next_row.update(previous_row: row.previous_row) unless next_row.nil?
+          row.destroy
+        end
       end
     when "add_column"
+      @table.ensure_room_for_columns!(1)
+
       update = event["update"]
-      last_column = @table.columns_in_order.last # todo: handle "position" in event payload
-      new_column = @table.columns.create!(
-        previous_column: last_column,
-        organization_id: @table.organization_id,
-        id: event["colId"],
-        name: update["name"],
-        kind: Tables::Column::to_kind(update["type"])
-      )
-      @table.rows.each do |row|
-        new_column.cells.create!(
-          table: @table,
-          row: row,
-          # value: value, # todo: maybe in event["update"]["data"] there is prefilled value, handle that
+
+      @table.transaction do
+        last_column = @table.columns_in_order.last # todo: handle "position" in event payload
+        new_column = @table.columns.create!(
+          previous_column: last_column,
           organization_id: @table.organization_id,
+          id: event["colId"],
+          name: update["name"],
+          kind: Tables::Column::to_kind(update["type"])
         )
+        @table.rows.each do |row|
+          new_column.cells.create!(
+            table: @table,
+            row: row,
+            # value: value, # todo: maybe in event["update"]["data"] there is prefilled value, handle that
+            organization_id: @table.organization_id,
+          )
+        end
       end
     when "update_column"
       column = @table.columns.find(event["colId"])
@@ -243,16 +262,23 @@ class Tables::TablesController < ApplicationController
       column.configuration = update["configuration"] if update.has_key?("configuration")
       column.save! if column.changed?
     when "delete_column"
-      column = @table.columns.find(event["colId"])
-      next_column = column.next_column
-      next_column.update(previous_column: column.previous_column) unless next_column.nil?
-      column.destroy
+      @table.transaction do
+        column = @table.columns.find(event["colId"])
+        next_column = column.next_column
+        next_column.update(previous_column: column.previous_column) unless next_column.nil?
+        column.destroy
+      end
     else
       raise "Unrecognized rowstack update event type: #{event_type}"
     end
 
     respond_to do |format|
       format.json { render json: {} }
+      format.all { head :unprocessable_content }
+    end
+  rescue Table::TooLarge => e
+    respond_to do |format|
+      format.json { render json: { error: e.message }, status: :unprocessable_content }
       format.all { head :unprocessable_content }
     end
   end

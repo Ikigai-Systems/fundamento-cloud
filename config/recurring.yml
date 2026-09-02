@@ -2,3 +2,8 @@ import_session_cleanup:
   class: ImportSessionCleanupJob
   cron: "0 3 * * *"
   description: "Clean up expired import sessions and their uploaded files"
+
+table_version_backfill:
+  class: TableVersionBackfillJob
+  cron: "20 3 * * *"
+  description: "Give tables that predate versioning a baseline version; self-terminating"

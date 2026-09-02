@@ -1,5 +1,8 @@
 # db/seeds.rb
 
+# Table writes made while seeding are attributed to the seeds, not to a user.
+Current.change_source = "seed"
+
 # Standalone mode seeding (production/self-hosted)
 if Flipper.enabled?(:standalone)
   DatabaseId.upsert(ActiveRecord::Base.connection)

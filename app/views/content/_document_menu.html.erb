@@ -41,6 +41,17 @@
         %>
       <% end %>
 
+      <% if content.is_a?(Table) && Tables::ChangeRecorder.enabled? %>
+        <%= link_to_with_disable "Table history",
+          table_version_path(content, "latest"),
+          disabled: content.versions.none?,
+          title: content.versions.none? ? "No table history yet, it is saved automatically after the table is edited" : nil,
+          data: { "dropdown-target" => "menuItem" },
+          role: "menuitem",
+          tabindex: "-1"
+        %>
+      <% end %>
+
       <% if content.archived? %>
         <%= button_to "Restore",
           polymorphic_path([content]),

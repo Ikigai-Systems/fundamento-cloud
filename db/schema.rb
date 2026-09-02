@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_02_100400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -609,8 +609,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
     t.string "value"
     t.index ["column_id"], name: "index_table_cells_on_column_id"
     t.index ["organization_id"], name: "index_table_cells_on_organization_id"
-    t.index ["row_id"], name: "index_table_cells_on_row_id"
+    t.index ["row_id", "column_id"], name: "index_table_cells_on_row_id_and_column_id", unique: true
     t.index ["table_id"], name: "index_table_cells_on_table_id"
+  end
+
+  create_table "table_change_events", force: :cascade do |t|
+    t.string "actor_id"
+    t.datetime "created_at", null: false
+    t.integer "kind", limit: 2, null: false
+    t.string "organization_id", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.string "source", default: "system", null: false
+    t.string "table_id", null: false
+    t.string "version_id"
+    t.index ["actor_id"], name: "index_table_change_events_on_actor_id"
+    t.index ["organization_id"], name: "index_table_change_events_on_organization_id"
+    t.index ["table_id", "created_at"], name: "index_table_change_events_on_table_id_and_created_at"
+    t.index ["table_id", "id"], name: "index_table_change_events_on_table_id_and_id"
+    t.index ["table_id", "version_id"], name: "index_table_change_events_on_table_id_and_version_id"
   end
 
   create_table "table_columns", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -632,17 +648,41 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
   end
 
   create_table "table_rows", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "organization_id", null: false
     t.string "previous_row_id"
     t.string "table_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["id", "table_id"], name: "index_table_rows_on_id_and_table_id", unique: true
     t.index ["organization_id"], name: "index_table_rows_on_organization_id"
     t.index ["previous_row_id"], name: "index_table_rows_on_previous_row_id"
     t.index ["table_id"], name: "index_table_rows_on_table_id"
   end
 
+  create_table "table_versions", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "column_count"
+    t.string "content_digest"
+    t.datetime "created_at", null: false
+    t.string "created_by_id"
+    t.integer "kind", limit: 2, default: 0, null: false
+    t.string "organization_id", null: false
+    t.boolean "pinned", default: false, null: false
+    t.string "restored_from_id"
+    t.integer "row_count"
+    t.integer "sequential_id", null: false
+    t.jsonb "summary", default: {}, null: false
+    t.string "table_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_table_versions_on_created_by_id"
+    t.index ["organization_id"], name: "index_table_versions_on_organization_id"
+    t.index ["restored_from_id"], name: "index_table_versions_on_restored_from_id"
+    t.index ["table_id", "sequential_id"], name: "index_table_versions_on_table_id_and_sequential_id", unique: true
+    t.index ["table_id"], name: "index_table_versions_on_table_id"
+  end
+
   create_table "tables", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false, null: false
+    t.integer "columns_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.string "icon_type"
     t.string "icon_value"
@@ -650,6 +690,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
     t.string "organization_id", null: false
     t.string "parent_id", null: false
     t.string "parent_type", null: false
+    t.integer "rows_count", default: 0, null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
@@ -816,12 +857,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_120100) do
   add_foreign_key "table_cells", "table_columns", column: "column_id"
   add_foreign_key "table_cells", "table_rows", column: "row_id"
   add_foreign_key "table_cells", "tables"
+  add_foreign_key "table_change_events", "organizations"
+  add_foreign_key "table_change_events", "table_versions", column: "version_id"
+  add_foreign_key "table_change_events", "tables"
+  add_foreign_key "table_change_events", "users", column: "actor_id"
   add_foreign_key "table_columns", "organizations"
   add_foreign_key "table_columns", "table_columns", column: "previous_column_id"
   add_foreign_key "table_columns", "tables"
   add_foreign_key "table_rows", "organizations"
   add_foreign_key "table_rows", "table_rows", column: "previous_row_id"
   add_foreign_key "table_rows", "tables"
+  add_foreign_key "table_versions", "organizations"
+  add_foreign_key "table_versions", "table_versions", column: "restored_from_id"
+  add_foreign_key "table_versions", "tables"
+  add_foreign_key "table_versions", "users", column: "created_by_id"
   add_foreign_key "tables", "organizations"
   add_foreign_key "tables", "spaces"
   add_foreign_key "tags", "organizations"

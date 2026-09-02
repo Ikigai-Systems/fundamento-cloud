@@ -6,12 +6,22 @@ module Api
     skip_before_action :verify_authenticity_token
 
     before_action :authenticate_user_from_headers!
+    before_action :set_current_attributes
 
     rescue_from Pundit::NotAuthorizedError do |_exception|
       head :forbidden
     end
 
     protected
+
+    # Attributes table change events are recorded against. Subclasses override
+    # #current_change_source to name a more specific origin.
+    def set_current_attributes
+      Current.user = current_user
+      Current.change_source = current_change_source
+    end
+
+    def current_change_source = "api"
 
     def authenticate_user_from_headers!
       return if authenticate_with_doorkeeper_token

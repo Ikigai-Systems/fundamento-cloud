@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 
   prepend_before_action :authenticate_user!
   before_action :capture_reddit_click_id
+  before_action :set_current_attributes
 
   helper_method :current_organization
   helper_method :current_organization_membership
@@ -16,6 +17,15 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :access_denied
 
   protected
+
+  # Carries the acting user down to the model layer, where table change events are
+  # recorded. Requests are the "ui" origin; jobs, MCP and formula execution set their own.
+  def set_current_attributes
+    Current.user = current_user
+    Current.change_source = current_change_source
+  end
+
+  def current_change_source = "ui"
 
   # Used in layouts to append text to website's <title/>
   def subtitle

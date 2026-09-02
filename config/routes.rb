@@ -108,6 +108,10 @@ Rails.application.routes.draw do
     end
 
     resources :tables, path: "t", module: :tables do
+      resources :versions, only: [:index, :show] do
+        post :restore, on: :member
+      end
+
       resources :columns
       resources :rows do
         resources :cells
