@@ -1,6 +1,12 @@
 class AutomationsController < ApplicationController
   include EnsureOrganization
 
+  # Automations are reached from the content menu on a document/table page, i.e.
+  # from inside the `content` Turbo Frame. Without a frame-aware layout the
+  # response carries no <turbo-frame id="content"> and Turbo renders
+  # "Content missing" instead of the page.
+  layout -> { content_layout(full: "full_width_application", frame: "full_width_frame") }
+
   before_action :load_space
 
   after_action :verify_authorized_or_index_scoped
