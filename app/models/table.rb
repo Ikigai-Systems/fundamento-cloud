@@ -72,11 +72,15 @@ class Table < ApplicationRecord
 
     return [] if rows.nil? || rows.empty?
 
-    # Create a hash where the keys are the id of the previous row and the values are the row objects
+    # Create a hash where the keys are the id of the previous row and the values are the row objects.
+    # Records claiming the same predecessor collapse into one entry here, which is why the
+    # completeness check below counts records rather than keys.
     rows_by_previous_id = rows.index_by(&method)
 
     # Find the first row (the one that has previous_row_id as nil)
     first_row = rows.find { |row| row.send(method).nil? }
+
+    raise IndexError.new("Incomplete linked list") if first_row.nil?
 
     # Initialize the ordered list of rows with the first row
     ordered_rows = [first_row]
@@ -86,8 +90,10 @@ class Table < ApplicationRecord
       ordered_rows << next_row
     end
 
-    # Final check for consistency
-    raise IndexError.new("Incomplete linked list") if ordered_rows.size != rows_by_previous_id.size
+    # Compare against the records, not against rows_by_previous_id: a forked chain has
+    # fewer keys than records, so checking the hash lets the fork through and silently
+    # drops every branch the walk did not take.
+    raise IndexError.new("Incomplete linked list") if ordered_rows.size != rows.size
 
     ordered_rows
   end
