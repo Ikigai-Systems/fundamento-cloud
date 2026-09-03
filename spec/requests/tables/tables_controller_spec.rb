@@ -56,7 +56,7 @@ RSpec.describe Tables::TablesController, type: :request do
     end
   end
 
-  describe "the Table history menu item" do
+  describe "the History menu item" do
     before do
       sign_in pawel
       post select_organization_path(ikigai_systems)
@@ -66,7 +66,7 @@ RSpec.describe Tables::TablesController, type: :request do
       it "is absent" do
         get table_path(table)
 
-        expect(response.body).not_to include("Table history")
+        expect(response.body).not_to include(table_version_path(table, "latest"))
       end
     end
 
@@ -79,7 +79,7 @@ RSpec.describe Tables::TablesController, type: :request do
         get table_path(table)
 
         # A link, not the <span> link_to_with_disable renders for a disabled entry.
-        expect(response.body).to include(%(href="#{table_version_path(table, "latest")}">Table history</a>))
+        expect(response.body).to include(%(href="#{table_version_path(table, "latest")}">History</a>))
       end
     end
   end

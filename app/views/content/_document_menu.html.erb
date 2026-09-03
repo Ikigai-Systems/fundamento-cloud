@@ -23,10 +23,10 @@
   >
     <div class="dropdown-container w-56">
       <% if content.is_a?(Document) %>
-        <%= link_to_with_disable "Document history",
+        <%= link_to_with_disable "History",
           document_version_path(content, "latest"),
           disabled: content.draft?,
-          title: content.draft? ? "No document history yet, save a version first" : nil,
+          title: content.draft? ? "No history yet, save a version first" : nil,
           data: { "dropdown-target" => "menuItem" },
           role: "menuitem",
           tabindex: "-1"
@@ -44,7 +44,7 @@
       <% if content.is_a?(Table) && Tables::ChangeRecorder.enabled? %>
         <%# Always clickable: a table with no versions yet lands on the history page,
             which explains when the first one will be saved. %>
-        <%= link_to "Table history",
+        <%= link_to "History",
           table_version_path(content, "latest"),
           data: { "dropdown-target" => "menuItem" },
           role: "menuitem",

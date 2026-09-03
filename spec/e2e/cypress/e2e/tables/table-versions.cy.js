@@ -44,7 +44,7 @@ describe("Table Versions", function () {
     snapshot();
 
     cy.visit("/t/projects/versions");
-    cy.contains("Table history").should("be.visible");
+    cy.contains("History - ").should("be.visible");
 
     // Newest first: the edit, then the baseline it was made against. One cell, however
     // many keystrokes rowstack sent on the way there.
@@ -105,7 +105,7 @@ describe("Table Versions", function () {
   it("explains what will create the first version when there is none", function () {
     cy.visit("/t/projects");
     cy.get("#content_menu_button").click();
-    cy.contains("Table history").should("be.visible").click();
+    cy.get("[role='menuitem']").contains("History").should("be.visible").click();
 
     cy.url().should("include", "/t/projects/versions");
     cy.get("[data-testid='no-versions-notice']").should("be.visible");

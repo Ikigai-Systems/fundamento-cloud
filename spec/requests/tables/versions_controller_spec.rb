@@ -32,7 +32,7 @@ RSpec.describe Tables::VersionsController, type: :request do
         get table_versions_path(table)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include("Table history")
+        expect(response.body).to include("History - ")
         expect(response.body).to include("1 cell")
         expect(response.body).to include("Baseline")
       end
