@@ -70,6 +70,11 @@ Rails.application.configure do
   config.active_job.queue_adapter = :good_job
   # config.active_job.queue_name_prefix = "interactive_documents_self_hosted_prototype1_production"
 
+  # Run the config/recurring.yml schedule. GoodJob de-duplicates cron enqueues across
+  # processes with a unique index, so it is safe that both the web and the worker
+  # containers have this on.
+  config.good_job.enable_cron = true
+
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
