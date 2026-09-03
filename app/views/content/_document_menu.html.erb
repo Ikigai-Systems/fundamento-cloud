@@ -78,10 +78,13 @@
 
       <hr class="border-t dark:border-gray-500">
 
+      <%# Automations is a standalone space-level page, not content for the
+          `content` Turbo Frame this menu lives in — break out to a full page
+          visit so Turbo doesn't look for a frame the response doesn't carry. %>
       <%= link_to_with_disable "Automations",
         space_automations_path(content.space),
         disabled: !policy(space).update?,
-        data: { "dropdown-target" => "menuItem" },
+        data: { "dropdown-target" => "menuItem", turbo_frame: "_top" },
         role: "menuitem",
         tabindex: "-1"
       %>
