@@ -25,7 +25,7 @@ class JwtAuthenticatableStrategy < Devise::Strategies::Base
     # space = GlobalID::Locator.locate payload["aud"]
 
     if organization_membership
-      RequestContext.current_organization = organization_membership.organization
+      Current.organization = organization_membership.organization
 
       success!(organization_membership.user)
     else
@@ -61,7 +61,7 @@ class ApiTokenAuthenticatableStrategy < JwtAuthenticatableStrategy
     if (token = ApiToken.find_by_encrypted_token(api_token))
       token.update!(used_at: Time.now)
 
-      RequestContext.current_organization = token.organization
+      Current.organization = token.organization
 
       success!(token.organization_membership.user)
     else

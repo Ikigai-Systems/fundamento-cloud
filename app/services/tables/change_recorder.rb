@@ -85,7 +85,7 @@ module Tables
       end
 
       def suppressed_table_ids
-        Current.suppressed_table_ids ||= Set.new
+        Tables::RecordingState.suppressed_table_ids ||= Set.new
       end
 
       # One enqueue per table per unit of work, rather than one per event: a 50-cell paste
@@ -97,7 +97,7 @@ module Tables
       # edit in the same request would then be dropped on the floor.
       def schedule_snapshot(table)
         ActiveRecord.after_all_transactions_commit do
-          scheduled = (Current.scheduled_snapshot_table_ids ||= Set.new)
+          scheduled = (Tables::RecordingState.scheduled_snapshot_table_ids ||= Set.new)
 
           if scheduled.add?(table.id)
             TableVersionSnapshotJob.set(wait: TableVersionSnapshotJob::WINDOW).perform_later(table)

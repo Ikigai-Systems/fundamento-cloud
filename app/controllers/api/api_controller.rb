@@ -49,7 +49,7 @@ module Api
 
       oauth_token.update_column(:used_at, Time.current)
 
-      RequestContext.current_organization = membership.organization
+      Current.organization = membership.organization
 
       sign_in(membership.user, scope: :user)
       true
@@ -64,7 +64,7 @@ module Api
     end
 
     def current_organization
-      RequestContext.current_organization
+      Current.organization
     end
 
     def pundit_user
