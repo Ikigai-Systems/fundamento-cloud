@@ -3,6 +3,8 @@
 module Api
   module V1
     class FormulasController < Api::ApiController
+      def current_change_source = "formula"
+
       def eval
         space = nil
         if params[:space_id].present?

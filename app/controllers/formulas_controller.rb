@@ -1,6 +1,10 @@
 class FormulasController < ApplicationController
   include EnsureOrganization
 
+  # Table writes here come out of formula actions (AddRow, UpdateRows, button formulas),
+  # not out of someone typing in a cell.
+  def current_change_source = "formula"
+
   def eval
     # todo: some kind of autorization? that user is logged in?
 

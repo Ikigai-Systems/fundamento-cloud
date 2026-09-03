@@ -3,6 +3,13 @@ require "csv"
 class Table < ApplicationRecord
   include NpiOrdering
 
+  # Design ceilings for the versioning work: a snapshot of a table this size is roughly
+  # 10-20 MB gzipped, which the streaming snapshot builder handles and anything larger
+  # does not. Enforced at every entry point that can grow a table.
+  MAX_ROWS = 50_000
+  MAX_COLUMNS = 200
+  MAX_CELL_VALUE_LENGTH = 100_000
+
   include ToReactProps
   set_react_props :id, :name, :icon, :title_for_editing, :organization_id, :parent_id, :parent_type, :space_id, :created_at, :updated_at, :archived
 
@@ -23,6 +30,9 @@ class Table < ApplicationRecord
   has_many :object_tags, as: :object, dependent: :delete_all
   has_many :tags, through: :object_tags
   has_many :source_object_references, class_name: "ObjectReference", as: :source, dependent: :delete_all
+
+  has_many :versions, class_name: "Tables::Version", dependent: :destroy
+  has_many :change_events, class_name: "Tables::ChangeEvent", dependent: :delete_all
 
   scope :lexicographically, -> { order(name: :asc) }
 
@@ -45,18 +55,32 @@ class Table < ApplicationRecord
 
   validates_uniqueness_of :name, scope: [:space_id]
 
+  # Every table gets a baseline version, so the first edit has something to be restored
+  # back to rather than only appearing in the change log.
+  after_commit :enqueue_initial_version, on: :create
+
   def title
     name
   end
 
+  def latest_version
+    versions.most_recent_first.first
+  end
+
   def order_linked_list(rows, method)
+    rows = rows.to_a unless rows.nil?
+
     return [] if rows.nil? || rows.empty?
 
-    # Create a hash where the keys are the id of the previous row and the values are the row objects
+    # Create a hash where the keys are the id of the previous row and the values are the row objects.
+    # Records claiming the same predecessor collapse into one entry here, which is why the
+    # completeness check below counts records rather than keys.
     rows_by_previous_id = rows.index_by(&method)
 
     # Find the first row (the one that has previous_row_id as nil)
     first_row = rows.find { |row| row.send(method).nil? }
+
+    raise IndexError.new("Incomplete linked list") if first_row.nil?
 
     # Initialize the ordered list of rows with the first row
     ordered_rows = [first_row]
@@ -66,8 +90,10 @@ class Table < ApplicationRecord
       ordered_rows << next_row
     end
 
-    # Final check for consistency
-    raise IndexError.new("Incomplete linked list") if ordered_rows.size != rows_by_previous_id.size
+    # Compare against the records, not against rows_by_previous_id: a forked chain has
+    # fewer keys than records, so checking the hash lets the fork through and silently
+    # drops every branch the walk did not take.
+    raise IndexError.new("Incomplete linked list") if ordered_rows.size != rows.size
 
     ordered_rows
   end
@@ -171,44 +197,62 @@ class Table < ApplicationRecord
     assert self.columns.count.zero?
 
     table_columns = {}
+    imported_rows = 0
 
     previous_row = nil
     previous_column = nil
 
-    self.transaction do
-      CSV.read(csv_file, headers: true, return_headers: true, encoding: "#{file_encoding}:utf-8").each do |row|
-        if row.header_row?
-          row.each do |header, value|
-            table_columns[header] = self.columns.
-              find_or_create_by!(
-                name: header,
-                organization_id: self.organization_id,
-                kind: 0,
-                previous_column: previous_column,
-              )
+    summary = {}
 
-            previous_column = table_columns[header]
-          end
-        else
-          previous_row = self.rows.create!(
-            previous_row: previous_row,
-            organization_id: self.organization_id,
-          )
+    # A single bulk_imported event rather than one per cell: a 10,000-row import would
+    # otherwise write hundreds of thousands of events to describe one user action. The
+    # payload hash is filled in by the block and read after it returns.
+    Tables::ChangeRecorder.bulk(self, kind: :bulk_imported, payload: summary) do
+      self.transaction do
+        CSV.read(csv_file, headers: true, return_headers: true, encoding: "#{file_encoding}:utf-8").each do |row|
+          if row.header_row?
+            raise TooLarge, "CSV has #{row.size} columns, the maximum is #{MAX_COLUMNS}" if row.size > MAX_COLUMNS
 
-          row.each_with_index do |(header, value), index|
-            self.cells.create!(
-              column: table_columns[header],
-              row: previous_row,
-              value: value,
+            row.each do |header, value|
+              table_columns[header] = self.columns.
+                find_or_create_by!(
+                  name: header,
+                  organization_id: self.organization_id,
+                  kind: 0,
+                  previous_column: previous_column,
+                )
+
+              previous_column = table_columns[header]
+            end
+          else
+            imported_rows += 1
+            raise TooLarge, "CSV has more than #{MAX_ROWS} rows" if imported_rows > MAX_ROWS
+
+            previous_row = self.rows.create!(
+              previous_row: previous_row,
               organization_id: self.organization_id,
             )
+
+            row.each_with_index do |(header, value), index|
+              self.cells.create!(
+                column: table_columns[header],
+                row: previous_row,
+                value: value,
+                organization_id: self.organization_id,
+              )
+            end
           end
         end
       end
+
+      summary[:rows] = imported_rows
+      summary[:columns] = table_columns.size
     end
   end
 
   def add_row(row_id = nil, values = {})
+    ensure_room_for_rows!(1)
+
     last_row = self.rows_in_order.last
 
     new_row = self.rows.create!(
@@ -227,7 +271,26 @@ class Table < ApplicationRecord
     end
   end
 
+  # Raised when an operation would push a table past MAX_ROWS or MAX_COLUMNS.
+  class TooLarge < StandardError; end
+
+  def ensure_room_for_rows!(count)
+    return if rows.count + count <= MAX_ROWS
+
+    raise TooLarge, "table cannot have more than #{MAX_ROWS} rows"
+  end
+
+  def ensure_room_for_columns!(count)
+    return if columns.count + count <= MAX_COLUMNS
+
+    raise TooLarge, "table cannot have more than #{MAX_COLUMNS} columns"
+  end
+
   private
+
+  def enqueue_initial_version
+    TableVersionSnapshotJob.perform_later(self, kind: :initial)
+  end
 
   def nullify_object_reference_targets
     ObjectReference.where(target_type: "Table", target_id: id, organization_id: organization_id)

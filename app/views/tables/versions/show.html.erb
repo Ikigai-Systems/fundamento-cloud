@@ -1,0 +1,103 @@
+<% content_for :content_menu do %>
+  <%= link_to "View current version",
+    table_path(@table),
+    class: "link-button before:icon-[heroicons--arrow-uturn-left-16-solid] before:mr-1" %>
+
+  <% if policy(@table).update? %>
+    <%# Spaced away from "View current version" so the two do not read as one phrase. %>
+    <%= button_to "Restore this version",
+      restore_table_version_path(@table, @version),
+      class: "link-button restore-table-version-button",
+      form_class: "ml-4",
+      form: {
+        data: {
+          turbo_confirm: "Replace the current table with version #{@version.sequential_id}? The current state is saved as its own version first, so this can be undone."
+        }
+      } %>
+  <% end %>
+<% end %>
+
+<% content_for :content_sidebar do %>
+  <div class="mt-2 flex items-center px-3 border-b">
+    <span class="self-center text-lg font-semibold whitespace-nowrap mb-2 truncate">
+      <i class="fa-regular fa-rectangle-history"></i>
+      Historical versions
+    </span>
+  </div>
+
+  <% @versions.each do |version| %>
+    <%= link_to table_version_path(@table, version) do %>
+      <%= tag.div(class: {
+        "flex flex-row" => true,
+        "bg-blue-100 hover:bg-blue-200 active:bg-blue-300 dark:bg-blue-900 dark:hover:bg-blue-800 dark:active:bg-blue-700" => @version == version,
+        "hover:bg-gray-100 active:bg-gray-200 dark:hover:bg-gray-800 dark:active:bg-gray-700" => @version != version,
+      }) do %>
+        <div class="<%= @version == version ? "bg-blue-500 dark:!bg-blue-400" : "" %> w-1"></div>
+
+        <div class="flex-1 p-2">
+          <div class="font-bold">Version <%= version.sequential_id %></div>
+
+          <div class="text-xs text-slate-500 dark:text-slate-400"><%= table_version_summary(version) %></div>
+
+          <div class="flex items-center gap-1">
+            <%# Baseline and backfilled versions have no author, so the avatar has to cope with nil. %>
+            <% if version.created_by.present? %>
+              <%= render UserAvatar.new(user: version.created_by, organization: current_organization, variant: "xs") %>
+              <%= version.created_by.display_name %>
+            <% else %>
+              <div title="Automatic" class="w-5 h-5 bg-gray-200 dark:bg-gray-600 rounded-full flex items-center justify-center text-xs font-bold">?</div>
+              Automatic
+            <% end %>
+          </div>
+
+          <time class="underline decoration-dotted"
+                datetime="<%= version.created_at.iso8601 %>"
+                data-controller="timestamp"
+                data-timestamp-datetime-value="<%= version.created_at.iso8601 %>">
+            <%= time_ago_in_words version.created_at %>
+          </time>
+        </div>
+
+        <% version_contributors = version.contributors %>
+        <% if version_contributors.any? %>
+          <div class="flex items-center pr-2" data-testid="version-contributors">
+            <%= render UserAvatarsGroup.new(users: version_contributors, organization: current_organization, variant: "xs") %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<article class="flex flex-col">
+  <% if @data.nil? && !@version.previewable? %>
+    <div class="content-editor-padding">
+      <p class="text-sm text-slate-500" data-testid="version-too-large-notice">
+        This version has <%= number_with_delimiter(@version.row_count) %> rows and
+        <%= @version.column_count %> columns, which is too large to preview here.
+        It can still be restored.
+      </p>
+    </div>
+  <% elsif @data.nil? %>
+    <div class="content-editor-padding">
+      <p class="text-sm text-slate-500">
+        This version's snapshot could not be read. It may still be being prepared - try again in a moment.
+      </p>
+    </div>
+  <% else %>
+    <% if @version.reader.columns.any?(&:formula?) %>
+      <div class="content-editor-padding pb-0">
+        <p class="text-sm text-slate-500" data-testid="formula-columns-notice">
+          Formula columns show no values in history: results are calculated on demand and were never stored.
+        </p>
+      </div>
+    <% end %>
+
+    <%= react_component "ViewTablePanel", {
+      table: @table,
+      space: @space.to_react_props
+    }, {
+      data: @data
+    } %>
+  <% end %>
+</article>

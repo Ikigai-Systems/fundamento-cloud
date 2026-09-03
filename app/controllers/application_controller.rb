@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 
   prepend_before_action :authenticate_user!
   before_action :capture_reddit_click_id
+  before_action :set_current_attributes
 
   helper_method :current_organization
   helper_method :current_organization_membership
@@ -17,23 +18,32 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Carries the acting user down to the model layer, where table change events are
+  # recorded. Requests are the "ui" origin; jobs, MCP and formula execution set their own.
+  def set_current_attributes
+    Current.user = current_user
+    Current.change_source = current_change_source
+  end
+
+  def current_change_source = "ui"
+
   # Used in layouts to append text to website's <title/>
   def subtitle
     nil
   end
 
   def current_organization
-    RequestContext.current_organization
+    Current.organization
   end
 
   def current_organization=(organization)
-    RequestContext.current_organization = organization
+    Current.organization = organization
   end
 
   def pundit_user
     # Argument order matters: current_user must be evaluated before current_organization.
     # Warden's JWT/API-token strategies (config/initializers/devise.rb) assign
-    # RequestContext.current_organization as a side effect of authenticating the user, so
+    # Current.organization as a side effect of authenticating the user, so
     # current_organization only has the right value once current_user has run. Ruby evaluates
     # method arguments left-to-right, which makes this safe — but reordering these two
     # arguments would silently break authorization.

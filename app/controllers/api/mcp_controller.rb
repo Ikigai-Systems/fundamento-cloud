@@ -1,4 +1,7 @@
 class Api::McpController < Api::ApiController
+  # Table writes made by the MCP tools are attributed to the agent, not to a browser.
+  def current_change_source = "mcp"
+
   def create
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
