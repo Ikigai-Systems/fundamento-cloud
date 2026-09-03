@@ -21,11 +21,7 @@ class TableVersionSnapshotJob < ApplicationJob
     wait: 5.seconds,
     attempts: Float::INFINITY
 
-  before_enqueue { throw :abort unless Tables::ChangeRecorder.enabled? }
-
   def perform(table, kind: :auto)
-    return unless Tables::ChangeRecorder.enabled?
-
     Tables::VersionSnapshotService.new(table, kind: kind).call
   rescue IndexError => e
     # Table#order_linked_list raises when the row or column chain is broken. That is a

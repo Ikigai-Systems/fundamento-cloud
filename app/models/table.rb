@@ -289,8 +289,6 @@ class Table < ApplicationRecord
   private
 
   def enqueue_initial_version
-    return unless Tables::ChangeRecorder.enabled?
-
     TableVersionSnapshotJob.perform_later(self, kind: :initial)
   end
 

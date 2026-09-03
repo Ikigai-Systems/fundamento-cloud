@@ -72,8 +72,6 @@ class Tables::Column < ApplicationRecord
   private
 
   def capture_values_for_change_event
-    return unless Tables::ChangeRecorder.enabled?
-
     pairs = cells.where.not(value: nil).limit(MAX_INLINE_DELETED_VALUES + 1).pluck(:row_id, :value)
 
     @deleted_values_truncated = pairs.size > MAX_INLINE_DELETED_VALUES

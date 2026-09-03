@@ -82,8 +82,6 @@ RSpec.describe "Table size limits", type: :model do
     end
 
     it "records the import as one event rather than one per cell" do
-      Flipper.enable(:table_versioning)
-
       expect { empty_table.import_from_csv(file_fixture("tables/projects.csv")) }
         .to change { empty_table.change_events.count }.by(1)
 

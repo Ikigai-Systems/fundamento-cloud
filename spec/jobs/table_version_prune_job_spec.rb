@@ -6,8 +6,6 @@ RSpec.describe TableVersionPruneJob, type: :job do
 
   let(:table) { tables_tables(:projects) }
 
-  before { Flipper.enable(:table_versioning) }
-
   def version_at(time, kind: :auto, sequential_id:)
     table.versions.create!(
       organization: table.organization,

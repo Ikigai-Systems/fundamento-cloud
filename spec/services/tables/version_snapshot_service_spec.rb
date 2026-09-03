@@ -8,8 +8,6 @@ RSpec.describe Tables::VersionSnapshotService, type: :service do
   let(:pawel) { users(:pawel) }
   let(:stefan) { users(:stefan) }
 
-  before { Flipper.enable(:table_versioning) }
-
   def edit_as(user, cell, value)
     Current.set(user: user, change_source: "ui") { cell.update!(value: value) }
   end

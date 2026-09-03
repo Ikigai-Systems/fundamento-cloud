@@ -11,7 +11,6 @@ class Tables::VersionsController < ApplicationController
   after_action :verify_authorized
 
   before_action :load_table
-  before_action :ensure_versioning_enabled
   before_action :load_version, only: [:restore]
 
   def index
@@ -61,9 +60,4 @@ class Tables::VersionsController < ApplicationController
     @table.versions.find_by(sequential_id: params[:id])
   end
 
-  def ensure_versioning_enabled
-    return if Tables::ChangeRecorder.enabled?
-
-    raise ActionController::RoutingError, "Not Found"
-  end
 end

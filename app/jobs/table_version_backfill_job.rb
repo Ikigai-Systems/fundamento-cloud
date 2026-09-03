@@ -9,11 +9,7 @@ class TableVersionBackfillJob < ApplicationJob
 
   queue_as :maintenance
 
-  before_enqueue { throw :abort unless Tables::ChangeRecorder.enabled? }
-
   def perform(batch_size: BATCH_SIZE)
-    return unless Tables::ChangeRecorder.enabled?
-
     Table.without_archived
          .where.missing(:versions)
          .limit(batch_size)

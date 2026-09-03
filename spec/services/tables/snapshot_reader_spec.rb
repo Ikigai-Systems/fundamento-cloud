@@ -7,8 +7,6 @@ RSpec.describe Tables::SnapshotReader, type: :service do
   let(:table) { tables_tables(:projects) }
   let(:version) { Tables::VersionSnapshotService.new(table, kind: :initial).call }
 
-  before { Flipper.enable(:table_versioning) }
-
   # The version viewer reuses TableDataBlueprint and the live rowstack grid, so the
   # reader has to hand back exactly what the live table endpoint would.
   it "reshapes the snapshot into the payload the live table endpoint serves" do

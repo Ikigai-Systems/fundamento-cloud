@@ -41,7 +41,7 @@
         %>
       <% end %>
 
-      <% if content.is_a?(Table) && Tables::ChangeRecorder.enabled? %>
+      <% if content.is_a?(Table) %>
         <%# Always clickable: a table with no versions yet lands on the history page,
             which explains when the first one will be saved. %>
         <%= link_to "History",

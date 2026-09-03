@@ -7,8 +7,6 @@ RSpec.describe Tables::RestoreService, type: :service do
   let(:table) { tables_tables(:projects) }
   let(:pawel) { users(:pawel) }
 
-  before { Flipper.enable(:table_versioning) }
-
   # The state we will come back to, plus a set of changes that touch content, structure
   # and both linked lists.
   let!(:baseline) { Tables::VersionSnapshotService.new(table, kind: :initial).call }

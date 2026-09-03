@@ -13,8 +13,6 @@ module Tables::RecordsChanges
   private
 
   def record_table_changes(action)
-    return unless Tables::ChangeRecorder.enabled?
-
     table_change_events_for(action).each do |kind, payload|
       Tables::ChangeRecorder.record(
         table: table,

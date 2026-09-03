@@ -3,7 +3,6 @@ import {isOrganizationCookie} from "../../support/organization-cookies.js";
 describe("Table Versions", function () {
   beforeEach(() => {
     cy.app("clean");
-    cy.appFlipper({flags: ["table_versioning"]});
 
     cy.appFixtures({
       fixtures_dir: "spec/fixtures",
@@ -111,13 +110,5 @@ describe("Table Versions", function () {
     cy.get("[data-testid='no-versions-notice']").should("be.visible");
     cy.contains("No versions yet").should("be.visible");
     cy.contains("a few minutes after this table changes").should("be.visible");
-  });
-
-  it("hides the history when the feature is off", function () {
-    cy.appFlipper({flags: []});
-
-    cy.request({url: "/t/projects/versions", failOnStatusCode: false})
-      .its("status")
-      .should("eq", 404);
   });
 });

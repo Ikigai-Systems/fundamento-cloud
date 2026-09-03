@@ -26,8 +26,6 @@ class Tables::Row < ApplicationRecord
   private
 
   def capture_values_for_change_event
-    return unless Tables::ChangeRecorder.enabled?
-
     @deleted_values = cells.pluck(:column_id, :value).to_h
   end
 

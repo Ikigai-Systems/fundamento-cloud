@@ -15,14 +15,10 @@ module Tables
     COALESCE_WINDOW = 30.seconds
 
     class << self
-      def enabled?
-        Flipper.enabled?(:table_versioning)
-      end
-
       # Appends one event. Runs inside the caller's transaction, so an event never
       # survives a mutation that rolled back.
       def record(table:, organization_id:, kind:, payload: {})
-        return if !enabled? || suppressed?(table)
+        return if suppressed?(table)
 
         if (previous = coalescable_event(table, kind, payload))
           # Keep the original "before": the interesting change is from what the cell held
