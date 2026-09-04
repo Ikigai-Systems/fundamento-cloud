@@ -38,6 +38,19 @@ module Fundamento
 
     config.action_mailer.default_url_options = { :host => ENV.fetch("HTTP_HOST", "localhost:3000") }
 
+    # GoodJob has no recurring.yml convention of its own -- it reads a cron hash from
+    # configuration -- so config/recurring.yml has to be loaded explicitly. Without this
+    # the file is inert, and nothing scheduled in it ever runs.
+    #
+    # Defining the schedule here and switching it on per environment keeps it in one
+    # place: enable_cron defaults to false, so the hash alone schedules nothing.
+    config.good_job.cron = YAML.load_file(File.expand_path("recurring.yml", __dir__)).to_h do |name, entry|
+      [
+        name.to_sym,
+        { cron: entry.fetch("cron"), class: entry.fetch("class"), description: entry["description"] },
+      ]
+    end
+
     # Enable lograge, but make it the default only on production
     config.lograge.enabled = true
     config.lograge.formatter = Lograge::Formatters::Logstash.new
