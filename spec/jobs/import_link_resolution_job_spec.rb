@@ -534,6 +534,64 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
+  describe "#content_haystack" do
+    let(:job) { described_class.new }
+
+    it "collects text, link hrefs and media props" do
+      blocks = [
+        { "id" => "b1", "type" => "paragraph", "props" => {},
+          "content" => [
+            { "type" => "text", "text" => "See [[other]]", "styles" => {} },
+            { "type" => "link", "href" => "Pliki/report.pdf",
+              "content" => [{ "type" => "text", "text" => "the report", "styles" => {} }] }
+          ],
+          "children" => [] },
+        { "id" => "b2", "type" => "video",
+          "props" => { "url" => "Pliki/clip.mp4", "name" => "clip.mp4", "caption" => "a caption" },
+          "content" => [], "children" => [] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to include("See [[other]]", "the report", "Pliki/report.pdf")
+      expect(haystack).to include("Pliki/clip.mp4", "clip.mp4", "a caption")
+    end
+
+    it "reaches text inside table cells and nested children" do
+      blocks = [
+        { "id" => "b1", "type" => "table", "props" => {},
+          "content" => { "type" => "tableContent", "rows" => [
+            { "cells" => [{ "content" => [{ "type" => "text", "text" => "in a cell [[x]]", "styles" => {} }] }] }
+          ] },
+          "children" => [
+            { "id" => "b2", "type" => "paragraph", "props" => {},
+              "content" => [{ "type" => "text", "text" => "nested [[y]]", "styles" => {} }],
+              "children" => [] }
+          ] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to include("in a cell [[x]]", "nested [[y]]")
+    end
+
+    it "excludes block ids and style maps" do
+      # blocks.to_json used to be the haystack, so a filename appearing as a block id (or
+      # anywhere else structural) counted as an attachment reference.
+      blocks = [
+        { "id" => "clip.mp4", "type" => "paragraph",
+          "props" => { "textAlignment" => "left" },
+          "content" => [{ "type" => "text", "text" => "nothing to see", "styles" => { "bold" => true } }],
+          "children" => [] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to eq("nothing to see")
+      expect(haystack).not_to include("clip.mp4")
+    end
+  end
+
   describe "#block_id_anchor?" do
     let(:job) { described_class.new }
 
