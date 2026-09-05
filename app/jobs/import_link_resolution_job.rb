@@ -1,4 +1,8 @@
-class ImportLinkResolutionJob < ApplicationJob
+# MemoryIntensiveJob, not ApplicationJob: this walks every document in a session, reading
+# each from storage and shelling out to the converter, so it has the same footprint as the
+# per-document import jobs. The per-pod limit also stops two link-resolution runs for the
+# same session overlapping, which is how duplicate versions were produced.
+class ImportLinkResolutionJob < MemoryIntensiveJob
   include ImportFileMarkdown
 
   # Obsidian block-reference anchor: a space, then ^blockid, at the end of a line.

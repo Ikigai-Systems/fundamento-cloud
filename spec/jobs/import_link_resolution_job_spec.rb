@@ -525,6 +525,15 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
+  describe "concurrency" do
+    it "is limited to one run per worker pod" do
+      # Reads every document in the session from storage and shells out to the converter
+      # for each, so it needs the same per-pod slot as the per-document import jobs.
+      expect(described_class.ancestors).to include(MemoryIntensiveJob)
+      expect(described_class.good_job_concurrency_config[:perform_limit]).to eq(1)
+    end
+  end
+
   describe "#block_id_anchor?" do
     let(:job) { described_class.new }
 
