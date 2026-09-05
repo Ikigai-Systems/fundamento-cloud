@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_073815) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_211558) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -558,6 +558,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_073815) do
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
     t.json "hierarchy", default: [], null: false
+    t.integer "hierarchy_version", default: 0, null: false
     t.string "home_document_id"
     t.string "icon_type"
     t.string "icon_value"

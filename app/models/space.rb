@@ -177,6 +177,9 @@ class Space < ApplicationRecord
       locked = self.class.find(id)
       result = yield locked
       locked.hierarchy_will_change!
+      # Bump the guard so a concurrent insert_hierarchy_node! holding the older value
+      # cannot swap this change away.
+      locked.hierarchy_version = locked.hierarchy_version.to_i + 1
       locked.save!
     end
 
@@ -200,6 +203,7 @@ class Space < ApplicationRecord
       result = yield(*spaces.map { |space| space && locked_by_id[space.id] })
       locked_by_id.each_value do |locked|
         locked.hierarchy_will_change!
+        locked.hierarchy_version = locked.hierarchy_version.to_i + 1
         locked.save!
       end
     end
@@ -216,8 +220,9 @@ class Space < ApplicationRecord
   # parent isn't in the hierarchy — the recursive insert returns nil in that case, and
   # without the fallback the document would exist but never appear in the sidebar.
   #
-  # Compare-and-swap rather than a lock. The write is a plain UPDATE guarded by the value we
-  # read, so:
+  # Compare-and-swap rather than a lock, guarded by `hierarchy_version` — an integer rather
+  # than the ~59KB hierarchy itself, and scoped to hierarchy writes rather than the whole
+  # row (see the migration for why it is not called `lock_version`). So:
   #
   #   * no lost update — if anyone else committed in between, the guard matches nothing, we
   #     re-read and retry;
@@ -235,13 +240,15 @@ class Space < ApplicationRecord
     node = create_hierarchy_node(document_id)
 
     HIERARCHY_INSERT_ATTEMPTS.times do
-      current = current_hierarchy
+      current, version = hierarchy_snapshot
       updated = self.class.hierarchy_with_node(current, parent_id, node)
 
       changed = self.class
-        .where(id: id)
-        .where("hierarchy::jsonb = ?::jsonb", current.to_json)
-        .update_all(["hierarchy = ?::json, updated_at = ?", updated.to_json, Time.current])
+        .where(id: id, hierarchy_version: version)
+        .update_all([
+          "hierarchy = ?::json, hierarchy_version = ?, updated_at = ?",
+          updated.to_json, version + 1, Time.current
+        ])
 
       if changed == 1
         reload
@@ -253,9 +260,10 @@ class Space < ApplicationRecord
       "could not place #{document_id} in space #{id} after #{HIERARCHY_INSERT_ATTEMPTS} attempts"
   end
 
-  # Reads straight from the row, bypassing this instance's possibly stale attribute.
-  def current_hierarchy
-    self.class.where(id: id).pick(:hierarchy) || []
+  # Reads straight from the row, bypassing this instance's possibly stale attributes.
+  def hierarchy_snapshot
+    row = self.class.where(id: id).pick(:hierarchy, :hierarchy_version)
+    [Array(row&.first), row&.last.to_i]
   end
 
   # Pure: returns a new tree with `node` placed under `parent_id`, or appended at the root

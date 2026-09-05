@@ -412,7 +412,7 @@ RSpec.describe Space, type: :model do
       end
 
       expect(queries).not_to include(a_string_matching(/FROM "spaces".*FOR UPDATE/m))
-      expect(queries).to include(a_string_matching(/UPDATE "spaces".*hierarchy::jsonb =/m))
+      expect(queries).to include(a_string_matching(/UPDATE "spaces".*"hierarchy_version" = /m))
     end
 
     it "retries when another writer commits between the read and the write" do
@@ -420,8 +420,8 @@ RSpec.describe Space, type: :model do
 
       # Someone else's node lands after we read but before we write, so our guarded UPDATE
       # matches nothing and we must re-read rather than overwrite them.
-      Space.find(space.id).update!(hierarchy: [{ "id" => "other", "children" => [] }])
-      allow(space).to receive(:current_hierarchy).and_return([], space.current_hierarchy)
+      Space.find(space.id).update!(hierarchy: [{ "id" => "other", "children" => [] }], hierarchy_version: 1)
+      allow(space).to receive(:hierarchy_snapshot).and_return([[], 0], space.hierarchy_snapshot)
 
       space.insert_hierarchy_node!("ours")
 
@@ -430,7 +430,7 @@ RSpec.describe Space, type: :model do
 
     it "gives up rather than spinning forever if the row never settles" do
       space.update!(hierarchy: [])
-      allow(space).to receive(:current_hierarchy).and_return([{ "id" => "never-committed", "children" => [] }])
+      allow(space).to receive(:hierarchy_snapshot).and_return([[{ "id" => "never-committed", "children" => [] }], 99])
 
       expect {
         space.insert_hierarchy_node!("ours")
