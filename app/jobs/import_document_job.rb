@@ -55,16 +55,16 @@ class ImportDocumentJob < MemoryIntensiveJob
           .update_tags(valid_tags)
       end
 
-      # Taken as late as possible: the Space row lock serializes every import job for this
-      # space, and it is held until this transaction commits wherever we acquire it.
-      session.space.insert_hierarchy_node!(document.id, parent_id: parent_id)
-
       locked_file.update!(
         status: :completed,
         document: document,
         processed_at: Time.current,
         error_message: nil
       )
+
+      # Placed late in the transaction: the UPDATE holds a write lock on the spaces row
+      # until commit, so everything slow should already be done by now.
+      session.space.insert_hierarchy_node!(document.id, parent_id: parent_id)
 
       session.merge_path_map!(import_file.relative_path, document.id)
     end

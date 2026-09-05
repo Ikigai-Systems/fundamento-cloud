@@ -398,6 +398,45 @@ RSpec.describe Space, type: :model do
       ])
     end
 
+    it "never asks for FOR UPDATE on the spaces row" do
+      # Callers insert a document first, which takes FOR KEY SHARE on this row to enforce
+      # the foreign key. Asking for FOR UPDATE afterwards is a lock upgrade, and two
+      # concurrent imports each holding KEY SHARE and each wanting UPDATE deadlock — a full
+      # vault import produced a steady stream of PG::TRDeadlockDetected.
+      space.update!(hierarchy: [])
+      queries = []
+      collect = ->(_name, _start, _finish, _id, payload) { queries << payload[:sql] }
+
+      ActiveSupport::Notifications.subscribed(collect, "sql.active_record") do
+        space.insert_hierarchy_node!("doc_a")
+      end
+
+      expect(queries).not_to include(a_string_matching(/FROM "spaces".*FOR UPDATE/m))
+      expect(queries).to include(a_string_matching(/UPDATE "spaces".*hierarchy::jsonb =/m))
+    end
+
+    it "retries when another writer commits between the read and the write" do
+      space.update!(hierarchy: [])
+
+      # Someone else's node lands after we read but before we write, so our guarded UPDATE
+      # matches nothing and we must re-read rather than overwrite them.
+      Space.find(space.id).update!(hierarchy: [{ "id" => "other", "children" => [] }])
+      allow(space).to receive(:current_hierarchy).and_return([], space.current_hierarchy)
+
+      space.insert_hierarchy_node!("ours")
+
+      expect(Space.find(space.id).hierarchy.map { _1["id"] }).to contain_exactly("other", "ours")
+    end
+
+    it "gives up rather than spinning forever if the row never settles" do
+      space.update!(hierarchy: [])
+      allow(space).to receive(:current_hierarchy).and_return([{ "id" => "never-committed", "children" => [] }])
+
+      expect {
+        space.insert_hierarchy_node!("ours")
+      }.to raise_error(Space::ConcurrentHierarchyUpdate, /could not place ours/)
+    end
+
     it "falls back to the root when the parent is missing from the hierarchy" do
       # add_item_to_hierarchy! returns nil here; without a fallback the node is dropped and
       # the document exists but never shows up in the sidebar.
@@ -434,6 +473,20 @@ RSpec.describe Space, type: :model do
 
       expect(Space.find(space.id).hierarchy.map { _1["id"] })
         .to contain_exactly("written_elsewhere", "ours")
+    end
+
+    it "does not deadlock against the foreign-key lock taken by a document insert" do
+      # Mirrors the ImportDocumentJob sequence: insert a document, then place it.
+      space.update!(hierarchy: [])
+
+      expect {
+        ActiveRecord::Base.transaction do
+          document = space.documents.create!(organization: space.organization, title: "New")
+          space.insert_hierarchy_node!(document.id)
+        end
+      }.not_to raise_error
+
+      expect(Space.find(space.id).hierarchy.size).to eq(1)
     end
 
     it "reloads the receiver so it doesn't keep serving a stale hierarchy" do
