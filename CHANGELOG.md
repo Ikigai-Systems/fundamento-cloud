@@ -10,6 +10,35 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.3.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.2.0...v1.3.0) (2026-09-05)
+
+
+### Features
+
+* **sidebar:** add Hierarchy and Starred tabs to the space sidebar ([#42](https://github.com/Ikigai-Systems/fundamento-cloud/issues/42)) ([ad7200f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ad7200fa2d9bdae624ef1189ec3546af11b6fcf5))
+* **tables:** keep a version history of every table change ([#141](https://github.com/Ikigai-Systems/fundamento-cloud/issues/141)) ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+
+
+### Bug Fixes
+
+* **automations:** open the automations page as a full page ([#144](https://github.com/Ikigai-Systems/fundamento-cloud/issues/144)) ([7e87a51](https://github.com/Ikigai-Systems/fundamento-cloud/commit/7e87a51c796861ef90195d64a498f94756b16e0d))
+* **automations:** open the automations page from a document or table ([#142](https://github.com/Ikigai-Systems/fundamento-cloud/issues/142)) ([6df268c](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6df268ce34e92d6f9a06923f04758bd770b32459))
+* **icons:** keep the emoji in the name when editing a space ([#156](https://github.com/Ikigai-Systems/fundamento-cloud/issues/156)) ([bfdc901](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bfdc901988352fdf794a50787888d3ada0cb5562))
+* **icons:** keep the emoji when renaming a table in a document ([bfdc901](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bfdc901988352fdf794a50787888d3ada0cb5562))
+* **imports:** expired import sessions get cleaned up now ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* **jobs:** scheduled maintenance jobs actually run ([#145](https://github.com/Ikigai-Systems/fundamento-cloud/issues/145)) ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* **sidebar:** draw the spaces menu over the sidebar tabs ([#155](https://github.com/Ikigai-Systems/fundamento-cloud/issues/155)) ([bbee322](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bbee322141718f4f16a992415e93c607eae6174c))
+* **tables:** a damaged row or column order no longer hides rows ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* **tables:** existing tables get a baseline version history ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* **tables:** moving a column no longer corrupts the column order ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+
+
+### Upgrade Notes
+
+* migration de-duplicates table cells and backfills row timestamps ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* table cell values are now capped at 100,000 characters ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* tables are now limited to 50,000 rows and 200 columns ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+
 ## [1.2.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.1.0...v1.2.0) (2026-09-01)
 
 
