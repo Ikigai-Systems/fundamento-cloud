@@ -525,6 +525,49 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
+  describe "#block_id_anchor?" do
+    let(:job) { described_class.new }
+
+    def paragraph(text)
+      [{ "id" => "b1", "type" => "paragraph", "props" => {},
+         "content" => [{ "type" => "text", "text" => text, "styles" => {} }],
+         "children" => [] }]
+    end
+
+    it "detects a real Obsidian block anchor" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^abc123"))).to be(true)
+    end
+
+    it "detects anchors with hyphens" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^my-block-id"))).to be(true)
+    end
+
+    it "does not fire on exponent notation" do
+      # The old /\^\w{2,}/ over blocks.to_json matched this, which is why most documents
+      # were re-resolved on every run.
+      expect(job.send(:block_id_anchor?, paragraph("2^10 is 1024"))).to be(false)
+    end
+
+    it "does not fire on a caret followed by a space" do
+      expect(job.send(:block_id_anchor?, paragraph("x = 2 ^ 10"))).to be(false)
+    end
+
+    it "does not fire on a single-character anchor" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^a"))).to be(false)
+    end
+
+    it "does not fire when the anchor is mid-line" do
+      expect(job.send(:block_id_anchor?, paragraph("Some ^abc123 text"))).to be(false)
+    end
+
+    it "finds anchors nested in children and table cells" do
+      blocks = [{ "id" => "b1", "type" => "paragraph", "props" => {}, "content" => [],
+                  "children" => paragraph("Nested ^abc123") }]
+
+      expect(job.send(:block_id_anchor?, blocks)).to be(true)
+    end
+  end
+
   describe "#blocks_equivalent?" do
     let(:job) { described_class.new }
 

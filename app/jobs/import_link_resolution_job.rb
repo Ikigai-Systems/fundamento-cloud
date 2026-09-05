@@ -1,6 +1,10 @@
 class ImportLinkResolutionJob < ApplicationJob
   include ImportFileMarkdown
 
+  # Obsidian block-reference anchor: a space, then ^blockid, at the end of a line.
+  # Shared by detection and stripping so the two can't drift apart.
+  BLOCK_ID_ANCHOR = / \^[a-zA-Z0-9-]{2,}$/
+
   queue_as :imports
 
   # Called by Good Job batch on_finish callback
@@ -52,7 +56,7 @@ class ImportLinkResolutionJob < ApplicationJob
 
     # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
     has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
-    has_block_ids = blocks_json.match?(/\^\w{2,}/)
+    has_block_ids = block_id_anchor?(blocks)
     attachment_paths = path_map.filter_map { |k, v| k if v.to_s.start_with?("attachment:") }
     has_local_attachment_refs = attachment_paths.any? { |p|
       blocks_json.include?(p) || blocks_json.include?(File.basename(p))
@@ -86,6 +90,18 @@ class ImportLinkResolutionJob < ApplicationJob
   rescue StandardError => e
     Rails.logger.error "ImportLinkResolutionJob: failed for #{import_file.relative_path}: #{e.message}"
     # Non-fatal — continue with other documents
+  end
+
+  # Inspects the actual text nodes rather than the serialized JSON blob. The old
+  # /\^\w{2,}/ over blocks.to_json also matched "2^10", LaTeX, and anything inside a code
+  # block, so most documents were re-resolved needlessly on every run.
+  def block_id_anchor?(blocks)
+    BlocknoteBlocks.walk_blocks(blocks) do |node|
+      text = node["text"]
+      return true if text.is_a?(String) && text.match?(BLOCK_ID_ANCHOR)
+    end
+
+    false
   end
 
   # BlockNote mints a fresh random UUID for every block, and another for every mention's
@@ -181,8 +197,7 @@ class ImportLinkResolutionJob < ApplicationJob
 
   def strip_obsidian_block_ids(markdown)
     # Remove ^blockid markers at end of lines (Obsidian block reference anchors)
-    # Format: space + ^alphanumeric at end of line
-    markdown.gsub(/ \^[a-zA-Z0-9-]{2,}$/, "")
+    markdown.gsub(BLOCK_ID_ANCHOR, "")
   end
 
   def resolve_heading_fragment(document_id, heading)
