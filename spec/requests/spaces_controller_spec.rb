@@ -27,6 +27,15 @@ RSpec.describe SpacesController, type: :request do
         expect(response.body).to include(public_space.name)
       end
 
+      it "keeps the icon emoji in the name field so saving does not drop it" do
+        public_space.update!(name: "\u{1F48A} Redpill")
+
+        get edit_space_path(public_space)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("value=\"\u{1F48A} Redpill\"")
+      end
+
       it "shows space membership multiselect" do
         get edit_space_path(private_space)
 
@@ -103,6 +112,28 @@ RSpec.describe SpacesController, type: :request do
         public_space.reload
         expect(public_space.name).to eq("Updated Space Name")
         expect(public_space.access_mode).to eq("restricted")
+      end
+
+      it "keeps the icon when the name field is submitted with its emoji" do
+        public_space.update!(name: "\u{1F48A} Redpill")
+
+        patch space_path(public_space), params: {
+          space: { name: public_space.title_for_editing, space_memberships: [""] }
+        }
+
+        public_space.reload
+        expect(public_space.name).to eq("Redpill")
+        expect(public_space.icon.to_s).to eq("\u{1F48A}")
+      end
+
+      it "removes the icon when the emoji is deleted from the name field" do
+        public_space.update!(name: "\u{1F48A} Redpill")
+
+        patch space_path(public_space), params: {
+          space: { name: "Redpill", space_memberships: [""] }
+        }
+
+        expect(public_space.reload.icon).to be_nil
       end
 
       it "adds space membership for user" do

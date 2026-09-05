@@ -172,7 +172,7 @@ class Tables::TablesController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @table.as_json.merge("title_for_editing" => @table.title_for_editing) }
+      format.json { render json: @table.as_json }
       format.html { render action: 'edit' }
     end
   rescue ActiveRecord::RecordNotUnique => e

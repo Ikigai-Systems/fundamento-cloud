@@ -1,5 +1,5 @@
 <section class="form-section">
-  <h2 class="form-header">Edit space <%= @space.name %></h2>
+  <h2 class="form-header">Edit space <%= render ObjectIcon.new(object: @space) %><%= @space.name %></h2>
 
   <%= form_for(@space,
     html: { class: "default-form" },
@@ -9,7 +9,7 @@
 
     <div class="form-field">
       <%= f.label :name %>
-      <%= f.text_field :name, autofocus: true, class: "form-input" %>
+      <%= f.text_field :name, value: f.object.title_for_editing, autofocus: true, class: "form-input" %>
 
       <p class="form-hint">You can use emojis to add some fun! 🥳</p>
     </div>
