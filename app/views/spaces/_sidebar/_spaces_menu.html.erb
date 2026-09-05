@@ -28,9 +28,11 @@
     <% end %>
   </div>
 
+  <%# z-30, not z-20: the sidebar tab bar below is relative z-20 and comes later in the DOM,
+      so at the same level it would paint over this menu. %>
   <div
     data-dropdown-target="menu"
-    class="hidden absolute top-5 left-0 z-20 mt-5 flex w-screen max-w-max"
+    class="hidden absolute top-5 left-0 z-30 mt-5 flex w-screen max-w-max"
     role="menu"
     aria-orientation="vertical"
     aria-labelledby="spaces-dropdown"
