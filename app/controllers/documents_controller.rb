@@ -60,17 +60,9 @@ class DocumentsController < ApplicationController
     authorize @document, :create?
 
     if @document.save
-      hierarchy_node = @space.create_hierarchy_node(@document.id)
+      @space.insert_hierarchy_node!(@document.id, parent_id: params[:parent_id])
 
-      if params[:parent_id].blank? || @space.add_item_to_hierarchy!(@space.hierarchy, params[:parent_id], hierarchy_node).blank?
-        @space.hierarchy.append(hierarchy_node)
-      end
-
-      if @space.save
-        redirect_to edit_document_path(@document)
-      else
-        render :new, status: :unprocessable_content
-      end
+      redirect_to edit_document_path(@document)
     else
       render :new, status: :unprocessable_content
     end
@@ -125,8 +117,7 @@ class DocumentsController < ApplicationController
     @document.destroy
 
     @space = @document.space
-    @space.remove_single_item_from_hierarchy!(@document.id)
-    @space.save!
+    @space.with_locked_hierarchy { |space| space.remove_single_item_from_hierarchy!(@document.id) }
 
     redirect_to space_path(@space), notice: 'Document was successfully deleted.'
   end
@@ -138,7 +129,6 @@ class DocumentsController < ApplicationController
   def move
     authorize @document, :show?
 
-    # FIXME: should lock both spaces
     @document.transaction do
       @source_space = @document.space
       @destination_space = current_organization.spaces.find(document_move_params[:space_id])
@@ -152,20 +142,24 @@ class DocumentsController < ApplicationController
       end
 
       if @document.errors.empty?
-        # So far, so good, try to move it
-        item_to_move = @source_space.remove_item_with_children_from_hierarchy!(@document.id)
+        # So far, so good, try to move it. Both spaces are locked in id order so two
+        # concurrent moves in opposite directions can't deadlock; a same-space move yields
+        # the same instance twice, which removes and re-appends correctly.
+        Space.with_locked_hierarchies(@source_space, @destination_space) do |source, destination|
+          item_to_move = source.remove_item_with_children_from_hierarchy!(@document.id)
 
-        if item_to_move.nil?
-          # Hierarchy didn't include the document, let's create a new node
-          item_to_move = @destination_space.create_hierarchy_node(@document.id)
+          if item_to_move.nil?
+            # Hierarchy didn't include the document, let's create a new node
+            item_to_move = destination.create_hierarchy_node(@document.id)
+          end
+
+          destination.hierarchy.append(item_to_move)
+
+          source.documents_from_hierarchy([item_to_move]).each { |document| document.update!(space: destination) }
         end
-
-        @destination_space.add_item_to_hierarchy!(@destination_space.hierarchy, nil, item_to_move)
-
-        @source_space.documents_from_hierarchy([item_to_move]).each { |document| document.update!(space: @destination_space) }
       end
 
-      if @document.errors.empty? && @source_space.save && @destination_space.save
+      if @document.errors.empty?
         # FIXME: would be great to show notice here
         render turbo_stream: turbo_stream.redirect_to(document_path(@document))
       else

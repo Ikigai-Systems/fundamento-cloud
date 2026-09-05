@@ -525,4 +525,141 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
+  describe "#blocks_equivalent?" do
+    let(:job) { described_class.new }
+
+    def block(id:, mention_id:, text: "hello")
+      [{ "id" => id, "type" => "paragraph", "props" => {},
+         "content" => [
+           { "type" => "text", "text" => text, "styles" => {} },
+           { "type" => "mention", "props" => { "id" => mention_id, "entityId" => "doc_1" } }
+         ],
+         "children" => [] }]
+    end
+
+    it "ignores the block and mention ids BlockNote regenerates on every conversion" do
+      a = block(id: "aaa", mention_id: "111")
+      b = block(id: "bbb", mention_id: "222")
+
+      expect(job.send(:blocks_equivalent?, a, b)).to be(true)
+    end
+
+    it "still distinguishes real content changes" do
+      a = block(id: "aaa", mention_id: "111", text: "hello")
+      b = block(id: "bbb", mention_id: "222", text: "goodbye")
+
+      expect(job.send(:blocks_equivalent?, a, b)).to be(false)
+    end
+
+    it "normalises symbol keys against the string keys returned by the json column" do
+      stored = [{ "id" => "aaa", "type" => "paragraph", "props" => { "url" => "u" } }]
+      fresh = [{ id: "bbb", type: "paragraph", props: { url: "u" } }]
+
+      expect(job.send(:blocks_equivalent?, fresh, stored)).to be(true)
+    end
+  end
+
+  describe "regressions" do
+    let(:job) { described_class.new }
+    let(:batch) { double("batch", properties: { import_session_id: session.id }) }
+    let(:vault_path) { "Zaimportowane/Redpill/Pliki/2022-12-09 02.29.53 video.mp4" }
+    let(:doc_relative_path) { "Pliki/2022-12-09 02.29.53 video.mp4" }
+
+    def import_file_with_content(document, path, markdown, format: "markdown")
+      import_file = session.import_files.create!(
+        relative_path: path,
+        format: format,
+        file_type: :document,
+        status: :completed,
+        document: document
+      )
+      import_file.file.attach(
+        io: StringIO.new(markdown),
+        filename: File.basename(path),
+        content_type: "text/markdown"
+      )
+      import_file
+    end
+
+    before { allow(ImportSessionCompletionJob).to receive(:perform_later) }
+
+    it "does not create another version when re-run over already-resolved content" do
+      # Any orchestrator re-run builds a fresh GoodJob batch, and every batch fires
+      # on_finish — so this job runs repeatedly for one import. It must be a no-op after
+      # the first pass, or documents accumulate a version per run.
+      doc = Document.create!(organization: org, space: space, title: "Notes")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "video",
+            "props" => { "url" => doc_relative_path, "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
+            "content" => [], "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Notes.md", "![2022-12-09 02.29.53 video.mp4](<#{doc_relative_path}>)")
+      session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+      # A fixed stub id would let a naive == guard pass — BlockNote really does mint a new
+      # UUID per conversion. `name` keeps the original filename so the job's own
+      # has_local_attachment_refs check still trips on the second run.
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks) do
+        [{ "id" => SecureRandom.uuid, "type" => "video",
+           "props" => { "url" => "attachment:99.mp4", "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
+           "content" => [], "children" => [] }]
+      end
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      expect { job.perform(batch) }.to change { doc.versions.count }.by(1)
+      expect { described_class.new.perform(batch) }.not_to change { doc.versions.count }
+    end
+
+    it "strips YAML frontmatter before regenerating blocks" do
+      # ImportDocumentJob strips frontmatter; this job used to re-read the raw file and
+      # push the YAML back into the document body as content.
+      doc = Document.create!(organization: org, space: space, title: "Notes")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "paragraph", "props" => {},
+            "content" => [{ "type" => "text", "text" => "See [[other]]", "styles" => {} }],
+            "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Notes.md", "---\ntitle: Secret Title\ntags:\n  - alpha\n---\n\nSee [[other]]\n")
+
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      job.perform(batch)
+
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+        .with(satisfy { |md| !md.include?("Secret Title") && !md.include?("tags:") && !md.start_with?("---") })
+    end
+
+    it "converts docx through Pandoc instead of reading raw ZIP bytes" do
+      # Without a format branch the ZIP bytes were force-encoded as UTF-8 and piped to the
+      # converter, replacing the document body with garbage.
+      doc = Document.create!(organization: org, space: space, title: "Report")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "paragraph", "props" => {},
+            "content" => [{ "type" => "text", "text" => "See [[other]]", "styles" => {} }],
+            "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Report.docx", "PK\x03\x04GARBAGEZIPBYTES", format: "docx")
+
+      allow(PandocConverterService).to receive(:file_to_markdown).and_return("See [[other]] in the report")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      job.perform(batch)
+
+      expect(PandocConverterService).to have_received(:file_to_markdown).with(anything, "docx")
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+        .with(satisfy { |md| !md.include?("GARBAGEZIPBYTES") })
+    end
+  end
+
 end

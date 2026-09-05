@@ -26,19 +26,6 @@ class DocumentService
 
       document.save!
 
-      # Add to hierarchy
-      hierarchy_node = space.create_hierarchy_node(document.id)
-
-      if parent_document.present?
-        if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
-          space.hierarchy.append(hierarchy_node)
-        end
-      else
-        space.hierarchy.append(hierarchy_node)
-      end
-
-      space.save!
-
       # Create initial version with content if provided
       if markdown.present?
         markdown, frontmatter_data = extract_frontmatter(markdown)
@@ -59,6 +46,10 @@ class DocumentService
           TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
         end
       end
+
+      # Added last: the Space row lock is held until this transaction commits, so it must
+      # not be taken before the BlocknoteConverterService subprocess calls above.
+      space.insert_hierarchy_node!(document.id, parent_id: parent_document&.id)
 
       document
     end
@@ -121,19 +112,6 @@ class DocumentService
       authorize document, :create?
       document.save!
 
-      # Add to hierarchy
-      hierarchy_node = space.create_hierarchy_node(document.id)
-
-      if parent_document.present?
-        if space.add_item_to_hierarchy!(space.hierarchy, parent_document.id, hierarchy_node).blank?
-          space.hierarchy.append(hierarchy_node)
-        end
-      else
-        space.hierarchy.append(hierarchy_node)
-      end
-
-      space.save!
-
       # Create initial version with content
       blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
       sync = BlocknoteConverterService.blocks_to_yjs(blocks)
@@ -149,6 +127,10 @@ class DocumentService
       if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
         TagsService.new(object: document, organization: document.organization).update_tags(frontmatter_data["tags"])
       end
+
+      # Added last: the Space row lock is held until this transaction commits, so it must
+      # not be taken before the conversion subprocess calls above.
+      space.insert_hierarchy_node!(document.id, parent_id: parent_document&.id)
 
       document
     end
