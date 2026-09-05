@@ -273,7 +273,12 @@ export const createAdvancedTable = createReactBlockSpec(
           const promiseData = TablesApi.show({id: tableId});
           Config.deserializeData = currentDataDeserializer;
           const data = await promiseData;
-          return {...data, forceRerenderUuid: crypto.randomUUID()}
+          // This request opts out of the camelCase deserialization above so the
+          // table's own data keys survive verbatim, which leaves the record's
+          // keys snake_case too. The title needs one of them, so rename it here
+          // rather than teaching the title component two spellings.
+          const table = {...data.table, titleForEditing: data.table.title_for_editing};
+          return {...data, table, forceRerenderUuid: crypto.randomUUID()}
         }
       }, queryClient);
       const {isLoading, isError} = tableQuery;

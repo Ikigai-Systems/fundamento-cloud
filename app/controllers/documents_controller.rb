@@ -114,7 +114,7 @@ class DocumentsController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @document.as_json(except: [:sync]).merge("title_for_editing" => @document.title_for_editing) }
+      format.json { render json: @document.as_json(except: [:sync]) }
       format.html { render action: 'edit' }
     end
   end

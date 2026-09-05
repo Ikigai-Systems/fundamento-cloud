@@ -73,6 +73,21 @@ RSpec.describe "Object icons in JSON payloads", type: :request do
     end
   end
 
+  describe "GET /t/:id" do
+    # The table block inside a document builds its editable title from this
+    # payload, so it needs the same combined string the page-level title gets.
+    it "sends the string the inline title field should show" do
+      table = Table.create!(name: "\u{1F4CA} Metrics", organization: organization, space: space, parent: space)
+
+      get table_path(table, format: :json)
+
+      json = JSON.parse(response.body)["table"]
+      expect(json["name"]).to eq("Metrics")
+      expect(json["icon"]).to eq({"type" => "emoji", "value" => "\u{1F4CA}"})
+      expect(json["title_for_editing"]).to eq("\u{1F4CA} Metrics")
+    end
+  end
+
   describe "PATCH /d/:id" do
     # The client uses the response rather than the string it typed, which is why
     # no JavaScript needs its own emoji matcher.

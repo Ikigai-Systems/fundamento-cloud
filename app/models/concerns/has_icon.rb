@@ -67,11 +67,18 @@ module HasIcon
   # consumer sees one icon shape. Keying off icon_type means `only:`, `except:`
   # and narrow selects keep working: the key appears only where icon_type would
   # have been serialized anyway.
+  #
+  # title_for_editing travels with it because a payload that feeds an editable
+  # title needs both halves: the stripped title to display and the combined
+  # string to put in the input. Leaving it to each endpoint to merge in by hand
+  # is how the table block inside a document ended up without one.
   def as_json(options = nil)
     json = super
     return json unless json.is_a?(Hash) && json.key?("icon_type")
 
-    json.merge("icon" => icon&.as_json)
+    json = json.merge("icon" => icon&.as_json)
+    json["title_for_editing"] = title_for_editing if has_attribute?(self.class.icon_source_attribute)
+    json
   end
 
   private
