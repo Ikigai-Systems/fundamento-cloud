@@ -31,6 +31,28 @@ describe("Space sidebar tabs", function () {
     });
   });
 
+  it("draws the spaces dropdown over the tab bar", function () {
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar #spaces-dropdown").click();
+    cy.get("#space-sidebar [data-dropdown-target='menu']").should("be.visible");
+
+    // The open menu hangs over the tab bar, which is positioned with a z-index of its own and
+    // comes later in the DOM — at the same level the tabs would paint over the menu, so being
+    // "visible" is not enough: the menu has to be the element actually on top.
+    cy.get("#space-sidebar [data-dropdown-target='menu']").then(($menu) => {
+      const menu = $menu[0].getBoundingClientRect();
+      const tabs = Cypress.$("#space-sidebar nav[data-tabs-target='list']")[0].getBoundingClientRect();
+      const x = Math.max(menu.left, tabs.left) + 2;
+      const y = Math.max(menu.top, tabs.top) + 2;
+      expect(y, "the menu and the tab bar overlap").to.be.lessThan(Math.min(menu.bottom, tabs.bottom));
+
+      cy.document().then((doc) => {
+        expect($menu[0].contains(doc.elementFromPoint(x, y))).to.be.true;
+      });
+    });
+  });
+
   it("names the tabs with a tooltip rather than visible text", function () {
     cy.visit("/d/one");
 
