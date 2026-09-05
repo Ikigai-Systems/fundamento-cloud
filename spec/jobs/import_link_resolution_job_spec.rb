@@ -525,4 +525,251 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
+  describe "concurrency" do
+    it "is limited to one run per worker pod" do
+      # Reads every document in the session from storage and shells out to the converter
+      # for each, so it needs the same per-pod slot as the per-document import jobs.
+      expect(described_class.ancestors).to include(MemoryIntensiveJob)
+      expect(described_class.good_job_concurrency_config[:perform_limit]).to eq(1)
+    end
+  end
+
+  describe "#content_haystack" do
+    let(:job) { described_class.new }
+
+    it "collects text, link hrefs and media props" do
+      blocks = [
+        { "id" => "b1", "type" => "paragraph", "props" => {},
+          "content" => [
+            { "type" => "text", "text" => "See [[other]]", "styles" => {} },
+            { "type" => "link", "href" => "Pliki/report.pdf",
+              "content" => [{ "type" => "text", "text" => "the report", "styles" => {} }] }
+          ],
+          "children" => [] },
+        { "id" => "b2", "type" => "video",
+          "props" => { "url" => "Pliki/clip.mp4", "name" => "clip.mp4", "caption" => "a caption" },
+          "content" => [], "children" => [] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to include("See [[other]]", "the report", "Pliki/report.pdf")
+      expect(haystack).to include("Pliki/clip.mp4", "clip.mp4", "a caption")
+    end
+
+    it "reaches text inside table cells and nested children" do
+      blocks = [
+        { "id" => "b1", "type" => "table", "props" => {},
+          "content" => { "type" => "tableContent", "rows" => [
+            { "cells" => [{ "content" => [{ "type" => "text", "text" => "in a cell [[x]]", "styles" => {} }] }] }
+          ] },
+          "children" => [
+            { "id" => "b2", "type" => "paragraph", "props" => {},
+              "content" => [{ "type" => "text", "text" => "nested [[y]]", "styles" => {} }],
+              "children" => [] }
+          ] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to include("in a cell [[x]]", "nested [[y]]")
+    end
+
+    it "excludes block ids and style maps" do
+      # blocks.to_json used to be the haystack, so a filename appearing as a block id (or
+      # anywhere else structural) counted as an attachment reference.
+      blocks = [
+        { "id" => "clip.mp4", "type" => "paragraph",
+          "props" => { "textAlignment" => "left" },
+          "content" => [{ "type" => "text", "text" => "nothing to see", "styles" => { "bold" => true } }],
+          "children" => [] }
+      ]
+
+      haystack = job.send(:content_haystack, blocks)
+
+      expect(haystack).to eq("nothing to see")
+      expect(haystack).not_to include("clip.mp4")
+    end
+  end
+
+  describe "#block_id_anchor?" do
+    let(:job) { described_class.new }
+
+    def paragraph(text)
+      [{ "id" => "b1", "type" => "paragraph", "props" => {},
+         "content" => [{ "type" => "text", "text" => text, "styles" => {} }],
+         "children" => [] }]
+    end
+
+    it "detects a real Obsidian block anchor" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^abc123"))).to be(true)
+    end
+
+    it "detects anchors with hyphens" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^my-block-id"))).to be(true)
+    end
+
+    it "does not fire on exponent notation" do
+      # The old /\^\w{2,}/ over blocks.to_json matched this, which is why most documents
+      # were re-resolved on every run.
+      expect(job.send(:block_id_anchor?, paragraph("2^10 is 1024"))).to be(false)
+    end
+
+    it "does not fire on a caret followed by a space" do
+      expect(job.send(:block_id_anchor?, paragraph("x = 2 ^ 10"))).to be(false)
+    end
+
+    it "does not fire on a single-character anchor" do
+      expect(job.send(:block_id_anchor?, paragraph("Some text ^a"))).to be(false)
+    end
+
+    it "does not fire when the anchor is mid-line" do
+      expect(job.send(:block_id_anchor?, paragraph("Some ^abc123 text"))).to be(false)
+    end
+
+    it "finds anchors nested in children and table cells" do
+      blocks = [{ "id" => "b1", "type" => "paragraph", "props" => {}, "content" => [],
+                  "children" => paragraph("Nested ^abc123") }]
+
+      expect(job.send(:block_id_anchor?, blocks)).to be(true)
+    end
+  end
+
+  describe "#blocks_equivalent?" do
+    let(:job) { described_class.new }
+
+    def block(id:, mention_id:, text: "hello")
+      [{ "id" => id, "type" => "paragraph", "props" => {},
+         "content" => [
+           { "type" => "text", "text" => text, "styles" => {} },
+           { "type" => "mention", "props" => { "id" => mention_id, "entityId" => "doc_1" } }
+         ],
+         "children" => [] }]
+    end
+
+    it "ignores the block and mention ids BlockNote regenerates on every conversion" do
+      a = block(id: "aaa", mention_id: "111")
+      b = block(id: "bbb", mention_id: "222")
+
+      expect(job.send(:blocks_equivalent?, a, b)).to be(true)
+    end
+
+    it "still distinguishes real content changes" do
+      a = block(id: "aaa", mention_id: "111", text: "hello")
+      b = block(id: "bbb", mention_id: "222", text: "goodbye")
+
+      expect(job.send(:blocks_equivalent?, a, b)).to be(false)
+    end
+
+    it "normalises symbol keys against the string keys returned by the json column" do
+      stored = [{ "id" => "aaa", "type" => "paragraph", "props" => { "url" => "u" } }]
+      fresh = [{ id: "bbb", type: "paragraph", props: { url: "u" } }]
+
+      expect(job.send(:blocks_equivalent?, fresh, stored)).to be(true)
+    end
+  end
+
+  describe "regressions" do
+    let(:job) { described_class.new }
+    let(:batch) { double("batch", properties: { import_session_id: session.id }) }
+    let(:vault_path) { "Zaimportowane/Redpill/Pliki/2022-12-09 02.29.53 video.mp4" }
+    let(:doc_relative_path) { "Pliki/2022-12-09 02.29.53 video.mp4" }
+
+    def import_file_with_content(document, path, markdown, format: "markdown")
+      import_file = session.import_files.create!(
+        relative_path: path,
+        format: format,
+        file_type: :document,
+        status: :completed,
+        document: document
+      )
+      import_file.file.attach(
+        io: StringIO.new(markdown),
+        filename: File.basename(path),
+        content_type: "text/markdown"
+      )
+      import_file
+    end
+
+    before { allow(ImportSessionCompletionJob).to receive(:perform_later) }
+
+    it "does not create another version when re-run over already-resolved content" do
+      # Any orchestrator re-run builds a fresh GoodJob batch, and every batch fires
+      # on_finish — so this job runs repeatedly for one import. It must be a no-op after
+      # the first pass, or documents accumulate a version per run.
+      doc = Document.create!(organization: org, space: space, title: "Notes")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "video",
+            "props" => { "url" => doc_relative_path, "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
+            "content" => [], "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Notes.md", "![2022-12-09 02.29.53 video.mp4](<#{doc_relative_path}>)")
+      session.merge_path_map!(vault_path, "attachment:99.mp4")
+
+      # A fixed stub id would let a naive == guard pass — BlockNote really does mint a new
+      # UUID per conversion. `name` keeps the original filename so the job's own
+      # has_local_attachment_refs check still trips on the second run.
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks) do
+        [{ "id" => SecureRandom.uuid, "type" => "video",
+           "props" => { "url" => "attachment:99.mp4", "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
+           "content" => [], "children" => [] }]
+      end
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      expect { job.perform(batch) }.to change { doc.versions.count }.by(1)
+      expect { described_class.new.perform(batch) }.not_to change { doc.versions.count }
+    end
+
+    it "strips YAML frontmatter before regenerating blocks" do
+      # ImportDocumentJob strips frontmatter; this job used to re-read the raw file and
+      # push the YAML back into the document body as content.
+      doc = Document.create!(organization: org, space: space, title: "Notes")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "paragraph", "props" => {},
+            "content" => [{ "type" => "text", "text" => "See [[other]]", "styles" => {} }],
+            "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Notes.md", "---\ntitle: Secret Title\ntags:\n  - alpha\n---\n\nSee [[other]]\n")
+
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      job.perform(batch)
+
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+        .with(satisfy { |md| !md.include?("Secret Title") && !md.include?("tags:") && !md.start_with?("---") })
+    end
+
+    it "converts docx through Pandoc instead of reading raw ZIP bytes" do
+      # Without a format branch the ZIP bytes were force-encoded as UTF-8 and piped to the
+      # converter, replacing the document body with garbage.
+      doc = Document.create!(organization: org, space: space, title: "Report")
+      doc.versions.create!(
+        content_blocks: [
+          { "id" => "block-1", "type" => "paragraph", "props" => {},
+            "content" => [{ "type" => "text", "text" => "See [[other]]", "styles" => {} }],
+            "children" => [] }
+        ],
+        created_by: membership.user
+      )
+      import_file_with_content(doc, "Report.docx", "PK\x03\x04GARBAGEZIPBYTES", format: "docx")
+
+      allow(PandocConverterService).to receive(:file_to_markdown).and_return("See [[other]] in the report")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+
+      job.perform(batch)
+
+      expect(PandocConverterService).to have_received(:file_to_markdown).with(anything, "docx")
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+        .with(satisfy { |md| !md.include?("GARBAGEZIPBYTES") })
+    end
+  end
+
 end

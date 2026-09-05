@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_02_100400) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_05_073815) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -682,7 +682,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_100400) do
 
   create_table "tables", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false, null: false
-    t.integer "columns_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.string "icon_type"
     t.string "icon_value"
@@ -690,7 +689,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_02_100400) do
     t.string "organization_id", null: false
     t.string "parent_id", null: false
     t.string "parent_type", null: false
-    t.integer "rows_count", default: 0, null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true

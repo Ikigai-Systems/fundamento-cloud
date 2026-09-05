@@ -1,4 +1,14 @@
-class ImportLinkResolutionJob < ApplicationJob
+# MemoryIntensiveJob, not ApplicationJob: this walks every document in a session, reading
+# each from storage and shelling out to the converter, so it has the same footprint as the
+# per-document import jobs. The per-pod limit also stops two link-resolution runs for the
+# same session overlapping, which is how duplicate versions were produced.
+class ImportLinkResolutionJob < MemoryIntensiveJob
+  include ImportFileMarkdown
+
+  # Obsidian block-reference anchor: a space, then ^blockid, at the end of a line.
+  # Shared by detection and stripping so the two can't drift apart.
+  BLOCK_ID_ANCHOR = / \^[a-zA-Z0-9-]{2,}$/
+
   queue_as :imports
 
   # Called by Good Job batch on_finish callback
@@ -12,10 +22,20 @@ class ImportLinkResolutionJob < ApplicationJob
     # Build basename index for Obsidian-style [[filename]] resolution
     basename_map = build_basename_map(path_map)
 
+    # Built once, not per document: this used to scan the whole path_map and call
+    # File.basename for every attachment inside the loop below, which for a large vault is
+    # thousands of scans and millions of basename calls.
+    attachment_needles = path_map.filter_map { |path, id|
+      [path, File.basename(path)] if id.to_s.start_with?("attachment:")
+    }
+
     @heading_maps = {}
 
     session.import_files.where(status: :completed, file_type: :document).find_each do |import_file|
-      resolve_links_for_document(import_file, path_map, basename_map)
+      # Legacy rows can carry an unknown format; skip rather than relying on the rescue.
+      next unless ImportFile::SUPPORTED_DOCUMENT_FORMATS.include?(import_file.format)
+
+      resolve_links_for_document(import_file, path_map, basename_map, attachment_needles)
     end
 
     ImportSessionCompletionJob.perform_later(session)
@@ -35,7 +55,7 @@ class ImportLinkResolutionJob < ApplicationJob
     basename_map
   end
 
-  def resolve_links_for_document(import_file, path_map, basename_map)
+  def resolve_links_for_document(import_file, path_map, basename_map, attachment_needles)
     document = import_file.document
     return unless document
 
@@ -43,27 +63,35 @@ class ImportLinkResolutionJob < ApplicationJob
     return unless latest_version
 
     blocks = latest_version.content_blocks
-    blocks_json = blocks.to_json
+    # Content-bearing values only. These checks used to run against blocks.to_json, which
+    # also carries block ids, style maps and every other key.
+    haystack = content_haystack(blocks)
 
     # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
-    has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
-    has_block_ids = blocks_json.match?(/\^\w{2,}/)
-    attachment_paths = path_map.filter_map { |k, v| k if v.to_s.start_with?("attachment:") }
-    has_local_attachment_refs = attachment_paths.any? { |p|
-      blocks_json.include?(p) || blocks_json.include?(File.basename(p))
+    has_wiki_links = haystack.include?("[[") # covers ![[embed]] too
+    has_block_ids = block_id_anchor?(blocks)
+    has_local_attachment_refs = attachment_needles.any? { |path, basename|
+      haystack.include?(path) || haystack.include?(basename)
     }
     return unless has_wiki_links || has_block_ids || has_local_attachment_refs
 
-    resolved_markdown = nil
-    import_file.file.open do |f|
-      # Re-fetch original markdown to process wiki links
-      # (blocks don't preserve raw [[...]] syntax — we need the original)
-      resolved_markdown = process_wiki_links_in_markdown(f.read.force_encoding("UTF-8"), path_map.merge(basename_map))
-    end
+    # Re-fetch the original markdown to process wiki links (blocks don't preserve raw
+    # [[...]] syntax). Goes through the shared extractor so docx/odt are converted by
+    # Pandoc instead of being read as raw bytes, and so frontmatter is stripped — without
+    # that, this job reintroduces the YAML that ImportDocumentJob removed.
+    body, _frontmatter = import_file_markdown(import_file)
+    resolved_markdown = process_wiki_links_in_markdown(body, path_map.merge(basename_map))
 
     return unless resolved_markdown
 
     new_blocks = BlocknoteConverterService.markdown_to_blocks(resolved_markdown)
+
+    # This job can be invoked more than once per session (any orchestrator re-run creates a
+    # fresh batch, and every batch fires on_finish). Re-resolving is deterministic, so if
+    # the result matches what's already stored there is nothing to record — skipping here
+    # also avoids the second Node call below.
+    return if blocks_equivalent?(new_blocks, blocks)
+
     new_sync = BlocknoteConverterService.blocks_to_yjs(new_blocks)
 
     document.versions.create!(
@@ -74,6 +102,58 @@ class ImportLinkResolutionJob < ApplicationJob
   rescue StandardError => e
     Rails.logger.error "ImportLinkResolutionJob: failed for #{import_file.relative_path}: #{e.message}"
     # Non-fatal — continue with other documents
+  end
+
+  # Props that can name a file: media blocks carry url/name/caption, and inline links
+  # carry href on the node itself.
+  REFERENCE_PROPS = %w[url name src caption].freeze
+
+  # The text, link targets and media references a document actually contains — everything
+  # a wiki link or attachment path could legitimately appear in, and nothing else.
+  def content_haystack(blocks)
+    parts = []
+
+    BlocknoteBlocks.walk_blocks(blocks) do |node|
+      parts << node["text"] if node["text"].is_a?(String)
+      parts << node["href"] if node["href"].is_a?(String)
+
+      props = node["props"]
+      next unless props.is_a?(Hash)
+
+      REFERENCE_PROPS.each do |key|
+        parts << props[key] if props[key].is_a?(String)
+      end
+    end
+
+    parts.join("\n")
+  end
+
+  # Inspects the actual text nodes rather than the serialized JSON blob. The old
+  # /\^\w{2,}/ over blocks.to_json also matched "2^10", LaTeX, and anything inside a code
+  # block, so most documents were re-resolved needlessly on every run.
+  def block_id_anchor?(blocks)
+    BlocknoteBlocks.walk_blocks(blocks) do |node|
+      text = node["text"]
+      return true if text.is_a?(String) && text.match?(BLOCK_ID_ANCHOR)
+    end
+
+    false
+  end
+
+  # BlockNote mints a fresh random UUID for every block, and another for every mention's
+  # props["id"], on each conversion — so a plain == never matches on a re-run. Compare with
+  # those generated ids removed. as_json is required, not cosmetic: content_blocks comes
+  # back from the json column with string keys, and without it the guard fails open.
+  def blocks_equivalent?(new_blocks, existing_blocks)
+    strip_generated_ids(new_blocks.as_json) == strip_generated_ids(existing_blocks.as_json)
+  end
+
+  def strip_generated_ids(value)
+    case value
+    when Array then value.map { |item| strip_generated_ids(item) }
+    when Hash then value.except("id").transform_values { |item| strip_generated_ids(item) }
+    else value
+    end
   end
 
   def process_wiki_links_in_markdown(markdown, combined_map)
@@ -153,8 +233,7 @@ class ImportLinkResolutionJob < ApplicationJob
 
   def strip_obsidian_block_ids(markdown)
     # Remove ^blockid markers at end of lines (Obsidian block reference anchors)
-    # Format: space + ^alphanumeric at end of line
-    markdown.gsub(/ \^[a-zA-Z0-9-]{2,}$/, "")
+    markdown.gsub(BLOCK_ID_ANCHOR, "")
   end
 
   def resolve_heading_fragment(document_id, heading)

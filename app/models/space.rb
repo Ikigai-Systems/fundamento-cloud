@@ -35,13 +35,15 @@ class Space < ApplicationRecord
     name
   end
 
+  # Returns only the documents in the hierarchy that still exist.
+  #
+  # This used to splice orphaned entries out of `hierarchy` in memory as a side effect,
+  # without saving — so the work was redone on every render, and an unrelated later save
+  # could persist it by accident. Callers that render the tree handle a missing document
+  # themselves by promoting its children: see SpaceSidebarTree#build and
+  # SpaceBlueprint.serialize_hierarchy_nodes.
   def documents_from_hierarchy(starting_node = hierarchy, scope: nil)
-    ids = traverse_hierarchy(starting_node)
-    documents_in_db = (scope || self.documents.with_has_versions).where(id: ids)
-    (ids - documents_in_db.map(&:id)).each do |missing_id|
-      remove_single_item_from_hierarchy!(missing_id)
-    end
-    documents_in_db
+    (scope || self.documents.with_has_versions).where(id: traverse_hierarchy(starting_node))
   end
 
   def remove_single_item_from_hierarchy!(document_id, starting_node = hierarchy)
@@ -146,6 +148,149 @@ class Space < ApplicationRecord
     { "id" => document_id, "children" => [] }
   end
 
+  def self.hierarchy_lock_key(space_id)
+    Zlib.crc32("space_#{space_id}_hierarchy")
+  end
+
+  # Serializes read-modify-write of the `hierarchy` JSON column. Every writer saves the
+  # whole column, so without serialization concurrent writers each persist their own stale
+  # copy and silently drop the other's nodes.
+  #
+  # Deliberately an advisory lock rather than SELECT ... FOR UPDATE. Callers normally
+  # insert a document first, and that insert takes a FOR KEY SHARE lock on the parent
+  # `spaces` row to enforce the foreign key. Asking for FOR UPDATE afterwards is a lock
+  # upgrade, and two concurrent imports each holding KEY SHARE and each wanting UPDATE
+  # deadlock — a full vault import produced a steady stream of PG::TRDeadlockDetected.
+  # The advisory lock serializes the same critical section without touching row lock modes,
+  # and the UPDATE below needs only FOR NO KEY UPDATE, which FOR KEY SHARE does not block.
+  #
+  # Yields the locked instance — mutate that, not the receiver. The receiver is reloaded
+  # afterwards so callers that go on to render it don't see a stale hierarchy.
+  def with_locked_hierarchy
+    result = nil
+
+    self.class.transaction do
+      self.class.connection.execute("SELECT pg_advisory_xact_lock(#{self.class.hierarchy_lock_key(id)})")
+
+      # Re-read inside the lock: under READ COMMITTED this picks up whatever the previous
+      # holder committed, which is the whole point of serializing here.
+      locked = self.class.find(id)
+      result = yield locked
+      locked.hierarchy_will_change!
+      locked.save!
+    end
+
+    reload
+    result
+  end
+
+  # Locks several spaces at once, always in id order so two concurrent moves in opposite
+  # directions can't deadlock. Duplicates are collapsed, so a same-space move yields the
+  # same instance twice.
+  def self.with_locked_hierarchies(*spaces)
+    ordered_ids = spaces.compact.map(&:id).uniq.sort
+    result = nil
+
+    transaction do
+      ordered_ids.each do |space_id|
+        connection.execute("SELECT pg_advisory_xact_lock(#{hierarchy_lock_key(space_id)})")
+      end
+
+      locked_by_id = ordered_ids.index_with { |space_id| find(space_id) }
+      result = yield(*spaces.map { |space| space && locked_by_id[space.id] })
+      locked_by_id.each_value do |locked|
+        locked.hierarchy_will_change!
+        locked.save!
+      end
+    end
+
+    spaces.compact.uniq(&:id).each(&:reload)
+    result
+  end
+
+  class ConcurrentHierarchyUpdate < StandardError; end
+
+  HIERARCHY_INSERT_ATTEMPTS = 10
+
+  # Inserts a node for `document_id` under `parent_id`, falling back to the root when the
+  # parent isn't in the hierarchy — the recursive insert returns nil in that case, and
+  # without the fallback the document would exist but never appear in the sidebar.
+  #
+  # Compare-and-swap rather than a lock. The write is a plain UPDATE guarded by the value we
+  # read, so:
+  #
+  #   * no lost update — if anyone else committed in between, the guard matches nothing, we
+  #     re-read and retry;
+  #   * no deadlock — a plain UPDATE needs only FOR NO KEY UPDATE, which does not conflict
+  #     with the FOR KEY SHARE that `documents.create!` takes on this row for the foreign
+  #     key. Asking for FOR UPDATE here instead is a lock upgrade, and two concurrent imports
+  #     each holding KEY SHARE and each wanting UPDATE deadlock;
+  #   * no stall — nothing is held across the caller's other work, unlike an advisory lock
+  #     scoped to the surrounding transaction.
+  #
+  # Under READ COMMITTED a concurrent writer makes this block on the row rather than return
+  # 0 rows; Postgres then re-evaluates the guard against the newly committed tuple, so the
+  # retry sees fresh data.
+  def insert_hierarchy_node!(document_id, parent_id: nil)
+    node = create_hierarchy_node(document_id)
+
+    HIERARCHY_INSERT_ATTEMPTS.times do
+      current = current_hierarchy
+      updated = self.class.hierarchy_with_node(current, parent_id, node)
+
+      changed = self.class
+        .where(id: id)
+        .where("hierarchy::jsonb = ?::jsonb", current.to_json)
+        .update_all(["hierarchy = ?::json, updated_at = ?", updated.to_json, Time.current])
+
+      if changed == 1
+        reload
+        return node
+      end
+    end
+
+    raise ConcurrentHierarchyUpdate,
+      "could not place #{document_id} in space #{id} after #{HIERARCHY_INSERT_ATTEMPTS} attempts"
+  end
+
+  # Reads straight from the row, bypassing this instance's possibly stale attribute.
+  def current_hierarchy
+    self.class.where(id: id).pick(:hierarchy) || []
+  end
+
+  # Pure: returns a new tree with `node` placed under `parent_id`, or appended at the root
+  # when `parent_id` is blank or absent from the tree.
+  def self.hierarchy_with_node(nodes, parent_id, node)
+    nodes = Array(nodes)
+    return nodes + [node] if parent_id.blank?
+
+    placed = hierarchy_with_node_under_parent(nodes, parent_id, node)
+    placed || nodes + [node]
+  end
+
+  # Returns a new tree, or nil when `parent_id` is not present anywhere in it.
+  def self.hierarchy_with_node_under_parent(nodes, parent_id, node)
+    found = false
+
+    rebuilt = Array(nodes).map do |item|
+      next item if found
+
+      children = Array(item["children"])
+
+      if item["id"] == parent_id
+        found = true
+        item.merge("children" => children + [node])
+      elsif (updated_children = hierarchy_with_node_under_parent(children, parent_id, node))
+        found = true
+        item.merge("children" => updated_children)
+      else
+        item
+      end
+    end
+
+    found ? rebuilt : nil
+  end
+
   # Mapping of old hardcoded NPIs to descriptive CSV filenames
   # This allows BlockNote JSON files to continue using old NPIs as placeholders
   TABLE_ID_PLACEHOLDERS = {
@@ -213,9 +358,7 @@ class Space < ApplicationRecord
       content_blocks: updated_content_blocks
     )
 
-    hierarchy_node = self.create_hierarchy_node(document.id)
-    self.hierarchy.append(hierarchy_node)
-    self.save!
+    insert_hierarchy_node!(document.id)
   end
 
   def replace_table_id_placeholders(content_blocks, table_id_mapping)

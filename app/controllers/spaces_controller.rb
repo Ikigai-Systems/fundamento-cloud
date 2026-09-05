@@ -120,21 +120,23 @@ class SpacesController < ApplicationController
       end
     end
 
-    hierarchy = @space.hierarchy
+    removed_item = nil
 
-    removed_item = @space.remove_item_with_children_from_hierarchy!(document_id, hierarchy)
+    @space.with_locked_hierarchy do |space|
+      removed_item = space.remove_item_with_children_from_hierarchy!(document_id)
+      next if removed_item.nil?
 
-    unless removed_item
-      render json: { error: "Document not found in hierarchy" }, status: :unprocessable_content
-      return
+      # Fall back to the root if the parent isn't in the hierarchy — we've already removed
+      # the item, so without this it would be dropped entirely.
+      if space.add_item_to_hierarchy!(space.hierarchy, parent_id, removed_item, position).blank?
+        space.hierarchy.append(removed_item)
+      end
     end
 
-    parent_item = @space.add_item_to_hierarchy!(hierarchy, parent_id, removed_item, position)
-
-    if @space.save
+    if removed_item
       head :ok
     else
-      render json: @space.errors, status: :unprocessable_content
+      render json: { error: "Document not found in hierarchy" }, status: :unprocessable_content
     end
   end
 
