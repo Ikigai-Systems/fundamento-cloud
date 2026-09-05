@@ -35,13 +35,15 @@ class Space < ApplicationRecord
     name
   end
 
+  # Returns only the documents in the hierarchy that still exist.
+  #
+  # This used to splice orphaned entries out of `hierarchy` in memory as a side effect,
+  # without saving — so the work was redone on every render, and an unrelated later save
+  # could persist it by accident. Callers that render the tree handle a missing document
+  # themselves by promoting its children: see SpaceSidebarTree#build and
+  # SpaceBlueprint.serialize_hierarchy_nodes.
   def documents_from_hierarchy(starting_node = hierarchy, scope: nil)
-    ids = traverse_hierarchy(starting_node)
-    documents_in_db = (scope || self.documents.with_has_versions).where(id: ids)
-    (ids - documents_in_db.map(&:id)).each do |missing_id|
-      remove_single_item_from_hierarchy!(missing_id)
-    end
-    documents_in_db
+    (scope || self.documents.with_has_versions).where(id: traverse_hierarchy(starting_node))
   end
 
   def remove_single_item_from_hierarchy!(document_id, starting_node = hierarchy)

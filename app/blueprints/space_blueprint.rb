@@ -21,15 +21,25 @@ class SpaceBlueprint < Blueprinter::Base
     documents_by_id = space
       .documents_from_hierarchy(scope: space.documents.select(:id, :title))
       .index_by(&:id)
-    space.hierarchy.map { |node| serialize_hierarchy_node(node, documents_by_id) }
+    serialize_hierarchy_nodes(space.hierarchy, documents_by_id)
   end
 
-  def self.serialize_hierarchy_node(node, documents_by_id)
-    {
-      id: documents_by_id[node["id"]].id,
-      npi: documents_by_id[node["id"]].id, # FIXME: something still depends on this but we should refactor it
-      title: documents_by_id[node["id"]].title,
-      children: node["children"].map { |child| serialize_hierarchy_node(child, documents_by_id) },
-    }
+  def self.serialize_hierarchy_nodes(nodes, documents_by_id)
+    Array(nodes).flat_map do |node|
+      document = documents_by_id[node["id"]]
+      children = node["children"] || []
+
+      # Orphaned hierarchy entry: promote its children, matching SpaceSidebarTree#build.
+      # Previously documents_from_hierarchy spliced these out in memory before we got
+      # here, so an unhandled nil raised NoMethodError.
+      next serialize_hierarchy_nodes(children, documents_by_id) if document.nil?
+
+      [{
+        id: document.id,
+        npi: document.id, # FIXME: something still depends on this but we should refactor it
+        title: document.title,
+        children: serialize_hierarchy_nodes(children, documents_by_id),
+      }]
+    end
   end
 end

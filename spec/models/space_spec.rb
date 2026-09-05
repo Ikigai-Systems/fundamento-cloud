@@ -342,14 +342,29 @@ RSpec.describe Space, type: :model do
 
     let(:space) { spaces(:is_default) }
 
-    it "still removes orphaned hierarchy entries when given a custom scope" do
+    it "returns only the documents that exist, ignoring orphaned entries" do
       space.update!(hierarchy: [
         { "id" => "does-not-exist", "children" => [{ "id" => documents(:one).id, "children" => [] }] }
       ])
 
-      space.documents_from_hierarchy(scope: space.documents.select(:id, :title))
+      result = space.documents_from_hierarchy(scope: space.documents.select(:id, :title))
 
-      expect(space.hierarchy.map { _1["id"] }).to eq([documents(:one).id])
+      expect(result.map(&:id)).to eq([documents(:one).id])
+    end
+
+    it "does not mutate the hierarchy" do
+      # It used to splice orphans out in memory without saving — surprising for a reader,
+      # redone on every render, and persistable by an unrelated later save.
+      hierarchy = [
+        { "id" => "does-not-exist", "children" => [{ "id" => documents(:one).id, "children" => [] }] }
+      ]
+      space.update!(hierarchy: hierarchy)
+
+      expect {
+        space.documents_from_hierarchy(scope: space.documents.select(:id, :title))
+      }.not_to change { space.reload.hierarchy }
+
+      expect(space.hierarchy).to eq(hierarchy)
     end
 
     it "uses the given scope for the lookup" do
