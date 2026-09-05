@@ -146,6 +146,61 @@ class Space < ApplicationRecord
     { "id" => document_id, "children" => [] }
   end
 
+  # Serializes read-modify-write of the `hierarchy` JSON column. Every writer saves the
+  # whole column, so without SELECT FOR UPDATE concurrent writers each persist their own
+  # stale copy and silently drop the other's nodes.
+  #
+  # Yields the *locked* instance — mutate that, not the receiver. The receiver is reloaded
+  # afterwards so callers that go on to render it don't see a stale hierarchy.
+  def with_locked_hierarchy
+    result = nil
+
+    self.class.transaction do
+      locked = self.class.lock.find(id)
+      result = yield locked
+      locked.hierarchy_will_change!
+      locked.save!
+    end
+
+    reload
+    result
+  end
+
+  # Locks several spaces at once, always in id order so two concurrent moves in opposite
+  # directions can't deadlock. Duplicates are collapsed, so a same-space move yields the
+  # same instance twice.
+  def self.with_locked_hierarchies(*spaces)
+    ordered_ids = spaces.compact.map(&:id).uniq.sort
+    result = nil
+
+    transaction do
+      locked_by_id = ordered_ids.index_with { |space_id| lock.find(space_id) }
+      result = yield(*spaces.map { |space| space && locked_by_id[space.id] })
+      locked_by_id.each_value do |locked|
+        locked.hierarchy_will_change!
+        locked.save!
+      end
+    end
+
+    spaces.compact.uniq(&:id).each(&:reload)
+    result
+  end
+
+  # Inserts a node for `document_id` under `parent_id`, falling back to the root when the
+  # parent isn't in the hierarchy — `add_item_to_hierarchy!` returns nil in that case, and
+  # without the fallback the document would exist but never appear in the sidebar.
+  def insert_hierarchy_node!(document_id, parent_id: nil, position: nil)
+    with_locked_hierarchy do |space|
+      node = space.create_hierarchy_node(document_id)
+
+      if parent_id.blank? || space.add_item_to_hierarchy!(space.hierarchy, parent_id, node, position).blank?
+        space.hierarchy.append(node)
+      end
+
+      node
+    end
+  end
+
   # Mapping of old hardcoded NPIs to descriptive CSV filenames
   # This allows BlockNote JSON files to continue using old NPIs as placeholders
   TABLE_ID_PLACEHOLDERS = {
@@ -213,9 +268,7 @@ class Space < ApplicationRecord
       content_blocks: updated_content_blocks
     )
 
-    hierarchy_node = self.create_hierarchy_node(document.id)
-    self.hierarchy.append(hierarchy_node)
-    self.save!
+    insert_hierarchy_node!(document.id)
   end
 
   def replace_table_id_placeholders(content_blocks, table_id_mapping)

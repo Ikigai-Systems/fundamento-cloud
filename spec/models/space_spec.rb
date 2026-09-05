@@ -361,4 +361,103 @@ RSpec.describe Space, type: :model do
       expect { result.first.archived }.to raise_error(ActiveModel::MissingAttributeError)
     end
   end
+
+  describe "#insert_hierarchy_node!" do
+    fixtures :documents
+
+    let(:space) { spaces(:is_default) }
+
+    it "appends at the root when no parent is given" do
+      space.insert_hierarchy_node!("doc_a")
+
+      expect(space.reload.hierarchy).to eq([{ "id" => "doc_a", "children" => [] }])
+    end
+
+    it "nests under the parent when the parent is in the hierarchy" do
+      space.update!(hierarchy: [{ "id" => "parent", "children" => [] }])
+
+      space.insert_hierarchy_node!("doc_a", parent_id: "parent")
+
+      expect(space.reload.hierarchy).to eq([
+        { "id" => "parent", "children" => [{ "id" => "doc_a", "children" => [] }] }
+      ])
+    end
+
+    it "falls back to the root when the parent is missing from the hierarchy" do
+      # add_item_to_hierarchy! returns nil here; without a fallback the node is dropped and
+      # the document exists but never shows up in the sidebar.
+      space.update!(hierarchy: [])
+
+      space.insert_hierarchy_node!("doc_a", parent_id: "ghost_parent")
+
+      expect(space.reload.hierarchy.map { _1["id"] }).to eq(["doc_a"])
+    end
+  end
+
+  describe "#with_locked_hierarchy" do
+    let(:space) { spaces(:is_default) }
+
+    it "yields a freshly loaded instance rather than the receiver" do
+      space.update!(hierarchy: [])
+
+      yielded = nil
+      space.with_locked_hierarchy { |locked| yielded = locked }
+
+      expect(yielded).to be_a(Space)
+      expect(yielded).not_to equal(space)
+      expect(yielded.id).to eq(space.id)
+    end
+
+    it "does not clobber a node written after the receiver was loaded" do
+      space.update!(hierarchy: [])
+      space.hierarchy # warm this instance's copy
+
+      # Stand-in for another worker: a separate instance commits its own node.
+      Space.find(space.id).update!(hierarchy: [{ "id" => "written_elsewhere", "children" => [] }])
+
+      space.with_locked_hierarchy { |locked| locked.hierarchy.append({ "id" => "ours", "children" => [] }) }
+
+      expect(Space.find(space.id).hierarchy.map { _1["id"] })
+        .to contain_exactly("written_elsewhere", "ours")
+    end
+
+    it "reloads the receiver so it doesn't keep serving a stale hierarchy" do
+      space.update!(hierarchy: [])
+      space.hierarchy
+
+      space.with_locked_hierarchy { |locked| locked.hierarchy.append({ "id" => "ours", "children" => [] }) }
+
+      expect(space.hierarchy.map { _1["id"] }).to eq(["ours"])
+    end
+  end
+
+  describe ".with_locked_hierarchies" do
+    let(:source) { spaces(:is_default) }
+    let(:destination) { spaces(:is_stefans) }
+
+    it "yields both spaces locked and saves both" do
+      source.update!(hierarchy: [{ "id" => "doc_a", "children" => [] }])
+      destination.update!(hierarchy: [])
+
+      Space.with_locked_hierarchies(source, destination) do |from, to|
+        item = from.remove_item_with_children_from_hierarchy!("doc_a")
+        to.hierarchy.append(item)
+      end
+
+      expect(Space.find(source.id).hierarchy).to eq([])
+      expect(Space.find(destination.id).hierarchy.map { _1["id"] }).to eq(["doc_a"])
+    end
+
+    it "yields the same instance twice when both spaces are the same" do
+      source.update!(hierarchy: [{ "id" => "doc_a", "children" => [] }])
+
+      Space.with_locked_hierarchies(source, source) do |from, to|
+        expect(from).to equal(to)
+        item = from.remove_item_with_children_from_hierarchy!("doc_a")
+        to.hierarchy.append(item)
+      end
+
+      expect(Space.find(source.id).hierarchy.map { _1["id"] }).to eq(["doc_a"])
+    end
+  end
 end

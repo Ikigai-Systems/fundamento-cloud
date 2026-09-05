@@ -1,5 +1,5 @@
 class ImportDocumentJob < MemoryIntensiveJob
-  include MarkdownFrontmatter
+  include ImportFileMarkdown
 
   queue_as :imports
 
@@ -20,8 +20,10 @@ class ImportDocumentJob < MemoryIntensiveJob
     # and starve the Good Job Notifier (ConnectionTimeoutError).
     ActiveRecord::Base.connection_pool.release_connection
 
-    markdown = fetch_markdown(import_file)
-    markdown, frontmatter = extract_frontmatter(markdown)
+    markdown, frontmatter = import_file_markdown(import_file)
+    # YAML.safe_load happily returns a String or Array for `--- some bare text ---`;
+    # #dig on those raises and would fail the whole file.
+    frontmatter = nil unless frontmatter.is_a?(Hash)
     title = frontmatter&.dig("title") || title_fallback
 
     blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
@@ -40,14 +42,6 @@ class ImportDocumentJob < MemoryIntensiveJob
         title: title
       )
 
-      hierarchy_node = session.space.create_hierarchy_node(document.id)
-      if parent_id.present?
-        session.space.add_item_to_hierarchy!(session.space.hierarchy, parent_id, hierarchy_node)
-      else
-        session.space.hierarchy.append(hierarchy_node)
-      end
-      session.space.save!
-
       document.versions.create!(
         content_blocks: blocks,
         created_by: session.organization_membership.user
@@ -60,6 +54,10 @@ class ImportDocumentJob < MemoryIntensiveJob
         TagsService.new(object: document, organization: session.organization)
           .update_tags(valid_tags)
       end
+
+      # Taken as late as possible: the Space row lock serializes every import job for this
+      # space, and it is held until this transaction commits wherever we acquire it.
+      session.space.insert_hierarchy_node!(document.id, parent_id: parent_id)
 
       locked_file.update!(
         status: :completed,
@@ -80,19 +78,6 @@ class ImportDocumentJob < MemoryIntensiveJob
   end
 
   private
-
-  def fetch_markdown(import_file)
-    import_file.file.open do |temp_file|
-      case import_file.format
-      when "markdown"
-        temp_file.read
-      when "docx", "odt"
-        PandocConverterService.file_to_markdown(temp_file.path, import_file.format)
-      else
-        raise "Unsupported document format: #{import_file.format}"
-      end
-    end
-  end
 
   def parent_document_id(import_file, session)
     dir_path = import_file.directory_path

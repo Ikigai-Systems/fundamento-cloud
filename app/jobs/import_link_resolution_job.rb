@@ -1,4 +1,6 @@
 class ImportLinkResolutionJob < ApplicationJob
+  include ImportFileMarkdown
+
   queue_as :imports
 
   # Called by Good Job batch on_finish callback
@@ -15,6 +17,9 @@ class ImportLinkResolutionJob < ApplicationJob
     @heading_maps = {}
 
     session.import_files.where(status: :completed, file_type: :document).find_each do |import_file|
+      # Legacy rows can carry an unknown format; skip rather than relying on the rescue.
+      next unless ImportFile::SUPPORTED_DOCUMENT_FORMATS.include?(import_file.format)
+
       resolve_links_for_document(import_file, path_map, basename_map)
     end
 
@@ -54,16 +59,23 @@ class ImportLinkResolutionJob < ApplicationJob
     }
     return unless has_wiki_links || has_block_ids || has_local_attachment_refs
 
-    resolved_markdown = nil
-    import_file.file.open do |f|
-      # Re-fetch original markdown to process wiki links
-      # (blocks don't preserve raw [[...]] syntax — we need the original)
-      resolved_markdown = process_wiki_links_in_markdown(f.read.force_encoding("UTF-8"), path_map.merge(basename_map))
-    end
+    # Re-fetch the original markdown to process wiki links (blocks don't preserve raw
+    # [[...]] syntax). Goes through the shared extractor so docx/odt are converted by
+    # Pandoc instead of being read as raw bytes, and so frontmatter is stripped — without
+    # that, this job reintroduces the YAML that ImportDocumentJob removed.
+    body, _frontmatter = import_file_markdown(import_file)
+    resolved_markdown = process_wiki_links_in_markdown(body, path_map.merge(basename_map))
 
     return unless resolved_markdown
 
     new_blocks = BlocknoteConverterService.markdown_to_blocks(resolved_markdown)
+
+    # This job can be invoked more than once per session (any orchestrator re-run creates a
+    # fresh batch, and every batch fires on_finish). Re-resolving is deterministic, so if
+    # the result matches what's already stored there is nothing to record — skipping here
+    # also avoids the second Node call below.
+    return if blocks_equivalent?(new_blocks, blocks)
+
     new_sync = BlocknoteConverterService.blocks_to_yjs(new_blocks)
 
     document.versions.create!(
@@ -74,6 +86,22 @@ class ImportLinkResolutionJob < ApplicationJob
   rescue StandardError => e
     Rails.logger.error "ImportLinkResolutionJob: failed for #{import_file.relative_path}: #{e.message}"
     # Non-fatal — continue with other documents
+  end
+
+  # BlockNote mints a fresh random UUID for every block, and another for every mention's
+  # props["id"], on each conversion — so a plain == never matches on a re-run. Compare with
+  # those generated ids removed. as_json is required, not cosmetic: content_blocks comes
+  # back from the json column with string keys, and without it the guard fails open.
+  def blocks_equivalent?(new_blocks, existing_blocks)
+    strip_generated_ids(new_blocks.as_json) == strip_generated_ids(existing_blocks.as_json)
+  end
+
+  def strip_generated_ids(value)
+    case value
+    when Array then value.map { |item| strip_generated_ids(item) }
+    when Hash then value.except("id").transform_values { |item| strip_generated_ids(item) }
+    else value
+    end
   end
 
   def process_wiki_links_in_markdown(markdown, combined_map)
