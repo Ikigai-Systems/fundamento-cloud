@@ -22,13 +22,20 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     # Build basename index for Obsidian-style [[filename]] resolution
     basename_map = build_basename_map(path_map)
 
+    # Built once, not per document: this used to scan the whole path_map and call
+    # File.basename for every attachment inside the loop below, which for a large vault is
+    # thousands of scans and millions of basename calls.
+    attachment_needles = path_map.filter_map { |path, id|
+      [path, File.basename(path)] if id.to_s.start_with?("attachment:")
+    }
+
     @heading_maps = {}
 
     session.import_files.where(status: :completed, file_type: :document).find_each do |import_file|
       # Legacy rows can carry an unknown format; skip rather than relying on the rescue.
       next unless ImportFile::SUPPORTED_DOCUMENT_FORMATS.include?(import_file.format)
 
-      resolve_links_for_document(import_file, path_map, basename_map)
+      resolve_links_for_document(import_file, path_map, basename_map, attachment_needles)
     end
 
     ImportSessionCompletionJob.perform_later(session)
@@ -48,7 +55,7 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     basename_map
   end
 
-  def resolve_links_for_document(import_file, path_map, basename_map)
+  def resolve_links_for_document(import_file, path_map, basename_map, attachment_needles)
     document = import_file.document
     return unless document
 
@@ -56,14 +63,15 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     return unless latest_version
 
     blocks = latest_version.content_blocks
-    blocks_json = blocks.to_json
+    # Content-bearing values only. These checks used to run against blocks.to_json, which
+    # also carries block ids, style maps and every other key.
+    haystack = content_haystack(blocks)
 
     # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
-    has_wiki_links = blocks_json.include?("[[") || blocks_json.include?("![[")
+    has_wiki_links = haystack.include?("[[") # covers ![[embed]] too
     has_block_ids = block_id_anchor?(blocks)
-    attachment_paths = path_map.filter_map { |k, v| k if v.to_s.start_with?("attachment:") }
-    has_local_attachment_refs = attachment_paths.any? { |p|
-      blocks_json.include?(p) || blocks_json.include?(File.basename(p))
+    has_local_attachment_refs = attachment_needles.any? { |path, basename|
+      haystack.include?(path) || haystack.include?(basename)
     }
     return unless has_wiki_links || has_block_ids || has_local_attachment_refs
 
@@ -94,6 +102,30 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
   rescue StandardError => e
     Rails.logger.error "ImportLinkResolutionJob: failed for #{import_file.relative_path}: #{e.message}"
     # Non-fatal — continue with other documents
+  end
+
+  # Props that can name a file: media blocks carry url/name/caption, and inline links
+  # carry href on the node itself.
+  REFERENCE_PROPS = %w[url name src caption].freeze
+
+  # The text, link targets and media references a document actually contains — everything
+  # a wiki link or attachment path could legitimately appear in, and nothing else.
+  def content_haystack(blocks)
+    parts = []
+
+    BlocknoteBlocks.walk_blocks(blocks) do |node|
+      parts << node["text"] if node["text"].is_a?(String)
+      parts << node["href"] if node["href"].is_a?(String)
+
+      props = node["props"]
+      next unless props.is_a?(Hash)
+
+      REFERENCE_PROPS.each do |key|
+        parts << props[key] if props[key].is_a?(String)
+      end
+    end
+
+    parts.join("\n")
   end
 
   # Inspects the actual text nodes rather than the serialized JSON blob. The old
