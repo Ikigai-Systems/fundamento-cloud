@@ -40,6 +40,29 @@ RSpec.describe "Api::V1::ImportSessions#manifest", type: :request do
   end
 
   describe "POST /api/v1/import_sessions/:id/manifest" do
+    it "classifies files itself and ignores what the client claims" do
+      # fundamento-cli still labels .doc a document, which can only ever fail. Whatever the
+      # client asserts, the server decides from the path.
+      post manifest_api_v1_import_session_path(session),
+        params: { files: [
+          { relative_path: "Osobiste/Outline.doc", checksum: "d1", file_size: 10,
+            format: "doc", file_type: "document" },
+          { relative_path: "Notes/real.md", checksum: "d2", file_size: 10,
+            format: "image", file_type: "attachment" }
+        ] },
+        headers: auth_headers
+
+      expect(response).to have_http_status(:ok)
+
+      doc_file = session.import_files.find_by(relative_path: "Osobiste/Outline.doc")
+      expect(doc_file).to be_attachment
+      expect(doc_file.format).to eq("other")
+
+      markdown_file = session.import_files.find_by(relative_path: "Notes/real.md")
+      expect(markdown_file).to be_document
+      expect(markdown_file.format).to eq("markdown")
+    end
+
     it "creates ImportFile records and returns upload URLs for all files" do
       post manifest_api_v1_import_session_path(session),
         params: { files: manifest_files },
