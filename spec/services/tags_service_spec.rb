@@ -411,6 +411,46 @@ RSpec.describe TagsService, type: :model do
     end
   end
 
+  describe "concurrent creation of the same tag" do
+    # find_or_create_by! races: another worker can commit the same tag between our SELECT
+    # and our INSERT. During one vault import this killed 20 documents, because the tag
+    # error aborts the caller's whole transaction even though the document was fine.
+    let(:attributes) { { name: "shared", space: space, organization: organization } }
+
+    it "adopts the row the other worker committed when validation loses the race" do
+      winner = Tag.create!(attributes)
+      losing_record = Tag.new(attributes)
+      losing_record.errors.add(:name, :taken)
+
+      allow(Tag).to receive(:find_or_create_by!).once
+        .and_raise(ActiveRecord::RecordInvalid.new(losing_record))
+      allow(Tag).to receive(:find_by).and_call_original
+
+      service.update_tags(["shared"])
+
+      expect(document.reload.tags).to eq([winner])
+    end
+
+    it "adopts the row the other worker committed when the unique index catches it" do
+      winner = Tag.create!(attributes)
+
+      allow(Tag).to receive(:find_or_create_by!).once
+        .and_raise(ActiveRecord::RecordNotUnique.new("duplicate key value violates unique constraint"))
+      allow(Tag).to receive(:find_by).and_call_original
+
+      service.update_tags(["shared"])
+
+      expect(document.reload.tags).to eq([winner])
+    end
+
+    it "still raises when the failure was not a lost race" do
+      allow(Tag).to receive(:find_or_create_by!).once
+        .and_raise(ActiveRecord::RecordNotUnique.new("something else entirely"))
+
+      expect { service.update_tags(["never-created"]) }.to raise_error(ActiveRecord::RecordNotUnique)
+    end
+  end
+
   context "with tables" do
     fixtures "tables/tables", "tables/columns", "tables/rows", "tables/cells"
 

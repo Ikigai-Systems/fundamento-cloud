@@ -146,12 +146,25 @@ class TagsService
     Array(tag_names).map { |name| self.class.normalize_tag_name(name) }.uniq
   end
 
+  # find_or_create_by! is not safe under concurrency: between its SELECT and the INSERT's
+  # own uniqueness check another worker can commit the same tag, and the loser blows up with
+  # "Tag has already been taken". During one vault import that killed 20 documents outright,
+  # because the tag failure aborts the whole ImportDocumentJob transaction — the document
+  # itself was fine.
+  #
+  # Both outcomes are possible: the model's uniqueness validation raises RecordInvalid, and
+  # the unique index on (name, space_id) raises RecordNotUnique when validation misses the
+  # window. Either way the other worker's row is the answer we wanted.
   def find_or_create_tag(tag_name)
-    Tag.find_or_create_by!(
-      name: tag_name,
-      space: object.space,
-      organization: organization
-    )
+    attributes = { name: tag_name, space: object.space, organization: organization }
+
+    begin
+      # Savepoint: RecordNotUnique comes from Postgres and aborts the enclosing transaction,
+      # so the failed INSERT has to roll back to here or the rest of update_tags cannot run.
+      Tag.transaction(requires_new: true) { Tag.find_or_create_by!(attributes) }
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+      Tag.find_by(attributes) || raise
+    end
   end
 
   def find_existing_tag(tag_name)

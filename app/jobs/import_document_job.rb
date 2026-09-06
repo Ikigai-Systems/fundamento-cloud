@@ -1,4 +1,11 @@
-class ImportDocumentJob < MemoryIntensiveJob
+# ApplicationJob, not MemoryIntensiveJob: imported documents are tiny. Across a real 3976
+# file vault the 1811 documents totalled 4.5 MB — 2.5 KB on average, 261 KB at the largest —
+# so there is nothing here to serialize for memory's sake. Holding them to one at a time made
+# a 1553-document import take hours (median 12s between completions, most of it the 5-second
+# ConcurrencyExceededError backoff the other threads paid to discover the slot was taken).
+# Concurrency is bounded by the worker's thread count. The heavy work is next door in
+# ImportAttachmentJob, which is where the limit now lives.
+class ImportDocumentJob < ApplicationJob
   include ImportFileMarkdown
 
   queue_as :imports
