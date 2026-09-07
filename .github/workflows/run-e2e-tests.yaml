@@ -108,9 +108,11 @@ jobs:
         run: docker compose build website jobs
         env:
           BUILD_CACHE_FROM: type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache
-          # Note the expression order: `cond && '' || X` would misfire, because an empty
-          # string is falsy in GitHub expressions and would always yield X.
-          BUILD_CACHE_TO: ${{ github.event_name != 'pull_request' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
+          # Master is the only writer, so the cache always reflects the merge base and
+          # no branch can overwrite it with its own Gemfile.lock. Note the expression
+          # order: `cond && '' || X` would misfire, because an empty string is falsy in
+          # GitHub expressions and would always yield X.
+          BUILD_CACHE_TO: ${{ github.ref == 'refs/heads/master' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
 
       - uses: hoverkraft-tech/compose-action@v3.1.0
         env:
