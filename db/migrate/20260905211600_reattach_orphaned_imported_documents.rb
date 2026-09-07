@@ -6,6 +6,11 @@
 # document's own node was lost, add_item_to_hierarchy! returned nil and the child was
 # silently discarded. Both are fixed in the same change as this migration.
 #
+# Ordered after AddHierarchyVersionToSpaces on purpose: the insert goes through
+# Space#insert_hierarchy_node!, which compare-and-swaps on spaces.hierarchy_version. This
+# migration first shipped with an earlier timestamp, so every database running both in one
+# pass aborted with PG::UndefinedColumn and cancelled the rest of db:migrate.
+#
 # Idempotent: re-running finds nothing to do.
 class ReattachOrphanedImportedDocuments < ActiveRecord::Migration[8.1]
   def up
