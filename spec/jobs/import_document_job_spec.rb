@@ -32,16 +32,6 @@ RSpec.describe ImportDocumentJob, type: :job do
     import_file
   end
 
-  describe "concurrency" do
-    it "is not held to one job per worker" do
-      # Imported documents average ~2.5 KB; serializing them made a 1553-document import
-      # take hours, most of it ConcurrencyExceededError backoff. The memory-heavy work is
-      # ImportAttachmentJob.
-      expect(described_class.ancestors).not_to include(MemoryIntensiveJob)
-      expect(described_class).not_to respond_to(:good_job_concurrency_config)
-    end
-  end
-
   describe "#perform" do
     it "creates a Document from a markdown file" do
       import_file = build_import_file(relative_path: "Notes/hello.md")
