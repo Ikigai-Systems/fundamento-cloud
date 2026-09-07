@@ -78,6 +78,14 @@ services:
         - RAILS_ENV=${RAILS_ENV:-production}
       secrets:
         - fontawesome-auth
+      # Layer cache for CI. Empty locally, so `bin/dev-e2e` builds exactly as before;
+      # CI exports these to reuse the previous run's layers -- without them every run
+      # does a cold `bundle install`, re-downloading the 17 MB Font Awesome Pro gem
+      # from dl.fontawesome.com and burning the account's monthly bandwidth quota.
+      cache_from:
+        - ${BUILD_CACHE_FROM:-}
+      cache_to:
+        - ${BUILD_CACHE_TO:-}
     environment:
       <<: [*rails-environment, *minio-storage-credentials]
     ports:
@@ -99,6 +107,14 @@ services:
         - RAILS_ENV=${RAILS_ENV:-production}
       secrets:
         - fontawesome-auth
+      # Layer cache for CI. Empty locally, so `bin/dev-e2e` builds exactly as before;
+      # CI exports these to reuse the previous run's layers -- without them every run
+      # does a cold `bundle install`, re-downloading the 17 MB Font Awesome Pro gem
+      # from dl.fontawesome.com and burning the account's monthly bandwidth quota.
+      cache_from:
+        - ${BUILD_CACHE_FROM:-}
+      cache_to:
+        - ${BUILD_CACHE_TO:-}
     command: bundle exec good_job start
     environment:
       <<: [*rails-environment, *minio-storage-credentials]
