@@ -1,4 +1,8 @@
-class ImportAttachmentJob < ApplicationJob
+# MemoryIntensiveJob: attachments are where the bytes actually are. In the same vault the
+# 2639 attachments totalled 10 GB — 4 MB on average, with a single 2.34 GB video — and each
+# one is streamed through this process and then analysed by ActiveStorage. Running several at
+# once is what exhausts a worker's memory, so only one may run per pod.
+class ImportAttachmentJob < MemoryIntensiveJob
   queue_as :imports
 
   def perform(import_file)

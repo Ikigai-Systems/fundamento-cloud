@@ -56,6 +56,39 @@ RSpec.describe ImportSessionOrchestratorJob, type: :job do
       described_class.perform_now(session)
     end
 
+    context "when there is nothing left to enqueue" do
+      # GoodJob fires on_finish synchronously for an empty batch (it has no unfinished jobs
+      # to wait for), which re-runs link resolution over an already-finished session — the
+      # source of the duplicate versions. Every retry_failed with nothing to retry hit this.
+      it "does not enqueue an empty batch" do
+        add_file(relative_path: "failed.md", file_type: :document, status: :failed)
+
+        expect(GoodJob::Batch).not_to receive(:enqueue)
+
+        described_class.perform_now(session)
+      end
+
+      it "finishes the session when nothing is in flight" do
+        add_file(relative_path: "failed.md", file_type: :document, status: :failed)
+        allow(GoodJob::Batch).to receive(:enqueue).and_yield
+
+        expect {
+          described_class.perform_now(session)
+        }.to have_enqueued_job(ImportSessionCompletionJob).with(session)
+      end
+
+      it "leaves in-flight files alone when the orchestrator is re-run" do
+        # A re-performed orchestrator sees files as :processing, not :uploaded. Finishing
+        # the session here would mark those healthy files as failed.
+        add_file(relative_path: "inflight.md", file_type: :document, status: :processing)
+        allow(GoodJob::Batch).to receive(:enqueue).and_yield
+
+        expect {
+          described_class.perform_now(session)
+        }.not_to have_enqueued_job(ImportSessionCompletionJob)
+      end
+    end
+
     it "creates directory documents for intermediate paths before enqueuing file jobs" do
       add_file(relative_path: "Notes/Projects/foo.md", file_type: :document)
 

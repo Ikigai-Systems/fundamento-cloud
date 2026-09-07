@@ -32,6 +32,14 @@ RSpec.describe ImportAttachmentJob, type: :job do
     import_file
   end
 
+  describe "concurrency" do
+    it "is limited to one job per worker" do
+      # Attachments carry the bytes: 10 GB across one real vault, including a 2.34 GB video.
+      expect(described_class.ancestors).to include(MemoryIntensiveJob)
+      expect(described_class.good_job_concurrency_config[:perform_limit]).to eq(1)
+    end
+  end
+
   describe "#perform" do
     it "creates an Attachment record pointing to the blob" do
       import_file = build_attachment_file(relative_path: "assets/photo.png")

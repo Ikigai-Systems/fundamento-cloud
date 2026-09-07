@@ -174,5 +174,45 @@ RSpec.describe ImportDocumentJob, type: :job do
         }.not_to change(Document, :count)
       end
     end
+
+    context "hierarchy placement" do
+      before do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      end
+
+      def hierarchy_ids(nodes = Space.find(space.id).hierarchy, collected = [])
+        Array(nodes).each do |node|
+          collected << node["id"]
+          hierarchy_ids(node["children"], collected)
+        end
+        collected
+      end
+
+      it "places the document at the root when its parent is missing from the hierarchy" do
+        # The parent directory document's own node was lost, so add_item_to_hierarchy!
+        # returns nil. Without a fallback the document imports fine but never appears.
+        session.merge_path_map!("Notes", "ghost_parent")
+        import_file = build_import_file(relative_path: "Notes/hello.md")
+
+        described_class.perform_now(import_file)
+
+        expect(hierarchy_ids).to include(import_file.reload.document_id)
+      end
+
+      it "does not clobber a node written by a concurrent worker" do
+        # Root-level path on purpose: a nested path makes the job call session.reload in
+        # parent_document_id, which clears the association cache this test depends on.
+        import_file = build_import_file(relative_path: "note.md")
+        import_file.import_session.space.hierarchy # warm the copy the job will hold
+
+        # Stand-in for another pod's job committing its node mid-flight.
+        Space.find(space.id).update!(hierarchy: [{ "id" => "written_elsewhere", "children" => [] }])
+
+        described_class.perform_now(import_file)
+
+        expect(hierarchy_ids).to contain_exactly("written_elsewhere", import_file.reload.document_id)
+      end
+    end
   end
 end

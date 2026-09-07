@@ -7,12 +7,29 @@ class ImportSessionOrchestratorJob < ApplicationJob
     # Build parent directory documents depth-first before processing files
     create_directory_documents(session)
 
+    pending = session.import_files.where(status: :uploaded)
+
+    # Never enqueue an empty batch. GoodJob fires on_finish synchronously for one (it has
+    # no unfinished jobs to wait for), which re-runs link resolution and completion for a
+    # session that is already done — the source of the duplicate versions. This happens on
+    # every retry_failed with nothing to retry, and on any orchestrator re-run.
+    if pending.none?
+      # Only finish the session if nothing is still in flight: a re-run of an interrupted
+      # orchestrator sees files as :processing, and ImportSessionCompletionJob would mark
+      # those healthy files as failed.
+      unless session.import_files.where(status: :processing).exists?
+        ImportSessionCompletionJob.perform_later(session)
+      end
+
+      return
+    end
+
     # Enqueue all file processing jobs in a Good Job batch
     GoodJob::Batch.enqueue(
       on_finish: ImportLinkResolutionJob,
       properties: { import_session_id: session.id }
     ) do
-      session.import_files.where(status: :uploaded).find_each do |import_file|
+      pending.find_each do |import_file|
         if import_file.document?
           ImportDocumentJob.perform_later(import_file)
         else
@@ -42,29 +59,27 @@ class ImportSessionOrchestratorJob < ApplicationJob
       dir_name = File.basename(dir_path)
       space = session.space
 
+      # Converted outside the transaction below: these shell out to Node, and the Space row
+      # lock must not be held across a subprocess call.
       blocks = BlocknoteConverterService.markdown_to_blocks("")
       sync = BlocknoteConverterService.blocks_to_yjs(blocks)
 
-      document = space.documents.create!(
-        organization: session.organization,
-        title: dir_name,
-        sync: sync
-      )
+      ActiveRecord::Base.transaction do
+        document = space.documents.create!(
+          organization: session.organization,
+          title: dir_name,
+          sync: sync
+        )
 
-      document.versions.create!(
-        content_blocks: blocks,
-        created_by: session.organization_membership.user
-      )
+        document.versions.create!(
+          content_blocks: blocks,
+          created_by: session.organization_membership.user
+        )
 
-      hierarchy_node = space.create_hierarchy_node(document.id)
-      if parent_id.present?
-        space.add_item_to_hierarchy!(space.hierarchy, parent_id, hierarchy_node)
-      else
-        space.hierarchy.append(hierarchy_node)
+        space.insert_hierarchy_node!(document.id, parent_id: parent_id)
+
+        session.merge_path_map!(dir_path, document.id)
       end
-      space.save!
-
-      session.merge_path_map!(dir_path, document.id)
     end
   end
 

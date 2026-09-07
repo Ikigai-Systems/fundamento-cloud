@@ -30,5 +30,36 @@ RSpec.describe SpaceBlueprint do
         },
       ])
     end
+
+    it "promotes the children of an orphaned hierarchy entry" do
+      # Space#documents_from_hierarchy no longer splices orphans out in memory before we
+      # get here, so this has to be handled at render time — as SpaceSidebarTree does.
+      space = spaces(:is_default)
+      space.update!(hierarchy: [
+        { "id" => "does-not-exist", "children" => [
+          { "id" => documents(:one).id, "children" => [] },
+        ] },
+      ])
+
+      result = SpaceBlueprint.render_as_hash(space, view: :with_documents)
+
+      expect(result[:documents]).to eq([
+        {
+          id: documents(:one).id,
+          npi: documents(:one).id,
+          title: documents(:one).title,
+          children: [],
+        },
+      ])
+    end
+
+    it "returns an empty tree when every entry is orphaned" do
+      space = spaces(:is_default)
+      space.update!(hierarchy: [{ "id" => "does-not-exist", "children" => [] }])
+
+      result = SpaceBlueprint.render_as_hash(space, view: :with_documents)
+
+      expect(result[:documents]).to eq([])
+    end
   end
 end
