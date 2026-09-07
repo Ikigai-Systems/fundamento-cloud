@@ -149,12 +149,16 @@ jobs:
           # Delivery lags the task stopping by a few seconds, so retry before giving up.
           for _ in $(seq 1 10); do
             aws logs get-log-events --log-group-name "$LOG_GROUP" --log-stream-name "$STREAM" \
-              --start-from-head --output json 2>/dev/null | jq -r '.events[].message' > migration.log || true
+              --start-from-head --output json 2>log-fetch.err | jq -r '.events[].message' > migration.log || true
             if [ -s migration.log ]; then break; fi
             sleep 3
           done
           if [ ! -s migration.log ]; then
             echo "no log events found in $LOG_GROUP / $STREAM"
+            # Keep stderr: discarding it made an IAM denial read identically to "the
+            # stream has not been delivered yet", which is how the first deploy carrying
+            # this step reported success while telling us nothing.
+            if [ -s log-fetch.err ]; then echo "log fetch failed:"; tail -n 3 log-fetch.err; fi
           fi
 
           if [ "$CODE" = "0" ]; then
