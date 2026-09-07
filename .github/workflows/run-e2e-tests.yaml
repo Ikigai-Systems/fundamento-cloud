@@ -71,6 +71,10 @@ jobs:
       # The build cache lives in GHCR rather than the Actions cache: a mode=max cache
       # for this image is ~10 GB, which alone exceeds the repo's 10 GB Actions cache
       # quota and would evict the npm/bundler caches the other workflows rely on.
+      #
+      # It is a tag on the existing (private) fundamento-cloud package, not a package
+      # of its own: a fresh GHCR package is created *public*, which would expose the
+      # cached layers -- and with them the Font Awesome Pro gem -- to anyone.
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -103,10 +107,10 @@ jobs:
       - name: Build app images (with layer cache)
         run: docker compose build website jobs
         env:
-          BUILD_CACHE_FROM: type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud-buildcache:e2e
+          BUILD_CACHE_FROM: type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache
           # Note the expression order: `cond && '' || X` would misfire, because an empty
           # string is falsy in GitHub expressions and would always yield X.
-          BUILD_CACHE_TO: ${{ github.event_name != 'pull_request' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud-buildcache:e2e,mode=max,ignore-error=true' || '' }}
+          BUILD_CACHE_TO: ${{ github.event_name != 'pull_request' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
 
       - uses: hoverkraft-tech/compose-action@v3.1.0
         env:
