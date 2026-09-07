@@ -72,6 +72,36 @@ function convertVideoToMarkdown() {
 }
 
 /**
+ * Rehype plugin: convert BlockNote file blocks to markdown embed syntax.
+ *
+ * blocksToHTMLLossy serialises a file block as an anchor carrying data-url:
+ *   <a href="attachment:9" data-name="report.csv" data-url="attachment:9">report.csv</a>
+ *
+ * Left alone, hast-util-to-mdast renders that as `[report.csv](attachment:9)`, and the
+ * markdown->HTML direction cannot turn a link back into a file block — custom URL schemes
+ * are dropped when BlockNote parses the anchor, so reading a document and writing it back
+ * silently loses every attachment. Emitting the embed form instead matches what image,
+ * video and audio blocks already produce, and markdownToHtml's image handler routes it to
+ * fileHandler, closing the round-trip.
+ *
+ * Only anchors carrying data-url are touched, so ordinary inline links are untouched.
+ */
+function convertFileToMarkdown() {
+  return (tree: HastNodes) => {
+    visit(tree, "element", (node: HastElement, index: number | undefined, parent: HastParents | undefined) => {
+      if (parent && node.tagName === "a" && node.properties?.dataUrl) {
+        const url = node.properties.dataUrl;
+        const name = node.properties.dataName || "";
+        parent.children[index!] = {
+          type: "text",
+          value: `![${name}](${url})`,
+        };
+      }
+    });
+  };
+}
+
+/**
  * Rehype plugin: remove <u> (underline) tags since Markdown doesn't support
  * underlines. Lifts child nodes outside the underline wrapper.
  * Replicated from @blocknote/core internals.
@@ -215,6 +245,7 @@ function htmlToMarkdown(html: string): string {
   const result = unified()
     .use(rehypeParse, {fragment: true})
     .use(convertVideoToMarkdown)
+    .use(convertFileToMarkdown)
     .use(removeUnderlines)
     .use(addSpacesToCheckboxes)
     .use(rehypeRemark, {
