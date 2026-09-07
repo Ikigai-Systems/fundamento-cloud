@@ -67,6 +67,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      # buildx's `type=gha` cache backend reads ACTIONS_CACHE_URL and
+      # ACTIONS_RUNTIME_TOKEN from the environment. docker/build-push-action injects
+      # them on its own, but a plain `docker compose build` does not -- without this
+      # step the cache silently no-ops and every run re-downloads every gem.
+      - name: Expose GitHub Actions runtime for the build cache
+        uses: crazy-max/ghaction-github-runtime@v3
+
       - uses: actions/setup-node@v7
         with:
           node-version-file: ".tool-versions"
@@ -84,6 +91,16 @@ jobs:
           max_attempts: 3
           timeout_minutes: 5
           command: docker compose pull postgresql redis minio minio-initialization
+
+      # Build the app images up front, reusing the previous run's layers. Without a
+      # cache the `bundle install` layer is rebuilt cold every run, which re-downloads
+      # the 17 MB font-awesome-pro-sass gem from dl.fontawesome.com -- ~4.9 GB/month
+      # against a 2 GB Font Awesome bandwidth quota. `up` below reuses these images.
+      - name: Build app images (with layer cache)
+        run: docker compose build website jobs
+        env:
+          BUILD_CACHE_FROM: type=gha,scope=e2e
+          BUILD_CACHE_TO: type=gha,mode=max,scope=e2e
 
       - uses: hoverkraft-tech/compose-action@v3.1.0
         env:
