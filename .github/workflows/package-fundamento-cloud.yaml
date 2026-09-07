@@ -136,7 +136,38 @@ jobs:
           CODE=$(aws ecs describe-tasks --cluster "$CLUSTER" --tasks "$TASK" \
             --query "tasks[0].containers[?name=='fundamento-cloud-website'].exitCode | [0]" --output text)
           echo "migration exit code: $CODE"
-          [ "$CODE" = "0" ] || { echo "::error::db:migrate failed (exit ${CODE})"; exit 1; }
+
+          # Pull the task's own output back into the job log. Without this the step
+          # reports nothing but an exit code and the backtrace stays in CloudWatch: the
+          # 20260905073815 migration failure needed an AWS round-trip to read. Group and
+          # stream are taken from the task definition rather than hardcoded, so they
+          # cannot drift from the Terraform that defines them.
+          LOG_GROUP=$(jq -r '.containerDefinitions[]|select(.name=="fundamento-cloud-website")|.logConfiguration.options["awslogs-group"]' web-register.json)
+          LOG_PREFIX=$(jq -r '.containerDefinitions[]|select(.name=="fundamento-cloud-website")|.logConfiguration.options["awslogs-stream-prefix"]' web-register.json)
+          STREAM="$LOG_PREFIX/fundamento-cloud-website/${TASK##*/}"
+          : > migration.log
+          # Delivery lags the task stopping by a few seconds, so retry before giving up.
+          for _ in $(seq 1 10); do
+            aws logs get-log-events --log-group-name "$LOG_GROUP" --log-stream-name "$STREAM" \
+              --start-from-head --output json 2>/dev/null | jq -r '.events[].message' > migration.log || true
+            if [ -s migration.log ]; then break; fi
+            sleep 3
+          done
+          if [ ! -s migration.log ]; then
+            echo "no log events found in $LOG_GROUP / $STREAM"
+          fi
+
+          if [ "$CODE" = "0" ]; then
+            echo "::group::db:migrate output"
+            tail -n 300 migration.log
+            echo "::endgroup::"
+          else
+            echo "----- db:migrate output (last 300 lines) -----"
+            tail -n 300 migration.log
+            echo "----------------------------------------------"
+            echo "::error::db:migrate failed (exit ${CODE}) -- task ${TASK##*/}"
+            exit 1
+          fi
 
       - name: Deploy website
         if: github.event.workflow_run.head_branch == 'master'
