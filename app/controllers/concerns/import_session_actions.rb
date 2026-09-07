@@ -84,18 +84,22 @@ module ImportSessionActions
       return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
     end
 
+    # The client's own `format`/`file_type` are ignored: it reports the path, the server
+    # decides what to do with it. See ImportFile.classify.
+    file_type, format = ImportFile.classify(entry[:relative_path])
+
     import_file.assign_attributes(
       checksum: entry[:checksum],
       file_size: entry[:file_size].to_i,
-      format: entry[:format],
-      file_type: entry[:file_type],
+      format: format,
+      file_type: file_type,
       status: :pending
     )
     blob = ActiveStorage::Blob.create_before_direct_upload!(
       filename: File.basename(entry[:relative_path].to_s),
       byte_size: entry[:file_size].to_i,
       checksum: entry[:checksum],
-      content_type: content_type_for_format(entry[:format])
+      content_type: content_type_for_format(format)
     )
 
     import_file.blob_signed_id = blob.signed_id
