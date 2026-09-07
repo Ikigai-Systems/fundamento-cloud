@@ -669,7 +669,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
     end
   end
 
-  describe "regressions" do
+  describe "#perform" do
     let(:job) { described_class.new }
     let(:batch) { double("batch", properties: { import_session_id: session.id }) }
     let(:vault_path) { "Zaimportowane/Redpill/Pliki/2022-12-09 02.29.53 video.mp4" }
