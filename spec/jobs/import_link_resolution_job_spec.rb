@@ -523,6 +523,34 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         expect(result).not_to include("data-mention")
       end
     end
+
+    describe "[[file]] links to attachments" do
+      it "resolves a plain [[file.png|alias]] link to the attachment" do
+        # Not an embed, so it used to fall through to "leave as-is" and stay literal text
+        # even when the attachment was sitting right there.
+        combined_map = { "assets/photo.png" => "attachment:42.png" }
+
+        result = job.send(:process_wiki_links_in_markdown, "See [[photo.png|Open: photo]]", combined_map)
+
+        expect(result).to include("![Open: photo](attachment:42.png)")
+        expect(result).not_to include("[[photo.png")
+      end
+
+      it "resolves a plain [[file.pdf]] link with no alias" do
+        combined_map = { "Pliki/Timeline.pdf" => "attachment:99.pdf" }
+
+        result = job.send(:process_wiki_links_in_markdown, "See [[Timeline.pdf]]", combined_map)
+
+        expect(result).to include("![Timeline.pdf](attachment:99.pdf)")
+      end
+
+      it "still leaves a file link alone when no such attachment was imported" do
+        result = job.send(:process_wiki_links_in_markdown, "See [[missing.png|Open: it]]", {})
+
+        expect(result).to include("[[missing.png|Open: it]]")
+        expect(result).not_to include("data-mention")
+      end
+    end
   end
 
   describe "concurrency" do

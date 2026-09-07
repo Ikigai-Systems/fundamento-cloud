@@ -207,6 +207,17 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
       target_base, heading = target.split("#", 2)
 
       resolved_id = resolve_wiki_link(target_base, combined_map)
+
+      # An Obsidian *link* to a file — [[photo.png|caption]] rather than ![[photo.png]] —
+      # only ever went through resolve_wiki_link, which matches documents by basename with
+      # the extension stripped and so can never match a file. It then fell through to the
+      # "leave as-is" branch below and stayed literal text even when the attachment was
+      # sitting right there: across one workspace, 146 of 162 such targets already had a
+      # matching attachment.
+      if resolved_id.nil? && attachment_extension?(target_base)
+        resolved_id = resolve_attachment_link(target_base, combined_map)
+      end
+
       display = alias_text || target_base
 
       if resolved_id&.start_with?("attachment:")
