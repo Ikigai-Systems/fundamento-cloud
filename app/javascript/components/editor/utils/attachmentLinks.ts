@@ -10,10 +10,19 @@ import AttachmentsApi from "../../../api/AttachmentsApi";
  *    (http|https|ftp|ftps|mailto|tel|callto|sms|cid|xmpp) -- silently, leaving plain text
  *    where the link was. `isValidLink` widens it by exactly one scheme.
  *
- * 2. A ProseMirror mark view resolves `attachment:` to a real path for display only.
- *    `renderHTML` would be the wrong place: DOMSerializer.fromSchema drives both the
- *    external HTML exporter and the clipboard, so rewriting there would put the endpoint
- *    into exported markdown, and re-importing that would store it back into the blocks.
+ * 2. `onClick` resolves `attachment:` to a real path when the link is followed.
+ *
+ * Resolution deliberately does not happen while rendering. `renderHTML` feeds
+ * DOMSerializer.fromSchema, which drives both the external HTML exporter and the
+ * clipboard, so rewriting there would put the endpoint into exported markdown and
+ * re-importing that would store it straight back into the blocks. A ProseMirror mark view
+ * would have been view-only and ideal, but tiptap overwrites `editorProps.markViews` with
+ * its own extension-derived map (Editor.ts, createView), and a mark view can only be
+ * contributed by the mark itself via `addMarkView` -- and @blocknote/core exports neither
+ * the `Link` mark nor `isAllowedUri` at runtime, in 0.52 or 0.54.
+ *
+ * The trade-off is that the rendered href stays `attachment:<id>`, so hovering or copying
+ * the link shows the internal form. Following it works.
  *
  * The default predicate is copied rather than imported: @blocknote/core 0.54.0 does not
  * export `isAllowedUri` at runtime, despite its own JSDoc telling you to import it. Keep
@@ -50,23 +59,54 @@ export function attachmentLinkOptions(
   showAttachmentPath: PathHelper = AttachmentsApi.show.path as PathHelper,
 ) {
   return {
-    links: {isValidLink},
-    _tiptapOptions: {
-      editorProps: {
-        markViews: {
-          link: (mark: {attrs: Record<string, unknown>}) => {
-            const dom = document.createElement("a");
-            const href = String(mark.attrs.href ?? "");
+    links: {
+      isValidLink,
+      onClick: (event: MouseEvent) => {
+        const anchor = (event.target as HTMLElement | null)?.closest?.("a");
+        const href = anchor?.getAttribute("href") ?? "";
+        const resolved = resolveLinkHref(href, showAttachmentPath);
 
-            dom.href = resolveLinkHref(href, showAttachmentPath);
-            if (mark.attrs.title) {
-              dom.title = String(mark.attrs.title);
-            }
+        if (resolved === href) {
+          return false;
+        }
 
-            return {dom, contentDOM: dom};
-          },
-        },
+        event.preventDefault();
+        window.open(resolved, "_blank", "noopener");
+
+        return true;
       },
     },
   };
+}
+
+/**
+ * Resolve `attachment:` link hrefs to real paths throughout a block tree.
+ *
+ * Only for read-only viewers. They never write back, so pre-resolving cannot leak an
+ * endpoint into stored content -- and they need it, because BlockNote's link click
+ * handler bails on a non-editable view (`clickHandler.ts`: `if (!view.editable) return
+ * false`), leaving `onClick` unable to resolve anything there.
+ *
+ * The editable editor must NOT use this: its blocks are posted back verbatim on save.
+ */
+export function resolveAttachmentLinksInBlocks<T>(
+  blocks: T,
+  showAttachmentPath: PathHelper = AttachmentsApi.show.path as PathHelper,
+): T {
+  if (Array.isArray(blocks)) {
+    return blocks.map((entry) => resolveAttachmentLinksInBlocks(entry, showAttachmentPath)) as T;
+  }
+
+  if (blocks && typeof blocks === "object") {
+    return Object.fromEntries(
+      Object.entries(blocks as Record<string, unknown>).map(([key, value]) => [
+        key,
+        key === "href" && typeof value === "string"
+          ? resolveLinkHref(value, showAttachmentPath)
+          : resolveAttachmentLinksInBlocks(value, showAttachmentPath),
+      ]),
+    ) as T;
+  }
+
+  return blocks;
 }

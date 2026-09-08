@@ -4,7 +4,7 @@ import '@blocknote/mantine/style.css';
 import schema from "./editor/schema";
 import PublicApi from "../api/PublicApi.js";
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
-import {attachmentLinkOptions} from "./editor/utils/attachmentLinks";
+import {resolveAttachmentLinksInBlocks} from "./editor/utils/attachmentLinks";
 import {QueryClientProvider} from "@tanstack/react-query";
 import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient.tsx";
@@ -22,13 +22,15 @@ const PublicDocumentViewer = ({document, version, space}: PublicDocumentViewerPr
   const editor = useCreateBlockNote({
     schema,
     // contentBlocks is persisted BlockNote JSON (typed `unknown` on Version).
-    initialContent: version.contentBlocks as PartialBlock<
+    initialContent: resolveAttachmentLinksInBlocks(
+      version.contentBlocks,
+      PublicApi.attachment.path,
+    ) as PartialBlock<
       typeof schema.blockSchema,
       typeof schema.inlineContentSchema,
       typeof schema.styleSchema
     >[],
-    resolveFileUrl: createFileUrlResolver(PublicApi.attachment.path),
-    ...attachmentLinkOptions(PublicApi.attachment.path)
+    resolveFileUrl: createFileUrlResolver(PublicApi.attachment.path)
   });
 
   return (
