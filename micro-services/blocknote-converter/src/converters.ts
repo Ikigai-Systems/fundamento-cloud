@@ -35,10 +35,31 @@ export function convertToBlocks(yjs : Buffer) {
   }
 }
 
+/**
+ * BlockNote drops any link whose href uses a scheme outside its allowlist
+ * (http|https|ftp|ftps|mailto|tel|callto|sms|cid|xmpp) -- the href is stripped and the
+ * anchor collapses to plain text, silently. Attachments are addressed internally as
+ * `attachment:<id>`, resolved to a real endpoint at render time, so links to them have to
+ * survive the round-trip.
+ *
+ * The default predicate is copied rather than imported: @blocknote/core 0.54.0 does not
+ * export `isAllowedUri` at runtime, despite its own JSDoc telling you to import it. Keep
+ * this in step with ALLOWED_URI_REGEX in
+ * @blocknote/core/src/extensions/tiptap-extensions/Link/link.ts.
+ */
+const BLOCKNOTE_ALLOWED_URI =
+  // eslint-disable-next-line no-useless-escape
+  /^(?:(?:http|https|ftp|ftps|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z0-9+.\-]+(?:[^a-z+.\-:]|$))/i;
+
+export function isValidLink(href: string): boolean {
+  return BLOCKNOTE_ALLOWED_URI.test(href) || href.startsWith("attachment:");
+}
+
 function createServerBlockNoteEditor() {
   return ServerBlockNoteEditor.create({
     schema: strippedSchema,
-  });
+    links: {isValidLink},
+  } as Parameters<typeof ServerBlockNoteEditor.create>[0]);
 }
 
 export function convertToYjs(blocks: Block[]) {

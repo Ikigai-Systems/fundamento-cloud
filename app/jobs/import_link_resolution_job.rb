@@ -222,7 +222,11 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
         # [[file|Open: file]] became a second copy of the image its ![[file]] embed
         # already showed — 274 documents in one workspace ended up with duplicated
         # image blocks.
-        "[#{display}](#{attachment_link_path(resolved_id)})"
+        #
+        # Keeps the internal attachment: form rather than a resolved path: blocks must not
+        # carry an endpoint, so the same document can be served through the authenticated
+        # and the public attachment routes. The editor resolves it at render time.
+        "[#{display}](#{resolved_id})"
       elsif resolved_id
         # Resolved to a document — render as mention with optional heading fragment
         build_mention_span(resolved_id, display, heading)
@@ -307,16 +311,6 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
   def attachment_extension?(target)
     ext = File.extname(target).downcase
     ext.present? && ATTACHMENT_EXTENSIONS.include?(ext)
-  end
-
-  # The attachment: scheme only survives conversion on the embed form — an anchor carrying
-  # it is parsed back as plain text, silently losing the href — so links use the routable
-  # path instead.
-  def attachment_link_path(attachment_uri)
-    id = attachment_uri[/\Aattachment:(\d+)/, 1]
-    return attachment_uri unless id
-
-    Rails.application.routes.url_helpers.attachment_path(id)
   end
 
   def resolve_attachment_link(target, combined_map)

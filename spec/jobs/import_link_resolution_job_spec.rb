@@ -137,7 +137,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       combined_map = { "images/photo.png" => "attachment:42" }
       result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png]]", combined_map)
 
-      expect(result).to include("[images/photo.png](/attachments/42)")
+      expect(result).to include("[images/photo.png](attachment:42)")
       expect(result).not_to include("![images/photo.png]")
       expect(result).not_to include("data-mention")
     end
@@ -146,7 +146,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       combined_map = { "images/photo.png" => "attachment:42" }
       result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png|My Photo]]", combined_map)
 
-      expect(result).to include("[My Photo](/attachments/42)")
+      expect(result).to include("[My Photo](attachment:42)")
       expect(result).not_to include("![My Photo]")
     end
 
@@ -534,7 +534,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         result = job.send(:process_wiki_links_in_markdown, "See [[photo.png|Open: photo]]", combined_map)
 
-        expect(result).to include("[Open: photo](/attachments/42)")
+        expect(result).to include("[Open: photo](attachment:42.png)")
         expect(result).not_to include("![Open: photo]")
         expect(result).not_to include("[[photo.png")
       end
@@ -544,7 +544,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         result = job.send(:process_wiki_links_in_markdown, "See [[Timeline.pdf]]", combined_map)
 
-        expect(result).to include("[Timeline.pdf](/attachments/99)")
+        expect(result).to include("[Timeline.pdf](attachment:99.pdf)")
         expect(result).not_to include("![Timeline.pdf]")
       end
 
@@ -556,7 +556,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         result = job.send(:process_wiki_links_in_markdown, markdown, combined_map)
 
-        expect(result).to include("[Pierwsza wersja](/attachments/42)")
+        expect(result).to include("[Pierwsza wersja](attachment:42.png)")
         expect(result).to include("![photo.png](attachment:42.png)")
         expect(result.scan(/!\[/).size).to eq(1)
       end

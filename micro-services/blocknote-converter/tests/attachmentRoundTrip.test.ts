@@ -66,10 +66,10 @@ describe("attachment round-trip", () => {
     expect(blocks[0].props.url).toBe("attachment:777.mp4");
   });
 
-  it("survives an inline link to an attachment path", async () => {
-    // The importer emits this form for Obsidian's [[file|caption]] link: an ordinary
-    // anchor, because an anchor carrying the attachment: scheme loses its href on the way
-    // back. read_document -> update_document has to preserve it.
+  it("survives an inline link using the internal attachment: scheme", async () => {
+    // Blocks address attachments as attachment:<id> so a document can be served through
+    // the authenticated or the public route without naming either. BlockNote drops hrefs
+    // outside its scheme allowlist, so the editor is configured to permit this one.
     const paragraph = {
       id: "b5",
       type: "paragraph",
@@ -78,7 +78,7 @@ describe("attachment round-trip", () => {
         {type: "text", text: "see ", styles: {}},
         {
           type: "link",
-          href: "/attachments/1234",
+          href: "attachment:1234",
           content: [{type: "text", text: "Pierwsza wersja", styles: {}}],
         },
         {type: "text", text: " here", styles: {}},
@@ -87,14 +87,21 @@ describe("attachment round-trip", () => {
     };
 
     const markdown = await convertBlocksToMarkdown([paragraph] as any);
-    expect(markdown).toContain("[Pierwsza wersja](/attachments/1234)");
-    // and never the embed form, which would turn a link into a second copy of the image
+    expect(markdown).toContain("[Pierwsza wersja](attachment:1234)");
+    // and never the embed form, which would render a second copy of the file
     expect(markdown).not.toContain("![Pierwsza wersja]");
 
     const blocks = await convertMarkdownToBlocks(markdown);
     const link = blocks[0].content.find((c: any) => c.type === "link");
-    expect(link.href).toBe("/attachments/1234");
+    expect(link.href).toBe("attachment:1234");
     expect(link.content[0].text).toBe("Pierwsza wersja");
+  });
+
+  it("still drops a javascript: href", async () => {
+    // Widening the allowlist must not widen it to anything dangerous.
+    const blocks = await convertMarkdownToBlocks("[click](javascript:alert(1))");
+
+    expect(blocks[0].content.find((c: any) => c.type === "link")).toBeUndefined();
   });
 
   it("keeps image blocks on the embed form they already used", async () => {

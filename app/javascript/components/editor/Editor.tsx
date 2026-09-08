@@ -12,6 +12,7 @@ import schema from "./schema";
 import {IndexeddbPersistence} from "y-indexeddb";
 import {uploadFile} from "./utils/uploadFile.tsx";
 import {createFileUrlResolver} from "./utils/createFileUrlResolver.tsx";
+import {attachmentLinkOptions} from "./utils/attachmentLinks";
 import LoadingContent from "./LoadingContent.tsx";
 import {CommonSuggestionMenus} from "./CommonSuggestionMenus.tsx";
 import {DefaultThreadStoreAuth} from "@blocknote/core/comments";
@@ -135,6 +136,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
         },
         uploadFile: uploadFile(document.id),
         resolveFileUrl: createFileUrlResolver(),
+        ...attachmentLinkOptions(),
         tables: {
           splitCells: true,
           cellBackgroundColor: true,

@@ -9,6 +9,7 @@ import '@blocknote/mantine/style.css';
 import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
+import {attachmentLinkOptions} from "./editor/utils/attachmentLinks";
 
 import {Features, FeaturesContext} from "../contextes/FeaturesContext.tsx";
 
@@ -30,6 +31,7 @@ const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelPr
       typeof schema.styleSchema
     >[],
     resolveFileUrl: createFileUrlResolver(),
+    ...attachmentLinkOptions(),
   });
 
   return <FeaturesContext.Provider value={features || []}>
