@@ -52,6 +52,51 @@ describe("attachment round-trip", () => {
     expect(link.href).toBe("https://example.com");
   });
 
+  it("survives a video block round-trip", async () => {
+    const video = {
+      id: "b4",
+      type: "video",
+      props: {name: "clip.mp4", url: "attachment:777.mp4", caption: ""},
+      children: [],
+    };
+
+    const blocks = await convertMarkdownToBlocks(await convertBlocksToMarkdown([video] as any));
+
+    expect(blocks[0].type).toBe("video");
+    expect(blocks[0].props.url).toBe("attachment:777.mp4");
+  });
+
+  it("survives an inline link to an attachment path", async () => {
+    // The importer emits this form for Obsidian's [[file|caption]] link: an ordinary
+    // anchor, because an anchor carrying the attachment: scheme loses its href on the way
+    // back. read_document -> update_document has to preserve it.
+    const paragraph = {
+      id: "b5",
+      type: "paragraph",
+      props: {},
+      content: [
+        {type: "text", text: "see ", styles: {}},
+        {
+          type: "link",
+          href: "/attachments/1234",
+          content: [{type: "text", text: "Pierwsza wersja", styles: {}}],
+        },
+        {type: "text", text: " here", styles: {}},
+      ],
+      children: [],
+    };
+
+    const markdown = await convertBlocksToMarkdown([paragraph] as any);
+    expect(markdown).toContain("[Pierwsza wersja](/attachments/1234)");
+    // and never the embed form, which would turn a link into a second copy of the image
+    expect(markdown).not.toContain("![Pierwsza wersja]");
+
+    const blocks = await convertMarkdownToBlocks(markdown);
+    const link = blocks[0].content.find((c: any) => c.type === "link");
+    expect(link.href).toBe("/attachments/1234");
+    expect(link.content[0].text).toBe("Pierwsza wersja");
+  });
+
   it("keeps image blocks on the embed form they already used", async () => {
     const image = {
       id: "b3",
