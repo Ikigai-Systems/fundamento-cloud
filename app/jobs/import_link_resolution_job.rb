@@ -210,10 +210,7 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
 
       # An Obsidian *link* to a file — [[photo.png|caption]] rather than ![[photo.png]] —
       # only ever went through resolve_wiki_link, which matches documents by basename with
-      # the extension stripped and so can never match a file. It then fell through to the
-      # "leave as-is" branch below and stayed literal text even when the attachment was
-      # sitting right there: across one workspace, 146 of 162 such targets already had a
-      # matching attachment.
+      # the extension stripped and so can never match a file.
       if resolved_id.nil? && attachment_extension?(target_base)
         resolved_id = resolve_attachment_link(target_base, combined_map)
       end
@@ -221,8 +218,11 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
       display = alias_text || target_base
 
       if resolved_id&.start_with?("attachment:")
-        # Resolved to an attachment — render as image/file link
-        "![#{display}](#{resolved_id})"
+        # A link stays a link. This used to emit the ![...] embed form, so every
+        # [[file|Open: file]] became a second copy of the image its ![[file]] embed
+        # already showed — 274 documents in one workspace ended up with duplicated
+        # image blocks.
+        "[#{display}](#{attachment_link_path(resolved_id)})"
       elsif resolved_id
         # Resolved to a document — render as mention with optional heading fragment
         build_mention_span(resolved_id, display, heading)
@@ -307,6 +307,16 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
   def attachment_extension?(target)
     ext = File.extname(target).downcase
     ext.present? && ATTACHMENT_EXTENSIONS.include?(ext)
+  end
+
+  # The attachment: scheme only survives conversion on the embed form — an anchor carrying
+  # it is parsed back as plain text, silently losing the href — so links use the routable
+  # path instead.
+  def attachment_link_path(attachment_uri)
+    id = attachment_uri[/\Aattachment:(\d+)/, 1]
+    return attachment_uri unless id
+
+    Rails.application.routes.url_helpers.attachment_path(id)
   end
 
   def resolve_attachment_link(target, combined_map)
