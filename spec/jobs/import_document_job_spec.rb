@@ -214,5 +214,32 @@ RSpec.describe ImportDocumentJob, type: :job do
         expect(hierarchy_ids).to contain_exactly("written_elsewhere", import_file.reload.document_id)
       end
     end
+
+    context "database connection ownership" do
+      # GoodJob runs each job inside `connection_pool.with_connection` and then reuses
+      # that very connection to release the job's session advisory lock. Handing it back
+      # to the pool mid-job lets another worker thread check it out, and two threads
+      # driving one libpq handle desync the wire protocol -- surfacing as
+      # `undefined method 'cmd_tuples' for nil` out of GoodJob's advisory unlock.
+      it "does not return its caller's connection to the pool" do
+        import_file = build_import_file(relative_path: "Notes/hello.md")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+
+        pool = ActiveRecord::Base.connection_pool
+        checkins = 0
+
+        pool.with_connection do |conn|
+          allow(pool).to receive(:checkin).and_wrap_original do |original, connection|
+            checkins += 1 if connection.equal?(conn)
+            original.call(connection)
+          end
+
+          described_class.perform_now(import_file)
+        end
+
+        expect(checkins).to eq(0)
+      end
+    end
   end
 end
