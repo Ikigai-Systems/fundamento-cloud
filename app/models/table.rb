@@ -1,12 +1,6 @@
 require "csv"
 
 class Table < ApplicationRecord
-  # Being dropped in a follow-up migration. Ignored here so this release stops writing
-  # them while containers on the previous release, which still declare the association,
-  # are draining. Tables have no hierarchy -- the sidebar lists them flat -- and nothing
-  # ever read the parent.
-  self.ignored_columns += %w[parent_id parent_type]
-
   include NpiOrdering
 
   # Design ceilings for the versioning work: a snapshot of a table this size is roughly
