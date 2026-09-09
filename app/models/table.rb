@@ -16,6 +16,9 @@ class Table < ApplicationRecord
   include HasIcon
   has_icon derived_from: :name
 
+  include TitleSearch
+  searchable_by :name
+
   belongs_to :organization
   belongs_to :space
 

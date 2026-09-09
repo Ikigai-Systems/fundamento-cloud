@@ -10,6 +10,9 @@ class Space < ApplicationRecord
   include HasIcon
   has_icon derived_from: :name
 
+  include TitleSearch
+  searchable_by :name
+
   has_many :automations, dependent: :destroy
   has_many :documents, dependent: :destroy
   has_many :import_sessions, dependent: :destroy

@@ -11,6 +11,9 @@ class Document < ApplicationRecord
   include HasIcon
   has_icon derived_from: :title
 
+  include TitleSearch
+  searchable_by :title
+
   belongs_to :organization
   belongs_to :space
 
@@ -86,24 +89,5 @@ class Document < ApplicationRecord
   def nullify_object_reference_targets
     ObjectReference.where(target_type: "Document", target_id: id, organization_id: organization_id)
                    .update_all(target_id: nil)
-  end
-
-  def parent
-    def get_parent_id_from_hierarchy(document_id, node)
-      node.each do |item|
-        item["children"].each do |child|
-          return item["id"] if child["id"] == document_id
-        end
-
-        parent_id = get_parent_id_from_hierarchy(document_id, item["children"])
-        return parent_id if parent_id.present?
-      end
-
-      nil
-    end
-
-    parent_id = get_parent_id_from_hierarchy(self.id, self.space.hierarchy)
-
-    Document.find_by(id: parent_id)
   end
 end

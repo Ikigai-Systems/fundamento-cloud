@@ -10,9 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_05_211600) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_141012) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "pg_trgm"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -153,6 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_211600) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_documents_on_id", unique: true
+    t.index ["organization_id", "title"], name: "index_documents_on_organization_and_search_term_trgm", opclass: { title: :gin_trgm_ops }, using: :gin
     t.index ["organization_id"], name: "index_documents_on_organization_id"
     t.index ["space_id"], name: "index_documents_on_space_id"
   end
@@ -568,6 +571,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_211600) do
     t.index ["id"], name: "index_spaces_on_id", unique: true
     t.index ["name", "organization_id"], name: "index_spaces_on_name_and_organization_id", unique: true
     t.index ["organization_id", "archived"], name: "index_spaces_on_organization_id_and_archived"
+    t.index ["organization_id", "name"], name: "index_spaces_on_organization_and_search_term_trgm", opclass: { name: :gin_trgm_ops }, using: :gin
     t.index ["organization_id"], name: "index_spaces_on_organization_id"
   end
 
@@ -694,6 +698,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_05_211600) do
     t.datetime "updated_at", null: false
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
     t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true
+    t.index ["organization_id", "name"], name: "index_tables_on_organization_and_search_term_trgm", opclass: { name: :gin_trgm_ops }, using: :gin
     t.index ["organization_id"], name: "index_tables_on_organization_id"
     t.index ["parent_type", "parent_id"], name: "index_tables_on_parent"
     t.index ["space_id"], name: "index_tables_on_space_id"
