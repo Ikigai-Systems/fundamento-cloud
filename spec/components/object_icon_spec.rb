@@ -59,7 +59,7 @@ RSpec.describe ObjectIcon, type: :component do
     end
 
     it "falls back to the table glyph" do
-      table = Table.create!(name: "Metrics", organization: organization, space: space, parent: space)
+      table = Table.create!(name: "Metrics", organization: organization, space: space)
 
       expect(render_icon(object: table).css("i.fa-table")).to be_present
     end

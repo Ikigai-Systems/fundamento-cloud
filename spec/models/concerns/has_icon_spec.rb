@@ -13,7 +13,7 @@ RSpec.describe HasIcon do
 
   def create_table(name, in_space: nil)
     in_space ||= space
-    Table.create!(name: name, organization: organization, space: in_space, parent: in_space)
+    Table.create!(name: name, organization: organization, space: in_space)
   end
 
   describe "promoting a leading emoji" do
@@ -254,7 +254,7 @@ RSpec.describe HasIcon do
     # database-level explosion.
     it "fails validation instead of raising a uniqueness violation" do
       create_table("Notes")
-      duplicate = Table.new(name: "🔥 Notes", organization: organization, space: space, parent: space)
+      duplicate = Table.new(name: "🔥 Notes", organization: organization, space: space)
 
       expect(duplicate).not_to be_valid
       expect(duplicate.errors[:name]).to be_present

@@ -114,7 +114,6 @@ RSpec.describe Tables::VersionsController, type: :request do
         name: "HC Table",
         organization: organizations(:hc),
         space: spaces(:hc_default),
-        parent: spaces(:hc_default),
       )
     end
 

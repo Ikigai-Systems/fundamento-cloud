@@ -53,7 +53,7 @@ RSpec.describe "Object icons in JSON payloads", type: :request do
     # The `only:` list here is maintained separately from the documents one, so
     # it is worth pinning independently.
     it "sends the icon for the @ menu" do
-      table = Table.create!(name: "📊 Metrics", organization: organization, space: space, parent: space)
+      table = Table.create!(name: "📊 Metrics", organization: organization, space: space)
 
       get tables_path(format: :json, mention: true)
 
@@ -77,7 +77,7 @@ RSpec.describe "Object icons in JSON payloads", type: :request do
     # The table block inside a document builds its editable title from this
     # payload, so it needs the same combined string the page-level title gets.
     it "sends the string the inline title field should show" do
-      table = Table.create!(name: "\u{1F4CA} Metrics", organization: organization, space: space, parent: space)
+      table = Table.create!(name: "\u{1F4CA} Metrics", organization: organization, space: space)
 
       get table_path(table, format: :json)
 

@@ -33,8 +33,7 @@ RSpec.describe BackfillObjectIconsFromTitles do
     in_space ||= space
     tables.create!(
       id: id, name: name,
-      organization_id: organization.id, space_id: in_space.id,
-      parent_id: in_space.id, parent_type: "Space"
+      organization_id: organization.id, space_id: in_space.id
     )
   end
 

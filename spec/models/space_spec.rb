@@ -41,8 +41,7 @@ RSpec.describe Space, type: :model do
 
       table = space.tables.create!(
         name: "Test Table",
-        organization: organizations(:is),
-        parent: document
+        organization: organizations(:is)
       )
 
       expect(table.space_id).to be_a(String)

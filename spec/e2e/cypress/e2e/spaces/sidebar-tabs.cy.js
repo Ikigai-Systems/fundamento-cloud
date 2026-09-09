@@ -139,7 +139,7 @@ describe("Space sidebar tabs", function () {
   it("adds and removes the row as a table's own star button is clicked", function () {
     cy.appEval(`
       Table.create!(id: "startable", name: "Starrable Table", organization_id: "is",
-                    space_id: "is_default", parent: Space.find("is_default")).id
+                    space_id: "is_default").id
     `);
 
     cy.visit("/t/startable");

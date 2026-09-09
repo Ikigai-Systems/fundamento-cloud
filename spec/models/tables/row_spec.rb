@@ -22,8 +22,7 @@ RSpec.describe Tables::Row, type: :model do
         id: "testrow001",
         name: "Test Table",
         organization: organization,
-        space: space,
-        parent: space
+        space: space
       )
 
       column = table.columns.create!(

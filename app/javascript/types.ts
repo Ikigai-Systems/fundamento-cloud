@@ -36,8 +36,6 @@ export type Table = {
   // Name with the icon put back on the front, for editing. See HasIcon.
   titleForEditing?: string,
   organizationId: number,
-  parentId: number,
-  parentType: string,
   spaceId: number,
   updatedAt: string, //date
 }
