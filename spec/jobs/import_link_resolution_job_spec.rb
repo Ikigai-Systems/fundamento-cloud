@@ -34,6 +34,28 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       expect(subject.send(:resolve_wiki_link, "Notes/foo", path_map)).to eq("doc1")
     end
 
+    it "resolves [[file.docx]] to the document converted from it" do
+      # Obsidian writes the extension for anything that is not markdown. The
+      # extension-stripped basename comparison could never match those, so the link became
+      # a broken mention even though the converted document was in the path map.
+      path_map = { "Osobiste/MBA/Pliki/Plan ed.16.docx" => "doc_docx" }
+
+      expect(subject.send(:resolve_wiki_link, "Plan ed.16.docx", path_map)).to eq("doc_docx")
+    end
+
+    it "still resolves the same target written without its extension" do
+      path_map = { "Osobiste/MBA/Pliki/Plan ed.16.docx" => "doc_docx" }
+
+      expect(subject.send(:resolve_wiki_link, "Plan ed.16", path_map)).to eq("doc_docx")
+    end
+
+    it "does not match a file of a different type" do
+      # The extension has to agree: [[notes.docx]] must not land on notes.md.
+      path_map = { "Notes/notes.md" => "doc_md" }
+
+      expect(subject.send(:resolve_wiki_link, "notes.docx", path_map)).to be_nil
+    end
+
     it "returns nil for unresolvable links" do
       path_map = {}
       expect(subject.send(:resolve_wiki_link, "missing", path_map)).to be_nil

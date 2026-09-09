@@ -21,6 +21,11 @@ class ImportFile < ApplicationRecord
   }
 
   SUPPORTED_DOCUMENT_FORMATS = %w[markdown docx odt].freeze
+
+  # Document formats whose bytes are a *source* that has to be converted, rather than the
+  # body itself. Derived from the supported list so that teaching the converter a new
+  # format does not silently skip keeping its originals.
+  CONVERTED_DOCUMENT_FORMATS = (SUPPORTED_DOCUMENT_FORMATS - %w[markdown]).freeze
   SUPPORTED_ATTACHMENT_FORMATS = %w[image pdf video other].freeze
 
   # Extensions we can actually turn into a document. Anything absent from this map is stored
@@ -70,5 +75,10 @@ class ImportFile < ApplicationRecord
 
   def filename
     File.basename(relative_path)
+  end
+
+  # True when importing this file produces a document but discards the file it came from.
+  def converted_source?
+    document? && CONVERTED_DOCUMENT_FORMATS.include?(format)
   end
 end

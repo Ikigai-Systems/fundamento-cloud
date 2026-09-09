@@ -56,6 +56,12 @@ class ImportDocumentJob < ApplicationJob
           .update_tags(valid_tags)
       end
 
+      # A .docx or .odt is converted to blocks and the original would otherwise be
+      # dropped, leaving no way back to the source -- while a .doc, which cannot be
+      # converted, is kept as an attachment. Same folder, opposite outcomes. Keep the
+      # source on the document it produced.
+      attach_source_file(document, import_file) if import_file.converted_source?
+
       locked_file.update!(
         status: :completed,
         document: document,
@@ -79,6 +85,20 @@ class ImportDocumentJob < ApplicationJob
   end
 
   private
+
+  # Reuses the blob the import already uploaded rather than re-reading the file, so this
+  # costs a row, not a copy of the bytes.
+  def attach_source_file(document, import_file)
+    return unless import_file.file.attached?
+
+    attachment = Attachment.create!(
+      organization: document.organization,
+      parent: document,
+      filename: import_file.filename,
+      mime_type: import_file.file.blob.content_type
+    )
+    attachment.file.attach(import_file.file.blob)
+  end
 
   def parent_document_id(import_file, session)
     dir_path = import_file.directory_path

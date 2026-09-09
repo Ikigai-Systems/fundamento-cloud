@@ -295,8 +295,17 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     combined_map["#{target}.md"] ||
       combined_map[target] ||
       combined_map[target.downcase] || # case-insensitive fallback
-      # Basename-only fallback for Obsidian [[filename]] style (O(n) scan)
-      combined_map.find { |k, _| File.basename(k, ".*") == target }&.last
+      # Basename-only fallback for Obsidian [[filename]] style (O(n) scan).
+      #
+      # Both forms are needed. The extension-stripped comparison handles [[Some Note]],
+      # but Obsidian writes the extension for anything that isn't markdown --
+      # [[Plan ed.16.docx]] -- and that never matched, because the key's extension had
+      # been stripped away before the comparison. Those links became broken mentions even
+      # though the converted document was sitting in the path map. The second comparison
+      # keeps the extension on both sides, so it only matches a file of the same type.
+      combined_map.find { |k, _|
+        File.basename(k, ".*") == target || File.basename(k) == target
+      }&.last
   end
 
   ATTACHMENT_EXTENSIONS = Set.new(%w[
