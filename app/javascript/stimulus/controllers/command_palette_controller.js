@@ -4,6 +4,7 @@ import {debounce} from "lodash";
 import DocumentsApi from "../../api/DocumentsApi.js";
 import SearchesApi from "@/api/SearchesApi.js";
 import TablesApi from "~/api/Tables/TablesApi.js";
+import SpacesApi from "@/api/SpacesApi.js";
 
 // Connects to data-controller="command-palette"
 // ninja-keys is a Lit element, so these are injected with unsafeHTML into its
@@ -12,6 +13,12 @@ import TablesApi from "~/api/Tables/TablesApi.js";
 // An emoji is plain text and needs no stylesheet, so it works either way.
 const DOCUMENT_GLYPH_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9"/></svg>';
 const TABLE_GLYPH_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 512 512"><path d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>';
+
+const SPACE_GLYPH_SVG = '<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44"/></svg>';
+
+// Mirrors TitleSearch::MIN_QUERY_LENGTH -- the server answers [] below this, so
+// there is no point spending a round trip on it.
+const MIN_QUERY_LENGTH = 2;
 
 // The icon value can only ever be an RGI emoji, but it is interpolated into
 // markup here, so escape it rather than rely on that.
@@ -26,7 +33,10 @@ function paletteIcon(object) {
     return `<span class="ninja-icon">${escapeHtml(object.icon.value)}</span>`;
   }
 
-  return object.type === "Document" ? DOCUMENT_GLYPH_SVG : TABLE_GLYPH_SVG;
+  if (object.type === "Document") return DOCUMENT_GLYPH_SVG;
+  if (object.type === "Space") return SPACE_GLYPH_SVG;
+
+  return TABLE_GLYPH_SVG;
 }
 
 export default class CommandPaletteController extends Controller {
@@ -35,7 +45,9 @@ export default class CommandPaletteController extends Controller {
   }
 
   connect() {
-    this.element.addEventListener("change", debounce(this.handleChange.bind(this), 300));
+    this.searchSequence = 0;
+    this.onSearchChange = debounce(this.handleChange.bind(this), 300);
+    this.element.addEventListener("change", this.onSearchChange);
     this.element.addEventListener("selected", this.handleSelected);
 
     // ninja-keys renders into its own shadow root, so the app's dark-mode CSS
@@ -61,53 +73,93 @@ export default class CommandPaletteController extends Controller {
   }
 
   async handleChange(e) {
-    // console.log(e.detail.search);
+    const query = e.detail.search.trim();
 
-    // todo: while we don't narrow down query for specific documents and instead we retrieve all, let's cache results:
-    if (this._cachedResults) {
+    if (query.length < MIN_QUERY_LENGTH) {
+      // Bump the sequence so a response still in flight for a longer query cannot land
+      // after the user has cleared the box.
+      this.searchSequence += 1;
+      this.abortController?.abort();
+      this.renderResults([]);
       return;
     }
 
-    if (e.detail.search.length > 0) {
-      if (this.element.data.find(command => command.id === "documentSearch_loading") === undefined) {
-        this.element.data = this.element.data.concat([{
-          id: "documentSearch_loading",
-          title: "Searching...",
-          section: "Documents",
-          icon: `<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity="0.25"/><path fill="currentColor" d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>`,
-          alwaysVisible: true,
-        }]);
-      }
-    } else {
-      this.element.data = this.element.data.filter(command => command.id !== "documentSearch_loading");
+    const sequence = ++this.searchSequence;
+    this.showLoadingRow();
+
+    // Two guards, deliberately: aborting cancels the wasted round trip, and the sequence
+    // check is what actually stops a slow response for "ch" overwriting a fast one for
+    // "checklist" -- an aborted request that loses the race still resolves.
+    this.abortController?.abort();
+    this.abortController = new AbortController();
+
+    let results;
+
+    try {
+      results = await SearchesApi.show({
+        query: {q: query},
+        fetchOptions: {signal: this.abortController.signal},
+      });
+    } catch {
+      if (sequence === this.searchSequence) this.renderResults([]);
+      return;
     }
 
-    const results = await SearchesApi.show(); //todo: use e.detail.search as query parameter to narrow down documents in response
+    if (sequence !== this.searchSequence) return;
 
+    this.renderResults(results);
+  }
+
+  showLoadingRow() {
+    if (this.element.data.find(command => command.id === "documentSearch_loading")) return;
+
+    this.element.data = this.element.data.concat([{
+      id: "documentSearch_loading",
+      title: "Searching...",
+      section: "Documents",
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" class="ninja-icon" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity="0.25"/><path fill="currentColor" d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>`,
+      alwaysVisible: true,
+    }]);
+  }
+
+  // Always strips the loading row as well as the previous results, so it can never get
+  // stranded on screen.
+  renderResults(results) {
     this.element.data = this.element.data.filter(command => {
       return !command.id.startsWith("documentSearch#") && command.id !== "documentSearch_loading";
     }).concat(results.map(({object, space}) => {
       const objectTitleWithPath = object.parentPath + object.title;
-      const displayTitle = `${space.name} ⎯ ${objectTitleWithPath.length > 60 ? "..." : ""}${(objectTitleWithPath).slice(-60)}`;
+      const truncated = `${objectTitleWithPath.length > 60 ? "..." : ""}${objectTitleWithPath.slice(-60)}`;
+      // A space is its own context, so prefixing it with its own name reads as "Sales — Sales".
+      const displayTitle = space.name ? `${space.name} ⎯ ${truncated}` : truncated;
+
       return {
         id: `documentSearch#${object.id}`,
         value: object.title,
         title: displayTitle,
         section: "Documents and tables",
         icon: paletteIcon(object),
+        // The server has already filtered. Without this ninja-keys re-filters with
+        // `new RegExp(search, "gi")` over `value`, which would drop rows the server
+        // deliberately returned whenever the query contains a regex metacharacter.
+        alwaysVisible: true,
         handler: () => {
           if (object.type === "Document") {
             Turbo.visit(DocumentsApi.show.path({id: object?.id}));
           } else if (object.type === "Table") {
             Turbo.visit(TablesApi.show.path({id: object?.id}));
+          } else if (object.type === "Space") {
+            Turbo.visit(SpacesApi.show.path({id: object?.id}));
           }
         }
       };
     }));
-    this._cachedResults = true;
   }
 
   disconnect() {
+    this.onSearchChange?.cancel();
+    this.abortController?.abort();
+    this.element.removeEventListener("change", this.onSearchChange);
     this.darkScheme?.removeEventListener("change", this.syncColorScheme);
   }
 

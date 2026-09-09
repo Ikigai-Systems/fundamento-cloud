@@ -20,7 +20,7 @@ RSpec.describe "Object icons in JSON payloads", type: :request do
     it "sends the icon so the command palette can render it" do
       documents(:one).update!(title: "⭐ Roadmap")
 
-      get search_path(format: :json)
+      get search_path(format: :json, q: "Roadmap")
 
       result = JSON.parse(response.body).find { |r| r.dig("object", "id") == documents(:one).id }
       expect(result["object"]).to include("title" => "Roadmap")
@@ -30,7 +30,7 @@ RSpec.describe "Object icons in JSON payloads", type: :request do
     it "sends a nil icon for objects without one" do
       documents(:one).update!(title: "Roadmap")
 
-      get search_path(format: :json)
+      get search_path(format: :json, q: "Roadmap")
 
       result = JSON.parse(response.body).find { |r| r.dig("object", "id") == documents(:one).id }
       expect(result["object"]).to include("icon" => nil)

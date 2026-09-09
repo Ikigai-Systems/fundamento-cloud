@@ -207,7 +207,7 @@ describe("Command Palette (Ctrl+K)", () => {
       cy.get("ninja-keys").shadow()
         .find(".modal").should("have.class", "visible");
 
-      cy.intercept("GET", "/search").as("search");
+      cy.intercept("GET", "/search*").as("search");
 
       cy.get("ninja-keys").shadow()
         .find("ninja-header").shadow()
@@ -226,8 +226,9 @@ describe("Command Palette (Ctrl+K)", () => {
       cy.get("ninja-keys").shadow()
         .find(".modal").should("have.class", "visible");
 
-      // Re-register intercept after page navigation
-      cy.intercept("GET", "/search").as("search2");
+      // Intercept aliases do not survive a full page navigation, so this needs a fresh
+      // one -- see .claude/rules/e2e-tests.md.
+      cy.intercept("GET", "/search*").as("search2");
 
       cy.get("ninja-keys").shadow()
         .find("ninja-header").shadow()
@@ -239,6 +240,100 @@ describe("Command Palette (Ctrl+K)", () => {
       clickCommand(/Two/);
 
       cy.url().should("include", "/d/two");
+    });
+
+    it("does not query the server below the minimum query length", () => {
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search*").as("shortSearch");
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("o");
+
+      // The debounce is 300ms; give it room to fire before asserting it did not.
+      cy.wait(600);
+      cy.get("@shortSearch.all").should("have.length", 0);
+    });
+
+    it("sends the typed query to the server", () => {
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search*").as("querySearch");
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("one");
+
+      cy.wait("@querySearch").its("request.query.q").should("eq", "one");
+    });
+
+    it("clears results when the query is erased", () => {
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search*").as("clearSearch");
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("one");
+
+      cy.wait("@clearSearch");
+      clickCommand(/One/);
+      cy.url().should("include", "/d/one");
+
+      cy.get("body").type("{ctrl}k");
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search*").as("clearSearch2");
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("one");
+      cy.wait("@clearSearch2");
+
+      // Results are alwaysVisible, so only an explicit clear can remove them.
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").clear();
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-action")
+        .should($actions => {
+          const titles = [...$actions].map(a => a.shadowRoot?.querySelector(".ninja-title")?.textContent?.trim());
+          expect(titles.some(t => t && t.includes("\u23af"))).to.be.false;
+        });
+    });
+
+    it("jumps to a space from the palette", () => {
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+
+      cy.intercept("GET", "/search*").as("spaceSearch");
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("Default IS");
+
+      cy.wait("@spaceSearch");
+
+      clickCommand(/Default IS/);
+
+      cy.url().should("include", "/s/is_default");
     });
   });
 
@@ -354,7 +449,7 @@ describe("Command Palette (Ctrl+K)", () => {
       cy.get("body").type("{ctrl}k");
       cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible");
 
-      cy.intercept("GET", "/search").as("iconSearch");
+      cy.intercept("GET", "/search*").as("iconSearch");
       cy.get("ninja-keys").shadow()
         .find("ninja-header").shadow()
         .find("#search").type(term);
