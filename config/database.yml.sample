@@ -8,6 +8,10 @@ default: &default
   adapter: postgresql
   encoding: unicode
   url: <%= ENV.fetch("DATABASE_URL", "postgres://postgres:password@localhost") %>
+  # Headroom over the thread count on purpose: Good Job needs a connection per worker
+  # thread plus a few of its own (the LISTEN notifier and the shared executor). Sized to
+  # the threads alone, the notifier starves with ConnectionTimeoutError.
+  max_connections: <%= ENV.fetch("RAILS_MAX_CONNECTIONS") { ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i + 3 } %>
 
 development:
   <<: *default
