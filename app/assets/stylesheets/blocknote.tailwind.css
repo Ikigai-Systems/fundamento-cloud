@@ -81,7 +81,46 @@
     @apply flex-1;
 }
 
-/* Fix BlockNote checklist checkboxes to use Tailwind forms plugin styling */
-.bn-block-content[data-content-type="checkListItem"] > input[type="checkbox"] {
-    @apply h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 dark:border-gray-500 dark:bg-gray-700;
+/*
+ * Fix BlockNote checklist checkboxes to use Tailwind forms plugin styling.
+ *
+ * BlockNote renders a check list item as `<div contenteditable="false"><input type="checkbox"></div><p>`
+ * and its own stylesheet stretches that input to 12x24px. Its styles are injected by Vite at runtime,
+ * so they land after this file - every rule below needs to out-specify
+ * `.bn-block-content[data-content-type=checkListItem] > div > input`.
+ */
+.bn-container .bn-block-content[data-content-type="checkListItem"] {
+    /* Centre the checkbox on the first line of the item instead of stretching it */
+    & > div:has(> input[type="checkbox"]) {
+        @apply flex h-6 items-center;
+    }
+
+    & > div > input[type="checkbox"] {
+        @apply h-4 w-4 ml-1 mr-2 my-0 shrink-0 cursor-pointer rounded border-gray-300 text-blue-600;
+        @apply dark:border-gray-500;
+
+        &:not(:checked) {
+            @apply bg-white dark:bg-gray-700;
+        }
+
+        /* The forms plugin paints the tick with `background-color: currentColor` */
+        &:checked {
+            @apply border-transparent bg-current;
+        }
+
+        &:not(:checked):hover:not(:disabled) {
+            @apply border-gray-400 dark:border-gray-400;
+        }
+
+        /* Read-only documents disable the input - keep it looking like a checkbox instead
+           of letting the global `input:disabled` style grey it out. */
+        &:disabled {
+            @apply cursor-default text-blue-600;
+        }
+    }
+
+    /* Completed items are already struck through by BlockNote, dim them as well */
+    &[data-checked="true"] .bn-inline-content {
+        @apply text-gray-400 dark:text-gray-500;
+    }
 }
