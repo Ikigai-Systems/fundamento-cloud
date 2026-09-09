@@ -1,6 +1,11 @@
 require 'open3'
 
 class Document < ApplicationRecord
+  # Content now lives in object_contents; a follow-up migration drops this column. Ignored
+  # so nothing can read a stale blob from it in the meantime, and so SELECT * stops
+  # carrying it immediately -- which is the point of the move.
+  self.ignored_columns += %w[sync]
+
   audited except: [:sync]
 
   include NpiOrdering
@@ -16,6 +21,15 @@ class Document < ApplicationRecord
 
   belongs_to :organization
   belongs_to :space
+
+  # The Y.js CRDT blob, kept off this row so it cannot ride along with SELECT *.
+  # See docs/superpowers/specs/2026-09-09-object-contents-design.md.
+  has_one :content, class_name: "ObjectContent", as: :owner, dependent: :destroy
+
+  # Writers use this rather than #content: a document may predate the move to
+  # object_contents, or have been created by a path that has not written content yet, so
+  # the row is created lazily on first write.
+  def content_or_build = content || build_content
 
   has_one :public_link, as: :object, dependent: :destroy
 
@@ -77,7 +91,7 @@ class Document < ApplicationRecord
   end
 
   def to_blocks
-    BlocknoteConverterService.yjs_to_blocks(sync)
+    BlocknoteConverterService.yjs_to_blocks(content&.sync)
   end
 
   def nullify_space_home_document_id

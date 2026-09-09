@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_09_151035) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_09_154256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -420,6 +420,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_151035) do
     t.index ["object_type", "object_id"], name: "index_object_comments_on_object"
     t.index ["organization_id"], name: "index_object_comments_on_organization_id"
     t.index ["organization_membership_id"], name: "index_object_comments_on_organization_membership_id"
+  end
+
+  create_table "object_contents", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "data"
+    t.string "owner_id", null: false
+    t.string "owner_type", null: false
+    t.binary "sync"
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_object_contents_on_owner_type_and_owner_id", unique: true
   end
 
   create_table "object_reactions", force: :cascade do |t|

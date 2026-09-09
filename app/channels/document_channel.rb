@@ -69,7 +69,7 @@ class DocumentChannel < ApplicationCable::Channel
   end
 
   def load_doc(document_id)
-    data = find_document(document_id).sync
+    data = find_document(document_id)&.content&.sync
     data = data.unpack("C*") unless data.nil?
     data
   end
@@ -79,7 +79,7 @@ class DocumentChannel < ApplicationCable::Channel
 
     return unless document && authorized_to_update?(document)
 
-    document.update(sync: update.pack("C*"))
+    document.content_or_build.update(sync: update.pack("C*"))
   rescue
     logger.error "Document sync #{document_id} could not be saved"
   end

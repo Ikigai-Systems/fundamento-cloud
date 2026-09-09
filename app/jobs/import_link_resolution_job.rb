@@ -98,7 +98,7 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
       content_blocks: new_blocks,
       created_by: import_file.import_session.organization_membership.user
     )
-    document.update!(sync: new_sync)
+    document.content_or_build.update!(sync: new_sync)
   rescue StandardError => e
     Rails.logger.error "ImportLinkResolutionJob: failed for #{import_file.relative_path}: #{e.message}"
     # Non-fatal — continue with other documents

@@ -166,6 +166,27 @@ smaller than it sounds:
 
 It is not zero. Deploy R1 at a quiet hour.
 
+### `ignored_columns` during R1
+
+R1 leaves `documents.sync` in place, which would let any missed call site silently read a
+stale blob. `Document` therefore adds:
+
+```ruby
+self.ignored_columns += %w[sync]
+```
+
+Two effects, both wanted: a missed call site raises `NoMethodError` instead of returning
+stale data, and `SELECT *` stops carrying the blob immediately rather than waiting for R2.
+Same pattern as the `tables.parent_id` removal.
+
+It also makes the dead defences harmless straight away. They are removed in **R2**, with
+the column, rather than in R1 — they cost nothing and still protect if R1's code is rolled
+back while the column exists:
+
+- `Document#as_json`'s Base64 override
+- `audited except: [:sync]`
+- the three `:except => [:sync]` in `documents_controller`
+
 ### R1 migration
 
 Production is under ~1 GB, so a batched backfill inside the migration is acceptable —
@@ -214,11 +235,17 @@ Two need more than a rename:
 
 ## What this removes
 
-- `Document#as_json`'s Base64 override — dead once `sync` is not a Document column
+Immediately in R1, via `ignored_columns`:
+
+- **the `GET /d.json` blob bug fixes itself** — `render json: policy_scope(...)` stops
+  reading 15 MB, because the blob is no longer on the model. Verified against the
+  development database: a 200-document query selects no `sync`.
+
+In R2, with the column:
+
+- `Document#as_json`'s Base64 override
 - `audited except: [:sync]` on `Document`
 - all three `:except => [:sync]` in `documents_controller`
-- **the `GET /d.json` blob bug fixes itself** — `render json: policy_scope(...)` stops
-  reading 15 MB, because there is no blob on the row to read
 
 The four defensive narrow selects can be revisited afterwards; several become unnecessary.
 That is cleanup, not part of this change.

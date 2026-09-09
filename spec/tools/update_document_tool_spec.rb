@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe UpdateDocumentTool, type: :model do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents, :object_contents
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }
@@ -151,7 +151,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         )
 
         document.reload
-        expect(document.sync).to eq(sample_sync)
+        expect(document.content.sync).to eq(sample_sync)
       end
     end
 

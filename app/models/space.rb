@@ -331,9 +331,9 @@ class Space < ApplicationRecord
 
     document = self.organization.documents.create!(
       title: File.exist?(title_filename) ? File.read(title_filename) : File.basename(yjs_file, ".*"),
-      sync: File.read(yjs_file),
       space: self,
     )
+    document.create_content!(sync: File.read(yjs_file))
 
     # Load BlockNote JSON
     content_blocks = JSON.load_file!(directory + "/" + File.basename(yjs_file, ".*") + ".blocknote.json")
@@ -421,9 +421,9 @@ class Space < ApplicationRecord
 
     home_document = documents.create!(
       title: "Home for #{name}",
-      organization: organization,
-      sync: File.read(Rails.root.join("app", "templates", "space.yjs"))
+      organization: organization
     )
+    home_document.create_content!(sync: File.read(Rails.root.join("app", "templates", "space.yjs")))
 
     home_document.versions.create!(
       content_blocks: JSON.load_file!(Rails.root.join("app", "templates", "space.blocknote.json"))

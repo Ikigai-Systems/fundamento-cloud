@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ReadDocumentTool, type: :model do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents, :object_contents
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }

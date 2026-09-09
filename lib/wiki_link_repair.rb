@@ -63,7 +63,7 @@ class WikiLinkRepair
   private
 
   def scope
-    documents = Document.where.not(sync: nil)
+    documents = Document.joins(:content).where.not(object_contents: {sync: nil})
     documents = documents.where(space_id: @space_id) if @space_id
     return documents.where(id: @document_id) if @document_id
 
@@ -84,7 +84,7 @@ class WikiLinkRepair
   end
 
   def repair_document(document)
-    blocks = BlocknoteConverterService.yjs_to_blocks(document.sync)
+    blocks = BlocknoteConverterService.yjs_to_blocks(document.content.sync)
     return if blocks.blank?
     return unless blocks.to_json.include?("[[")
 
@@ -102,7 +102,7 @@ class WikiLinkRepair
     new_sync = BlocknoteConverterService.blocks_to_yjs(rewritten)
     Document.transaction do
       document.versions.create!(content_blocks: rewritten, created_by: repair_author(document))
-      document.update!(sync: new_sync)
+      document.content.update!(sync: new_sync)
     end
   end
 
