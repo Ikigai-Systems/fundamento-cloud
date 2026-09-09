@@ -222,7 +222,7 @@ describe("Advanced Table Title in Document", function () {
       cy.appEval(`
         Table.create!(
           id: "icontable", name: "⭐ Metrics", organization_id: "is",
-          space_id: "is_default", parent_id: "is_default", parent_type: "Space"
+          space_id: "is_default"
         ).id
       `);
 
@@ -239,7 +239,7 @@ describe("Advanced Table Title in Document", function () {
       cy.appEval(`
         Table.create!(
           id: "plaintable", name: "Plain Metrics", organization_id: "is",
-          space_id: "is_default", parent_id: "is_default", parent_type: "Space"
+          space_id: "is_default"
         ).id
       `);
 

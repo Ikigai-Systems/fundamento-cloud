@@ -248,7 +248,7 @@ RSpec.describe ObjectReferenceReconciler do
 
   context "advancedTable blocks" do
     let(:space) { spaces(:is_default) }
-    let(:table) { Table.create!(name: "Test Table", organization: organization, space: space, parent: space) }
+    let(:table) { Table.create!(name: "Test Table", organization: organization, space: space) }
 
     def advanced_table_block(id:, table_npi: nil, table_id: nil)
       props = { "viewId" => "view1" }
@@ -392,7 +392,7 @@ RSpec.describe ObjectReferenceReconciler do
     end
 
     it "works for comments on Tables" do
-      table = Table.create!(name: "Test Table", organization: organization, space: space, parent: space)
+      table = Table.create!(name: "Test Table", organization: organization, space: space)
       uuid = SecureRandom.uuid
       content = [mention_block(id: uuid, entity: "document", entity_id: documents(:two).id)]
       comment = ObjectComment.create!(

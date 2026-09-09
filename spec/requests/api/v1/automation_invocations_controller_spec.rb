@@ -23,7 +23,6 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
       organization: organization,
       name: "Test Table",
       id: "id",
-      parent: space,
     )
   end
 

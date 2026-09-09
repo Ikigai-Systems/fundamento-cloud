@@ -64,8 +64,6 @@ class Tables::TablesController < ApplicationController
     authorize @table, :create?
 
     @table.organization = @space.organization
-    @table.parent = @space.home_document || @space.documents.first || nil
-    @table.parent_id = 0 if @table.parent.nil?
 
     if @table.save
       uploaded_file = params[:table].fetch(:csv_file, nil)

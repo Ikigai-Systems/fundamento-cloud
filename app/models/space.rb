@@ -352,7 +352,6 @@ class Space < ApplicationRecord
 
       table = self.tables.create!(
         name: table_name,
-        parent: self.home_document || self.documents.first || nil,
         organization: self.organization,
       )
 

@@ -32,8 +32,7 @@ RSpec.describe Formula::TableLookup, type: :model do
           id: "other_space_projects",
           name: "Projects",
           organization: organization,
-          space: other_space,
-          parent: other_space
+          space: other_space
         )
 
         # Same name as projects_table but in other_space — should still find the one in default_space
@@ -63,8 +62,7 @@ RSpec.describe Formula::TableLookup, type: :model do
           id: "duplicate_projects",
           name: projects_table.name,
           organization: organization,
-          space: other_space,
-          parent: other_space
+          space: other_space
         )
 
         expect { lookup.find!(projects_table.name) }.to raise_error(
@@ -77,8 +75,7 @@ RSpec.describe Formula::TableLookup, type: :model do
           id: "duplicate_projects",
           name: projects_table.name,
           organization: organization,
-          space: other_space,
-          parent: other_space
+          space: other_space
         )
 
         expect(lookup.find!(projects_table.id)).to eq(projects_table)

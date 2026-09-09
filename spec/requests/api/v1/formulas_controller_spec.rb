@@ -100,8 +100,7 @@ RSpec.describe "Api::V1::Formulas", type: :request do
             id: "duplicate_projects",
             name: tables_tables(:projects).name,
             organization: ikigai_systems,
-            space: spaces(:is_stefans),
-            parent: spaces(:is_stefans)
+            space: spaces(:is_stefans)
           )
 
           post api_v1_formulas_eval_path,

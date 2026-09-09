@@ -19,7 +19,6 @@ RSpec.describe Objects::TagsController, type: :request do
       table.name = "Test Table One"
       table.organization = ikigai_systems
       table.space = is_default_space
-      table.parent = is_default_space
     end
   end
 

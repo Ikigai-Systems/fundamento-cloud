@@ -61,8 +61,7 @@ RSpec.describe Formula::Engine, type: :model do
           id: "duplicate_projects",
           name: tables_tables(:projects).name,
           organization: organization,
-          space: spaces(:is_stefans),
-          parent: spaces(:is_stefans)
+          space: spaces(:is_stefans)
         )
 
         expect {

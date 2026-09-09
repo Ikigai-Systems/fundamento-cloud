@@ -10,8 +10,7 @@ RSpec.describe Table, type: :model do
       id: "hctable001",
       name: "Sample Table",
       organization: organization,
-      space: space,
-      parent: space
+      space: space
     )
   end
 
@@ -30,8 +29,7 @@ RSpec.describe Table, type: :model do
       # Create a new table
       new_table = organization.tables.create!(
         name: "Newest Table",
-        space: space,
-        parent: space
+        space: space
       )
 
       expect(Table.order(:created_at).last).to eq(new_table)
@@ -41,8 +39,7 @@ RSpec.describe Table, type: :model do
     it "generates 10-character ID on create" do
       new_table = organization.tables.create!(
         name: "Test Table",
-        space: space,
-        parent: space
+        space: space
       )
 
       expect(new_table.id).to be_a(String)
@@ -69,8 +66,7 @@ RSpec.describe Table, type: :model do
     it "nullifies target_id on object_references pointing to deleted table" do
       target_table = is_org.tables.create!(
         name: "Deletable Table",
-        space: is_space,
-        parent: is_space
+        space: is_space
       )
 
       source_doc = documents(:one)

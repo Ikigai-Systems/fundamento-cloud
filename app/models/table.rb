@@ -1,6 +1,12 @@
 require "csv"
 
 class Table < ApplicationRecord
+  # Being dropped in a follow-up migration. Ignored here so this release stops writing
+  # them while containers on the previous release, which still declare the association,
+  # are draining. Tables have no hierarchy -- the sidebar lists them flat -- and nothing
+  # ever read the parent.
+  self.ignored_columns += %w[parent_id parent_type]
+
   include NpiOrdering
 
   # Design ceilings for the versioning work: a snapshot of a table this size is roughly
@@ -11,7 +17,7 @@ class Table < ApplicationRecord
   MAX_CELL_VALUE_LENGTH = 100_000
 
   include ToReactProps
-  set_react_props :id, :name, :icon, :title_for_editing, :organization_id, :parent_id, :parent_type, :space_id, :created_at, :updated_at, :archived
+  set_react_props :id, :name, :icon, :title_for_editing, :organization_id, :space_id, :created_at, :updated_at, :archived
 
   include HasIcon
   has_icon derived_from: :name
@@ -21,8 +27,6 @@ class Table < ApplicationRecord
 
   belongs_to :organization
   belongs_to :space
-
-  belongs_to :parent, polymorphic: true
 
   has_many :cells, class_name: "Tables::Cell", dependent: :delete_all
   has_many :columns, class_name: "Tables::Column", dependent: :delete_all

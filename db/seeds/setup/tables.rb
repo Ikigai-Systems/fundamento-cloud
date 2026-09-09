@@ -21,7 +21,6 @@ section :table_helpers do
       name: defn["name"],
       space: space,
       organization: organization,
-      parent: space,
       **attrs
     )
 
