@@ -210,10 +210,7 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
 
       # An Obsidian *link* to a file — [[photo.png|caption]] rather than ![[photo.png]] —
       # only ever went through resolve_wiki_link, which matches documents by basename with
-      # the extension stripped and so can never match a file. It then fell through to the
-      # "leave as-is" branch below and stayed literal text even when the attachment was
-      # sitting right there: across one workspace, 146 of 162 such targets already had a
-      # matching attachment.
+      # the extension stripped and so can never match a file.
       if resolved_id.nil? && attachment_extension?(target_base)
         resolved_id = resolve_attachment_link(target_base, combined_map)
       end
@@ -221,8 +218,15 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
       display = alias_text || target_base
 
       if resolved_id&.start_with?("attachment:")
-        # Resolved to an attachment — render as image/file link
-        "![#{display}](#{resolved_id})"
+        # A link stays a link. This used to emit the ![...] embed form, so every
+        # [[file|Open: file]] became a second copy of the image its ![[file]] embed
+        # already showed — 274 documents in one workspace ended up with duplicated
+        # image blocks.
+        #
+        # Keeps the internal attachment: form rather than a resolved path: blocks must not
+        # carry an endpoint, so the same document can be served through the authenticated
+        # and the public attachment routes. The editor resolves it at render time.
+        "[#{display}](#{resolved_id})"
       elsif resolved_id
         # Resolved to a document — render as mention with optional heading fragment
         build_mention_span(resolved_id, display, heading)

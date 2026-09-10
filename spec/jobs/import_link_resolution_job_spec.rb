@@ -133,19 +133,21 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       expect(result).not_to include(".broken_link")
     end
 
-    it "converts [[attachment.png]] resolved to attachment: URI into image markdown" do
+    it "converts [[attachment.png]] into a link, not an embed" do
       combined_map = { "images/photo.png" => "attachment:42" }
       result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png]]", combined_map)
 
-      expect(result).to include("![images/photo.png](attachment:42)")
+      expect(result).to include("[images/photo.png](attachment:42)")
+      expect(result).not_to include("![images/photo.png]")
       expect(result).not_to include("data-mention")
     end
 
-    it "converts [[attachment.png|alias]] resolved to attachment: URI with alias" do
+    it "converts [[attachment.png|alias]] into a link carrying the alias" do
       combined_map = { "images/photo.png" => "attachment:42" }
       result = job.send(:process_wiki_links_in_markdown, "See [[images/photo.png|My Photo]]", combined_map)
 
-      expect(result).to include("![My Photo](attachment:42)")
+      expect(result).to include("[My Photo](attachment:42)")
+      expect(result).not_to include("![My Photo]")
     end
 
     it "does not create broken document mention for unresolved file with attachment extension" do
@@ -532,7 +534,8 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         result = job.send(:process_wiki_links_in_markdown, "See [[photo.png|Open: photo]]", combined_map)
 
-        expect(result).to include("![Open: photo](attachment:42.png)")
+        expect(result).to include("[Open: photo](attachment:42.png)")
+        expect(result).not_to include("![Open: photo]")
         expect(result).not_to include("[[photo.png")
       end
 
@@ -541,7 +544,21 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
         result = job.send(:process_wiki_links_in_markdown, "See [[Timeline.pdf]]", combined_map)
 
-        expect(result).to include("![Timeline.pdf](attachment:99.pdf)")
+        expect(result).to include("[Timeline.pdf](attachment:99.pdf)")
+        expect(result).not_to include("![Timeline.pdf]")
+      end
+
+      it "keeps a link and an embed of the same file distinct" do
+        # Obsidian writes both forms next to each other. Rewriting the link as an embed
+        # too produced two copies of the image -- 274 documents in one workspace.
+        combined_map = { "assets/photo.png" => "attachment:42.png" }
+        markdown = "[[photo.png|Pierwsza wersja]]\n![[photo.png]]"
+
+        result = job.send(:process_wiki_links_in_markdown, markdown, combined_map)
+
+        expect(result).to include("[Pierwsza wersja](attachment:42.png)")
+        expect(result).to include("![photo.png](attachment:42.png)")
+        expect(result.scan(/!\[/).size).to eq(1)
       end
 
       it "still leaves a file link alone when no such attachment was imported" do

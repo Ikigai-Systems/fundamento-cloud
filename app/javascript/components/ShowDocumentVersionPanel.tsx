@@ -9,6 +9,7 @@ import '@blocknote/mantine/style.css';
 import schema from "./editor/schema.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
+import {resolveAttachmentLinksInBlocks} from "./editor/utils/attachmentLinks";
 
 import {Features, FeaturesContext} from "../contextes/FeaturesContext.tsx";
 
@@ -24,7 +25,7 @@ const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelPr
   const editor = useCreateBlockNote({
     schema,
     // contentBlocks is persisted BlockNote JSON (typed `unknown` on Version).
-    initialContent: version.contentBlocks as PartialBlock<
+    initialContent: resolveAttachmentLinksInBlocks(version.contentBlocks) as PartialBlock<
       typeof schema.blockSchema,
       typeof schema.inlineContentSchema,
       typeof schema.styleSchema
