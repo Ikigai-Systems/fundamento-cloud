@@ -51,7 +51,7 @@ describe("Attachment links in documents", function () {
         ]
       }]
       document.versions.create!(content_blocks: blocks)
-      document.update!(sync: BlocknoteConverterService.blocks_to_yjs(blocks))
+      document.content_or_build.update!(sync: BlocknoteConverterService.blocks_to_yjs(blocks))
       attachment.id
     `);
   }
