@@ -32,6 +32,66 @@ RSpec.describe ImportDocumentJob, type: :job do
     import_file
   end
 
+  describe "keeping the source of a converted document" do
+    it "attaches the original .docx to the document it produced" do
+      # Without this the source is unreachable after import: the document holds only the
+      # converted text. A .doc, which cannot be converted, is kept as an attachment --
+      # so the same folder gave opposite outcomes depending on the extension.
+      import_file = build_import_file(relative_path: "Notes/Plan.docx", format: "docx", content: "PK\x03\x04docx")
+      allow(PandocConverterService).to receive(:file_to_markdown).and_return("# Plan\n\nBody")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+
+      described_class.perform_now(import_file)
+
+      document = import_file.reload.document
+      attachment = Attachment.find_by(parent_id: document.id, parent_type: "Document")
+      expect(attachment).to be_present
+      expect(attachment.filename).to eq("Plan.docx")
+      expect(attachment.file).to be_attached
+    end
+
+    it "keeps the attachment usable after the import session is cleaned up" do
+      # The document's attachment shares the blob the ImportFile uploaded, and expired
+      # sessions are destroyed by ImportSessionCleanupJob -- which cascades to ImportFile
+      # and purges its blob. This survives only because ActiveStorage::Blob#purge rescues
+      # the foreign-key violation raised while another attachment still references the
+      # blob, so the S3 object is never deleted. Worth pinning: nothing else states it.
+      import_file = build_import_file(relative_path: "Notes/Plan.docx", format: "docx", content: "PK\x03\x04docx")
+      allow(PandocConverterService).to receive(:file_to_markdown).and_return("# Plan\n\nBody")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      described_class.perform_now(import_file)
+
+      document = import_file.reload.document
+      attachment = Attachment.find_by(parent_id: document.id, parent_type: "Document")
+      blob_id = attachment.file.blob.id
+
+      import_file.destroy!
+      # Exactly what ActiveStorage::PurgeJob does for the now-orphaned import attachment.
+      ActiveStorage::Blob.find(blob_id).purge
+
+      expect(ActiveStorage::Blob.exists?(blob_id)).to be(true)
+      expect(attachment.reload.file).to be_attached
+      expect(attachment.file.download).to eq("PK\x03\x04docx")
+    end
+
+    it "picks up any converted format, not a hardcoded list" do
+      expect(ImportFile::CONVERTED_DOCUMENT_FORMATS)
+        .to match_array(ImportFile::SUPPORTED_DOCUMENT_FORMATS - ["markdown"])
+    end
+
+    it "does not attach anything for a markdown document" do
+      import_file = build_import_file(relative_path: "Notes/hello.md")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+
+      described_class.perform_now(import_file)
+
+      expect(Attachment.where(parent_id: import_file.reload.document_id, parent_type: "Document")).to be_empty
+    end
+  end
+
   describe "#perform" do
     it "creates a Document from a markdown file" do
       import_file = build_import_file(relative_path: "Notes/hello.md")
