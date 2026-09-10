@@ -59,7 +59,7 @@ function createServerBlockNoteEditor() {
   return ServerBlockNoteEditor.create({
     schema: strippedSchema,
     links: {isValidLink},
-  } as Parameters<typeof ServerBlockNoteEditor.create>[0]);
+  });
 }
 
 export function convertToYjs(blocks: Block[]) {
