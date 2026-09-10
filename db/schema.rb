@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_09_154256) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_091904) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -151,7 +151,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_09_154256) do
     t.string "icon_value"
     t.string "organization_id"
     t.string "space_id"
-    t.binary "sync"
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_documents_on_id", unique: true
