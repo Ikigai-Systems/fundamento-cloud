@@ -5,7 +5,7 @@ class Tables::ChangeEvent < ApplicationRecord
   self.table_name = :table_change_events
 
   # This model *is* the audit log. Auditing it would be circular.
-  audited enabled: false
+  skip_auditing
 
   belongs_to :organization
   belongs_to :table

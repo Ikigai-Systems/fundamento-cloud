@@ -1,5 +1,5 @@
 class ObjectVisitor < ApplicationRecord
-  audited enabled: false
+  skip_auditing
 
   belongs_to :user
   belongs_to :object, polymorphic: true
