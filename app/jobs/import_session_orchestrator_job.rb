@@ -67,9 +67,9 @@ class ImportSessionOrchestratorJob < ApplicationJob
       ActiveRecord::Base.transaction do
         document = space.documents.create!(
           organization: session.organization,
-          title: dir_name,
-          sync: sync
+          title: dir_name
         )
+        document.create_content!(sync: sync)
 
         document.versions.create!(
           content_blocks: blocks,

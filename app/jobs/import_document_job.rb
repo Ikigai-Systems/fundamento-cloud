@@ -47,7 +47,7 @@ class ImportDocumentJob < ApplicationJob
         content_blocks: blocks,
         created_by: session.organization_membership.user
       )
-      document.update!(sync: sync)
+      document.create_content!(sync: sync)
 
       if frontmatter&.dig("tags").is_a?(Array)
         valid_tags = frontmatter["tags"].select { |t| TagsService.valid_tag_name?(t.to_s) }

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe WikiLinkRepair do
-  fixtures :organizations, :users, :spaces, :organization_memberships
+  fixtures :organizations, :users, :spaces, :organization_memberships, :object_contents
 
   let(:organization) { organizations(:is) }
   let(:space) { spaces(:is_default) }
@@ -14,7 +14,7 @@ RSpec.describe WikiLinkRepair do
   def prepare(document, blocks)
     allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return(blocks)
     allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("new-sync")
-    document.update_column(:sync, "s")
+    document.create_content!(sync: "s")
     document
   end
 
@@ -150,6 +150,6 @@ RSpec.describe WikiLinkRepair do
     prepare(document, [paragraph("see [[report.pdf|the report]]")])
 
     expect { run(document) }.not_to change { document.versions.count }
-    expect(document.reload.sync).to eq("s")
+    expect(document.content.reload.sync).to eq("s")
   end
 end

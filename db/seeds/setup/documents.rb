@@ -95,11 +95,11 @@ section :document_helpers do
 
     doc = create(label,
       title: title,
-      sync: yjs_binary,
       space: space,
       organization: organization,
       **attrs
     )
+    doc.create_content!(sync: yjs_binary)
 
     Version.create!(
       document: doc,

@@ -39,7 +39,7 @@ class DocumentService
           created_by: pundit_user.user
         )
 
-        document.update!(sync: sync)
+        document.create_content!(sync: sync)
 
         # Process tags from frontmatter
         if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
@@ -74,7 +74,7 @@ class DocumentService
       )
 
       # Update document sync
-      document.update!(sync: sync)
+      document.content_or_build.update!(sync: sync)
 
       # Process tags from frontmatter
       if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
@@ -121,7 +121,7 @@ class DocumentService
         created_by: pundit_user.user
       )
 
-      document.update!(sync: sync)
+      document.create_content!(sync: sync)
 
       # Process tags from frontmatter
       if frontmatter_data && frontmatter_data["tags"].is_a?(Array)

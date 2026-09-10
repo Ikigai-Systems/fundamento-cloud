@@ -1,0 +1,14 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+_fixture:
+  model_class: ObjectContent
+
+one:
+  owner_type: Document
+  owner_id: one
+  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"
+
+two:
+  owner_type: Document
+  owner_id: two
+  sync: !!binary "<%= Base64.encode64(File.read("app/templates/space.yjs", mode: "rb")) %>"

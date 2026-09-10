@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Documents", type: :request do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_contents
 
   let(:pawel) { users(:pawel) }
   let(:ikigai_systems) { organizations(:is) }
@@ -700,7 +700,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:ok)
 
         document_one.reload
-        expect(document_one.sync).to eq(sample_sync)
+        expect(document_one.content.sync).to eq(sample_sync)
       end
     end
 
