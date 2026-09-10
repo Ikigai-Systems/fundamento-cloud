@@ -9,6 +9,10 @@ Context includes also:
 
 When possible use scripts from `bin/` instead of using `bundle exec`. For example `bin/rails`, `bin/rspec`, `bin/rake`, etc.
 
+`micro-services/blocknote-converter` is a separate npm project with its own `typecheck`,
+`lint` and `test` — the app's `npm run typecheck` does not cover it, and its `npm run build`
+uses esbuild, which does not typecheck. See `.claude/rules/blocknote-converter.md`.
+
 ## Architecture Overview
 
 ### Core Application Structure
@@ -76,6 +80,10 @@ Node.js services handle specialized processing:
 - Uses **ViewComponent** for reusable UI elements
 - **Good Job** for background processing
 - **ActiveStorage** with MinIO (S3-compatible) for file storage
+- **Document content** lives in `object_contents`, not on `documents`: read
+  `document.content.sync`, write through `document.content_or_build`. The `documents.sync`
+  column was dropped — code or specs still naming it will fail with
+  `unknown attribute 'sync'`.
 - **Feature flags** via Flipper
 - **Error tracking** with Sentry
 
