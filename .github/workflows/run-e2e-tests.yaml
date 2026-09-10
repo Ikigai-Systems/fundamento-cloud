@@ -76,7 +76,7 @@ jobs:
       # of its own: a fresh GHCR package is created *public*, which would expose the
       # cached layers -- and with them the Font Awesome Pro gem -- to anyone.
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
