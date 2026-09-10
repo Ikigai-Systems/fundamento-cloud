@@ -1,5 +1,5 @@
 class DocumentEditingSession < ApplicationRecord
-  audited enabled: false
+  skip_auditing
 
   include NpiOrdering
 

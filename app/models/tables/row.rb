@@ -4,7 +4,7 @@ class Tables::Row < ApplicationRecord
   self.table_name = :table_rows
 
   # See the note in Tables::Cell.
-  audited enabled: false
+  skip_auditing
 
   include Tables::RecordsChanges
 

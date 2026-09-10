@@ -4,7 +4,7 @@ class Tables::Cell < ApplicationRecord
   # Superseded by Tables::ChangeEvent, which records the same writes with row and column
   # context and is actually read by the product. audited is declared on ApplicationRecord
   # and was costing an extra INSERT on every cell edit for a log nothing consumed.
-  audited enabled: false
+  skip_auditing
 
   include Tables::RecordsChanges
 

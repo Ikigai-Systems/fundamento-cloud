@@ -7,7 +7,7 @@ class Tables::Version < ApplicationRecord
 
   include NpiOrdering
 
-  audited enabled: false
+  skip_auditing
 
   belongs_to :organization
   belongs_to :table
