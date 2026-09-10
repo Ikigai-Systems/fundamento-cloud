@@ -1,13 +1,6 @@
 require 'open3'
 
 class Document < ApplicationRecord
-  # Content now lives in object_contents; a follow-up migration drops this column. Ignored
-  # so nothing can read a stale blob from it in the meantime, and so SELECT * stops
-  # carrying it immediately -- which is the point of the move.
-  self.ignored_columns += %w[sync]
-
-  audited except: [:sync]
-
   include NpiOrdering
 
   include ToReactProps
@@ -72,14 +65,6 @@ class Document < ApplicationRecord
   def title
     super.presence || "Untitled"
     # [STE] - ask Pawel why do we need to provide default "Untitled" value instead of handling nil title by the callers
-  end
-
-  def as_json(options = {})
-    super(options).tap do |hash|
-      if hash.key?(:sync)
-        hash[:sync] = Base64.encode64(hash[:sync])
-      end
-    end
   end
 
   def draft?

@@ -23,7 +23,7 @@ class DocumentsController < ApplicationController
           render json: policy_scope(current_organization.documents).select(:id, :title, :icon_type, :icon_value),
             only: [:id, :title, :icon_type, :icon_value]
         else
-          render json: policy_scope(current_organization.documents), :except => [:sync]
+          render json: policy_scope(current_organization.documents)
         end
       end
       format.all { head :unprocessable_content }
@@ -72,7 +72,7 @@ class DocumentsController < ApplicationController
     authorize @document, :show?
 
     respond_to do |format|
-      format.json { render json: @document, :except => [:sync] }
+      format.json { render json: @document }
       format.html do
         if @document.draft?
           redirect_to edit_document_path(@document)
@@ -106,7 +106,7 @@ class DocumentsController < ApplicationController
     end
 
     respond_to do |format|
-      format.json { render json: @document.as_json(except: [:sync]) }
+      format.json { render json: @document.as_json }
       format.html { render action: 'edit' }
     end
   end
