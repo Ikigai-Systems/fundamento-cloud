@@ -151,6 +151,19 @@ Explicit access reads correctly when tables join the same store.
 **R1** creates the table, backfills, and switches reads and writes together.
 **R2** drops `documents.sync`.
 
+### Two deployment models
+
+The cutover means different things for each, and only one of them has a loss window.
+
+**SaaS cloud** deploys from `master` — merging triggers `Run Tests`, which triggers
+`Package: fundamento-cloud`, which deploys. Containers roll, so R1 and R2 must be separate
+releases and the window below applies.
+
+**Standalone** ships as a versioned release and runs `db:prepare` on boot. R1 and R2 can
+land in the *same* release there: both migrations run in order against a stopped app, so
+the backfill completes before the column is dropped and nothing is writing meanwhile. The
+upgrade requires downtime, which operators expect.
+
 ### The loss window, stated plainly
 
 During R1's rollout, a draining container on the previous release still writes to
@@ -164,7 +177,8 @@ smaller than it sounds:
 - `DocumentChannel` holds Y.js state client-side, so an affected user's next keystroke
   rewrites the whole document.
 
-It is not zero. Deploy R1 at a quiet hour.
+It is not zero. Deploy R1 at a quiet hour. This applies to SaaS cloud only — standalone
+takes downtime for the upgrade, so there is no window there at all.
 
 ### `ignored_columns` during R1
 
