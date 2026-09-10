@@ -20,7 +20,7 @@
     "@fastify/request-context": "^7.0.0",
     "@sentry/node": "^10.73.0",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.0.0",
     "commander": "^15.0.0",
     "concurrently": "^10.0.5",
     "esbuild": "^0.28.2",
