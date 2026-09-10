@@ -75,3 +75,6 @@ tasks.json
 # inherit the project's permission allow-list)
 .claude/worktrees/
 .worktrees/
+
+# Per-project Claude Code local settings (autoMode env profile) — never commit
+.claude/settings.local.json

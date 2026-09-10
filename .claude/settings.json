@@ -1,2 +1,16 @@
 {
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.fundamento.it)",
+      "Bash(bin/dev-e2e:*)",
+      "Bash(bin/rails:*)",
+      "Bash(bin/rake:*)",
+      "Bash(bin/rspec:*)",
+      "Bash(npx cypress run:*)",
+      "Bash(npx playwright:*)",
+      "Bash(npx vitest run:*)",
+      "Bash(rails:*)",
+      "Bash(rspec:*)"
+    ]
+  }
 }
