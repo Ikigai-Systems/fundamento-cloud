@@ -90,11 +90,11 @@ class ImportBackfill
       ) t WHERE t.body LIKE '%"entityId":""%' OR t.body LIKE '%"entityId": ""%'
     SQL
 
-    Document.where(id: ids).where.not(sync: nil)
+    Document.joins(:content).where(id: ids).where.not(object_contents: {sync: nil})
   end
 
   def repair_document(document, path_map, resolver)
-    blocks = BlocknoteConverterService.yjs_to_blocks(document.sync)
+    blocks = BlocknoteConverterService.yjs_to_blocks(document.content.sync)
     return if blocks.blank?
 
     fixed_here = 0
@@ -127,7 +127,7 @@ class ImportBackfill
 
     Document.transaction do
       document.versions.create!(content_blocks: blocks, created_by: last_author(document))
-      document.update!(sync: BlocknoteConverterService.blocks_to_yjs(blocks))
+      document.content.update!(sync: BlocknoteConverterService.blocks_to_yjs(blocks))
     end
   end
 
