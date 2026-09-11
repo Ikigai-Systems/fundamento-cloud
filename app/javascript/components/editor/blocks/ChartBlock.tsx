@@ -22,8 +22,10 @@ const CHART_TYPES = ["line", "area", "bar", "funnel", "pie", "donut", "radialBar
 type CellValue = string | number | null;
 type TableRow = Record<string, CellValue>;
 type ChartType = ReactApexChartProps["type"];
+// Mirrors TableDataBlueprint: columns are serialized with `id`, and each row is
+// keyed by that same column id. There is no `npi` field on the wire.
 type TableColumn = {
-  npi: string;
+  id: string;
   name: string;
 };
 type TableData = {
@@ -285,7 +287,7 @@ export const createChartBlock = createReactBlockSpec(
                 }
               },
               series: [{
-                name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+                name: columns.find(column => column.id === yAxisColumnNpi)?.name,
                 data: yAxisDataset.map(valueToSeriesPoint<null>())
               }] satisfies ApexAxisChartSeries,
             };
@@ -326,7 +328,7 @@ export const createChartBlock = createReactBlockSpec(
                 },
               },
               series: [{
-                name: columns.find(column => column.npi === yAxisColumnNpi)?.name,
+                name: columns.find(column => column.id === yAxisColumnNpi)?.name,
                 data: yAxisDataset.map(valueToSeriesPoint<null>())
               }] satisfies ApexAxisChartSeries,
             };
@@ -370,7 +372,7 @@ export const createChartBlock = createReactBlockSpec(
                 },
               },
               series: [{
-                name: columns.find(column => column.npi === xAxisColumnNpi)?.name,
+                name: columns.find(column => column.id === xAxisColumnNpi)?.name,
                 data: yAxisDataset.map((yValue, index): [number, number | null] => {
                   return [valueToSeriesPoint<null>()(yValue) ?? 0, valueToSeriesPoint<null>()(xAxisDataset[index])];
                 }),
@@ -409,7 +411,7 @@ export const createChartBlock = createReactBlockSpec(
             <label className="text-sm mx-2">X axis</label>
             {editor.isEditable && <SelectButton
               value={xAxisColumnNpi}
-              options={columns.map(column => ({value: column.npi, label: column.name}))}
+              options={columns.map(column => ({value: column.id, label: column.name}))}
               onChange={async (option) => {
                 setXAxisDataset(undefined);
                 editor.updateBlock(props.block, {
@@ -420,14 +422,14 @@ export const createChartBlock = createReactBlockSpec(
               }}
             />}
             {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
-              {columns.find(column => column.npi === xAxisColumnNpi)?.name || "None"}
+              {columns.find(column => column.id === xAxisColumnNpi)?.name || "None"}
             </div>}
           </div>
           <div className="flex flex-row items-center">
             <label className="text-sm mx-2">Y axis</label>
             {editor.isEditable && <SelectButton
               value={yAxisColumnNpi}
-              options={columns.map(column => ({value: column.npi, label: column.name}))}
+              options={columns.map(column => ({value: column.id, label: column.name}))}
               onChange={async (option) => {
                 setYAxisDataset(undefined);
                 editor.updateBlock(props.block, {
@@ -438,7 +440,7 @@ export const createChartBlock = createReactBlockSpec(
               }}
             />}
             {!editor.isEditable && <div className="border h-8 w-32 px-2 flex flex-row items-center justify-between rounded-lg text-sm">
-              {columns.find(column => column.npi === yAxisColumnNpi)?.name || "None"}
+              {columns.find(column => column.id === yAxisColumnNpi)?.name || "None"}
             </div>}
           </div>
           <div className="flex flex-row items-center">
