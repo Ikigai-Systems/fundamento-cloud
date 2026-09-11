@@ -7,6 +7,7 @@
 **Duration**: January 15 - March 31
 **Lead**: <span data-mention="user" data-entity-id="james@brightpath.example.com">James Rivera</span>
 **Account Manager**: <span data-mention="user" data-entity-id="priya@brightpath.example.com">Priya Patel</span>
+**Strategy**: <span data-mention="document" data-entity-id="PLACEHOLDER_doc_greenleaf_gtm">Greenleaf Gtm Strategy</span>
 
 ## Objective
 

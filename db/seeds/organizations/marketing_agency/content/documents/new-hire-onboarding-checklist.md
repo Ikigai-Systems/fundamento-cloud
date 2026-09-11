@@ -13,7 +13,7 @@ Welcome to BrightPath Media! This checklist covers everything you need to comple
 ## Week 1 - Learning the Ropes
 
 - [ ] Review the BrightPath Design System and Brand Guidelines document
-- [ ] Read through the Vacation Policy and Travel Reimbursement Policy
+- [ ] Read through the <span data-mention="document" data-entity-id="PLACEHOLDER_doc_vacation_policy">Vacation Policy</span> and <span data-mention="document" data-entity-id="PLACEHOLDER_doc_travel_reimbursement">Travel Reimbursement Policy</span>
 - [ ] Meet with each team lead for a 30-minute introduction:
   - <span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span> (company overview and culture)
   - <span data-mention="user" data-entity-id="james@brightpath.example.com">James</span> (creative process and client strategy)
@@ -34,10 +34,10 @@ Welcome to BrightPath Media! This checklist covers everything you need to comple
 
 ## Helpful Resources
 
-- **Welcome to BrightPath** - Company overview and team introductions
+- **<span data-mention="document" data-entity-id="PLACEHOLDER_doc_welcome">Welcome to BrightPath</span>** - Company overview and team introductions
 - **Content Calendar Template** - How we plan and schedule content
 - **Design System Guidelines** - Our internal brand standards
-- **Out of Office Guidelines** - How to handle time off and coverage
+- **<span data-mention="document" data-entity-id="PLACEHOLDER_doc_out_of_office">Out of Office Guidelines</span>** - How to handle time off and coverage
 
 ## Questions?
 

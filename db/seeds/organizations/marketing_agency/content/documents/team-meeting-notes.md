@@ -45,7 +45,7 @@ Please review the vacation tracker below and flag any coverage gaps:
 
 <div data-content-type="advancedTable" data-table-npi="PLACEHOLDER_vacation_tracker">Table</div>
 
-Reminder: Submit PTO requests at least two weeks in advance. See the vacation policy document for full details.
+Reminder: Submit PTO requests at least two weeks in advance. See the <span data-mention="document" data-entity-id="PLACEHOLDER_doc_vacation_policy">Vacation Policy</span> for full details.
 
 ## Open Discussion
 
