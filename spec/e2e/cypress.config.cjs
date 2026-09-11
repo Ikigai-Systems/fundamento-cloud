@@ -4,7 +4,13 @@ const os = require('os')
 module.exports = defineConfig({
   viewportWidth: 1280,
   viewportHeight: 720,
-  allowCypressEnv: false,
+  // Cypress 16 dropped the default keystrokeDelay from 10ms to 0. BlockNote's
+  // suggestion menus (`/` for slash commands, `@` for mentions) open from a
+  // ProseMirror plugin via a React state update, so a burst of keystrokes with
+  // no delay -- `cy.type("/table")` -- lands the whole query before the menu
+  // exists and `.bn-suggestion-menu` never appears. Restore the Cypress 15
+  // cadence rather than sprinkling `{ delay: 10 }` across the specs.
+  keystrokeDelay: 10,
   e2e: {
     baseUrl: process.env.CYPRESS_BASE_URL || "http://localhost:4000",
     defaultCommandTimeout: 10000,
