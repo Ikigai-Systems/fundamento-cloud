@@ -112,6 +112,81 @@ RSpec.describe BlocknoteBlocks do
 
       expect(yielded_types).to include("table", "text", "mention")
     end
+
+    # Content saved before BlockNote 0.25 stores a table cell as the inline content
+    # array itself rather than a { type: "tableCell", content: [...] } object. Both
+    # shapes are still declared in TableContent and still exist in stored versions.
+    it "traverses table cells stored as bare inline content arrays" do
+      blocks = [
+        {
+          "type" => "table",
+          "id" => "t1",
+          "content" => {
+            "type" => "tableContent",
+            "rows" => [
+              {
+                "cells" => [
+                  [ { "type" => "text", "text" => "Name" } ],
+                  [ { "type" => "mention", "props" => { "id" => "m1", "entity" => "user", "entityId" => "u1", "title" => "Sarah" } } ]
+                ]
+              }
+            ]
+          },
+          "children" => []
+        }
+      ]
+
+      yielded_types = []
+      described_class.walk_blocks(blocks) { |node| yielded_types << node["type"] }
+
+      expect(yielded_types).to include("table", "text", "mention")
+    end
+
+    it "traverses a table mixing both cell shapes" do
+      blocks = [
+        {
+          "type" => "table",
+          "id" => "t1",
+          "content" => {
+            "type" => "tableContent",
+            "rows" => [
+              {
+                "cells" => [
+                  [ { "type" => "mention", "props" => { "id" => "legacy", "entity" => "user", "entityId" => "u1" } } ],
+                  { "type" => "tableCell", "content" => [ { "type" => "mention", "props" => { "id" => "modern", "entity" => "user", "entityId" => "u2" } } ] }
+                ]
+              }
+            ]
+          },
+          "children" => []
+        }
+      ]
+
+      mention_ids = []
+      described_class.each_mention(blocks) { |node| mention_ids << node.dig("props", "id") }
+
+      expect(mention_ids).to contain_exactly("legacy", "modern")
+    end
+
+    it "skips table content that is not shaped like rows of cells" do
+      malformed = [
+        { "rows" => "not an array" },
+        { "rows" => [nil, 42, { "cells" => "not an array" }] },
+        { "rows" => [{ "cells" => [nil, 42, "a string cell"] }] }
+      ]
+
+      malformed.each do |content|
+        blocks = [{ "type" => "table", "id" => "t1", "children" => [],
+                    "content" => content.merge("type" => "tableContent") }]
+
+        yielded_types = []
+        expect {
+          described_class.walk_blocks(blocks) { |node| yielded_types << node["type"] }
+        }.not_to raise_error
+
+        expect(yielded_types).to eq(["table"])
+      end
+    end
   end
 
   describe ".each_mention" do
