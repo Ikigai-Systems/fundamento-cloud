@@ -139,12 +139,19 @@ ooo_doc = documents.create_from_markdown :bp_out_of_office,
 onboarding_doc = documents.create_from_markdown :bp_onboarding_checklist,
   markdown_path: scenario_dir.join("content/documents/new-hire-onboarding-checklist.md"),
   space: hq_space, organization: org, author: sarah,
+  document_placeholders: {
+    "doc_welcome" => welcome_doc,
+    "doc_vacation_policy" => vacation_doc,
+    "doc_travel_reimbursement" => travel_doc,
+    "doc_out_of_office" => ooo_doc
+  },
   created_at: t.around(t.first_week + 2.days), updated_at: t.around(t.recent)
 
 meeting_doc = documents.create_from_markdown :bp_meeting_notes,
   markdown_path: scenario_dir.join("content/documents/team-meeting-notes.md"),
   space: hq_space, organization: org, author: sarah,
   table_placeholders: { "vacation_tracker" => vacation_tracker },
+  document_placeholders: { "doc_vacation_policy" => vacation_doc },
   created_at: t.around(t.recent), updated_at: t.around(t.recent + 1.day)
 
 # ─── Documents: Client Projects ────────────────────────────────
@@ -158,6 +165,7 @@ gtm_doc = documents.create_from_markdown :greenleaf_gtm,
 campaign_brief_doc = documents.create_from_markdown :greenleaf_q1_brief,
   markdown_path: scenario_dir.join("content/documents/greenleaf-q1-campaign-brief.md"),
   space: client_space, organization: org, author: james,
+  document_placeholders: { "doc_greenleaf_gtm" => gtm_doc },
   created_at: t.around(t.ramp_up + 1.week), updated_at: t.around(t.steady_state)
 
 brand_voice_doc = documents.create_from_markdown :urbanfit_brand_voice,
@@ -168,11 +176,16 @@ brand_voice_doc = documents.create_from_markdown :urbanfit_brand_voice,
 instagram_doc = documents.create_from_markdown :urbanfit_instagram,
   markdown_path: scenario_dir.join("content/documents/urbanfit-instagram-campaign.md"),
   space: client_space, organization: org, author: elena,
+  document_placeholders: { "doc_urbanfit_brand_voice" => brand_voice_doc },
   created_at: t.around(t.steady_state + 3.days), updated_at: t.around(t.recent)
 
 technova_doc = documents.create_from_markdown :technova_proposal,
   markdown_path: scenario_dir.join("content/documents/technova-proposal-draft.md"),
   space: client_space, organization: org, author: james,
+  document_placeholders: {
+    "doc_greenleaf_gtm" => gtm_doc,
+    "doc_urbanfit_instagram" => instagram_doc
+  },
   created_at: t.around(t.recent), updated_at: t.around(t.today)
 
 # ─── Documents: Creative Lab ───────────────────────────────────
@@ -191,6 +204,7 @@ brainstorm_doc = documents.create_from_markdown :spring_brainstorm,
 design_doc = documents.create_from_markdown :design_guidelines,
   markdown_path: scenario_dir.join("content/documents/design-system-guidelines.md"),
   space: creative_space, organization: org, author: marcus,
+  document_placeholders: { "doc_urbanfit_brand_voice" => brand_voice_doc },
   created_at: t.around(t.onboarding_done), updated_at: t.around(t.steady_state)
 
 # ─── Backfill: Campaign Tracker "Brief" column ────────────────
@@ -230,15 +244,40 @@ puts "  [Table] Campaign Tracker briefs linked (#{rows_by_campaign.size} rows)"
 # ─── Comments ───────────────────────────────────────────────────
 # ObjectComment stores content as JSON (BlockNote-style blocks)
 
-def self.comment_content(text)
-  [{ "type" => "paragraph", "content" => [{ "type" => "text", "text" => text }] }]
+# Parts are plain strings, or mention nodes from user_mention/document_mention.
+def self.comment_content(*parts)
+  content = parts.map do |part|
+    part.is_a?(String) ? { "type" => "text", "text" => part } : part
+  end
+
+  [{ "type" => "paragraph", "content" => content }]
+end
+
+def self.user_mention(user)
+  mention_node("user", user.id, user.display_name)
+end
+
+def self.document_mention(document)
+  mention_node("document", document.id, document.title)
+end
+
+def self.mention_node(entity, entity_id, title)
+  {
+    "type" => "mention",
+    "props" => {
+      "id" => SecureRandom.uuid,
+      "entity" => entity,
+      "entityId" => entity_id,
+      "title" => title
+    }
+  }
 end
 
 # Sarah encourages James on the TechNova proposal
 object_comments.create(
   organization: org, organization_membership: sarah_membership,
   object: technova_doc,
-  content: comment_content("This looks great, James! I love the data-driven approach. Let's make sure we highlight our social media analytics capabilities in the pitch."),
+  content: comment_content("This looks great, ", user_mention(james), "! I love the data-driven approach. Let's make sure we highlight our social media analytics capabilities in the pitch."),
   created_at: t.around(t.recent + 1.day), updated_at: t.around(t.recent + 1.day)
 )
 
@@ -253,7 +292,7 @@ priya_gtm_comment = object_comments.create(
 object_comments.create(
   organization: org, organization_membership: james_membership,
   object: gtm_doc,
-  content: comment_content("Good call, Priya. I've updated the budget split. Let's review it in the next client sync."),
+  content: comment_content("Good call, ", user_mention(priya), ". I've updated the budget split. Let's review it in the next client sync."),
   created_at: t.around(t.ramp_up + 6.days), updated_at: t.around(t.ramp_up + 6.days)
 )
 
@@ -268,7 +307,7 @@ object_comments.create(
 object_comments.create(
   organization: org, organization_membership: sarah_membership,
   object: onboarding_doc,
-  content: comment_content("Great question, Alex! Just set up accounts for the platforms your assigned clients use. James will walk you through the specifics in your 1:1 tomorrow."),
+  content: comment_content("Great question, ", user_mention(alex), "! Just set up accounts for the platforms your assigned clients use. ", user_mention(james), " will walk you through the specifics in your 1:1 tomorrow."),
   created_at: t.around(t.recent + 2.days + 3.hours), updated_at: t.around(t.recent + 2.days + 3.hours)
 )
 
@@ -276,7 +315,7 @@ object_comments.create(
 object_comments.create(
   organization: org, organization_membership: elena_membership,
   object: calendar_template_doc,
-  content: comment_content("Heads up - there's a scheduling conflict for the GreenLeaf posts next Tuesday. I've moved them to Wednesday to avoid overlap with the UrbanFit launch."),
+  content: comment_content("Heads up - there's a scheduling conflict for the ", document_mention(gtm_doc), " posts next Tuesday. I've moved them to Wednesday to avoid overlap with the ", document_mention(instagram_doc), " launch."),
   created_at: t.around(t.recent + 3.days), updated_at: t.around(t.recent + 3.days)
 )
 

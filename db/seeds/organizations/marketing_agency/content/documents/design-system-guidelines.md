@@ -74,4 +74,4 @@ Examples:
 
 ## When Working on Client Brands
 
-These guidelines apply to BrightPath's own materials only. Each client has their own brand guide -- always reference the client-specific voice and visual guide before creating content for them. When in doubt, check the relevant project space.
+These guidelines apply to BrightPath's own materials only. Each client has their own brand guide -- the <span data-mention="document" data-entity-id="PLACEHOLDER_doc_urbanfit_brand_voice">Urbanfit Brand Voice Guide</span> is the model to follow. Always reference the client-specific voice and visual guide before creating content for them. When in doubt, check the relevant project space.

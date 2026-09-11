@@ -18,6 +18,40 @@
   end
   ```
 
+## Mentions in seed content
+
+Mentions are what populate `object_references`, which is the only source for the
+notifications badge and the connections sidebar — so seed content without them
+leaves both features untestable by hand.
+
+**In markdown**, any entity works through the same span; the converter is
+entity-agnostic:
+
+```html
+<span data-mention="user" data-entity-id="sarah@brightpath.example.com">Sarah</span>
+<span data-mention="document" data-entity-id="PLACEHOLDER_doc_vacation_policy">Vacation Policy</span>
+```
+
+User mentions carry an email, resolved by `resolve_user_mentions!` at any point.
+Document and table mentions carry a `PLACEHOLDER_*` token, resolved from the
+`document_placeholders:` / `table_placeholders:` hashes passed to
+`create_from_markdown`. **The referenced document must already exist**, so a
+mention can only point backwards in the scenario's creation order. A forward
+reference needs a backfill pass after every document exists — and unlike the table
+cell backfill above, that means rewriting both `content_blocks` and the YJS
+`content`, so prefer reordering creation where the narrative allows.
+
+**In comments**, build the node directly — `comment_content` takes plain strings
+and mention nodes interchangeably:
+
+```ruby
+content: comment_content("Good call, ", user_mention(priya), ". I've updated the split.")
+```
+
+Comments are created after every document, so document mentions there have no
+ordering constraint. Note the reference's source is the object the comment is *on*,
+not the mentioned document.
+
 ## Adding a new seed scenario
 
 See the Development Seeds section in CLAUDE.md. Key steps:

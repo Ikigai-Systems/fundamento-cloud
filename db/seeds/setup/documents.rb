@@ -10,20 +10,25 @@ section :document_helpers do
   end
 
   # Resolve PLACEHOLDER_* tokens in BlockNote blocks with actual NPIs.
-  # table_placeholders: { "campaign_tracker" => <Table record>, ... }
-  # Replaces PLACEHOLDER_campaign_tracker with the table's NPI.
-  # Also resolves column placeholders: PLACEHOLDER_<column_name_snake> with column NPI.
-  def documents.resolve_placeholders!(blocks, table_placeholders)
-    return blocks if table_placeholders.empty?
+  # placeholders: { "campaign_tracker" => <Table>, "doc_vacation_policy" => <Document> }
+  # Replaces PLACEHOLDER_campaign_tracker with the record's NPI.
+  # For tables, also resolves column placeholders: PLACEHOLDER_<column_name_snake>.
+  #
+  # A document mention can only point at a document that already exists, so the
+  # referenced document has to be created earlier in the scenario.
+  def documents.resolve_placeholders!(blocks, placeholders)
+    return blocks if placeholders.empty?
 
     json_str = blocks.to_json
 
-    table_placeholders.each do |placeholder_key, table|
-      # Replace table NPI placeholder
-      json_str.gsub!("PLACEHOLDER_#{placeholder_key}", table.id)
+    placeholders.each do |placeholder_key, record|
+      # Replace record NPI placeholder
+      json_str.gsub!("PLACEHOLDER_#{placeholder_key}", record.id)
 
-      # Replace column NPI placeholders
-      table.columns.each do |col|
+      # Only tables carry columns, which chart blocks reference by NPI
+      next unless record.respond_to?(:columns)
+
+      record.columns.each do |col|
         col_key = col.name.downcase.gsub(/\s+/, "_")
         json_str.gsub!("PLACEHOLDER_#{col_key}", col.id)
       end
@@ -77,14 +82,17 @@ section :document_helpers do
   #   organization: - the Organization record
   #   author: - (optional) User who created it
   #   table_placeholders: - (optional) hash of { "name" => Table } for NPI resolution
+  #   document_placeholders: - (optional) hash of { "doc_name" => Document } for NPI
+  #     resolution; the referenced documents must already exist
   #   title: - (optional) override title, otherwise derived from filename
   #   parent_document_id: - (optional) parent doc ID for nesting in hierarchy
-  def documents.create_from_markdown(label = nil, markdown_path:, space:, organization:, author: nil, table_placeholders: {}, parent_document_id: nil, **attrs)
+  def documents.create_from_markdown(label = nil, markdown_path:, space:, organization:, author: nil, table_placeholders: {}, document_placeholders: {}, parent_document_id: nil, **attrs)
     markdown = File.read(markdown_path)
     blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
 
-    # Resolve table/column NPI placeholders if any tables are referenced
-    blocks = resolve_placeholders!(blocks, table_placeholders) if table_placeholders.any?
+    # Resolve table/column/document NPI placeholders if any are referenced
+    placeholders = table_placeholders.merge(document_placeholders)
+    blocks = resolve_placeholders!(blocks, placeholders) if placeholders.any?
 
     # Resolve user mention email placeholders to actual user IDs
     blocks = resolve_user_mentions!(blocks, organization)

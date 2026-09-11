@@ -169,6 +169,56 @@ describe("Document References and Mentions", function () {
         });
       });
     });
+
+    it("drops the connection once the mention is removed from the document", function () {
+      cy.appScenario("create_document_referencing_document", {
+        space_id: "is_default",
+        organization_id: "is",
+        user_email: "pawel@ikigai.systems"
+      });
+
+      cy.appEval("Document.find_by(title: 'Source Document').id").then((sourceDocId) => {
+        // force: true because the "Document has been updated" flash sits over the tab
+        // icons, and whether it is still on screen depends on which render consumed it.
+        // The wait is on the panel's own fetch — clicking alone says nothing about
+        // which panel ended up loaded.
+        function openConnectionsTab(alias) {
+          cy.intercept("GET", `/d/${sourceDocId}/sidebar?tab=connections`).as(alias);
+          cy.get('#content-sidebar').within(() => {
+            cy.get('[aria-label="Connections"]').click({ force: true });
+          });
+          cy.wait(`@${alias}`);
+        }
+
+        cy.visit(`/d/${sourceDocId}`);
+        openConnectionsTab("connectionsBefore");
+
+        cy.get('#connections_sidebar_tab').within(() => {
+          cy.contains("Target Document").should("be.visible");
+        });
+
+        // Replace the whole body, dropping the mention with it
+        cy.visit(`/d/${sourceDocId}/edit`);
+        cy.waitForEditor();
+        cy.get("[data-document-editor] [role='textbox']")
+          .first()
+          .type("{selectall}No mentions any more.");
+
+        cy.intercept("POST", `/d/${sourceDocId}/versions`).as("saveVersion");
+        cy.get('[aria-label="Save document"]').click();
+        cy.wait("@saveVersion");
+
+        // Saving navigates back to the show page; visiting explicitly avoids racing
+        // that navigation with the tab click.
+        cy.visit(`/d/${sourceDocId}`);
+        openConnectionsTab("connectionsAfter");
+
+        cy.get('#connections_sidebar_tab').within(() => {
+          cy.contains("No references were found.").should("be.visible");
+          cy.contains("Target Document").should("not.exist");
+        });
+      });
+    });
   });
 
   describe("Connections Tab - Incoming References", function () {
@@ -484,6 +534,46 @@ describe("Document References and Mentions", function () {
       cy.get('#mentions_container').within(() => {
         cy.contains("First Mention Doc").should("be.visible");
         cy.contains("Second Mention Doc").should("be.visible");
+      });
+    });
+
+    it("lists a mention made in a comment rather than in the document body", function () {
+      cy.appScenario("create_document_with_comment_mention", {
+        space_id: "is_default",
+        organization_id: "is",
+        user_email: "pawel@ikigai.systems"
+      });
+
+      cy.visit("/");
+
+      cy.get('[data-testid="notification-badge"]')
+        .should("have.attr", "data-count", "1");
+
+      cy.get('button#mentions').click();
+
+      cy.get('#mentions_container').within(() => {
+        cy.contains("Document with Comment Mention").should("be.visible");
+      });
+    });
+
+    it("links a comment mention to the document, not to a version", function () {
+      cy.appScenario("create_document_with_comment_mention", {
+        space_id: "is_default",
+        organization_id: "is",
+        user_email: "pawel@ikigai.systems"
+      });
+
+      cy.appEval("Document.find_by(title: 'Document with Comment Mention').id").then((docId) => {
+        cy.visit("/");
+
+        cy.get('button#mentions').click();
+
+        cy.get('#mentions_container').within(() => {
+          cy.contains("Document with Comment Mention").click();
+        });
+
+        cy.url().should("include", `/d/${docId}`);
+        cy.url().should("not.include", "/versions/");
       });
     });
   });

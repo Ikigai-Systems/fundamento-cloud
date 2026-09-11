@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe OrganizationMembership, type: :model do
   include ActionDispatch::TestProcess::FixtureFile
 
-  fixtures :organizations, :users, :organization_memberships
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_references
 
   describe "NPI primary key migration" do
     it "uses string ID as primary key" do
@@ -531,6 +531,40 @@ RSpec.describe OrganizationMembership, type: :model do
 
         expect(OrganizationMembership.exists?(ou_id)).to be false
       end
+    end
+  end
+
+  # Drives the unread badge rendered on every page by root#notifications.
+  describe "#unread_mentions_count" do
+    let(:membership) { organization_memberships(:om_is_stefan) }
+    let(:scope) { organizations(:is).documents }
+
+    def seen_at(time)
+      membership.organization_membership_properties.create!(
+        key: "last_mention_seen_at",
+        value: time.iso8601
+      )
+    end
+
+    it "counts every mention when the user has never opened notifications" do
+      # doc_mention_to_user, doc_mention_with_version, non_current_user_mention
+      expect(membership.unread_mentions_count(scope)).to eq(3)
+    end
+
+    it "counts only mentions newer than last_mention_seen_at" do
+      seen_at(4.days.ago)
+
+      expect(membership.unread_mentions_count(scope)).to eq(2)
+    end
+
+    it "counts nothing once every mention has been seen" do
+      seen_at(1.minute.from_now)
+
+      expect(membership.unread_mentions_count(scope)).to eq(0)
+    end
+
+    it "ignores mentions in documents outside the given scope" do
+      expect(membership.unread_mentions_count(Document.none)).to eq(0)
     end
   end
 end

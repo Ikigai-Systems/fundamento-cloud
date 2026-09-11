@@ -71,7 +71,7 @@ This includes:
 
 ## Why BrightPath
 
-[TODO: Add 2-3 relevant case studies. GreenLeaf results would be good here once we have Q1 data. Also mention our experience with UrbanFit's launch.]
+[TODO: Add 2-3 relevant case studies. Results from the <span data-mention="document" data-entity-id="PLACEHOLDER_doc_greenleaf_gtm">Greenleaf Gtm Strategy</span> would be good here once we have Q1 data. Also pull from the <span data-mention="document" data-entity-id="PLACEHOLDER_doc_urbanfit_instagram">Urbanfit Instagram Campaign</span>.]
 
 We bring a hands-on approach that larger agencies cannot match. Your account will be managed directly by senior team members, not handed off to junior staff after the sale.
 

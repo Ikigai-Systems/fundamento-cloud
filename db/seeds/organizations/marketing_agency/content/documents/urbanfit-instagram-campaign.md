@@ -7,6 +7,7 @@
 **Duration**: March - June
 **Lead**: <span data-mention="user" data-entity-id="elena@brightpath.example.com">Elena Vasquez</span>
 **Creative**: <span data-mention="user" data-entity-id="marcus@brightpath.example.com">Marcus Thompson</span>
+**Brand voice**: <span data-mention="document" data-entity-id="PLACEHOLDER_doc_urbanfit_brand_voice">Urbanfit Brand Voice Guide</span>
 
 ## Content Pillars
 
