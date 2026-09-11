@@ -11,16 +11,41 @@ class BlocknoteBlocks
       if content.is_a?(Array)
         walk_blocks(content, &block)
       elsif content.is_a?(Hash) && content["type"] == "tableContent"
-        # Table blocks store content as { type: "tableContent", rows: [{ cells: [{ content: [...] }] }] }
-        content["rows"]&.each do |row|
-          row["cells"]&.each do |cell|
-            walk_blocks(cell["content"], &block) if cell["content"].is_a?(Array)
-          end
-        end
+        walk_table_content(content, &block)
       end
       walk_blocks(node["children"], &block) if node["children"].is_a?(Array)
     end
   end
+
+  # Table blocks store content as { type: "tableContent", rows: [{ cells: [...] }] }.
+  # A cell is either a { type: "tableCell", content: [...] } object or, in content saved
+  # before BlockNote 0.25, the inline content array itself. TableContent still declares
+  # both (`cells: InlineContent[][] | TableCell[]`) and @blocknote/core normalises them
+  # in `mapTableCell` / `isTableCell` (src/util/table.ts), which treat anything that is
+  # not a "tableCell" object as the cell content. Stored versions are never rewritten, so
+  # both shapes reach this walker — assuming a Hash raised TypeError on the older one.
+  def self.walk_table_content(content, &block)
+    rows = content["rows"]
+    return unless rows.is_a?(Array)
+
+    rows.each do |row|
+      next unless row.is_a?(Hash)
+
+      cells = row["cells"]
+      next unless cells.is_a?(Array)
+
+      cells.each do |cell|
+        if cell.is_a?(Hash) && cell["type"] == "tableCell"
+          walk_blocks(cell["content"], &block)
+        else
+          # `mapTableCell` wraps a non-cell in `[].concat(cell)`, so a lone node counts
+          # as the cell's content too. Non-hashes fall out in walk_blocks.
+          walk_blocks(cell.is_a?(Array) ? cell : [cell], &block)
+        end
+      end
+    end
+  end
+  private_class_method :walk_table_content
 
   def self.each_mention(blocks, &block)
     walk_blocks(blocks) do |node|
