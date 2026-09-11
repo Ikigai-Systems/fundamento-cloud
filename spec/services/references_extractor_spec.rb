@@ -685,4 +685,55 @@ RSpec.describe ReferencesExtractor do
       expect(ref.referenced_icon).to eq(Icon.emoji("\u{1F4DD}"))
     end
   end
+
+  # The connections sidebar renders on every document, so this has to stay flat in
+  # the number of documents — it used to run a query per document.
+  describe "query count" do
+    def sql_queries
+      count = 0
+      subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |_name, _start, _finish, _id, payload|
+        count += 1 unless ["SCHEMA", "TRANSACTION"].include?(payload[:name])
+      end
+      yield
+      count
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber)
+    end
+
+    def document_referencing(target, title)
+      document = Document.create!(organization: organization, space: space, title: title)
+      document.versions.create!(
+        content_blocks: [
+          {
+            "id" => unique_id("block"),
+            "type" => "paragraph",
+            "content" => [
+              {
+                "type" => "mention",
+                "props" => {
+                  "id" => unique_id("mention"),
+                  "entity" => "document",
+                  "entityId" => target.id
+                }
+              }
+            ]
+          }
+        ],
+        created_by: user
+      )
+      document
+    end
+
+    it "does not grow with the number of documents" do
+      target = documents(:two)
+      docs = (1..10).map { |i| document_referencing(target, "Doc #{i}") }
+
+      for_one = sql_queries { described_class.all_references(docs.first(1)) }
+      for_ten = sql_queries { described_class.all_references(docs) }
+
+      expect(described_class.all_references(docs).length).to eq(10)
+      expect(for_one).to be_positive # the subscriber really is counting
+      expect(for_ten).to eq(for_one)
+    end
+  end
 end

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Document, type: :model do
-  fixtures :organizations, :spaces, :documents
+  fixtures :organizations, :spaces, :documents, :object_references
 
   describe "NPI primary key migration" do
     it "uses string ID as primary key" do
@@ -120,6 +120,29 @@ RSpec.describe Document, type: :model do
       source_doc.destroy!
 
       expect(ObjectReference.exists?(om.id)).to be false
+    end
+  end
+
+  # object_references is the only source for mentions and connections now, so a
+  # destroyed document has to take its own references with it and leave the ones
+  # pointing at it marked broken rather than dangling.
+  describe "object references on destroy" do
+    it "deletes the references the document was the source of" do
+      document = documents(:one)
+
+      expect { document.destroy! }
+        .to change { ObjectReference.where(source_type: "Document", source_id: "one").count }
+        .to(0)
+    end
+
+    it "nullifies the target of references pointing at it" do
+      reference = object_references(:doc_mention_to_doc)
+      expect(reference.target_id).to eq("two")
+
+      documents(:two).destroy!
+
+      expect(reference.reload.target_id).to be_nil
+      expect(reference.reload).to be_broken
     end
   end
 end

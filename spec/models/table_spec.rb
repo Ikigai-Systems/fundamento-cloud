@@ -110,4 +110,44 @@ RSpec.describe Table, type: :model do
       expect(table).to respond_to(:cells)
     end
   end
+
+  # Mirrors the Document behaviour: a destroyed table leaves the references that
+  # pointed at it marked broken, since nothing re-derives them from content now.
+  describe "object references on destroy" do
+    let(:document) { organization.documents.create!(title: "Refers to a table", space: space) }
+    let!(:reference) do
+      ObjectReference.create!(
+        source_node_id: "table-ref-node",
+        source: document,
+        target_type: "Table",
+        target_id: table.id,
+        title: table.name,
+        current: true,
+        organization: organization
+      )
+    end
+
+    it "nullifies the target of references pointing at it" do
+      table.destroy!
+
+      expect(reference.reload.target_id).to be_nil
+      expect(reference.reload).to be_broken
+    end
+
+    it "deletes the references the table was the source of" do
+      own_reference = ObjectReference.create!(
+        source_node_id: "table-source-node",
+        source: table,
+        target_type: "Document",
+        target_id: document.id,
+        title: document.title,
+        current: true,
+        organization: organization
+      )
+
+      table.destroy!
+
+      expect(ObjectReference.where(id: own_reference.id)).to be_empty
+    end
+  end
 end

@@ -136,6 +136,23 @@ RSpec.describe MentionsExtractor do
       expect(mentions.first.object_path).to include("versions")
       expect(mentions.first.object_path).to include("mention-#{mention_id}")
     end
+
+    it "falls back to the document path when the version a mention came from is gone" do
+      mention_id = unique_id("mention")
+
+      first_version = document.versions.create!(
+        content_blocks: mention_content(mention_id, entity: "user", entity_id: user.id),
+        created_by: author,
+        created_at: 3.days.ago
+      )
+      document.versions.create!(content_blocks: empty_content, created_by: author)
+      first_version.destroy!
+
+      mentions = described_class.get_all_mentions([document], user)
+      expect(mentions.length).to eq(1)
+      expect(mentions.first.object_path).not_to include("versions")
+      expect(mentions.first.object_path).to include("mention-#{mention_id}")
+    end
   end
 
   context "mentions from comments" do
@@ -243,5 +260,40 @@ RSpec.describe MentionsExtractor do
     expect(mentions.first).to be_a(Mention)
     expect(mentions.first.object_title).to eq("My Document")
     expect(mentions.first.object_icon).to eq(Icon.emoji("📝"))
+  end
+
+  # The notification bell is a lazy Turbo frame in every layout, so this has to stay
+  # flat in the number of documents — it used to run two queries per document.
+  context "query count" do
+    def sql_queries
+      count = 0
+      subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |_name, _start, _finish, _id, payload|
+        count += 1 unless ["SCHEMA", "TRANSACTION"].include?(payload[:name])
+      end
+      yield
+      count
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber)
+    end
+
+    def document_mentioning_user(title)
+      document = Document.create!(organization: organization, space: space, title: title)
+      document.versions.create!(
+        content_blocks: mention_content(unique_id("mention"), entity: "user", entity_id: user.id),
+        created_by: author
+      )
+      document
+    end
+
+    it "does not grow with the number of documents" do
+      docs = (1..10).map { |i| document_mentioning_user("Doc #{i}") }
+
+      for_one = sql_queries { described_class.get_all_mentions(docs.first(1), user) }
+      for_ten = sql_queries { described_class.get_all_mentions(docs, user) }
+
+      expect(described_class.get_all_mentions(docs, user).length).to eq(10)
+      expect(for_one).to be_positive # the subscriber really is counting
+      expect(for_ten).to eq(for_one)
+    end
   end
 end
