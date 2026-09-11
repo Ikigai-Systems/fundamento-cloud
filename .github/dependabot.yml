@@ -55,6 +55,15 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/react-dom"
         update-types: ["version-update:semver-major"]
+      # @mantine/core 9 peers react ^19.2.0, so it is part of the React 19
+      # migration above, not a bump of its own (see PR #151).
+      - dependency-name: "@mantine/*"
+        update-types: ["version-update:semver-major"]
+      # typescript-eslint 8.70.0 -- the newest release, alphas included -- peers
+      # typescript ">=4.8.4 <6.1.0". TypeScript 7 cannot install alongside it
+      # (see PR #127). Remove this once typescript-eslint widens that range.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     commit-message:
@@ -78,6 +87,10 @@ updates:
           - "@vitest/*"
       converter-minor-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # Same typescript-eslint peer ceiling as the root project above.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     commit-message:
