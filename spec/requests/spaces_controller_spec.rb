@@ -846,6 +846,18 @@ RSpec.describe SpacesController, type: :request do
         expect(response.body).to include("starred_sidebar_tab")
       end
 
+      # The sidebar is itself a turbo frame, and the home page has no frame by that name, so the
+      # logo has to break out of it or the frame renders "Content missing".
+      it "navigates the whole page from the logo link" do
+        get sidebar_space_path(space), headers: { "Turbo-Frame" => "space_sidebar" }
+
+        html = Nokogiri::HTML(response.body)
+        logo_link = html.at("a[href='#{root_path}']")
+
+        expect(logo_link).to be_present
+        expect(logo_link["data-turbo-frame"]).to eq("_top")
+      end
+
       # The whole point of rendering Hierarchy inline: the tree must not cost a second request.
       it "does not load the starred list" do
         expect_any_instance_of(described_class).not_to receive(:space_favorites)
