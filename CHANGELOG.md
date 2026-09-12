@@ -10,6 +10,77 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.3.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.2.0...v1.3.0) (2026-09-12)
+
+
+### Features
+
+* **search:** jump straight to a space from the command palette ([d2c50cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d2c50cb997840c21565a4c9e4a8dd1aa13bc1335))
+* **sidebar:** add Hierarchy and Starred tabs to the space sidebar ([#42](https://github.com/Ikigai-Systems/fundamento-cloud/issues/42)) ([ad7200f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ad7200fa2d9bdae624ef1189ec3546af11b6fcf5))
+* **tables:** keep a version history of every table change ([#141](https://github.com/Ikigai-Systems/fundamento-cloud/issues/141)) ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+
+
+### Bug Fixes
+
+* **audits:** stop writing audit records for models that opted out ([#175](https://github.com/Ikigai-Systems/fundamento-cloud/issues/175)) ([fc1e417](https://github.com/Ikigai-Systems/fundamento-cloud/commit/fc1e417f8875276caa4db2ceec9e3591b5e46d35))
+* **automations:** open the automations page as a full page ([#144](https://github.com/Ikigai-Systems/fundamento-cloud/issues/144)) ([7e87a51](https://github.com/Ikigai-Systems/fundamento-cloud/commit/7e87a51c796861ef90195d64a498f94756b16e0d))
+* **automations:** open the automations page from a document or table ([#142](https://github.com/Ikigai-Systems/fundamento-cloud/issues/142)) ([6df268c](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6df268ce34e92d6f9a06923f04758bd770b32459))
+* **documents:** keep attachments when a document is rewritten ([#159](https://github.com/Ikigai-Systems/fundamento-cloud/issues/159)) ([52637a3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/52637a3df4e69765c3f573843d5aa2e93f972042))
+* **editor:** checklist checkboxes are square and aligned ([#172](https://github.com/Ikigai-Systems/fundamento-cloud/issues/172)) ([6f4b876](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6f4b876b1741e6364f5b19cbc37d14f17452b29c))
+* **icons:** keep the emoji in the name when editing a space ([#156](https://github.com/Ikigai-Systems/fundamento-cloud/issues/156)) ([bfdc901](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bfdc901988352fdf794a50787888d3ada0cb5562))
+* **icons:** keep the emoji when renaming a table in a document ([bfdc901](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bfdc901988352fdf794a50787888d3ada0cb5562))
+* **imports:** cap link resolution at one job per worker ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** convert docx/odt with Pandoc during link resolution ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** expired import sessions get cleaned up now ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* **imports:** keep hierarchy nodes and stop duplicate versions ([#154](https://github.com/Ikigai-Systems/fundamento-cloud/issues/154)) ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** keep the original file when converting it to a document ([484f2cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/484f2cb0036681edbf21f7b4d2da0b18cd0dd23f))
+* **imports:** Obsidian file links no longer duplicate their images ([#165](https://github.com/Ikigai-Systems/fundamento-cloud/issues/165)) ([a50b5b3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a50b5b3c6d021e34c0f7bf1c9868e57fc0dd1505))
+* **imports:** resolve Obsidian [[file.ext]] links to attachments ([52637a3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/52637a3df4e69765c3f573843d5aa2e93f972042))
+* **imports:** resolve wiki-links to converted documents ([#167](https://github.com/Ikigai-Systems/fundamento-cloud/issues/167)) ([484f2cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/484f2cb0036681edbf21f7b4d2da0b18cd0dd23f))
+* **imports:** stop imports wedging the background job worker ([#166](https://github.com/Ikigai-Systems/fundamento-cloud/issues/166)) ([0dfba1f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0dfba1f455336d07bc11521cd379419f9e0908b6))
+* **imports:** stop re-resolving documents that only contain a caret ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** strip frontmatter when resolving Obsidian links ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** unbreak db:migrate on the orphan repair migration ([#161](https://github.com/Ikigai-Systems/fundamento-cloud/issues/161)) ([4128635](https://github.com/Ikigai-Systems/fundamento-cloud/commit/412863524acc806f6a77d0dd08819cbd59b66af4))
+* **imports:** unsupported files no longer fail the import ([#157](https://github.com/Ikigai-Systems/fundamento-cloud/issues/157)) ([5b7cfa3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5b7cfa369db54332da2f1e1c5f2cbf1362674370))
+* **jobs:** give the job worker enough database connections ([0dfba1f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0dfba1f455336d07bc11521cd379419f9e0908b6))
+* **jobs:** scheduled maintenance jobs actually run ([#145](https://github.com/Ikigai-Systems/fundamento-cloud/issues/145)) ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* let chart blocks use the column id the API actually sends ([#194](https://github.com/Ikigai-Systems/fundamento-cloud/issues/194)) ([317020d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/317020dd2024ec0931f58305cf1f07ab901e1518))
+* return to the home page from the sidebar logo ([#196](https://github.com/Ikigai-Systems/fundamento-cloud/issues/196)) ([975699f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/975699f5ffc37d78dd826defa90b188370bee6be))
+* **search:** hide archived items from the command palette ([d2c50cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d2c50cb997840c21565a4c9e4a8dd1aa13bc1335))
+* **sidebar:** draw the spaces menu over the sidebar tabs ([#155](https://github.com/Ikigai-Systems/fundamento-cloud/issues/155)) ([bbee322](https://github.com/Ikigai-Systems/fundamento-cloud/commit/bbee322141718f4f16a992415e93c607eae6174c))
+* **spaces:** keep the sidebar working when a document is missing ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* surface mentions written inside older tables ([#195](https://github.com/Ikigai-Systems/fundamento-cloud/issues/195)) ([d6b422e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d6b422e7104c28f317e0e8ef7fbc4916be8a9c2a))
+* **tables:** a damaged row or column order no longer hides rows ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* **tables:** existing tables get a baseline version history ([0e0fcf3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0e0fcf386567363a8897d8463fc8bab277ca0ed5))
+* **tables:** moving a column no longer corrupts the column order ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* **tags:** stop a tag collision from discarding an imported document ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+
+
+### Performance
+
+* **documents:** stop loading document bodies when listing documents ([615287f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/615287f1549293135d220afd825b1a8580c13650))
+* **imports:** import documents in parallel, attachments one at a time ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* **imports:** skip needless re-resolution work during import ([9c4dc01](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9c4dc01f855120b75a382afce86b39c920ee312d))
+* load the notification count without scanning every document ([#193](https://github.com/Ikigai-Systems/fundamento-cloud/issues/193)) ([64da3c0](https://github.com/Ikigai-Systems/fundamento-cloud/commit/64da3c0ce80845e4681eaf191ed97e28cec804e3))
+* **search:** make the command palette fast in large organizations ([#168](https://github.com/Ikigai-Systems/fundamento-cloud/issues/168)) ([d2c50cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d2c50cb997840c21565a4c9e4a8dd1aa13bc1335))
+* show document connections without scanning every document ([64da3c0](https://github.com/Ikigai-Systems/fundamento-cloud/commit/64da3c0ce80845e4681eaf191ed97e28cec804e3))
+
+
+### Security
+
+* **editor:** harden Markdown parsing and attribute handling ([#197](https://github.com/Ikigai-Systems/fundamento-cloud/issues/197)) ([c90368f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c90368f6f86680be599271576cab6b003045f8d0))
+
+
+### Upgrade Notes
+
+* deploy at a quiet hour — mid-rollout edits can be lost ([615287f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/615287f1549293135d220afd825b1a8580c13650))
+* **imports:** run `rails imports:backfill` to repair earlier imports ([484f2cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/484f2cb0036681edbf21f7b4d2da0b18cd0dd23f))
+* migration de-duplicates table cells and backfills row timestamps ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* self-hosted db:schema:load now needs pg_trgm/btree_gin rights ([d2c50cb](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d2c50cb997840c21565a4c9e4a8dd1aa13bc1335))
+* table cell values are now capped at 100,000 characters ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* tables are now limited to 50,000 rows and 200 columns ([5ae3948](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5ae394866d9ce3f3462a2a3d723d9f9f486a6901))
+* this release's migration rebuilds mentions; expect a slower boot ([64da3c0](https://github.com/Ikigai-Systems/fundamento-cloud/commit/64da3c0ce80845e4681eaf191ed97e28cec804e3))
+
 ## [1.2.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.1.0...v1.2.0) (2026-09-01)
 
 
