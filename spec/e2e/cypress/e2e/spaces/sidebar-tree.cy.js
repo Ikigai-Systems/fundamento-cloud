@@ -189,7 +189,7 @@ describe("Space sidebar tree", function () {
 
     // The same event EditableContentTitle dispatches once a rename has been persisted.
     cy.window().then((win) => {
-      win.dispatchEvent(new win.CustomEvent("content-title-updated", {
+      win.dispatchEvent(new win.CustomEvent("content-updated", {
         detail: {id: "one", title: "Renamed One"},
       }));
     });
@@ -204,6 +204,68 @@ describe("Space sidebar tree", function () {
     cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
     cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
     cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
+  });
+
+  it("drops the Draft lozenge once the document is saved", function () {
+    // No versions fixture is loaded, so both documents start as drafts.
+    cy.visit("/d/one");
+    cy.url().should("include", "/d/one/edit");
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("exist");
+
+    // Wait for the editor to be interactive — the save posts whatever the hidden
+    // content_blocks input holds, which the editor fills on ready.
+    cy.get("[data-editor-target='editorRoot'] [role='textbox']", {timeout: 10000}).should("exist");
+
+    cy.intercept("POST", "/d/*/versions").as("saveVersion");
+    cy.get('[aria-label="Save document"]').click();
+    cy.wait("@saveVersion");
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("not.exist");
+
+    // The sidebar frame never reloads, so re-rendering from the JSON frozen at its load would
+    // bring the lozenge back on the next expand/collapse.
+    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.get("#space-sidebar li[data-node-id='two']").should("exist");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("not.exist");
+
+    // "two" is still a draft, so its own lozenge must survive — this is not a blanket removal.
+    cy.get("#space-sidebar li[data-node-id='two'] .draft-lozenge").should("exist");
+  });
+
+  it("applies several attributes from one content-updated event", function () {
+    cy.visit("/d/one");
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "One");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("exist");
+
+    cy.window().then((win) => {
+      win.dispatchEvent(new win.CustomEvent("content-updated", {
+        detail: {id: "one", title: "Renamed One", draft: false},
+      }));
+    });
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("not.exist");
+  });
+
+  it("leaves out fields an update does not carry", function () {
+    cy.visit("/d/one");
+
+    // The sidebar is its own frame and loads asynchronously; wait for the tree to be on screen,
+    // or the controller is not listening yet and the event below goes nowhere.
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("exist");
+
+    // A draft-only update must not blank the title, in the tree or in the rows
+    // content_title_sync_controller patches.
+    cy.window().then((win) => {
+      win.dispatchEvent(new win.CustomEvent("content-updated", {
+        detail: {id: "one", draft: false},
+      }));
+    });
+
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "One");
+    cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("not.exist");
   });
 
   it("nests a document under another via drag and drop", function () {

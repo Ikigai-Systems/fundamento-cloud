@@ -1,8 +1,12 @@
 import {Controller} from "@hotwired/stimulus"
 import {applyObjectIcon} from "../sidebar/object_icon"
-import {ObjectIcon} from "../sidebar/types"
+import {CONTENT_UPDATED, contentUpdateFrom} from "../content_updated"
 
 // Keeps sidebar rows in step with a rename without waiting for a frame reload.
+//
+// Only the naming fields of the shared content-updated event are this controller's business;
+// sidebar_tree_controller owns everything the document tree renders from its own JSON. This
+// one covers the rows that stay server-rendered, i.e. the Tables section.
 //
 // The event carries what the server actually stored, not what the user typed, so
 // a title of "🔥 Roadmap" arrives here already split into the label "Roadmap" and
@@ -12,20 +16,21 @@ export default class extends Controller<HTMLElement> {
 
   connect() {
     this.handler = (event: Event) => {
-      const {id, title, icon} =
-        (event as CustomEvent<{id: string; title: string; icon?: ObjectIcon | null}>).detail;
-      const container = this.element.querySelector<HTMLElement>(`[data-document-id="${id}"]`);
+      const update = contentUpdateFrom(event);
+      if (!update || update.title === undefined) return;
+
+      const container = this.element.querySelector<HTMLElement>(`[data-document-id="${update.id}"]`);
       if (!container) return;
 
       const label = container.querySelector<HTMLElement>("span.truncate");
-      if (label) label.textContent = title;
+      if (label) label.textContent = update.title;
 
-      applyObjectIcon(container, icon);
+      applyObjectIcon(container, update.icon);
     };
-    window.addEventListener("content-title-updated", this.handler);
+    window.addEventListener(CONTENT_UPDATED, this.handler);
   }
 
   disconnect() {
-    window.removeEventListener("content-title-updated", this.handler);
+    window.removeEventListener(CONTENT_UPDATED, this.handler);
   }
 }

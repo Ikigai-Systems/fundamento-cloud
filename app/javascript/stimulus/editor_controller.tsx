@@ -7,6 +7,7 @@ import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient";
 import {FeaturesContext} from "../contextes/FeaturesContext";
 import type {Document, Space, User} from "../types";
+import {publishContentUpdate} from "../content_updated";
 
 export interface EditorConsumerController {
   receiveBlocks(blocks: unknown[]): void;
@@ -43,12 +44,26 @@ export default class extends Controller {
   private root: Root | undefined;
   private editorInstance: EditorInstance | undefined;
 
+  // Posting the first version is what stops a document being a draft. The sidebar is its own
+  // Turbo frame, rendered from JSON frozen at that frame's load, so the save leaves a stale
+  // "Draft" lozenge behind — announce the change the way a rename does.
+  private handleSubmitEnd = (event: Event) => {
+    if (!this.hasContentBlocksInputTarget) return;
+    // The hidden input carries form="save-version-form", so its .form is the save form itself.
+    if (event.target !== this.contentBlocksInputTarget.form) return;
+    if (!(event as CustomEvent<{success?: boolean}>).detail?.success) return;
+
+    publishContentUpdate({id: this.documentValue.id, draft: false});
+  };
+
   connect() {
     this.root = createRoot(this.editorRootTarget);
     this.renderComponent();
+    document.addEventListener("turbo:submit-end", this.handleSubmitEnd);
   }
 
   disconnect() {
+    document.removeEventListener("turbo:submit-end", this.handleSubmitEnd);
     this.root?.unmount();
     this.root = undefined;
     this.editorInstance = undefined;
