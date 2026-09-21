@@ -1,7 +1,8 @@
 import {Controller} from "@hotwired/stimulus"
 import {loadExpanded, saveExpanded} from "../sidebar/expansion_store"
 import {renderTreeItem} from "../sidebar/tree_item"
-import {ObjectIcon, RenderContext, TreeNode, TreePayload} from "../sidebar/types"
+import {RenderContext, TreeNode, TreePayload} from "../sidebar/types"
+import {CONTENT_UPDATED, contentUpdateFrom} from "../content_updated"
 
 // Connects to data-controller="sidebar-tree"
 export default class extends Controller<HTMLElement> {
@@ -38,21 +39,36 @@ export default class extends Controller<HTMLElement> {
     this.reloadFrame();
   };
 
-  // content_title_sync_controller patches the rendered <span> when a document is renamed, but the
-  // JSON this controller renders from is frozen at frame load, so the very next render would put
-  // the stale title back. Update the in-memory node too and re-render from it.
-  private handleTitleUpdated = (event: Event) => {
-    const {id, title, icon} =
-      (event as CustomEvent<{id: string; title: string; icon?: ObjectIcon | null}>).detail ?? {};
-    if (!id) return;
+  // content_title_sync_controller patches the rendered row directly, but the JSON this controller
+  // renders from is frozen at frame load, so the very next render would put the stale values
+  // back. Apply the change to the in-memory node too and re-render from it.
+  private handleContentUpdated = (event: Event) => {
+    const update = contentUpdateFrom(event);
+    if (!update) return;
 
     // The same event is fired for tables, which are not part of this tree.
-    const node = this.byId.get(id);
+    const node = this.byId.get(update.id);
     if (!node) return;
 
-    node.title = title;
-    node.icon = icon ?? null;
-    this.render();
+    // Only the fields this update carries — see ContentUpdate on what undefined means. An
+    // update that just restates what the node already holds skips the re-render: every save
+    // announces draft: false, and most saves are of documents that were never drafts.
+    // Icons compare by reference, which can only err towards re-rendering, never staleness.
+    let changed = false;
+    if (update.title !== undefined && update.title !== node.title) {
+      node.title = update.title;
+      changed = true;
+    }
+    if (update.icon !== undefined && update.icon !== node.icon) {
+      node.icon = update.icon;
+      changed = true;
+    }
+    if (update.draft !== undefined && update.draft !== (node.draft ?? false)) {
+      node.draft = update.draft;
+      changed = true;
+    }
+
+    if (changed) this.render();
   };
 
   connect() {
@@ -64,12 +80,12 @@ export default class extends Controller<HTMLElement> {
     this.render();
     this.scrollSelectedIntoView();
     this.element.addEventListener("draggable:reordered", this.handleReordered);
-    window.addEventListener("content-title-updated", this.handleTitleUpdated);
+    window.addEventListener(CONTENT_UPDATED, this.handleContentUpdated);
   }
 
   disconnect() {
     this.element.removeEventListener("draggable:reordered", this.handleReordered);
-    window.removeEventListener("content-title-updated", this.handleTitleUpdated);
+    window.removeEventListener(CONTENT_UPDATED, this.handleContentUpdated);
   }
 
   private reloadFrame() {

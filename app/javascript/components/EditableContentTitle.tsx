@@ -3,6 +3,7 @@ import {Document, ObjectIcon as ObjectIconValue, Table} from "../types.js";
 import ObjectIcon, {ObjectType} from "./ObjectIcon.tsx";
 import createFlash from "../utils/createFlash.ts";
 import DocumentsApi from "../api/DocumentsApi.js";
+import {publishContentUpdate} from "../content_updated.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 
 export const UNTITLED_CONTENT = "Untitled";
@@ -31,7 +32,9 @@ function announceRename(id: string, response: RenameResponse, typedTitle: string
   const title = response.title ?? response.name ?? typedTitle;
   const icon = response.icon ?? null;
 
-  window.dispatchEvent(new CustomEvent("content-title-updated", {detail: {id, title, icon}}));
+  // icon is explicitly null rather than omitted when the new title has no leading emoji:
+  // omitting it would read as "icon unchanged" and leave the old one in the sidebar.
+  publishContentUpdate({id, title, icon});
 
   return {title, icon, titleForEditing: response.titleForEditing ?? title};
 }
