@@ -60,6 +60,58 @@ RSpec.describe DocumentsController, type: :request do
         document_one.reload
         expect(document_one.space_id).to eq(other_space.id)
       end
+
+      context "when the document has children" do
+        let(:destination_space) { ikigai_systems.spaces.create!(name: "Destination Space", access_mode: :public) }
+        let(:parent) { is_default_space.documents.create!(title: "Parent", organization: ikigai_systems) }
+        let(:child) { is_default_space.documents.create!(title: "Child", organization: ikigai_systems) }
+        let(:grandchild) { is_default_space.documents.create!(title: "Grandchild", organization: ikigai_systems) }
+        let(:sibling) { is_default_space.documents.create!(title: "Sibling", organization: ikigai_systems) }
+
+        before do
+          is_default_space.update!(hierarchy: [
+            {
+              "id" => parent.id,
+              "children" => [
+                { "id" => child.id, "children" => [{ "id" => grandchild.id, "children" => [] }] }
+              ]
+            },
+            { "id" => sibling.id, "children" => [] }
+          ])
+
+          post move_document_path(parent),
+            params: { document: { space_id: destination_space.id } },
+            headers: { "Turbo-Frame" => "edit_document_#{parent.id}" }
+        end
+
+        it "reassigns the whole subtree to the destination space" do
+          expect(response).to have_http_status(:ok)
+
+          expect([parent, child, grandchild].map { |document| document.reload.space_id })
+            .to all(eq(destination_space.id))
+        end
+
+        it "leaves documents outside the subtree in the source space" do
+          expect(sibling.reload.space_id).to eq(is_default_space.id)
+        end
+
+        it "removes the whole subtree from the source hierarchy" do
+          expect(is_default_space.reload.hierarchy).to eq([
+            { "id" => sibling.id, "children" => [] }
+          ])
+        end
+
+        it "appends the subtree to the destination hierarchy with its nesting intact" do
+          expect(destination_space.reload.hierarchy).to eq([
+            {
+              "id" => parent.id,
+              "children" => [
+                { "id" => child.id, "children" => [{ "id" => grandchild.id, "children" => [] }] }
+              ]
+            }
+          ])
+        end
+      end
     end
   end
 
