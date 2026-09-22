@@ -112,6 +112,60 @@ jobs:
           container-name: fundamento-cloud-jobs
           image: ghcr.io/ikigai-systems/fundamento-cloud:${{ steps.imgtag.outputs.tag }}
 
+      # Snapshot the database before the migration is allowed to touch it.
+      #
+      # Automated backups already give point-in-time recovery, but using them after a
+      # bad migration means first working out from logs which minute the migration
+      # started, and PITR granularity is five minutes -- at 3am, against a clock you
+      # are reconstructing. An explicit snapshot named for the deploy removes both
+      # problems. Manual snapshots are never expired by RDS, so this also prunes its
+      # own old ones; pruning failures warn rather than block the deploy.
+      - name: Snapshot database before migrations
+        if: github.event.workflow_run.head_branch == 'master'
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          IMAGE_TAG: ${{ steps.imgtag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          INSTANCE=prod-rds-postgres
+          RETAIN_DAYS=7
+          SNAPSHOT="${INSTANCE}-premigrate-$(date -u +%Y%m%d-%H%M%S)"
+
+          aws rds create-db-snapshot \
+            --db-instance-identifier "$INSTANCE" \
+            --db-snapshot-identifier "$SNAPSHOT" \
+            --tags "Key=Source,Value=deploy-premigrate" \
+                   "Key=Commit,Value=${HEAD_SHA}" \
+                   "Key=ImageTag,Value=${IMAGE_TAG}" \
+            --query 'DBSnapshot.DBSnapshotIdentifier' --output text
+
+          # Block the migration until the snapshot is usable. A snapshot that is still
+          # building is not something you can restore from.
+          aws rds wait db-snapshot-available --db-snapshot-identifier "$SNAPSHOT"
+          echo "::notice::pre-migration snapshot ${SNAPSHOT} (commit ${HEAD_SHA})"
+
+          # Prune by the timestamp in the name rather than SnapshotCreateTime: the
+          # JMESPath ordering operators are defined only for numbers, so comparing
+          # timestamps inside --query yields null and silently prunes nothing. The
+          # name suffix is fixed-width UTC, so a plain string compare is correct.
+          PREFIX="${INSTANCE}-premigrate-"
+          CUTOFF=$(python3 -c "import datetime, sys; print((datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=int(sys.argv[1]))).strftime('%Y%m%d-%H%M%S'))" "$RETAIN_DAYS")
+          if ! OLD=$(aws rds describe-db-snapshots \
+            --snapshot-type manual \
+            --query "DBSnapshots[?DBInstanceIdentifier=='${INSTANCE}' && starts_with(DBSnapshotIdentifier, '${PREFIX}')].DBSnapshotIdentifier" \
+            --output text); then
+            echo "::warning::could not list snapshots to prune"
+            OLD=""
+          fi
+          for snap in $OLD; do
+            stamp="${snap#"$PREFIX"}"
+            if [[ "$stamp" < "$CUTOFF" ]]; then
+              echo "pruning $snap"
+              aws rds delete-db-snapshot --db-snapshot-identifier "$snap" >/dev/null \
+                || echo "::warning::could not prune snapshot ${snap}"
+            fi
+          done
+
       # Run DB migrations with the NEW image before shifting traffic. Register the
       # rendered website task-def (stripped of read-only fields) and run it once.
       - name: Run database migrations
