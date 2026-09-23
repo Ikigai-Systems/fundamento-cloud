@@ -54,9 +54,9 @@ class RemoveTagsTool < ApplicationTool
   def self.resolve_object(id, object_type, organization)
     case object_type
     when "Document"
-      organization.documents.find(id)
+      organization.documents.kept.find(id)
     when "Table"
-      organization.tables.find(id)
+      organization.tables.kept.find(id)
     else
       raise ArgumentError, "Unsupported object_type: #{object_type}"
     end

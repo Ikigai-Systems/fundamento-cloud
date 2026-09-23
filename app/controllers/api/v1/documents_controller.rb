@@ -56,7 +56,7 @@ module Api
       end
 
       def show
-        document = current_organization.documents.find(params[:id])
+        document = current_organization.documents.kept.find(params[:id])
         authorize document
 
         blocks = if document.draft?

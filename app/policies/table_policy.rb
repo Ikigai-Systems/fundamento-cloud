@@ -1,7 +1,10 @@
 class TablePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
+    # `.kept` here rather than at each call site: the dashboard, mentions, search, the
+    # API index and the MCP tools are all built from a policy scope, and every one of
+    # them wants a trashed record to be invisible rather than merely unopenable.
     def resolve
-      scope.where(space: Pundit.policy_scope!(user_context, Space))
+      scope.kept.where(space: Pundit.policy_scope!(user_context, Space))
     end
   end
 

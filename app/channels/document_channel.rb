@@ -57,8 +57,12 @@ class DocumentChannel < ApplicationCable::Channel
 
   private
 
+  # `.kept`: a trashed document must be unreachable for editing, not merely hidden from
+  # lists. save_doc writes the whole Y.js state back on every update, so a client that
+  # stayed subscribed would keep persisting into a record the user believes is deleted,
+  # and would overwrite it wholesale if it were later restored.
   def find_document(document_id)
-    current_organization.documents.find_by(id: document_id)
+    current_organization.documents.kept.find_by(id: document_id)
   end
 
   def current_membership

@@ -92,7 +92,7 @@ class SpacesController < ApplicationController
     end
 
     # Validate that the document exists and belongs to this space
-    document = @space.documents.find_by(id: document_id)
+    document = @space.documents.kept.find_by(id: document_id)
     unless document
       render json: { error: "Document not found or does not belong to this space" }, status: :unprocessable_content
       return
@@ -100,7 +100,7 @@ class SpacesController < ApplicationController
 
     # Validate parent_id if provided
     if parent_id.present?
-      parent_document = @space.documents.find_by(id: parent_id)
+      parent_document = @space.documents.kept.find_by(id: parent_id)
       unless parent_document
         render json: { error: "Parent document not found or does not belong to this space" }, status: :unprocessable_content
         return

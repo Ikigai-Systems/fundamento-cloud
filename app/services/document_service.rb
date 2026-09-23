@@ -13,7 +13,7 @@ class DocumentService
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
 
-      parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
+      parent_document = space.documents.kept.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
       document = space.documents.new(
@@ -57,7 +57,7 @@ class DocumentService
 
   def update!(document_id:, markdown:)
     ActiveRecord::Base.transaction do
-      document = pundit_user.current_organization.documents.find(document_id)
+      document = pundit_user.current_organization.documents.kept.find(document_id)
       authorize document, :update?
 
       # Extract and process frontmatter
@@ -90,7 +90,7 @@ class DocumentService
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
 
-      parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
+      parent_document = space.documents.kept.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
       # Convert file to markdown

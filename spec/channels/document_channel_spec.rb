@@ -67,6 +67,23 @@ RSpec.describe DocumentChannel, type: :channel do
       end
     end
 
+    # A trashed document must be unreachable for editing, not just hidden from lists.
+    # The channel writes the whole Y.js document state back on every update, so a client
+    # that stayed subscribed would keep persisting into a record the user believes is
+    # deleted -- and would overwrite it wholesale if it were ever restored.
+    context "when the document is trashed" do
+      let(:organization_membership) { organization_memberships(:om_is_stefan) }
+      let(:document) { documents(:one) }
+
+      before { document.trash!(by: user) }
+
+      it "rejects the subscription" do
+        subscribe(documentId: document.id)
+
+        expect(subscription).to be_rejected
+      end
+    end
+
     context "when the document belongs to a different organization" do
       let(:organization_membership) { organization_memberships(:om_hc_stefan) }
       let(:document) { documents(:one) } # belongs to org "is"
