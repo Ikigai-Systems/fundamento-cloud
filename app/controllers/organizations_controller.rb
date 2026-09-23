@@ -81,9 +81,13 @@ class OrganizationsController < ApplicationController
   def destroy
     authorize @organization, :destroy?
 
-    @organization.destroy!
+    # Trashed, not destroyed: the organization and everything under it stay on disk for
+    # the retention window, and TrashPurgeJob does the real destroy at the end of it.
+    @organization.trash!(by: current_user)
+    cookies.encrypted[:organization_id] = nil if cookies.encrypted[:organization_id] == @organization.id
 
-    redirect_to organizations_path, notice: "Organization was removed."
+    redirect_to organizations_path,
+      notice: "#{@organization.name} was removed. It can be restored for the next #{Trashable::RETENTION.inspect}."
   end
 
   private

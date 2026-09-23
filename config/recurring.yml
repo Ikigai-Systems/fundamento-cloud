@@ -7,3 +7,8 @@ table_version_backfill:
   class: TableVersionBackfillJob
   cron: "20 3 * * *"
   description: "Give tables that predate versioning a baseline version; self-terminating"
+
+trash_purge:
+  class: TrashPurgeJob
+  cron: "40 3 * * *"
+  description: "Permanently destroy records trashed longer ago than the retention window"
