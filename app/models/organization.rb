@@ -1,5 +1,6 @@
 class Organization < ApplicationRecord
   include NpiOrdering
+  include Trashable
 
   has_many :api_tokens, dependent: :delete_all
   has_many :attachments, dependent: :destroy

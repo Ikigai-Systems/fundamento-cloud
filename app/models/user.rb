@@ -26,7 +26,12 @@ class User < ApplicationRecord
 
   has_many :user_identities, dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
-  has_many :organizations, through: :organization_memberships
+  # Scoped rather than filtered at each call site: every path that asks which
+  # organizations a user belongs to -- the picker, EnsureOrganization, the
+  # ActionCable connection check, UserPolicy, the MCP tools -- reads this
+  # association, and all of them want the same answer. Organization.find still
+  # sees trashed rows, which is what the purge and any restore path need.
+  has_many :organizations, -> { kept }, through: :organization_memberships
   has_many :public_links, foreign_key: :updated_by_id, dependent: :nullify
 
   has_many :team_memberships, through: :organization_memberships
