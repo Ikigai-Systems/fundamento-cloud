@@ -8,6 +8,36 @@ RSpec.describe OrganizationsController, type: :request do
   let(:pawel) { users(:pawel) }
   let(:maria) { users(:maria) }
 
+  # Deleting an organization is the single most destructive action in the product: one
+  # click used to hard-DELETE the tenant and cascade through a dozen associations, with
+  # no recovery short of restoring the whole database to a point in time.
+  describe "DELETE #destroy" do
+    before { sign_in pawel }
+
+    it "trashes the organization instead of destroying it" do
+      delete organization_path(is_org)
+
+      expect(Organization.find_by(id: is_org.id)).to be_present
+      expect(is_org.reload).to be_trashed
+      expect(is_org.deleted_by_id).to eq(pawel.id)
+    end
+
+    it "leaves the organization's data in place" do
+      space_ids = is_org.spaces.pluck(:id)
+      expect(space_ids).not_to be_empty
+
+      delete organization_path(is_org)
+
+      expect(Space.where(id: space_ids).count).to eq(space_ids.size)
+    end
+
+    it "removes the organization from the user's list" do
+      delete organization_path(is_org)
+
+      expect(pawel.organizations.reload).not_to include(is_org)
+    end
+  end
+
   describe "POST #select" do
     context "when user has access to the organization" do
       before do

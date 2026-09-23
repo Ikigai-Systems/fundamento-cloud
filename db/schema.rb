@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_11_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -510,8 +510,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_11_140000) do
 
   create_table "organizations", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.string "deleted_by_id"
     t.string "name"
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_organizations_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id"], name: "index_organizations_on_id", unique: true
   end
 
