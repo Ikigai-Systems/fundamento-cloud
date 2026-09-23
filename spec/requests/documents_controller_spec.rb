@@ -148,6 +148,22 @@ RSpec.describe DocumentsController, type: :request do
     end
   end
 
+  # Every controller that loads a document by param goes through LoadDocument, so this
+  # is the one place that decides whether a trashed document is still reachable.
+  describe "opening a trashed document" do
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+      document_one.trash!(by: pawel)
+    end
+
+    it "is not found" do
+      get document_path(document_one)
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
+
   describe "DELETE /d/:id" do
     context "when authenticated" do
       before do
@@ -155,11 +171,21 @@ RSpec.describe DocumentsController, type: :request do
         post select_organization_path(ikigai_systems)
       end
 
-      it "deletes document via id parameter" do
+      it "trashes the document instead of destroying it" do
         expect {
           delete document_path(document_one)
-        }.to change(Document, :count).by(-1)
+        }.not_to change(Document, :count)
+
+        expect(document_one.reload).to be_trashed
+        expect(document_one.deleted_by_id).to eq(pawel.id)
       end
+
+      it "hides the trashed document from the space" do
+        delete document_path(document_one)
+
+        expect(is_default_space.documents.kept).not_to include(document_one)
+      end
+
     end
   end
 

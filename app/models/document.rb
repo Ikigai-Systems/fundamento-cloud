@@ -2,6 +2,7 @@ require 'open3'
 
 class Document < ApplicationRecord
   include NpiOrdering
+  include Trashable
 
   include ToReactProps
   set_react_props :id, :title, :icon, :title_for_editing
