@@ -1,7 +1,6 @@
 x-minio-configuration: &minio-configuration
   MINIO_ROOT_USER: minio
   MINIO_ROOT_PASSWORD: password
-  MINIO_VOLUMES: /var/lib/minio/data
   MINIO_HOST: minio
 
 x-minio-storage-credentials: &minio-storage-credentials
@@ -41,16 +40,32 @@ services:
       interval: 5s
       timeout: 10s
       retries: 3
+  # MinIO deleted its own images from Docker Hub (2026-09-11) and made the quay.io
+  # mirrors private (2026-09-24), which broke `docker compose pull` everywhere. These
+  # are Bitnami's archived builds of the same AGPL binaries -- the only drop-in left
+  # that still speaks `mc admin`, which dockerfiles/minio-init.sh needs. The namespace
+  # is frozen and will never be updated, so both are pinned by digest; this is a
+  # stopgap until the object store is replaced (SeaweedFS/Garage/RustFS).
+  #
+  # Bitnami's entrypoint, not ours, builds the `minio server` argv -- it reads
+  # MINIO_DATA_DIR / MINIO_API_PORT_NUMBER / MINIO_CONSOLE_PORT_NUMBER instead of
+  # MINIO_VOLUMES, and defaults MINIO_BROWSER to off where upstream defaults it on.
+  #
+  # MINIO_SKIP_CLIENT is not cosmetic. Without it Bitnami's setup starts a throwaway
+  # MinIO in the background to configure its own `mc` alias, then stops it before
+  # starting the real server. The healthcheck below passes against that throwaway, so
+  # Compose releases minio-initialization into the gap and `mc alias set` dies on
+  # "connection refused". Skipping the client step removes the start/stop entirely;
+  # we create buckets from minio-initialization, never from MINIO_DEFAULT_BUCKETS.
   minio:
-    image: quay.io/minio/minio:latest
-    command:
-      - server
-      - --console-address
-      - :9001
+    image: bitnamilegacy/minio:2025.7.23-debian-12-r5@sha256:6dabb4a2088c9a79908de3bc05f4586c23ad2182c8908e7e3acbf61c1467fb20
     environment:
       <<: *minio-configuration
+      MINIO_DATA_DIR: /bitnami/minio/data
+      MINIO_BROWSER: 'on'
+      MINIO_SKIP_CLIENT: 'yes'
     volumes:
-      - minio:/var/lib/minio/data
+      - minio-data:/bitnami/minio/data
     ports:
       - '${MINIO_PORT:-9000}:9000'
       - '${MINIO_CONSOLE_PORT:-9001}:9001'
@@ -60,13 +75,17 @@ services:
       timeout: 10s
       retries: 3
   minio-initialization:
-    image: quay.io/minio/mc:latest
+    image: bitnamilegacy/minio-client:2025.7.21-debian-12-r3@sha256:73bd39f7899a0cef12b8dd5df13aa93a3ed1aaa44236542442e9ac76819ac158
     entrypoint: /bin/sh
     command: /minio-init.sh
     volumes:
       - ./dockerfiles/minio-init.sh:/minio-init.sh
     environment:
       <<: [*minio-configuration, *minio-storage-credentials]
+      # Overriding the entrypoint skips Bitnami's setup, which is what normally gives
+      # `mc` somewhere to write. The image runs as uid 1001 with HOME=/, which it
+      # cannot write to, so point mc's config at a writable path explicitly.
+      MC_CONFIG_DIR: /tmp/.mc
     depends_on:
       minio:
         condition: service_healthy
@@ -130,7 +149,11 @@ services:
 
 volumes:
   postgres:
-  minio:
+  # Renamed from `minio` deliberately: the data dir moved to Bitnami's
+  # /bitnami/minio/data, and reusing the old root-owned volume would leave the
+  # uid-1001 server unable to write to it. The old volume is dev/e2e scratch
+  # storage and can be dropped (`docker volume rm fundamento-cloud_minio`).
+  minio-data:
 
 secrets:
   fontawesome-auth:
