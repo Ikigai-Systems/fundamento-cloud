@@ -114,7 +114,7 @@ jobs:
           # GitHub expressions and would always yield X.
           BUILD_CACHE_TO: ${{ github.ref == 'refs/heads/master' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
 
-      - uses: hoverkraft-tech/compose-action@v3.1.0
+      - uses: hoverkraft-tech/compose-action@v3.2.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
