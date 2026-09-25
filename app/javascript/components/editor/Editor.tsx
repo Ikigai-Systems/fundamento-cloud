@@ -20,13 +20,27 @@ import {YjsThreadStore, withCollaboration} from "@blocknote/core/yjs";
 import tinySimpleHash from "../../utils/tinySimpleHash";
 import resolveUsers from "../../utils/resolveUsers";
 
-// The @types/rails__actioncable definitions omit `connectionIsStale`, which exists at runtime
-// (see @rails/actioncable ConnectionMonitor). Augment the type so we can call it type-safely.
+// @types/rails__actioncable 8.x narrowed Consumer to Action Cable's *documented* surface,
+// dropping `connection` and the Connection/ConnectionMonitor types entirely. The runtime
+// still has all three -- consumer.js does `this.connection = new Connection(this)` and
+// ConnectionMonitor still implements connectionIsStale() -- so the staleness check below
+// is sound; only the types stopped describing it. Re-declare the narrow path we walk, so
+// that call stays type-checked instead of becoming an `any`.
+//
+// These are Action Cable internals, not public API: if a future release actually removes
+// them, this augmentation will keep type-checking while the runtime returns undefined.
+// Worth re-testing the stale-connection banner whenever @rails/actioncable moves.
 declare module "@rails/actioncable" {
-  // The type parameter must match the original class declaration exactly for merging to apply.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ConnectionMonitor<C = Consumer> {
+  interface ConnectionMonitor {
     connectionIsStale(): boolean;
+  }
+
+  interface Connection {
+    monitor: ConnectionMonitor;
+  }
+
+  interface Consumer {
+    readonly connection: Connection;
   }
 }
 
