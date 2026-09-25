@@ -75,6 +75,23 @@ RSpec.describe TrashPurgeJob do
 
       expect(document.reload).to be_trashed
     end
+
+    # The node has to outlive the trash -- that is what makes untrashing restore the
+    # document's position -- but not the document. Trashing stopped splicing it out, so
+    # without this the hierarchy accumulates nodes pointing at destroyed documents
+    # forever: renderers tolerate them, so nothing breaks visibly while the JSON grows.
+    it "removes the purged document's node from the space hierarchy" do
+      child = documents(:two)
+      space = document.space
+      space.update!(hierarchy: [
+        { "id" => document.id, "children" => [{ "id" => child.id, "children" => [] }] }
+      ])
+      trash_at(document, (Trashable::RETENTION + 1.day).ago)
+
+      described_class.perform_now
+
+      expect(space.reload.hierarchy).to eq([{ "id" => child.id, "children" => [] }])
+    end
   end
 
   describe "tables" do

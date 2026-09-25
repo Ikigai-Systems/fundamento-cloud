@@ -181,7 +181,11 @@ class DocumentsController < ApplicationController
 
     children_ids = @document.space.get_children_ids_from_hierarchy(@document.id) || []
 
-    @children = @document.space.documents.kept.find(children_ids).filter { |document| policy(document).update? || document.versions.present? }
+    # `where`, not `find`: the hierarchy keeps a trashed document's node, so these ids are
+    # no longer guaranteed to resolve, and `find` on an array raises unless every one
+    # does. One trashed child would otherwise break the whole page for its parent.
+    @children = @document.space.documents.kept.where(id: children_ids)
+      .filter { |document| policy(document).update? || document.versions.present? }
   end
 
   private

@@ -150,6 +150,27 @@ RSpec.describe DocumentsController, type: :request do
 
   # Every controller that loads a document by param goes through LoadDocument, so this
   # is the one place that decides whether a trashed document is still reachable.
+  # The hierarchy JSON keeps a trashed document's node, so the ids it yields are no
+  # longer guaranteed to resolve. `find` on an array raises unless every id is found --
+  # which would turn one trashed child into a broken page for its parent.
+  describe "listing a document's children when one is trashed" do
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+      is_default_space.update!(hierarchy: [
+        { "id" => document_one.id, "children" => [{ "id" => documents(:two).id, "children" => [] }] }
+      ])
+      documents(:two).trash!(by: pawel)
+    end
+
+    it "omits the trashed child instead of failing" do
+      get hierarchy_document_path(document_one), headers: { "Turbo-Frame" => "content" }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include(documents(:two).title)
+    end
+  end
+
   describe "opening a trashed document" do
     before do
       sign_in pawel
