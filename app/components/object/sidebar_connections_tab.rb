@@ -19,34 +19,44 @@ class SidebarConnectionsTab < ViewComponent::Base
 
     @incoming = @references.select do |reference|
       reference.referenced_type == @object.class.to_s && reference.referenced_id == @object.id
-    end.map { |reference| with_link_details(reference) }
+    end.filter_map { |reference| with_link_details(reference) }
 
     @outgoing = @references.select do |reference|
       reference.referenced_by == @object
-    end.map { |reference| with_link_details(reference) }
+    end.filter_map { |reference| with_link_details(reference) }
   end
 
   protected
 
+  # Returns nil for a reference whose target cannot be seen, and the caller drops it.
+  #
+  # A reference outlives the trashing of what it points at, deliberately: the target has
+  # to still be there for untrashing to make the connection work again. So this has to
+  # cope with a target it cannot load, which `find_by_param!` could not -- it raised, and
+  # took the whole connections tab down for any document that merely mentioned something
+  # deleted. An unknown *type* is still a bug and still raises.
   def with_link_details(reference)
-    reference.tap do |reference|
-      organization = @pundit_user.current_organization
+    organization = @pundit_user.current_organization
 
-      case reference.referenced_type
-      when "Table"
-        referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
-        reference.referenced_title = referenced.name
-        reference.referenced_path = table_path(reference.referenced_id)
-      when "Document"
-        referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
-        reference.referenced_title = referenced.title
-        reference.referenced_path = document_path(reference.referenced_id)
-      else
-        raise ArgumentError.new("Unrecognized object type: #{reference.referenced_type}")
-      end
+    case reference.referenced_type
+    when "Table"
+      referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+      return nil if referenced.nil?
 
-      reference.referenced_icon = referenced.icon
+      reference.referenced_title = referenced.name
+      reference.referenced_path = table_path(reference.referenced_id)
+    when "Document"
+      referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+      return nil if referenced.nil?
+
+      reference.referenced_title = referenced.title
+      reference.referenced_path = document_path(reference.referenced_id)
+    else
+      raise ArgumentError.new("Unrecognized object type: #{reference.referenced_type}")
     end
+
+    reference.referenced_icon = referenced.icon
+    reference
   end
 
 end

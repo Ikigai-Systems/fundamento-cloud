@@ -23,7 +23,10 @@ class SpacesController < ApplicationController
   def show
     authorize @space, :show?
 
-    if @space.home_document.present?
+    # `kept?`, not `present?`: home_document_id deliberately survives trashing so that
+    # untrashing restores the space's landing page, but redirecting to a trashed document
+    # would 404 and leave the owner no way into their own space.
+    if @space.home_document&.kept?
       redirect_to document_url(@space.home_document)
     else
       render layout: content_layout(full: "full_width_application", frame: "full_width_frame")
@@ -92,7 +95,7 @@ class SpacesController < ApplicationController
     end
 
     # Validate that the document exists and belongs to this space
-    document = @space.documents.kept.find_by(id: document_id)
+    document = @space.documents.find_by(id: document_id)
     unless document
       render json: { error: "Document not found or does not belong to this space" }, status: :unprocessable_content
       return
@@ -100,7 +103,7 @@ class SpacesController < ApplicationController
 
     # Validate parent_id if provided
     if parent_id.present?
-      parent_document = @space.documents.kept.find_by(id: parent_id)
+      parent_document = @space.documents.find_by(id: parent_id)
       unless parent_document
         render json: { error: "Parent document not found or does not belong to this space" }, status: :unprocessable_content
         return
