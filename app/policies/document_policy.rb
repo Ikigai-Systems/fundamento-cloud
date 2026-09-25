@@ -1,8 +1,8 @@
 class DocumentPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
-    # `.kept` here rather than at each call site: the dashboard, mentions, search, the
-    # API index and the MCP tools are all built from a policy scope, and every one of
-    # them wants a trashed record to be invisible rather than merely unopenable.
+    # `.kept` here as well as on the associations, because a policy scope is sometimes
+    # handed the class rather than an association -- `policy_scope(Document)` would
+    # otherwise see the trash.
     def resolve
       scope.kept.where(space: Pundit.policy_scope!(user_context, Space))
     end

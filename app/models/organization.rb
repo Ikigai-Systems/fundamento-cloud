@@ -5,14 +5,16 @@ class Organization < ApplicationRecord
   has_many :api_tokens, dependent: :delete_all
   has_many :attachments, dependent: :destroy
   has_many :automations, dependent: :destroy
-  has_many :documents, dependent: :destroy
+  has_many :documents, -> { kept }, dependent: nil, inverse_of: :organization
+  has_many :all_documents, class_name: "Document", dependent: :destroy, inverse_of: :organization
   has_many :import_sessions, dependent: :destroy
   has_many :invited_users, dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :packs, dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy
-  has_many :tables, dependent: :destroy
+  has_many :tables, -> { kept }, dependent: nil, inverse_of: :organization
+  has_many :all_tables, class_name: "Table", dependent: :destroy, inverse_of: :organization
   has_many :tags, dependent: :destroy
   has_many :team_memberships, dependent: :destroy
   has_many :teams, dependent: :destroy

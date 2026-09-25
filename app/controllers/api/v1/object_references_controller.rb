@@ -2,7 +2,7 @@ module Api
   module V1
     class ObjectReferencesController < Api::ApiController
       def index
-        document = current_organization.documents.kept.find(params[:document_id])
+        document = current_organization.documents.find(params[:document_id])
 
         authorize document, :show?
 

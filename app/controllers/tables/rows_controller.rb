@@ -10,6 +10,6 @@ class Tables::RowsController < ApplicationController
   protected
 
   def load_table
-    @table = self.current_organization.tables.kept.find(params[:table_id])
+    @table = self.current_organization.tables.find(params[:table_id])
   end
 end

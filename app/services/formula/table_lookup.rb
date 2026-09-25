@@ -19,12 +19,12 @@ class Formula::TableLookup
   private
 
   def find_in_space(identifier)
-    @space.tables.kept.find_by(id: identifier) || @space.tables.kept.find_by(name: identifier)
+    @space.tables.find_by(id: identifier) || @space.tables.find_by(name: identifier)
   end
 
   def find_in_organization(identifier)
     organization = @pundit_user.current_organization
-    by_id = organization.tables.kept.find_by(id: identifier)
+    by_id = organization.tables.find_by(id: identifier)
     return by_id if by_id
 
     matches = organization.tables.where(name: identifier).to_a

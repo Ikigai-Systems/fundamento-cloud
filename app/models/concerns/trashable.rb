@@ -5,8 +5,9 @@
 # There is deliberately no `default_scope`. Blanket soft delete is an anti-pattern --
 # every query grows a filter it did not ask for, unique indexes stop meaning what they
 # say, and `Model.find` starts lying. Callers that should not see trashed records say so,
-# either with `.kept` or, where an association is always meant to exclude them, by
-# scoping the association itself.
+# scoping the association itself: `space.documents` is kept-only and `space.all_documents`
+# is everything, so the obvious call gets the safe answer and the cascade still reaches
+# the trash. Use `.kept` directly only where there is no association to scope.
 #
 # Trashing touches nothing but the record: no `dependent:` callback fires, no child is
 # deleted, no blob is purged. That is the whole point -- it is what makes `untrash!`
@@ -35,5 +36,9 @@ module Trashable
 
   def trashed?
     deleted_at.present?
+  end
+
+  def kept?
+    !trashed?
   end
 end

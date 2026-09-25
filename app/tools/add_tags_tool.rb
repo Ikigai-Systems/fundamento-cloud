@@ -54,9 +54,9 @@ class AddTagsTool < ApplicationTool
   def self.resolve_object(id, object_type, organization)
     case object_type
     when "Document"
-      organization.documents.kept.find(id)
+      organization.documents.find(id)
     when "Table"
-      organization.tables.kept.find(id)
+      organization.tables.find(id)
     else
       raise ArgumentError, "Unsupported object_type: #{object_type}"
     end

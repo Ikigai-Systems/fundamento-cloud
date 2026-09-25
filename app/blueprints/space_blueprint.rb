@@ -19,7 +19,7 @@ class SpaceBlueprint < Blueprinter::Base
     # Only id and title are serialised below; skip the sync blob and the
     # has_versions subquery entirely.
     documents_by_id = space
-      .documents_from_hierarchy(scope: space.documents.kept.select(:id, :title))
+      .documents_from_hierarchy(scope: space.documents.select(:id, :title))
       .index_by(&:id)
     serialize_hierarchy_nodes(space.hierarchy, documents_by_id)
   end

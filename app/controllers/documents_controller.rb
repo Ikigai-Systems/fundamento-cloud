@@ -184,7 +184,7 @@ class DocumentsController < ApplicationController
     # `where`, not `find`: the hierarchy keeps a trashed document's node, so these ids are
     # no longer guaranteed to resolve, and `find` on an array raises unless every one
     # does. One trashed child would otherwise break the whole page for its parent.
-    @children = @document.space.documents.kept.where(id: children_ids)
+    @children = @document.space.documents.where(id: children_ids)
       .filter { |document| policy(document).update? || document.versions.present? }
   end
 
@@ -194,10 +194,10 @@ class DocumentsController < ApplicationController
     instance_variable_defined?(:@document) && @document.title
   end
 
-  # `.kept` matches LoadDocument: a trashed document is invisible, not merely
-  # undeletable, so opening one 404s rather than rendering it.
+  # Matches LoadDocument: `documents` is scoped to kept, so opening a trashed document
+  # 404s rather than rendering it.
   def load_document
-    @document = current_organization.documents.kept.find(params[:id])
+    @document = current_organization.documents.find(params[:id])
     @space = @document.space
   end
 

@@ -27,12 +27,12 @@ class SpaceSidebarTree
     *HasIcon::COLUMNS.map { |column| "documents.#{column}" }
   ].join(", ")
 
-  # `.kept` rather than splicing the hierarchy on delete: a node whose document is
-  # missing here already promotes its children (see #build), so a trashed document drops
-  # out of the tree for free, and untrashing restores its position and its subtree
-  # without anything having had to remember them.
+  # `@space.documents` excludes trashed documents, which is the whole mechanism behind
+  # not splicing the hierarchy on delete: a node missing from here already promotes its
+  # children (see #build), so a trashed document drops out of the tree for free and
+  # untrashing restores its position and subtree without anything having recorded them.
   def documents_by_id
-    @documents_by_id ||= @space.documents.kept
+    @documents_by_id ||= @space.documents
       .select("#{SELECTED_COLUMNS}, EXISTS (SELECT 1 FROM versions WHERE versions.document_id = documents.id) AS has_versions")
       .index_by(&:id)
   end
