@@ -2,6 +2,7 @@ require 'open3'
 
 class Document < ApplicationRecord
   include NpiOrdering
+  include Trashable
 
   include ToReactProps
   set_react_props :id, :title, :icon, :title_for_editing
@@ -46,6 +47,7 @@ class Document < ApplicationRecord
 
   before_destroy :nullify_space_home_document_id
   before_destroy :nullify_object_reference_targets
+  after_destroy :remove_from_space_hierarchy
 
   scope :archived, -> { where(archived: true) }
   scope :without_archived, -> { where(archived: false) }
@@ -88,5 +90,23 @@ class Document < ApplicationRecord
   def nullify_object_reference_targets
     ObjectReference.where(target_type: "Document", target_id: id, organization_id: organization_id)
                    .update_all(target_id: nil)
+  end
+
+  # The hierarchy node deliberately outlives *trashing* -- that is what lets untrashing
+  # restore the document's original position and subtree without anything having had to
+  # record them. It must not outlive the document itself: once the purge destroys the
+  # record, a node pointing at it is garbage that renderers quietly tolerate while the
+  # JSON grows for good.
+  #
+  # Removing it promotes the children into its place, which is the same thing the
+  # renderers were already doing for a node they could not resolve.
+  #
+  # Skipped when the space is being destroyed anyway: the hierarchy goes with it, and
+  # locking and rewriting it once per document would be wasted work.
+  def remove_from_space_hierarchy
+    return if destroyed_by_association
+    return if space.nil?
+
+    space.with_locked_hierarchy { |locked| locked.remove_single_item_from_hierarchy!(id) }
   end
 end

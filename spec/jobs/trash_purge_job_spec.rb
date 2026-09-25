@@ -4,7 +4,8 @@ require "rails_helper"
 # organizations accumulate forever, and the rows they keep alive -- every space,
 # document, table and blob under them -- accumulate with them.
 RSpec.describe TrashPurgeJob do
-  fixtures :organizations, :users, :organization_memberships, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents,
+           "tables/tables", "tables/columns", "tables/rows"
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }
@@ -54,6 +55,65 @@ RSpec.describe TrashPurgeJob do
     described_class.perform_now
 
     expect(Organization.find_by(id: organization.id)).to be_present
+  end
+
+  describe "documents" do
+    let(:document) { documents(:one) }
+
+    it "destroys documents trashed longer ago than the retention window" do
+      trash_at(document, (Trashable::RETENTION + 1.day).ago)
+
+      described_class.perform_now
+
+      expect(Document.find_by(id: document.id)).to be_nil
+    end
+
+    it "leaves documents still inside the window alone" do
+      trash_at(document, (Trashable::RETENTION - 1.day).ago)
+
+      described_class.perform_now
+
+      expect(document.reload).to be_trashed
+    end
+
+    # The node has to outlive the trash -- that is what makes untrashing restore the
+    # document's position -- but not the document. Trashing stopped splicing it out, so
+    # without this the hierarchy accumulates nodes pointing at destroyed documents
+    # forever: renderers tolerate them, so nothing breaks visibly while the JSON grows.
+    it "removes the purged document's node from the space hierarchy" do
+      child = documents(:two)
+      space = document.space
+      space.update!(hierarchy: [
+        { "id" => document.id, "children" => [{ "id" => child.id, "children" => [] }] }
+      ])
+      trash_at(document, (Trashable::RETENTION + 1.day).ago)
+
+      described_class.perform_now
+
+      expect(space.reload.hierarchy).to eq([{ "id" => child.id, "children" => [] }])
+    end
+  end
+
+  describe "tables" do
+    let(:table) { tables_tables(:projects) }
+
+    it "destroys tables trashed longer ago than the retention window" do
+      trash_at(table, (Trashable::RETENTION + 1.day).ago)
+
+      described_class.perform_now
+
+      expect(Table.find_by(id: table.id)).to be_nil
+    end
+
+    it "destroys the table's rows and columns" do
+      column_ids = table.columns.pluck(:id)
+      expect(column_ids).not_to be_empty
+      trash_at(table, (Trashable::RETENTION + 1.day).ago)
+
+      described_class.perform_now
+
+      expect(Tables::Column.where(id: column_ids)).to be_empty
+    end
   end
 
   it "is idempotent" do

@@ -15,17 +15,30 @@ class TrashPurgeJob < ApplicationJob
   # organization cascades through a dozen associations.
   BATCH_SIZE = 20
 
+  # Organizations first: purging one destroys its documents and tables by cascade, so
+  # doing them first means the later passes have less to walk. Anything trashed
+  # individually inside a surviving organization is still caught by its own pass.
+  PURGEABLE = [Organization, Document, Table].freeze
+
   def perform
     cutoff = Trashable::RETENTION.ago
-    purged = 0
 
-    Organization.trashed
-      .where(deleted_at: ..cutoff)
-      .find_each(batch_size: BATCH_SIZE) do |organization|
-        organization.destroy!
+    counts = PURGEABLE.to_h do |model|
+      purged = 0
+
+      model.where(deleted_at: ..cutoff).find_each(batch_size: BATCH_SIZE) do |record|
+        # `destroy`, not `delete_all`: trashing skipped every `dependent:` callback, and
+        # this is where they finally run -- including Active Storage purging its blobs.
+        record.destroy!
         purged += 1
       end
 
-    Rails.logger.info "TrashPurgeJob: purged #{purged} organizations trashed before #{cutoff.iso8601}"
+      [model.name, purged]
+    end
+
+    Rails.logger.info(
+      "TrashPurgeJob: purged #{counts.map { |name, n| "#{n} #{name.tableize}" }.join(", ")} " \
+      "trashed before #{cutoff.iso8601}"
+    )
   end
 end

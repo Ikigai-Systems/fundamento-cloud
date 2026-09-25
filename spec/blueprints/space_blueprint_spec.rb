@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe SpaceBlueprint do
-  fixtures :organizations, :spaces, :documents
+  fixtures :organizations, :users, :organization_memberships, :spaces, :documents
 
   describe ".render_as_hash" do
     it "returns a nested id/npi/title/children shape for a two-level hierarchy" do
@@ -29,6 +29,23 @@ RSpec.describe SpaceBlueprint do
           ],
         },
       ])
+    end
+
+    # Same rule, different cause: a trashed document is one this serializer cannot see,
+    # so it must drop out and its children move up, exactly as an orphan does. The
+    # sidebar and the API have to agree about what is visible.
+    it "promotes the children of a trashed document" do
+      space = spaces(:is_default)
+      space.update!(hierarchy: [
+        { "id" => documents(:one).id, "children" => [
+          { "id" => documents(:two).id, "children" => [] },
+        ] },
+      ])
+      documents(:one).trash!(by: users(:pawel))
+
+      result = SpaceBlueprint.render_as_hash(space.reload, view: :with_documents)
+
+      expect(result[:documents].map { _1[:id] }).to eq([documents(:two).id])
     end
 
     it "promotes the children of an orphaned hierarchy entry" do

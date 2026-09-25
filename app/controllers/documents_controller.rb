@@ -114,12 +114,14 @@ class DocumentsController < ApplicationController
   def destroy
     authorize @document, :destroy?
 
-    @document.destroy
+    @document.trash!(by: current_user)
 
-    @space = @document.space
-    @space.with_locked_hierarchy { |space| space.remove_single_item_from_hierarchy!(@document.id) }
-
-    redirect_to space_path(@space), notice: 'Document was successfully deleted.'
+    # The hierarchy node is deliberately left alone. SpaceSidebarTree and SpaceBlueprint
+    # already promote the children of a node whose document they cannot see, so the
+    # trashed document drops out of the tree on its own -- and untrashing restores both
+    # its position and its subtree, which splicing the node out would have thrown away.
+    redirect_to space_path(@document.space),
+      notice: "Document was deleted. It can be restored for the next #{Trashable::RETENTION.inspect}."
   end
 
   def select_destination
@@ -179,7 +181,11 @@ class DocumentsController < ApplicationController
 
     children_ids = @document.space.get_children_ids_from_hierarchy(@document.id) || []
 
-    @children = @document.space.documents.find(children_ids).filter { |document| policy(document).update? || document.versions.present? }
+    # `where`, not `find`: the hierarchy keeps a trashed document's node, so these ids are
+    # no longer guaranteed to resolve, and `find` on an array raises unless every one
+    # does. One trashed child would otherwise break the whole page for its parent.
+    @children = @document.space.documents.where(id: children_ids)
+      .filter { |document| policy(document).update? || document.versions.present? }
   end
 
   private
@@ -188,6 +194,8 @@ class DocumentsController < ApplicationController
     instance_variable_defined?(:@document) && @document.title
   end
 
+  # Matches LoadDocument: `documents` is scoped to kept, so opening a trashed document
+  # 404s rather than rendering it.
   def load_document
     @document = current_organization.documents.find(params[:id])
     @space = @document.space

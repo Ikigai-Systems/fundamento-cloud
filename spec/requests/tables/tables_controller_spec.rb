@@ -1,11 +1,54 @@
 require "rails_helper"
 
 RSpec.describe Tables::TablesController, type: :request do
-  fixtures :organizations, :users, :organization_memberships, :spaces, "tables/tables"
+  fixtures :organizations, :users, :organization_memberships, :spaces,
+           "tables/tables", "tables/columns", "tables/rows"
 
   let(:pawel) { users(:pawel) }
   let(:ikigai_systems) { organizations(:is) }
   let(:table) { tables_tables(:projects) }
+
+  describe "DELETE /t/:id" do
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+    end
+
+    it "trashes the table instead of destroying it" do
+      expect {
+        delete table_path(table)
+      }.not_to change(Table, :count)
+
+      expect(table.reload).to be_trashed
+      expect(table.deleted_by_id).to eq(pawel.id)
+    end
+
+    it "keeps the table's rows and columns" do
+      column_ids = table.columns.pluck(:id)
+      expect(column_ids).not_to be_empty
+
+      delete table_path(table)
+
+      expect(Tables::Column.where(id: column_ids).count).to eq(column_ids.size)
+    end
+
+    # Name uniqueness is enforced by a unique index as well as a validation. Unless both
+    # are scoped to kept tables, the trash holds the old name hostage for the whole
+    # retention window -- which would make a recoverable delete feel worse than the
+    # irreversible one it replaced.
+    it "frees the table's name for reuse in the same space" do
+      original_name = table.name
+
+      delete table_path(table)
+
+      replacement = Table.new(
+        name: original_name,
+        space: table.space,
+        organization: table.organization,
+      )
+      expect(replacement.save).to be(true), replacement.errors.full_messages.to_sentence
+    end
+  end
 
   describe "GET /t/:id with Turbo-Frame: content header" do
     context "when authenticated" do

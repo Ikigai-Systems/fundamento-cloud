@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -147,12 +147,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_120000) do
   create_table "documents", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.string "deleted_by_id"
     t.string "icon_type"
     t.string "icon_value"
     t.string "organization_id"
     t.string "space_id"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_documents_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id"], name: "index_documents_on_id", unique: true
     t.index ["organization_id", "title"], name: "index_documents_on_organization_and_search_term_trgm", opclass: { title: :gin_trgm_ops }, using: :gin
     t.index ["organization_id"], name: "index_documents_on_organization_id"
@@ -700,14 +703,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_120000) do
   create_table "tables", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "archived", default: false, null: false
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.string "deleted_by_id"
     t.string "icon_type"
     t.string "icon_value"
     t.string "name", null: false
     t.string "organization_id", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_tables_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
-    t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true
+    t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true, where: "(deleted_at IS NULL)"
     t.index ["organization_id", "name"], name: "index_tables_on_organization_and_search_term_trgm", opclass: { name: :gin_trgm_ops }, using: :gin
     t.index ["organization_id"], name: "index_tables_on_organization_id"
     t.index ["space_id"], name: "index_tables_on_space_id"
