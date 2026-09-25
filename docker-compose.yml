@@ -51,6 +51,12 @@ services:
   # MINIO_DATA_DIR / MINIO_API_PORT_NUMBER / MINIO_CONSOLE_PORT_NUMBER instead of
   # MINIO_VOLUMES, and defaults MINIO_BROWSER to off where upstream defaults it on.
   #
+  # The server runs as uid 1001, so a `minio` volume left over from the old
+  # root-owned image fails to start with "/bitnami/minio/data/.root_user:
+  # Permission denied". It holds nothing but dev/e2e scratch data -- drop it once
+  # (`docker volume rm fundamento-cloud_minio`) and it is recreated correctly. CI
+  # starts from an empty volume every run and is unaffected.
+  #
   # MINIO_SKIP_CLIENT is not cosmetic. Without it Bitnami's setup starts a throwaway
   # MinIO in the background to configure its own `mc` alias, then stops it before
   # starting the real server. The healthcheck below passes against that throwaway, so
@@ -65,7 +71,7 @@ services:
       MINIO_BROWSER: 'on'
       MINIO_SKIP_CLIENT: 'yes'
     volumes:
-      - minio-data:/bitnami/minio/data
+      - minio:/bitnami/minio/data
     ports:
       - '${MINIO_PORT:-9000}:9000'
       - '${MINIO_CONSOLE_PORT:-9001}:9001'
@@ -149,11 +155,7 @@ services:
 
 volumes:
   postgres:
-  # Renamed from `minio` deliberately: the data dir moved to Bitnami's
-  # /bitnami/minio/data, and reusing the old root-owned volume would leave the
-  # uid-1001 server unable to write to it. The old volume is dev/e2e scratch
-  # storage and can be dropped (`docker volume rm fundamento-cloud_minio`).
-  minio-data:
+  minio:
 
 secrets:
   fontawesome-auth:
