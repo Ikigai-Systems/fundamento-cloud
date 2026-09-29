@@ -10,6 +10,10 @@ module Tenant
   class TableRegistry
     # Not tenant data. Never exported, and restoring one would be actively wrong.
     #
+    # `tenant_exports` carries organization_id and is still not tenant data: it is the
+    # record of previous archives. Including it would put a tenant's backup history, and
+    # by way of Active Storage its previous archives, inside its next one.
+    #
     # `audits` is here despite being application data: it has no organization_id, it is
     # never pruned, and it cannot reconstruct document or table content anyway because
     # ObjectContent and Tables::Cell/Row/Column all skip_auditing. Exporting it would cost
@@ -27,6 +31,7 @@ module Tenant
       oauth_applications
       schema_migrations
       superintendents
+      tenant_exports
       user_identities
     ].freeze
 

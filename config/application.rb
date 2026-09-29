@@ -17,6 +17,12 @@ module Fundamento
   end
 
   class Application < Rails::Application
+    # Where tenant export archives are stored. Left unset they go wherever Active Storage
+    # already points, which is what dev and test want. Production sets it to a separate
+    # bucket that the task role cannot delete from: an application able to erase its own
+    # backups does not really have any.
+    config.tenant_export_service = ENV["TENANT_EXPORT_SERVICE"].presence&.to_sym
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
