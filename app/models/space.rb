@@ -14,10 +14,20 @@ class Space < ApplicationRecord
   searchable_by :name
 
   has_many :automations, dependent: :destroy
-  has_many :documents, dependent: :destroy
+  # Two associations per trashable child, on purpose.
+  #
+  # `documents` is what nearly every caller wants -- the documents that are still there --
+  # so it carries the scope and the safe default is the one you get by writing the obvious
+  # thing. `all_documents` is the complete set and is what cascades, because
+  # `dependent: :destroy` only destroys what its association's scope selects
+  # (rails/rails#22201): hanging it off the scoped association would leave trashed
+  # documents behind as orphans whenever a space is destroyed.
+  has_many :documents, -> { kept }, dependent: nil, inverse_of: :space
+  has_many :all_documents, class_name: "Document", dependent: :destroy, inverse_of: :space
   has_many :import_sessions, dependent: :destroy
   has_many :space_memberships, dependent: :destroy
-  has_many :tables, dependent: :destroy
+  has_many :tables, -> { kept }, dependent: nil, inverse_of: :space
+  has_many :all_tables, class_name: "Table", dependent: :destroy, inverse_of: :space
   has_many :tags, dependent: :delete_all
 
   belongs_to :home_document, class_name: "Document", optional: true

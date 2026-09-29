@@ -1,7 +1,10 @@
 class TablePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
+    # `.kept` here as well as on the associations, because a policy scope is sometimes
+    # handed the class rather than an association -- `policy_scope(Table)` would
+    # otherwise see the trash.
     def resolve
-      scope.where(space: Pundit.policy_scope!(user_context, Space))
+      scope.kept.where(space: Pundit.policy_scope!(user_context, Space))
     end
   end
 

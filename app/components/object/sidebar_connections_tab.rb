@@ -19,26 +19,37 @@ class SidebarConnectionsTab < ViewComponent::Base
 
     @incoming = @references.select do |reference|
       reference.referenced_type == @object.class.to_s && reference.referenced_id == @object.id
-    end.map { |reference| with_link_details(reference) }
+    end.filter_map { |reference| with_link_details(reference) }
 
     @outgoing = @references.select do |reference|
       reference.referenced_by == @object
-    end.map { |reference| with_link_details(reference) }
+    end.filter_map { |reference| with_link_details(reference) }
   end
 
   protected
 
+  # Returns nil when the target cannot be seen, and the caller drops the reference.
+  #
+  # A reference deliberately outlives the trashing of what it points at, so that
+  # untrashing makes the connection work again. `organization.documents` is scoped to
+  # kept records, so the lookup has to tolerate a miss -- `find_by_param!` raised, which
+  # took the whole connections tab down for any document that merely mentioned something
+  # deleted. An unrecognised *type* is still a bug and still raises.
   def with_link_details(reference)
     reference.tap do |reference|
       organization = @pundit_user.current_organization
 
       case reference.referenced_type
       when "Table"
-        referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
+        referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+        return nil if referenced.nil?
+
         reference.referenced_title = referenced.name
         reference.referenced_path = table_path(reference.referenced_id)
       when "Document"
-        referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by_param!(reference.referenced_id)
+        referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+        return nil if referenced.nil?
+
         reference.referenced_title = referenced.title
         reference.referenced_path = document_path(reference.referenced_id)
       else

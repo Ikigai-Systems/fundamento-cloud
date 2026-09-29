@@ -2,6 +2,7 @@ require "csv"
 
 class Table < ApplicationRecord
   include NpiOrdering
+  include Trashable
 
   # Design ceilings for the versioning work: a snapshot of a table this size is roughly
   # 10-20 MB gzipped, which the streaming snapshot builder handles and anything larger
@@ -54,7 +55,11 @@ class Table < ApplicationRecord
 
   validates_presence_of :name
 
-  validates_uniqueness_of :name, scope: [:space_id]
+  # Scoped to kept tables, matching the partial unique index. Both halves are needed:
+  # without the index the database still rejects the insert, and without the
+  # condition the validation still rejects it before the database is asked.
+  # Otherwise a trashed table holds its name for the whole retention window.
+  validates_uniqueness_of :name, scope: [:space_id], conditions: -> { kept }
 
   # Every table gets a baseline version, so the first edit has something to be restored
   # back to rather than only appearing in the change log.

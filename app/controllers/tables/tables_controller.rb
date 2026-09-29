@@ -184,9 +184,10 @@ class Tables::TablesController < ApplicationController
   def destroy
     authorize @table, :destroy?
 
-    @table.destroy
+    @table.trash!(by: current_user)
 
-    redirect_to space_path(@space), notice: 'Table has been deleted.'
+    redirect_to space_path(@space),
+      notice: "Table has been deleted. It can be restored for the next #{Trashable::RETENTION.inspect}."
   end
 
   def update_by_rowstack

@@ -15,17 +15,38 @@ class TrashPurgeJob < ApplicationJob
   # organization cascades through a dozen associations.
   BATCH_SIZE = 20
 
+  # Every model that includes Trashable. Adding one here is not optional -- a spec walks
+  # the Trashable includers and fails if this list has fallen behind, because the symptom
+  # otherwise is trash that silently never expires.
+  #
+  # Named rather than discovered: finding them at runtime would mean eager-loading the
+  # application inside the job to work around the autoloader, which is a lot of machinery
+  # in production for a question that only changes when someone edits a model.
+  #
+  # Organizations first so the later passes have less to walk -- purging one destroys its
+  # documents and tables by cascade. That is efficiency, not correctness: anything trashed
+  # inside a surviving organization is caught by its own model's pass regardless.
+  PURGEABLE = [Organization, Document, Table].freeze
+
   def perform
     cutoff = Trashable::RETENTION.ago
-    purged = 0
 
-    Organization.trashed
-      .where(deleted_at: ..cutoff)
-      .find_each(batch_size: BATCH_SIZE) do |organization|
-        organization.destroy!
+    counts = PURGEABLE.to_h do |model|
+      purged = 0
+
+      model.where(deleted_at: ..cutoff).find_each(batch_size: BATCH_SIZE) do |record|
+        # `destroy`, not `delete_all`: trashing skipped every `dependent:` callback, and
+        # this is where they finally run -- including Active Storage purging its blobs.
+        record.destroy!
         purged += 1
       end
 
-    Rails.logger.info "TrashPurgeJob: purged #{purged} organizations trashed before #{cutoff.iso8601}"
+      [model.name, purged]
+    end
+
+    Rails.logger.info(
+      "TrashPurgeJob: purged #{counts.map { |name, n| "#{n} #{name.tableize}" }.join(", ")} " \
+      "trashed before #{cutoff.iso8601}"
+    )
   end
 end

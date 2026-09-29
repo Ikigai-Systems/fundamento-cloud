@@ -11,6 +11,22 @@ RSpec.describe SpaceSidebarTree do
     { "id" => document.id, "children" => children }
   end
 
+  # Trashing deliberately leaves the hierarchy JSON alone. This is why that works: a node
+  # whose document is no longer visible already promotes its children, so the trashed
+  # document drops out of the tree and its subtree stays reachable -- and untrashing
+  # restores both its position and its children with nothing having had to remember them.
+  it "promotes the children of a trashed document and leaves the hierarchy intact" do
+    space.update!(hierarchy: [node(one, [node(two)])])
+    before_hierarchy = space.hierarchy.deep_dup
+
+    one.trash!(by: users(:pawel))
+
+    result = described_class.new(space: space.reload, can_update_space: true).as_json
+
+    expect(result["nodes"].map { _1["id"] }).to eq([two.id])
+    expect(space.hierarchy).to eq(before_hierarchy)
+  end
+
   it "builds a nested tree of the space's documents" do
     space.update!(hierarchy: [node(one, [node(two)])])
 

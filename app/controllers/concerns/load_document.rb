@@ -1,3 +1,6 @@
+# Loads through `current_organization.documents`, which is scoped to kept records, so a
+# trashed document 404s here rather than rendering. Reach for `all_documents` only when
+# you genuinely mean the trash too.
 module LoadDocument
   def self.from_param(param_name)
     Module.new do

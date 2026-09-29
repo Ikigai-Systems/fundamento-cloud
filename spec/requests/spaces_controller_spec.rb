@@ -1,7 +1,8 @@
 require "rails_helper"
 
 RSpec.describe SpacesController, type: :request do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :teams, :team_memberships
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships,
+           :teams, :team_memberships, :documents
 
   let(:manager) { users(:pawel) }
   let(:member) { users(:stefan) }
@@ -950,6 +951,28 @@ RSpec.describe SpacesController, type: :request do
         expect(response).to have_http_status(:ok)
         expect(queries).to eq(1)
       end
+    end
+  end
+
+  # Document#nullify_space_home_document_id used to clear this pointer on destroy.
+  # Trashing skips every destroy callback, so the pointer now survives -- and #show
+  # redirecting to it blindly would send the owner of the space to a 404 and leave them
+  # no way back into their own space.
+  describe "GET /s/:id when the home document is trashed" do
+    let(:space) { spaces(:is_default) }
+    let(:home) { documents(:one) }
+
+    before do
+      sign_in users(:pawel)
+      post select_organization_path(organizations(:is))
+      space.update!(home_document: home)
+      home.trash!(by: users(:pawel))
+    end
+
+    it "renders the space instead of redirecting to the trashed document" do
+      get space_path(space)
+
+      expect(response).to have_http_status(:ok)
     end
   end
 end
