@@ -15,12 +15,23 @@ RSpec.describe TrashPurgeJob do
     record.update_columns(deleted_at: time)
   end
 
-  # The list is discovered rather than written down, so a model that starts including
-  # Trashable starts being purged for that reason alone. This asserts the discovery
-  # actually works -- an empty or partial list would otherwise only show up as trash that
-  # silently never expires.
-  it "purges every model that includes Trashable" do
-    expect(described_class.purgeable_models).to match_array([Organization, Document, Table])
+  # The job names its models explicitly, which keeps it cheap and obvious. This is what
+  # stops that list going stale: a model that starts including Trashable and is not added
+  # to PURGEABLE fails here, rather than silently accumulating trash that never expires.
+  #
+  # The reflection lives in the test on purpose. Discovering the list at runtime would
+  # mean eager-loading the whole application inside a job to work around the autoloader,
+  # which is a lot of machinery in production to answer a question that only ever changes
+  # when someone edits a model.
+  it "names every model that includes Trashable" do
+    Rails.application.eager_load!
+
+    trashable = ApplicationRecord.descendants.select do |model|
+      # base_class skips STI subclasses, whose rows the parent's pass already covers.
+      model.include?(Trashable) && model == model.base_class
+    end
+
+    expect(described_class::PURGEABLE).to match_array(trashable)
   end
 
   it "destroys organizations trashed longer ago than the retention window" do

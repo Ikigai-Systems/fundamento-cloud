@@ -13,6 +13,9 @@
 # deleted, no blob is purged. That is the whole point -- it is what makes `untrash!`
 # trivial -- and it is why the purge job at the end of the retention window must call a
 # real `destroy`, so the cascades that were skipped here finally run.
+# Including this in a new model means adding it to TrashPurgeJob::PURGEABLE too. A spec
+# enforces that, so forgetting fails the build rather than quietly leaving the model's
+# trash to accumulate forever.
 module Trashable
   extend ActiveSupport::Concern
 
