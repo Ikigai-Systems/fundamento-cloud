@@ -15,15 +15,32 @@ class TrashPurgeJob < ApplicationJob
   # organization cascades through a dozen associations.
   BATCH_SIZE = 20
 
-  # Organizations first: purging one destroys its documents and tables by cascade, so
-  # doing them first means the later passes have less to walk. Anything trashed
-  # individually inside a surviving organization is still caught by its own pass.
-  PURGEABLE = [Organization, Document, Table].freeze
+  # Discovered rather than listed. A model that starts including Trashable starts being
+  # purged because it is trashable, not because someone remembered to add it here --
+  # and forgetting would be invisible, since the symptom is trash that silently never
+  # expires.
+  #
+  # eager_load! because in development and test the autoloader has only loaded the
+  # constants something has referenced, so descendants is otherwise whatever happens to
+  # be in memory. In production eager loading has already happened and this is a no-op.
+  #
+  # Order does not matter for correctness: purging an organization destroys its documents
+  # and tables by cascade, and anything trashed inside a surviving organization is caught
+  # by its own model's pass either way. Sorted only so the log reads the same every run.
+  def self.purgeable_models
+    Rails.application.eager_load!
+
+    ApplicationRecord.descendants.select do |model|
+      # `model == model.base_class` skips STI subclasses, whose rows the base class
+      # already covers.
+      model.include?(Trashable) && model == model.base_class
+    end.sort_by(&:name)
+  end
 
   def perform
     cutoff = Trashable::RETENTION.ago
 
-    counts = PURGEABLE.to_h do |model|
+    counts = self.class.purgeable_models.to_h do |model|
       purged = 0
 
       model.where(deleted_at: ..cutoff).find_each(batch_size: BATCH_SIZE) do |record|

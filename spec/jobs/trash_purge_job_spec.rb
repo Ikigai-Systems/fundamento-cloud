@@ -15,6 +15,14 @@ RSpec.describe TrashPurgeJob do
     record.update_columns(deleted_at: time)
   end
 
+  # The list is discovered rather than written down, so a model that starts including
+  # Trashable starts being purged for that reason alone. This asserts the discovery
+  # actually works -- an empty or partial list would otherwise only show up as trash that
+  # silently never expires.
+  it "purges every model that includes Trashable" do
+    expect(described_class.purgeable_models).to match_array([Organization, Document, Table])
+  end
+
   it "destroys organizations trashed longer ago than the retention window" do
     trash_at(organization, (Trashable::RETENTION + 1.day).ago)
 
