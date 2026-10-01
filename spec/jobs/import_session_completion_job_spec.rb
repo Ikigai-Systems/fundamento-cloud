@@ -56,6 +56,59 @@ RSpec.describe ImportSessionCompletionJob, type: :job do
       described_class.perform_now(session)
     end
 
+    describe "sibling order" do
+      def import(relative_path, document_id, parent_id: nil)
+        create_import_file(relative_path: relative_path, status: :completed)
+        space.insert_hierarchy_node!(document_id, parent_id: parent_id)
+        session.merge_path_map!(relative_path, document_id)
+      end
+
+      def import_folder(relative_path, document_id, parent_id: nil)
+        space.insert_hierarchy_node!(document_id, parent_id: parent_id)
+        session.merge_path_map!(relative_path, document_id)
+      end
+
+      def ids(nodes) = nodes.map { |node| node["id"] }
+
+      it "puts imported siblings in folder-first, alphabetical order at every level" do
+        # Completion order, as concurrent jobs would leave it
+        import("zeta.md", "doc_zeta")
+        import_folder("Notes", "doc_notes")
+        import("Alpha.md", "doc_alpha")
+        import_folder("Archive", "doc_archive")
+        import("Notes/b.md", "doc_notes_b", parent_id: "doc_notes")
+        import("Notes/a.md", "doc_notes_a", parent_id: "doc_notes")
+
+        described_class.perform_now(session)
+
+        hierarchy = space.reload.hierarchy
+        expect(ids(hierarchy)).to eq(%w[doc_archive doc_notes doc_alpha doc_zeta])
+        notes = hierarchy.find { |node| node["id"] == "doc_notes" }
+        expect(ids(notes["children"])).to eq(%w[doc_notes_a doc_notes_b])
+      end
+
+      it "leaves documents that were already in the space where they were" do
+        space.insert_hierarchy_node!("existing_first")
+        import("b.md", "doc_b")
+        space.insert_hierarchy_node!("existing_middle")
+        import("a.md", "doc_a")
+
+        described_class.perform_now(session)
+
+        expect(ids(space.reload.hierarchy)).to eq(%w[existing_first doc_a existing_middle doc_b])
+      end
+
+      it "ignores attachments in the path map" do
+        import("b.md", "doc_b")
+        import("a.md", "doc_a")
+        session.merge_path_map!("image.png", "attachment:123")
+
+        described_class.perform_now(session)
+
+        expect(ids(space.reload.hierarchy)).to eq(%w[doc_a doc_b])
+      end
+    end
+
     context "when files are stuck in :processing (interrupted job, silent retry)" do
       it "marks stuck files as failed" do
         create_import_file(relative_path: "done.md", status: :completed)
