@@ -43,6 +43,29 @@ RSpec.describe MarkdownFrontmatter do
       expect(content).to eq(markdown)
     end
 
+    it "leaves a list between two --- lines in the body" do
+      markdown = "---\n- one\n- two\n---\n# Content"
+      content, data = instance.extract_frontmatter(markdown)
+
+      expect(data).to be_nil
+      expect(content).to eq(markdown)
+    end
+
+    it "leaves bare text between two --- lines in the body" do
+      markdown = "---\nJust a paragraph\n---\n# Content"
+      content, data = instance.extract_frontmatter(markdown)
+
+      expect(data).to be_nil
+      expect(content).to eq(markdown)
+    end
+
+    it "strips empty frontmatter" do
+      content, data = instance.extract_frontmatter("---\n---\n# Content")
+
+      expect(data).to be_nil
+      expect(content).to eq("# Content")
+    end
+
     it "parses date values without raising" do
       markdown = <<~MD
         ---

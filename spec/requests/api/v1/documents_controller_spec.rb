@@ -392,6 +392,23 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(created_doc.tags).to include(existing_tag)
       end
 
+      it "keeps a list between two --- lines as content instead of failing" do
+        markdown = "---\n- just\n- a list\n---\n# Hello\n"
+
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([{ "id" => "1", "type" => "paragraph" }])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return({ "data" => "yjs_sync_data" })
+
+        expect {
+          post api_v1_documents_path(space_id: is_default_space.id),
+            params: { document: { title: "Document with Horizontal Rules", markdown: markdown } },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.to change(Document, :count).by(1)
+         .and change(Tag, :count).by(0)
+
+        expect(response).to have_http_status(:created)
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(markdown)
+      end
+
       it "creates a nested document under a parent" do
         parent_doc = is_default_space.documents.create!(
           title: "Parent Document",
