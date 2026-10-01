@@ -13,6 +13,9 @@ concurrency:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    # A normal run takes 6-14 minutes. Without a limit a hung step runs to GitHub's
+    # 6-hour default.
+    timeout-minutes: 30
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     permissions:
@@ -24,8 +27,10 @@ jobs:
       DATABASE_URL: postgres://postgres:password@localhost/postgres
 
     steps:
+      # apt mirrors occasionally stop responding mid-update and hang the job.
       - name: Install dependencies
         shell: bash
+        timeout-minutes: 5
         run: |
           sudo apt-get update && sudo apt-get install -y pandoc
 
@@ -121,3 +126,7 @@ jobs:
           detailed_summary: true
           annotate_only: false
           fail_on_failure: true
+          # A cancelled or hung run leaves no report, and the action would otherwise post
+          # a passing check for it.
+          require_tests: true
+          fail_on_parse_error: true
