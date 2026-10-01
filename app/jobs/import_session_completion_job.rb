@@ -27,6 +27,8 @@ class ImportSessionCompletionJob < ApplicationJob
       )
     end
 
+    session.sort_imported_documents!
+
     final_status = session.import_files.where(status: :failed).exists? ? :partial : :completed
 
     session.update!(

@@ -48,7 +48,46 @@ class ImportSession < ApplicationRecord
     )
   end
 
+  # Documents are processed concurrently and each is appended to its parent as it finishes,
+  # so siblings land in completion order — different on every run. Put them back in the
+  # order of the source directory: folders first, then by name. Only the slots imported
+  # documents already hold are reshuffled, so anything else in the space stays where it is.
+  def sort_imported_documents!
+    sort_keys = imported_document_sort_keys
+    return if sort_keys.empty?
+
+    space.with_locked_hierarchy do |locked_space|
+      locked_space.hierarchy = self.class.sort_hierarchy_nodes(locked_space.hierarchy, sort_keys)
+    end
+  end
+
+  def self.sort_hierarchy_nodes(nodes, sort_keys)
+    nodes = Array(nodes).map { |node| node.merge("children" => sort_hierarchy_nodes(node["children"], sort_keys)) }
+
+    slots = nodes.each_index.select { |i| sort_keys.key?(nodes[i]["id"].to_s) }
+    sorted = slots.map { |i| nodes[i] }.sort_by { |node| sort_keys[node["id"].to_s] }
+    slots.zip(sorted).each { |i, node| nodes[i] = node }
+
+    nodes
+  end
+
   private
+
+  # { document_id => sort key } for every document the import created, folders included.
+  # The path_map also holds attachments, which never appear in the hierarchy.
+  def imported_document_sort_keys
+    file_paths = import_files.pluck(:relative_path).to_set
+
+    # Read from the row: merge_path_map! writes with update_all, so this instance is stale.
+    current_path_map = self.class.where(id: id).pick(:path_map) || {}
+
+    current_path_map.each_with_object({}) do |(path, object_id), keys|
+      next if object_id.to_s.start_with?("attachment:")
+
+      name = File.basename(path)
+      keys[object_id.to_s] = [file_paths.include?(path) ? 1 : 0, name.downcase, name]
+    end
+  end
 
   def status_count(status_key)
     if @preloaded_counts
