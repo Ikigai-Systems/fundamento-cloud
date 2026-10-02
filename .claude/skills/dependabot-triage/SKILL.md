@@ -30,10 +30,26 @@ Then classify each PR with the decision tree below and work the buckets in order
 
 ## Step 1 — Establish a baseline first
 
-Before blaming any PR, know what master does on its own. `run-e2e-tests` is
-**flaky on master** — two specs (`table-crud` add-row, `document-editing-sessions`)
-fail on a clean baseline. Diff a PR's failures against that baseline rather than
-treating any red E2E as the PR's fault.
+Before blaming any PR, know what master does on its own. `run-e2e-tests` has known
+flaky specs — `table-crud` add-row and `document-editing-sessions` (the latter is a
+CI-runner TCP-retransmit delay, root-caused with evidence; it carries its own
+`retries: {runMode: 2}`). Diff a PR's failures against that baseline.
+
+**But "e2e is flaky" is a hypothesis about one named spec, never a verdict on a red
+run.** Treating it as a verdict is how a real regression ships. Before writing any
+e2e failure off:
+
+- **Name the failing spec.** "e2e failed" is not a diagnosis. Only the two specs
+  above have earned the benefit of the doubt, and only with their own signature.
+- **Match the signature, not just the spec.** `document-editing-sessions` flaking
+  means `Edit by <email> was not recorded server-side in time`. A different message
+  in a known-flaky spec is a different problem.
+- **Count across siblings.** A sweep gives you free controls: the other bot PRs are
+  the same master with one dependency changed. A spec that fails twice on one PR
+  while passing on five others is a regression signal, whatever its history.
+
+A re-run is for confirming a flake you have already identified — not for finding out
+whether one exists. If you cannot name why it failed, you have not finished Step 2.
 
 Also confirm master is current (`git fetch origin && git rev-list --left-right --count HEAD...origin/master`).
 Per `.claude/rules/ci-merge-order.md`, a bot PR opened last week was validated against a
@@ -56,6 +72,29 @@ Almost every red Dependabot PR is one of two shapes, and both are visible in the
 - `npm error code ERESOLVE` — a peer dependency conflict. The install never ran; no test
   result on the PR means anything.
 - A test/typecheck failure — the install worked and the new version genuinely broke code.
+
+### E2E failures: read the artifact, not just the message
+
+The log gives you a Cypress assertion, which tells you what was *observed* — never what
+the app *did*. The run uploads a screenshot of the failing moment, with the command log
+and network panel in it, and that is usually the whole diagnosis:
+
+```bash
+run=$(gh pr checks <N> | grep e2e | grep -oE 'runs/[0-9]+' | cut -d/ -f2)
+gh api repos/Ikigai-Systems/fundamento-cloud/actions/runs/$run/artifacts \
+  --jq '.artifacts[] | "\(.name) id=\(.id)"'
+gh api repos/Ikigai-Systems/fundamento-cloud/actions/artifacts/<id>/zip > shots.zip
+unzip -o -q shots.zip -d shots && find shots -name '*.png'
+```
+
+This is not optional polish. In the Oct 2026 sweep, `document-advanced-tables`
+("cancels editing on Escape") failed on the BlockNote 0.55 bump and looked exactly like
+a flaky timing assertion. The screenshot showed a **`PATCH /t/:id` firing after the
+`{esc}` keystroke** — Escape was *saving* the title it was supposed to discard. The
+assertion message alone could not have told you that, and the spec asserted only on the
+rendered title, which reverts correctly even when the save goes out.
+
+`docker-compose-app-logs` is uploaded too, when you need the server's side of it.
 
 ## Step 3 — Classify
 
@@ -145,6 +184,24 @@ The install succeeded and the new major changed behaviour. Take it on a branch, 
 per dependency. Reproduce locally before reading release notes — the failure tells you
 which subsystem moved. If the fix is larger than the bump is worth, demote it to
 bucket C with an ignore entry and a note.
+
+**The bump is not always what is broken.** It can equally expose a bug that was already
+there, latent, waiting on an ordering that never came up before. The tell is a failure
+you cannot reproduce locally on the new version but which CI reproduces consistently —
+timing-dependent, and the new version only changed the odds.
+
+When that happens the fix belongs in **its own PR against master**, not folded into the
+bot's branch: it is a user-facing `fix:` with its own changelog entry, it wants its own
+revert handle, and it is worth merging whether or not the bump ever lands. Merge it,
+update the bot PR from master (`gh pr update-branch <N>`), and re-run. That sequence is
+also the experiment — if the bump goes green, the latent bug *was* the trigger.
+
+To confirm a race rather than guess at one, force the ordering instead of waiting for
+it. In the Oct 2026 sweep, dispatching `keydown` Escape and calling `blur()` in the same
+tick reproduced the Escape-saves-the-title bug every time, where ordinary interaction
+never did — a React state update had not been applied yet, and the blur handler read the
+stale value. Verify the fix against the **database**, not the rendered UI: that bug
+reverted the display correctly while still sending the save.
 
 ## Per-ecosystem gotchas
 
