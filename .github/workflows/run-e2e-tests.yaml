@@ -20,6 +20,9 @@ concurrency:
 jobs:
   run-e2e-tests:
     runs-on: ubuntu-latest
+    # A normal run takes 20-24 minutes. Without a limit a hung step runs to GitHub's
+    # 6-hour default.
+    timeout-minutes: 45
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     permissions:
@@ -160,6 +163,10 @@ jobs:
           detailed_summary: true
           annotate_only: false
           fail_on_failure: true
+          # A cancelled or hung run leaves no report, and the action would otherwise post
+          # a passing check for it.
+          require_tests: true
+          fail_on_parse_error: true
 
       - name: Upload screenshots on failure
         if: failure()
