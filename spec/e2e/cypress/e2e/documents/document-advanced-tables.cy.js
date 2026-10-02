@@ -130,6 +130,11 @@ describe("Advanced Table Title in Document", function () {
       // Should revert to original title
       cy.get(".advanced-table-title").should("contain", "Original Title");
       cy.get(".advanced-table-title input").should("not.exist");
+
+      // Escape must discard, not save. Asserting on the rendered title alone
+      // misses the case where blur races the Escape state update and PATCHes
+      // the discarded value, so assert no second save was ever sent.
+      cy.get("@updateTableTitle.all").should("have.length", 1);
     });
   });
 
