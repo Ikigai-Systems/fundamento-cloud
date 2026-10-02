@@ -14,10 +14,12 @@ if (sentryDsn) {
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production.
     tracesSampleRate: 1.0,
-    // Set profilesSampleRate to profile 100%
-    // of sampled transactions.
+    // Set profileSessionSampleRate to profile 100% of sessions, and run the
+    // profiler for the lifetime of each sampled trace -- together these are the
+    // v11 equivalent of the old profilesSampleRate.
     // We recommend adjusting this value in production.
-    profilesSampleRate: 1.0,
+    profileSessionSampleRate: 1.0,
+    profileLifecycle: "trace",
   });
 }
 
