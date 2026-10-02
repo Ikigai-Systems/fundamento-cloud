@@ -9,27 +9,29 @@ module Tenant
   class IdMap
     # [table, column, table it points at].
     #
-    # Four of these the database declares as foreign keys and a spec derives them, so a new
-    # one cannot be missed. The last two it does not: object_references.source_version_id
-    # and source_comment_id are integer references to versions and object_comments with no
-    # constraint behind them, so nothing in the schema would have revealed them. They are
-    # named here because a restore that leaves them pointing at the archived id silently
-    # attaches a mention to whatever row now holds that number -- possibly another
-    # tenant's.
+    # Three of these the database declares as foreign keys and a spec derives them, so a new
+    # one cannot be missed. The last it does not: object_references.source_version_id is an
+    # integer reference to versions with no constraint behind it, so nothing in the schema
+    # would have revealed it. It is named here because a restore that leaves it pointing at
+    # the archived id silently attaches a mention to whatever row now holds that number --
+    # possibly another tenant's.
+    #
+    # The list keeps shrinking, and deliberately: object_comments and pack_versions were both
+    # given string primary keys to retire their entries. What is left all points at `versions`
+    # or at Rails' own active_storage_blobs. id_map_spec.rb fails on an entry whose target no
+    # longer reassigns its ids, so a retirement cannot be forgotten.
     REMAPPED = [
       ["document_editing_sessions", "version_id", "versions"],
-      ["packs", "active_version_id", "pack_versions"],
       ["active_storage_attachments", "blob_id", "active_storage_blobs"],
       ["active_storage_variant_records", "blob_id", "active_storage_blobs"],
       ["object_references", "source_version_id", "versions"],
-      ["object_references", "source_comment_id", "object_comments"],
     ].freeze
 
     # The subset the database enforces. A spec checks this against the real foreign keys,
     # so the difference between the two lists is exactly the set nobody could have derived.
     def self.constrained = REMAPPED.reject { |_, column, _| UNCONSTRAINED_COLUMNS.include?(column) }
 
-    UNCONSTRAINED_COLUMNS = %w[source_version_id source_comment_id].freeze
+    UNCONSTRAINED_COLUMNS = %w[source_version_id].freeze
 
     def initialize
       @map = Hash.new { |h, k| h[k] = {} }
