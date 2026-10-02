@@ -59,15 +59,12 @@ module Tenant
     def restore_table(table)
       return if table == "users" # a projection, never written back
 
-      # Nothing in these tables can be matched -- they have no unique key, or the only one
-      # is redacted -- so there is no way to tell an archived row from the one already in
-      # the database. Inserting them would duplicate every comment and every change event
-      # in the organization on each run, which is a worse outcome than not restoring them.
-      #
-      # Found by restoring a document against real data: six comments and fifteen change
-      # events came back as duplicates of rows that had never gone away. Scoping a restore
-      # to one document would make them safe, because then only that document's rows are in
-      # play; until that exists, they are left alone and reported.
+      # A table the planner could not find a key for: there is no way to tell an archived row
+      # from the one already in the database, so inserting it would duplicate the lot on
+      # every run. No table is in that position now -- see .claude/rules/tenant-archive.md
+      # for the eight that were, and what each was given instead -- and a spec fails if one
+      # ever is again. The guard stays because the failure is silent duplication rather than
+      # an error, which is the kind of thing that is only noticed by the person restoring.
       return if unmatchable.include?(table)
 
       rows = reader.each_row(table).to_a
