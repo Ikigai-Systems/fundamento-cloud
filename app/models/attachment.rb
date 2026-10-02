@@ -1,4 +1,6 @@
 class Attachment < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization
   belongs_to :parent, polymorphic: true
 

@@ -71,7 +71,7 @@ module Tables
       def coalescable_event(table, kind, payload)
         return nil unless kind.to_s == "cell_updated"
 
-        previous = Tables::ChangeEvent.where(table_id: table.id, version_id: nil).order(id: :desc).first
+        previous = Tables::ChangeEvent.where(table_id: table.id, version_id: nil).order(sequential_id: :desc).first
 
         return nil if previous.nil?
         return nil unless previous.cell_updated?

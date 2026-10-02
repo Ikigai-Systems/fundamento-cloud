@@ -1,4 +1,6 @@
 class ObjectComment < ApplicationRecord
+  include NpiOrdering
+
   ALLOWED_OBJECT_TYPES = %w[Document Table]
 
   belongs_to :organization
