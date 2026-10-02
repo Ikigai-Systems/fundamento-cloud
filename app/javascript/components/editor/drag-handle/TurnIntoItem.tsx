@@ -1,5 +1,5 @@
 import {BlockTypeSelectItem, useExtensionState} from '@blocknote/react'
-import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, useDictionary} from '@blocknote/react'
+import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, useDictionary, usePortalElement} from '@blocknote/react'
 import {ReactNode, useMemo} from "react";
 import {SideMenuExtension} from "@blocknote/core/extensions";
 import type {PartialBlock} from "@blocknote/core";
@@ -8,6 +8,7 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
   const dictionary = useDictionary();
+  const portalElement = usePortalElement();
 
   const block = useExtensionState(SideMenuExtension, {
     editor,
@@ -30,7 +31,7 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
   }
 
   return (
-    <Components.Generic.Menu.Root sub position='right'>
+    <Components.Generic.Menu.Root sub position='right' portalElement={portalElement}>
       <Components.Generic.Menu.Trigger>
         <Components.Generic.Menu.Item
           subTrigger={true}
