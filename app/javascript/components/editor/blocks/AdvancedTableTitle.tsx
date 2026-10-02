@@ -13,6 +13,12 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
   const [title, setTitle] = useState(initialTitle);
   const [originalTitle, setOriginalTitle] = useState(initialTitle);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Escape has to be visible to handleBlur in the same tick. Blur can reach
+  // handleBlur before React applies the state update Escape schedules, and the
+  // handler would then still see the typed title and save the edit the user
+  // just asked to discard. A ref is read synchronously, so it survives that
+  // ordering where state does not.
+  const escapedRef = useRef(false);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -37,6 +43,10 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
 
   const handleBlur = async () => {
     setIsEditing(false);
+    if (escapedRef.current) {
+      escapedRef.current = false;
+      return;
+    }
     if (title !== originalTitle) {
       await save(title);
     }
@@ -46,9 +56,17 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
     if (e.key === "Enter") {
       e.currentTarget.blur();
     } else if (e.key === "Escape") {
+      escapedRef.current = true;
       setTitle(originalTitle);
       setIsEditing(false);
     }
+  };
+
+  const startEditing = () => {
+    // Escape may not be followed by a blur at all, so clear the flag on the way
+    // in rather than relying on handleBlur to consume it.
+    escapedRef.current = false;
+    setIsEditing(true);
   };
 
   if (!editable) {
@@ -78,7 +96,7 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
   return (
     <div
       className="advanced-table-title editable"
-      onClick={() => setIsEditing(true)}
+      onClick={startEditing}
     >
       {title}
     </div>
