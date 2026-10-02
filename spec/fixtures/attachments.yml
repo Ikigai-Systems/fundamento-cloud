@@ -1,6 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: one
   filename: MyString
   mime_type: MyString
   data: 
@@ -8,6 +9,7 @@ one:
   parent: two (Document)
 
 two:
+  id: two
   filename: MyString
   mime_type: MyString
   data: 
