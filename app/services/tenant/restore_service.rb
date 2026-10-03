@@ -19,7 +19,7 @@ module Tenant
   class RestoreService
     class Blocked < StandardError; end
 
-    Result = Struct.new(:inserted, :skipped, :unmatchable, keyword_init: true)
+    Result = Struct.new(:inserted, :skipped, :unmatchable, :withheld, keyword_init: true)
 
     BATCH_SIZE = 1_000
 
@@ -41,13 +41,19 @@ module Tenant
       end
 
       @unmatchable = plan.unmatchable
+      @withheld = plan.withheld
 
       ApplicationRecord.transaction do
         Tenant::RestoreOrder::TABLES.each { |table| restore_table(table) }
         fill_deferred_references
       end
 
-      Result.new(inserted: inserted, skipped: skipped, unmatchable: plan.unmatchable)
+      Result.new(
+        inserted: inserted,
+        skipped: skipped,
+        unmatchable: plan.unmatchable,
+        withheld: plan.withheld,
+      )
     end
 
     private
@@ -55,6 +61,8 @@ module Tenant
     attr_reader :organization, :reader, :id_map, :inserted, :skipped
 
     def unmatchable = @unmatchable || []
+
+    def withheld = @withheld || {}
 
     def restore_table(table)
       return if table == "users" # a projection, never written back
@@ -67,13 +75,27 @@ module Tenant
       # an error, which is the kind of thing that is only noticed by the person restoring.
       return if unmatchable.include?(table)
 
+      # Credentials whose secret the archive drops on purpose. See
+      # RestorePlanner#withholds_credentials? -- putting these back produces a token nothing
+      # can authenticate with, and for three of the four the insert would fail outright.
+      return if withheld.key?(table)
+
       rows = reader.each_row(table).to_a
       return if rows.empty?
 
-      present = existing_keys(table)
-      missing = rows.reject { |row| present.include?(key_for(table, row)) }
+      existing = existing_ids_by_key(table)
+      matched, missing = rows.partition { |row| existing.key?(key_for(table, row)) }
 
-      skipped[table] = rows.size - missing.size
+      # A row already in the database keeps the id it has, which is not the archived one. The
+      # IdMap has to be told, or anything pointing at that row is rewritten to the lookup's nil
+      # -- which for active_storage_attachments.blob_id is a NOT NULL violation, and for a
+      # nullable column is a reference silently erased. Recording the match is what makes a
+      # second restore a no-op rather than a corruption.
+      if bigint_keyed?(table)
+        matched.each { |row| id_map.record(table, row["id"], existing[key_for(table, row)]) }
+      end
+
+      skipped[table] = matched.size
       return if missing.empty?
 
       missing.each_slice(BATCH_SIZE) { |batch| insert_batch(table, batch) }
@@ -163,19 +185,22 @@ module Tenant
       columns.map { row[_1].to_s }
     end
 
-    def existing_keys(table)
+    # key => the id the row already has. The id matters as much as the presence: see the note in
+    # #restore_table about what a nil lookup does to a column pointing at a matched row.
+    def existing_ids_by_key(table)
+      quoted = connection.quote_table_name(table)
+
       if string_keyed?(table)
-        Set.new(connection.select_values("SELECT id FROM #{connection.quote_table_name(table)}"))
+        connection.select_values("SELECT id FROM #{quoted}").index_by(&:itself)
       else
         columns = natural_key(table)
-        return Set.new if columns.nil?
+        return {} if columns.nil?
 
-        Set.new(
-          connection.select_rows(
-            "SELECT #{columns.map { connection.quote_column_name(_1) }.join(', ')} " \
-            "FROM #{connection.quote_table_name(table)}"
-          ).map { |values| values.map(&:to_s) }
-        )
+        list = columns.map { connection.quote_column_name(_1) }.join(", ")
+
+        connection.select_rows("SELECT id, #{list} FROM #{quoted}").to_h do |row|
+          [row[1..].map(&:to_s), row.first]
+        end
       end
     end
 

@@ -1,0 +1,16 @@
+# String primary key since the stable-identity migration. Nothing references these rows, which
+# is why they were the cheapest of the six to convert.
+_fixture:
+  model_class: AutomationInvocation
+
+is_webhook_run:
+  id: inv_is_one
+  organization_id: "is"
+  automation_id: iswebhook1
+  space_id: "is_default"
+  run_as_id: om_is_pawel
+  kind: 0 # webhook
+  formula: '=1+1'
+  webhook: '{"ref":"main"}'
+  result: '2'
+  invoked_at: <%= 30.minutes.ago.iso8601 %>

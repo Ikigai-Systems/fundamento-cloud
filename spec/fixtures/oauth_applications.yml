@@ -1,0 +1,13 @@
+# Global rather than per-tenant: oauth_applications is in Tenant::TableRegistry::GLOBAL and is
+# never exported. It exists here only so the grants and tokens below have a parent.
+_fixture:
+  model_class: Doorkeeper::Application
+
+mcp:
+  id: 9301
+  name: Fundamento MCP
+  uid: mcp-client-uid
+  secret: mcp-client-secret
+  redirect_uri: "https://example.test/callback"
+  scopes: mcp
+  confidential: true
