@@ -1,0 +1,9 @@
+# Reached from the blobs above. Its unique key is (blob_id, variation_digest), and blob_id is
+# reassigned on restore -- see active_storage_attachments.yml.
+_fixture:
+  model_class: ActiveStorage::VariantRecord
+
+document_file_thumb:
+  id: 9421
+  blob_id: 9402
+  variation_digest: thumbnail-digest

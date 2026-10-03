@@ -1,0 +1,25 @@
+# Rails-owned, integer primary key, matched on `key` -- which the archive carries verbatim, so
+# blobs themselves round trip. Their *ids* are reassigned, which is why Tenant::IdMap::REMAPPED
+# still names the two columns pointing at them.
+_fixture:
+  model_class: ActiveStorage::Blob
+
+pack_bundle:
+  id: 9401
+  key: pack-bundle-key
+  filename: bundle.zip
+  content_type: application/zip
+  service_name: test
+  byte_size: 1024
+  checksum: aGVsbG8gcGFjayBidW5kbGU=
+  metadata: '{"identified":true}'
+
+document_file:
+  id: 9402
+  key: document-file-key
+  filename: notes.txt
+  content_type: text/plain
+  service_name: test
+  byte_size: 64
+  checksum: aGVsbG8gZG9jdW1lbnQgZmlsZQ==
+  metadata: '{"identified":true}'

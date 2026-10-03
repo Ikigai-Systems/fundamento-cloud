@@ -1,0 +1,18 @@
+# Integer primary key, matched on (pack_id, version) -- the per-pack counter
+# PackVersion#set_version_number has always assigned, finally declared unique.
+_fixture:
+  model_class: PackVersion
+
+is_one_v1:
+  id: 9101
+  organization_id: "is"
+  pack_id: test_pack_1
+  version: 1
+  description: First cut
+
+is_one_v2:
+  id: 9102
+  organization_id: "is"
+  pack_id: test_pack_1
+  version: 2
+  description: Second cut

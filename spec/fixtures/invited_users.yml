@@ -1,0 +1,15 @@
+# invitation_token and encrypted_password are both redacted by the export, so this table is
+# withheld on restore: an invitation without its token can never be accepted.
+_fixture:
+  model_class: InvitedUser
+
+is_newcomer:
+  id: invited_is_one
+  organization_id: "is"
+  email: newcomer@ikigai.test
+  first_name: New
+  last_name: Comer
+  encrypted_password: ""
+  invitation_token: is-invitation-token
+  invitation_created_at: <%= 1.day.ago.iso8601 %>
+  invitation_sent_at: <%= 1.day.ago.iso8601 %>
