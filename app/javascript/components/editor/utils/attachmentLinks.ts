@@ -33,7 +33,23 @@ const BLOCKNOTE_ALLOWED_URI =
   // eslint-disable-next-line no-useless-escape
   /^(?:(?:http|https|ftp|ftps|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z0-9+.\-]+(?:[^a-z+.\-:]|$))/i;
 
-const ATTACHMENT_HREF = /^attachment:(\d+)(\.[a-z0-9]+)?$/i;
+// The id is a nanoid, so it spans nanoid's whole URL-safe alphabet -- letters, digits,
+// underscore and hyphen -- not just digits. It used to be `\d+`, because attachments once had
+// an integer primary key; after the stable-identity migration that pattern matched nothing and
+// every attachment link silently stopped resolving.
+//
+// The optional suffix stays unambiguous because a nanoid cannot contain a dot.
+const ATTACHMENT_HREF = /^attachment:([A-Za-z0-9_-]+)(\.[a-z0-9]+)?$/i;
+
+/**
+ * The attachment id inside an `attachment:` href, or null for any other href.
+ *
+ * Exported so there is one definition of the shape. There used to be a second copy in
+ * createFileUrlResolver, and when the id format changed only one of them was updated.
+ */
+export function attachmentIdFromHref(href: string): string | null {
+  return href.match(ATTACHMENT_HREF)?.[1] ?? null;
+}
 
 export function isValidLink(href: string): boolean {
   return BLOCKNOTE_ALLOWED_URI.test(href) || ATTACHMENT_HREF.test(href);

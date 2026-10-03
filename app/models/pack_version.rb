@@ -1,4 +1,6 @@
 class PackVersion < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization
   belongs_to :pack
 
