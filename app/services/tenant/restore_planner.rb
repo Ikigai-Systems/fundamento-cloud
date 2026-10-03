@@ -17,7 +17,7 @@ module Tenant
 
     Plan = Struct.new(
       :mode, :organization_id, :rows_to_insert, :rows_already_present, :conflicts, :remapped_tables,
-      :unmatchable,
+      :unmatchable, :withheld,
       keyword_init: true,
     ) do
       def blocked? = conflicts.any?
@@ -41,12 +41,18 @@ module Tenant
       present = {}
       conflicts = []
       unmatchable = []
+      withheld = {}
 
       Tenant::RestoreOrder::TABLES.each do |table|
         next if skip?(table)
 
         archived = reader.each_row(table).to_a
         next if archived.empty?
+
+        if withholds_credentials?(table)
+          withheld[table] = archived.size
+          next
+        end
 
         matcher = matcher_for(table, archived.first)
 
@@ -72,6 +78,7 @@ module Tenant
         conflicts: conflicts,
         remapped_tables: bigint_keyed_tables,
         unmatchable: unmatchable,
+        withheld: withheld,
       )
     end
 
@@ -92,6 +99,19 @@ module Tenant
     # users is a redacted projection rather than rows: it exists so a restore can match
     # people by email, never to be written back.
     def skip?(table) = table == "users"
+
+    # Tables whose rows are credentials, and whose credential the export deliberately drops.
+    #
+    # These cannot be restored, and the reason is not a limitation to be fixed later: the
+    # archive is handed to departing customers, so it must not carry their token ciphertext,
+    # and a row put back without its secret is worse than no row at all. It looks like a
+    # working API token or a pending invitation in the interface, and nothing can ever
+    # authenticate with it. Three of the four would not even insert -- the redacted column is
+    # NOT NULL -- which is how this was found: api_tokens used to be skipped as unmatchable, so
+    # the contradiction never ran until it stopped being skipped.
+    #
+    # The operator is told, and the answer is to reissue, not to restore.
+    def withholds_credentials?(table) = Tenant::ExportBuilder::REDACTED.key?(table)
 
     # How to tell whether an archived row is already in the database.
     #

@@ -78,4 +78,33 @@ RSpec.describe Tenant::TableRegistry do
 
     expect(mismatched).to eq([])
   end
+
+  describe "EXCLUDED" do
+    it "keeps its tables out of every archive" do
+      expect(described_class.exported).not_to include(*described_class::EXCLUDED.keys)
+    end
+
+    # A renamed or dropped table would otherwise sit here forever, excluding nothing.
+    it "names tables that exist" do
+      expect(ActiveRecord::Base.connection.tables).to include(*described_class::EXCLUDED.keys)
+    end
+
+    it "gives a reason for each" do
+      expect(described_class::EXCLUDED.values).to all(be_present)
+    end
+
+    # The point of the category: these belong to a tenant, unlike GLOBAL. If one stopped having
+    # a route to an organization it would belong in GLOBAL instead, and the distinction this
+    # category exists to draw would have quietly collapsed.
+    it "excludes only tables that really are a tenant's" do
+      described_class::EXCLUDED.each_key do |table|
+        columns = ActiveRecord::Base.connection.columns(table).map(&:name)
+
+        routed = columns.include?("organization_id") || columns.include?("import_session_id")
+
+        expect(routed).to be(true),
+          "#{table} has no route to an organization, so it is GLOBAL rather than EXCLUDED"
+      end
+    end
+  end
 end

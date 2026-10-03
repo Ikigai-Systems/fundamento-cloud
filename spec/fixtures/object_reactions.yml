@@ -1,0 +1,24 @@
+# Reactions are polymorphic over Document, Table *and* ObjectComment, and object_id is a plain
+# string column with no foreign key -- so nothing in the schema reveals that these rows hold a
+# comment's primary key. That made it the trap in the stable-identity migration, and it is
+# fixtured here so a round trip would notice if the link ever broke again.
+_fixture:
+  model_class: ObjectReaction
+
+on_a_comment:
+  id: 9201
+  organization_id: "is"
+  organization_membership_id: om_is_pawel
+  object_type: ObjectComment
+  object_id: one
+  emoji: "🎉"
+  created_at: <%= 30.minutes.ago.iso8601 %>
+
+on_a_document:
+  id: 9202
+  organization_id: "is"
+  organization_membership_id: om_is_pawel
+  object_type: Document
+  object_id: one
+  emoji: "👍"
+  created_at: <%= 30.minutes.ago.iso8601 %>

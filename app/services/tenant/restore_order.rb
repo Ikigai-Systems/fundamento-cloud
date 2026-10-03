@@ -52,8 +52,6 @@ module Tenant
       pack_versions
       automations
       automation_invocations
-      import_sessions
-      import_files
       attachments
       active_storage_blobs
       active_storage_attachments
