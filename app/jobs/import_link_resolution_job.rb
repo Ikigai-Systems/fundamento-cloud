@@ -1,15 +1,29 @@
 # MemoryIntensiveJob, not ApplicationJob: this walks every document in a session, reading
 # each from storage and shelling out to the converter, so it has the same footprint as the
-# per-document import jobs. The per-pod limit also stops two link-resolution runs for the
-# same session overlapping, which is how duplicate versions were produced.
+# per-document import jobs.
+#
+# Two runs for the same session overlapping is how duplicate versions were produced. The
+# memory-intensive thread is per worker, so it cannot prevent that; the concurrency key below
+# is per session, which a key can express because it is fixed when the job is enqueued.
 class ImportLinkResolutionJob < MemoryIntensiveJob
   include ImportFileMarkdown
+  include GoodJob::ActiveJobExtensions::Concurrency
+
+  good_job_control_concurrency_with(
+    perform_limit: 1,
+    key: -> { "import_link_resolution_#{arguments.first&.properties&.dig(:import_session_id)}" },
+  )
+
+  # A blocked run is waiting for the other one to finish, so check back soon rather than
+  # backing off polynomially.
+  retry_on GoodJob::ActiveJobExtensions::Concurrency::ConcurrencyExceededError,
+    wait: 5.seconds,
+    attempts: Float::INFINITY
 
   # Obsidian block-reference anchor: a space, then ^blockid, at the end of a line.
   # Shared by detection and stripping so the two can't drift apart.
   BLOCK_ID_ANCHOR = / \^[a-zA-Z0-9-]{2,}$/
 
-  queue_as :imports
 
   # Called by Good Job batch on_finish callback
   # GoodJob 4.x passes (batch, { event: :finish }); import_session_id is in batch.properties with symbol keys

@@ -29,11 +29,26 @@ Key points:
 - The lock is always released at transaction end (COMMIT, ROLLBACK, or connection close) — it can never get stuck.
 - Keep the transaction short: do slow network I/O (S3, HTTP) *before* the transaction starts so the lock isn't held during network waits.
 
-## GoodJob + Kubernetes concurrency keys
+## Limiting how many jobs run at once
 
-- **Never use `Process.pid`** in a `good_job_control_concurrency_with` key — every container's main process has PID 1, collapsing all pods onto a single global semaphore slot.
-- Use `ENV.fetch("HOSTNAME", Socket.gethostname)` instead — Kubernetes sets `HOSTNAME` to the unique pod name.
-- For `ConcurrencyExceededError`, override the default polynomial backoff with a short fixed wait so queued jobs resume quickly once the slot frees:
+**A concurrency key is computed when the job is enqueued**, stored in
+`good_jobs.concurrency_key`, and reused at perform time. So a key can scope a limit to an
+*entity* (a table, an import session), but never to the *worker* that performs the job: a
+`HOSTNAME` key names whichever process enqueued it. That mistake made `MemoryIntensiveJob`'s
+"one per pod" limit one across every worker.
+
+- **Per worker** (memory, CPU): give the job a queue served by exactly one thread pool in
+  `lib/good_job_queues.rb`. That pool's size is the limit, and blocked jobs simply wait in
+  the queue. Keep the pool shared: exclude only the *other* capped queues, so it runs
+  ordinary jobs too and no thread sits reserved while nothing is importing. Subclass
+  `MemoryIntensiveJob` for one-at-a-time-per-worker work.
+- **Per entity** (no two runs for the same record): `good_job_control_concurrency_with`
+  with a key built from the job's arguments, e.g.
+  `key: -> { "table_snapshot_#{arguments.first&.id}" }`.
+- A job that sets `queue_as` *after* inheriting from `MemoryIntensiveJob` silently leaves
+  the single-threaded pool. Don't.
+- For `ConcurrencyExceededError`, override the default polynomial backoff with a short fixed
+  wait so blocked jobs resume quickly once the slot frees:
   ```ruby
   retry_on GoodJob::ActiveJobExtensions::Concurrency::ConcurrencyExceededError,
     wait: 5.seconds,
