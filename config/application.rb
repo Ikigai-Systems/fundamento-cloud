@@ -6,6 +6,8 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative "../lib/good_job_queues"
+
 module Fundamento
   # The released version, owned by release-please (see release-please-config.json).
   # Defined here rather than in an initializer so it is available to every initializer,
@@ -23,7 +25,8 @@ module Fundamento
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w(assets tasks middleware))
+    # good_job_queues.rb is required above: configuration needs it before autoloading exists.
+    config.autoload_lib(ignore: %w(assets tasks middleware good_job_queues.rb))
 
     # From https://guides.rubyonrails.org/active_job_basics.html#serializers
     config.autoload_once_paths << "#{Rails.root}/app/serializers"
@@ -50,6 +53,9 @@ module Fundamento
         { cron: entry.fetch("cron"), class: entry.fetch("class"), description: entry["description"] },
       ]
     end
+
+    # Import documents get a thread pool of their own; see lib/good_job_queues.rb.
+    config.good_job.queues = GoodJobQueues.queue_string(ENV)
 
     # Enable lograge, but make it the default only on production
     config.lograge.enabled = true

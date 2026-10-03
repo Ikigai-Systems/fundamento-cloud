@@ -3,12 +3,14 @@
 # so there is nothing here to serialize for memory's sake. Holding them to one at a time made
 # a 1553-document import take hours (median 12s between completions, most of it the 5-second
 # ConcurrencyExceededError backoff the other threads paid to discover the slot was taken).
-# Concurrency is bounded by the worker's thread count. The heavy work is next door in
-# ImportAttachmentJob, which is where the limit now lives.
+# The files are small, but converting each one starts a ~240 MB Node process, so five at once
+# OOM-killed a 1 GB worker. The import_documents queue has a thread pool of its own on every
+# worker (lib/good_job_queues.rb), which caps that per process without the polling a
+# concurrency limit costs.
 class ImportDocumentJob < ApplicationJob
   include ImportFileMarkdown
 
-  queue_as :imports
+  queue_as GoodJobQueues::IMPORT_DOCUMENTS
 
   def perform(import_file)
     # Allow retry from :processing — jobs interrupted mid-run (SIGTERM, OOM) leave

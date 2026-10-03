@@ -36,7 +36,7 @@ RSpec.describe ImportAttachmentJob, type: :job do
     it "is limited to one job per worker" do
       # Attachments carry the bytes: 10 GB across one real vault, including a 2.34 GB video.
       expect(described_class.ancestors).to include(MemoryIntensiveJob)
-      expect(described_class.good_job_concurrency_config[:perform_limit]).to eq(1)
+      expect(described_class.new.queue_name).to eq(GoodJobQueues::MEMORY_INTENSIVE)
     end
   end
 

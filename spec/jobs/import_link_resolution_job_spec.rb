@@ -588,11 +588,21 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
   end
 
   describe "concurrency" do
-    it "is limited to one run per worker pod" do
+    it "is limited to one run per worker" do
       # Reads every document in the session from storage and shells out to the converter
-      # for each, so it needs the same per-pod slot as the per-document import jobs.
+      # for each, so it shares the single memory-intensive thread.
       expect(described_class.ancestors).to include(MemoryIntensiveJob)
+      expect(described_class.new.queue_name).to eq(GoodJobQueues::MEMORY_INTENSIVE)
+    end
+
+    it "runs one at a time per session, across workers" do
+      # Two overlapping runs for one session are how duplicate versions were produced; the
+      # per-worker thread no longer prevents that on its own.
+      batch = double("batch", properties: { import_session_id: 42 })
+      job = described_class.new(batch, { event: :finish })
+
       expect(described_class.good_job_concurrency_config[:perform_limit]).to eq(1)
+      expect(job.good_job_concurrency_key).to eq("import_link_resolution_42")
     end
   end
 
