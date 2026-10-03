@@ -61,8 +61,7 @@ class ImportSessionOrchestratorJob < ApplicationJob
 
       # Converted outside the transaction below: these shell out to Node, and the Space row
       # lock must not be held across a subprocess call.
-      blocks = BlocknoteConverterService.markdown_to_blocks("")
-      sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+      blocks, sync = BlocknoteConverterService.markdown_to_blocks_and_yjs("")
 
       ActiveRecord::Base.transaction do
         document = space.documents.create!(

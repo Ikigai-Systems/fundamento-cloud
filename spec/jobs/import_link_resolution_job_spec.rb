@@ -368,8 +368,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         resolved_block = { "id" => "block-1", "type" => "video",
           "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
           "content" => [], "children" => [] }
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[resolved_block], "sync_data"])
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
@@ -410,8 +409,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         resolved_block_b = { "id" => "block-b", "type" => "video",
           "props" => { "url" => "attachment:99.mp4", "name" => "video.mp4", "caption" => "" },
           "content" => [], "children" => [] }
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([resolved_block_a], [resolved_block_b])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[resolved_block_a], "sync_data"], [[resolved_block_b], "sync_data"])
 
         batch = double("batch", properties: { import_session_id: session.id })
         allow(ImportSessionCompletionJob).to receive(:perform_later)
@@ -435,14 +433,13 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         make_import_file(document: doc, path: "Notes.md", markdown: "![clip.mp4](<Pliki/clip.mp4>)")
         session.merge_path_map!("Vault/Pliki/clip.mp4", "attachment:55.mp4")
 
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], "sync_data"])
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:55.mp4"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:55.mp4"))
       end
 
       it "passes attachment URI with extension to the converter for audio" do
@@ -458,14 +455,13 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         make_import_file(document: doc, path: "Notes.md", markdown: "![track.mp3](<Pliki/track.mp3>)")
         session.merge_path_map!("Vault/Pliki/track.mp3", "attachment:56.mp3")
 
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], "sync_data"])
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:56.mp3"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:56.mp3"))
       end
 
       it "passes attachment URI with extension to the converter for a PDF" do
@@ -481,14 +477,13 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         make_import_file(document: doc, path: "Notes.md", markdown: "![report.pdf](<Pliki/report.pdf>)")
         session.merge_path_map!("Vault/Pliki/report.pdf", "attachment:57.pdf")
 
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], "sync_data"])
         allow(ImportSessionCompletionJob).to receive(:perform_later)
 
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks).with(include("attachment:57.pdf"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:57.pdf"))
       end
     end
 
@@ -779,12 +774,11 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       # A fixed stub id would let a naive == guard pass — BlockNote really does mint a new
       # UUID per conversion. `name` keeps the original filename so the job's own
       # has_local_attachment_refs check still trips on the second run.
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks) do
-        [{ "id" => SecureRandom.uuid, "type" => "video",
-           "props" => { "url" => "attachment:99.mp4", "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
-           "content" => [], "children" => [] }]
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs) do
+        [[{ "id" => SecureRandom.uuid, "type" => "video",
+            "props" => { "url" => "attachment:99.mp4", "name" => "2022-12-09 02.29.53 video.mp4", "caption" => "" },
+            "content" => [], "children" => [] }], "sync_data"]
       end
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
 
       expect { job.perform(batch) }.to change { doc.versions.count }.by(1)
       expect { described_class.new.perform(batch) }.not_to change { doc.versions.count }
@@ -804,12 +798,11 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       )
       import_file_with_content(doc, "Notes.md", "---\ntitle: Secret Title\ntags:\n  - alpha\n---\n\nSee [[other]]\n")
 
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], "sync_data"])
 
       job.perform(batch)
 
-      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs)
         .with(satisfy { |md| !md.include?("Secret Title") && !md.include?("tags:") && !md.start_with?("---") })
     end
 
@@ -828,13 +821,12 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       import_file_with_content(doc, "Report.docx", "PK\x03\x04GARBAGEZIPBYTES", format: "docx")
 
       allow(PandocConverterService).to receive(:file_to_markdown).and_return("See [[other]] in the report")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync_data")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], "sync_data"])
 
       job.perform(batch)
 
       expect(PandocConverterService).to have_received(:file_to_markdown).with(anything, "docx")
-      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks)
+      expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs)
         .with(satisfy { |md| !md.include?("GARBAGEZIPBYTES") })
     end
   end

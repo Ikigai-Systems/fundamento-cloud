@@ -27,8 +27,7 @@ class ImportDocumentJob < ApplicationJob
     frontmatter = nil unless frontmatter.is_a?(Hash)
     title = frontmatter&.dig("title") || title_fallback
 
-    blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
-    sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+    blocks, sync = BlocknoteConverterService.markdown_to_blocks_and_yjs(markdown)
 
     ActiveRecord::Base.transaction do
       # Serialize concurrent threads: GoodJob can dispatch the same job to multiple
