@@ -461,3 +461,81 @@ RSpec.describe BlocknoteBlocks do
     end
   end
 end
+
+RSpec.describe "BlocknoteBlocks.rewrite_attachment_ids!" do
+  def rewrite(blocks, mapping)
+    [BlocknoteBlocks.rewrite_attachment_ids!(blocks, mapping), blocks]
+  end
+
+  it "rewrites a link href and keeps any suffix" do
+    blocks = [{"type" => "paragraph", "content" => [
+      {"type" => "link", "href" => "attachment:7", "content" => []},
+      {"type" => "link", "href" => "attachment:8.png", "content" => []},
+    ]}]
+
+    count, result = rewrite(blocks, {"7" => "aBcDeFgHiJ", "8" => "kLmNoPqRsT"})
+
+    expect(count).to eq(2)
+    expect(result.dig(0, "content", 0, "href")).to eq("attachment:aBcDeFgHiJ")
+    expect(result.dig(0, "content", 1, "href")).to eq("attachment:kLmNoPqRsT.png")
+  end
+
+  # createFileUrlResolver resolves props.url, so an image whose url is missed stays broken even
+  # when every link on the page is fixed.
+  it "rewrites a file or image block's props.url" do
+    blocks = [{"type" => "image", "props" => {"url" => "attachment:9", "name" => "x"}, "content" => []}]
+
+    count, result = rewrite(blocks, {"9" => "uVwXyZ1234"})
+
+    expect(count).to eq(1)
+    expect(result.dig(0, "props", "url")).to eq("attachment:uVwXyZ1234")
+  end
+
+  it "reaches inside table cells, in both stored shapes" do
+    blocks = [{"type" => "table", "content" => {"type" => "tableContent", "rows" => [
+      {"cells" => [
+        {"type" => "tableCell", "content" => [{"type" => "link", "href" => "attachment:1", "content" => []}]},
+        [{"type" => "link", "href" => "attachment:2", "content" => []}],
+      ]},
+    ]}}]
+
+    count, = rewrite(blocks, {"1" => "oneoneone1", "2" => "twotwotwo2"})
+
+    expect(count).to eq(2)
+    expect(blocks.to_json).to include("attachment:oneoneone1", "attachment:twotwotwo2")
+  end
+
+  # The reason this walks the tree rather than replacing text: `attachment:12` is a prefix of
+  # `attachment:123`, so a textual substitution would corrupt the longer one.
+  it "does not touch an id that merely starts with a mapped one" do
+    blocks = [{"type" => "paragraph", "content" => [
+      {"type" => "link", "href" => "attachment:123", "content" => []},
+    ]}]
+
+    count, result = rewrite(blocks, {"12" => "shouldNotBe"})
+
+    expect(count).to eq(0)
+    expect(result.dig(0, "content", 0, "href")).to eq("attachment:123")
+  end
+
+  it "leaves ordinary links and unmapped attachments alone" do
+    blocks = [{"type" => "paragraph", "content" => [
+      {"type" => "link", "href" => "https://example.com", "content" => []},
+      {"type" => "link", "href" => "attachment:999", "content" => []},
+    ]}]
+
+    count, result = rewrite(blocks, {"7" => "aBcDeFgHiJ"})
+
+    expect(count).to eq(0)
+    expect(result.to_json).to include("https://example.com", "attachment:999")
+  end
+
+  # Two copies of this pattern already drifted once: the TypeScript said `\d+` after attachments
+  # moved to nanoid keys, so every attachment link stopped resolving. Pin them together.
+  it "matches the id shape the TypeScript resolver accepts" do
+    typescript = Rails.root.join("app/javascript/components/editor/utils/attachmentLinks.ts").read
+    declared = typescript[/const ATTACHMENT_HREF = \/(.+)\/i;/, 1]
+
+    expect(declared).to eq(BlocknoteBlocks::ATTACHMENT_REFERENCE.source.gsub('\A', "^").gsub('\z', "$"))
+  end
+end

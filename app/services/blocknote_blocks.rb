@@ -47,6 +47,44 @@ class BlocknoteBlocks
   end
   private_class_method :walk_table_content
 
+  # The same shape as ATTACHMENT_HREF in app/javascript/.../attachmentLinks.ts. Kept in step by
+  # spec/services/blocknote_blocks_spec.rb, which reads the TypeScript and compares.
+  ATTACHMENT_REFERENCE = /\Aattachment:([A-Za-z0-9_-]+)(\.[a-z0-9]+)?\z/i
+
+  # Rewrites every `attachment:<id>` in a block tree through `mapping` (old id => new id),
+  # in place, and returns how many it changed.
+  #
+  # Attachments are referenced two ways and both matter: a link's `href`, and a file or image
+  # block's `props.url` -- which is what createFileUrlResolver resolves. Rewriting only the
+  # first leaves every embedded image broken.
+  def self.rewrite_attachment_ids!(blocks, mapping)
+    rewritten = 0
+
+    walk_blocks(blocks) do |node|
+      rewritten += 1 if rewrite_attachment_reference!(node, "href", mapping)
+
+      props = node["props"]
+      rewritten += 1 if props.is_a?(Hash) && rewrite_attachment_reference!(props, "url", mapping)
+    end
+
+    rewritten
+  end
+
+  def self.rewrite_attachment_reference!(holder, key, mapping)
+    value = holder[key]
+    return false unless value.is_a?(String)
+
+    match = ATTACHMENT_REFERENCE.match(value)
+    return false unless match
+
+    replacement = mapping[match[1]]
+    return false if replacement.blank?
+
+    holder[key] = "attachment:#{replacement}#{match[2]}"
+    true
+  end
+  private_class_method :rewrite_attachment_reference!
+
   def self.each_mention(blocks, &block)
     walk_blocks(blocks) do |node|
       yield node if node["type"] == "mention"
