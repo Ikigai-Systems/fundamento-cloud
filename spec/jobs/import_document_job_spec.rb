@@ -39,8 +39,7 @@ RSpec.describe ImportDocumentJob, type: :job do
       # so the same folder gave opposite outcomes depending on the extension.
       import_file = build_import_file(relative_path: "Notes/Plan.docx", format: "docx", content: "PK\x03\x04docx")
       allow(PandocConverterService).to receive(:file_to_markdown).and_return("# Plan\n\nBody")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       described_class.perform_now(import_file)
 
@@ -59,8 +58,7 @@ RSpec.describe ImportDocumentJob, type: :job do
       # blob, so the S3 object is never deleted. Worth pinning: nothing else states it.
       import_file = build_import_file(relative_path: "Notes/Plan.docx", format: "docx", content: "PK\x03\x04docx")
       allow(PandocConverterService).to receive(:file_to_markdown).and_return("# Plan\n\nBody")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
       described_class.perform_now(import_file)
 
       document = import_file.reload.document
@@ -83,8 +81,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     it "does not attach anything for a markdown document" do
       import_file = build_import_file(relative_path: "Notes/hello.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       described_class.perform_now(import_file)
 
@@ -95,8 +92,7 @@ RSpec.describe ImportDocumentJob, type: :job do
   describe "#perform" do
     it "creates a Document from a markdown file" do
       import_file = build_import_file(relative_path: "Notes/hello.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       expect {
         described_class.perform_now(import_file)
@@ -110,8 +106,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     it "sets the document title from filename when no frontmatter title" do
       import_file = build_import_file(relative_path: "Notes/my-note.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       described_class.perform_now(import_file)
 
@@ -121,8 +116,7 @@ RSpec.describe ImportDocumentJob, type: :job do
     it "uses frontmatter title when present" do
       content = "---\ntitle: My Custom Title\n---\n\nBody text"
       import_file = build_import_file(relative_path: "Notes/file.md", content: content)
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       described_class.perform_now(import_file)
 
@@ -131,7 +125,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     it "marks as failed and records error on conversion failure" do
       import_file = build_import_file(relative_path: "Notes/bad.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs)
         .and_raise(BlocknoteConverterService::ConversionError, "boom")
 
       described_class.perform_now(import_file)
@@ -143,8 +137,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     it "increments session processed_files on success" do
       import_file = build_import_file(relative_path: "note.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-      allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
       expect {
         described_class.perform_now(import_file)
@@ -153,7 +146,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     it "increments session failed_files on failure" do
       import_file = build_import_file(relative_path: "bad.md")
-      allow(BlocknoteConverterService).to receive(:markdown_to_blocks)
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs)
         .and_raise(BlocknoteConverterService::ConversionError)
 
       expect {
@@ -163,8 +156,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     context "when frontmatter contains tags" do
       before do
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
       end
 
       it "applies valid tags to the document" do
@@ -208,8 +200,7 @@ RSpec.describe ImportDocumentJob, type: :job do
         import_file = build_import_file(relative_path: "interrupted.md")
         import_file.update_column(:status, ImportFile.statuses[:processing])
 
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
         expect {
           described_class.perform_now(import_file)
@@ -226,8 +217,7 @@ RSpec.describe ImportDocumentJob, type: :job do
           document_id: existing_doc.id
         )
 
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
         expect {
           described_class.perform_now(import_file)
@@ -237,8 +227,7 @@ RSpec.describe ImportDocumentJob, type: :job do
 
     context "hierarchy placement" do
       before do
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
       end
 
       def hierarchy_ids(nodes = Space.find(space.id).hierarchy, collected = [])
@@ -283,8 +272,7 @@ RSpec.describe ImportDocumentJob, type: :job do
       # `undefined method 'cmd_tuples' for nil` out of GoodJob's advisory unlock.
       it "does not return its caller's connection to the pool" do
         import_file = build_import_file(relative_path: "Notes/hello.md")
-        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("")
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
 
         pool = ActiveRecord::Base.connection_pool
         checkins = 0

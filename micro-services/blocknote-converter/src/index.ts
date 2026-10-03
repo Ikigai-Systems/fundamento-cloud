@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertToBlocks, convertToYjs} from "./converters";
+import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertMarkdownToBlocksAndYjs, convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
 import {startServer} from "./server";
 import * as Sentry from "@sentry/node";
@@ -145,6 +145,22 @@ program
     handleStreamConversion(
       options,
       (data) => convertMarkdownToBlocks(data.toString("utf8")),
+      true
+    );
+  });
+
+program
+  .command("convert-markdown-to-blocks-and-yjs")
+  .description("Convert Markdown to Blocknote and YJS in one pass; YJS is base64 in the JSON output")
+  .option("-i, --input <file>", "Input file (default: stdin)")
+  .option("-o, --output <file>", "Output file (default: stdout)")
+  .action((options) => {
+    handleStreamConversion(
+      options,
+      async (data) => {
+        const {blocks, yjs} = await convertMarkdownToBlocksAndYjs(data.toString("utf8"));
+        return {blocks, yjs: Buffer.from(yjs).toString("base64")};
+      },
       true
     );
   });

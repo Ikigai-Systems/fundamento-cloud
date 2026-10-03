@@ -481,3 +481,17 @@ export async function convertMarkdownToBlocks(markdown: string) {
   const html = markdownToHtml(markdown);
   return await editor.tryParseHTMLToBlocks(html);
 }
+
+/**
+ * Both halves of creating a document from markdown, in one process. Every CLI call pays
+ * Node's startup and the bundle load (~240 MB, most of the CPU for a small document), so
+ * doing this as two calls doubled the cost of each imported document.
+ *
+ * The blocks go through JSON before the Yjs conversion so the document matches what the two-call
+ * path produced, where they crossed into Ruby and back as JSON.
+ */
+export async function convertMarkdownToBlocksAndYjs(markdown: string) {
+  const blocks = await convertMarkdownToBlocks(markdown);
+  const yjs = convertToYjs(JSON.parse(JSON.stringify(blocks)));
+  return {blocks, yjs};
+}

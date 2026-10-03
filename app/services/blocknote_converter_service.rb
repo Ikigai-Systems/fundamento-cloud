@@ -76,4 +76,26 @@ module BlocknoteConverterService
       raise ConversionError.new "Unable to convert markdown to blocks"
     end
   end
+
+  # markdown_to_blocks followed by blocks_to_yjs, in one Node process instead of two. Each
+  # process costs ~240 MB and the bundle's startup time, which is most of the work for a
+  # typical document, so callers that need both should use this.
+  #
+  # Returns [blocks, sync].
+  def self.markdown_to_blocks_and_yjs(markdown)
+    stdout, stderr, status = Open3.capture3(
+      build_env,
+      "node ./micro-services/blocknote-converter/build/blocknoteConverter.cjs convert-markdown-to-blocks-and-yjs",
+      binmode: true,
+      stdin_data: markdown
+    )
+
+    if status.success?
+      result = JSON.parse(stdout)
+      [result["blocks"], Base64.strict_decode64(result["yjs"])]
+    else
+      puts stderr
+      raise ConversionError.new "Unable to convert markdown to blocks and YJS"
+    end
+  end
 end

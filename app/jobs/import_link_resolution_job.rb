@@ -84,15 +84,14 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
 
     return unless resolved_markdown
 
-    new_blocks = BlocknoteConverterService.markdown_to_blocks(resolved_markdown)
+    # One Node call for both: starting the converter costs far more than the Yjs conversion,
+    # so computing sync we may discard below is cheaper than a second process when we don't.
+    new_blocks, new_sync = BlocknoteConverterService.markdown_to_blocks_and_yjs(resolved_markdown)
 
     # This job can be invoked more than once per session (any orchestrator re-run creates a
     # fresh batch, and every batch fires on_finish). Re-resolving is deterministic, so if
-    # the result matches what's already stored there is nothing to record — skipping here
-    # also avoids the second Node call below.
+    # the result matches what's already stored there is nothing to record.
     return if blocks_equivalent?(new_blocks, blocks)
-
-    new_sync = BlocknoteConverterService.blocks_to_yjs(new_blocks)
 
     document.versions.create!(
       content_blocks: new_blocks,
