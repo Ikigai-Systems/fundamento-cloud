@@ -2,19 +2,15 @@
 # migration. These five are grouped together because nothing in the database points at them:
 # no foreign key targets any of them, so the swap is local to each table.
 #
-# What *does* hold their ids is two string columns the schema cannot reveal, and both are
-# rewritten here while the old id and the new npi are both still present:
+# What *does* hold their ids is audits.auditable_id / associated_id, rewritten here while the old
+# id and the new npi are both still present. `audited` is declared on ApplicationRecord, so every
+# model is audited unless it calls skip_auditing, and leaving these behind would point each
+# model's whole audit trail at ids that no longer exist.
 #
-#   * active_storage_attachments.record_id -- Attachment has_one_attached :file. The column is
-#     already a string (see db/migrate/20260104205731_fix_active_storage_attachments_for_user_npi.rb),
-#     so it holds the integer stringified and needs a data rewrite, not a type change.
-#
-#   * audits.auditable_id / associated_id -- `audited` is declared on ApplicationRecord, so
-#     every model is audited unless it calls skip_auditing. Leaving these behind would point
-#     each model's whole audit trail at ids that no longer exist.
-#
-# object_comments took the same npi column but is swapped separately: it has two referencing
-# columns of its own, one of which the schema does not declare.
+# Three of the eight are swapped in their own migrations instead, because each has references
+# this shape cannot handle: object_comments (two referencing columns, one undeclared),
+# pack_versions (a polymorphic Active Storage reference) and attachments (ids embedded in
+# document content, including the binary Yjs state).
 class MigrateUnreferencedTablesToNpiPk < ActiveRecord::Migration[8.1]
   # table => the model name `audited` records in audits.auditable_type.
   #
@@ -23,21 +19,12 @@ class MigrateUnreferencedTablesToNpiPk < ActiveRecord::Migration[8.1]
   # sweeps are expected to match nothing.
   TABLES = {
     api_tokens: "ApiToken",
-    attachments: "Attachment",
     automation_invocations: "AutomationInvocation",
     oauth_access_grants: "Doorkeeper::AccessGrant",
     oauth_access_tokens: "Doorkeeper::AccessToken",
   }.freeze
 
   def up
-    execute <<~SQL
-      UPDATE active_storage_attachments
-      SET record_id = attachments.npi
-      FROM attachments
-      WHERE active_storage_attachments.record_type = 'Attachment'
-        AND active_storage_attachments.record_id = attachments.id::text
-    SQL
-
     TABLES.each do |table, audited_type|
       execute <<~SQL
         UPDATE audits

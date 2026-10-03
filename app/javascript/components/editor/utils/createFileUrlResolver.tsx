@@ -1,8 +1,9 @@
 import AttachmentsApi from "../../../api/AttachmentsApi";
+import {attachmentIdFromHref} from "./attachmentLinks";
 
 export function createFileUrlResolver(showAttachmentPath = AttachmentsApi.show.path) {
   return async (fileUrl: string) => {
-    const attachmentId = fileUrl.match(/^attachment:(\d+)(\.[a-z0-9]+)?$/i)?.[1];
+    const attachmentId = attachmentIdFromHref(fileUrl);
 
     if (attachmentId) {
       return showAttachmentPath({id: attachmentId});
