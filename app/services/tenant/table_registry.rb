@@ -36,6 +36,26 @@ module Tenant
     ].freeze
 
     # The tenant itself.
+    # A tenant's own rows that an archive deliberately leaves out. Distinct from GLOBAL, which
+    # is about rows that are nobody's tenant data; these belong to a tenant and are excluded on
+    # purpose, which is a claim that needs a reason next to it.
+    EXCLUDED = {
+      # The staging area for an import, not its result. The documents an import produced are
+      # exported in their own right, and so are the attachments it created -- by design the
+      # import file and the resulting Attachment *share* one Active Storage blob
+      # (ImportDocumentJob#attach_source_file), so nothing in the archive depends on these rows.
+      #
+      # Leaving them in was also incoherent: the exporter never scoped
+      # record_type = 'ImportFile' in active_storage_attachments, so it archived import_files
+      # rows without the blobs they point at, and a restore would put back a record referring
+      # to a file the archive never held.
+      #
+      # import_sessions.path_map additionally maps source paths to the document ids the import
+      # created, which is one more place embedded ids would have to be rewritten.
+      "import_sessions" => "the staging area for an import, not its result",
+      "import_files" => "the staging area for an import, not its result",
+    }.freeze
+
     ROOT = "organizations".freeze
 
     # Carry organization_id, so a single WHERE selects the tenant's rows.
@@ -45,7 +65,6 @@ module Tenant
       automation_invocations
       automations
       documents
-      import_sessions
       invited_users
       object_comments
       object_reactions
@@ -74,7 +93,6 @@ module Tenant
     DERIVED = {
       "document_editing_sessions" => { foreign_key: "document_id", parent: "documents" },
       "favorites" => { foreign_key: "organization_membership_id", parent: "organization_memberships" },
-      "import_files" => { foreign_key: "import_session_id", parent: "import_sessions" },
       "inline_comment_threads" => { foreign_key: "document_id", parent: "documents" },
       "inline_comments" => { foreign_key: "inline_comment_thread_id", parent: "inline_comment_threads" },
       "oauth_access_grants" => { foreign_key: "organization_membership_id", parent: "organization_memberships" },
@@ -118,7 +136,7 @@ module Tenant
     ].freeze
 
     def self.all_declared
-      (GLOBAL + [ROOT] + DIRECT + DERIVED.keys + POLYMORPHIC + PROJECTED).sort
+      (GLOBAL + EXCLUDED.keys + [ROOT] + DIRECT + DERIVED.keys + POLYMORPHIC + PROJECTED).sort
     end
 
     # Everything that actually ends up in an archive, in no particular order -- the

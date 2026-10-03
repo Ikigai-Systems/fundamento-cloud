@@ -8,6 +8,25 @@ class ImportFile < ApplicationRecord
 
   validates :relative_path, presence: true
 
+  # Drops the uploaded source file, keeping the blob if anything else still points at it.
+  #
+  # An import deliberately hands its blob to the Attachment it creates rather than copying the
+  # bytes (ImportDocumentJob#attach_source_file). So destroying an import file would purge --
+  # has_one_attached defaults to dependent: :purge_later -- and delete the object behind an
+  # imported document's attachment. Production has 2,648 blobs shared exactly that way.
+  def release_source_file!
+    attachment = file.attachment
+    return if attachment.nil?
+
+    blob_id = attachment.blob_id
+    attachment.delete # the join row only; never the object store
+
+    return if ActiveStorage::Attachment.exists?(blob_id: blob_id)
+
+    ActiveStorage::Blob.find_by(id: blob_id)&.purge_later
+  end
+
+
   enum :file_type, { document: 0, attachment: 1 }
 
   enum :status, {
