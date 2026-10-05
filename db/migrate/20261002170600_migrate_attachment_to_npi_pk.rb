@@ -25,9 +25,12 @@
 #     ~1,300 documents is minutes rather than seconds, inside one transaction so a failure leaves
 #     nothing half-rewritten.
 #
-#   * A browser holding an older copy of a document in IndexedDB would merge the old ids back in.
-#     Rotate `database_id` in ar_internal_metadata when deploying this -- that is the namespace
-#     the editor's IndexedDB key is built from, so changing it makes every client load fresh.
+#   * It invalidates every browser's cached documents, by rotating `database_id`. That is not
+#     politeness: the editor persists each document's Yjs state to IndexedDB, Yjs *merges*
+#     rather than replaces, so a client holding the old content would fold the old ids straight
+#     back in and quietly undo this. It happens here rather than in a deploy note because
+#     self-hosted installs run db:prepare on boot and never run a rake task -- a manual step
+#     would simply not happen for them.
 class MigrateAttachmentToNpiPk < ActiveRecord::Migration[8.1]
   class ConversionFailed < StandardError; end
 
@@ -35,8 +38,7 @@ class MigrateAttachmentToNpiPk < ActiveRecord::Migration[8.1]
     mapping = select_rows("SELECT id::text, npi FROM attachments").to_h
     say "rewriting #{mapping.size} attachment id(s) where they are embedded in content"
 
-    rewrite_versions(mapping)
-    rewrite_yjs_documents(mapping)
+    @rewritten = rewrite_versions(mapping) + rewrite_yjs_documents(mapping)
 
     # Polymorphic, already a string column, holding the integer as text.
     execute <<~SQL
@@ -61,6 +63,13 @@ class MigrateAttachmentToNpiPk < ActiveRecord::Migration[8.1]
     remove_column :attachments, :id
     rename_column :attachments, :npi, :id
     execute "ALTER TABLE attachments ADD PRIMARY KEY (id)"
+
+    # Inside the same transaction as the rewrite: a client must never be able to merge the old
+    # ids back over content this migration has changed.
+    if @rewritten.positive?
+      DatabaseId.rotate!(connection)
+      say "rotated database_id, so every browser reloads its cached documents", true
+    end
   end
 
   def down
@@ -87,6 +96,7 @@ class MigrateAttachmentToNpiPk < ActiveRecord::Migration[8.1]
     end
 
     say "rewrote #{rewritten} version(s)", true
+    rewritten
   end
 
   # Live editor state. Decode, rewrite, re-encode, then decode again and require the result to
@@ -120,7 +130,7 @@ class MigrateAttachmentToNpiPk < ActiveRecord::Migration[8.1]
 
     say "rewrote #{rewritten} Yjs document(s)", true
 
-    return if failures.empty?
+    return rewritten if failures.empty?
 
     raise ConversionFailed, <<~MESSAGE
       #{failures.size} document(s) could not be rewritten, so the migration has rolled back and

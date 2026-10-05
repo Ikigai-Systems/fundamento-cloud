@@ -22,9 +22,9 @@ end
 # document-attachment-links.cy.js.
 #
 # Rotating the id is cheaper than clearing IndexedDB from Cypress, and it covers every editor
-# spec rather than the one that happened to notice.
-ActiveRecord::InternalMetadata.new(ActiveRecord::Base.connection_pool)[:database_id] =
-  Nanoid.generate(size: 10)
+# spec rather than the one that happened to notice. Same operation a content rewrite needs --
+# see DatabaseId.rotate!.
+DatabaseId.rotate!(ActiveRecord::Base.connection)
 
 CypressOnRails::SmartFactoryWrapper.reload
 
