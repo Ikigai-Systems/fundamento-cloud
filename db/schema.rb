@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_02_170600) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -44,7 +44,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "api_tokens", force: :cascade do |t|
+  create_table "api_tokens", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "encrypted_token", null: false
     t.string "organization_id"
@@ -57,7 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["organization_membership_id"], name: "index_api_tokens_on_organization_membership_id"
   end
 
-  create_table "attachments", force: :cascade do |t|
+  create_table "attachments", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.binary "data"
     t.string "filename"
@@ -92,7 +92,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["user_id", "user_type"], name: "user_index"
   end
 
-  create_table "automation_invocations", force: :cascade do |t|
+  create_table "automation_invocations", id: :string, force: :cascade do |t|
     t.string "automation_id"
     t.datetime "created_at", null: false
     t.string "formula"
@@ -364,7 +364,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["organization_id"], name: "index_invited_users_on_organization_id"
   end
 
-  create_table "oauth_access_grants", force: :cascade do |t|
+  create_table "oauth_access_grants", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "application_id", null: false
     t.datetime "created_at", null: false
     t.integer "expires_in", null: false
@@ -379,7 +379,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
-  create_table "oauth_access_tokens", force: :cascade do |t|
+  create_table "oauth_access_tokens", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.bigint "application_id", null: false
     t.datetime "created_at", null: false
     t.integer "expires_in"
@@ -410,7 +410,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
-  create_table "object_comments", force: :cascade do |t|
+  create_table "object_comments", id: :string, force: :cascade do |t|
     t.json "content", null: false
     t.datetime "created_at", null: false
     t.string "object_id", null: false
@@ -451,7 +451,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.datetime "created_at", null: false
     t.boolean "current", default: true, null: false
     t.string "organization_id", null: false
-    t.bigint "source_comment_id"
+    t.string "source_comment_id"
     t.string "source_id", null: false
     t.string "source_node_id"
     t.string "source_type", null: false
@@ -521,7 +521,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["id"], name: "index_organizations_on_id", unique: true
   end
 
-  create_table "pack_versions", force: :cascade do |t|
+  create_table "pack_versions", id: :string, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.string "organization_id", null: false
@@ -529,11 +529,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.datetime "updated_at", null: false
     t.integer "version", null: false
     t.index ["organization_id"], name: "index_pack_versions_on_organization_id"
+    t.index ["pack_id", "version"], name: "index_pack_versions_on_pack_id_and_version", unique: true
     t.index ["pack_id"], name: "index_pack_versions_on_pack_id"
   end
 
   create_table "packs", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "active_version_id"
+    t.string "active_version_id"
     t.datetime "created_at", null: false
     t.string "description", default: "", null: false
     t.string "name", null: false
@@ -639,6 +640,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.integer "kind", limit: 2, null: false
     t.string "organization_id", null: false
     t.jsonb "payload", default: {}, null: false
+    t.integer "sequential_id", null: false
     t.string "source", default: "system", null: false
     t.string "table_id", null: false
     t.string "version_id"
@@ -646,6 +648,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_140000) do
     t.index ["organization_id"], name: "index_table_change_events_on_organization_id"
     t.index ["table_id", "created_at"], name: "index_table_change_events_on_table_id_and_created_at"
     t.index ["table_id", "id"], name: "index_table_change_events_on_table_id_and_id"
+    t.index ["table_id", "sequential_id"], name: "index_table_change_events_on_table_id_and_sequential_id", unique: true
     t.index ["table_id", "version_id"], name: "index_table_change_events_on_table_id_and_version_id"
   end
 

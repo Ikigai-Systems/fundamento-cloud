@@ -1,4 +1,6 @@
 class ApiToken < ApplicationRecord
+  include NpiOrdering
+
   belongs_to :organization
   belongs_to :organization_membership
 
