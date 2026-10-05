@@ -18,4 +18,41 @@ RSpec.describe BlocknoteConverterService do
       expect(described_class.yjs_to_blocks(sync)).to eq(blocks)
     end
   end
+
+  # There was no timeout here, and one document that never came back hung a production
+  # migration for over an hour mid-transaction. The converter is replaced with a script that
+  # deliberately never exits, so the test is of the timeout rather than of a slow document.
+  describe "a conversion that never returns" do
+    let(:never_exits) { Rails.root.join("tmp/never_exits.cjs") }
+
+    before do
+      FileUtils.mkdir_p(never_exits.dirname)
+      never_exits.write("process.stdin.resume(); setInterval(() => {}, 1000);\n")
+      stub_const("BlocknoteConverterService::SCRIPT", never_exits.to_s)
+    end
+
+    after { FileUtils.rm_f(never_exits) }
+
+    it "gives up rather than waiting forever" do
+      expect { described_class.yjs_to_blocks("anything", timeout: 2) }
+        .to raise_error(BlocknoteConverterService::ConversionTimeout, /did not finish within 2s/)
+    end
+
+    # A timeout that leaves the process running would leak one per document.
+    it "kills the subprocess it gave up on" do
+      before_count = `pgrep -f never_exits.cjs`.split.size
+
+      expect { described_class.yjs_to_blocks("anything", timeout: 2) }
+        .to raise_error(BlocknoteConverterService::ConversionTimeout)
+
+      sleep 0.5
+      expect(`pgrep -f never_exits.cjs`.split.size).to eq(before_count)
+    end
+
+    # Callers that already rescue ConversionError keep working.
+    it "is a ConversionError" do
+      expect(BlocknoteConverterService::ConversionTimeout.ancestors)
+        .to include(BlocknoteConverterService::ConversionError)
+    end
+  end
 end

@@ -27,7 +27,7 @@ class PublicController < ApplicationController
   end
 
   def attachment
-    @attachment = Attachment.find(params[:id])
+    @attachment = Attachment.resolve!(params[:id])
 
     if @attachment.parent.present? && @attachment.parent.respond_to?(:public_link) && @attachment.parent.public_link.present?
       # Check authorization based on allowed_emails for the public link
