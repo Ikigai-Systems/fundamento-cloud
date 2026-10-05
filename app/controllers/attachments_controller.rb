@@ -4,7 +4,7 @@ class AttachmentsController < ApplicationController
   after_action :verify_authorized
 
   def show
-    @attachment = current_organization.attachments.find(params[:id])
+    @attachment = Attachment.resolve!(params[:id], scope: current_organization.attachments)
 
     authorize @attachment, :show?
 
@@ -45,7 +45,7 @@ class AttachmentsController < ApplicationController
   end
 
   def destroy
-    @attachment = current_organization.attachments.find(params[:id])
+    @attachment = Attachment.resolve!(params[:id], scope: current_organization.attachments)
 
     authorize @attachment, :update?
 

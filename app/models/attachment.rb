@@ -7,6 +7,27 @@ class Attachment < ApplicationRecord
   # Active Storage association for migrating from database storage
   has_one_attached :file
 
+  # True while the stable-identity rewrite is part-way through: npi holds what will become the
+  # primary key, and `id` is still the integer.
+  def self.in_transition? = column_names.include?("npi")
+
+  # Resolves an attachment by whichever identifier the document happens to hold.
+  #
+  # Content and ids cannot flip in one step. The rewrite commits as it goes so that an
+  # interruption can be resumed rather than redone, which means that for its duration one
+  # document may reference the integer id it was written with and the next may reference the
+  # npi. Both have to resolve, or half the documents show broken attachments until the rewrite
+  # finishes.
+  #
+  # Collapses back to a plain lookup once npi has been dropped.
+  def self.resolve!(param, scope: all)
+    return scope.find(param) unless in_transition?
+
+    scope.where(id: param).or(scope.where(npi: param)).first ||
+      raise(ActiveRecord::RecordNotFound, "Couldn't find Attachment with id or npi #{param.inspect}")
+  end
+
+
   # Helper method to check which storage is being used
   def stored_in_active_storage?
     file.attached?
