@@ -25,6 +25,15 @@ amazon:
  region: <%= ENV["AWS_REGION"] %>
  bucket: <%= ENV["S3_BUCKET"] %>
 
+# Tenant export archives. A separate bucket from the application's own storage: these
+# are full copies of a tenant, they are handed to departing customers and kept for months,
+# and the bucket policy denies the task role permission to delete from it -- an
+# application that can erase its own backups does not really have any.
+exports:
+ service: S3
+ region: <%= ENV["AWS_REGION"] %>
+ bucket: <%= ENV["EXPORTS_S3_BUCKET"] %>
+
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS

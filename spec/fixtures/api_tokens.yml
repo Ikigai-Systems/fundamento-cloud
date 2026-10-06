@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+#
+# Ids are given explicitly rather than by association label: api_tokens and
+# organization_memberships both have string primary keys, and a label would be resolved to
+# Rails' hashed integer.
+#
+# encrypted_token is an Active Record encrypted attribute. These values are only here to
+# prove a tenant export redacts the column, never to be decrypted.
+
+_fixture:
+  model_class: ApiToken
+
+is_pawel:
+  id: is_pawel
+  organization_id: "is"
+  organization_membership_id: om_is_pawel
+  title: Ikigai CI token
+  encrypted_token: is-token-ciphertext
+
+hc_pawel:
+  id: hc_pawel
+  organization_id: "hc"
+  organization_membership_id: om_hc_pawel
+  title: HeroCoders CI token
+  encrypted_token: hc-token-ciphertext

@@ -760,6 +760,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_170600) do
     t.index ["shortcut", "organization_id"], name: "index_teams_on_shortcut_and_organization_id", unique: true
   end
 
+  create_table "tenant_exports", id: :string, force: :cascade do |t|
+    t.bigint "byte_size"
+    t.datetime "created_at", null: false
+    t.string "digest"
+    t.text "error"
+    t.datetime "finished_at"
+    t.integer "format_version", null: false
+    t.string "organization_id", null: false
+    t.jsonb "row_counts", default: {}, null: false
+    t.datetime "started_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organization_id", "created_at"], name: "index_tenant_exports_on_organization_id_and_created_at"
+    t.index ["organization_id"], name: "index_tenant_exports_on_organization_id"
+  end
+
   create_table "user_identities", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -900,6 +916,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_170600) do
   add_foreign_key "team_memberships", "organizations"
   add_foreign_key "team_memberships", "teams"
   add_foreign_key "teams", "organizations"
+  add_foreign_key "tenant_exports", "organizations"
   add_foreign_key "user_identities", "users"
   add_foreign_key "versions", "documents"
   add_foreign_key "versions", "users", column: "created_by_id"
