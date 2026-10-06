@@ -79,10 +79,17 @@ module BlocknoteConverterService
           "Converting #{description} did not finish within #{timeout}s; the converter was killed"
       end
 
-      return reader.value if process.value.success?
+      # Both threads are joined before the block ends, whichever way this goes. popen3 closes
+      # the pipes on its way out, and a reader still blocked on a stream it then closes raises
+      # IOError -- which Ruby reports with a backtrace per call. Harmless, but it buried the
+      # migration's own output under three stack traces per document.
+      output = reader.value
+      diagnostics = errors.value
+
+      return output if process.value.success?
 
       raise ConversionError,
-        "Unable to convert #{description}: #{errors.value.to_s.lines.last(5).join.strip}"
+        "Unable to convert #{description}: #{diagnostics.to_s.lines.last(5).join.strip}"
     end
   end
   private_class_method :run

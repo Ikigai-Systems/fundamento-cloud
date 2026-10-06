@@ -62,8 +62,77 @@ function createServerBlockNoteEditor() {
   });
 }
 
+/**
+ * Clamps table cell spans to the table they are in.
+ *
+ * A colspan or rowspan reaching past the last column or row makes @blocknote/core's
+ * blocksToYDoc index a row that is not there, and it throws "Cannot read properties of
+ * undefined (reading '0')" — which takes the whole document with it, not just the table.
+ *
+ * Production has one: a document whose tenth and final row holds a single cell with
+ * colspan 4 / rowspan 5, claiming five rows starting from the last one. It made that document
+ * impossible to convert in either direction, and it is why the attachment id migration could
+ * not finish.
+ *
+ * Whatever wrote it, a span cannot mean anything outside the table, so this clamps rather than
+ * rejects: refusing to convert the document would be the worse answer. Valid tables are
+ * untouched, because a span within bounds clamps to itself.
+ */
+function clampTableSpans(blocks: unknown[]): void {
+  for (const block of blocks) {
+    if (!block || typeof block !== "object") {
+      continue;
+    }
+
+    const node = block as {content?: unknown; children?: unknown};
+    const content = node.content as
+      | {type?: string; columnWidths?: unknown[]; rows?: {cells?: unknown[]}[]}
+      | undefined;
+
+    if (content?.type === "tableContent" && Array.isArray(content.rows)) {
+      const rows = content.rows;
+      const columns = Array.isArray(content.columnWidths)
+        ? content.columnWidths.length
+        : Math.max(...rows.map((row) => (Array.isArray(row?.cells) ? row.cells.length : 0)), 0);
+
+      rows.forEach((row, rowIndex) => {
+        if (!Array.isArray(row?.cells)) {
+          return;
+        }
+
+        let column = 0;
+
+        for (const cell of row.cells) {
+          // Content saved before BlockNote 0.25 stores a cell as its inline content array,
+          // which carries no spans to clamp.
+          const props = (cell as {props?: {colspan?: number; rowspan?: number}})?.props;
+
+          if (!props) {
+            column += 1;
+            continue;
+          }
+
+          const colspan = props.colspan ?? 1;
+          const rowspan = props.rowspan ?? 1;
+
+          props.colspan = Math.max(1, Math.min(colspan, columns - column));
+          props.rowspan = Math.max(1, Math.min(rowspan, rows.length - rowIndex));
+
+          column += props.colspan;
+        }
+      });
+    }
+
+    if (Array.isArray(node.children)) {
+      clampTableSpans(node.children);
+    }
+  }
+}
+
 export function convertToYjs(blocks: Block[]) {
   const serverBlockNoteEditor = createServerBlockNoteEditor();
+
+  clampTableSpans(blocks);
 
   return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
 }
