@@ -1,5 +1,6 @@
-# Integer primary key, matched on (pack_id, version) -- the per-pack counter
-# PackVersion#set_version_number has always assigned, finally declared unique.
+# String primary key since the stable-identity migration -- a pack's bundle is attached through
+# the polymorphic active_storage_attachments.record_id, which an integer id reassigned on restore
+# left dangling. (pack_id, version) is declared unique as well.
 _fixture:
   model_class: PackVersion
 

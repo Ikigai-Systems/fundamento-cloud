@@ -22,16 +22,45 @@ RSpec.describe "tenant archive round trip" do
 
   let(:organization) { organizations(:is) }
 
-  # Columns that cannot survive a round trip by design, and why.
+  # Columns no fixture sets, but a restore has to carry: one a second pass fills in
+  # (RestoreOrder::DEFERRED), and a reference to a version, whose id is reassigned.
+  #
+  # packs.active_version_id is the other DEFERRED column and is deliberately not set: with it,
+  # the organization cannot be destroyed at all. Pack destroys its versions before itself, and
+  # the foreign key from packs to pack_versions refuses. Nothing in the app sets the column
+  # today, so that is latent rather than live.
+  before do
+    spaces(:is_default).update!(home_document: documents(:one))
+    document_editing_sessions(:session_pawel_doc_two).update!(version: versions(:two_version_1))
+  end
+
+  # Columns whose value cannot survive a round trip by design, and why.
   #
   #   id on an integer-keyed table -- dropped on insert so the sequence reassigns it.
-  #   an IdMap::REMAPPED column    -- rewritten to point at whatever the new id turned out to be.
   #   a REDACTED column            -- never in the archive in the first place.
   def volatile_columns(table)
     columns = Tenant::ExportBuilder::REDACTED.fetch(table, []).dup
-    columns += Tenant::IdMap::REMAPPED.filter_map { |t, column, _| column if t == table }
     columns << "id" if integer_keyed?(table)
     columns
+  end
+
+  # An IdMap::REMAPPED column holds a reassigned id, so its *value* changes -- but what it points
+  # at must not. Each is replaced by the row it resolves to within the same archive, so a
+  # reference left holding the archived id compares as dangling instead of being ignored.
+  def resolve_references(reader, table, rows)
+    Tenant::IdMap::REMAPPED.each do |from_table, column, to_table|
+      next unless from_table == table
+
+      targets = reader.each_row(to_table).to_h { |row| [row["id"].to_s, row.except(*volatile_columns(to_table))] }
+
+      rows.each do |row|
+        next if row[column].nil?
+
+        row[column] = targets.fetch(row[column].to_s) { "dangling #{to_table}##{row[column]}" }
+      end
+    end
+
+    rows
   end
 
   def integer_keyed?(table)
@@ -43,7 +72,7 @@ RSpec.describe "tenant archive round trip" do
   def contents(reader)
     reader.tables.to_h do |table|
       volatile = volatile_columns(table)
-      rows = reader.each_row(table).map { |row| row.except(*volatile) }
+      rows = resolve_references(reader, table, reader.each_row(table).map { |row| row.except(*volatile) })
 
       [table, rows.sort_by { |row| row.sort.map { |key, value| "#{key}=#{value.inspect}" }.join("\x1f") }]
     end

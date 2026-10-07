@@ -2,8 +2,8 @@
 # at users. An export built on the wrong column contained zero OAuth records and said nothing,
 # which is why Tenant::TableRegistry::UNCONSTRAINED names this rule.
 #
-# `token` is the only unique key and the export redacts it, so a restore withholds this table
-# rather than putting back a grant nothing can redeem.
+# The export redacts `token`, so a restore withholds this table rather than putting back a grant
+# nothing can redeem.
 _fixture:
   model_class: Doorkeeper::AccessGrant
 
