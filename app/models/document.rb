@@ -34,6 +34,11 @@ class Document < ApplicationRecord
   has_many :object_tags, as: :object, dependent: :delete_all
   has_many :tags, through: :object_tags
   has_many :inline_comment_threads, dependent: :destroy
+  # An import file records which document it produced. Without this the foreign key makes an
+  # imported document undeletable -- ActiveRecord::InvalidForeignKey on destroy, which also
+  # stops TrashPurgeJob ever purging it. Nullified rather than destroyed: the import record is
+  # history, and it stays truthful by saying the document it created is gone.
+  has_many :import_files, dependent: :nullify
   has_many :attachments, as: :parent, dependent: :destroy
   has_many :editing_sessions, class_name: "DocumentEditingSession", dependent: :delete_all
   has_many :source_object_references, class_name: "ObjectReference", as: :source, dependent: :delete_all

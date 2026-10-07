@@ -145,4 +145,28 @@ RSpec.describe Document, type: :model do
       expect(reference.reload).to be_broken
     end
   end
+
+  # import_files.document_id is a foreign key with no cascade, and Document had no inverse
+  # association -- so destroying an imported document raised ActiveRecord::InvalidForeignKey.
+  # Every imported document was undeletable, and TrashPurgeJob could never purge one.
+  describe "a document that came from an import" do
+    fixtures :users, :organization_memberships
+
+    it "can be destroyed, and the import record survives saying so" do
+      document = documents(:one)
+      session = ImportSession.create!(
+        organization: document.organization, space: document.space,
+        organization_membership: organization_memberships(:om_is_pawel),
+        expires_at: 1.day.from_now
+      )
+      import_file = ImportFile.create!(
+        import_session: session, document: document,
+        relative_path: "note.md", file_type: :document, status: :completed
+      )
+
+      expect { document.destroy! }.not_to raise_error
+
+      expect(import_file.reload.document_id).to be_nil
+    end
+  end
 end
