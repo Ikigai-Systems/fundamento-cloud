@@ -22,6 +22,59 @@ namespace :tenant do
     puts "  archive: #{export.archive.filename}"
   end
 
+  namespace :restore do
+    desc "Show what restoring an export would do, without doing any of it (tenant:restore:plan[<export_id>])"
+    task :plan, [:export_id] => :environment do |_task, args|
+      export_id = args[:export_id].presence or
+        abort("usage: rake 'tenant:restore:plan[<export_id>]'\n\nSee `rake tenant:exports` for ids.")
+
+      export = TenantExport.find_by(id: export_id) or abort("no export with id #{export_id.inspect}")
+      abort("export #{export_id} is #{export.status}, not completed") unless export.completed?
+
+      export.archive.open do |file|
+        plan = Tenant::RestorePlanner.new(
+          organization: export.organization,
+          reader: Tenant::ExportReader.new(file),
+        ).call
+
+        puts "restore plan for #{export.organization.name} (#{export.organization.id})"
+        puts "  archive taken: #{export.created_at.utc.iso8601}"
+        puts "  mode:          #{plan.mode}"
+        puts
+
+        if plan.total_to_insert.zero?
+          puts "  nothing to restore -- every archived row is already present."
+        else
+          puts "  would insert:"
+          plan.rows_to_insert.reject { |_, n| n.zero? }.each { |t, n| puts "    #{t}: #{n}" }
+        end
+
+        puts
+        if plan.blocked?
+          puts "  BLOCKED -- #{plan.conflicts.size} unique-index conflict(s). Nothing would be written:"
+          plan.conflicts.first(20).each do |c|
+            puts "    #{c[:table]} (#{c[:columns].join(', ')}) = #{c[:values].join(', ')}"
+            puts "      archived row #{c[:archived_id]} cannot go back; #{c[:existing_id]} holds that key now"
+          end
+          puts "    ... and #{plan.conflicts.size - 20} more" if plan.conflicts.size > 20
+        else
+          puts "  no unique-index conflicts."
+        end
+
+        if plan.unmatchable.any?
+          puts
+          puts "  cannot tell whether these are already present -- restoring twice would"
+          puts "  duplicate them (no unique key, or the only one is redacted):"
+          plan.unmatchable.each { |t| puts "    #{t}: #{plan.rows_to_insert[t]} row(s)" }
+        end
+
+        puts
+        puts "  ids reassigned on insert (integer keys are shared across tenants):"
+        puts "    #{plan.remapped_tables.join(', ')}"
+      end
+    end
+  end
+
   desc "List organizations with the age of their most recent successful export"
   task list: :environment do
     latest = TenantExport.completed.group(:organization_id).maximum(:created_at)
