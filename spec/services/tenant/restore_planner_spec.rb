@@ -121,6 +121,12 @@ RSpec.describe Tenant::RestorePlanner do
     expect(plan).not_to be_blocked
   end
 
+  # Overwrite is not implemented, so asking for it must fail rather than quietly produce an
+  # additive plan under another name.
+  it "refuses a mode it does not implement" do
+    expect { plan(mode: :scoped_overwrite) }.to raise_error(ArgumentError, /unknown mode/)
+  end
+
   it "refuses an archive belonging to a different organization" do
     other = Tenant::ExportBuilder.new(organizations(:hc)).build
 

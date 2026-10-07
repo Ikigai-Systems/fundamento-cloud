@@ -13,7 +13,9 @@ module Tenant
   class RestorePlanner
     class WrongOrganization < StandardError; end
 
-    MODES = %i[additive scoped_overwrite].freeze
+    # Only additive exists. Overwrite was named here before it was built, and accepting a mode
+    # nothing honours would label an additive plan as something it is not.
+    MODES = %i[additive].freeze
 
     Plan = Struct.new(
       :mode, :organization_id, :rows_to_insert, :rows_already_present, :conflicts, :remapped_tables,
