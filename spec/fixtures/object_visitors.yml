@@ -1,0 +1,17 @@
+# No organization_id: the export reaches these through the document or table they record a visit
+# to (TableRegistry::POLYMORPHIC). Integer primary key, matched on (object_id, object_type,
+# user_id). One of each object type, so both routes are exercised.
+_fixture:
+  model_class: ObjectVisitor
+
+pawel_visited_document_one:
+  object_id: one
+  object_type: Document
+  user_id: user_pawel
+  visited_at: <%= 2.days.ago.iso8601 %>
+
+stefan_visited_projects_table:
+  object_id: projects
+  object_type: Table
+  user_id: user_stefan
+  visited_at: <%= 1.day.ago.iso8601 %>

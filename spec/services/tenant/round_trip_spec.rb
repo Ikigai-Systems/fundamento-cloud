@@ -18,7 +18,8 @@ RSpec.describe "tenant archive round trip" do
            :import_sessions, :import_files, :automations, :automation_invocations, :packs,
            :pack_versions, :invited_users, :oauth_applications, :oauth_access_grants,
            :oauth_access_tokens, :active_storage_blobs, :active_storage_attachments,
-           :active_storage_variant_records
+           :active_storage_variant_records, :space_memberships, :object_visitors,
+           :organization_membership_properties
 
   let(:organization) { organizations(:is) }
 
