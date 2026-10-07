@@ -5,8 +5,8 @@ require "rails_helper"
 # silent: an unmapped reference keeps the archived number, which by now may belong to another
 # tenant's row. Nothing raises; a mention simply points at the wrong thing.
 #
-# So the list is checked against the database. Four of its five entries are declared foreign
-# keys and are derived here, which means a new one cannot be missed. The fifth is not declared
+# So the list is checked against the database. Three of its four entries are declared foreign
+# keys and are derived here, which means a new one cannot be missed. The fourth is not declared
 # anywhere, which is the whole reason it has to be written down -- and the reason this spec also
 # checks that the undeclared set has not quietly grown.
 RSpec.describe Tenant::IdMap do

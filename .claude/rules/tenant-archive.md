@@ -18,8 +18,9 @@ one-liner of making an existing `[parent_id, id]` index unique.
 
 `Tenant::RestorePlanner` returns no matcher for a table that has neither, and
 `Tenant::RestoreService` then **skips it and reports it** rather than inserting. No exported
-table is in that position today, and `spec/services/tenant/round_trip_spec.rb` fails if one
-ever is. The guard stays anyway: the failure mode is silent duplication, not an error.
+table is in that position today, and `restore_planner_spec.rb` ("can match every exported
+table") fails if one ever is. The guard stays anyway: the failure mode is silent duplication, not
+an error — and `restore_service_spec.rb` drops a unique index to keep it exercised.
 
 ### What this cost to find out
 
@@ -75,7 +76,8 @@ type changes:
 `Doorkeeper::AccessToken` and `AccessGrant` inherit from `::ActiveRecord::Base`, not this app's
 `ApplicationRecord`, so `generate_id_if_needed` never runs and a string `id` would fail `NOT
 NULL` on every insert — every OAuth sign-in. Their `id` columns therefore keep a
-`gen_random_uuid()` database default, which is the one place that default is deliberate.
+`gen_random_uuid()` database default. Other tables carry the same default by project
+convention, but there the model's nanoid wins; on these two the default is what actually runs.
 Patching the gem's classes is the alternative, and Doorkeeper 5.9.3 deliberately no-ops its own
 `run_hooks` because of a re-entrant `ApplicationRecord` autoload (its comment cites issue
 #1828), so the database is the safer place for it.
@@ -145,6 +147,16 @@ Two of them exist specifically because the database cannot verify the content:
   reassigns its ids, so a retirement cannot be forgotten — it caught both of these.
 
 Adding to either list is meant to require writing down why.
+
+## A restore spec must check where references point, not only that rows came back
+
+Every one of these passed the restore specs at some point while broken: references to a
+re-created version left holding the archived id, the second pass for `spaces.home_document_id`
+never run, integer ids reused instead of reassigned, the unmatchable guard removed. Counting
+rows, or comparing them with the remapped columns stripped out, cannot see any of that. Each
+now has a test that fails when it is broken, and each was checked by breaking it. Anything new
+in `IdMap::REMAPPED` or `RestoreOrder::DEFERRED` needs the same: fixture data that actually
+uses the column, and an assertion on the row it resolves to.
 
 ## Reflection belongs in specs, not production code
 
