@@ -46,4 +46,26 @@ RSpec.describe Pack, type: :model do
     pack.organization = nil
     expect(pack.save).to be_falsey
   end
+
+  # packs.active_version_id is a foreign key into pack_versions, and a pack destroys its versions
+  # before deleting itself -- so with an active version set, the delete was refused and the pack
+  # could not be destroyed, nor could the organization holding it.
+  describe "destroying a pack with an active version" do
+    fixtures :pack_versions
+
+    let(:pack) { packs(:test_pack_1) }
+
+    before { pack.update!(active_version: pack_versions(:is_one_v2)) }
+
+    it "removes the pack and its versions" do
+      pack.destroy!
+
+      expect(Pack.exists?(pack.id)).to be(false)
+      expect(PackVersion.where(pack_id: pack.id)).to be_empty
+    end
+
+    it "does not stop its organization being destroyed" do
+      expect { organizations(:is).destroy! }.not_to raise_error
+    end
+  end
 end
