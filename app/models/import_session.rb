@@ -26,6 +26,25 @@ class ImportSession < ApplicationRecord
       .where("expires_at < ?", Time.current)
   }
 
+  # How long a finished import's uploaded source files are kept.
+  #
+  # They are a staging area, not a result: the documents and attachments an import produced are
+  # first-class records of their own. What the sources are still good for is retrying a failed or
+  # partial import (ImportSessionsController#retry_failed re-runs the orchestrator over them) and
+  # working out why a conversion came out wrong -- both of which have a shelf life. Comparable
+  # importers treat the upload as transient and do not offer it back.
+  #
+  # Thirty days to match the trash window, so "how long until it is really gone" has one answer
+  # across the product.
+  FINISHED_RETENTION = 30.days
+
+  # Imports that ran to a conclusion, long enough ago that nobody is going to retry them.
+  # `expired` covers the other case: uploads abandoned before processing ever started.
+  scope :finished_and_stale, -> {
+    where(status: statuses.values_at("completed", "partial", "failed"))
+      .where("COALESCE(completed_processing_at, created_at) < ?", FINISHED_RETENTION.ago)
+  }
+
   before_create :set_expires_at
 
   def all_files_uploaded?

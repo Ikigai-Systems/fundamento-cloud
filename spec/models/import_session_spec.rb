@@ -108,4 +108,59 @@ RSpec.describe ImportSession, type: :model do
       expect(ImportSession.expired).not_to include(active)
     end
   end
+
+  # An import hands its blob to the Attachment it creates rather than copying the bytes
+  # (ImportDocumentJob#attach_source_file), so the import file and the imported document's
+  # attachment share one blob. Destroying the session must not take the document's file with it.
+  describe "destroying a finished import" do
+    include ActiveJob::TestHelper
+
+    fixtures :documents
+
+    let(:session) { ImportSession.create!(organization: org, space: space, organization_membership: membership, status: :completed) }
+
+    let!(:attachment) do
+      import_file = ImportFile.create!(
+        import_session: session, document: documents(:one), relative_path: "note.docx",
+        file_type: :document, status: :completed
+      )
+      import_file.file.attach(
+        io: StringIO.new("source bytes"), filename: "note.docx",
+        content_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      )
+
+      Attachment.create!(
+        organization: org, parent: documents(:one), filename: "note.docx",
+        mime_type: import_file.file.blob.content_type
+      ).tap { |a| a.file.attach(import_file.file.blob) }
+    end
+
+    def expect_attachment_intact
+      expect(ActiveStorage::Blob.exists?(attachment.file.blob.id)).to be(true)
+      expect(attachment.reload.file.download).to eq("source bytes")
+    end
+
+    it "keeps the imported document's attachment when the session is destroyed" do
+      perform_enqueued_jobs { session.destroy! }
+
+      expect(ImportFile.where(import_session_id: session.id)).to be_empty
+      expect_attachment_intact
+    end
+
+    # The control for the test above: without it, that one would also pass if the purge job
+    # never ran. Active Storage's Blob refuses to be destroyed while any attachment still names
+    # it, so a shared blob survives the purge and only an exclusive one goes.
+    it "still purges a source file nothing else uses" do
+      lonely = ImportFile.create!(
+        import_session: session, relative_path: "other.md", file_type: :document, status: :completed
+      )
+      lonely.file.attach(io: StringIO.new("only here"), filename: "other.md", content_type: "text/markdown")
+      lonely_blob = lonely.file.blob
+
+      perform_enqueued_jobs { session.destroy! }
+
+      expect(ActiveStorage::Blob.exists?(lonely_blob.id)).to be(false)
+      expect_attachment_intact
+    end
+  end
 end
