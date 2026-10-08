@@ -2,3 +2,9 @@ hc_administrators:
   organization_id: "hc"
   name: "Administrators"
   shortcut: "@admins"
+
+# The only team in "is", so a tenant round trip has one to carry.
+is_engineering:
+  organization_id: "is"
+  name: "Engineering"
+  shortcut: "@engineering"

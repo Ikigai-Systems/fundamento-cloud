@@ -1,0 +1,24 @@
+# The export reaches these through the record they hang off -- Attachment, Tables::Version or
+# PackVersion -- so both kinds are covered here.
+#
+# Note the unique index is (record_type, record_id, name, blob_id), and blob_id is reassigned by
+# a restore. That makes it the one declared unique key in the schema whose columns a restore does
+# not all preserve, which is why the round trip asserts restoring twice is a no-op.
+_fixture:
+  model_class: ActiveStorage::Attachment
+
+pack_bundle:
+  id: 9411
+  name: bundle
+  record_type: PackVersion
+  record_id: "9101"
+  blob_id: 9401
+  created_at: <%= 1.hour.ago.iso8601 %>
+
+document_file:
+  id: 9412
+  name: file
+  record_type: Attachment
+  record_id: one
+  blob_id: 9402
+  created_at: <%= 1.hour.ago.iso8601 %>

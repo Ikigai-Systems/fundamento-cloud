@@ -9,3 +9,16 @@ hc_administrators_membership_2:
   team: :hc_administrators
   member_id: om_hc_pawel
   member_type: OrganizationMembership
+
+# Integer primary key, matched on (member_id, member_type, team_id).
+is_engineering_membership_pawel:
+  organization_id: "is"
+  team: :is_engineering
+  member_id: om_is_pawel
+  member_type: OrganizationMembership
+
+is_engineering_membership_stefan:
+  organization_id: "is"
+  team: :is_engineering
+  member_id: om_is_stefan
+  member_type: OrganizationMembership

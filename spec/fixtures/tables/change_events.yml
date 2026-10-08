@@ -1,0 +1,37 @@
+# A table's change log. Integer primary key, matched on the (table_id, sequential_id) counter --
+# so a round trip proves that counter survives an archive, which is the whole reason it exists.
+_fixture:
+  model_class: Tables::ChangeEvent
+
+projects_first_edit:
+  id: 9001
+  organization_id: "is"
+  table_id: "projects"
+  actor_id: user_pawel
+  kind: 0 # cell_updated
+  source: ui
+  sequential_id: 1
+  payload: '<%= {"row_id" => "projects_row_one", "column_id" => "projects_jira", "before" => "JIRA", "after" => "LINEAR"}.to_json %>'
+  created_at: <%= 2.hours.ago.iso8601 %>
+
+projects_second_edit:
+  id: 9002
+  organization_id: "is"
+  table_id: "projects"
+  actor_id: user_pawel
+  kind: 1 # row_inserted
+  source: ui
+  sequential_id: 2
+  payload: '<%= {"row_id" => "projects_row_two"}.to_json %>'
+  created_at: <%= 1.hour.ago.iso8601 %>
+
+# A second table, to prove the counter is per-table rather than global.
+orders_first_edit:
+  id: 9003
+  organization_id: "is"
+  table_id: "orders"
+  kind: 0
+  source: system
+  sequential_id: 1
+  payload: '<%= {}.to_json %>'
+  created_at: <%= 1.hour.ago.iso8601 %>

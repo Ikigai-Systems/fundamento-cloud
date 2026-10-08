@@ -1,0 +1,13 @@
+# Per-membership settings, reached through organization_membership_id. Integer primary key,
+# matched on (key, organization_membership_id).
+#
+# The app's only key today is last_mention_seen_at, which drives the notifications badge, so a
+# fixture with it would change what other specs see. The endpoint stores any key, so this uses
+# one nothing reads.
+_fixture:
+  model_class: OrganizationMembershipProperty
+
+pawel_sidebar_collapsed:
+  organization_membership_id: om_is_pawel
+  key: sidebar_collapsed
+  value: true

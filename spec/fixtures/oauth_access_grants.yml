@@ -1,0 +1,19 @@
+# Reaches the tenant through organization_membership_id -- *not* resource_owner_id, which points
+# at users. An export built on the wrong column contained zero OAuth records and said nothing,
+# which is why Tenant::TableRegistry::UNCONSTRAINED names this rule.
+#
+# The export redacts `token`, so a restore withholds this table rather than putting back a grant
+# nothing can redeem.
+_fixture:
+  model_class: Doorkeeper::AccessGrant
+
+is_pawel:
+  id: grant_is_pawel
+  application_id: 9301
+  organization_membership_id: om_is_pawel
+  resource_owner_id: user_pawel
+  token: is-grant-token
+  expires_in: 600
+  redirect_uri: "https://example.test/callback"
+  scopes: mcp
+  created_at: <%= 10.minutes.ago.iso8601 %>

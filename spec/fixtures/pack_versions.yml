@@ -1,0 +1,19 @@
+# String primary key since the stable-identity migration -- a pack's bundle is attached through
+# the polymorphic active_storage_attachments.record_id, which an integer id reassigned on restore
+# left dangling. (pack_id, version) is declared unique as well.
+_fixture:
+  model_class: PackVersion
+
+is_one_v1:
+  id: 9101
+  organization_id: "is"
+  pack_id: test_pack_1
+  version: 1
+  description: First cut
+
+is_one_v2:
+  id: 9102
+  organization_id: "is"
+  pack_id: test_pack_1
+  version: 2
+  description: Second cut

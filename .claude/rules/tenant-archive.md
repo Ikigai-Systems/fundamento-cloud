@@ -19,7 +19,7 @@ one-liner of making an existing `[parent_id, id]` index unique.
 `Tenant::RestorePlanner` returns no matcher for a table that has neither, and
 `Tenant::RestoreService` then **skips it and reports it** rather than inserting. No exported
 table is in that position today, and `restore_planner_spec.rb` ("can match every exported
-table") fails if one ever is. The guard stays anyway: the failure mode is silent duplication, not
+table") and `round_trip_spec.rb` both fail if one ever is. The guard stays anyway: the failure mode is silent duplication, not
 an error — and `restore_service_spec.rb` drops a unique index to keep it exercised.
 
 ### What this cost to find out
@@ -50,6 +50,15 @@ existed:
   did not, because `object_references.source_comment_id` is an integer reference with **no
   foreign key behind it** — the hazard described under `Tenant::IdMap` below. A string key
   retires the column; a counter would have left it standing.
+
+### Credentials are withheld, whatever their key
+
+Identity was never enough for a credential whose secret the export drops. A restored `api_tokens`
+row without `encrypted_token` fails `NOT NULL`; a restored OAuth grant or token, or an
+`invited_users` row without its `invitation_token`, inserts fine and can never be used — it
+looks like a working credential and is not. So `RestorePlanner` **withholds** every table with
+a column in `ExportBuilder::REDACTED`, reports it in `plan.withheld`, and the operator
+reissues. The round trip asserts the exact withheld list, so growing it is a decision.
 
 **Scoping a restore to a subtree was the planned fix and is no longer needed for this.** It
 would have made the eight safe by narrowing what is in play. Giving them real identities was
@@ -126,7 +135,7 @@ is what the hierarchy renderers already did.
 
 `Tenant::TableRegistry.all_declared`, `TrashPurgeJob::PURGEABLE`,
 `Tenant::RestoreOrder::TABLES`, `Tenant::IdMap::REMAPPED`,
-`Tenant::TableRegistry::UNCONSTRAINED`.
+`Tenant::TableRegistry::UNCONSTRAINED`, `Tenant::TableRegistry::EXCLUDED`.
 
 If any of these drifts the result is silence, not failure: a table missing from every archive,
 trash that never expires, a restore that quietly omits a table. Each has a spec that fails
@@ -147,6 +156,13 @@ Two of them exist specifically because the database cannot verify the content:
   reassigns its ids, so a retirement cannot be forgotten — it caught both of these.
 
 Adding to either list is meant to require writing down why.
+
+`TableRegistry::EXCLUDED` is the third list with a reason per entry: a tenant's own tables that
+an archive leaves out on purpose, as distinct from `GLOBAL`, which is nobody's. Today it holds
+`import_sessions` and `import_files` — the staging area for an import, not its result. The
+documents and attachments an import produced are archived in their own right, and the import
+files' blobs never were, so archiving the rows put back records naming files the archive did
+not hold.
 
 ## A restore spec must check where references point, not only that rows came back
 

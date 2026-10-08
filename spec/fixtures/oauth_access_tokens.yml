@@ -1,0 +1,15 @@
+# See oauth_access_grants.yml. Both `token` and `refresh_token` are redacted, so this table is
+# withheld on restore and the operator is told to reissue.
+_fixture:
+  model_class: Doorkeeper::AccessToken
+
+is_pawel:
+  id: token_is_pawel
+  application_id: 9301
+  organization_membership_id: om_is_pawel
+  resource_owner_id: user_pawel
+  token: is-access-token
+  refresh_token: is-refresh-token
+  expires_in: 7200
+  scopes: mcp
+  created_at: <%= 10.minutes.ago.iso8601 %>
