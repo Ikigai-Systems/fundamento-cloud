@@ -23,15 +23,11 @@ RSpec.describe "tenant archive round trip" do
 
   let(:organization) { organizations(:is) }
 
-  # Columns no fixture sets, but a restore has to carry: one a second pass fills in
+  # Columns no fixture sets, but a restore has to carry: the two a second pass fills in
   # (RestoreOrder::DEFERRED), and a reference to a version, whose id is reassigned.
-  #
-  # packs.active_version_id is the other DEFERRED column and is deliberately not set: with it,
-  # the organization cannot be destroyed at all. Pack destroys its versions before itself, and
-  # the foreign key from packs to pack_versions refuses. Nothing in the app sets the column
-  # today, so that is latent rather than live.
   before do
     spaces(:is_default).update!(home_document: documents(:one))
+    packs(:test_pack_1).update!(active_version: pack_versions(:is_one_v2))
     document_editing_sessions(:session_pawel_doc_two).update!(version: versions(:two_version_1))
   end
 
