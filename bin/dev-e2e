@@ -94,8 +94,9 @@ class DevE2E < Thor
   end
 
   desc "test", "Run Cypress tests (assumes environment already running)"
+  option :device, type: :string, default: "desktop", desc: "Device profile: desktop, phone or tablet (spec/e2e/cypress/support/devices.cjs)"
   def test
-    run_cypress
+    run_cypress(device: options[:device])
   end
 
   private
@@ -258,8 +259,8 @@ class DevE2E < Thor
     system("stty echo 2>/dev/null || true")
   end
 
-  def run_cypress
-    system("npx", "cypress", "run", "--project", "spec/e2e")
+  def run_cypress(device: "desktop")
+    system("npx", "cypress", "run", "--project", "spec/e2e", "--expose", "device=#{device}")
     exit($?.exitstatus || 1)
   end
 
@@ -275,6 +276,7 @@ class DevE2E < Thor
   def print_hints
     puts "Quick commands:"
     puts "  Run tests:  bin/dev-e2e test"
+    puts "  As a phone: bin/dev-e2e test --device phone"
     puts "  Open UI:    npx cypress open --project spec/e2e"
     puts "  Logs:       bin/dev-e2e logs"
     puts "  Console:    bin/dev-e2e console"
