@@ -207,8 +207,11 @@ Options: `ignore: [selectors]` for known issues with a follow-up,
   | expired form token shows a message | fails: nothing is shown | Phase 1.1 |
 
 **CI.**
-- `run-e2e-tests.yaml` runs the `devices/` specs as a phone after the desktop suite, against
-  the same environment, which adds about a minute.
+- `run-e2e-tests.yaml` is a matrix over devices: a `desktop` leg runs the whole suite and
+  a `phone` leg runs the `devices/` specs, each on its own runner and environment, in
+  parallel. Wall-clock time doesn't grow. Only the desktop leg writes the build cache.
+- Adding a leg (a `tablet`, or the whole suite as a phone nightly) is one more matrix
+  entry.
 - They publish as a separate check, "Cypress Phone Test Results".
 - That check is **report-only** (`fail_on_failure: false`) while the failures above are
   expected. Flip it once Phase 1 lands.
