@@ -17,6 +17,9 @@
 // import 'cypress-on-rails/support/index'
 import './commands'
 import './on-rails'
+import './device'
+import './page-health'
+import 'cypress-real-events'
 
 Cypress.on('uncaught:exception', (err, runnable, promise) => {
   // when the exception originated from an unhandled promise

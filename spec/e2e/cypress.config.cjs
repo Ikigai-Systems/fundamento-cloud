@@ -1,5 +1,6 @@
 const { defineConfig } = require('cypress')
 const os = require('os')
+const { DEVICES } = require('./cypress/support/devices.cjs')
 
 module.exports = defineConfig({
   viewportWidth: 1280,
@@ -16,7 +17,31 @@ module.exports = defineConfig({
     defaultCommandTimeout: 10000,
     supportFile: "cypress/support/index.js",
     excludeSpecPattern: "**/rails_examples/**/*",
-    setupNodeEvents(on) {
+    setupNodeEvents(on, config) {
+      // `--expose device=phone` runs the suite as a touch device. The viewport and user agent
+      // have to be set here, before the browser launches; touch itself is switched on per
+      // test in support/device.js.
+      config.expose = config.expose || {}
+      const deviceName = config.expose.device || "desktop"
+      const device = DEVICES[deviceName]
+      if (!device) {
+        throw new Error(`Unknown device "${deviceName}". Known: ${Object.keys(DEVICES).join(", ")}`)
+      }
+      config.viewportWidth = device.viewport.width
+      config.viewportHeight = device.viewport.height
+      if (device.userAgent) config.userAgent = device.userAgent
+      config.expose.device = deviceName
+      config.expose.touch = device.touch
+      config.screenshotsFolder = `${config.screenshotsFolder}/${deviceName}`
+      // CI publishes each device as its own check, matched by file name, so a phone run must
+      // not write into the desktop report's `cypress-results-*.xml` pattern.
+      if (deviceName !== "desktop") {
+        config.reporterOptions = {
+          ...config.reporterOptions,
+          mochaFile: `../../tmp/cypress-${deviceName}-results-[hash].xml`,
+        }
+      }
+
       // Linux/Wayland: force XWayland mode to avoid rendering artifacts
       if (os.platform() === "linux") {
         on("before:browser:launch", (browser, launchOptions) => {
@@ -26,6 +51,8 @@ module.exports = defineConfig({
           return launchOptions
         })
       }
+
+      return config
     },
   },
   // JUnit reporter configuration for GitHub Actions integration
