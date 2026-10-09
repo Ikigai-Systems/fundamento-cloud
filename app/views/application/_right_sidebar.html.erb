@@ -8,11 +8,15 @@
 %>
 
 <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
-     data-controller="cookie-controlled-toggle"
-     data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
-     data-cookie-controlled-toggle-target="toggleable"
+     data-controller="sidebar"
+     data-sidebar-cookie-key-value="ikigai_userPreferences_contentSideBarExpanded"
+     data-sidebar-target="toggleable"
      data-toggle-class="collapsed"
-     data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
+     data-sidebar-open-value="<%= !is_collapsed %>"
+     data-action="sidebar-drawer:toggle@window->sidebar#toggleDrawer keydown.esc@window->sidebar#closeDrawer turbo:frame-load@document->sidebar#closeDrawerAfterNavigation turbo:before-cache@document->sidebar#closeDrawer">
+
+  <%# Below lg the sidebar is a drawer over the content; this dims the content and closes it %>
+  <div class="sidebar-backdrop" data-action="click->sidebar#closeDrawer" aria-hidden="true"></div>
 
   <%# Spacer creates layout space on desktop grid %>
   <div class="sidebar-spacer"></div>
@@ -25,7 +29,7 @@
       <div class="sidebar-trigger-area right-side"
            data-controller="hotkey popover"
            data-hotkey="]"
-           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+           data-action="click->sidebar#toggle mouseenter->popover#show mouseleave->popover#hide">
 
         <div class="sidebar-trigger-button right-side">
           <span class="icon-[heroicons--chevron-right-16-solid] size-4 block group-[.collapsed]/collapser:hidden"></span>

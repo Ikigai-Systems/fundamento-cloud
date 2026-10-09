@@ -1,0 +1,17 @@
+<%#
+  Opens a sidebar as a drawer on screens narrower than lg, where it no longer fits beside the
+  content. Wider screens collapse the sidebars from their edge instead, so the button hides there.
+
+  Locals: controls (the sidebar's id), label, icon (a literal icon class, so Tailwind sees it),
+  and optional extra classes.
+%>
+<button type="button"
+        class="document-toolbar-button lg:hidden <%= local_assigns[:class] %>"
+        data-controller="sidebar-drawer-button"
+        data-action="sidebar-drawer-button#toggle"
+        aria-controls="<%= controls %>"
+        aria-expanded="false"
+        aria-label="<%= label %>"
+        title="<%= label %>">
+  <span class="<%= icon %> size-5" aria-hidden="true"></span>
+</button>

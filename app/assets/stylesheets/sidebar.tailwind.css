@@ -15,22 +15,46 @@
         @apply lg:relative;
     }
 
-    /* Sidebar: fixed on mobile (overlay), absolute on desktop (within grid cell) */
+    /*
+     * Sidebar: absolute on desktop (within its grid cell), collapsing from its edge.
+     *
+     * Below lg it is a drawer: fixed over the content, off-canvas and invisible until the
+     * container gets `drawer-open` (sidebar_controller.js). Being closed without any class means
+     * a page never renders with drawers covering it, whatever the desktop cookie says.
+     * `visibility` keeps a closed drawer out of the tab order; transitioning it flips it at the
+     * end of the slide-out and the start of the slide-in.
+     */
     .sidebar {
         @apply inset-y-0 w-[300px] z-10;
-        @apply max-lg:fixed lg:absolute;
-        @apply transition-transform duration-[350ms] ease-in-out;
+        @apply max-lg:fixed max-lg:z-40 lg:absolute;
+        @apply transition-[transform,visibility] duration-[350ms] ease-in-out;
         @apply flex flex-col;
+        @apply max-lg:invisible;
 
         &.left-side {
             @apply left-0;
-            @apply group-[.collapsed]/collapser:-translate-x-full;
+            @apply max-lg:-translate-x-full lg:group-[.collapsed]/collapser:-translate-x-full;
         }
 
         &.right-side {
             @apply right-0;
-            @apply group-[.collapsed]/collapser:translate-x-full;
+            @apply max-lg:translate-x-full lg:group-[.collapsed]/collapser:translate-x-full;
         }
+    }
+
+    .drawer-open .sidebar.left-side,
+    .drawer-open .sidebar.right-side {
+        @apply max-lg:visible max-lg:translate-x-0;
+    }
+
+    /* Dims the content behind an open drawer; tapping it closes the drawer */
+    .sidebar-backdrop {
+        @apply fixed inset-0 z-30 bg-black/40 lg:hidden;
+        @apply opacity-0 pointer-events-none transition-opacity duration-[350ms];
+    }
+
+    .drawer-open .sidebar-backdrop {
+        @apply opacity-100 pointer-events-auto;
     }
 
     /* The visible panel with background and content */
@@ -49,10 +73,12 @@
         }
     }
 
-    /* Invisible clickable trigger area on panel edge */
+    /* Invisible clickable trigger area on panel edge. Drawers open from the top bar instead. */
     .sidebar-trigger-area {
         @apply absolute inset-y-0 w-7 cursor-pointer;
         @apply flex items-center justify-center;
+        /* After `flex`, which would otherwise win as the later display rule */
+        @apply max-lg:hidden;
 
         &.left-side {
             @apply -right-7;
@@ -76,12 +102,13 @@
         @apply rounded-l-xl;
     }
 
+    /* Desktop only: a drawer keeps its rounded edge whatever the desktop state */
     .collapsed .sidebar-panel.left-side {
-        @apply rounded-r-none;
+        @apply lg:rounded-r-none;
     }
 
     .collapsed .sidebar-panel.right-side {
-        @apply rounded-l-none;
+        @apply lg:rounded-l-none;
     }
 
     .collapsed .sidebar-trigger-button.left-side {
@@ -110,6 +137,13 @@
 
     .sidebar-trigger-area:hover .sidebar-trigger-button {
         @apply opacity-100;
+    }
+
+    /* A touch screen can't hover to find the toggle, so it is always shown there */
+    @media (hover: none) {
+        .sidebar-trigger-button {
+            @apply opacity-100;
+        }
     }
 
     .collapsed .sidebar-trigger-button {
