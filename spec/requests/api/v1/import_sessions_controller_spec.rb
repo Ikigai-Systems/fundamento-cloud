@@ -59,6 +59,23 @@ RSpec.describe "Api::V1::ImportSessions", type: :request do
     end
   end
 
+  describe "GET /api/v1/import_sessions/:id of another member's import" do
+    it "is forbidden, because it lists the files of a space the reader may not see" do
+      maria = organization_memberships(:om_hc_maria)
+      token = ApiToken.create!(organization: organizations(:hc), organization_membership: maria, title: "Maria")
+      session = ImportSession.create!(
+        organization: organizations(:hc),
+        space: spaces(:hc_pawels),
+        organization_membership: organization_memberships(:om_hc_pawel)
+      )
+
+      get api_v1_import_session_path(session), headers: { "Authorization" => "Bearer #{token.encrypted_token}" }
+
+      expect(response).to have_http_status(:forbidden)
+      expect(response.body).not_to include("relative_path")
+    end
+  end
+
   describe "DELETE /api/v1/import_sessions/:id" do
     it "destroys the session" do
       session = ImportSession.create!(
