@@ -47,7 +47,61 @@ describe("Touch device smoke", function () {
       })
     })
 
-    it("shows no shortcut tooltip after tapping a sidebar toggle", () => {
+    it("opens the navigation from the top bar and closes it from the backdrop", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false").realTouch()
+      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "true")
+      cy.get("#space-sidebar").should(($sidebar) => {
+        expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
+      })
+      cy.get("#space-sidebar li[data-node-id='two']").should("be.visible")
+      // The desktop edge toggle belongs to the side-by-side layout, not to a drawer
+      cy.get("#space-sidebar .sidebar-trigger-area").should("not.be.visible")
+      cy.checkPageHealth()
+
+      // Tap the backdrop to the right of the drawer, where the document is dimmed
+      cy.get(".drawer-open .sidebar-backdrop").realTouch({ position: "right" })
+      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false")
+      cy.get("#space-sidebar").should("not.be.visible")
+    })
+
+    it("closes the navigation after opening a document from it", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      cy.get("button[aria-controls='space-sidebar']").realTouch()
+      // A real tap lands at fixed coordinates, so wait for the drawer to finish sliding in
+      cy.get("#space-sidebar").should(($sidebar) => {
+        expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
+      })
+      cy.get("#space-sidebar li[data-node-id='two'] a.content-link span.truncate").first().realTouch()
+
+      cy.url().should("include", "/d/two")
+      cy.get("#space-sidebar").should("not.be.visible")
+    })
+
+    it("opens the document details, and one drawer at a time", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      cy.get("button[aria-controls='space-sidebar']").realTouch()
+      cy.get("#space-sidebar").should("be.visible")
+
+      // The backdrop covers the top bar too, so the details button is reached with Escape first
+      cy.realPress("Escape")
+      cy.get("#space-sidebar").should("not.be.visible")
+
+      cy.get("button[aria-controls='content-sidebar']").realTouch()
+      cy.get("#content-sidebar").should("be.visible")
+      cy.get("#space-sidebar").should("not.be.visible")
+    })
+
+    // The edge toggles exist only where the sidebars sit beside the content (1024px and wider);
+    // narrower screens use the top bar buttons above. Runs on a landscape tablet.
+    it("shows no shortcut tooltip after tapping a sidebar toggle", function () {
+      if (Cypress.config("viewportWidth") < 1024) this.skip()
       cy.visit("/d/one")
       cy.get("[data-document-editor] [role='textbox']").should("exist")
       // The right sidebar's toggle, because while both are open the right panel covers the left one's
