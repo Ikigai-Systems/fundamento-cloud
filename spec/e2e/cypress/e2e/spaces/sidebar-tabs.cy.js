@@ -58,7 +58,8 @@ describe("Space sidebar tabs", function () {
 
     cy.get("#space-sidebar #hierarchy").should("not.contain.text", "Hierarchy");
 
-    cy.get("#space-sidebar #starred [data-controller='popover']").trigger("mouseenter");
+    // A real mouse: the tooltip answers pointer events, and only from a mouse
+    cy.get("#space-sidebar #starred [data-controller='tooltip']").realHover();
 
     cy.get("#space-sidebar .popover-tooltip-card").should("contain", "Starred");
 

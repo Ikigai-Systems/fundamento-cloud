@@ -4,6 +4,7 @@ import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Tabs, Toggle}
 import SidebarController from "./sidebar_controller.js";
 import SidebarDrawerButtonController from "./sidebar_drawer_button_controller.js";
 import Popover from "@stimulus-components/popover";
+import TooltipController from "./tooltip_controller.js";
 import ReactLoader from "./react_loader_controller"
 import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
@@ -59,6 +60,7 @@ class FixedPopover extends Popover {
 }
 
 application.register('popover', FixedPopover);
+application.register("tooltip", TooltipController);
 
 application.register('auto-submit', AutoSubmit);
 
