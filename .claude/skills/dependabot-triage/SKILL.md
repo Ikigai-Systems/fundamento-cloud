@@ -18,6 +18,12 @@ gh pr list --author "app/dependabot" --state open --limit 50 \
   --json number,title,createdAt,mergeStateStatus \
   --template '{{range .}}{{.number}}	{{.createdAt}}	{{.mergeStateStatus}}	{{.title}}{{"\n"}}{{end}}'
 
+# 1b. What each PR actually bumps -- group PRs hide 5-10 packages behind one title.
+#     This is where overlaps between PRs and risky packages (tiptap, BlockNote) show up.
+for n in $(gh pr list --author "app/dependabot" --state open --json number --jq '.[].number'); do
+  echo "=== #$n"; gh pr view $n --json body --jq '.body' | grep -E '^Updates `'
+done
+
 # 2. Per PR, see which checks are red
 gh pr checks <N>
 
@@ -133,12 +139,44 @@ gh pr merge <N> --squash
 merges immediately with checks still pending. Merge explicitly, one at a time, and
 re-check the next PR after each merge.
 
+#### Merge order: one PR per lockfile, then rebase the rest
+
+PRs that touch the same lockfile conflict the moment one of them merges. A green batch is
+therefore never "merge them all": group the PRs by lockfile (root `package-lock.json`,
+the converter's `package-lock.json`, `Gemfile.lock`, workflows) and:
+
+1. Merge the largest PR in each group first. PRs in *different* groups touch disjoint
+   files and can be merged back to back.
+2. Post `@dependabot rebase` on every PR left behind.
+3. Wait for each one to resolve as one of two outcomes:
+   - **The PR was closed.** Dependabot closes a PR it decides is no longer needed (for
+     example, an earlier group PR's lockfile already moved the package) and says why in
+     a comment. Read the comment and move on.
+   - **The head SHA changed.** Only then run `gh pr checks <N> --watch`, which blocks
+     until that commit's checks finish. Checking earlier reads the *old* commit's run,
+     and `mergeable` can report true before the rebase lands.
+
+   ```bash
+   old=$(gh pr view <N> --json headRefOid --jq .headRefOid)
+   until [ "$(gh pr view <N> --json state --jq .state)" != OPEN ] ||
+         [ "$(gh pr view <N> --json headRefOid --jq .headRefOid)" != "$old" ]; do sleep 20; done
+   gh pr checks <N> --watch
+   ```
+4. Merge once green on the new base, and repeat for the next PR in that group.
+
 ### Bucket B — recombine a split pair
 
 Dependabot's groups in `.github/dependabot.yml` exist to prevent this, but they do not
 always hold: in Sept 2026 it split vitest 5 into #181 (`vitest`) and #186 (`@vitest/ui`)
 despite both matching the converter's `vitest` group. `@vitest/ui` peers an **exact**
 `vitest` version, so each PR alone fails `npm ci`.
+
+**Overlap is not the same as breakage — check the lockfile first.** In the Oct 2026
+sweep, #253 (converter group, `@vitest/ui` 5.0.3) and #252 (`vitest` 5.0.3) split the
+same pair, yet both were green: the `^5.0.2` range let #253's lockfile move `vitest` to
+5.0.3 too. When `gh pr diff <N>` shows the peer already moved in the lockfile, it is
+bucket A. Merge the group PR, and Dependabot closes the redundant one after a rebase.
+Recombine only when the split actually fails `npm ci`.
 
 Do not try to patch one bot branch onto the other. Open one replacement PR:
 
