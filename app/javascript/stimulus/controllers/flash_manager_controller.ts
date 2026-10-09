@@ -64,8 +64,9 @@ export default class extends Controller<HTMLElement> {
         type = "alert"
       }
     }
-    // Map duration to milliseconds
-    const durationMs = options.duration === "short" ? 3000 : undefined
+    // Notices are confirmations and close themselves; alerts and errors wait for the user.
+    // A notice that never closed sat over the content on a phone until hit with the small ×.
+    const durationMs = options.duration === "short" ? 3000 : type === "notice" ? 6000 : undefined
     const autoDismissAttr = durationMs
       ? `data-alert-dismiss-after-value="${durationMs}"`
       : ""
@@ -78,14 +79,14 @@ export default class extends Controller<HTMLElement> {
     const html = `
       <div data-controller="alert"
            ${autoDismissAttr}
-           data-transition-enter="transition-position ease-in-out duration-500"
-           data-transition-enter-from="left-96"
-           data-transition-enter-to="-left-8"
-           data-transition-leave="transition-position ease-in-out duration-500"
-           data-transition-leave-from="-left-8"
-           data-transition-leave-to="left-96"
-           class="w-full flex items-end justify-right [&:nth-child(n+2)]:mt-2 first:mt-10 justify-end z-50 pointer-events-none relative left-96">
-        <div class="max-w-sm w-full relative pointer-events-auto flash-${type}-container border-t-4 rounded-b px-4 py-3 shadow-md">
+           data-transition-enter="transition ease-out duration-300"
+           data-transition-enter-from="opacity-0 -translate-y-2"
+           data-transition-enter-to="opacity-100 translate-y-0"
+           data-transition-leave="transition ease-in duration-200"
+           data-transition-leave-from="opacity-100 translate-y-0"
+           data-transition-leave-to="opacity-0 -translate-y-2"
+           class="w-full max-w-sm opacity-0 -translate-y-2">
+        <div class="relative pointer-events-auto flash-${type}-container border-t-4 rounded-b px-4 py-3 shadow-md">
           <div class="flex items-start">
             <div class="py-1">
               <svg class="fill-current h-6 w-6 flash-${type}-icon mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -97,7 +98,7 @@ export default class extends Controller<HTMLElement> {
               <p class="text-sm">${this.escapeHtml(options.message)}</p>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
-              <button data-action="alert#close" class="inline-flex flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">
+              <button data-action="alert#close" class="inline-flex p-1 -m-1 flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">
                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>

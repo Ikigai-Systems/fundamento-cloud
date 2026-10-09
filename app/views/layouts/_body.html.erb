@@ -73,9 +73,10 @@
     </div>
   </dialog>
 
+  <%# Below the 60px top bar; full width less a margin on phones, a right-hand column from sm up %>
   <div id="flashes"
        data-controller="flash-manager"
-       class="fixed top-0 w-full flex flex-col items-end pointer-events-none z-50">
+       class="fixed inset-x-0 top-16 px-4 sm:px-8 flex flex-col items-center sm:items-end gap-2 pointer-events-none z-50">
     <%= render partial: "flash_messages_as_alerts" %>
   </div>
 
