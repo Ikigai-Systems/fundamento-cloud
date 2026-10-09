@@ -28,6 +28,16 @@ class Attachment < ApplicationRecord
   end
 
 
+  # Where to send a browser for this attachment's file, named after the attachment rather than
+  # its blob. One blob can back several attachments: an import shares its upload's blob with the
+  # Attachment it creates, and a blob reused by content keeps the name it was first uploaded
+  # under, so naming the download after the blob could show one member another's filename.
+  #
+  # Active Storage still forces `attachment` disposition for types unsafe to render inline.
+  def download_url(disposition: "inline")
+    file.blob.url(disposition: disposition, filename: filename.presence || file.filename)
+  end
+
   # Helper method to check which storage is being used
   def stored_in_active_storage?
     file.attached?

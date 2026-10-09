@@ -10,7 +10,7 @@ class AttachmentsController < ApplicationController
 
     # Dual-read: Read from Active Storage if available, fallback to database
     if @attachment.file.attached?
-      redirect_to rails_blob_path(@attachment.file, disposition: "inline"), allow_other_host: true
+      redirect_to @attachment.download_url, allow_other_host: true
     else
       send_data @attachment.data, type: @attachment.mime_type, disposition: "inline"
     end

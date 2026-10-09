@@ -1,6 +1,15 @@
 require "rails_helper"
 
 RSpec.describe PublicController, type: :request do
+  # Follows redirects to the stored file, as a browser would.
+  def follow_download
+    3.times do
+      break unless response.redirect?
+
+      get response.location
+    end
+  end
+
   fixtures :organizations, :spaces, :users, :organization_memberships, :documents, :versions, :public_links
 
   let(:pawel) { users(:pawel) }
@@ -186,6 +195,22 @@ RSpec.describe PublicController, type: :request do
               expect(response).to have_http_status(:forbidden)
             end
           end
+        end
+      end
+
+      context "when the attachment's file is in Active Storage" do
+        it "names the download after the attachment, not the blob" do
+          public_link
+          stored = Attachment.create!(organization: organization, parent: document, filename: "notes.txt", mime_type: "text/plain")
+          stored.file.attach(io: StringIO.new("shared bytes"), filename: "layoffs-2026.txt", content_type: "text/plain")
+
+          get "/public/attachments/#{stored.id}"
+          expect(response).to have_http_status(:redirect)
+          follow_download
+
+          expect(response.body).to eq("shared bytes")
+          expect(response.headers["Content-Disposition"]).to include("notes.txt")
+          expect(response.headers["Content-Disposition"]).not_to include("layoffs")
         end
       end
 
