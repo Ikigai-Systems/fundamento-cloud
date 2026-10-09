@@ -3,6 +3,7 @@ import {Application} from "@hotwired/stimulus"
 import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Tabs, Toggle} from "tailwindcss-stimulus-components"
 import CookieControlledToggle from "./cookie_controlled_toogle.js";
 import Popover from "@stimulus-components/popover";
+import TooltipController from "./tooltip_controller.js";
 import ReactLoader from "./react_loader_controller"
 import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
@@ -57,6 +58,7 @@ class FixedPopover extends Popover {
 }
 
 application.register('popover', FixedPopover);
+application.register("tooltip", TooltipController);
 
 application.register('auto-submit', AutoSubmit);
 

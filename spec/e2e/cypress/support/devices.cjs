@@ -14,6 +14,9 @@ const DEVICES = {
   desktop: { viewport: { width: 1280, height: 720 }, touch: false },
   phone: { viewport: { width: 390, height: 844 }, touch: true, userAgent: ANDROID_PHONE_UA },
   tablet: { viewport: { width: 820, height: 1180 }, touch: true, userAgent: ANDROID_TABLET_UA },
+  // Wide enough (1024px and up) for the desktop layout, but driven by touch: where hover-only
+  // controls built for a mouse meet a finger.
+  "tablet-landscape": { viewport: { width: 1180, height: 820 }, touch: true, userAgent: ANDROID_TABLET_UA },
 }
 
 module.exports = { DEVICES }

@@ -1,10 +1,10 @@
 class Object::SidebarTabIcon < ViewComponent::Base
   erb_template <<-ERB
-    <div data-controller="popover" class="relative" data-action="mouseenter->popover#show mouseleave->popover#hide" aria-label="<%= @label %>">
+    <div data-controller="tooltip" class="relative" data-action="pointerenter->tooltip#show pointerleave->tooltip#hide focusin->tooltip#show focusout->tooltip#hide" aria-label="<%= @label %>">
       <%= content %>
 
-      <template data-popover-target="content">
-        <div class="popover-tooltip-card m-1" data-popover-target="card">
+      <template data-tooltip-target="content">
+        <div class="popover-tooltip-card m-1" data-tooltip-target="card">
           <p><%= @tooltip || @label %></p>
         </div>
       </template>

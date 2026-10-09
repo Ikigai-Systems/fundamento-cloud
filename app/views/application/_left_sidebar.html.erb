@@ -26,9 +26,9 @@
 
       <%# Full-height trigger area on panel edge %>
       <div class="sidebar-trigger-area left-side"
-           data-controller="hotkey popover"
+           data-controller="hotkey tooltip"
            data-hotkey="["
-           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+           data-action="click->cookie-controlled-toggle#toggle pointerenter->tooltip#show pointerleave->tooltip#hide focusin->tooltip#show focusout->tooltip#hide">
 
         <%# Visual button indicator %>
         <div class="sidebar-trigger-button left-side">
@@ -36,8 +36,8 @@
           <span class="icon-[heroicons--chevron-right-16-solid] size-4 hidden group-[.collapsed]/collapser:block"></span>
         </div>
 
-        <template data-popover-target="content">
-          <div data-popover-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center left-5 group-[.collapsed]/collapser:left-14 top-1/2 -translate-y-1/2">
+        <template data-tooltip-target="content">
+          <div data-tooltip-target="card" class="popover-tooltip-card w-24 flex flex-row items-center justify-center left-5 group-[.collapsed]/collapser:left-14 top-1/2 -translate-y-1/2">
             <p class="block group-[.collapsed]/collapser:hidden">Collapse <code>[</code></p>
             <p class="hidden group-[.collapsed]/collapser:block">Expand <code>[</code></p>
           </div>
