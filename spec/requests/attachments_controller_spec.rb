@@ -1,6 +1,15 @@
 require "rails_helper"
 
 RSpec.describe AttachmentsController, type: :request do
+  # Follows redirects to the stored file, as a browser would.
+  def follow_download
+    3.times do
+      break unless response.redirect?
+
+      get response.location
+    end
+  end
+
   fixtures :organizations, :spaces, :users, :organization_memberships, :documents
 
   let(:organization) { organizations(:is) }
@@ -71,20 +80,34 @@ RSpec.describe AttachmentsController, type: :request do
         att
       end
 
-      it "redirects to Active Storage blob URL" do
+      it "redirects to the stored file" do
         get attachment_path(attachment)
-
         expect(response).to have_http_status(:redirect)
-        expect(response.location).to include("rails/active_storage/blobs")
+        follow_download
+        expect(response.body).to eq("Hello from Active Storage")
+      end
+
+      # One blob can back several attachments: an import shares its upload's blob with the
+      # Attachment it creates, and a blob reused by content keeps the name of whoever uploaded
+      # it first. The download must carry this attachment's own name, not the blob's.
+      it "names the download after the attachment, not the blob" do
+        attachment.file.blob.update!(filename: "layoffs-2026.txt")
+        attachment.update!(filename: "notes.txt")
+
+        get attachment_path(attachment)
+        follow_download
+
+        expect(response.headers["Content-Disposition"]).to include("notes.txt")
+        expect(response.headers["Content-Disposition"]).not_to include("layoffs")
       end
 
       it "prioritizes Active Storage over database (dual-read)" do
-        # This attachment has Active Storage file (will be read from there)
-        get attachment_path(attachment)
+        attachment.update_column(:data, "stale database copy")
 
-        expect(response).to have_http_status(:redirect)
-        expect(response.location).to include("rails/active_storage/blobs")
-        # Should not use send_data for database content
+        get attachment_path(attachment)
+        follow_download
+
+        expect(response.body).to eq("Hello from Active Storage")
       end
     end
 
