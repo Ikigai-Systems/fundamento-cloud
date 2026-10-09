@@ -31,19 +31,20 @@ module ImportSessionActions
     file_entries = Array(params[:files])
 
     # Pre-fetch to avoid N+1: one query for existing files in this session, one for
-    # files already completed in previous sessions for the same space, keyed by
-    # [relative_path, checksum] with the newest such file winning.
+    # documents already imported unchanged into this space, and one for stored files the
+    # importer could already open.
     existing_files = session.import_files.index_by(&:relative_path)
-    completed_elsewhere = ImportFile
+    unchanged_documents = ImportFile
       .joins(:import_session)
       .where(import_sessions: { space_id: session.space_id }, status: ImportFile.statuses[:completed])
       .where.not(import_session_id: session.id)
-      .order(:created_at)
-      .pluck(:relative_path, :checksum, :id)
-      .to_h { |path, checksum, id| [[path, checksum], id] }
+      .document
+      .pluck(:relative_path, :checksum)
+      .to_set
+    stored_blobs = readable_blobs_matching(file_entries)
 
     results = file_entries.map { |entry|
-      process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
+      process_manifest_entry(session, entry, existing_files:, unchanged_documents:, stored_blobs:)
     }
 
     session.update!(status: :uploading)
@@ -67,7 +68,7 @@ module ImportSessionActions
     nil
   end
 
-  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: {})
+  def process_manifest_entry(session, entry, existing_files: {}, unchanged_documents: Set.new, stored_blobs: {})
     import_file = existing_files[entry[:relative_path]] ||
       session.import_files.build(relative_path: entry[:relative_path])
 
@@ -89,26 +90,21 @@ module ImportSessionActions
       status: :pending
     )
 
-    previous_id = completed_elsewhere[[entry[:relative_path], entry[:checksum]]]
+    if import_file.document? && unchanged_documents.include?([entry[:relative_path], entry[:checksum]])
+      import_file.status = :skipped
+      import_file.save!
+      return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
+    end
 
-    if previous_id
-      # An attachment imported before is still imported again, from the bytes already
-      # stored: skipping it saved the transfer but also dropped it from this session's
-      # path_map, so documents in this session kept their raw links to it. Only the upload
-      # is skipped — ImportAttachmentJob binds it to this import's documents as usual.
-      if import_file.attachment? && (blob = ImportFile.find_by(id: previous_id)&.file&.blob)
-        import_file.assign_attributes(status: :uploaded, uploaded_at: Time.current)
-        import_file.file.attach(blob)
-        import_file.save!
-        return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_uploaded")
-      end
-
-      # Unchanged documents are skipped outright.
-      if import_file.document?
-        import_file.status = :skipped
-        import_file.save!
-        return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
-      end
+    # Bytes already stored are reused rather than uploaded again, wherever and under whatever
+    # name they were stored. Only the transfer is skipped: the file still goes through
+    # ImportAttachmentJob, which binds it to this import's documents. Skipping it outright
+    # used to leave those documents with raw links to it.
+    if import_file.attachment? && (blob = stored_blobs[[entry[:checksum], entry[:file_size].to_i]])
+      import_file.assign_attributes(status: :uploaded, uploaded_at: Time.current)
+      import_file.file.attach(blob)
+      import_file.save!
+      return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_uploaded")
     end
 
     blob = ActiveStorage::Blob.create_before_direct_upload!(
@@ -129,6 +125,34 @@ module ImportSessionActions
       content_type: blob.content_type,
       signed_blob_id: blob.signed_id
     )
+  end
+
+  # Stored blobs the client may reuse, keyed by [checksum, byte_size].
+  #
+  # The client only *claims* to have these bytes: it sends a checksum and never uploads them.
+  # So only blobs it could already open are offered — those attached in spaces it can read.
+  # Matching across the whole organization would hand anyone who learned a checksum the file
+  # behind it, from a space they cannot see.
+  #
+  # MD5 is enough within that boundary. A collision needs both files crafted together, so it
+  # can only ever produce content the person who crafted them already had.
+  def readable_blobs_matching(file_entries)
+    checksums = file_entries.filter_map { |entry| entry[:checksum].presence }.uniq
+    return {} if checksums.empty?
+
+    readable_spaces = policy_scope(current_organization.spaces).select(:id)
+    readable_attachments = current_organization.attachments.merge(
+      Attachment.where(parent_type: "Space", parent_id: readable_spaces).or(
+        Attachment.where(parent_type: "Document", parent_id: Document.kept.where(space_id: readable_spaces).select(:id))
+      )
+    )
+
+    ActiveStorage::Blob
+      .joins(:attachments)
+      .where(active_storage_attachments: { name: "file", record_type: "Attachment", record_id: readable_attachments.select(:id) })
+      .where(checksum: checksums)
+      .distinct
+      .index_by { |blob| [blob.checksum, blob.byte_size] }
   end
 
   def content_type_for_format(format)

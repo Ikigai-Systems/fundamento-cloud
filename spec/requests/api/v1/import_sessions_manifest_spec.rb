@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::ImportSessions#manifest", type: :request do
-  fixtures :organizations, :users, :organization_memberships, :spaces
+  fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents
 
   let(:org) { organizations(:is) }
   let(:space) { spaces(:is_default) }
@@ -118,89 +118,121 @@ RSpec.describe "Api::V1::ImportSessions#manifest", type: :request do
       changed = json.find { |f| f["relative_path"] == "Notes/hello.md" }
       expect(changed["direct_upload_url"]).to be_present
     end
-    describe "files completed in an earlier session of the same space" do
-      let(:earlier_session) do
-        ImportSession.create!(
-          organization: org, space: space,
-          organization_membership: membership,
-          status: :completed
-        )
+    describe "files whose bytes are already stored" do
+      let(:bytes) { "the same photo" }
+      let(:checksum) { OpenSSL::Digest::MD5.base64digest(bytes) }
+
+      # Stored the way the editor stores a dropped file: an Attachment with its own blob.
+      def stored_attachment(parent:, organization: org, filename: "earlier.png")
+        attachment = Attachment.create!(organization: organization, parent: parent, filename: filename, mime_type: "image/png")
+        attachment.file.attach(io: StringIO.new(bytes), filename: filename, content_type: "image/png")
+        attachment
       end
 
-      def completed_earlier(relative_path:, checksum:, file_type:, format:, attach: true)
-        import_file = ImportFile.create!(
-          import_session: earlier_session,
-          relative_path: relative_path, checksum: checksum, file_size: 1024,
-          file_type: file_type, format: format, status: :completed
-        )
-        if attach
-          import_file.file.attach(
-            io: StringIO.new("bytes"), filename: File.basename(relative_path), content_type: "image/png"
-          )
-        end
-        import_file
-      end
-
-      def submit_manifest
-        post manifest_api_v1_import_session_path(session),
-          params: { files: manifest_files },
-          headers: auth_headers
+      def submit(files, as: auth_headers, to: session)
+        post manifest_api_v1_import_session_path(to), params: { files: files }, headers: as
         JSON.parse(response.body).index_by { |f| f["relative_path"] }
       end
 
-      it "reuses an attachment's stored bytes instead of skipping it" do
-        earlier = completed_earlier(relative_path: "assets/image.png", checksum: "def456",
-          file_type: :attachment, format: "image")
+      def image_entry(path = "assets/image.png", checksum: self.checksum, size: bytes.bytesize)
+        { relative_path: path, checksum: checksum, file_size: size }
+      end
 
-        entry = submit_manifest["assets/image.png"]
+      it "reuses them instead of asking for an upload" do
+        earlier = stored_attachment(parent: space)
+
+        entry = submit([image_entry])["assets/image.png"]
 
         expect(entry["direct_upload_url"]).to be_nil
         expect(entry["status"]).to eq("uploaded")
         expect(entry["skipped_reason"]).to eq("already_uploaded")
-
         reused = session.import_files.find_by!(relative_path: "assets/image.png")
         expect(reused.file.blob).to eq(earlier.file.blob)
       end
 
+      it "matches by content, whatever the file is called and wherever it was stored" do
+        stored_attachment(parent: documents(:one), filename: "IMG_0042.png")
+
+        entry = submit([image_entry("Pliki/c8790093_renamed.png")])["Pliki/c8790093_renamed.png"]
+
+        expect(entry["skipped_reason"]).to eq("already_uploaded")
+      end
+
       # The reported bug: a skipped attachment never reached this session's path_map, so a
       # document imported alongside it kept its raw ![](assets/image.png) link.
-      it "binds the reused attachment to this session's documents" do
-        earlier = completed_earlier(relative_path: "assets/image.png", checksum: "def456",
-          file_type: :attachment, format: "image")
-        submit_manifest
+      it "binds the reused file to this import's documents" do
+        earlier = stored_attachment(parent: space)
+        submit([image_entry])
         session.update!(status: :processing)
 
-        reused = session.import_files.find_by!(relative_path: "assets/image.png")
-        ImportAttachmentJob.perform_now(reused)
+        ImportAttachmentJob.perform_now(session.import_files.find_by!(relative_path: "assets/image.png"))
 
-        attachment = Attachment.last
+        attachment = Attachment.order(:created_at).last
+        expect(attachment).not_to eq(earlier)
         expect(attachment.file.blob).to eq(earlier.file.blob)
         expect(session.reload.path_map["assets/image.png"]).to eq("attachment:#{attachment.id}.png")
       end
 
-      it "uploads afresh when the attachment's checksum changed" do
-        completed_earlier(relative_path: "assets/image.png", checksum: "changed",
-          file_type: :attachment, format: "image")
+      it "asks for an upload when only the checksum matches, not the size" do
+        stored_attachment(parent: space)
 
-        expect(submit_manifest["assets/image.png"]["direct_upload_url"]).to be_present
+        expect(submit([image_entry(size: bytes.bytesize + 1)])["assets/image.png"]["direct_upload_url"]).to be_present
       end
 
-      it "uploads afresh when the earlier file no longer has its bytes" do
-        completed_earlier(relative_path: "assets/image.png", checksum: "def456",
-          file_type: :attachment, format: "image", attach: false)
+      it "asks for an upload when the stored copy is on a trashed document" do
+        stored_attachment(parent: documents(:one))
+        documents(:one).update_column(:deleted_at, Time.current)
 
-        expect(submit_manifest["assets/image.png"]["direct_upload_url"]).to be_present
+        expect(submit([image_entry])["assets/image.png"]["direct_upload_url"]).to be_present
       end
 
-      it "still skips an unchanged document" do
-        completed_earlier(relative_path: "Notes/hello.md", checksum: "abc123",
-          file_type: :document, format: "markdown", attach: false)
+      it "still skips an unchanged document imported before" do
+        earlier_session = ImportSession.create!(organization: org, space: space, organization_membership: membership, status: :completed)
+        ImportFile.create!(import_session: earlier_session, relative_path: "Notes/hello.md", checksum: "abc123",
+          file_size: 1024, file_type: :document, format: "markdown", status: :completed)
 
-        entry = submit_manifest["Notes/hello.md"]
+        entry = submit(manifest_files)["Notes/hello.md"]
 
         expect(entry["status"]).to eq("skipped")
         expect(entry["skipped_reason"]).to eq("already_imported")
-        expect(entry["direct_upload_url"]).to be_nil
+      end
+
+      # The client only claims to have the bytes. Reusing a blob from a space the importer
+      # cannot open would hand over that file to anyone who learned its checksum.
+      context "when the only stored copy is in a space the importer cannot read" do
+        let(:hc) { organizations(:hc) }
+        let(:maria) { organization_memberships(:om_hc_maria) }
+        let(:maria_headers) do
+          token = ApiToken.create!(organization: hc, organization_membership: maria, title: "Maria")
+          { "Authorization" => "Bearer #{token.encrypted_token}" }
+        end
+        let(:marias_session) { ImportSession.create!(organization: hc, space: spaces(:hc_default), organization_membership: maria) }
+
+        it "asks for an upload and never attaches that blob" do
+          private_copy = stored_attachment(parent: spaces(:hc_pawels), organization: hc)
+
+          entry = submit([image_entry], as: maria_headers, to: marias_session)["assets/image.png"]
+
+          expect(entry["direct_upload_url"]).to be_present
+          expect(entry["skipped_reason"]).to be_nil
+          expect(marias_session.import_files.find_by!(relative_path: "assets/image.png").file.attached?).to be(false)
+          expect(private_copy.file.blob.attachments.count).to eq(1)
+        end
+
+        it "reuses a copy that is also in a space the importer can read" do
+          stored_attachment(parent: spaces(:hc_pawels), organization: hc)
+          stored_attachment(parent: spaces(:hc_default), organization: hc)
+
+          entry = submit([image_entry], as: maria_headers, to: marias_session)["assets/image.png"]
+
+          expect(entry["skipped_reason"]).to eq("already_uploaded")
+        end
+      end
+
+      it "never reuses a blob from another organization" do
+        stored_attachment(parent: spaces(:hc_default), organization: organizations(:hc))
+
+        expect(submit([image_entry])["assets/image.png"]["direct_upload_url"]).to be_present
       end
     end
   end
