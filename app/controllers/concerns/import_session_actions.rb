@@ -31,14 +31,16 @@ module ImportSessionActions
     file_entries = Array(params[:files])
 
     # Pre-fetch to avoid N+1: one query for existing files in this session, one for
-    # files already completed in previous sessions for the same space.
+    # files already completed in previous sessions for the same space, keyed by
+    # [relative_path, checksum] with the newest such file winning.
     existing_files = session.import_files.index_by(&:relative_path)
     completed_elsewhere = ImportFile
       .joins(:import_session)
       .where(import_sessions: { space_id: session.space_id }, status: ImportFile.statuses[:completed])
       .where.not(import_session_id: session.id)
-      .pluck(:relative_path, :checksum)
-      .to_set
+      .order(:created_at)
+      .pluck(:relative_path, :checksum, :id)
+      .to_h { |path, checksum, id| [[path, checksum], id] }
 
     results = file_entries.map { |entry|
       process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
@@ -65,7 +67,7 @@ module ImportSessionActions
     nil
   end
 
-  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: Set.new)
+  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: {})
     import_file = existing_files[entry[:relative_path]] ||
       session.import_files.build(relative_path: entry[:relative_path])
 
@@ -73,15 +75,6 @@ module ImportSessionActions
         import_file.uploaded? &&
         import_file.checksum == entry[:checksum]
       return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil)
-    end
-
-    # Skip files already imported in a previous session for this space
-    already_imported = completed_elsewhere.include?([entry[:relative_path], entry[:checksum]])
-
-    if already_imported
-      import_file.assign_attributes(status: :skipped)
-      import_file.save!
-      return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
     end
 
     # The client's own `format`/`file_type` are ignored: it reports the path, the server
@@ -95,6 +88,29 @@ module ImportSessionActions
       file_type: file_type,
       status: :pending
     )
+
+    previous_id = completed_elsewhere[[entry[:relative_path], entry[:checksum]]]
+
+    if previous_id
+      # An attachment imported before is still imported again, from the bytes already
+      # stored: skipping it saved the transfer but also dropped it from this session's
+      # path_map, so documents in this session kept their raw links to it. Only the upload
+      # is skipped — ImportAttachmentJob binds it to this import's documents as usual.
+      if import_file.attachment? && (blob = ImportFile.find_by(id: previous_id)&.file&.blob)
+        import_file.assign_attributes(status: :uploaded, uploaded_at: Time.current)
+        import_file.file.attach(blob)
+        import_file.save!
+        return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_uploaded")
+      end
+
+      # Unchanged documents are skipped outright.
+      if import_file.document?
+        import_file.status = :skipped
+        import_file.save!
+        return file_json(import_file).merge(direct_upload_url: nil, signed_blob_id: nil, skipped_reason: "already_imported")
+      end
+    end
+
     blob = ActiveStorage::Blob.create_before_direct_upload!(
       filename: File.basename(entry[:relative_path].to_s),
       byte_size: entry[:file_size].to_i,
