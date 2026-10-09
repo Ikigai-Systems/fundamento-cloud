@@ -67,13 +67,22 @@ describe("Touch device smoke", function () {
       cy.contains("tr", "Ikigai Systems").within(() => cy.contains("Switch to").realTouch())
 
       cy.url().should("include", "/s/is_default")
-      // Retried, because the banner enters from off-screen and is only judged once it settles
+      // Retried, because the banner animates in and is only judged once it settles
       cy.contains("[data-controller=alert]", "switched to").should(($flash) => {
         const rect = $flash[0].querySelector("[class*=flash-]").getBoundingClientRect()
         const viewportWidth = $flash[0].ownerDocument.documentElement.clientWidth
         expect(rect.right, "flash right edge").to.be.at.most(viewportWidth)
         expect(rect.left, "flash left edge").to.be.at.least(0)
+        // Below the 60px top bar, so it doesn't hide the menu or the page title
+        expect(rect.top, "flash top edge").to.be.at.least(60)
       })
+      cy.contains("[data-controller=alert]", "switched to").find("button[aria-label=Close]").should(($close) => {
+        const { width, height } = $close[0].getBoundingClientRect()
+        expect(Math.min(width, height), "close button tap target").to.be.at.least(24)
+      })
+
+      // A confirmation closes itself rather than sitting over the content until dismissed
+      cy.contains("[data-controller=alert]", "switched to", { timeout: 10000 }).should("not.exist")
     })
 
     // iOS Safari restores a tab from its page cache after the session has rotated, so the
