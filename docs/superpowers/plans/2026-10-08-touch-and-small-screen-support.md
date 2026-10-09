@@ -213,8 +213,10 @@ Options: `ignore: [selectors]` for known issues with a follow-up,
 - Adding a leg (a `tablet`, or the whole suite as a phone nightly) is one more matrix
   entry.
 - They publish as a separate check, "Cypress Phone Test Results".
-- That check is **report-only** (`fail_on_failure: false`) while the failures above are
-  expected. Flip it once Phase 1 lands.
+- That check is **red on purpose** while the failures above are open: the reporting action
+  sets a check's result from the test results alone. `fail_on_failure: false` keeps the
+  job itself green. Flip it to `true` once the smoke spec passes, so the fixes are guarded
+  against regressions.
 
 **The whole existing suite as a phone** (`bin/dev-e2e test --device phone`) is a discovery
 tool, not a gate. Desktop specs use `.trigger("mouseenter")` and keyboard shortcuts that

@@ -37,10 +37,12 @@ jobs:
             results: tmp/cypress-results-*.xml
             check_name: Cypress E2E Test Results
             fail_on_failure: true
-          # Report-only until the touch fixes in
-          # docs/superpowers/plans/2026-10-08-touch-and-small-screen-support.md land: the
-          # phone specs describe the target behaviour and several fail on purpose today.
-          # Flip fail_on_failure to true once they pass.
+          # The phone specs describe the target behaviour from
+          # docs/superpowers/plans/2026-10-08-touch-and-small-screen-support.md, and several
+          # fail on purpose until those fixes land. Their check is red while any of them
+          # fail -- action-junit-report sets the check's conclusion from the results alone
+          # -- but fail_on_failure: false keeps the job itself green. Flip it to true once
+          # they pass, so they guard against regressions.
           - device: phone
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
             results: tmp/cypress-phone-results-*.xml
@@ -195,7 +197,7 @@ jobs:
           require_tests: true
           fail_on_parse_error: true
 
-      # A report-only leg never fails the job, so it uploads its failure screenshots and
+      # A leg with fail_on_failure: false never fails the job, so it uploads its failure screenshots and
       # videos regardless; Cypress writes them only for failed tests anyway.
       - name: Upload screenshots on failure
         if: failure() || !matrix.fail_on_failure
