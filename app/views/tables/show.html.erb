@@ -19,20 +19,20 @@
 
   <% has_permission_to_edit = policy(@table).update? %>
 
-  <div data-controller="popover" class="relative">
+  <div data-controller="tooltip" class="relative">
     <%= button_to edit_table_path(@table),
       method: :get,
       id: dom_id(@table, :edit),
       disabled: !has_permission_to_edit,
       class: "document-toolbar-button edit-table-button",
-      form: { data: { action: "mouseenter->popover#show mouseleave->popover#hide" } },
+      form: { data: { action: "pointerenter->tooltip#show pointerleave->tooltip#hide focusin->tooltip#show focusout->tooltip#hide" } },
       aria: { label: "Edit table" } do
     %>
       <i class="fa-regular fa-pencil"></i>
     <% end %>
 
-    <template data-popover-target="content">
-      <div data-popover-target="card" class="popover-tooltip-card m-1">
+    <template data-tooltip-target="content">
+      <div data-tooltip-target="card" class="popover-tooltip-card m-1">
         <p>
           <% if has_permission_to_edit %>
             Edit <code>E</code>

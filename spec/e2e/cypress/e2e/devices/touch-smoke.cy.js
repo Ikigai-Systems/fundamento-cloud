@@ -61,6 +61,33 @@ describe("Touch device smoke", function () {
     })
   })
 
+  describe("tooltips", () => {
+    beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
+
+    // The details sidebar's tabs are icons named by a hint. Switching tabs doesn't navigate,
+    // so a hint left behind by the tap would stay on screen.
+    it("shows no hint after tapping an icon tab", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      // Narrow screens keep the sidebar in a drawer, opened from the top bar
+      cy.get("body").then(($body) => {
+        const opener = $body.find("button[aria-controls='content-sidebar']:visible")
+        if (opener.length) cy.wrap(opener).realTouch()
+      })
+      // A real tap lands at fixed coordinates, so wait until the sidebar has stopped sliding
+      cy.get("#content-sidebar").should(($sidebar) => {
+        const { right } = $sidebar[0].getBoundingClientRect()
+        expect(right, "sidebar settled on screen").to.be.at.most($sidebar[0].ownerDocument.documentElement.clientWidth)
+      })
+      cy.get("#content-sidebar #details").realTouch()
+
+      // Prove the tap landed before asserting the hint's absence
+      cy.get("#content-sidebar #details").should("have.attr", "aria-selected", "true")
+      cy.get(".popover-tooltip-card").should("not.exist")
+    })
+  })
+
   describe("switching organization", () => {
     it("switches by tapping, and the confirmation fits on screen", () => {
       cy.visit("/organizations")
