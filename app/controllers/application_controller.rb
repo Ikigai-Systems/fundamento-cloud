@@ -15,8 +15,21 @@ class ApplicationController < ActionController::Base
   etag { Rails.application.importmap.digest(resolver: helpers) if request.format&.html? }
 
   rescue_from Pundit::NotAuthorizedError, with: :access_denied
+  rescue_from ActionController::InvalidAuthenticityToken, with: :expired_form_token
 
   protected
+
+  # A form posted with a token the session no longer accepts — typically a page iOS Safari
+  # restored from its cache after the session rotated. Rails answers 422, which a Turbo form
+  # submission renders as nothing, so the button seems dead. Going back reloads the page with a
+  # fresh token, so a retry works. Nothing was changed: the check runs before the action.
+  def expired_form_token(exception)
+    raise exception unless request.format.html? || request.format.turbo_stream?
+
+    redirect_back_or_to root_path,
+      alert: "This page had expired, so nothing was changed. Please try again.",
+      status: :see_other
+  end
 
   # Carries the acting user down to the model layer, where table change events are
   # recorded. Requests are the "ui" origin; jobs, MCP and formula execution set their own.

@@ -81,10 +81,19 @@ describe("Touch device smoke", function () {
     // phone in a minute. Whatever the outcome, the user must be told something happened.
     it("tells the user when the form's security token has expired", () => {
       cy.visit("/organizations")
+      // A page restored from cache holds a stale token in both places Turbo sends one from:
+      // the form's hidden field and the `csrf-token` meta tag it copies into X-CSRF-Token.
+      // Rails accepts either, so spoiling only the field leaves the request valid.
       cy.contains("tr", "Ikigai Systems").find("input[name=authenticity_token]").invoke("val", "stale-token")
+      cy.get("meta[name=csrf-token]").invoke("attr", "content", "stale-token")
       cy.contains("tr", "Ikigai Systems").within(() => cy.contains("Switch to").realTouch())
 
-      cy.contains("[role=alert], [data-controller=alert]", /try again|expired|session/i).should("be.visible")
+      cy.contains("[data-controller=alert]", /expired.*try again/i).should("be.visible")
+      cy.url().should("include", "/organizations")
+
+      // The page came back with a fresh token, so the retry the message asks for works
+      cy.contains("tr", "Ikigai Systems").within(() => cy.contains("Switch to").realTouch())
+      cy.url().should("include", "/s/is_default")
     })
   })
 })
