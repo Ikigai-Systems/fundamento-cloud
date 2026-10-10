@@ -10,11 +10,15 @@
 
 <%# Container for spacer + sidebar (relative on desktop for absolute positioning) %>
 <div class="sidebar-container group/collapser <%= 'collapsed' if is_collapsed %>"
-     data-controller="cookie-controlled-toggle"
-     data-cookie-controlled-toggle-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
-     data-cookie-controlled-toggle-target="toggleable"
+     data-controller="sidebar"
+     data-sidebar-cookie-key-value="ikigai_userPreferences_leftSideBarExpanded"
+     data-sidebar-target="toggleable"
      data-toggle-class="collapsed"
-     data-cookie-controlled-toggle-open-value="<%= !is_collapsed %>">
+     data-sidebar-open-value="<%= !is_collapsed %>"
+     data-action="sidebar-drawer:toggle@window->sidebar#toggleDrawer keydown.esc@window->sidebar#closeDrawer turbo:frame-load@document->sidebar#closeDrawerAfterNavigation turbo:before-cache@document->sidebar#closeDrawer">
+
+  <%# Below lg the sidebar is a drawer over the content; this dims the content and closes it %>
+  <div class="sidebar-backdrop" data-action="click->sidebar#closeDrawer" aria-hidden="true"></div>
 
   <div class="sidebar-spacer"></div>
 
@@ -28,7 +32,7 @@
       <div class="sidebar-trigger-area left-side"
            data-controller="hotkey popover"
            data-hotkey="["
-           data-action="click->cookie-controlled-toggle#toggle touch->cookie-controlled-toggle#toggle mouseenter->popover#show mouseleave->popover#hide">
+           data-action="click->sidebar#toggle mouseenter->popover#show mouseleave->popover#hide">
 
         <%# Visual button indicator %>
         <div class="sidebar-trigger-button left-side">

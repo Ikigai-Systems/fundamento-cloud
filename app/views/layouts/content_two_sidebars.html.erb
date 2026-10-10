@@ -11,12 +11,18 @@
         <%# Column 2: main content area %>
         <div class="h-screen content-container flex flex-col relative">
           <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+            <%= render "application/sidebar_drawer_button", controls: "space-sidebar", label: "Open navigation", icon: "icon-[heroicons--bars-3]", class: "ml-0" %>
+
             <div class="flex-1 min-w-0">
               <%= content_for :content_title %>
             </div>
 
             <div class="flex gap-1 items-center">
               <%= content_for :content_menu %>
+
+              <% if @document || @table || content_for?(:content_sidebar) %>
+                <%= render "application/sidebar_drawer_button", controls: "content-sidebar", label: "Show details", icon: "icon-[heroicons--information-circle]" %>
+              <% end %>
 
               <%= render "application/notifications_menu" %>
 

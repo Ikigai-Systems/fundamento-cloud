@@ -69,6 +69,13 @@
                 @apply group-hover:bg-blue-300 group-hover:hover:bg-blue-400 group-hover:active:bg-blue-500;
                 @apply dark:group-hover:bg-blue-900 dark:group-hover:border-blue-600 dark:group-hover:hover:bg-blue-800 dark:group-hover:active:bg-blue-600;
             }
+
+            /* A touch screen can't hover to reveal them, and an invisible button still takes the tap */
+            @media (hover: none) {
+                .content-link-button {
+                    @apply opacity-100;
+                }
+            }
         }
     }
 

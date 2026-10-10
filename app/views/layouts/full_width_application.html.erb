@@ -13,6 +13,8 @@
         <%# Column 2: full-width content area %>
         <div class="h-screen overflow-y-auto content-container">
           <nav class="w-full flex justify-end p-3 gap-1 items-center">
+            <%= render "application/sidebar_drawer_button", controls: "space-sidebar", label: "Open navigation", icon: "icon-[heroicons--bars-3]", class: "ml-0 mr-auto" %>
+
             <%= content_for :content_menu %>
 
             <%= render "application/notifications_menu" %>
