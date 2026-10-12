@@ -54,7 +54,7 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
-<% content_for :content_nav_end do %>
+<% content_for :content_menu_end do %>
   <%= render SidebarDrawerButton.new(side: :right) %>
 <% end %>
 
