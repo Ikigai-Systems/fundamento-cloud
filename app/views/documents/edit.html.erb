@@ -54,6 +54,10 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
+<% content_for :content_menu_end do %>
+  <%= render SidebarDrawerButton.new(side: :right) %>
+<% end %>
+
 <article class="flex flex-col flex-1"
          data-controller="editor"
          data-editor-document-value="<%= @document.to_react_props.to_json %>"

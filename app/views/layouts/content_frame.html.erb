@@ -15,12 +15,17 @@
   <%# Column 2: main content %>
   <div class="h-screen content-container flex flex-col relative">
     <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+      <%= render SidebarDrawerButton.new(side: :left) %>
+
       <div class="flex-1 min-w-0">
         <%= content_for :content_title %>
       </div>
 
       <div class="flex gap-1 items-center">
         <%= content_for :content_menu %>
+
+        <%# Rightmost, for what belongs at the page's right edge, like the content sidebar's drawer button %>
+        <%= content_for :content_menu_end %>
       </div>
     </nav>
 
