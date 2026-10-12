@@ -78,6 +78,10 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @document } %>
 <% end %>
 
+<% content_for :content_nav_end do %>
+  <%= render SidebarDrawerButton.new(side: :right) %>
+<% end %>
+
 <article class="flex flex-col">
   <%= turbo_frame_tag "document_hierarchy",
     data: { turbo: false },

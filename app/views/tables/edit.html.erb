@@ -19,6 +19,10 @@
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
 <% end %>
 
+<% content_for :content_nav_end do %>
+  <%= render SidebarDrawerButton.new(side: :right) %>
+<% end %>
+
 <article class="flex flex-col">
   <%= react_component "EditTablePanel", {
     table: @table,

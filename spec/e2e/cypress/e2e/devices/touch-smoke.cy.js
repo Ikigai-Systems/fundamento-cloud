@@ -67,6 +67,37 @@ describe("Touch device smoke", function () {
       cy.get("#space-sidebar").should("not.be.visible")
     })
 
+    // Where the sidebars sit on desktop: navigation first, details last, everything else between
+    it("puts each drawer button at the edge its sidebar opens from", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      cy.get("button[aria-controls='space-sidebar']").closest("nav").within(($nav) => {
+        const controls = [...$nav[0].querySelectorAll("button, a, [role=button]")]
+          .filter((element) => element.getClientRects().length > 0)
+          .map((element) => element.getBoundingClientRect())
+        cy.get("button[aria-controls='space-sidebar']").should(($button) => {
+          expect($button[0].getBoundingClientRect().left, "navigation button is leftmost").to.equal(Math.min(...controls.map((rect) => rect.left)))
+        })
+        cy.get("button[aria-controls='content-sidebar']").should(($button) => {
+          expect($button[0].getBoundingClientRect().right, "details button is rightmost").to.equal(Math.max(...controls.map((rect) => rect.right)))
+        })
+      })
+    })
+
+    it("shows the navigation's row buttons beside the titles rather than over them", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+      cy.get("button[aria-controls='space-sidebar']").realTouch()
+      cy.get("#space-sidebar li[data-node-id='two'] .content-link-button").should("be.visible")
+
+      cy.get("#space-sidebar li[data-node-id='two'] > .content-link-container").first().should(($row) => {
+        const title = $row[0].querySelector("a.content-link").getBoundingClientRect()
+        const buttons = $row[0].querySelector(".content-link-buttons-container").getBoundingClientRect()
+        expect(title.right, "title ends before the buttons start").to.be.at.most(buttons.left)
+      })
+    })
+
     it("closes the navigation after opening a document from it", () => {
       cy.visit("/d/one")
       cy.get("[data-document-editor] [role='textbox']").should("exist")

@@ -70,10 +70,29 @@
                 @apply dark:group-hover:bg-blue-900 dark:group-hover:border-blue-600 dark:group-hover:hover:bg-blue-800 dark:group-hover:active:bg-blue-600;
             }
 
-            /* A touch screen can't hover to reveal them, and an invisible button still takes the tap */
+            /* A touch screen can't hover to reveal them, and an invisible button still takes the tap.
+               So they stay visible, beside the title rather than over it, and look like buttons. */
             @media (hover: none) {
-                .content-link-button {
-                    @apply opacity-100;
+                /* Archived rows hide with the hidden attribute, which a plain display: flex would undo */
+                .content-link-container:not([hidden]) {
+                    @apply flex items-center;
+                }
+
+                .content-link {
+                    @apply min-w-0;
+                }
+
+                .content-link-buttons-container {
+                    @apply static shrink-0 pl-0;
+                }
+
+                .content-link-button,
+                .content-link-button.selected {
+                    @apply opacity-100 secondary-button p-0 size-7;
+
+                    i {
+                        @apply opacity-100;
+                    }
                 }
             }
         }

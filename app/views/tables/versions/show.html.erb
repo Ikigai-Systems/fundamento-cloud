@@ -17,6 +17,10 @@
   <% end %>
 <% end %>
 
+<% content_for :content_nav_end do %>
+  <%= render SidebarDrawerButton.new(side: :right) %>
+<% end %>
+
 <% content_for :content_sidebar do %>
   <div class="mt-2 flex items-center px-3 border-b">
     <span class="self-center text-lg font-semibold whitespace-nowrap mb-2 truncate">
