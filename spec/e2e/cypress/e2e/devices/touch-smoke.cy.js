@@ -31,6 +31,16 @@ describe("Touch device smoke", function () {
         cy.checkPageHealth()
       })
     })
+
+    it("keeps the top bar's Spaces menu on one line", () => {
+      cy.visit("/")
+      cy.get("#spaces-dropdown").should(($button) => {
+        const lineHeight = parseFloat(getComputedStyle($button[0]).lineHeight)
+        const { paddingTop, paddingBottom } = getComputedStyle($button[0])
+        const contentHeight = $button[0].clientHeight - parseFloat(paddingTop) - parseFloat(paddingBottom)
+        expect(contentHeight, "label height").to.be.below(lineHeight * 1.5)
+      })
+    })
   })
 
   describe("document page", () => {
