@@ -1,4 +1,4 @@
-import Popover from "@stimulus-components/popover"
+import FixedPopover from "./popover_controller.js"
 
 // A hover hint (a control's name, its keyboard shortcut) for pointers that can hover and for
 // keyboard focus, never for a finger.
@@ -9,15 +9,14 @@ import Popover from "@stimulus-components/popover"
 // only takes it back on the next tap elsewhere — a tooltip wired to it sticks after every tap.
 //
 // Popovers whose content is the point (who reacted, the rest of an avatar list) stay on the
-// `popover` controller: hiding them from touch would make their content unreachable.
-export default class TooltipController extends Popover {
+// `popover` controller: hiding them from touch would make their content unreachable. Both share
+// FixedPopover, so neither stacks a second card when re-entered while shown.
+export default class TooltipController extends FixedPopover {
   show(event) {
     if (event.type === "pointerenter" && event.pointerType !== "mouse") return
     // A tap focuses a button on some touch browsers; only keyboard focus shows a hint
     if (event.type === "focusin" && !event.target.matches(":focus-visible")) return
 
-    // Re-entering while shown (focus then hover) must not stack a second card
-    this.hide()
     return super.show(event)
   }
 }
