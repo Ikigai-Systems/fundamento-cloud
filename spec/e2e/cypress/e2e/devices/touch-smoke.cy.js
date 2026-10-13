@@ -57,48 +57,91 @@ describe("Touch device smoke", function () {
       })
     })
 
-    it("opens the navigation from the top bar and closes it from the backdrop", () => {
-      cy.visit("/d/one")
-      cy.get("[data-document-editor] [role='textbox']").should("exist")
-
-      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false").realTouch()
-      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "true")
-      cy.get("#space-sidebar").should(($sidebar) => {
-        expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
+    // Below 1024px the sidebars are drawers opened from the top bar. Wider screens, like a
+    // landscape tablet, keep them beside the content, where the edge toggles below apply.
+    describe("drawers", () => {
+      before(function () {
+        if (Cypress.config("viewportWidth") >= 1024) this.skip()
       })
-      cy.get("#space-sidebar li[data-node-id='two']").should("be.visible")
-      // The desktop edge toggle belongs to the side-by-side layout, not to a drawer
-      cy.get("#space-sidebar .sidebar-trigger-area").should("not.be.visible")
-      cy.checkPageHealth()
 
-      // Tap the backdrop to the right of the drawer, where the document is dimmed
-      cy.get(".drawer-open .sidebar-backdrop").realTouch({ position: "right" })
-      cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false")
-      cy.get("#space-sidebar").should("not.be.visible")
-    })
+      it("opens the navigation from the top bar and closes it from the backdrop", () => {
+        cy.visit("/d/one")
+        cy.get("[data-document-editor] [role='textbox']").should("exist")
 
-    // Where the sidebars sit on desktop: navigation first, details last, everything else between
-    it("puts each drawer button at the edge its sidebar opens from", () => {
-      cy.visit("/d/one")
-      cy.get("[data-document-editor] [role='textbox']").should("exist")
-
-      cy.get("button[aria-controls='space-sidebar']").closest("nav").within(($nav) => {
-        const controls = [...$nav[0].querySelectorAll("button, a, [role=button]")]
-          .filter((element) => element.getClientRects().length > 0)
-          .map((element) => element.getBoundingClientRect())
-        cy.get("button[aria-controls='space-sidebar']").should(($button) => {
-          expect($button[0].getBoundingClientRect().left, "navigation button is leftmost").to.equal(Math.min(...controls.map((rect) => rect.left)))
+        cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false").realTouch()
+        cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "true")
+        cy.get("#space-sidebar").should(($sidebar) => {
+          expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
         })
-        cy.get("button[aria-controls='content-sidebar']").should(($button) => {
-          expect($button[0].getBoundingClientRect().right, "details button is rightmost").to.equal(Math.max(...controls.map((rect) => rect.right)))
+        cy.get("#space-sidebar li[data-node-id='two']").should("be.visible")
+        // The desktop edge toggle belongs to the side-by-side layout, not to a drawer
+        cy.get("#space-sidebar .sidebar-trigger-area").should("not.be.visible")
+        cy.checkPageHealth()
+
+        // Tap the backdrop to the right of the drawer, where the document is dimmed
+        cy.get(".drawer-open .sidebar-backdrop").realTouch({ position: "right" })
+        cy.get("button[aria-controls='space-sidebar']").should("have.attr", "aria-expanded", "false")
+        cy.get("#space-sidebar").should("not.be.visible")
+      })
+
+      // Where the sidebars sit on desktop: navigation first, details last, everything else between
+      it("puts each drawer button at the edge its sidebar opens from", () => {
+        cy.visit("/d/one")
+        cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+        cy.get("button[aria-controls='space-sidebar']").closest("nav").within(($nav) => {
+          const controls = [...$nav[0].querySelectorAll("button, a, [role=button]")]
+            .filter((element) => element.getClientRects().length > 0)
+            .map((element) => element.getBoundingClientRect())
+          cy.get("button[aria-controls='space-sidebar']").should(($button) => {
+            expect($button[0].getBoundingClientRect().left, "navigation button is leftmost").to.equal(Math.min(...controls.map((rect) => rect.left)))
+          })
+          cy.get("button[aria-controls='content-sidebar']").should(($button) => {
+            expect($button[0].getBoundingClientRect().right, "details button is rightmost").to.equal(Math.max(...controls.map((rect) => rect.right)))
+          })
         })
+      })
+
+      it("closes the navigation after opening a document from it", () => {
+        cy.visit("/d/one")
+        cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+        cy.get("button[aria-controls='space-sidebar']").realTouch()
+        // A real tap lands at fixed coordinates, so wait for the drawer to finish sliding in
+        cy.get("#space-sidebar").should(($sidebar) => {
+          expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
+        })
+        cy.get("#space-sidebar li[data-node-id='two'] a.content-link span.truncate").first().realTouch()
+
+        cy.url().should("include", "/d/two")
+        cy.get("#space-sidebar").should("not.be.visible")
+      })
+
+      it("opens the document details, and one drawer at a time", () => {
+        cy.visit("/d/one")
+        cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+        cy.get("button[aria-controls='space-sidebar']").realTouch()
+        cy.get("#space-sidebar").should("be.visible")
+
+        // The backdrop covers the top bar too, so the details button is reached with Escape first
+        cy.realPress("Escape")
+        cy.get("#space-sidebar").should("not.be.visible")
+
+        cy.get("button[aria-controls='content-sidebar']").realTouch()
+        cy.get("#content-sidebar").should("be.visible")
+        cy.get("#space-sidebar").should("not.be.visible")
       })
     })
 
     it("shows the navigation's row buttons beside the titles rather than over them", () => {
       cy.visit("/d/one")
       cy.get("[data-document-editor] [role='textbox']").should("exist")
-      cy.get("button[aria-controls='space-sidebar']").realTouch()
+      // Narrow screens keep the sidebar in a drawer, opened from the top bar
+      cy.get("body").then(($body) => {
+        const opener = $body.find("button[aria-controls='space-sidebar']:visible")
+        if (opener.length) cy.wrap(opener).realTouch()
+      })
       cy.get("#space-sidebar li[data-node-id='two'] .content-link-button").should("be.visible")
 
       cy.get("#space-sidebar li[data-node-id='two'] > .content-link-container").first().should(($row) => {
@@ -106,37 +149,6 @@ describe("Touch device smoke", function () {
         const buttons = $row[0].querySelector(".content-link-buttons-container").getBoundingClientRect()
         expect(title.right, "title ends before the buttons start").to.be.at.most(buttons.left)
       })
-    })
-
-    it("closes the navigation after opening a document from it", () => {
-      cy.visit("/d/one")
-      cy.get("[data-document-editor] [role='textbox']").should("exist")
-
-      cy.get("button[aria-controls='space-sidebar']").realTouch()
-      // A real tap lands at fixed coordinates, so wait for the drawer to finish sliding in
-      cy.get("#space-sidebar").should(($sidebar) => {
-        expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
-      })
-      cy.get("#space-sidebar li[data-node-id='two'] a.content-link span.truncate").first().realTouch()
-
-      cy.url().should("include", "/d/two")
-      cy.get("#space-sidebar").should("not.be.visible")
-    })
-
-    it("opens the document details, and one drawer at a time", () => {
-      cy.visit("/d/one")
-      cy.get("[data-document-editor] [role='textbox']").should("exist")
-
-      cy.get("button[aria-controls='space-sidebar']").realTouch()
-      cy.get("#space-sidebar").should("be.visible")
-
-      // The backdrop covers the top bar too, so the details button is reached with Escape first
-      cy.realPress("Escape")
-      cy.get("#space-sidebar").should("not.be.visible")
-
-      cy.get("button[aria-controls='content-sidebar']").realTouch()
-      cy.get("#content-sidebar").should("be.visible")
-      cy.get("#space-sidebar").should("not.be.visible")
     })
 
     // The edge toggles exist only where the sidebars sit beside the content (1024px and wider);
@@ -153,6 +165,33 @@ describe("Touch device smoke", function () {
         cy.get(".sidebar-container:has(#content-sidebar)").should(wasCollapsed ? "not.have.class" : "have.class", "collapsed")
         cy.get(".popover-tooltip-card").should("not.exist")
       })
+    })
+  })
+
+  describe("tooltips", () => {
+    beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
+
+    // The details sidebar's tabs are icons named by a hint. Switching tabs doesn't navigate,
+    // so a hint left behind by the tap would stay on screen.
+    it("shows no hint after tapping an icon tab", () => {
+      cy.visit("/d/one")
+      cy.get("[data-document-editor] [role='textbox']").should("exist")
+
+      // Narrow screens keep the sidebar in a drawer, opened from the top bar
+      cy.get("body").then(($body) => {
+        const opener = $body.find("button[aria-controls='content-sidebar']:visible")
+        if (opener.length) cy.wrap(opener).realTouch()
+      })
+      // A real tap lands at fixed coordinates, so wait until the sidebar has stopped sliding
+      cy.get("#content-sidebar").should(($sidebar) => {
+        const { right } = $sidebar[0].getBoundingClientRect()
+        expect(right, "sidebar settled on screen").to.be.at.most($sidebar[0].ownerDocument.documentElement.clientWidth)
+      })
+      cy.get("#content-sidebar #details").realTouch()
+
+      // Prove the tap landed before asserting the hint's absence
+      cy.get("#content-sidebar #details").should("have.attr", "aria-selected", "true")
+      cy.get(".popover-tooltip-card").should("not.exist")
     })
   })
 

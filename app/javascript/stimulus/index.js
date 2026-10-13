@@ -3,7 +3,8 @@ import {Application} from "@hotwired/stimulus"
 import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Tabs, Toggle} from "tailwindcss-stimulus-components"
 import SidebarController from "./sidebar_controller.js";
 import SidebarDrawerButtonController from "./sidebar_drawer_button_controller.js";
-import Popover from "@stimulus-components/popover";
+import FixedPopover from "./popover_controller.js";
+import TooltipController from "./tooltip_controller.js";
 import ReactLoader from "./react_loader_controller"
 import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
@@ -51,14 +52,8 @@ application.register('toggle', Toggle)
 application.register("sidebar", SidebarController);
 application.register("sidebar-drawer-button", SidebarDrawerButtonController);
 
-class FixedPopover extends Popover {
-  show(event) {
-    super.hide();
-    return super.show(event);
-  }
-}
-
 application.register('popover', FixedPopover);
+application.register("tooltip", TooltipController);
 
 application.register('auto-submit', AutoSubmit);
 

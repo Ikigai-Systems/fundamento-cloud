@@ -73,9 +73,11 @@
         }
     }
 
-    /* Invisible clickable trigger area on panel edge. Drawers open from the top bar instead. */
+    /* Invisible clickable trigger area on panel edge. Drawers open from the top bar instead.
+       Above the panel's content, whose sticky section headers (z-10) would otherwise paint over
+       the half of the button that overlaps the panel, and over its tooltip. */
     .sidebar-trigger-area {
-        @apply absolute inset-y-0 w-7 cursor-pointer;
+        @apply absolute inset-y-0 w-7 cursor-pointer z-20;
         @apply flex items-center justify-center;
         /* After `flex`, which would otherwise win as the later display rule */
         @apply max-lg:hidden;

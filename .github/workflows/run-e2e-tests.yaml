@@ -46,6 +46,12 @@ jobs:
             results: tmp/cypress-phone-results-*.xml
             check_name: Cypress Phone Test Results
             fail_on_failure: false
+          # The desktop layout driven by touch: where controls built for a mouse meet a finger
+          - device: tablet-landscape
+            spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
+            results: tmp/cypress-tablet-landscape-results-*.xml
+            check_name: Cypress Landscape Tablet Test Results
+            fail_on_failure: false
 
     permissions:
       contents: read
