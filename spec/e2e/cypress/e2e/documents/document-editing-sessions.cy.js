@@ -107,13 +107,11 @@ describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, func
     });
   }
 
-  // Helper to save version and wait for confirmation. The save swaps the content frame to the
-  // document page; waiting for it there, rather than for the flash, which can still be showing from
-  // an earlier save and now closes by itself, keeps the next step off the edit page.
+  // Helper to save version and wait for confirmation
   function saveVersion() {
     cy.get("[aria-label=\"Save document\"]").click();
     cy.wait("@saveVersion");
-    cy.get("[aria-label=\"Edit document\"]").should("exist");
+    cy.contains("Document has been updated").should("be.visible");
   }
 
   it("tracks editing sessions across multiple versions with different contributors", function () {
