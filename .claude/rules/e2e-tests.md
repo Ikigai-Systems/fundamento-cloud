@@ -2,6 +2,10 @@
 
 ## Running specs
 
+- The E2E images bake the source in: the `website` service builds from context with no volume
+  mounts. `bin/dev-e2e up --no-build` runs the **previous** image and silently tests stale code, so
+  rebuild after changing app code.
+
 - Never run multiple Cypress specs in parallel against the same E2E database — `cy.app("clean")` in `beforeEach` wipes all tables, causing cross-spec interference.
 - Use `bin/dev-e2e up --test` to run the full suite, or `npx cypress run --project spec/e2e --spec <path> --config baseUrl=http://localhost:4000` for individual specs.
 
@@ -94,3 +98,11 @@ for i in $(seq 1 10); do
   npx cypress run --project spec/e2e --spec "<path>" --config baseUrl=http://localhost:4000 || break
 done
 ```
+
+## A narrow viewport is not a touch device
+
+Viewport emulation (agent-browser `set device`, Cypress `cy.viewport`) still reports `hover: hover`
+and no touch, so hover-only UI and tap behaviour look fine when they aren't. Run specs with a device
+profile (`--expose device=phone|tablet|tablet-landscape`, see
+`spec/e2e/cypress/support/devices.cjs`) and use `realTouch` from cypress-real-events when the touch
+itself is under test.

@@ -161,6 +161,18 @@ Every PR carries its own changelog entry in its title and description. See
 change. Merging the `chore(main): release X.Y.Z` PR tags the release, which builds
 semver-tagged images from `.github/workflows/package-*.yaml`.
 
+### Deployment: two models
+
+- **Hosted cloud deploys from `master`.** Merge → `Run Tests` → `Package: fundamento-cloud`
+  (a `workflow_run` trigger) → deploy. Merging *is* deploying, and containers roll, so a
+  multi-phase schema change must be split across separate merges.
+- **Standalone ships versioned releases** cut by release-please and runs `db:prepare` on boot.
+  Operators accept downtime for an upgrade, so a multi-phase migration can land in one release.
+
+**Don't infer whether the cloud has a change from git tags.** Tags track only the standalone
+release; a merged PR can be live on the cloud while the latest tag is older. Check the package
+run instead: `gh run list --workflow package-fundamento-cloud.yaml`.
+
 ## Code formatting
 
 Whenever possible, use the following rules:
