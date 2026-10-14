@@ -9,7 +9,9 @@ import {isOrganizationCookie} from "../../support/organization-cookies.js";
 // contended Docker network, entirely below the WebSocket/ActionCable layer.
 // Server logs corroborate this: the connection never disconnected or
 // reconnected during the gap. Retry absorbs this rather than papering over
-// a real bug — there isn't one to fix in app or test code here.
+// a real bug — there isn't one to fix in app code here. (Separately, the save
+// intercept used to be re-registered per save, letting a wait resolve early;
+// see beforeEach.)
 describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, function () {
   const documentId = "one";
 
@@ -28,6 +30,11 @@ describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, func
         "document_editing_sessions"
       ]
     });
+
+    // Once per test, never per save: with the same alias registered again for each save, a later
+    // cy.wait("@saveVersion") can resolve with an earlier save's request and return before its own
+    // POST has finished, so the version assertions that follow can run before the save lands.
+    cy.intercept("POST", "/d/*/versions").as("saveVersion");
   });
 
   // Helper to login and set org cookie
@@ -100,12 +107,13 @@ describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, func
     });
   }
 
-  // Helper to save version and wait for confirmation
+  // Helper to save version and wait for confirmation. The save swaps the content frame to the
+  // document page; waiting for it there, rather than for the flash, which can still be showing from
+  // an earlier save and now closes by itself, keeps the next step off the edit page.
   function saveVersion() {
-    cy.intercept("POST", "/d/*/versions").as("saveVersion");
     cy.get("[aria-label=\"Save document\"]").click();
     cy.wait("@saveVersion");
-    cy.contains("Document has been updated").should("be.visible");
+    cy.get("[aria-label=\"Edit document\"]").should("exist");
   }
 
   it("tracks editing sessions across multiple versions with different contributors", function () {
