@@ -18,6 +18,32 @@ RSpec.describe Documents::VersionsController, type: :request do
       [{ "id" => "block1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Hello" }] }].to_json
     end
 
+    # The editor fills content_blocks once it has loaded the document. A save sent before that
+    # posts nothing, which must not replace the document or surface a parser error.
+    [["blank", ""], ["not JSON", "{oops"], ["not a list of blocks", '{"type":"paragraph"}']].each do |label, value|
+      it "saves nothing and explains when the content is #{label}" do
+        expect {
+          post document_versions_path(document),
+            params: { content_blocks: value },
+            headers: { "Accept" => "text/vnd.turbo-stream.html, text/html" }
+        }.not_to change { document.versions.count }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include('<turbo-stream action="append" target="flashes"')
+        expect(response.body).to include("The editor was still loading, so nothing was saved")
+        expect(response.body).not_to match(/unexpected|ParserError|unexpected end of input/i)
+      end
+    end
+
+    it "sends a plain form post with no content back to the editor" do
+      expect {
+        post document_versions_path(document), params: { content_blocks: "" }
+      }.not_to change { document.versions.count }
+
+      expect(response).to redirect_to(edit_document_path(document))
+      expect(flash[:alert]).to include("The editor was still loading, so nothing was saved")
+    end
+
     it "claims unlinked editing sessions for the document" do
       session1 = DocumentEditingSession.create!(
         document: document,
