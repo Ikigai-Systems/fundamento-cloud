@@ -22,16 +22,26 @@ describe("Document Editor", function () {
     cy.loginWithSession("pawel@ikigai.systems", "password");
 
     cy.setCookie("organization_id", isOrganizationCookie);
+
+    // Once per test, never per save: with the same alias registered again for each save, a later
+    // cy.wait("@saveVersion") can resolve with an earlier save's request and return before its own
+    // POST has finished.
+    cy.intercept("POST", "/d/*/versions").as("saveVersion");
   });
 
   // Helper: click Save and wait for the POST to complete. Required because the
   // save now does a Turbo Frame swap (not a full page reload), so cy.contains
   // on the success flash can match a stale "Document has been updated." from a
   // previous save and let subsequent DB assertions race the in-flight POST.
+  //
+  // The swap then shows the document page, whose right sidebar loads lazily onto its first tab.
+  // Waiting for those on the page, rather than counting sidebar requests (opening the editor
+  // reloads the sidebar too), keeps a following click from landing on the old page or being reset.
   function saveDocument() {
-    cy.intercept("POST", "/d/*/versions").as("saveVersion");
     cy.get('[aria-label="Save document"]').click();
     cy.wait("@saveVersion");
+    cy.get('[aria-label="Edit document"]').should("exist");
+    cy.get("#content-sidebar .content-sidebar-tabs").should("exist");
   }
 
   it("creates a new document and updates its content", function () {
@@ -291,8 +301,6 @@ describe("Document Editor", function () {
 
       // Get initial version count
       cy.appEval(`Document.find('${documentId}').versions.count`).then((initialCount) => {
-        cy.intercept("POST", `/d/${documentId}/versions`).as("saveVersion");
-
         // Add content
         cy.get("[data-document-editor] [role='textbox']").first().type("{selectall}Keyboard shortcut test content.{ctrl+enter}");
 

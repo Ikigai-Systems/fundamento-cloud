@@ -3,10 +3,13 @@ import { Controller } from "@hotwired/stimulus"
 type FlashOptions = {
   type?: "notice" | "alert" | "error"
   message: string
-  duration?: "short"
   key?: string
   replacePrevious?: boolean
 }
+
+// Long enough to read a one-line confirmation; hovering or focusing it holds it open.
+// A notice that never closed sat over the content on a phone until hit with the small ×.
+const NOTICE_DISMISS_MS = 3000
 
 export default class extends Controller<HTMLElement> {
   static targets = ["pending"]
@@ -20,7 +23,6 @@ export default class extends Controller<HTMLElement> {
     const options: FlashOptions = {
       type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
       message: el.dataset.flashMessage || "",
-      duration: el.dataset.flashDuration as FlashOptions["duration"],
       key: el.dataset.flashKey,
       replacePrevious: el.dataset.flashReplacePrevious === "true",
     }
@@ -51,6 +53,35 @@ export default class extends Controller<HTMLElement> {
 
     const flashElement = this.createFlashElement(options)
     this.element.appendChild(flashElement)
+    if (flashElement.dataset.flashType === "notice") this.dismissLater(flashElement)
+  }
+
+  // Notices are confirmations and close themselves; alerts and errors wait for the user.
+  // The countdown stops while the notice is hovered or focused and starts over when left,
+  // so it never closes under someone reading it or about to press its close button.
+  private dismissLater(flash: HTMLElement) {
+    let timer: number | undefined
+    let hovered = false
+    let focused = false
+    const start = () => {
+      window.clearTimeout(timer)
+      if (hovered || focused) return
+      timer = window.setTimeout(() => {
+        if (!flash.isConnected) return
+        const alert = this.application.getControllerForElementAndIdentifier(flash, "alert") as { close(): void } | null
+        if (alert) alert.close()
+        else flash.remove()
+      }, NOTICE_DISMISS_MS)
+    }
+    flash.addEventListener("mouseenter", () => { hovered = true; start() })
+    flash.addEventListener("mouseleave", () => { hovered = false; start() })
+    flash.addEventListener("focusin", () => { focused = true; start() })
+    flash.addEventListener("focusout", (event) => {
+      if (flash.contains(event.relatedTarget as Node | null)) return
+      focused = false
+      start()
+    })
+    start()
   }
 
   private createFlashElement(options: FlashOptions): HTMLElement {
@@ -64,11 +95,6 @@ export default class extends Controller<HTMLElement> {
         type = "alert"
       }
     }
-    // Map duration to milliseconds
-    const durationMs = options.duration === "short" ? 3000 : undefined
-    const autoDismissAttr = durationMs
-      ? `data-alert-dismiss-after-value="${durationMs}"`
-      : ""
 
     // Build HTML directly in TypeScript (single source of truth).
     // NOTE: do NOT interpolate options.key (or any user-supplied string) into
@@ -77,15 +103,15 @@ export default class extends Controller<HTMLElement> {
     // or HTML metacharacters.
     const html = `
       <div data-controller="alert"
-           ${autoDismissAttr}
-           data-transition-enter="transition-position ease-in-out duration-500"
-           data-transition-enter-from="left-96"
-           data-transition-enter-to="-left-8"
-           data-transition-leave="transition-position ease-in-out duration-500"
-           data-transition-leave-from="-left-8"
-           data-transition-leave-to="left-96"
-           class="w-full flex items-end justify-right [&:nth-child(n+2)]:mt-2 first:mt-10 justify-end z-50 pointer-events-none relative left-96">
-        <div class="max-w-sm w-full relative pointer-events-auto flash-${type}-container border-t-4 rounded-b px-4 py-3 shadow-md">
+           data-flash-type="${type}"
+           data-transition-enter="transition ease-out duration-300"
+           data-transition-enter-from="opacity-0 -translate-y-2"
+           data-transition-enter-to="opacity-100 translate-y-0"
+           data-transition-leave="transition ease-in duration-200"
+           data-transition-leave-from="opacity-100 translate-y-0"
+           data-transition-leave-to="opacity-0 -translate-y-2"
+           class="w-full max-w-sm opacity-0 -translate-y-2">
+        <div class="relative pointer-events-auto flash-${type}-container border-t-4 rounded-b px-4 py-3 shadow-md">
           <div class="flex items-start">
             <div class="py-1">
               <svg class="fill-current h-6 w-6 flash-${type}-icon mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -97,7 +123,7 @@ export default class extends Controller<HTMLElement> {
               <p class="text-sm">${this.escapeHtml(options.message)}</p>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
-              <button data-action="alert#close" class="inline-flex flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">
+              <button data-action="alert#close" class="inline-flex p-1 -m-1 flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">
                 <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                 </svg>
