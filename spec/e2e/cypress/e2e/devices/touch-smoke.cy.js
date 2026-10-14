@@ -106,11 +106,7 @@ describe("Touch device smoke", function () {
         cy.visit("/d/one")
         cy.get("[data-document-editor] [role='textbox']").should("exist")
 
-        cy.get("button[aria-controls='space-sidebar']").realTouch()
-        // A real tap lands at fixed coordinates, so wait for the drawer to finish sliding in
-        cy.get("#space-sidebar").should(($sidebar) => {
-          expect($sidebar[0].getBoundingClientRect().left, "drawer slid in").to.be.at.least(0)
-        })
+        cy.openSidebar()
         cy.get("#space-sidebar li[data-node-id='two'] a.content-link span.truncate").first().realTouch()
 
         cy.url().should("include", "/d/two")
@@ -137,11 +133,7 @@ describe("Touch device smoke", function () {
     it("shows the navigation's row buttons beside the titles rather than over them", () => {
       cy.visit("/d/one")
       cy.get("[data-document-editor] [role='textbox']").should("exist")
-      // Narrow screens keep the sidebar in a drawer, opened from the top bar
-      cy.get("body").then(($body) => {
-        const opener = $body.find("button[aria-controls='space-sidebar']:visible")
-        if (opener.length) cy.wrap(opener).realTouch()
-      })
+      cy.openSidebar()
       cy.get("#space-sidebar li[data-node-id='two'] .content-link-button").should("be.visible")
 
       cy.get("#space-sidebar li[data-node-id='two'] > .content-link-container").first().should(($row) => {
@@ -177,16 +169,7 @@ describe("Touch device smoke", function () {
       cy.visit("/d/one")
       cy.get("[data-document-editor] [role='textbox']").should("exist")
 
-      // Narrow screens keep the sidebar in a drawer, opened from the top bar
-      cy.get("body").then(($body) => {
-        const opener = $body.find("button[aria-controls='content-sidebar']:visible")
-        if (opener.length) cy.wrap(opener).realTouch()
-      })
-      // A real tap lands at fixed coordinates, so wait until the sidebar has stopped sliding
-      cy.get("#content-sidebar").should(($sidebar) => {
-        const { right } = $sidebar[0].getBoundingClientRect()
-        expect(right, "sidebar settled on screen").to.be.at.most($sidebar[0].ownerDocument.documentElement.clientWidth)
-      })
+      cy.openSidebar("details")
       cy.get("#content-sidebar #details").realTouch()
 
       // Prove the tap landed before asserting the hint's absence
