@@ -37,21 +37,18 @@ jobs:
             results: tmp/cypress-results-*.xml
             check_name: Cypress E2E Test Results
             fail_on_failure: true
-          # Report-only until the touch fixes in
-          # docs/superpowers/plans/2026-10-08-touch-and-small-screen-support.md land: the
-          # phone specs describe the target behaviour and several fail on purpose today.
-          # Flip fail_on_failure to true once they pass.
+          # The touch specs gate the build like the desktop suite: a phone regression fails CI.
           - device: phone
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
             results: tmp/cypress-phone-results-*.xml
             check_name: Cypress Phone Test Results
-            fail_on_failure: false
+            fail_on_failure: true
           # The desktop layout driven by touch: where controls built for a mouse meet a finger
           - device: tablet-landscape
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
             results: tmp/cypress-tablet-landscape-results-*.xml
             check_name: Cypress Landscape Tablet Test Results
-            fail_on_failure: false
+            fail_on_failure: true
 
     permissions:
       contents: read
