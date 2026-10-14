@@ -12,7 +12,8 @@ class Documents::VersionsController < ApplicationController
   def create
     authorize @document, :update?
 
-    content_blocks = JSON.parse(params["content_blocks"].to_s)
+    content_blocks = parsed_content_blocks
+    return reject_unloaded_content if content_blocks.nil?
 
     if ENV["BLOCKNOTE_DIFF"].to_bool
       blocks2 = @document.to_blocks
@@ -77,5 +78,30 @@ class Documents::VersionsController < ApplicationController
     @version = @document.versions.find_by(sequential_id: params[:id])
 
     head :no_content
+  end
+
+  private
+
+  # The editor fills content_blocks once it has loaded the document, and only then enables the
+  # save button. Anything else means the form went before that; saving it would replace the
+  # document with nothing.
+  def parsed_content_blocks
+    blocks = JSON.parse(params[:content_blocks].to_s)
+    blocks if blocks.is_a?(Array)
+  rescue JSON::ParserError
+    nil
+  end
+
+  def reject_unloaded_content
+    message = "The editor was still loading, so nothing was saved. Please try again."
+
+    respond_to do |format|
+      format.html { redirect_to edit_document_path(@document), alert: message }
+      format.turbo_stream do
+        flash.now[:alert] = message
+        render turbo_stream: turbo_stream.append("flashes", partial: "flash_messages_as_alerts", locals: { flash: flash }),
+          status: :unprocessable_content
+      end
+    end
   end
 end

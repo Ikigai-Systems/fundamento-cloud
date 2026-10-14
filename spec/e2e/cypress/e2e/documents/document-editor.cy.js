@@ -327,6 +327,26 @@ describe("Document Editor", function () {
     });
   });
 
+  // Save stays disabled until the editor has loaded and filled the content it posts. Should a save
+  // still go without it, nothing is saved and the editor stays, with a message instead of a
+  // parser error. Emptying the field after load stands in for the save that went too early.
+  it("saves nothing and says so when the editor's content is missing", function () {
+    cy.visit("/d/two/edit");
+    cy.waitForEditor();
+    cy.get('[aria-label="Save document"]').should("not.be.disabled");
+
+    cy.appEval("Document.find('two').versions.count").then((initialCount) => {
+      cy.get("input[name=content_blocks]").invoke("val", "");
+      cy.get('[aria-label="Save document"]').click();
+      cy.wait("@saveVersion").its("response.statusCode").should("eq", 422);
+
+      cy.contains("#flashes", "The editor was still loading, so nothing was saved").should("be.visible");
+      cy.url().should("include", "/d/two/edit");
+      cy.get('[aria-label="Save document"]').should("exist");
+      cy.appEval("Document.find('two').versions.count").should("eq", initialCount);
+    });
+  });
+
   it("handles empty document gracefully", function () {
     // Create a new empty document
     cy.visit("/s/is_default");

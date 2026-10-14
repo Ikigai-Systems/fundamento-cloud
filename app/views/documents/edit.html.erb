@@ -28,8 +28,10 @@
   <% end %>
 
   <div data-controller="tooltip" class="relative">
+    <%# Disabled until the editor has loaded the document and filled content_blocks (editor_controller) %>
     <%= button_to document_versions_path(@document), method: :create,
       class: "document-toolbar-button update-button",
+      disabled: true,
       form: { id: "save-version-form", data: { action: "pointerenter->tooltip#show pointerleave->tooltip#hide focusin->tooltip#show focusout->tooltip#hide" } },
       aria: { label: "Save document" } do
     %>

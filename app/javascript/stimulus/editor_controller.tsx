@@ -78,6 +78,11 @@ export default class extends Controller {
   private onEditorReady(editor: EditorInstance) {
     this.editorInstance = editor;
     this.syncContentBlocksInput(editor.document);
+    // Saving is possible only now that content_blocks holds the synced document; earlier it would
+    // post nothing. The button, and the shortcut that clicks it, start out disabled.
+    if (this.hasContentBlocksInputTarget) {
+      this.contentBlocksInputTarget.form?.querySelector("button")?.removeAttribute("disabled");
+    }
     if (this.hasTableOfContentsOutlet) {
       this.tableOfContentsOutlets.forEach((o) => o.receiveBlocks(editor.document));
     }

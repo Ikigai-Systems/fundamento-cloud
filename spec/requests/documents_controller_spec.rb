@@ -232,6 +232,17 @@ RSpec.describe DocumentsController, type: :request do
 
         expect(response.body).to include('id="content_sidebar"')
       end
+
+      # The editor fills the saved content only once it has loaded the document, and enables the
+      # button then; saving earlier would post nothing.
+      it "renders the save button disabled until the editor has loaded" do
+        get edit_document_path(document_one),
+          headers: { "Turbo-Frame" => "content" }
+
+        save_button = Nokogiri::HTML(response.body).at_css("form#save-version-form button")
+        expect(save_button).to be_present
+        expect(save_button["disabled"]).to be_present
+      end
     end
   end
 
