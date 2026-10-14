@@ -1,5 +1,4 @@
 import { default as default_2 } from 'react';
-import { EVALUATION_LICENSE } from '../utils/license.js';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 declare interface AddRowConfig {
@@ -17,7 +16,7 @@ export declare interface Column {
     options: Array<Option_2>;
     isEditable: boolean;
     isViewOnly: boolean;
-    renderer: any;
+    renderer: unknown;
 }
 
 export declare interface ColumnType {
@@ -56,19 +55,17 @@ export declare interface Config {
     extraColumnTypes: ColumnType[];
     extraColumnHeaderPopupActions: PopupAction[];
     extraToolbarItems: ToolbarItem[];
-    parseDate: (value: string, configuration: {}) => any | Date;
-    formatStoredDate: (parsedData: Date, configuration: {}) => string;
-    formatDisplayDate: (parsedData: Date, configuration: {}) => string;
-    parseNumber: (value: string | null | undefined, configuration: {}) => number | null;
-    formatDisplayNumber: (parsedData: number | null, configuration: {}) => string;
+    parseDate: (value: string, configuration: Record<string, unknown>) => Date | null;
+    formatStoredDate: (parsedData: Date, configuration: Record<string, unknown>) => string;
+    formatDisplayDate: (parsedData: Date, configuration: Record<string, unknown>) => string;
+    parseNumber: (value: string | null | undefined, configuration: Record<string, unknown>) => number | null;
+    formatDisplayNumber: (parsedData: number | null, configuration: Record<string, unknown>) => string;
 }
 
 export declare interface Data {
     id: string;
     [key: string]: string;
 }
-
-export { EVALUATION_LICENSE }
 
 export declare interface FeatureConfig {
     enabled: boolean;
@@ -87,12 +84,11 @@ export declare interface PopupAction {
     popup?: default_2.ReactNode;
 }
 
-declare function Table({ data, columns, onChange, config, licenseKey, }: {
+declare function Table({ data, columns, onChange, config, }: {
     data: Array<Data>;
     columns: Array<Partial<Column>>;
     onChange: (x: any) => void;
     config: Partial<Config>;
-    licenseKey: string;
 }): JSX_2.Element;
 export default Table;
 
