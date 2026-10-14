@@ -35,7 +35,7 @@ jobs:
           - device: desktop
             spec: ""  # the whole suite
             results: tmp/cypress-results-*.xml
-            check_name: Cypress E2E Test Results
+            check_name: Cypress Desktop Test Results
             fail_on_failure: true
           # The touch specs gate the build like the desktop suite: a phone regression fails CI.
           - device: phone
