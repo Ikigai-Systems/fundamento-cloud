@@ -3,10 +3,13 @@ import { Controller } from "@hotwired/stimulus"
 type FlashOptions = {
   type?: "notice" | "alert" | "error"
   message: string
-  duration?: "short"
   key?: string
   replacePrevious?: boolean
 }
+
+// Long enough to read a one-line confirmation; hovering or focusing it holds it open.
+// A notice that never closed sat over the content on a phone until hit with the small ×.
+const NOTICE_DISMISS_MS = 3000
 
 export default class extends Controller<HTMLElement> {
   static targets = ["pending"]
@@ -20,7 +23,6 @@ export default class extends Controller<HTMLElement> {
     const options: FlashOptions = {
       type: (el.dataset.flashType as FlashOptions["type"]) || "notice",
       message: el.dataset.flashMessage || "",
-      duration: el.dataset.flashDuration as FlashOptions["duration"],
       key: el.dataset.flashKey,
       replacePrevious: el.dataset.flashReplacePrevious === "true",
     }
@@ -51,6 +53,35 @@ export default class extends Controller<HTMLElement> {
 
     const flashElement = this.createFlashElement(options)
     this.element.appendChild(flashElement)
+    if (flashElement.dataset.flashType === "notice") this.dismissLater(flashElement)
+  }
+
+  // Notices are confirmations and close themselves; alerts and errors wait for the user.
+  // The countdown stops while the notice is hovered or focused and starts over when left,
+  // so it never closes under someone reading it or about to press its close button.
+  private dismissLater(flash: HTMLElement) {
+    let timer: number | undefined
+    let hovered = false
+    let focused = false
+    const start = () => {
+      window.clearTimeout(timer)
+      if (hovered || focused) return
+      timer = window.setTimeout(() => {
+        if (!flash.isConnected) return
+        const alert = this.application.getControllerForElementAndIdentifier(flash, "alert") as { close(): void } | null
+        if (alert) alert.close()
+        else flash.remove()
+      }, NOTICE_DISMISS_MS)
+    }
+    flash.addEventListener("mouseenter", () => { hovered = true; start() })
+    flash.addEventListener("mouseleave", () => { hovered = false; start() })
+    flash.addEventListener("focusin", () => { focused = true; start() })
+    flash.addEventListener("focusout", (event) => {
+      if (flash.contains(event.relatedTarget as Node | null)) return
+      focused = false
+      start()
+    })
+    start()
   }
 
   private createFlashElement(options: FlashOptions): HTMLElement {
@@ -64,12 +95,6 @@ export default class extends Controller<HTMLElement> {
         type = "alert"
       }
     }
-    // Notices are confirmations and close themselves; alerts and errors wait for the user.
-    // A notice that never closed sat over the content on a phone until hit with the small ×.
-    const durationMs = options.duration === "short" ? 3000 : type === "notice" ? 6000 : undefined
-    const autoDismissAttr = durationMs
-      ? `data-alert-dismiss-after-value="${durationMs}"`
-      : ""
 
     // Build HTML directly in TypeScript (single source of truth).
     // NOTE: do NOT interpolate options.key (or any user-supplied string) into
@@ -78,7 +103,7 @@ export default class extends Controller<HTMLElement> {
     // or HTML metacharacters.
     const html = `
       <div data-controller="alert"
-           ${autoDismissAttr}
+           data-flash-type="${type}"
            data-transition-enter="transition ease-out duration-300"
            data-transition-enter-from="opacity-0 -translate-y-2"
            data-transition-enter-to="opacity-100 translate-y-0"

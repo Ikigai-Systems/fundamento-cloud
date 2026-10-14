@@ -20,7 +20,6 @@ export default class extends Controller {
         type: stale ? "error" : "notice",
         replacePrevious: true,
         key: "isStaleMessage",
-        duration: stale ? undefined : "short",
       });
       this.wasStale = stale;
     }
