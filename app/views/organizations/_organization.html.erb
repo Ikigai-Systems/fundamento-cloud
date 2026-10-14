@@ -3,10 +3,15 @@
     <div class="text-base font-semibold"><%= organization.name %></div>
   </th>
   <td>
-    <% if current_organization != organization %>
-      <%= button_to "Switch to", select_organization_path(organization), method: :post, class: "link-button" %>
-    <% end %>
+    <%# Row actions rather than links in a sentence, so each gets a 32px tap target. The negative
+        margin keeps the row as tall as the text; the gap keeps a thumb off the neighbouring action. %>
+    <div class="flex items-center gap-4">
+      <% if current_organization != organization %>
+        <%= button_to "Switch to", select_organization_path(organization), method: :post,
+              class: "link-button inline-flex items-center min-h-8 -my-1.5" %>
+      <% end %>
 
-    <%= link_to "Show", organization_path(organization), class: "link-button" %>
+      <%= link_to "Show", organization_path(organization), class: "link-button inline-flex items-center min-h-8 -my-1.5" %>
+    </div>
   </td>
 </tr>
