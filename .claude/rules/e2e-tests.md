@@ -60,12 +60,31 @@ Saves that swap the content frame (instead of doing a full page load) leave the 
 
 Use `cy.intercept` + `cy.wait` on the POST instead — that's the only reliable sync point. Pattern:
 ```js
-function saveDocument() {
+beforeEach(() => {
   cy.intercept("POST", "/d/*/versions").as("saveVersion");
+});
+
+function saveDocument() {
   cy.get('[aria-label="Save document"]').click();
   cy.wait("@saveVersion");
+  // The swap lands on the document page; its sidebar loads lazily afterwards
+  cy.get('[aria-label="Edit document"]').should("exist");
+  cy.get("#content-sidebar .content-sidebar-tabs").should("exist");
 }
 ```
+
+## Register an aliased intercept once, not inside a helper called repeatedly
+
+Calling `cy.intercept(...).as("x")` again for each action stacks intercepts under one alias, and
+a later `cy.wait("@x")` can then resolve with a request an earlier wait already consumed —
+returning immediately, before the action's own request has finished. Recorded on the document
+editor spec: the third save's wait resolved with the second save's request, so the next step ran
+against a page and database the save hadn't reached yet. Register it once in `beforeEach` (or at
+the top of the test) and only `cy.wait` in the helper.
+
+Don't count requests that other steps also trigger, either: the content sidebar reloads both when
+a save lands and when the editor opens, so the nth `cy.wait` on it drifts behind. Wait for what the
+page shows instead.
 
 ## Stability verification
 
