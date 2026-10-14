@@ -28,10 +28,15 @@ describe("Document Editor", function () {
   // save now does a Turbo Frame swap (not a full page reload), so cy.contains
   // on the success flash can match a stale "Document has been updated." from a
   // previous save and let subsequent DB assertions race the in-flight POST.
+  //
+  // The swap then reloads the right sidebar, which comes back on its first tab. Waiting for that
+  // too keeps a following tab click from landing before the reload and being reset by it.
   function saveDocument() {
     cy.intercept("POST", "/d/*/versions").as("saveVersion");
+    cy.intercept("GET", /\/d\/[^/?]+\/sidebar$/).as("reloadSidebar");
     cy.get('[aria-label="Save document"]').click();
     cy.wait("@saveVersion");
+    cy.wait("@reloadSidebar");
   }
 
   it("creates a new document and updates its content", function () {
