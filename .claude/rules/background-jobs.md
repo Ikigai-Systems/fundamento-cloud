@@ -68,3 +68,11 @@ Size the pool for the threads instead (`config/initializers/good_job_connection_
 images ship without `config/database.yml`, so pool env vars that only a `database.yml` reads have
 no effect there. A line that sat harmlessly for months can be armed by a gem bump: this one was,
 by GoodJob 4.12 → 4.19.
+
+## Diagnosing GoodJob from the database
+
+- `good_job_processes.state` is JSON with `pid`, `hostname` and `schedulers[].max_threads`: use it
+  to check each worker's real thread configuration.
+- `good_job_executions.error_event`: `3` = retried after `ConcurrencyExceededError`; `0` = clean
+  *or* interrupted (check the `error` column); `NULL` = success. `process_id` is the executing
+  process's GoodJob id.
