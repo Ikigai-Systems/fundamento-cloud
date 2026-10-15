@@ -1,3 +1,13 @@
+---
+paths:
+  - "app/models/space.rb"
+  - "app/models/import_*.rb"
+  - "app/jobs/import_*.rb"
+  - "app/controllers/documents_controller.rb"
+  - "app/controllers/spaces_controller.rb"
+  - "app/services/document_service.rb"
+---
+
 # Imports and `spaces.hierarchy`
 
 ## Writing the hierarchy

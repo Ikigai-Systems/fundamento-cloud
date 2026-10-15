@@ -1,3 +1,9 @@
+---
+paths:
+  - "db/seeds.rb"
+  - "db/seeds/**"
+---
+
 # Seeds (Oaken)
 
 ## Table seed helper

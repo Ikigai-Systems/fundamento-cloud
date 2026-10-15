@@ -1,3 +1,9 @@
+---
+paths:
+  - "db/migrate/**"
+  - "db/schema.rb"
+---
+
 # Data Migrations
 
 The self-hosted standalone version runs `db:prepare` on boot — anything in `db/migrate/` runs automatically, rake tasks don't. All data changes that self-hosted customers need must be migrations, not rake tasks.

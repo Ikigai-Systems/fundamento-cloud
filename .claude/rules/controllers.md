@@ -1,5 +1,7 @@
 ---
-globs: ["app/controllers/**/*.rb", "app/controllers/concerns/**/*.rb"]
+paths:
+  - "app/controllers/**/*.rb"
+  - "app/controllers/concerns/**/*.rb"
 ---
 
 # Controllers

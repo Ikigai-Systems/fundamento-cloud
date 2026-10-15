@@ -1,5 +1,10 @@
 ---
-globs: ["app/javascript/stimulus/**/*.ts", "app/javascript/stimulus/**/*.tsx", "app/javascript/components/**/*.tsx", "app/views/**/*.html.erb", "app/components/**/*.html.erb"]
+paths:
+  - "app/javascript/stimulus/**/*.ts"
+  - "app/javascript/stimulus/**/*.tsx"
+  - "app/javascript/components/**/*.tsx"
+  - "app/views/**/*.html.erb"
+  - "app/components/**/*.html.erb"
 ---
 
 # Stimulus + React Bridge Pattern

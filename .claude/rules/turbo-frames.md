@@ -1,3 +1,10 @@
+---
+paths:
+  - "app/views/**"
+  - "app/components/**"
+  - "app/javascript/stimulus/**"
+---
+
 # Turbo frames
 
 A link **inside** a turbo-frame with `data-turbo-frame="other_frame"` navigates that other frame

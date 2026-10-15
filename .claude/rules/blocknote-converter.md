@@ -1,3 +1,10 @@
+---
+paths:
+  - "micro-services/blocknote-converter/**"
+  - "package.json"
+  - "package-lock.json"
+---
+
 # BlockNote converter micro-service
 
 `micro-services/blocknote-converter` is a **separate npm project**. Running the app's

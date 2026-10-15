@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.erb"
+---
+
 # ERB
 
 Prefer `if/elsif/else` over `case/when` to choose inline output.

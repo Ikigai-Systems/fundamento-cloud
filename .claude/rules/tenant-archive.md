@@ -1,3 +1,15 @@
+---
+paths:
+  - "app/services/tenant/**"
+  - "spec/services/tenant/**"
+  - "app/models/tenant_export.rb"
+  - "app/jobs/tenant_export_job.rb"
+  - "app/jobs/trash_purge_job.rb"
+  - "app/models/concerns/trashable.rb"
+  - "lib/tasks/tenant_backup.rake"
+  - "db/migrate/**"
+---
+
 # Tenant archives, trash, and restore
 
 The facts here are expensive to rediscover, and nearly all of them were found by running code
