@@ -45,7 +45,7 @@ module Api
       return false if membership_id.blank?
 
       membership = OrganizationMembership.find_by(id: membership_id)
-      return false unless membership
+      return false unless membership && membership.user_id == oauth_token.resource_owner_id
 
       oauth_token.update_column(:used_at, Time.current)
 
