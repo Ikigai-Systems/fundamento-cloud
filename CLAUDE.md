@@ -107,9 +107,6 @@ cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
 cd <worktree> && bin/rails tailwindcss:build
 ```
 
-Cypress needs the root `node_modules` too: without `npm ci` at the worktree root every spec
-fails to compile ("Can't resolve 'cypress-real-events'") and reports 0 tests, 1 failing.
-
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
 removing one, also run `docker compose -p <project> down --volumes` for any stack it started
 (`docker compose ls` lists them).

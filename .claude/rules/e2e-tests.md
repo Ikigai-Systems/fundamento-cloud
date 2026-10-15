@@ -21,6 +21,9 @@
 - Every remaining spec failing in under a second (1 failing, the rest skipped) means the app is
   unreachable, e.g. the stack was stopped mid-run, not a regression.
 
+- Cypress runs from the root `node_modules`, which a fresh worktree doesn't have: run `npm ci` at
+  its root first. Without it every spec fails to compile ("Can't resolve 'cypress-real-events'")
+  and reports 0 tests, 1 failing, which is not a real result.
 - Never run multiple Cypress specs in parallel against the same E2E database — `cy.app("clean")` in `beforeEach` wipes all tables, causing cross-spec interference.
 - Use `bin/dev-e2e up --test` to run the full suite, or `npx cypress run --project spec/e2e --spec <path> --config baseUrl=http://localhost:4000` for individual specs.
 
