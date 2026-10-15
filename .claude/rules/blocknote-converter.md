@@ -13,3 +13,13 @@ checks says nothing about it.
 - `@blocknote/core` exports neither `Link` nor `isAllowedUri` at runtime in either version,
   despite its own JSDoc telling you to import the latter. Predicates copied from it must
   name the original so they can be kept in step.
+
+## Upgrading `@tiptap/*`
+
+Every `@tiptap/*` package peer-pins `@tiptap/core` to an **exact** version. `npm update
+@tiptap/core` therefore can't move the hoisted copy: it adds a duplicate newer one nested under
+`@blocknote/core` and leaves the old one in use, while the audit count still drops. To upgrade,
+delete every `node_modules/**@tiptap/**` key from the lockfile's `packages` and `npm install` to
+re-resolve the family together, in **both** this project and the app. Check afterwards that each
+lockfile has exactly one `node_modules/@tiptap/core`. BlockNote declares `@tiptap/*` as a caret
+range, so a 3.x bump needs no manifest change and no `overrides` entry.

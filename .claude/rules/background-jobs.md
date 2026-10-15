@@ -54,3 +54,17 @@ Key points:
     wait: 5.seconds,
     attempts: Float::INFINITY
   ```
+
+## Never release the connection inside a job
+
+GoodJob 4.19+ runs each job inside `connection_pool.with_connection`, keeps that connection, and
+reuses it in its `ensure` to release the job's advisory lock. Calling
+`ActiveRecord::Base.connection_pool.release_connection` in `perform` (to "free it" during slow I/O)
+checks it back in underneath GoodJob: another thread takes it, two threads drive one libpq handle,
+and it surfaces as `NoMethodError: undefined method 'cmd_tuples' for nil`, leaked advisory locks,
+`idle in transaction` sessions and a deadlocked pool.
+
+Size the pool for the threads instead (`config/initializers/good_job_connection_pool.rb`). Deployed
+images ship without `config/database.yml`, so pool env vars that only a `database.yml` reads have
+no effect there. A line that sat harmlessly for months can be armed by a gem bump: this one was,
+by GoodJob 4.12 → 4.19.
