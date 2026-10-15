@@ -2,37 +2,34 @@
 
 ## Writing the hierarchy
 
-`spaces.hierarchy` is a JSON column holding a space's whole tree. Concurrent writers (import jobs
-above all) doing load → change in Ruby → `save!` lose updates: the last write wins, and the other
-document exists, is reachable by URL, but never appears in the sidebar.
+`spaces.hierarchy` is a JSON column holding a space's whole tree, and every writer saves the whole
+column. An unserialized load → change → `save!` loses concurrent updates: the other document
+exists and is reachable by URL, but never appears in the sidebar.
 
-**What works: compare-and-swap on `hierarchy_version`, no lock.** Read the tree and its version,
-compute the new tree, then write with a column-scoped UPDATE guarded by the version; 0 rows means
-someone committed in between, so re-read and retry (then raise `Space::ConcurrentHierarchyUpdate`).
+Never write the column directly. `Space` has two paths, and both bump `hierarchy_version`:
 
-```ruby
-Space.where(id: id, hierarchy_version: version)
-     .update_all(["hierarchy = ?::json, hierarchy_version = ?, updated_at = ?",
-                  updated.to_json, version + 1, Time.current])
-```
+- **Adding a node: `insert_hierarchy_node!(document_id, parent_id:)`.** A compare-and-swap on
+  `hierarchy_version` with retries, no lock. Imports, document creation and `DocumentService` use
+  it, because it holds nothing across the caller's other work.
+- **Any other change (move, remove, re-sort): `with_locked_hierarchy` /
+  `Space.with_locked_hierarchies(a, b)`.** Takes `pg_advisory_xact_lock` on the space, re-reads
+  it, yields the locked instance (mutate that, not the receiver) and saves. The multi-space form
+  locks in id order so opposite moves can't deadlock.
 
-A plain UPDATE takes `FOR NO KEY UPDATE`, which doesn't conflict with the `FOR KEY SHARE` a
-foreign-key insert takes on the space, and it stays inside the caller's transaction. Under READ
-COMMITTED a concurrent writer makes it block and then re-check the guard against the new row.
+The comments on these methods in `app/models/space.rb` explain why: `FOR UPDATE` deadlocks
+against the `FOR KEY SHARE` a document insert takes for the foreign key, and the version bump
+keeps a concurrent insert from swapping a locked change away.
 
-What failed, so it isn't tried again:
+Keep the locked block short and don't call it inside a long transaction. `pg_advisory_xact_lock`
+is held until the **outermost** transaction ends. Held across a whole import job, it made every
+job for the space contend and wedged an import for 24 minutes; advisory waits are invisible to
+Postgres's deadlock detector, so nothing broke the cycle. That is why inserts went to
+compare-and-swap. Taking the lock outside the transaction instead reopened the window between
+COMMIT and placement and orphaned documents again.
 
-- **`Space.lock.find` (`FOR UPDATE`) deadlocks.** `space.documents.create!` already holds
-  `FOR KEY SHARE` on the space for the foreign key; asking for `FOR UPDATE` is a lock upgrade, and
-  two transactions doing it deadlock.
-- **`pg_advisory_xact_lock` across the job transaction wedges imports.** Every job for the space
-  contends, the lock spans other advisory locks (versions, GoodJob), and advisory waits are
-  invisible to Postgres's deadlock detector, so nothing breaks the cycle.
-- **The same advisory lock outside the transaction** removes contention but reopens the window
-  between COMMIT and placement, orphaning documents again.
-- **Naming the column `lock_version`** turns on Rails optimistic locking for the whole model, so
-  unrelated writers (archiving, renaming) start raising `StaleObjectError`. Hence the separate name.
-- **A SQL function** wouldn't survive `db:schema:load`, because `schema_format` is `:ruby`.
+The guard isn't called `lock_version`, because that name turns on Rails optimistic locking for
+the whole model, so unrelated writers (archiving, renaming) would start raising
+`StaleObjectError`.
 
 ## Imports are not a sync
 
