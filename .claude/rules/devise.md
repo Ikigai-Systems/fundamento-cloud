@@ -1,5 +1,7 @@
 ---
-globs: ["app/controllers/users/**/*.rb", "spec/requests/users/**/*.rb"]
+paths:
+  - "app/controllers/users/**/*.rb"
+  - "spec/requests/users/**/*.rb"
 ---
 
 # Devise Controllers

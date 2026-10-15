@@ -1,5 +1,6 @@
 ---
-globs: ["spec/requests/**/*.rb"]
+paths:
+  - "spec/requests/**/*.rb"
 ---
 
 # Request Specs

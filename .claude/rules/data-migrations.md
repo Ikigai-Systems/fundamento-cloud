@@ -1,3 +1,9 @@
+---
+paths:
+  - "db/migrate/**"
+  - "db/schema.rb"
+---
+
 # Data Migrations
 
 The self-hosted standalone version runs `db:prepare` on boot — anything in `db/migrate/` runs automatically, rake tasks don't. All data changes that self-hosted customers need must be migrations, not rake tasks.
@@ -78,3 +84,26 @@ silent read of stale data, and caught four spec assertions during the `documents
 **Run the chain from zero** on a scratch database (`db:create` + `db:migrate` with a `DATABASE_URL`
 override) whenever one migration backfills from a column a later one drops. Timestamp order has to
 put the backfill first, and only a from-zero run proves it.
+
+## A failed migration blocks every deploy
+
+`package-fundamento-cloud.yaml` runs the new image's `db:migrate` as a one-off task **before**
+traffic shifts, and skips both deploy steps when it fails. A broken migration doesn't just fail
+itself: it freezes deploys for every later merge until fixed. Read the outcome with
+`gh run view <run-id> --log-failed | grep -iE "migrating|Processed|error|exit code"`.
+
+A migration that walks historical JSON (e.g. `versions.content_blocks`) meets every shape the
+data has ever had, and one malformed row anywhere aborts it. Enumerate the real shapes in
+production before shipping it, and code defensively against shapes older than the current schema.
+
+Recovery is cheap as long as the migration stays transactional (no `disable_ddl_transaction!`): it
+rolls back whole, so there is no partial state. Whether it ran is answered by its
+`schema_migrations` row, not by row counts.
+
+## Diff `schema.rb` after migrating
+
+`bin/rails db:migrate` regenerates `db/schema.rb` from your local database, so anything the file
+declares that no migration creates is silently dropped from it. After migrating, `git diff
+db/schema.rb` and confirm the only other change is yours. Never add a column to `schema.rb`
+without a migration: it splits schema-loaded installs from migrated ones, invisibly, until someone
+regenerates the file.
