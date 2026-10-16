@@ -143,7 +143,10 @@ const findFailedRequests = (win, allowStatuses) =>
     .filter((entry) => entry.responseStatus >= 400 && !allowStatuses.includes(entry.responseStatus))
     .map((entry) => `${entry.responseStatus} from ${entry.name.replace(win.location.origin, "")}`)
 
-Cypress.Commands.add("checkPageHealth", (options = {}) => {
+// The problems found on the current page, as a report (empty when there are none).
+// `cy.checkPageHealth()` fails on them; the crawler collects them from several states of a
+// page before failing.
+const pageHealthReport = (win, options = {}) => {
   const {
     overflow = true,
     invisibleClickable = true,
@@ -155,21 +158,31 @@ Cypress.Commands.add("checkPageHealth", (options = {}) => {
   } = options
   const touch = isTouch()
 
+  const sections = {
+    overflow: overflow ? findOverflow(win, ignore) : [],
+    "invisible tappable controls": touch && invisibleClickable ? findInvisibleClickable(win, ignore) : [],
+    "tap targets too small": touch && tapTargets ? findSmallTargets(win, ignore) : [],
+    "failed requests": failedRequests ? findFailedRequests(win, allowStatuses) : [],
+    "console errors": consoleErrors ? win.__consoleErrors || [] : [],
+  }
+
+  return Object.entries(sections)
+    .filter(([, problems]) => problems.length > 0)
+    .map(([name, problems]) => `${name}:\n${problems.map((p) => `  - ${p}`).join("\n")}`)
+    .join("\n")
+}
+
+const logged = (win, options) => {
+  const report = pageHealthReport(win, options)
+  Cypress.log({ name: "pageHealth", message: report ? "problems found" : "ok" })
+  return report
+}
+
+Cypress.Commands.add("pageHealthReport", (options = {}) => cy.window({ log: false }).then((win) => logged(win, options)))
+
+Cypress.Commands.add("checkPageHealth", (options = {}) => {
   cy.window({ log: false }).then((win) => {
-    const sections = {
-      overflow: overflow ? findOverflow(win, ignore) : [],
-      "invisible tappable controls": touch && invisibleClickable ? findInvisibleClickable(win, ignore) : [],
-      "tap targets too small": touch && tapTargets ? findSmallTargets(win, ignore) : [],
-      "failed requests": failedRequests ? findFailedRequests(win, allowStatuses) : [],
-      "console errors": consoleErrors ? win.__consoleErrors || [] : [],
-    }
-
-    const report = Object.entries(sections)
-      .filter(([, problems]) => problems.length > 0)
-      .map(([name, problems]) => `${name}:\n${problems.map((p) => `  - ${p}`).join("\n")}`)
-      .join("\n")
-
-    Cypress.log({ name: "pageHealth", message: report ? "problems found" : "ok" })
+    const report = logged(win, options)
     if (report) {
       throw new Error(`Page health check failed on ${win.location.pathname}\n${report}`)
     }
