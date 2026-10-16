@@ -19,6 +19,7 @@ import './commands'
 import './on-rails'
 import './device'
 import './page-health'
+import './sidebars'
 import 'cypress-real-events'
 
 Cypress.on('uncaught:exception', (err, runnable, promise) => {
