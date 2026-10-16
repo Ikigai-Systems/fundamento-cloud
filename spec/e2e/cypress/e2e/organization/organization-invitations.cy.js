@@ -57,7 +57,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Verify the user has access to Ikigai Systems organization
         cy.visit("/s/is_default");
-        cy.contains("Default IS").should("be.visible");
+        cy.openSidebar().contains("Default IS").should("be.visible");
       });
     });
   });
@@ -108,7 +108,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Verify the user has access to Ikigai Systems organization
         cy.visit("/s/is_default");
-        cy.contains("Default IS").should("be.visible");
+        cy.openSidebar().contains("Default IS").should("be.visible");
       });
     });
   });
@@ -185,7 +185,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Verify access to Ikigai Systems organization
         cy.visit("/s/is_default");
-        cy.contains("Default IS").should("be.visible");
+        cy.openSidebar().contains("Default IS").should("be.visible");
       });
     });
 
@@ -227,7 +227,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Verify access to Ikigai Systems organization
         cy.visit("/s/is_default");
-        cy.contains("Default IS").should("be.visible");
+        cy.openSidebar().contains("Default IS").should("be.visible");
       });
     });
 
@@ -302,7 +302,7 @@ describe("Organization Invitations (Cloud Flow)", function() {
 
         // Verify access to organization
         cy.visit("/s/is_default");
-        cy.contains("Default IS").should("be.visible");
+        cy.openSidebar().contains("Default IS").should("be.visible");
       });
     });
   });

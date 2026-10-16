@@ -78,3 +78,7 @@ tasks.json
 
 # Per-project Claude Code local settings (autoMode env profile) — never commit
 .claude/settings.local.json
+
+# Plans and specs live in Fundamento, not in this public repo
+/docs/plans/
+/docs/superpowers/

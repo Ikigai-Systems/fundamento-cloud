@@ -49,7 +49,7 @@ describe("Document Editor", function () {
     cy.visit("/s/is_default");
 
     // Click the new document button (creates document and redirects to edit page)
-    cy.get('[aria-label="Create new document"]').click();
+    cy.openSidebar().find('[aria-label="Create new document"]').click();
 
     // Wait for the document to be created and redirected to edit page
     cy.url().should("match", editPageUrl);
@@ -77,7 +77,7 @@ describe("Document Editor", function () {
   it("displays headers in the sidebar hierarchy tab and updates when document changes", function () {
     // Create a new document with headers
     cy.visit("/s/is_default");
-    cy.get('[aria-label="Create new document"]').click();
+    cy.openSidebar().find('[aria-label="Create new document"]').click();
 
     // Wait for redirect to edit page
     cy.url().should("match", editPageUrl);
@@ -96,7 +96,7 @@ describe("Document Editor", function () {
     cy.contains("First Heading").should("be.visible");
     cy.contains("Second Heading").should("be.visible");
 
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Structure"]').click();
     });
 
@@ -107,10 +107,12 @@ describe("Document Editor", function () {
     });
 
     // Update a heading
-    cy.contains("First Heading").click();
+    cy.closeSidebar();
+    cy.get("[data-document-editor]").contains("First Heading").click();
     cy.focused().type("{selectall}Updated First Heading");
 
     // Verify the hierarchy updates
+    cy.openSidebar("details");
     cy.get('#table_of_contents_sidebar_tab').within(() => {
       cy.contains("Updated First Heading").should("be.visible");
       cy.contains("Second Heading").should("not.exist");
@@ -169,7 +171,7 @@ describe("Document Editor", function () {
       });
 
       // Verify contributors appear in sidebar details
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -244,7 +246,7 @@ describe("Document Editor", function () {
       cy.contains("Version 3 content.").should("not.exist");
       cy.contains("Version 2 content.").should("not.exist");
 
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.contains("Version 3").click();
         cy.url().should("include", `/d/${documentId}/versions/${versionIds[1]}`);
       })
@@ -253,7 +255,7 @@ describe("Document Editor", function () {
       cy.contains("Version 3 content.").should("be.visible");
       cy.contains("Version 2 content.").should("not.exist");
 
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.contains("Version 2").click();
         cy.url().should("include", `/d/${documentId}/versions/${versionIds[2]}`);
       })
@@ -350,7 +352,7 @@ describe("Document Editor", function () {
   it("handles empty document gracefully", function () {
     // Create a new empty document
     cy.visit("/s/is_default");
-    cy.get('[aria-label="Create new document"]').click();
+    cy.openSidebar().find('[aria-label="Create new document"]').click();
 
     // Wait for redirect to edit page
     cy.url().should("match", editPageUrl);
@@ -398,7 +400,7 @@ describe("Document Editor", function () {
   it("supports using slash commands when editing", function () {
     // Create a new document with various block types
     cy.visit("/s/is_default");
-    cy.get('[aria-label="Create new document"]').click();
+    cy.openSidebar().find('[aria-label="Create new document"]').click();
 
     // Wait for redirect to edit page
     cy.url().should("match", editPageUrl);
@@ -472,7 +474,7 @@ describe("Document Editor", function () {
     saveDocument();
 
     // Reload and verify structure persists
-    cy.contains(documentTitle).should("be.visible");
+    cy.get("#content").contains(documentTitle).should("be.visible");
     cy.get("[data-document-editor]").should("exist");
     cy.contains("Main Heading").should("be.visible");
     cy.contains("First bullet").should("be.visible");

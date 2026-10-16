@@ -1,4 +1,5 @@
 import { isOrganizationCookie } from "../../support/organization-cookies.js"
+import { isTouch } from "../../support/device.js"
 
 // Notices confirm something and close themselves; alerts and errors stay until closed.
 describe("Flash messages", function () {
@@ -24,7 +25,10 @@ describe("Flash messages", function () {
     cy.contains("#flashes [data-controller=alert]", "Notice that closes", { timeout: 5000 }).should("not.exist")
   })
 
-  it("keeps a notice open while it is hovered, then closes it after leaving", () => {
+  it("keeps a notice open while it is hovered, then closes it after leaving", function () {
+    // A touch screen has no hover to pause on
+    if (isTouch()) this.skip()
+
     flash({ type: "notice", message: "Notice being read" })
     cy.contains("#flashes [data-controller=alert]", "Notice being read").realHover()
 

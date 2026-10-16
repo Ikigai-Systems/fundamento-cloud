@@ -165,7 +165,7 @@ describe("Space Onboarding NPI Uniqueness", function() {
       cy.visit(`/d/${data.doc_id}`);
 
       // Wait for document to load
-      cy.contains(data.doc_title).should("be.visible");
+      cy.get("#content").contains(data.doc_title).should("be.visible");
 
       // Verify the advancedTable block is rendered
       // The block should render the table with NPI 7hDhcL1cyv
