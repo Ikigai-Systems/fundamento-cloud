@@ -23,4 +23,15 @@ class Oauth::AuthorizationsController < Doorkeeper::AuthorizationsController
   def oauth_organization_membership_session_key
     "oauth_organization_membership_#{params[:state]}"
   end
+
+  # Doorkeeper copies custom_access_token_attributes onto the grant straight from the
+  # request, so the membership is replaced with the one chosen server-side, and only
+  # when it belongs to the approving user.
+  def pre_auth_params
+    super.merge(organization_membership_id: selected_organization_membership&.id)
+  end
+
+  def selected_organization_membership
+    current_resource_owner.organization_memberships.find_by(id: session[oauth_organization_membership_session_key])
+  end
 end
