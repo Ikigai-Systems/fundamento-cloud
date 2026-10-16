@@ -11,6 +11,10 @@ import { isTouch } from "./device"
 // and waits for the slide to finish: a real tap lands at fixed coordinates, so tapping into a
 // drawer that is still moving misses. On a wide profile it does nothing. Either way it yields
 // the sidebar.
+//
+// An open drawer covers the page, so a step that goes back to the content first calls
+// `cy.closeSidebar()`, which taps the dimmed backdrop beside the drawer, as a person would, and
+// waits until the drawer has slid away. With no drawer open it does nothing.
 
 const SIDEBARS = {
   navigation: { id: "space-sidebar", edge: "left" },
@@ -40,4 +44,25 @@ Cypress.Commands.add("openSidebar", (side = "navigation") => {
   })
 
   return cy.get(`#${sidebar.id}`)
+})
+
+Cypress.Commands.add("closeSidebar", () => {
+  cy.get("body", { log: false }).then(($body) => {
+    const sidebar = Object.values(SIDEBARS).find(({ id }) =>
+      $body.find(`button[aria-controls='${id}']:visible`).attr("aria-expanded") === "true"
+    )
+    if (!sidebar) return
+
+    // The backdrop spans the whole screen under the drawer; tap the strip the drawer leaves dimmed,
+    // clear of the screen edge
+    const $backdrop = $body.find(".drawer-open .sidebar-backdrop")
+    const { width, height } = $backdrop[0].getBoundingClientRect()
+    const x = sidebar.edge === "left" ? width - 16 : 16
+    const y = height / 2
+    if (isTouch()) cy.wrap($backdrop, { log: false }).realTouch({ x, y })
+    else cy.wrap($backdrop, { log: false }).click(x, y)
+
+    cy.get(`button[aria-controls='${sidebar.id}']`, { log: false }).should("have.attr", "aria-expanded", "false")
+    cy.get(`#${sidebar.id}`, { log: false }).should("not.be.visible")
+  })
 })

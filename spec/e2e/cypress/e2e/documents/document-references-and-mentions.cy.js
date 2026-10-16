@@ -58,7 +58,7 @@ describe("Document References and Mentions", function () {
           });
 
           // Open connections tab
-          cy.get('#content-sidebar').within(() => {
+          cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click();
           });
 
@@ -105,7 +105,7 @@ describe("Document References and Mentions", function () {
             });
 
             // Open connections tab
-            cy.get('#content-sidebar').within(() => {
+            cy.openSidebar("details").within(() => {
               cy.get('[aria-label="Connections"]').click();
             });
 
@@ -157,7 +157,7 @@ describe("Document References and Mentions", function () {
         });
 
         // Open connections tab
-        cy.get('#content-sidebar').within(() => {
+        cy.openSidebar("details").within(() => {
           cy.get('[aria-label="Connections"]').click();
         });
 
@@ -184,7 +184,7 @@ describe("Document References and Mentions", function () {
         // which panel ended up loaded.
         function openConnectionsTab(alias) {
           cy.intercept("GET", `/d/${sourceDocId}/sidebar?tab=connections`).as(alias);
-          cy.get('#content-sidebar').within(() => {
+          cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click({ force: true });
           });
           cy.wait(`@${alias}`);
@@ -249,7 +249,7 @@ describe("Document References and Mentions", function () {
           cy.waitForEditor();
 
           // Open connections tab
-          cy.get('#content-sidebar').within(() => {
+          cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click();
           });
 
@@ -301,7 +301,7 @@ describe("Document References and Mentions", function () {
             cy.waitForEditor();
 
             // Open connections tab
-            cy.get('#content-sidebar').within(() => {
+            cy.openSidebar("details").within(() => {
               cy.get('[aria-label="Connections"]').click();
             });
 
@@ -319,7 +319,7 @@ describe("Document References and Mentions", function () {
     it("shows no references message when there are none", function () {
       // Create a new document with no references
       cy.visit("/s/is_default");
-      cy.get('[aria-label="Create new document"]').click();
+      cy.openSidebar().find('[aria-label="Create new document"]').click();
 
       cy.url().should("match", editPageUrl);
       cy.waitForEditor();
@@ -333,7 +333,7 @@ describe("Document References and Mentions", function () {
       });
 
       // Open connections tab
-      cy.get('#content-sidebar').within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Connections"]').click();
       });
 
@@ -378,7 +378,7 @@ describe("Document References and Mentions", function () {
           });
 
           // Open connections tab
-          cy.get('#content-sidebar').within(() => {
+          cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click();
           });
 
@@ -394,7 +394,7 @@ describe("Document References and Mentions", function () {
           cy.waitForEditor();
 
           // Open connections tab
-          cy.get('#content-sidebar').within(() => {
+          cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click();
           });
 

@@ -25,7 +25,7 @@ describe("Content frame navigation — sidebar stability", function () {
     cy.get("#space-sidebar a.content-link").should("exist");
     cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-    cy.get("#space-sidebar a.content-link[href='/d/two']").click();
+    cy.openSidebar().find("a.content-link[href='/d/two']").click();
 
     cy.get("#content").should("exist");
     cy.url().should("include", "/d/two");
@@ -35,7 +35,7 @@ describe("Content frame navigation — sidebar stability", function () {
   it("marks the navigated-to document as selected in the sidebar", function () {
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar a.content-link[href='/d/two']").click();
+    cy.openSidebar().find("a.content-link[href='/d/two']").click();
     cy.url().should("include", "/d/two");
 
     cy.get("[data-document-id='two']")

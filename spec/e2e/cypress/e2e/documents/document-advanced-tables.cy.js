@@ -24,7 +24,7 @@ describe("Advanced Table Title in Document", function () {
 
   function createDocumentAndInsertTable() {
     cy.visit("/s/is_default");
-    cy.get('[aria-label="Create new document"]').click();
+    cy.openSidebar().find('[aria-label="Create new document"]').click();
 
     cy.url().should("match", editPageUrl);
     cy.waitForEditor();
@@ -210,7 +210,7 @@ describe("Advanced Table Title in Document", function () {
   describe("Object icons in the existing-table picker", function () {
     function openNewTableDialog() {
       cy.visit("/s/is_default");
-      cy.get('[aria-label="Create new document"]').click();
+      cy.openSidebar().find('[aria-label="Create new document"]').click();
 
       cy.url().should("match", editPageUrl);
       cy.waitForEditor();

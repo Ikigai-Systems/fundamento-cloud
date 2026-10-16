@@ -35,7 +35,7 @@ describe("Content frame navigation on full-width pages", function () {
       cy.get("#space-sidebar a.content-link").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-      cy.get("#space-sidebar a.content-link[href='/d/one']").click();
+      cy.openSidebar().find("a.content-link[href='/d/one']").click();
 
       cy.get("#content").should("exist");
       cy.url().should("include", "/d/one");
@@ -57,7 +57,7 @@ describe("Content frame navigation on full-width pages", function () {
       cy.get("#space-sidebar a.content-link").should("exist");
       cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");
 
-      cy.get("#space-sidebar a.content-link[href='/d/two']").click();
+      cy.openSidebar().find("a.content-link[href='/d/two']").click();
 
       cy.get("#content").should("exist");
       cy.url().should("include", "/d/two");

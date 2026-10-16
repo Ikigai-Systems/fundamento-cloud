@@ -32,7 +32,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -64,7 +64,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -105,7 +105,7 @@ describe("Document Tags", function () {
       cy.waitForEditor();
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -145,7 +145,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -190,7 +190,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -211,7 +211,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab again
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -242,7 +242,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -292,7 +292,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -338,7 +338,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -366,7 +366,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -385,6 +385,7 @@ describe("Document Tags", function () {
     cy.get('@editPageTags').should('have.length.at.least', 1);
 
     // Save and navigate to show page
+    cy.closeSidebar();
     cy.get('[aria-label="Save document"]').click();
     cy.url().should("include", `/d/${documentId}`);
     cy.url().should("not.include", "/edit");
@@ -398,7 +399,7 @@ describe("Document Tags", function () {
     cy.waitForEditor();
 
     // Open sidebar Details tab on show page
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 

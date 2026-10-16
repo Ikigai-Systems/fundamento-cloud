@@ -219,7 +219,7 @@ describe("Document Editing Sessions", {retries: {runMode: 2, openMode: 0}}, func
     cy.visit(`/d/${documentId}/versions/latest`);
 
     // The sidebar should show versions with contributor avatars
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       // Each version entry should exist
       cy.contains("Version 1").should("be.visible");
       cy.contains("Version 2").should("be.visible");
