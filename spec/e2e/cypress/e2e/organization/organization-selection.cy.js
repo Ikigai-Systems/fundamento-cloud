@@ -53,7 +53,7 @@ describe("Organization Selection (EnsureOrganization)", function() {
       });
 
       cy.url().should("eq", Cypress.config().baseUrl + "/s/is_default");
-      cy.contains("Default IS").should("be.visible");
+      cy.openSidebar().contains("Default IS").should("be.visible");
 
       cy.getCookie("organization_id").then(cookie => { cy.log("Generated cookie: " + cookie.value) })
     });
@@ -72,7 +72,7 @@ describe("Organization Selection (EnsureOrganization)", function() {
 
       cy.visit("/s/hc_default");
 
-      cy.contains("Default HC").should("be.visible");
+      cy.openSidebar().contains("Default HC").should("be.visible");
 
       // Cookie should still be set
       cy.getCookie("organization_id").should("have.property", "value", hcOrganizationCookie);
@@ -104,7 +104,8 @@ describe("Organization Selection (EnsureOrganization)", function() {
         cy.contains("Switch to").click();
       });
 
-      cy.contains("Default IS").should("be.visible");
+      cy.url().should("include", "/s/is_default");
+      cy.openSidebar().contains("Default IS").should("be.visible");
 
       // Cookie should be cleared (or reset)
       // Note: After redirect, cookie might be cleared or set to new value

@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {isTouch} from "../../support/device.js";
 
 describe("Space sidebar tree", function () {
   beforeEach(() => {
@@ -22,7 +23,7 @@ describe("Space sidebar tree", function () {
     cy.get("#space-sidebar li[data-node-id='one']").should("exist");
     cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
 
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
   });
@@ -30,7 +31,7 @@ describe("Space sidebar tree", function () {
   it("removes children from the DOM again when collapsed", function () {
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
 
     cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
@@ -51,7 +52,7 @@ describe("Space sidebar tree", function () {
     cy.appEval(`Document.find("two").update!(archived: true)`);
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two'] .content-link-container")
       .should("not.be.visible");
 
@@ -64,7 +65,7 @@ describe("Space sidebar tree", function () {
   it("remembers which nodes are expanded across a reload", function () {
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
 
     cy.reload();
@@ -75,7 +76,7 @@ describe("Space sidebar tree", function () {
   it("remembers a collapse across a reload", function () {
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
     cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
 
@@ -86,7 +87,7 @@ describe("Space sidebar tree", function () {
 
   it("keeps expansion state separate per space", function () {
     cy.visit("/d/one");
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
 
     // A second space in the same org ("is"), with its own nested hierarchy, so we can prove
@@ -101,7 +102,7 @@ describe("Space sidebar tree", function () {
       const [space2Id, docAId] = result.split("|");
 
       cy.visit(`/d/${docAId}`);
-      cy.get(`#space-sidebar li[data-node-id='${docAId}'] .collapsible-trigger`).click();
+      cy.openSidebar().find(`li[data-node-id='${docAId}'] .collapsible-trigger`).click();
       cy.get(`#space-sidebar li[data-node-id='${docAId}'] .content-link-container`).should("have.class", "selected");
 
       cy.window().then((win) => {
@@ -141,13 +142,13 @@ describe("Space sidebar tree", function () {
 
     cy.visit("/d/two");
 
-    cy.get("#space-sidebar li[data-node-id='two'] .content-link-container.selected")
+    cy.openSidebar().find("li[data-node-id='two'] .content-link-container.selected")
       .should("be.visible");
   });
 
   it("expands to the open document even when the stored state has it collapsed", function () {
     cy.visit("/d/one");
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").first().click();
 
     cy.visit("/d/two");
@@ -165,7 +166,7 @@ describe("Space sidebar tree", function () {
       .should("have.attr", "draggable", "true")
       .and("have.attr", "role", "option");
 
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
 
     cy.get("#space-sidebar [data-sidebar-tree-target='root'] > ul > li[data-node-id='one']")
@@ -197,7 +198,7 @@ describe("Space sidebar tree", function () {
     cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
 
     // Re-rendering from the JSON payload frozen at frame load would restore the stale title here.
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
     cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container span.truncate").should("have.text", "Renamed One");
 
@@ -225,7 +226,7 @@ describe("Space sidebar tree", function () {
 
     // The sidebar frame never reloads, so re-rendering from the JSON frozen at its load would
     // bring the lozenge back on the next expand/collapse.
-    cy.get("#space-sidebar li[data-node-id='one'] .collapsible-trigger").click();
+    cy.openSidebar().find("li[data-node-id='one'] .collapsible-trigger").click();
     cy.get("#space-sidebar li[data-node-id='two']").should("exist");
     cy.get("#space-sidebar li[data-node-id='one'] > .content-link-container .draft-lozenge").should("not.exist");
 
@@ -269,6 +270,9 @@ describe("Space sidebar tree", function () {
   });
 
   it("nests a document under another via drag and drop", function () {
+    // Reordering by drag is mouse-only; touch is to get a "Move to…" action instead
+    if (isTouch()) this.skip();
+
     cy.appEval(`
       space = Space.find("is_default")
       space.update!(hierarchy: [

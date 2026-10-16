@@ -22,7 +22,7 @@ describe("Document Sidebar Timestamps", function () {
   });
 
   function openDetailsSidebar() {
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
   }

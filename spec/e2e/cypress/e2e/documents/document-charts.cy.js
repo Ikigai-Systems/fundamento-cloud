@@ -111,7 +111,7 @@ describe("Charts in Document", function () {
   describe("inserting a chart", function () {
     function insertChartBlock() {
       cy.visit("/s/is_default");
-      cy.get('[aria-label="Create new document"]').click();
+      cy.openSidebar().find('[aria-label="Create new document"]').click();
 
       cy.url().should("match", editPageUrl);
       cy.waitForEditor();

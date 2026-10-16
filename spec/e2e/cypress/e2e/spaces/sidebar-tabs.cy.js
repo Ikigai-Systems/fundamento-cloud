@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {isTouch} from "../../support/device.js";
 
 describe("Space sidebar tabs", function () {
   beforeEach(() => {
@@ -34,8 +35,8 @@ describe("Space sidebar tabs", function () {
   it("draws the spaces dropdown over the tab bar", function () {
     cy.visit("/d/one");
 
-    cy.get("#space-sidebar #spaces-dropdown").click();
-    cy.get("#space-sidebar [data-dropdown-target='menu']").should("be.visible");
+    cy.openSidebar().find("#spaces-dropdown").click();
+    cy.openSidebar().find("[data-dropdown-target='menu']").should("be.visible");
 
     // The open menu hangs over the tab bar, which is positioned with a z-index of its own and
     // comes later in the DOM — at the same level the tabs would paint over the menu, so being
@@ -54,6 +55,9 @@ describe("Space sidebar tabs", function () {
   });
 
   it("names the tabs with a tooltip rather than visible text", function () {
+    // Tooltips answer only a mouse, so a touch screen never shows one
+    if (isTouch()) this.skip();
+
     cy.visit("/d/one");
 
     cy.get("#space-sidebar #hierarchy").should("not.contain.text", "Hierarchy");
@@ -82,7 +86,7 @@ describe("Space sidebar tabs", function () {
     cy.get("#space-sidebar li[data-node-id='one']").should("exist");
     cy.get("@starredTab.all").should("have.length", 0);
 
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
 
     cy.wait("@starredTab");
     cy.contains("No starred items").should("be.visible");
@@ -90,7 +94,7 @@ describe("Space sidebar tabs", function () {
 
   it("adds and removes an item as it is starred and unstarred", function () {
     cy.visit("/d/one");
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
     cy.contains("No starred items").should("be.visible");
 
     // Starred from elsewhere (the fixture document opens in edit mode, which has no star
@@ -122,19 +126,21 @@ describe("Space sidebar tabs", function () {
     // documents(:two) has a version fixture, so it renders in show mode with a star button —
     // a draft would redirect to /edit, which has none.
     cy.visit("/d/two");
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
     cy.contains("No starred items").should("be.visible");
 
     // The form keeps its dom_id across the star/unstar swap, so one selector covers both.
+    cy.closeSidebar();
     cy.get("#favorite_document_two button").click();
 
     cy.get("#space_starred_list a.content-link[href='/d/two']").should("exist");
-    cy.contains("No starred items").should("not.be.visible");
+    cy.openSidebar().contains("No starred items").should("not.be.visible");
 
+    cy.closeSidebar();
     cy.get("#favorite_document_two button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
-    cy.contains("No starred items").should("be.visible");
+    cy.openSidebar().contains("No starred items").should("be.visible");
   });
 
   it("adds and removes the row as a table's own star button is clicked", function () {
@@ -144,9 +150,10 @@ describe("Space sidebar tabs", function () {
     `);
 
     cy.visit("/t/startable");
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
     cy.contains("No starred items").should("be.visible");
 
+    cy.closeSidebar();
     cy.get("#favorite_table_startable button").click();
 
     cy.get("#space_starred_list a.content-link[href='/t/startable']").should("exist");
@@ -154,7 +161,7 @@ describe("Space sidebar tabs", function () {
     cy.get("#favorite_table_startable button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
-    cy.contains("No starred items").should("be.visible");
+    cy.openSidebar().contains("No starred items").should("be.visible");
   });
 
   it("leaves out items starred in another space", function () {
@@ -167,7 +174,7 @@ describe("Space sidebar tabs", function () {
     `);
 
     cy.visit("/d/one");
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
 
     cy.get("#space_starred_list a.content-link[href='/d/one']").should("exist");
     cy.get("#space_starred_list").should("not.contain", "Other Space Doc");
@@ -179,7 +186,7 @@ describe("Space sidebar tabs", function () {
     `);
 
     cy.visit("/d/one");
-    cy.get("#space-sidebar #starred").click();
+    cy.openSidebar().find("#starred").click();
     cy.get("#space_starred_list a.content-link[href='/d/two']").should("exist");
 
     cy.intercept("GET", /\/s\/.*\/sidebar/).as("sidebarReload");

@@ -96,9 +96,9 @@ describe("Moving a document with children between spaces", function () {
     // that is also what proves the nesting survived rather than the nodes being flattened
     // onto the destination root.
     cy.get(`#space-sidebar li[data-node-id='${ids.parentId}']`).should("exist");
-    cy.get(`#space-sidebar li[data-node-id='${ids.parentId}'] .collapsible-trigger`).click();
+    cy.openSidebar().find(`li[data-node-id='${ids.parentId}'] .collapsible-trigger`).click();
     cy.get(`#space-sidebar li[data-node-id='${ids.childId}']`).should("exist");
-    cy.get(`#space-sidebar li[data-node-id='${ids.childId}'] .collapsible-trigger`).click();
+    cy.openSidebar().find(`li[data-node-id='${ids.childId}'] .collapsible-trigger`).click();
     cy.get(`#space-sidebar li[data-node-id='${ids.grandchildId}']`).should("exist");
 
     cy.appEval(`Space.find("${ids.destinationId}").hierarchy`).then((hierarchy) => {

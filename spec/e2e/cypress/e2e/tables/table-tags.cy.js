@@ -32,7 +32,7 @@ describe("Table Tags", function () {
     cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
     // Open the sidebar Details tab
-    cy.get("#content-sidebar").within(() => {
+    cy.openSidebar("details").within(() => {
       cy.get('[aria-label="Details"]').click();
     });
 
@@ -66,7 +66,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -109,7 +109,7 @@ describe("Table Tags", function () {
         cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
         // Open the sidebar Details tab
-        cy.get("#content-sidebar").within(() => {
+        cy.openSidebar("details").within(() => {
           cy.get('[aria-label="Details"]').click();
         });
 
@@ -158,7 +158,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -208,7 +208,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -230,7 +230,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab again
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -261,7 +261,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -314,7 +314,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
@@ -374,7 +374,7 @@ describe("Table Tags", function () {
         cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
         // Open the sidebar Details tab
-        cy.get("#content-sidebar").within(() => {
+        cy.openSidebar("details").within(() => {
           cy.get('[aria-label="Details"]').click();
         });
 
@@ -431,7 +431,7 @@ describe("Table Tags", function () {
       cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
 
       // Open the sidebar Details tab
-      cy.get("#content-sidebar").within(() => {
+      cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
 
