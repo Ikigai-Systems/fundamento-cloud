@@ -196,6 +196,8 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
+  get "/mcp" => "ai_assistants#show", as: :ai_assistants
+
   resources :packs do
     # get :suggest_members, on: :collection
   end
