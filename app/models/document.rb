@@ -17,7 +17,6 @@ class Document < ApplicationRecord
   belongs_to :space
 
   # The Y.js CRDT blob, kept off this row so it cannot ride along with SELECT *.
-  # See docs/superpowers/specs/2026-09-09-object-contents-design.md.
   has_one :content, class_name: "ObjectContent", as: :owner, dependent: :destroy
 
   # Writers use this rather than #content: a document may predate the move to

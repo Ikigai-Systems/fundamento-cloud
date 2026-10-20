@@ -233,8 +233,7 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
       if resolved_id&.start_with?("attachment:")
         # A link stays a link. This used to emit the ![...] embed form, so every
         # [[file|Open: file]] became a second copy of the image its ![[file]] embed
-        # already showed — 274 documents in one workspace ended up with duplicated
-        # image blocks.
+        # already showed, leaving documents with duplicated image blocks.
         #
         # Keeps the internal attachment: form rather than a resolved path: blocks must not
         # carry an endpoint, so the same document can be served through the authenticated

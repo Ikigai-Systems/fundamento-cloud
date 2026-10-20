@@ -1,8 +1,8 @@
-# ApplicationJob, not MemoryIntensiveJob: imported documents are tiny. Across a real 3976
-# file vault the 1811 documents totalled 4.5 MB — 2.5 KB on average, 261 KB at the largest —
-# so there is nothing here to serialize for memory's sake. Holding them to one at a time made
-# a 1553-document import take hours (median 12s between completions, most of it the 5-second
-# ConcurrencyExceededError backoff the other threads paid to discover the slot was taken).
+# ApplicationJob, not MemoryIntensiveJob: imported documents are tiny. In a typical vault
+# documents average a few KB and the largest are a few hundred KB, so there is nothing here
+# to serialize for memory's sake. Holding them to one at a time made a large import take
+# hours (median 12s between completions, most of it the 5-second ConcurrencyExceededError
+# backoff the other threads paid to discover the slot was taken).
 # The files are small, but converting each one starts a ~240 MB Node process, so five at once
 # OOM-killed a 1 GB worker. The import_documents queue has a thread pool of its own on every
 # worker (lib/good_job_queues.rb), which caps that per process without the polling a

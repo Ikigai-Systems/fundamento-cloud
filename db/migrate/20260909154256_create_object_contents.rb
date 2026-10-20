@@ -7,8 +7,7 @@
 # documents at all, and about moving the write churn off a table the command palette
 # scans on every search.
 #
-# Polymorphic because table content is expected to land here too, as `data` -- see
-# docs/superpowers/specs/2026-09-09-object-contents-design.md.
+# Polymorphic because table content is expected to land here too, as `data`.
 #
 # documents.sync is left in place; a follow-up migration drops it once this release has
 # rolled out.

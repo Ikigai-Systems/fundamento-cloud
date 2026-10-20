@@ -9,8 +9,8 @@ module BlocknoteConverterService
 
   # Generous, because a large docx legitimately takes a while, but finite -- which is the point.
   #
-  # There was no timeout here at all, and on 2026-10-05 a single document's conversion never
-  # returned: it hung MigrateAttachmentToNpiPk in production for over an hour, mid-transaction,
+  # There was no timeout here at all, and once a single document's conversion never
+  # returned: it hung MigrateAttachmentToNpiPk for over an hour, mid-transaction,
   # holding locks. Postgres showed the session `idle in transaction` waiting on ClientRead --
   # the database waiting on a client that was itself waiting on a subprocess. The same hazard
   # applies to every import worker.

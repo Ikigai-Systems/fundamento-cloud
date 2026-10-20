@@ -1,8 +1,7 @@
 # The content of a document or -- later -- a table, kept off the owner's row.
 #
 # `sync` holds a document's Y.js CRDT blob. `data` is reserved for table content once it
-# moves from tables/rows + columns + cells to JSON. See
-# docs/superpowers/specs/2026-09-09-object-contents-design.md.
+# moves from tables/rows + columns + cells to JSON.
 class ObjectContent < ApplicationRecord
   # The blob is rewritten on essentially every keystroke, and an audit row per write would
   # store a copy of every version of every document.

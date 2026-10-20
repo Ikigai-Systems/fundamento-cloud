@@ -130,83 +130,83 @@ RSpec.describe Formula::Engine, type: :model do
             {
               type: "AddRow",
               tableId: "users_tracker",
-              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-07T00:00:00+02:00" }
+              values: { "users_tracker_count" => 10, "users_tracker_counted_at" => "2024-07-07T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-14T00:00:00+02:00" }
+              values: { "users_tracker_count" => 20, "users_tracker_counted_at" => "2024-07-14T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-21T00:00:00+02:00" }
+              values: { "users_tracker_count" => 30, "users_tracker_counted_at" => "2024-07-21T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 2, "users_tracker_counted_at" => "2024-07-28T00:00:00+02:00" }
+              values: { "users_tracker_count" => 40, "users_tracker_counted_at" => "2024-07-28T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-04T00:00:00+02:00" }
+              values: { "users_tracker_count" => 50, "users_tracker_counted_at" => "2024-08-04T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-11T00:00:00+02:00" }
+              values: { "users_tracker_count" => 60, "users_tracker_counted_at" => "2024-08-11T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-18T00:00:00+02:00" }
+              values: { "users_tracker_count" => 70, "users_tracker_counted_at" => "2024-08-18T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-08-25T00:00:00+02:00" }
+              values: { "users_tracker_count" => 80, "users_tracker_counted_at" => "2024-08-25T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-01T00:00:00+02:00" }
+              values: { "users_tracker_count" => 90, "users_tracker_counted_at" => "2024-09-01T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-08T00:00:00+02:00" }
+              values: { "users_tracker_count" => 100, "users_tracker_counted_at" => "2024-09-08T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-15T00:00:00+02:00" }
+              values: { "users_tracker_count" => 110, "users_tracker_counted_at" => "2024-09-15T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-22T00:00:00+02:00" }
+              values: { "users_tracker_count" => 120, "users_tracker_counted_at" => "2024-09-22T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-09-29T00:00:00+02:00" }
+              values: { "users_tracker_count" => 130, "users_tracker_counted_at" => "2024-09-29T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 3, "users_tracker_counted_at" => "2024-10-06T00:00:00+02:00" }
+              values: { "users_tracker_count" => 140, "users_tracker_counted_at" => "2024-10-06T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 4, "users_tracker_counted_at" => "2024-10-13T00:00:00+02:00" }
+              values: { "users_tracker_count" => 150, "users_tracker_counted_at" => "2024-10-13T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 6, "users_tracker_counted_at" => "2024-10-20T00:00:00+02:00" }
+              values: { "users_tracker_count" => 160, "users_tracker_counted_at" => "2024-10-20T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 7, "users_tracker_counted_at" => "2024-10-27T00:00:00+02:00" }
+              values: { "users_tracker_count" => 170, "users_tracker_counted_at" => "2024-10-27T00:00:00+02:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 8, "users_tracker_counted_at" => "2024-11-03T00:00:00+01:00" }
+              values: { "users_tracker_count" => 180, "users_tracker_counted_at" => "2024-11-03T00:00:00+01:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 9, "users_tracker_counted_at" => "2024-11-10T00:00:00+01:00" }
+              values: { "users_tracker_count" => 190, "users_tracker_counted_at" => "2024-11-10T00:00:00+01:00" }
             },
             { tableId: "users_tracker",
               type: "AddRow",
-              values: { "users_tracker_count" => 12, "users_tracker_counted_at" => "2024-11-17T00:00:00+01:00" }
+              values: { "users_tracker_count" => 200, "users_tracker_counted_at" => "2024-11-17T00:00:00+01:00" }
             }
           ])
         end

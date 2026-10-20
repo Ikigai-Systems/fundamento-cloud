@@ -39,10 +39,10 @@ RSpec.describe Icon do
     # them out of the title.
     previously_false_positives = ["✓ Reviewed", "✎ Notes", "✂ Cut", "☙ Ornament", "♀ Women"]
 
-    # Real shapes taken from the production title survey.
-    production_shapes = {
+    # Shapes real titles take.
+    real_shapes = {
       "📆2025 planning" => ["📆", "2025 planning"],
-      "✅Tagi" => ["✅", "Tagi"]
+      "✅Tags" => ["✅", "Tags"]
     }
 
     describe "emoji the previous implementation failed to recognize" do
@@ -69,15 +69,15 @@ RSpec.describe Icon do
       end
     end
 
-    describe "titles seen in production" do
-      production_shapes.each do |input, (emoji, rest)|
+    describe "real-world title shapes" do
+      real_shapes.each do |input, (emoji, rest)|
         it "splits #{input.inspect}" do
           expect(described_class.split_leading(input)).to eq([emoji, rest])
         end
       end
 
-      # 37 of the 63 production titles starting with a symbol begin with one of
-      # these, and none of them should become an icon.
+      # Most real titles starting with a symbol begin with one of these, and none
+      # of them should become an icon.
       ['"/" quoted', "[Dark] mode", ".obsidian", "- dash"].each do |input|
         it "leaves #{input.inspect} untouched" do
           expect(described_class.split_leading(input)).to be_nil

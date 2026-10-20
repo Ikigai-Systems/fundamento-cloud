@@ -3,13 +3,9 @@
 #
 # This is the one table of the eight whose ids users' own content refers to. Attachments are
 # addressed as `attachment:<id>` -- in a link's href, and in a file or image block's props.url,
-# which is what createFileUrlResolver resolves. Production measured:
-#
-#   24,432 of 29,777 versions contain `attachment:`
-#    1,303 of  3,409 live Yjs documents contain it
-#
-# So changing the key without moving content breaks an attachment link or an embedded image in
-# four documents out of five.
+# which is what createFileUrlResolver resolves. Most versions and a large share of live Yjs
+# documents contain `attachment:`, so changing the key without moving content breaks
+# attachment links and embedded images across most documents.
 #
 # == Why this commits as it goes
 #

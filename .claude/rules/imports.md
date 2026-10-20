@@ -32,7 +32,7 @@ keeps a concurrent insert from swapping a locked change away.
 
 Keep the locked block short and don't call it inside a long transaction. `pg_advisory_xact_lock`
 is held until the **outermost** transaction ends. Held across a whole import job, it made every
-job for the space contend and wedged an import for 24 minutes; advisory waits are invisible to
+job for the space contend and wedged an import for many minutes; advisory waits are invisible to
 Postgres's deadlock detector, so nothing broke the cycle. That is why inserts went to
 compare-and-swap. Taking the lock outside the transaction instead reopened the window between
 COMMIT and placement and orphaned documents again.

@@ -2,7 +2,7 @@
 require "rails_helper"
 require Rails.root.join("db/migrate/20260831120100_backfill_object_icons_from_titles")
 
-# Production has no name collisions, so without this spec the skip path would
+# Real data rarely has name collisions, so without this spec the skip path would
 # ship completely unexercised -- and it runs unattended against self-hosted
 # databases on boot, where an abort means a failed upgrade.
 RSpec.describe BackfillObjectIconsFromTitles do
@@ -80,7 +80,7 @@ RSpec.describe BackfillObjectIconsFromTitles do
       end
 
       it "leaves an emoji-only title alone" do
-        # 19 documents in production are titled exactly this.
+        # Real documents are titled exactly this.
         record = create_document("d4", "✅")
 
         migrate_up
