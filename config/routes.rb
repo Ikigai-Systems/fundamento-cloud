@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # /.well-known/oauth-authorization-server — RFC 8414 auth server metadata (standard OAuth discovery)
   namespace "well_known", path: ".well-known" do
     get "oauth-protected-resource", to: "oauth_protected_resource#show"
+    get "oauth-protected-resource/api/mcp/organizations/:organization_id", to: "oauth_protected_resource#show"
     get "oauth-authorization-server", to: "oauth_authorization_server#show"
   end
 
