@@ -110,7 +110,7 @@ rails db:reset
 
 ## Docker Development
 
-Infrastucture services are managed by docker compose locally and on CI/CD. Also the app is distributed as docker images and those get deployed automatically to Kubernetes cluster.
+Infrastucture services are managed by docker compose locally and on CI/CD. The app is distributed as docker images; the hosted cloud deploys them automatically to AWS ECS.
 
 
 ```bash
