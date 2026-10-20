@@ -18,8 +18,8 @@ function table(rows: unknown[], columnWidths: unknown[] = [null, 234, null, 172]
 const ordinaryRow = () => ({cells: [cell(), cell(), cell(), cell()]});
 
 describe("table cell spans that reach past the table", () => {
-  // The shape of a real production document: nine ordinary rows, then a final row holding one
-  // cell with colspan 4 / rowspan 5 -- five rows claimed starting from the tenth of ten.
+  // The shape seen in real data: ordinary rows, then a final row holding one cell whose
+  // colspan and rowspan claim columns and rows past the end of the table.
   // blocksToYDoc threw "Cannot read properties of undefined (reading '0')" on it, taking the
   // whole document with it, which is what stalled the attachment id migration.
   const outOfBounds = () => table([
@@ -62,7 +62,7 @@ describe("table cell spans that reach past the table", () => {
     expect(JSON.stringify(valid)).toBe(before);
   });
 
-  // Clamping fixes spans that point outside the table, which is the case production had. A
+  // Clamping fixes spans that point outside the table, which is the case real data had. A
   // table whose spans are inside the table but contradict each other -- two cells claiming one
   // position -- is a different problem, and @blocknote/core still rejects it rather than
   // guessing. Pinned so that the limit is known rather than discovered.

@@ -157,7 +157,7 @@ Two of them exist specifically because the database cannot verify the content:
 
 - `TableRegistry::UNCONSTRAINED` — derived rules whose column has no foreign key, so no spec
   can confirm the parent. The plan had the OAuth tables reaching the tenant through
-  `resource_owner_id`; production says that column points at **users** (372 of 372 tokens),
+  `resource_owner_id`; real data shows that column points at **users** (every token),
   and the real link is `organization_membership_id`. An export built on the wrong one would
   have contained zero OAuth records and said nothing.
 - `IdMap::REMAPPED` — four columns referring to reassigned integer ids, of which only three are

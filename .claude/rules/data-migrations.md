@@ -89,8 +89,9 @@ put the backfill first, and only a from-zero run proves it.
 
 `package-fundamento-cloud.yaml` runs the new image's `db:migrate` as a one-off task **before**
 traffic shifts, and skips both deploy steps when it fails. A broken migration doesn't just fail
-itself: it freezes deploys for every later merge until fixed. Read the outcome with
-`gh run view <run-id> --log-failed | grep -iE "migrating|Processed|error|exit code"`.
+itself: it freezes deploys for every later merge until fixed. The run log shows only the exit
+code and the CloudWatch command to read the output: this repo's Actions logs are public, and
+migration output can carry customer data, so it stays in CloudWatch.
 
 A migration that walks historical JSON (e.g. `versions.content_blocks`) meets every shape the
 data has ever had, and one malformed row anywhere aborts it. Enumerate the real shapes in

@@ -71,8 +71,9 @@ RSpec.describe ImportSessionCleanupJob, type: :job do
 
     # The hazard worth a test of its own: an import hands its blob to the Attachment it creates
     # instead of copying the bytes, so the session's purge must not delete the file behind an
-    # imported document's attachment. Production has 2,648 blobs shared this way. The purge job
-    # is run for real -- asserting only that it was enqueued would prove nothing either way.
+    # imported document's attachment. Every imported attachment shares its blob this way. The
+    # purge job is run for real -- asserting only that it was enqueued would prove nothing
+    # either way.
     it "keeps a blob the imported document still points at" do
       _file, blob = source_file(stale, key: "shared-source-key")
 

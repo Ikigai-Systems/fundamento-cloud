@@ -11,7 +11,7 @@
 #
 # Replaces Document#parent, which walked the entire tree in Ruby and issued a find_by per
 # level -- the caller then looped that per level per document, making it
-# O(documents x hierarchy_size): 4.1s for 1761 documents.
+# O(documents x hierarchy_size): seconds for a large space.
 class HierarchyPaths
   SEPARATOR = " › "
 

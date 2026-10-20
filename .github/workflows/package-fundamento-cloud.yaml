@@ -191,39 +191,17 @@ jobs:
             --query "tasks[0].containers[?name=='fundamento-cloud-website'].exitCode | [0]" --output text)
           echo "migration exit code: $CODE"
 
-          # Pull the task's own output back into the job log. Without this the step
-          # reports nothing but an exit code and the backtrace stays in CloudWatch: the
-          # 20260905073815 migration failure needed an AWS round-trip to read. Group and
-          # stream are taken from the task definition rather than hardcoded, so they
-          # cannot drift from the Terraform that defines them.
+          # The task's output stays in CloudWatch. This repo is public, so its Actions logs
+          # are too, and a migration's output can carry customer data (a failing row, an
+          # exception message). Print where to read it instead. Group and stream come from
+          # the task definition, so they cannot drift from the Terraform that defines them.
           LOG_GROUP=$(jq -r '.containerDefinitions[]|select(.name=="fundamento-cloud-website")|.logConfiguration.options["awslogs-group"]' web-register.json)
           LOG_PREFIX=$(jq -r '.containerDefinitions[]|select(.name=="fundamento-cloud-website")|.logConfiguration.options["awslogs-stream-prefix"]' web-register.json)
           STREAM="$LOG_PREFIX/fundamento-cloud-website/${TASK##*/}"
-          : > migration.log
-          # Delivery lags the task stopping by a few seconds, so retry before giving up.
-          for _ in $(seq 1 10); do
-            aws logs get-log-events --log-group-name "$LOG_GROUP" --log-stream-name "$STREAM" \
-              --start-from-head --output json 2>log-fetch.err | jq -r '.events[].message' > migration.log || true
-            if [ -s migration.log ]; then break; fi
-            sleep 3
-          done
-          if [ ! -s migration.log ]; then
-            echo "no log events found in $LOG_GROUP / $STREAM"
-            # Keep stderr: discarding it made an IAM denial read identically to "the
-            # stream has not been delivered yet", which is how the first deploy carrying
-            # this step reported success while telling us nothing.
-            if [ -s log-fetch.err ]; then echo "log fetch failed:"; tail -n 3 log-fetch.err; fi
-          fi
+          echo "db:migrate output: aws logs get-log-events --log-group-name '$LOG_GROUP' --log-stream-name '$STREAM' --start-from-head --query 'events[].message' --output text"
 
-          if [ "$CODE" = "0" ]; then
-            echo "::group::db:migrate output"
-            tail -n 300 migration.log
-            echo "::endgroup::"
-          else
-            echo "----- db:migrate output (last 300 lines) -----"
-            tail -n 300 migration.log
-            echo "----------------------------------------------"
-            echo "::error::db:migrate failed (exit ${CODE}) -- task ${TASK##*/}"
+          if [ "$CODE" != "0" ]; then
+            echo "::error::db:migrate failed (exit ${CODE}) -- task ${TASK##*/}; read its output in CloudWatch (command above)"
             exit 1
           fi
 

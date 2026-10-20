@@ -5,7 +5,7 @@ class AddTrigramIndexesForSearch < ActiveRecord::Migration[8.1]
   disable_ddl_transaction!
 
   # The command palette searches these with ILIKE '%term%'. Bounded by organization_id a
-  # sequential scan is already fast (0.8ms over ~1800 rows), so these indexes are insurance
+  # sequential scan is already fast (under a millisecond), so these indexes are insurance
   # for the shared multi-tenant tables as they grow, not the thing that makes search quick.
   INDEXES = {
     documents: :title,

@@ -69,10 +69,9 @@ function createServerBlockNoteEditor() {
  * blocksToYDoc index a row that is not there, and it throws "Cannot read properties of
  * undefined (reading '0')" — which takes the whole document with it, not just the table.
  *
- * Production has one: a document whose tenth and final row holds a single cell with
- * colspan 4 / rowspan 5, claiming five rows starting from the last one. It made that document
- * impossible to convert in either direction, and it is why the attachment id migration could
- * not finish.
+ * Real data had one: a table whose final row holds a single cell with a rowspan claiming rows
+ * past the end of the table. It made that document impossible to convert in either direction,
+ * and it is why the attachment id migration could not finish.
  *
  * Whatever wrote it, a span cannot mean anything outside the table, so this clamps rather than
  * rejects: refusing to convert the document would be the worse answer. Valid tables are

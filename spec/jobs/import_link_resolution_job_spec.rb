@@ -567,7 +567,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
       it "keeps a link and an embed of the same file distinct" do
         # Obsidian writes both forms next to each other. Rewriting the link as an embed
-        # too produced two copies of the image -- 274 documents in one workspace.
+        # too produced two copies of the image.
         combined_map = { "assets/photo.png" => "attachment:42.png" }
         markdown = "[[photo.png|Pierwsza wersja]]\n![[photo.png]]"
 
