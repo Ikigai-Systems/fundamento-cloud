@@ -91,21 +91,21 @@ Node.js services handle specialized processing:
 
 Worktrees are stored in `.claude/worktrees/` (gitignored). The path matters: anything outside `.claude/` doesn't inherit this project's `.claude/settings.local.json` permission allow-list when Claude is launched from inside the worktree, leading to repeated permission prompts for commands that should be auto-allowed.
 
-After creating a worktree, these gitignored files must be copied from the main repo and build steps must be run before tests will pass:
+Before running specs or the app in a new worktree, run:
 
 ```bash
-# Copy gitignored config files
-cp config/database.yml <worktree>/config/database.yml
-cp dockerfiles/sops-age-key.secret <worktree>/dockerfiles/sops-age-key.secret
-cp dockerfiles/fontawesome-auth.secret <worktree>/dockerfiles/fontawesome-auth.secret
-cp -r .bundle <worktree>/.bundle
-
-# Build the blocknote-converter micro-service (used by fixtures and model code)
-cd <worktree>/micro-services/blocknote-converter && npm install && npm run build
-
-# Build Tailwind CSS (required for request/view specs)
-cd <worktree> && bin/rails tailwindcss:build
+bin/worktree setup
 ```
+
+It copies the gitignored files listed in `.worktreeinclude` from the main checkout (Claude Code
+already does this for worktrees it creates), generates `config/database.yml` from
+`config/database.yml.sample`, and runs `bundle install`, `npm ci` (root and
+blocknote-converter), the converter build and the Tailwind build. Each step is skipped when its
+inputs haven't changed, so rerunning it is cheap; `--force` reruns everything. A new gitignored
+file that worktrees need goes into `.worktreeinclude`, not into a manual copy step.
+
+Worktrees still share the main checkout's databases, Redis and ports, so don't run `bin/rspec`,
+`bin/dev` or `bin/dev-e2e` in two checkouts at once.
 
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
 removing one, also run `docker compose -p <project> down --volumes` for any stack it started
