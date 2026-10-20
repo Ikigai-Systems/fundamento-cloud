@@ -2,6 +2,8 @@ class Api::McpController < Api::ApiController
   # Table writes made by the MCP tools are attributed to the agent, not to a browser.
   def current_change_source = "mcp"
 
+  before_action :ensure_requested_organization!, if: -> { params[:organization_id] }
+
   def create
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
@@ -48,4 +50,22 @@ class Api::McpController < Api::ApiController
   end
 
   alias_method :show, :create
+
+  private
+
+  # A token for another organization, or an organization the user isn't in, gets the same
+  # invalid_token answer: the client re-authorizes, and the organization's existence isn't revealed.
+  def ensure_requested_organization!
+    return if current_organization&.id == params[:organization_id]
+
+    response.headers["WWW-Authenticate"] =
+      %(Bearer error="invalid_token", resource_metadata="#{protected_resource_metadata_url}")
+    head :unauthorized
+  end
+
+  def protected_resource_metadata_url
+    return super unless params[:organization_id]
+
+    "#{super}#{api_organization_mcp_path(params[:organization_id])}"
+  end
 end

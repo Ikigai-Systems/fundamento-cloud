@@ -211,6 +211,11 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     resource :mcp, only: [:create, :show], controller: :mcp
 
+    # One URL per organization, so an MCP client connects straight to it without the picker
+    resources :organizations, only: [], path: "mcp/organizations" do
+      resource :mcp, path: "", only: [:create, :show], controller: :mcp
+    end
+
     namespace :v1 do
       resources :packs do
         member do
