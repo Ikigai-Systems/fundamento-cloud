@@ -8,10 +8,7 @@
       "Bash(bin/rake:*)",
       "Bash(bin/rspec:*)",
       "Bash(npx cypress run:*)",
-      "Bash(npx playwright:*)",
-      "Bash(npx vitest run:*)",
-      "Bash(rails:*)",
-      "Bash(rspec:*)"
+      "Bash(npx vitest run:*)"
     ]
   }
 }
