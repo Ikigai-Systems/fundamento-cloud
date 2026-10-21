@@ -104,12 +104,20 @@ blocknote-converter), the converter build and the Tailwind build. Each step is s
 inputs haven't changed, so rerunning it is cheap; `--force` reruns everything. A new gitignored
 file that worktrees need goes into `.worktreeinclude`, not into a manual copy step.
 
-Worktrees still share the main checkout's databases, Redis and ports, so don't run `bin/rspec`,
-`bin/dev` or `bin/dev-e2e` in two checkouts at once.
+Each linked worktree gets its own test database, `fundamento_test_wt_<id>`, so `bin/rspec` can
+run in several checkouts at once (Postgres must be running: `docker compose up -d --wait
+postgresql` from the main checkout). `bin/worktree info` shows the id and database names.
+Worktrees still share the development database, Redis and ports, so don't run `bin/dev` or
+`bin/dev-e2e` in two checkouts at once.
+
+Databases are recorded per worktree in `.git/fundamento-worktrees.json`. `bin/worktree setup`
+drops the ones whose worktree is gone, `bin/worktree gc [--dry-run]` does only that, and
+`bin/worktree list` shows what exists. Only databases named with the `_wt_` marker and recorded
+by this clone are ever dropped.
 
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
-removing one, also run `docker compose -p <project> down --volumes` for any stack it started
-(`docker compose ls` lists them).
+removing one by hand, run `bin/worktree teardown` in it first, and `docker compose -p <project>
+down --volumes` for any stack it started (`docker compose ls` lists them).
 
 ## Development Seeds
 

@@ -2,6 +2,7 @@
 # No bundler/setup: this has to run in a fresh worktree before `bundle install`. Thor comes
 # from the shared gem directory, where railties installed it.
 require "thor"
+require "shellwords"
 require_relative "lib/worktree"
 
 class WorktreeCLI < Thor
@@ -17,6 +18,13 @@ class WorktreeCLI < Thor
   default_command :setup
 
   desc "setup", "Make this checkout ready for bin/rspec and bin/dev (default command, idempotent)"
+  long_desc <<~DESC
+    Copies the gitignored files listed in .worktreeinclude from the main checkout, writes
+    config/database.yml, installs gems and npm packages, builds the blocknote-converter and
+    Tailwind. In a linked worktree it also creates the worktree's own test database and drops
+    the databases of worktrees that no longer exist (see `gc`). Steps whose inputs haven't
+    changed are skipped.
+  DESC
   option :force, type: :boolean, default: false, desc: "Rerun every step, ignoring stamps"
   def setup
     copy_included_files
@@ -29,6 +37,8 @@ class WorktreeCLI < Thor
       run!("npm", "run", "build", chdir: CONVERTER_DIR)
     end
     build_tailwind
+    prepare_test_database
+    collect_garbage(dry_run: false, quiet: true) unless context.main?
     puts ""
     puts "#{context.main? ? "Main checkout" : "Worktree #{context.id}"} is ready."
   end
@@ -37,6 +47,77 @@ class WorktreeCLI < Thor
   option :force, type: :boolean, default: false, desc: "Overwrite an existing config/database.yml"
   def config
     write_database_yml
+  end
+
+  desc "info", "Show this checkout's id and the resources it uses"
+  option :format, type: :string, default: "text", enum: %w[text shell], desc: "shell prints KEY=value lines"
+  def info
+    values = {
+      "WORKTREE_ID" => context.id.to_s,
+      "WORKTREE_ROOT" => context.root,
+      "WORKTREE_MAIN_ROOT" => context.main_root,
+      "WORKTREE_TEST_DATABASE" => context.test_database
+    }
+
+    if options[:format] == "shell"
+      values.each { |key, value| puts "#{key}=#{Shellwords.escape(value)}" }
+    else
+      puts "Checkout:      #{context.main? ? "main" : "worktree #{context.id}"}"
+      puts "Root:          #{context.root}"
+      puts "Main checkout: #{context.main_root}" unless context.main?
+      puts "Test database: #{context.test_database}"
+    end
+  end
+
+  desc "list", "List this clone's worktrees and the databases recorded for them"
+  def list
+    registry = context.registry.entries
+    existing = with_server { |server| server.databases }
+    live = context.live_worktree_paths
+
+    live.each do |path|
+      checkout = Worktree::Context.new(root: path, common_dir: context.common_dir)
+      databases = registry.dig(path, "databases") || []
+      label = checkout.main? ? "main" : checkout.id
+      puts "#{label.ljust(32)} #{path}"
+      databases.each { |name| puts "  #{name}#{" (missing)" unless existing.include?(name)}" }
+    end
+
+    orphans = context.registry.orphans(live)
+    orphans.each do |path, entry|
+      puts "#{entry["id"].ljust(32)} #{path} (gone; `bin/worktree gc` drops its databases)"
+      entry["databases"].each { |name| puts "  #{name}#{" (missing)" unless existing.include?(name)}" }
+    end
+
+    recorded = registry.values.flat_map { |entry| entry["databases"] }
+    unknown = existing.grep(Worktree::WORKTREE_DATABASE) - recorded
+    return if unknown.empty?
+
+    puts ""
+    puts "Worktree databases this clone didn't create (left alone by gc):"
+    unknown.each { |name| puts "  #{name}" }
+  end
+
+  desc "gc", "Drop the databases of this clone's worktrees that no longer exist"
+  option :dry_run, type: :boolean, default: false, desc: "Only list what would be removed"
+  def gc
+    collect_garbage(dry_run: options[:dry_run])
+  end
+
+  desc "teardown", "Drop this worktree's databases (run before `git worktree remove`)"
+  def teardown
+    raise Worktree::Error, "The main checkout has no resources of its own to tear down" if context.main?
+
+    entry = context.registry.entries[context.root]
+    databases = entry ? entry["databases"] : context.own_databases.values
+    with_server do |server|
+      databases.each do |name|
+        server.drop(name)
+        puts "Dropped #{name}"
+      end
+    end
+    context.registry.remove(context.root)
+    test_database_stamp.delete!
   end
 
   private
@@ -50,18 +131,24 @@ class WorktreeCLI < Thor
     copied.each { |path| puts "Copied #{path} from the main checkout" }
   end
 
+  # A file that matches what this command would write, or the plain sample (what phase-one
+  # worktrees got), is safe to regenerate. Anything else was edited by hand and is kept.
   def write_database_yml
     target = path(DATABASE_YML)
     sample = File.read(path(DATABASE_YML_SAMPLE))
+    expected = Worktree.database_yml(sample, context.own_databases)
 
     if File.exist?(target) && !options[:force]
-      return if File.read(target) == sample
+      current = File.read(target)
+      return if current == expected
 
-      puts "Kept existing #{DATABASE_YML}; it differs from #{DATABASE_YML_SAMPLE} (--force to regenerate)"
-      return
+      unless current == sample
+        puts "Kept existing #{DATABASE_YML}; it differs from what bin/worktree generates (--force to regenerate)"
+        return
+      end
     end
 
-    File.write(target, sample)
+    File.write(target, expected)
     puts "Wrote #{DATABASE_YML} from #{DATABASE_YML_SAMPLE}"
   end
 
@@ -86,6 +173,50 @@ class WorktreeCLI < Thor
     run!("bin/rails", "tailwindcss:build")
   end
 
+  # Linked worktrees get their own test database, so `bin/rspec` in two checkouts at once
+  # doesn't truncate each other's tables. It is registered before it is created, so a setup
+  # that fails halfway still leaves it for `gc` to find.
+  def prepare_test_database
+    return if context.main?
+
+    context.registry.register(context)
+    stamp = test_database_stamp
+    exists = with_server { |server| server.exists?(context.test_database) }
+    return if stamp.current? && exists && !options[:force]
+
+    run!("bin/rails", "db:test:prepare")
+    stamp.write!
+  end
+
+  def test_database_stamp
+    Worktree::Stamp.new(context.root, "test-database", ["db/schema.rb", DATABASE_YML])
+  end
+
+  def collect_garbage(dry_run:, quiet: false)
+    orphans = context.registry.orphans(context.live_worktree_paths)
+    if orphans.empty?
+      puts "Nothing to clean up" unless quiet
+      return
+    end
+
+    with_server do |server|
+      orphans.each do |path, entry|
+        entry["databases"].each do |name|
+          puts "#{dry_run ? "Would drop" : "Dropped"} #{name} (#{path} is gone)"
+          server.drop(name) unless dry_run
+        end
+        context.registry.remove(path) unless dry_run
+      end
+    end
+  end
+
+  def with_server
+    server = Worktree::Server.for(context.root)
+    yield server
+  ensure
+    server&.close
+  end
+
   def stamped(name, inputs, output:)
     stamp = Worktree::Stamp.new(context.root, name, inputs)
     return if stamp.current? && File.exist?(path(output)) && !options[:force]
@@ -107,4 +238,8 @@ class WorktreeCLI < Thor
   end
 end
 
-WorktreeCLI.start(ARGV)
+begin
+  WorktreeCLI.start(ARGV)
+rescue Worktree::Error => e
+  abort e.message
+end
