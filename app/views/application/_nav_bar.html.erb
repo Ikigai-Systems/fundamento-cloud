@@ -20,6 +20,8 @@
     <div class="w-auto flex flex-row items-center gap-2">
 
       <% if user_signed_in? %>
+        <%= render "application/search_button" %>
+
         <%= render "application/notifications_menu" %>
       <% end %>
 

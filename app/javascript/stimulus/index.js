@@ -3,6 +3,7 @@ import {Application} from "@hotwired/stimulus"
 import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Tabs, Toggle} from "tailwindcss-stimulus-components"
 import SidebarController from "./sidebar_controller.js";
 import SidebarDrawerButtonController from "./sidebar_drawer_button_controller.js";
+import CommandPaletteButtonController from "./command_palette_button_controller.js";
 import FixedPopover from "./popover_controller.js";
 import TooltipController from "./tooltip_controller.js";
 import ReactLoader from "./react_loader_controller"
@@ -83,6 +84,8 @@ application.register("hotkey", HotkeyController);
 application.register("emoji-picker", EmojiPickerController);
 
 application.register("command-palette", CommandPaletteController);
+
+application.register("command-palette-button", CommandPaletteButtonController);
 
 application.register('clipboard', Clipboard);
 

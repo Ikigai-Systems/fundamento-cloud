@@ -174,6 +174,11 @@ export default class CommandPaletteController extends Controller {
 
   handleSelected() {
   }
+
+  // From the top bar's search button (command_palette_button_controller.js)
+  open() {
+    this.element.open();
+  }
 }
 
 const defaultCommands = [

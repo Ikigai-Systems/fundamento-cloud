@@ -1,0 +1,10 @@
+<% if current_organization.present? %>
+  <button type="button"
+          class="document-toolbar-button"
+          data-controller="command-palette-button"
+          data-action="command-palette-button#open"
+          aria-label="Search"
+          title="Search">
+    <span class="icon-[heroicons--magnifying-glass] size-5" aria-hidden="true"></span>
+  </button>
+<% end %>
