@@ -1,0 +1,12 @@
+# Gitignored files a new worktree needs, copied from the main checkout. Claude Code reads
+# this when it creates a worktree; `bin/worktree setup` copies the same files for worktrees
+# made any other way. Plain paths and globs only.
+#
+# config/database.yml is deliberately absent: `bin/worktree config` generates it from
+# config/database.yml.sample, so a worktree doesn't inherit a drifted local copy.
+.env
+.bundle/config
+config/credentials/development.key
+config/credentials/test.key
+config/credentials/e2e.key
+dockerfiles/*.secret

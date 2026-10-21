@@ -1,0 +1,110 @@
+#!/usr/bin/env ruby
+# No bundler/setup: this has to run in a fresh worktree before `bundle install`. Thor comes
+# from the shared gem directory, where railties installed it.
+require "thor"
+require_relative "lib/worktree"
+
+class WorktreeCLI < Thor
+  DATABASE_YML = "config/database.yml".freeze
+  DATABASE_YML_SAMPLE = "config/database.yml.sample".freeze
+  CONVERTER_DIR = "micro-services/blocknote-converter".freeze
+  TAILWIND_OUTPUT = "app/assets/builds/tailwind.css".freeze
+
+  def self.exit_on_failure?
+    true
+  end
+
+  default_command :setup
+
+  desc "setup", "Make this checkout ready for bin/rspec and bin/dev (default command, idempotent)"
+  option :force, type: :boolean, default: false, desc: "Rerun every step, ignoring stamps"
+  def setup
+    copy_included_files
+    write_database_yml
+    bundle_install
+    stamped("npm-root", %w[package.json package-lock.json], output: "node_modules") { run!("npm", "ci") }
+    stamped("npm-converter", ["#{CONVERTER_DIR}/package.json", "#{CONVERTER_DIR}/package-lock.json"],
+            output: "#{CONVERTER_DIR}/node_modules") { run!("npm", "ci", chdir: CONVERTER_DIR) }
+    stamped("converter-build", converter_build_inputs, output: "#{CONVERTER_DIR}/build/blocknoteConverter.cjs") do
+      run!("npm", "run", "build", chdir: CONVERTER_DIR)
+    end
+    build_tailwind
+    puts ""
+    puts "#{context.main? ? "Main checkout" : "Worktree #{context.id}"} is ready."
+  end
+
+  desc "config", "Generate config/database.yml from config/database.yml.sample when missing"
+  option :force, type: :boolean, default: false, desc: "Overwrite an existing config/database.yml"
+  def config
+    write_database_yml
+  end
+
+  private
+
+  def context
+    @context ||= Worktree::Context.detect
+  end
+
+  def copy_included_files
+    copied = Worktree.copy_included_files(context)
+    copied.each { |path| puts "Copied #{path} from the main checkout" }
+  end
+
+  def write_database_yml
+    target = path(DATABASE_YML)
+    sample = File.read(path(DATABASE_YML_SAMPLE))
+
+    if File.exist?(target) && !options[:force]
+      return if File.read(target) == sample
+
+      puts "Kept existing #{DATABASE_YML}; it differs from #{DATABASE_YML_SAMPLE} (--force to regenerate)"
+      return
+    end
+
+    File.write(target, sample)
+    puts "Wrote #{DATABASE_YML} from #{DATABASE_YML_SAMPLE}"
+  end
+
+  # `bundle check` is the source of truth here rather than a stamp: it also catches gems that
+  # are pinned to a git ref nobody has checked out yet.
+  def bundle_install
+    return if system("bundle", "check", out: File::NULL, err: File::NULL, chdir: context.root)
+
+    run!("bundle", "install")
+  end
+
+  def converter_build_inputs
+    %W[#{CONVERTER_DIR}/package-lock.json #{CONVERTER_DIR}/package.json #{CONVERTER_DIR}/src/**/*
+       vendor/javascript/rowstack/**/*]
+  end
+
+  # The CSS only has to exist for request and view specs; bin/dev keeps it current while
+  # running, so a stale build is harmless and not worth a stamp over every template.
+  def build_tailwind
+    return if File.exist?(path(TAILWIND_OUTPUT)) && !options[:force]
+
+    run!("bin/rails", "tailwindcss:build")
+  end
+
+  def stamped(name, inputs, output:)
+    stamp = Worktree::Stamp.new(context.root, name, inputs)
+    return if stamp.current? && File.exist?(path(output)) && !options[:force]
+
+    yield
+    stamp.write!
+  end
+
+  def run!(*command, chdir: ".")
+    dir = File.join(context.root, chdir)
+    puts "== #{command.join(" ")}#{" (in #{chdir})" unless chdir == "."}"
+    return if system(*command, chdir: dir)
+
+    abort "Failed: #{command.join(" ")}"
+  end
+
+  def path(relative)
+    File.join(context.root, relative)
+  end
+end
+
+WorktreeCLI.start(ARGV)

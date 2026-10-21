@@ -3,6 +3,7 @@
     "allow": [
       "WebFetch(domain:docs.fundamento.it)",
       "Bash(bin/dev-e2e:*)",
+      "Bash(bin/worktree:*)",
       "Bash(bin/rails:*)",
       "Bash(bin/rake:*)",
       "Bash(bin/rspec:*)",
