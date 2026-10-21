@@ -115,4 +115,118 @@ RSpec.describe Worktree do
       expect(Worktree::Stamp.new(@tmp, "build", ["src/**/*"])).not_to be_current
     end
   end
+
+  describe ".database_yml" do
+    let(:sample) do
+      <<~YML
+        default: &default
+          adapter: postgresql
+
+        development:
+          <<: *default
+          database: fundamento_development
+
+        # A comment between sections
+        test:
+          <<: *default
+          database: fundamento_test
+      YML
+    end
+
+    it "points the given sections at the worktree's databases and leaves the rest alone" do
+      yml = Worktree.database_yml(sample, {"test" => "fundamento_test_wt_x"})
+
+      expect(yml).to include("database: fundamento_test_wt_x")
+      expect(yml).to include("database: fundamento_development")
+      expect(yml).not_to include("database: fundamento_test\n")
+    end
+
+    it "returns the sample unchanged for the main checkout" do
+      expect(Worktree.database_yml(sample, {})).to eq(sample)
+    end
+
+    it "fails when the sample has no database line to replace" do
+      expect { Worktree.database_yml(sample, {"standalone" => "x"}) }.to raise_error(Worktree::Error, /standalone/)
+    end
+  end
+
+  describe "database names" do
+    it "marks worktree databases and keeps the main checkout's names" do
+      main = create_repo
+      worktree = add_worktree(main, "feature")
+
+      expect(Worktree::Context.detect(main).own_databases).to eq({})
+      expect(Worktree::Context.detect(main).development_database).to eq("fundamento_development")
+      expect(Worktree::Context.detect(worktree).own_databases).to eq(
+        "development" => "fundamento_development_wt_feature",
+        "test" => "fundamento_test_wt_feature"
+      )
+      expect("fundamento_development_wt_feature").to match(Worktree::WORKTREE_DATABASE)
+      expect("fundamento_development").not_to match(Worktree::WORKTREE_DATABASE)
+    end
+  end
+
+  describe "#live_worktree_paths" do
+    it "leaves out worktrees whose directory was deleted" do
+      main = create_repo
+      kept = add_worktree(main, "kept")
+      deleted = add_worktree(main, "deleted")
+      FileUtils.rm_rf(deleted)
+
+      expect(Worktree::Context.detect(main).live_worktree_paths).to contain_exactly(main, kept)
+    end
+  end
+
+  describe Worktree::Registry do
+    it "records each worktree's databases and reports the ones whose worktree is gone" do
+      main = create_repo
+      kept = add_worktree(main, "kept")
+      gone = add_worktree(main, "gone")
+      Worktree::Context.detect(kept).registry.register(Worktree::Context.detect(kept))
+      Worktree::Context.detect(gone).registry.register(Worktree::Context.detect(gone))
+      sh(main, "git", "worktree", "remove", gone)
+
+      context = Worktree::Context.detect(main)
+      orphans = context.registry.orphans(context.live_worktree_paths)
+
+      expect(context.registry.entries[kept]).to eq("id" => "kept", "databases" => %w[fundamento_development_wt_kept fundamento_test_wt_kept])
+      expect(orphans.keys).to eq([gone])
+    end
+
+    it "refuses a second live worktree with the same id" do
+      main = create_repo
+      first = add_worktree(main, "same")
+      second = File.join(main, "other", "same")
+      sh(main, "git", "worktree", "add", "-q", "-b", "same-2", second)
+      Worktree::Context.detect(first).registry.register(Worktree::Context.detect(first))
+
+      expect { Worktree::Context.detect(second).registry.register(Worktree::Context.detect(second)) }
+        .to raise_error(Worktree::Error, /already uses the id same/)
+    end
+  end
+
+  describe Worktree::Server do
+    it "reads connection details from a database.yml section" do
+      secret = "a@b"
+      url = "postgres://user:#{URI.encode_www_form_component(secret)}@db.local:6543/app"
+      params = Worktree::Server.connection_params("url" => url)
+
+      expect(params).to eq(host: "db.local", port: 6543, user: "user", password: secret, dbname: "postgres")
+    end
+
+    it "creates, finds and drops worktree databases, and refuses any other" do
+      url = ENV.fetch("DATABASE_URL", "postgres://postgres:password@localhost")
+      server = Worktree::Server.new(Worktree::Server.connection_params("url" => url))
+      name = "fundamento_test_wt_spec_#{Process.pid}"
+
+      PG.connect(Worktree::Server.connection_params("url" => url)) { |pg| pg.exec("CREATE DATABASE #{name}") }
+      expect(server.exists?(name)).to be(true)
+
+      server.drop(name)
+      expect(server.exists?(name)).to be(false)
+      expect { server.drop("fundamento_test") }.to raise_error(Worktree::Error, /Refusing/)
+    ensure
+      server&.close
+    end
+  end
 end
