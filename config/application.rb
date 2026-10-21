@@ -47,6 +47,11 @@ module Fundamento
 
     config.action_mailer.default_url_options = { :host => ENV.fetch("HTTP_HOST", "localhost:3000") }
 
+    # Prepended to every Redis key and Action Cable channel, so several git worktrees can share
+    # one development Redis (bin/worktree sets it). Empty everywhere else, which keeps the keys
+    # unchanged. Raw Redis access must apply it too: see .claude/rules/redis.md.
+    config.x.redis_key_prefix = ENV.fetch("REDIS_KEY_PREFIX", "")
+
     # GoodJob has no recurring.yml convention of its own -- it reads a cron hash from
     # configuration -- so config/recurring.yml has to be loaded explicitly. Without this
     # the file is inert, and nothing scheduled in it ever runs.
