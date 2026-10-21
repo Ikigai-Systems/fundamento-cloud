@@ -1,14 +1,15 @@
 ---
 paths:
   - "app/views/**"
+  - "app/components/**"
   - "app/assets/stylesheets/**"
 ---
 
 # Styling views: inherit, don't restyle
 
 Pages should look like one app. The shared stylesheets in `app/assets/stylesheets/` already set
-text color, size, padding and fonts, so a view uses their classes and adds no colors or font sizes
-of its own.
+text color, size, padding and fonts, so a view or view component (`app/components/`, whether the classes sit in
+its template or its Ruby) uses their classes and adds no colors or font sizes of its own.
 
 `body` gets `content-container` (`text-black dark:text-white`), so plain text already works in
 dark mode. A hand-picked `text-gray-700 dark:text-gray-200` is redundant at best and drifts from
