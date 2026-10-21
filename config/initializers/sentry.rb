@@ -1,6 +1,8 @@
 sentry_dsn = ENV.fetch("SENTRY_DSN", Rails.application.credentials[:sentry_dsn])
 
-if sentry_dsn.present?
+# Never from the test suite: a developer's .env can carry a DSN, and the specs would report
+# their own deliberate errors -- and fail the run on exit when the DSN is rejected.
+if sentry_dsn.present? && !Rails.env.test?
   Sentry.init do |config|
     config.dsn = sentry_dsn
 
