@@ -155,10 +155,14 @@ RSpec.describe Worktree do
       main = create_repo
       worktree = add_worktree(main, "feature")
 
-      expect(Worktree::Context.detect(main).test_database).to eq("fundamento_test")
-      expect(Worktree::Context.detect(worktree).test_database).to eq("fundamento_test_wt_feature")
-      expect("fundamento_test_wt_feature").to match(Worktree::WORKTREE_DATABASE)
-      expect("fundamento_test").not_to match(Worktree::WORKTREE_DATABASE)
+      expect(Worktree::Context.detect(main).own_databases).to eq({})
+      expect(Worktree::Context.detect(main).development_database).to eq("fundamento_development")
+      expect(Worktree::Context.detect(worktree).own_databases).to eq(
+        "development" => "fundamento_development_wt_feature",
+        "test" => "fundamento_test_wt_feature"
+      )
+      expect("fundamento_development_wt_feature").to match(Worktree::WORKTREE_DATABASE)
+      expect("fundamento_development").not_to match(Worktree::WORKTREE_DATABASE)
     end
   end
 
@@ -185,7 +189,7 @@ RSpec.describe Worktree do
       context = Worktree::Context.detect(main)
       orphans = context.registry.orphans(context.live_worktree_paths)
 
-      expect(context.registry.entries[kept]).to eq("id" => "kept", "databases" => ["fundamento_test_wt_kept"])
+      expect(context.registry.entries[kept]).to eq("id" => "kept", "databases" => %w[fundamento_development_wt_kept fundamento_test_wt_kept])
       expect(orphans.keys).to eq([gone])
     end
 

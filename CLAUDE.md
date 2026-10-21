@@ -104,10 +104,13 @@ blocknote-converter), the converter build and the Tailwind build. Each step is s
 inputs haven't changed, so rerunning it is cheap; `--force` reruns everything. A new gitignored
 file that worktrees need goes into `.worktreeinclude`, not into a manual copy step.
 
-Each linked worktree gets its own test database, `fundamento_test_wt_<id>`, so `bin/rspec` can
-run in several checkouts at once (Postgres must be running: `docker compose up -d --wait
-postgresql` from the main checkout). `bin/worktree info` shows the id and database names.
-Worktrees still share the development database, Redis and ports, so don't run `bin/dev` or
+Each linked worktree gets its own databases: `fundamento_development_wt_<id>` (created and
+seeded on the first `setup`, migrated after that) and `fundamento_test_wt_<id>`. So `bin/rspec`
+can run in several checkouts at once, and `bin/dev` in a worktree runs that branch's migrations
+and background jobs against its own data (Postgres must be running: `docker compose up -d
+--wait postgresql redis` from the main checkout). `bin/worktree info` shows the id and database
+names. `bin/dev` always uses the main checkout's Compose project, so every checkout shares one
+set of containers. Worktrees still share Redis and ports, so don't run `bin/dev` or
 `bin/dev-e2e` in two checkouts at once.
 
 Databases are recorded per worktree in `.git/fundamento-worktrees.json`. `bin/worktree setup`

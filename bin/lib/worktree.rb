@@ -44,6 +44,10 @@ module Worktree
       Worktree.sanitize(File.basename(root)) unless main?
     end
 
+    def development_database
+      Worktree.database_name("development", id)
+    end
+
     def test_database
       Worktree.database_name("test", id)
     end
@@ -51,7 +55,7 @@ module Worktree
     # Databases this checkout uses that the main checkout doesn't share, keyed by the
     # database.yml section they replace.
     def own_databases
-      main? ? {} : {"test" => test_database}
+      main? ? {} : {"development" => development_database, "test" => test_database}
     end
 
     # One registry per clone, in the git directory all its worktrees share.
