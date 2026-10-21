@@ -27,10 +27,14 @@ module Api
       return if authenticate_with_doorkeeper_token
 
       unless request.env["warden"].authenticate(:api_token, :jwt, scope: :user)
-        response.headers["WWW-Authenticate"] =
-          %(Bearer resource_metadata="#{request.base_url}/.well-known/oauth-protected-resource")
+        response.headers["WWW-Authenticate"] = %(Bearer resource_metadata="#{protected_resource_metadata_url}")
         head :unauthorized
       end
+    end
+
+    # RFC 9728 metadata describing this resource; MCP clients start OAuth discovery from it.
+    def protected_resource_metadata_url
+      "#{request.base_url}/.well-known/oauth-protected-resource"
     end
 
     def authenticate_with_doorkeeper_token

@@ -74,6 +74,51 @@ RSpec.describe "OAuth authorization", type: :request do
     end
   end
 
+  describe "granting access to the organization named by the MCP URL" do
+    def authorize_for(resource)
+      get oauth_authorization_path(authorize_params.merge(resource: resource))
+    end
+
+    it "skips the picker and issues a token for that organization" do
+      sign_in pawel
+      authorize_for("http://www.example.com/api/mcp/organizations/hc")
+      expect(response).to have_http_status(:ok)
+
+      post oauth_authorization_path, params: authorize_params
+
+      expect(exchange_code_for_token.organization_membership_id).to eq("om_hc_pawel")
+    end
+
+    it "refuses an organization the user isn't in, rather than picking another" do
+      sign_in users(:maria)
+
+      expect { authorize_for("http://www.example.com/api/mcp/organizations/is") }
+        .not_to change(Doorkeeper::AccessGrant, :count)
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "refuses an organization that doesn't exist the same way" do
+      sign_in pawel
+      authorize_for("http://www.example.com/api/mcp/organizations/does-not-exist")
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "still shows the picker for the shared MCP URL" do
+      sign_in pawel
+      authorize_for("http://www.example.com/api/mcp")
+
+      expect(response).to redirect_to(%r{/oauth/pick-organization})
+    end
+
+    it "ignores an MCP URL on another host" do
+      sign_in pawel
+      authorize_for("https://elsewhere.example/api/mcp/organizations/hc")
+
+      expect(response).to redirect_to(%r{/oauth/pick-organization})
+    end
+  end
+
   describe "using a token" do
     it "accepts a token whose membership belongs to its owner" do
       call_mcp(oauth_access_tokens(:is_pawel).token)

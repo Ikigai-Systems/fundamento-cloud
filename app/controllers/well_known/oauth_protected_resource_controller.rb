@@ -6,9 +6,12 @@ class WellKnown::OauthProtectedResourceController < ApplicationController
 
   def show
     base = request.base_url
+    # Clients require `resource` to equal the URL they connect to. Not checked against the
+    # database, so the metadata doesn't reveal which organizations exist.
+    path = params[:organization_id] ? api_organization_mcp_path(params[:organization_id]) : api_mcp_path
 
     render json: {
-      resource: "#{base}/api/mcp",
+      resource: "#{base}#{path}",
       authorization_servers: [base],
       bearer_methods_supported: ["header"],
       scopes_supported: ["mcp"],

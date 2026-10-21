@@ -4,15 +4,20 @@
     }
 
     .table-legend .table-legend-description {
-        @apply sm:flex-auto;
+        @apply sm:flex-auto min-w-0;
     }
 
     .table-legend .table-legend-description h1 {
         @apply text-base font-semibold leading-6;
     }
 
-    .table-legend .table-legend-description p {
+    .table-legend .table-legend-description p,
+    .table-legend .table-legend-description ol {
         @apply mt-2 text-sm text-gray-700 dark:text-gray-300;
+    }
+
+    .table-legend .table-legend-description ol {
+        @apply list-decimal list-inside space-y-1;
     }
 
     .table-legend .table-legend-buttons-container {

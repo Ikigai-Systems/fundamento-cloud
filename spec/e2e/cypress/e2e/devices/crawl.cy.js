@@ -52,6 +52,7 @@ const PAGES = {
   "/teams/new": "/teams/new",
   "/teams/:id": "/teams/:team",
   "/teams/:id/edit": "/teams/:team/edit",
+  "/mcp": "/mcp",
   "/users/edit": "/users/edit",
   "/users/invitation/new": "/users/invitation/new",
   "/users/confirmation/pending": "/users/confirmation/pending",
@@ -86,7 +87,8 @@ const NOT_PAGES = {
     "/teams/suggest_members", "/s/:space_id/tags/suggest", "/d/:document_id/object_references",
     "/t/:table_id/columns", "/t/:table_id/rows", "/t/:table_id/rows/:row_id/cells", "/version",
     "/oauth/token/info", "/.well-known/oauth-authorization-server",
-    "/.well-known/oauth-protected-resource", "/up",
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/api/mcp/organizations/:organization_id", "/up",
   ]),
   ...reasons("declared by `resources` but has no page", [
     "/comments", "/comments/new", "/comments/:id", "/comments/:id/edit", "/reactions",

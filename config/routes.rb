@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # /.well-known/oauth-authorization-server — RFC 8414 auth server metadata (standard OAuth discovery)
   namespace "well_known", path: ".well-known" do
     get "oauth-protected-resource", to: "oauth_protected_resource#show"
+    get "oauth-protected-resource/api/mcp/organizations/:organization_id", to: "oauth_protected_resource#show"
     get "oauth-authorization-server", to: "oauth_authorization_server#show"
   end
 
@@ -195,6 +196,8 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
+  get "/mcp" => "ai_assistants#show", as: :ai_assistants
+
   resources :packs do
     # get :suggest_members, on: :collection
   end
@@ -210,6 +213,11 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     resource :mcp, only: [:create, :show], controller: :mcp
+
+    # One URL per organization, so an MCP client connects straight to it without the picker
+    resources :organizations, only: [], path: "mcp/organizations" do
+      resource :mcp, path: "", only: [:create, :show], controller: :mcp
+    end
 
     namespace :v1 do
       resources :packs do

@@ -1,0 +1,12 @@
+<section class="form-section">
+  <h1 class="form-header">Can't connect to this workspace</h1>
+
+  <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
+    <%= current_resource_owner.email %> isn't a member of the workspace this connection is for.
+    Ask its owner for an invitation, or sign in with another account and connect again.
+  </p>
+
+  <div class="form-footer">
+    <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "secondary-button cursor-pointer", data: { turbo: false } %>
+  </div>
+</section>

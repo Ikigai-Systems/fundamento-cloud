@@ -1,0 +1,72 @@
+<% content_for :focused_header do %>
+  AI Assistants
+<% end %>
+
+<% content_for :focused_header_buttons do %>
+  <div class="mt-4 flex md:ml-4 md:mt-0 gap-2">
+    <%= link_to "Connected Apps", oauth_authorized_applications_path, class: "secondary-button" %>
+  </div>
+<% end %>
+
+<% content_for :focused_content do %>
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <p>
+        Connect Claude or another AI assistant to <strong><%= current_organization.name %></strong> over MCP.
+        The assistant can then read and edit its documents and tables on your behalf, with your permissions.
+      </p>
+
+      <div class="default-form">
+        <div class="form-field">
+          <label for="mcp_url">MCP server URL</label>
+          <div class="flex flex-row items-center gap-2" data-controller="clipboard" data-clipboard-success-content-value="Copied!">
+            <input type="text" id="mcp_url" value="<%= @mcp_url %>" readonly class="form-input mt-0 h-10"
+                   data-clipboard-target="source" data-testid="mcp-url">
+            <button type="button" title="Copy to clipboard" class="secondary-button px-2 shadow-md h-10"
+                    data-clipboard-target="button" data-action="clipboard#copy" data-testid="copy-mcp-url">
+              <span class="icon-[heroicons--clipboard] size-6"></span>
+            </button>
+          </div>
+          <div class="form-hint">
+            This URL is for <%= current_organization.name %> only. To connect another organization,
+            <%= link_to "switch to it", organizations_path, class: "underline" %> and copy its URL from this page.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <h1>Claude (web, desktop and mobile)</h1>
+      <ol>
+        <li>Open <strong>Settings → Connectors</strong> and choose <strong>Add custom connector</strong>.</li>
+        <li>Name it, for example "Fundamento <%= current_organization.name %>", and paste the URL above.</li>
+        <li>Choose <strong>Connect</strong> and sign in to Fundamento to approve access.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <h1>Claude Code</h1>
+      <p>Add the server, then run <code>/mcp</code> in Claude Code and sign in:</p>
+      <div class="example-code-container">
+        <pre><code>claude mcp add --transport http fundamento-<%= current_organization.name.parameterize %> <%= @mcp_url %></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-legend">
+    <div class="table-legend-description">
+      <h1>Other MCP clients</h1>
+      <p>Add a remote MCP server with the URL above. Sign-in uses OAuth, so there's no key to paste.</p>
+      <p>
+        To see or revoke assistants you've connected, open
+        <%= link_to "Connected Apps", oauth_authorized_applications_path, class: "underline" %>.
+      </p>
+    </div>
+  </div>
+<% end %>
+
+<%= render "focused_section" %>
