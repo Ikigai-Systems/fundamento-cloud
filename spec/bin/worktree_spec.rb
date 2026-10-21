@@ -189,8 +189,28 @@ RSpec.describe Worktree do
       context = Worktree::Context.detect(main)
       orphans = context.registry.orphans(context.live_worktree_paths)
 
-      expect(context.registry.entries[kept]).to eq("id" => "kept", "databases" => %w[fundamento_development_wt_kept fundamento_test_wt_kept])
+      expect(context.registry.entries[kept]).to eq(
+        "id" => "kept", "databases" => %w[fundamento_development_wt_kept fundamento_test_wt_kept],
+        "redis_key_prefix" => "wt_kept:", "slot" => 1
+      )
       expect(orphans.keys).to eq([gone])
+    end
+
+    it "gives each worktree the lowest free slot, keeps it, and reuses it once the worktree is gone" do
+      main = create_repo
+      first = add_worktree(main, "first")
+      second = add_worktree(main, "second")
+      registry = Worktree::Context.detect(main).registry
+
+      expect(registry.register(Worktree::Context.detect(first))["slot"]).to eq(1)
+      expect(registry.register(Worktree::Context.detect(second))["slot"]).to eq(2)
+      expect(registry.register(Worktree::Context.detect(first))["slot"]).to eq(1)
+      expect(registry.entries[second]["redis_key_prefix"]).to eq("wt_second:")
+
+      registry.remove(first)
+      third = add_worktree(main, "third")
+      expect(registry.register(Worktree::Context.detect(third))["slot"]).to eq(1)
+      expect(Worktree::Context.detect(third).ports).to eq("rails" => 20_010, "vite" => 20_011, "blocknote" => 20_012)
     end
 
     it "refuses a second live worktree with the same id" do
@@ -202,6 +222,52 @@ RSpec.describe Worktree do
 
       expect { Worktree::Context.detect(second).registry.register(Worktree::Context.detect(second)) }
         .to raise_error(Worktree::Error, /already uses the id same/)
+    end
+  end
+
+  describe "ports and env file" do
+    it "keeps today's ports and no Redis prefix in the main checkout" do
+      context = Worktree::Context.detect(create_repo)
+
+      expect(context.ports).to eq("rails" => 3000, "vite" => 3036, "blocknote" => 3002)
+      expect(context.redis_key_prefix).to eq("")
+    end
+
+    it "gives slots non-overlapping port blocks below the ephemeral range" do
+      blocks = (1..Worktree::MAX_SLOTS).map { |slot| Worktree.ports(slot).values }
+
+      expect(blocks.flatten.uniq.size).to eq(blocks.flatten.size)
+      expect(blocks.flatten.max).to be < 32_768
+      expect(blocks.flatten & [3000, 3036, 3037, 3002, 4000, 4002, 5432, 6379]).to be_empty
+    end
+
+    it "writes an env file that reads back with the worktree's values" do
+      path = File.join(@tmp, ".env.development.local")
+      File.write(path, Worktree.env_file(ports: Worktree.ports(3), redis_key_prefix: "wt_x:"))
+
+      expect(Worktree.read_env(path)).to eq(
+        "PORT" => "20030", "HTTP_HOST" => "localhost:20030", "VITE_RUBY_PORT" => "20031",
+        "BLOCKNOTE_PORT" => "20032", "REDIS_KEY_PREFIX" => "wt_x:"
+      )
+    end
+  end
+
+  describe Worktree::RedisServer do
+    it "deletes only the keys under a worktree prefix, and refuses any other prefix" do
+      redis = Worktree::RedisServer.new(ENV.fetch("REDIS_URL", "redis://127.0.0.1:6379"))
+      raw = Redis.new(url: ENV.fetch("REDIS_URL", "redis://127.0.0.1:6379"))
+      prefix = "wt_spec_#{Process.pid}:"
+      kept = ["wt_spec_#{Process.pid}x:a", "spec_#{Process.pid}:b"]
+      (["#{prefix}a", "#{prefix}npn:development:cache:b"] + kept).each { |key| raw.set(key, "1") }
+
+      expect(redis.delete_prefix(prefix)).to eq(2)
+      expect(raw.exists(*kept)).to eq(2)
+      expect { redis.delete_prefix("") }.to raise_error(Worktree::Error, /Refusing/)
+      expect { redis.delete_prefix("npn:") }.to raise_error(Worktree::Error, /Refusing/)
+    ensure
+      raw&.del(*kept) if kept
+      redis&.close
+      raw&.close
     end
   end
 

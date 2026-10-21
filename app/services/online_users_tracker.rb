@@ -71,8 +71,9 @@ class OnlineUsersTracker
     end
   end
 
+  # Raw keys bypass the cache namespace, so they carry the key prefix themselves.
   def self.redis_key(for_organization = nil)
-    "online_users/#{for_organization&.cache_key}"
+    "#{Rails.configuration.x.redis_key_prefix}online_users/#{for_organization&.cache_key}"
   end
 
   def self.with_redis(&block)

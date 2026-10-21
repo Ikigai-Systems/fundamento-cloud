@@ -58,6 +58,23 @@ module Worktree
       main? ? {} : {"development" => development_database, "test" => test_database}
     end
 
+    # Prepended to every Redis key and pub/sub channel the dev server uses; empty for the main
+    # checkout, which keeps today's keys.
+    def redis_key_prefix
+      main? ? "" : Worktree.redis_key_prefix(id)
+    end
+
+    # The slot `setup` recorded for this worktree; nil for the main checkout or before setup.
+    def slot
+      registry.entries.dig(root, "slot") unless main?
+    end
+
+    # Ports the dev server uses: today's fixed ones in the main checkout, the slot's range in a
+    # worktree. nil when a worktree has no slot yet.
+    def ports
+      main? ? DEFAULT_PORTS : (slot && Worktree.ports(slot))
+    end
+
     # One registry per clone, in the git directory all its worktrees share.
     def registry
       Registry.new(File.join(common_dir, "fundamento-worktrees.json"))
@@ -91,6 +108,51 @@ module Worktree
 
   def self.database_name(kind, id)
     id ? "fundamento_#{kind}_wt_#{id}" : "fundamento_#{kind}"
+  end
+
+  # Each worktree gets a block of SLOT_SIZE ports from DEV_PORT_BASE + slot * SLOT_SIZE, well
+  # away from the fixed ports the main checkout and the E2E stack use, and below the Linux
+  # ephemeral range (32768+).
+  DEV_PORT_BASE = 20_000
+  SLOT_SIZE = 10
+  MAX_SLOTS = 99
+  DEFAULT_PORTS = {"rails" => 3000, "vite" => 3036, "blocknote" => 3002}.freeze
+
+  def self.ports(slot)
+    base = DEV_PORT_BASE + (slot * SLOT_SIZE)
+    {"rails" => base, "vite" => base + 1, "blocknote" => base + 2}
+  end
+
+  REDIS_KEY_PREFIX = /\Awt_[a-z0-9_]+:\z/
+
+  def self.redis_key_prefix(id)
+    "wt_#{id}:"
+  end
+
+  ENV_FILE = ".env.development.local".freeze
+  ENV_FILE_HEADER = "# Written by bin/worktree setup for this worktree; rerunning it overwrites this file.\n".freeze
+
+  # Loaded after .env by bin/dev (foreman) and by dotenv-rails, so these values win over .env.
+  def self.env_file(ports:, redis_key_prefix:)
+    values = {
+      "PORT" => ports.fetch("rails"),
+      "HTTP_HOST" => "localhost:#{ports.fetch("rails")}",
+      "VITE_RUBY_PORT" => ports.fetch("vite"),
+      "BLOCKNOTE_PORT" => ports.fetch("blocknote"),
+      "REDIS_KEY_PREFIX" => redis_key_prefix
+    }
+    ENV_FILE_HEADER + values.map { |key, value| "#{key}=#{value}\n" }.join
+  end
+
+  # KEY=value lines of a dotenv file; enough for the plain values bin/worktree needs.
+  def self.read_env(path)
+    return {} unless File.exist?(path)
+
+    File.readlines(path, chomp: true).each_with_object({}) do |line, env|
+      next unless (match = line.match(/\A(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)\z/))
+
+      env[match[1]] = match[2].strip.delete_prefix('"').delete_suffix('"').delete_prefix("'").delete_suffix("'")
+    end
   end
 
   # database.yml for a checkout: the sample, with the `database:` line of each section in
@@ -177,7 +239,17 @@ module Worktree
 
         entry = data[context.root] ||= {"id" => context.id, "databases" => []}
         entry["databases"] = (entry["databases"] | context.own_databases.values).sort
+        entry["redis_key_prefix"] = context.redis_key_prefix
+        entry["slot"] ||= free_slot(data.except(context.root))
+        entry
       end
+    end
+
+    # The lowest slot no other entry holds, so slots of removed worktrees are reused after gc.
+    def free_slot(others)
+      taken = others.values.filter_map { |entry| entry["slot"] }
+      slot = (1..MAX_SLOTS).find { |candidate| !taken.include?(candidate) }
+      slot || raise(Error, "All #{MAX_SLOTS} worktree slots are taken; run `bin/worktree gc` or remove worktrees")
     end
 
     # Entries whose worktree no longer exists.
@@ -243,6 +315,37 @@ module Worktree
 
     def close
       @connection.close
+    end
+  end
+
+  # The Redis server the dev server uses, reached through the `redis` gem without Bundler.
+  class RedisServer
+    def self.for(root)
+      new(Worktree.read_env(File.join(root, ".env")).fetch("REDIS_URL", "redis://127.0.0.1:6379"))
+    end
+
+    def initialize(url)
+      require "redis"
+      @redis = Redis.new(url: url)
+      @redis.ping
+    rescue Redis::BaseConnectionError => e
+      raise Error, "Can't reach Redis (#{e.message}). Start it from the main checkout: docker compose up -d --wait redis"
+    end
+
+    # Deletes every key under a worktree prefix and returns how many there were. Refuses any
+    # other prefix, so the main checkout's keys are never touched.
+    def delete_prefix(prefix)
+      raise Error, "Refusing to delete Redis keys under #{prefix.inspect}: not a worktree prefix" unless prefix.match?(REDIS_KEY_PREFIX)
+
+      deleted = 0
+      @redis.scan_each(match: "#{prefix}*", count: 1000).each_slice(500) do |keys|
+        deleted += @redis.unlink(*keys)
+      end
+      deleted
+    end
+
+    def close
+      @redis.close
     end
   end
 

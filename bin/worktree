@@ -21,15 +21,17 @@ class WorktreeCLI < Thor
   long_desc <<~DESC
     Copies the gitignored files listed in .worktreeinclude from the main checkout, writes
     config/database.yml, installs gems and npm packages, builds the blocknote-converter and
-    Tailwind. In a linked worktree it also prepares the worktree's own development database
-    (created and seeded the first time, migrated after that) and test database, and drops the
-    databases of worktrees that no longer exist (see `gc`). Steps whose inputs haven't changed
-    are skipped.
+    Tailwind. In a linked worktree it also gives the worktree a slot (its own dev server ports)
+    and a Redis key prefix, written to .env.development.local, prepares the worktree's own
+    development database (created and seeded the first time, migrated after that) and test
+    database, and cleans up after worktrees that no longer exist (see `gc`). Steps whose inputs
+    haven't changed are skipped.
   DESC
   option :force, type: :boolean, default: false, desc: "Rerun every step, ignoring stamps"
   def setup
     copy_included_files
     write_database_yml
+    register
     bundle_install
     stamped("npm-root", %w[package.json package-lock.json], output: "node_modules") { run!("npm", "ci") }
     stamped("npm-converter", ["#{CONVERTER_DIR}/package.json", "#{CONVERTER_DIR}/package-lock.json"],
@@ -50,15 +52,21 @@ class WorktreeCLI < Thor
     write_database_yml
   end
 
-  desc "info", "Show this checkout's id and the resources it uses"
+  desc "info", "Show this checkout's id, ports and the resources it uses"
   option :format, type: :string, default: "text", enum: %w[text shell], desc: "shell prints KEY=value lines"
   def info
+    ports = context.ports || {}
     values = {
       "WORKTREE_ID" => context.id.to_s,
       "WORKTREE_ROOT" => context.root,
       "WORKTREE_MAIN_ROOT" => context.main_root,
       "WORKTREE_DEVELOPMENT_DATABASE" => context.development_database,
-      "WORKTREE_TEST_DATABASE" => context.test_database
+      "WORKTREE_TEST_DATABASE" => context.test_database,
+      "WORKTREE_SLOT" => context.slot.to_s,
+      "WORKTREE_PORT" => ports["rails"].to_s,
+      "WORKTREE_VITE_PORT" => ports["vite"].to_s,
+      "WORKTREE_BLOCKNOTE_PORT" => ports["blocknote"].to_s,
+      "WORKTREE_REDIS_KEY_PREFIX" => context.redis_key_prefix
     }
 
     if options[:format] == "shell"
@@ -69,6 +77,13 @@ class WorktreeCLI < Thor
       puts "Main checkout: #{context.main_root}" unless context.main?
       puts "Dev database:  #{context.development_database}"
       puts "Test database: #{context.test_database}"
+      if context.ports
+        puts "Slot:          #{context.slot}" unless context.main?
+        puts "Ports:         rails #{ports["rails"]}, vite #{ports["vite"]}, blocknote #{ports["blocknote"]}"
+        puts "Redis prefix:  #{context.redis_key_prefix}" unless context.main?
+      else
+        puts "Ports:         none yet; run bin/worktree setup"
+      end
     end
   end
 
@@ -82,7 +97,9 @@ class WorktreeCLI < Thor
       checkout = Worktree::Context.new(root: path, common_dir: context.common_dir)
       databases = registry.dig(path, "databases") || []
       label = checkout.main? ? "main" : checkout.id
-      puts "#{label.ljust(32)} #{path}"
+      slot = registry.dig(path, "slot")
+      port = checkout.main? ? Worktree::DEFAULT_PORTS["rails"] : (slot && Worktree.ports(slot)["rails"])
+      puts "#{label.ljust(32)} #{"port #{port}".ljust(11) if port}#{path}"
       databases.each { |name| puts "  #{name}#{" (missing)" unless existing.include?(name)}" }
     end
 
@@ -101,24 +118,25 @@ class WorktreeCLI < Thor
     unknown.each { |name| puts "  #{name}" }
   end
 
-  desc "gc", "Drop the databases of this clone's worktrees that no longer exist"
+  desc "gc", "Drop the databases and Redis keys of this clone's worktrees that no longer exist"
   option :dry_run, type: :boolean, default: false, desc: "Only list what would be removed"
   def gc
     collect_garbage(dry_run: options[:dry_run])
   end
 
-  desc "teardown", "Drop this worktree's databases (run before `git worktree remove`)"
+  desc "teardown", "Drop this worktree's databases and Redis keys (run before `git worktree remove`)"
   def teardown
     raise Worktree::Error, "The main checkout has no resources of its own to tear down" if context.main?
 
-    entry = context.registry.entries[context.root]
-    databases = entry ? entry["databases"] : context.own_databases.values
+    entry = context.registry.entries[context.root] ||
+            {"databases" => context.own_databases.values, "redis_key_prefix" => context.redis_key_prefix}
     with_server do |server|
-      databases.each do |name|
+      entry["databases"].each do |name|
         server.drop(name)
         puts "Dropped #{name}"
       end
     end
+    delete_redis_keys(entry["redis_key_prefix"], dry_run: false)
     context.registry.remove(context.root)
     database_stamps.each_value(&:delete!)
   end
@@ -127,6 +145,26 @@ class WorktreeCLI < Thor
 
   def context
     @context ||= Worktree::Context.detect
+  end
+
+  # Records the worktree before anything is created for it, so a setup that fails halfway still
+  # leaves its resources for `gc` to find, and gives it a slot. Then writes the env file that
+  # bin/dev and Rails load, with the slot's ports and the Redis key prefix.
+  def register
+    return if context.main?
+
+    entry = context.registry.register(context)
+    target = path(Worktree::ENV_FILE)
+    expected = Worktree.env_file(ports: Worktree.ports(entry["slot"]), redis_key_prefix: entry["redis_key_prefix"])
+    return if File.exist?(target) && File.read(target) == expected
+
+    if File.exist?(target) && !File.read(target).start_with?(Worktree::ENV_FILE_HEADER) && !options[:force]
+      puts "Kept existing #{Worktree::ENV_FILE}; bin/worktree didn't write it (--force to overwrite)"
+      return
+    end
+
+    File.write(target, expected)
+    puts "Wrote #{Worktree::ENV_FILE} (slot #{entry["slot"]}, dev server on port #{Worktree.ports(entry["slot"])["rails"]})"
   end
 
   def copy_included_files
@@ -179,15 +217,13 @@ class WorktreeCLI < Thor
 
   # Linked worktrees get their own databases: `bin/rspec` in two checkouts at once doesn't
   # truncate each other's tables, and a worktree's dev server runs its branch's migrations and
-  # background jobs against its own data. They are registered before they are created, so a
-  # setup that fails halfway still leaves them for `gc` to find.
+  # background jobs against its own data. `register` has already recorded them.
   #
   # db:prepare creates, loads the schema and seeds a missing development database, and only
   # migrates an existing one. db:test:prepare reloads the test schema.
   def prepare_databases
     return if context.main?
 
-    context.registry.register(context)
     commands = {
       context.test_database => %w[bin/rails db:test:prepare],
       context.development_database => %w[bin/rails db:prepare]
@@ -222,9 +258,25 @@ class WorktreeCLI < Thor
           puts "#{dry_run ? "Would drop" : "Dropped"} #{name} (#{path} is gone)"
           server.drop(name) unless dry_run
         end
+        delete_redis_keys(entry["redis_key_prefix"], dry_run: dry_run)
         context.registry.remove(path) unless dry_run
       end
     end
+  end
+
+  # Redis only holds cache, presence and pub/sub for the dev server, so an unreachable Redis
+  # leaves a warning rather than stopping the database cleanup.
+  def delete_redis_keys(prefix, dry_run:)
+    return if prefix.nil? || prefix.empty?
+    return puts("Would delete Redis keys under #{prefix}") if dry_run
+
+    redis = Worktree::RedisServer.for(context.root)
+    count = redis.delete_prefix(prefix)
+    puts "Deleted #{count} Redis keys under #{prefix}" if count.positive?
+  rescue Worktree::Error => e
+    warn "Skipped Redis keys under #{prefix}: #{e.message}"
+  ensure
+    redis&.close
   end
 
   def with_server

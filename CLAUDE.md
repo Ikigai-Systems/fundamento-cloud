@@ -108,15 +108,21 @@ Each linked worktree gets its own databases: `fundamento_development_wt_<id>` (c
 seeded on the first `setup`, migrated after that) and `fundamento_test_wt_<id>`. So `bin/rspec`
 can run in several checkouts at once, and `bin/dev` in a worktree runs that branch's migrations
 and background jobs against its own data (Postgres must be running: `docker compose up -d
---wait postgresql redis` from the main checkout). `bin/worktree info` shows the id and database
-names. `bin/dev` always uses the main checkout's Compose project, so every checkout shares one
-set of containers. Worktrees still share Redis and ports, so don't run `bin/dev` or
-`bin/dev-e2e` in two checkouts at once.
+--wait postgresql redis` from the main checkout).
 
-Databases are recorded per worktree in `.git/fundamento-worktrees.json`. `bin/worktree setup`
-drops the ones whose worktree is gone, `bin/worktree gc [--dry-run]` does only that, and
-`bin/worktree list` shows what exists. Only databases named with the `_wt_` marker and recorded
-by this clone are ever dropped.
+A worktree also gets a slot with its own dev server ports (Rails on `20000 + slot * 10`, Vite
++1, blocknote-converter +2) and a Redis key prefix `wt_<id>:`. `setup` writes them to
+`.env.development.local`, which `bin/dev` loads after `.env`. So `bin/dev` can run in several
+checkouts at once; `bin/worktree info` shows the URL to open (the main checkout keeps port
+3000). `bin/dev` runs `bin/worktree setup` itself in a worktree and always uses the main
+checkout's Compose project, so every checkout shares one set of containers and one Redis.
+`bin/dev-e2e` is still shared, so don't run it in two checkouts at once.
+
+Databases, slots and Redis prefixes are recorded per worktree in `.git/fundamento-worktrees.json`.
+`bin/worktree setup` cleans up after worktrees that are gone (drops their databases, deletes
+their Redis keys, frees their slot), `bin/worktree gc [--dry-run]` does only that, and
+`bin/worktree list` shows what exists. Only databases named with the `_wt_` marker and keys under
+a `wt_<id>:` prefix recorded by this clone are ever removed.
 
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
 removing one by hand, run `bin/worktree teardown` in it first, and `docker compose -p <project>
