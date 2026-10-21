@@ -123,6 +123,16 @@ module Worktree
     {"rails" => base, "vite" => base + 1, "blocknote" => base + 2}
   end
 
+  # bin/browser-session-for gives each dev account of a worktree one Chrome remote-debugging
+  # port from this block, so sessions in different worktrees never collide. The main checkout
+  # keeps its email-hashed ports in 9200-9299.
+  DEBUG_PORT_BASE = 24_000
+
+  def self.debug_ports(slot)
+    base = DEBUG_PORT_BASE + (slot * SLOT_SIZE)
+    base...(base + SLOT_SIZE)
+  end
+
   REDIS_KEY_PREFIX = /\Awt_[a-z0-9_]+:\z/
 
   def self.redis_key_prefix(id)

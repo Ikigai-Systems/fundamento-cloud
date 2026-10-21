@@ -161,13 +161,18 @@ bin/browser-session-for sarah@brightpath.example.com
 
 # Open a second session simultaneously
 bin/browser-session-for james@brightpath.example.com
+
+# Without a window (automatic when there is no display, e.g. a remote session)
+bin/browser-session-for --headless sarah@brightpath.example.com &
 ```
 
-Each session gets its own Chrome profile (`tmp/browser-sessions/<email>/`) with persistent cookies. The debug port is written to `tmp/browser-sessions/<email>/debug-port` and printed to stdout for agent-browser connectivity:
+Each session gets its own Chrome profile (`tmp/browser-sessions/<email>/`) with persistent cookies. The remote-debugging port is written to `tmp/browser-sessions/<email>/debug-port` and printed to stdout, so agent-browser can drive the session:
 
 ```bash
-npx agent-browser --remote-debugging-port=$(cat tmp/browser-sessions/sarah@brightpath.example.com/debug-port)
+npx agent-browser --cdp $(cat tmp/browser-sessions/sarah@brightpath.example.com/debug-port) snapshot
 ```
+
+In a linked worktree the session opens that worktree's dev server (port from `bin/worktree info`) and takes debug ports from the worktree's own block (`24000 + slot * 10`, one per account, kept across launches), so sessions in several worktrees run side by side. The main checkout keeps port 3000 and debug ports 9200–9299.
 
 Requires the Rails dev server running (`bin/dev`) and uses the `?as=<email>` backdoor (dev-only middleware) for instant login.
 

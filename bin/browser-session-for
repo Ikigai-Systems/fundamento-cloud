@@ -5,19 +5,42 @@ set -euo pipefail
 #
 # Usage:
 #   bin/browser-session-for sarah@brightpath.example.com
+#   bin/browser-session-for --headless sarah@brightpath.example.com
 #   bin/browser-session-for --polypane sarah@brightpath.example.com
 #   bin/browser-session-for --list
 #
 # Each email gets its own Chrome profile directory (tmp/browser-sessions/<email>/)
 # with persistent cookies/localStorage. A unique --remote-debugging-port is assigned
-# per email so agent-browser can connect.
+# per email so agent-browser can connect (`npx agent-browser --cdp <port> ...`).
 #
-# With --polypane, launches Polypane instead of Chrome using the "Fundamento" project.
+# The app URL and the debug ports come from `bin/worktree info`: the main checkout uses
+# port 3000 and debug ports 9200-9299 hashed from the email; a linked worktree uses its own
+# dev server port and assigns debug ports from its own block, so sessions in several
+# worktrees run side by side. APP_PORT overrides the app port.
+#
+# Chrome runs headless with --headless, or automatically when there is no display (e.g. a
+# remote Claude session). With --polypane, launches Polypane instead of Chrome using the
+# "Fundamento" project.
 
 USE_POLYPANE=false
-APP_PORT="${APP_PORT:-3000}"
-APP_URL="http://localhost:${APP_PORT}"
+HEADLESS=false
+if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" && "$(uname)" == "Linux" ]]; then
+  HEADLESS=true
+fi
 SESSIONS_DIR="tmp/browser-sessions"
+
+WORKTREE_ID=""
+WORKTREE_PORT=""
+WORKTREE_DEBUG_PORT_BASE=""
+if WORKTREE_INFO=$(bin/worktree info --format shell 2>/dev/null); then
+  eval "$WORKTREE_INFO"
+fi
+if [[ -n "$WORKTREE_ID" && -z "$WORKTREE_PORT" && -z "${APP_PORT:-}" ]]; then
+  echo "This worktree has no dev server port yet: run bin/dev (or bin/worktree setup) first." >&2
+  exit 1
+fi
+APP_PORT="${APP_PORT:-${WORKTREE_PORT:-3000}}"
+APP_URL="http://localhost:${APP_PORT}"
 
 # ─── Find Chrome ──────────────────────────────────────────────
 
@@ -63,14 +86,42 @@ find_polypane() {
   exit 1
 }
 
-# ─── Deterministic port from email ────────────────────────────
+# ─── Debug port per email ─────────────────────────────────────
+
+# The port already recorded for an email in this checkout, if any.
+recorded_debug_port() {
+  local file="${SESSIONS_DIR}/$1/debug-port"
+  [[ -f "$file" ]] && cat "$file"
+}
 
 debug_port_for() {
   local email="$1"
-  # Hash email to a number in range 9200-9299
-  local hash
-  hash=$(printf '%s' "$email" | cksum | awk '{print $1}')
-  echo $(( 9200 + (hash % 100) ))
+
+  # Main checkout: hash the email into 9200-9299, as before.
+  if [[ -z "$WORKTREE_DEBUG_PORT_BASE" ]]; then
+    local hash
+    hash=$(printf '%s' "$email" | cksum | awk '{print $1}')
+    echo $(( 9200 + (hash % 100) ))
+    return
+  fi
+
+  # Worktree: keep the email's recorded port if it is in this worktree's block, otherwise take
+  # the first free one. Recorded ports live in the profile dirs, which are per checkout.
+  local base="$WORKTREE_DEBUG_PORT_BASE" recorded used port
+  recorded=$(recorded_debug_port "$email" || true)
+  if [[ -n "$recorded" ]] && (( recorded >= base && recorded < base + 10 )); then
+    echo "$recorded"
+    return
+  fi
+  used=$(cat "$SESSIONS_DIR"/*/debug-port 2>/dev/null || true)
+  for port in $(seq "$base" $(( base + 9 ))); do
+    if ! grep -qx "$port" <<<"$used"; then
+      echo "$port"
+      return
+    fi
+  done
+  echo "Error: all 10 debug ports of this worktree are taken; remove a profile from $SESSIONS_DIR" >&2
+  exit 1
 }
 
 # ─── List seed accounts ──────────────────────────────────────
@@ -84,7 +135,11 @@ list_accounts() {
       if [[ -f "$seed_file" ]]; then
         grep -oE '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+' "$seed_file" | sort -u | while read -r email; do
           local port
-          port=$(debug_port_for "$email")
+          if [[ -n "$WORKTREE_DEBUG_PORT_BASE" ]]; then
+            port=$(recorded_debug_port "$email" || echo "assigned on first launch")
+          else
+            port=$(debug_port_for "$email")
+          fi
           printf "  %-40s (debug port: %s)\n" "$email" "$port"
         done
       fi
@@ -109,9 +164,13 @@ while [[ $# -gt 0 ]]; do
       USE_POLYPANE=true
       shift
       ;;
+    --headless)
+      HEADLESS=true
+      shift
+      ;;
     -*)
       echo "Unknown option: $1" >&2
-      echo "Usage: bin/browser-session-for [--polypane] <email>"
+      echo "Usage: bin/browser-session-for [--headless|--polypane] <email>"
       echo "       bin/browser-session-for --list"
       exit 1
       ;;
@@ -123,14 +182,39 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${EMAIL:-}" ]]; then
-  echo "Usage: bin/browser-session-for [--polypane] <email>"
+  echo "Usage: bin/browser-session-for [--headless|--polypane] <email>"
   echo "       bin/browser-session-for --list"
   exit 1
 fi
 
+# Pick and record the port under a lock, so sessions started at the same moment don't take the
+# same one. mkdir is atomic and, unlike flock, also available on macOS.
+USER_DATA_DIR="${SESSIONS_DIR}/${EMAIL}"
+mkdir -p "$USER_DATA_DIR"
+LOCK_DIR="${SESSIONS_DIR}/.debug-port.lock"
+LOCKED=false
+for _ in $(seq 1 50); do
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    LOCKED=true
+    break
+  fi
+  sleep 0.1
+done
+if [[ "$LOCKED" != true ]]; then
+  echo "Error: couldn't lock $LOCK_DIR; remove it if no session is starting" >&2
+  exit 1
+fi
+trap 'rmdir "$LOCK_DIR" 2>/dev/null || true' EXIT
 DEBUG_PORT=$(debug_port_for "$EMAIL")
+echo "$DEBUG_PORT" > "${USER_DATA_DIR}/debug-port"
+rmdir "$LOCK_DIR"
+trap - EXIT
 
 if [[ "$USE_POLYPANE" == true ]]; then
+  if [[ "$HEADLESS" == true ]]; then
+    echo "Polypane can't run headless (no display found); use Chrome instead." >&2
+    exit 1
+  fi
   POLYPANE=$(find_polypane)
 
   echo "Opening Polypane session for: $EMAIL"
@@ -139,7 +223,7 @@ if [[ "$USE_POLYPANE" == true ]]; then
   echo "  App URL:        $APP_URL"
   echo ""
   echo "To connect with agent-browser:"
-  echo "  npx agent-browser --remote-debugging-port=$DEBUG_PORT"
+  echo "  npx agent-browser --cdp $DEBUG_PORT snapshot"
   echo ""
 
   # Launch Polypane with the "Fundamento" project
@@ -150,26 +234,22 @@ if [[ "$USE_POLYPANE" == true ]]; then
     "${APP_URL}/?as=${EMAIL}"
 else
   CHROME=$(find_chrome)
-  USER_DATA_DIR="${SESSIONS_DIR}/${EMAIL}"
 
-  # Create session directory
-  mkdir -p "$USER_DATA_DIR"
-
-  # Write debug port for easy reference
-  echo "$DEBUG_PORT" > "${USER_DATA_DIR}/debug-port"
-
-  echo "Opening Chrome session for: $EMAIL"
+  echo "Opening Chrome session for: $EMAIL$( [[ "$HEADLESS" == true ]] && echo " (headless)")"
   echo "  User data dir:  $USER_DATA_DIR"
   echo "  Debug port:     $DEBUG_PORT"
   echo "  App URL:        $APP_URL"
   echo ""
   echo "To connect with agent-browser:"
-  echo "  npx agent-browser --remote-debugging-port=$DEBUG_PORT"
+  echo "  npx agent-browser --cdp $DEBUG_PORT snapshot"
   echo ""
 
-  # Linux-only: use XWayland mode to avoid Wayland CSD rendering artifacts
+  # Headless needs no display. Otherwise, on Linux, use XWayland mode to avoid Wayland CSD
+  # rendering artifacts.
   LINUX_FLAGS=()
-  if [[ "$(uname)" == "Linux" ]]; then
+  if [[ "$HEADLESS" == true ]]; then
+    LINUX_FLAGS=(--headless=new)
+  elif [[ "$(uname)" == "Linux" ]]; then
     LINUX_FLAGS=(--ozone-platform=x11)
   fi
 
