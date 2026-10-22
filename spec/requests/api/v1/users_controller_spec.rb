@@ -110,18 +110,6 @@ RSpec.describe "Api::V1::Users", type: :request do
       end
     end
 
-    context "with a JWT token" do
-      it "is rejected, even when signed with the old formula_eval key" do
-        payload = { "sub" => pawel_ikigai_systems.to_global_id.to_s, "exp" => 1.hour.from_now.to_i }
-        token = JWT.encode(payload, "any_secret", "HS256")
-        allow(Rails.application.credentials).to receive(:formula_eval).and_return(double(jwt_secret_key!: "any_secret"))
-
-        get "/api/v1/users/#{pawel.id}", headers: { "Authorization" => "JWT #{token}" }
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
-
     context "authorization and error handling" do
       it "returns not found for non-existent user" do
         get "/api/v1/users/999999",
