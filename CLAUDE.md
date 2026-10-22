@@ -134,14 +134,11 @@ removing one by hand, run `bin/worktree teardown` in it first.
 
 ### Remote control
 
-To drive several sessions from claude.ai/code or the phone, each in its own worktree, start this
-in the main checkout:
-
-```bash
-claude remote-control --spawn=worktree --no-create-session-in-dir --permission-mode auto
-```
-
-`--no-create-session-in-dir` matters: by default one session is also started in the main
+To drive several sessions from claude.ai/code or the phone, each in its own worktree, run
+`bin/remote-control` (from any checkout; extra arguments such as `--name` go to `claude
+remote-control`). It switches to the main checkout, starts Postgres and Redis, runs `bin/worktree
+gc`, then starts `claude remote-control --spawn=worktree --no-create-session-in-dir
+--permission-mode auto`. `--no-create-session-in-dir` keeps a session from working in the main
 checkout itself, where a branch switch moves HEAD for every other session. In a folder Claude
 hasn't trusted yet, run `claude` there once first; there is no terminal to ask on.
 
