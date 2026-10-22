@@ -6,6 +6,7 @@ module CommandPaletteHelper
     # #syncColorScheme -- rather than an inline script's.
     content_tag("ninja-keys", nil, data: {
       controller: "command-palette",
+      action: "command-palette:open@window->command-palette#open",
       command_palette_commands_value: palette_commands
     })
   end

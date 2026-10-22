@@ -89,6 +89,7 @@
 
 <%= render partial: "focused_section" %>
 
-<div class="mt-10 text-center text-sm text-gray-500">
+<%# A touch screen has no keyboard shortcut; the top bar's search button opens the palette there %>
+<div class="mt-10 text-center text-sm text-gray-500 [@media(hover:none)]:hidden">
   Use Ctrl+K or Cmd+K to open quick search
 </div>

@@ -10,6 +10,13 @@ import { isTouch } from "../../support/device.js"
 //
 // A journey the app doesn't support on touch yet is pending, named after what is missing.
 
+// `.realTouch()` misplaces a target inside a shadow root (in the emoji picker, by the height of its
+// sticky header), so tap the screen where the element is
+const tapOnScreen = ($element) => {
+  const { x, y, width, height } = $element[0].getBoundingClientRect()
+  cy.get("body").realTouch({ x: x + width / 2, y: y + height / 2, scrollBehavior: false })
+}
+
 const FIXTURES = [
   "organizations", "users", "organization_memberships", "spaces", "documents", "versions",
   "tables/tables", "tables/columns", "tables/rows", "tables/cells",
@@ -90,8 +97,27 @@ describe("Touch journeys", function () {
       cy.openSidebar().find("#spaces-dropdown").should("contain", "Second IS Space")
     })
 
-    // The command palette opens only with Ctrl+K or Cmd+K, and nothing on screen opens it
-    it("searches from the top bar (there is no search button yet)")
+    it("searches from the top bar", () => {
+      cy.visit("/d/one")
+      cy.waitForEditor()
+
+      cy.get("nav button[aria-label='Search']").should("be.visible").realTouch()
+      cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible")
+      cy.get("ninja-keys").shadow().find("ninja-header").shadow().find("#search").type("Two")
+
+      cy.get("ninja-keys").shadow()
+        .find("ninja-action")
+        .should(($actions) => {
+          const titles = [...$actions].map((action) => action.shadowRoot?.querySelector(".ninja-title")?.textContent)
+          expect(titles.some((title) => / Two$/.test(title?.trim()))).to.be.true
+        })
+        .then(($actions) => {
+          const result = [...$actions].find((action) => / Two$/.test(action.shadowRoot.querySelector(".ninja-title").textContent.trim()))
+          tapOnScreen(Cypress.$(result.shadowRoot.querySelector(".ninja-action")))
+        })
+
+      cy.url().should("include", "/d/two")
+    })
 
     it("opens a recently updated document from the dashboard", () => {
       cy.visit("/")
@@ -164,12 +190,7 @@ describe("Touch journeys", function () {
         .find("button[aria-label='😀']")
         .last()
         .should("be.visible")
-        // `.realTouch()` misplaces a target inside a shadow root (here by the height of the
-        // picker's sticky header), so tap the screen where the emoji is
-        .then(($emoji) => {
-          const { x, y, width, height } = $emoji[0].getBoundingClientRect()
-          cy.get("body").realTouch({ x: x + width / 2, y: y + height / 2, scrollBehavior: false })
-        })
+        .then(tapOnScreen)
 
       cy.wait("@addReaction")
       cy.get(".destroy-reaction-button").should("contain", "😀")

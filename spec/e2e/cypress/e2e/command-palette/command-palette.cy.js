@@ -69,6 +69,15 @@ describe("Command Palette (Ctrl+K)", () => {
         .find(".modal").should("have.class", "visible");
     });
 
+    it("opens from the search button in the top bar", () => {
+      cy.visit("/");
+
+      cy.get("nav button[aria-label='Search']").click();
+
+      cy.get("ninja-keys").shadow()
+        .find(".modal").should("have.class", "visible");
+    });
+
     it("displays default commands when opened", () => {
       cy.visit("/");
       cy.get("body").type("{ctrl}k");
