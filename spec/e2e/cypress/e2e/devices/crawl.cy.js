@@ -2,9 +2,9 @@ import { isOrganizationCookie } from "../../support/organization-cookies.js"
 import { deviceName } from "../../support/device.js"
 
 // Visits every page a signed-in user can reach and runs `cy.checkPageHealth()` on it, with
-// each sidebar drawer open in turn where the page has one. A discovery tool rather than a
-// gate: most pages have problems on a phone that are still to be fixed, so it only runs when
-// asked for, on any device profile:
+// each sidebar drawer open in turn where the page has one. It runs only when asked for, on any
+// device profile; CI's phone and landscape-tablet jobs ask, so a page that regresses on touch
+// fails the build:
 //
 //   npx cypress run --project spec/e2e --expose device=phone,crawl=true --spec "**/devices/crawl.cy.js"
 //

@@ -34,18 +34,23 @@ jobs:
         include:
           - device: desktop
             spec: ""  # the whole suite
+            expose: device=desktop
             results: tmp/cypress-results-*.xml
             check_name: Cypress Desktop Test Results
             fail_on_failure: true
           # The touch specs gate the build like the desktop suite: a phone regression fails CI.
+          # Both touch jobs also crawl every page (~45s each), so a control too small to tap,
+          # hidden from a finger or overflowing the screen fails the build.
           - device: phone
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
+            expose: device=phone,crawl=true
             results: tmp/cypress-phone-results-*.xml
             check_name: Cypress Phone Test Results
             fail_on_failure: true
           # The desktop layout driven by touch: where controls built for a mouse meet a finger
           - device: tablet-landscape
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
+            expose: device=tablet-landscape,crawl=true
             results: tmp/cypress-tablet-landscape-results-*.xml
             check_name: Cypress Landscape Tablet Test Results
             fail_on_failure: true
@@ -156,7 +161,7 @@ jobs:
           wait-on: http://localhost:3000
           config: baseUrl=http://localhost:3000
           spec: ${{ matrix.spec }}
-          expose: device=${{ matrix.device }}
+          expose: ${{ matrix.expose }}
         env:
           DEBUG: "@cypress/github-action"
         continue-on-error: true  # Allow workflow to continue to publish results
