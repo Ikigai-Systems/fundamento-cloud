@@ -124,17 +124,20 @@ const findInvisibleClickable = (win, ignore) =>
     .filter((el) => effectiveOpacity(win, el) === 0 || paintsNothing(win, el))
     .map((el) => `${describeElement(el)} is tappable but invisible (nothing shows until hovered)`)
 
+// A tap anywhere on a label that wraps an input operates the input, so the label is its target
+const targetRect = (el) => (el.closest("label") || el).getBoundingClientRect()
+
 const findSmallTargets = (win, ignore) =>
   interactiveInViewport(win, ignore)
     // WCAG exempts links inside a sentence; their size is set by the text around them.
     .filter((el) => win.getComputedStyle(el).display !== "inline")
     .filter((el) => effectiveOpacity(win, el) > 0)
     .filter((el) => {
-      const rect = el.getBoundingClientRect()
+      const rect = targetRect(el)
       return rect.width < MIN_TARGET || rect.height < MIN_TARGET
     })
     .map((el) => {
-      const rect = el.getBoundingClientRect()
+      const rect = targetRect(el)
       return `${describeElement(el)} is ${Math.round(rect.width)}×${Math.round(rect.height)}px, below the ${MIN_TARGET}px minimum`
     })
 

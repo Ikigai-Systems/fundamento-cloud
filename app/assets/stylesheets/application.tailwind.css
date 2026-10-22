@@ -111,6 +111,8 @@
 
     .link-button {
         @apply font-medium text-primary-blue-500 dark:text-secondary-blue-500;
+        /* A line of small text is 20px tall, under the 24px a finger needs */
+        @apply touch:py-0.5;
     }
 
     .link-button:not(:disabled) {
