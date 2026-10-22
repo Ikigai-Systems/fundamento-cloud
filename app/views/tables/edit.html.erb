@@ -12,7 +12,9 @@
 
 <% content_for :content_menu do %>
   <%= link_to table_path(@table),
-    class: "link-button" do %>
+    class: "document-toolbar-button",
+    aria: { label: "Stop editing" },
+    title: "Stop editing" do %>
     <i class="fa-regular fa-turn-left"></i>
   <% end %>
 

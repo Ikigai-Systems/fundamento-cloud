@@ -22,7 +22,9 @@
 
   <% if @document.versions.present? %>
     <%= link_to document_path(@document),
-      class: "link-button" do %>
+      class: "document-toolbar-button",
+      aria: { label: "Stop editing" },
+      title: "Stop editing" do %>
       <i class="fa-regular fa-turn-left"></i>
     <% end %>
   <% end %>
