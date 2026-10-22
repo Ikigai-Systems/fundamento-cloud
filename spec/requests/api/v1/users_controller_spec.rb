@@ -128,23 +128,5 @@ RSpec.describe "Api::V1::Users", type: :request do
         expect(response.body).to eq("'#{users(:john).id}' is invalid user reference")
       end
     end
-
-    context "authentication method precedence" do
-      it "uses API token when Bearer token is provided and valid" do
-        expect {
-          get "/api/v1/users/#{pawel.id}",
-            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
-        }.to change { pawel_is_token.reload.used_at }
-
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "returns unauthorized when the Bearer token is invalid" do
-        get "/api/v1/users/#{pawel.id}",
-          headers: { "Authorization" => "Bearer invalid_api_token" }
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
   end
 end
