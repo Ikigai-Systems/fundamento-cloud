@@ -17,6 +17,13 @@ jobs:
   build-and-push-images:
     runs-on: ubuntu-latest
     if: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
+    # One production deploy at a time. Overlapping deploys finish in any order, so an older one
+    # could roll production back. A deploy that is running is never cancelled; GitHub keeps one
+    # waiting and drops older waiting ones, which is fine because each build checks out the
+    # current master.
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
     permissions:
       contents: read
       packages: write
