@@ -132,6 +132,24 @@ databases named with the `_wt_` marker, keys under a `wt_<id>:` prefix and Compo
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
 removing one by hand, run `bin/worktree teardown` in it first.
 
+### Remote control
+
+To drive several sessions from claude.ai/code or the phone, each in its own worktree, run
+`bin/remote-control` (from any checkout; extra arguments such as `--name` go to `claude
+remote-control`). It switches to the main checkout, starts Postgres and Redis, runs `bin/worktree
+gc`, then starts `claude remote-control --spawn=worktree --no-create-session-in-dir
+--permission-mode auto`. `--no-create-session-in-dir` keeps a session from working in the main
+checkout itself, where a branch switch moves HEAD for every other session. In a folder Claude
+hasn't trusted yet, run `claude` there once first; there is no terminal to ask on.
+
+A spawned session needs no manual setup: `bin/dev` sets up its worktree, and `bin/worktree
+setup` is all `bin/rspec` needs. There is no display, so `bin/browser-session-for` runs Chrome
+headless and `bin/dev-e2e test` runs Cypress under `xvfb-run`.
+
+A session that ends with no changes and no new commits has its worktree removed, but its
+databases, Redis keys and E2E stack stay until the next `bin/worktree gc` (any `setup` also runs
+it). Run `bin/worktree gc` after a day of sessions, and `bin/worktree list` to see what is left.
+
 ## Development Seeds
 
 Seeds use the [Oaken gem](https://github.com/kaspth/oaken) for realistic development data.

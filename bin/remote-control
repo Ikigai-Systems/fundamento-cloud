@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+# Serve Claude Code sessions to claude.ai/code and the phone, each in its own git worktree.
+# Extra arguments go to `claude remote-control` (e.g. --name, --capacity).
+set -e
+
+# Spawned worktrees land under the directory this runs in, so always use the main checkout.
+MAIN_ROOT=$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")
+cd "$MAIN_ROOT"
+
+if ! command -v claude >/dev/null 2>&1; then
+  echo "claude not found on PATH; install Claude Code first." >&2
+  exit 1
+fi
+
+# Sessions run bin/worktree setup, which needs Postgres; Redis backs the dev server.
+echo "Starting Postgres and Redis..."
+docker compose up -d --wait postgresql redis
+
+# Drop what earlier sessions' removed worktrees left behind (databases, Redis keys, E2E stacks).
+bin/worktree gc
+
+# --no-create-session-in-dir: otherwise one session works in the main checkout itself, where a
+# branch switch moves HEAD for everyone else.
+exec claude remote-control --spawn=worktree --no-create-session-in-dir --permission-mode auto "$@"
