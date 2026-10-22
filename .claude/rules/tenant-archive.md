@@ -84,7 +84,7 @@ invisible in `db/schema.rb` because none is a foreign key. Audit these whenever 
 type changes:
 
 - `active_storage_attachments.record_id` — polymorphic, already a string, holding the integer
-  stringified. `Attachment` and `PackVersion` both `has_one_attached`.
+  stringified. `Attachment` and `Tables::Version` both `has_one_attached`.
 - `object_reactions.object_id` — polymorphic and already a string.
   `ObjectReaction::ALLOWED_OBJECT_TYPES` includes `ObjectComment`, so comments carry reactions;
   only the model says so.

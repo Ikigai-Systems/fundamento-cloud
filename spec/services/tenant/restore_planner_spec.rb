@@ -87,7 +87,7 @@ RSpec.describe Tenant::RestorePlanner do
   it "does not name tables the archive has no rows for" do
     allow_any_instance_of(described_class).to receive(:usable_unique_index).and_return(nil)
 
-    expect(plan.unmatchable).not_to include("attachments", "pack_versions")
+    expect(plan.unmatchable).not_to include("attachments")
   end
 
   it "counts a deleted row as one that would be restored" do

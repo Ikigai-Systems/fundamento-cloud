@@ -5,7 +5,7 @@ require "rails_helper"
 # an archive carries verbatim, or by a unique index over columns the archive preserves -- so if
 # any of this drifts, restores silently start duplicating rows instead of failing.
 RSpec.describe "stable identity for restorable tables" do
-  CONVERTED_TO_NANOID_PK = [ApiToken, Attachment, AutomationInvocation, ObjectComment, PackVersion].freeze
+  CONVERTED_TO_NANOID_PK = [ApiToken, Attachment, AutomationInvocation, ObjectComment].freeze
 
   # No model file: the Doorkeeper tables are the gem's own classes.
   DOORKEEPER_TABLES = %w[oauth_access_grants oauth_access_tokens].freeze
@@ -53,8 +53,7 @@ RSpec.describe "stable identity for restorable tables" do
   end
 
   describe "table_change_events, which kept its integer key" do
-    # Nothing holds a change event's id, which is what makes the counter sufficient here and
-    # insufficient for pack_versions -- an attachment held one of those.
+    # Nothing holds a change event's id, which is what makes the counter sufficient here.
     it "matches on its per-table counter" do
       expect(ActiveRecord::Base.connection.indexes("table_change_events"))
         .to include(have_attributes(columns: %w[table_id sequential_id], unique: true))
@@ -77,24 +76,6 @@ RSpec.describe "stable identity for restorable tables" do
       end
 
       expect(holders).to eq([])
-    end
-  end
-
-  describe "pack_versions" do
-    # Kept even though the primary key is now the match key: a pack having two version 3s is
-    # wrong regardless of restores, and PackVersion#set_version_number assigns it under an
-    # advisory lock on that assumption.
-    it "still declares its per-pack counter unique" do
-      expect(ActiveRecord::Base.connection.indexes("pack_versions"))
-        .to include(have_attributes(columns: %w[pack_id version], unique: true))
-    end
-
-    # The reason it got a string key rather than keeping the counter alone: this column is
-    # polymorphic, so Tenant::IdMap -- whose entries name a single target table -- cannot rewrite
-    # it, and a reassigned id left a restored pack without its bundle.
-    it "is pointed at by a polymorphic column that no restore could have remapped" do
-      expect(column("active_storage_attachments", "record_id").type).to eq(:string)
-      expect(column("pack_versions", "id").type).to eq(:string)
     end
   end
 

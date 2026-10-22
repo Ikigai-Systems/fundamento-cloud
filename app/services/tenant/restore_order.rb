@@ -48,8 +48,6 @@ module Tenant
       public_links
       api_tokens
       invited_users
-      packs
-      pack_versions
       automations
       automation_invocations
       attachments
@@ -63,11 +61,9 @@ module Tenant
     # Written NULL on the way in, filled by a second pass once the target exists.
     #
     # spaces.home_document_id and documents.space_id are a genuine cycle: a space needs its
-    # home document and the document needs its space. packs.active_version_id and
-    # pack_versions.pack_id are the same shape.
+    # home document and the document needs its space.
     DEFERRED = [
       ["spaces", "home_document_id"],
-      ["packs", "active_version_id"],
     ].freeze
 
     # Columns pointing at their own table. These decide the order rows go in, not the order

@@ -15,19 +15,18 @@ RSpec.describe "tenant archive round trip" do
            "tables/change_events", :object_contents, :versions, :object_comments,
            :object_reactions, :api_tokens, :attachments, :tags, :object_tags, :object_references,
            :favorites, :teams, :team_memberships, :public_links, :document_editing_sessions,
-           :import_sessions, :import_files, :automations, :automation_invocations, :packs,
-           :pack_versions, :invited_users, :oauth_applications, :oauth_access_grants,
+           :import_sessions, :import_files, :automations, :automation_invocations,
+           :invited_users, :oauth_applications, :oauth_access_grants,
            :oauth_access_tokens, :active_storage_blobs, :active_storage_attachments,
            :active_storage_variant_records, :space_memberships, :object_visitors,
            :organization_membership_properties
 
   let(:organization) { organizations(:is) }
 
-  # Columns no fixture sets, but a restore has to carry: the two a second pass fills in
+  # Columns no fixture sets, but a restore has to carry: the one a second pass fills in
   # (RestoreOrder::DEFERRED), and a reference to a version, whose id is reassigned.
   before do
     spaces(:is_default).update!(home_document: documents(:one))
-    packs(:test_pack_1).update!(active_version: pack_versions(:is_one_v2))
     document_editing_sessions(:session_pawel_doc_two).update!(version: versions(:two_version_1))
   end
 

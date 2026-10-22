@@ -10,7 +10,6 @@ class Organization < ApplicationRecord
   has_many :import_sessions, dependent: :destroy
   has_many :invited_users, dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
-  has_many :packs, dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy
   has_many :tables, -> { kept }, dependent: nil, inverse_of: :organization
