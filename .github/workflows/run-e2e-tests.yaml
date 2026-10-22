@@ -81,6 +81,9 @@ jobs:
           FONTAWESOME_TOKEN=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml)
           RAILS_MASTER_KEY=$(sops -d --extract '["rails"]["master_key"]' config/secrets/e2e.sops.yaml)
 
+          # Values derived from secrets aren't masked automatically, and these logs are public.
+          echo "::add-mask::${FONTAWESOME_TOKEN}"
+          echo "::add-mask::${RAILS_MASTER_KEY}"
           echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
           echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 

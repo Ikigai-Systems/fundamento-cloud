@@ -14,8 +14,8 @@ This directory contains SOPS-encrypted infrastructure keys. Application secrets 
 
 Recipients are defined per-file in `.sops.yaml` (first-match rules):
 
-- **admin** (`age193z7…`) — owner recovery key, held privately, never in CI. Recipient on every file.
-- **build/CI** (`age18p3re8…`) — GitHub Actions `SOPS_AGE_KEY` + `dockerfiles/sops-age-key.secret`. Recipient on every file (trusted push/PR/build runs).
+- **admin** (`age193z7…`) — owner recovery key, held privately, never in CI. Recipient on every file, and the only one on `production`.
+- **build** (`age1m2ksw2…`) — GitHub Actions `SOPS_AGE_KEY` + `dockerfiles/sops-age-key.secret` (from 1Password via `bin/setup`). Recipient on `build`, `test`, `e2e` and `development`. Not on `production`: nothing in CI or the Docker build reads it.
 - **dependabot** (`age1et3r…`) — Dependabot `SOPS_AGE_KEY` only. Recipient on **`build`, `test`, `e2e` only** — deliberately NOT on `production`/`development`, so a Dependabot job (running untrusted updated dependency code) can never decrypt production secrets, in any commit. Do not add it there.
 
 ## What's stored here
