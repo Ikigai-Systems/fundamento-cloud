@@ -8,6 +8,15 @@ on:
     branches:
       - master
 
+# One publish at a time. create-multi-arch-manifest assembles `latest` from the `latest-amd64` and
+# `latest-arm64` tags, so overlapping runs could pair two commits in one manifest, or leave
+# `latest` on the older build. Queued like the cloud deploy: a running publish is never
+# cancelled, only the newest waiting one is kept, and runs that skip publishing get a group of
+# their own.
+concurrency:
+  group: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') && 'standalone-publish' || format('standalone-publish-noop-{0}', github.run_id) }}
+  cancel-in-progress: false
+
 env:
   REGISTRY: ghcr.io
   SOPS_VERSION: 3.11.0

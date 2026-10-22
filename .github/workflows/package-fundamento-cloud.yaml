@@ -8,6 +8,15 @@ on:
     branches:
       - master
 
+# One production deploy at a time. Overlapping deploys finish in any order, so an older one
+# could roll production back. A running deploy is never cancelled; GitHub keeps one waiting and
+# drops older waiting ones, which loses nothing because each build checks out the current master.
+# Runs that will skip the deploy (failed tests, [skip-deploy]) get a group of their own, so they
+# can't take the waiting slot from one that deploys.
+concurrency:
+  group: ${{ (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') && 'production-deploy' || format('production-deploy-noop-{0}', github.run_id) }}
+  cancel-in-progress: false
+
 env:
   REGISTRY: ghcr.io
   SOPS_VERSION: 3.11.0
