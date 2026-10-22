@@ -66,6 +66,7 @@ class WorktreeCLI < Thor
       "WORKTREE_PORT" => ports["rails"].to_s,
       "WORKTREE_VITE_PORT" => ports["vite"].to_s,
       "WORKTREE_BLOCKNOTE_PORT" => ports["blocknote"].to_s,
+      "WORKTREE_DEBUG_PORT_BASE" => (context.slot && Worktree.debug_ports(context.slot).first).to_s,
       "WORKTREE_REDIS_KEY_PREFIX" => context.redis_key_prefix
     }
 

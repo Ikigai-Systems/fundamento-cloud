@@ -234,11 +234,11 @@ RSpec.describe Worktree do
     end
 
     it "gives slots non-overlapping port blocks below the ephemeral range" do
-      blocks = (1..Worktree::MAX_SLOTS).map { |slot| Worktree.ports(slot).values }
+      blocks = (1..Worktree::MAX_SLOTS).map { |slot| Worktree.ports(slot).values + Worktree.debug_ports(slot).to_a }
 
       expect(blocks.flatten.uniq.size).to eq(blocks.flatten.size)
       expect(blocks.flatten.max).to be < 32_768
-      expect(blocks.flatten & [3000, 3036, 3037, 3002, 4000, 4002, 5432, 6379]).to be_empty
+      expect(blocks.flatten & ([3000, 3036, 3037, 3002, 4000, 4002, 5432, 6379] + (9200..9299).to_a)).to be_empty
     end
 
     it "writes an env file that reads back with the worktree's values" do
