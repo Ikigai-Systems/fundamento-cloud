@@ -116,17 +116,21 @@ A worktree also gets a slot with its own dev server ports (Rails on `20000 + slo
 checkouts at once; `bin/worktree info` shows the URL to open (the main checkout keeps port
 3000). `bin/dev` runs `bin/worktree setup` itself in a worktree and always uses the main
 checkout's Compose project, so every checkout shares one set of containers and one Redis.
-`bin/dev-e2e` is still shared, so don't run it in two checkouts at once.
+
+`bin/dev-e2e` in a worktree runs its own Compose project, `fundamento-e2e-wt-<id>`, built from
+that worktree's code, with Rails on `22000 + slot * 10` (Postgres +1, Redis +2, MinIO +3/+4).
+`bin/dev-e2e test` points Cypress at it, so E2E runs in several worktrees at once. The main
+checkout keeps `e2e-tests` on port 4000. `bin/worktree info` shows the project and port.
 
 Databases, slots and Redis prefixes are recorded per worktree in `.git/fundamento-worktrees.json`.
 `bin/worktree setup` cleans up after worktrees that are gone (drops their databases, deletes
-their Redis keys, frees their slot), `bin/worktree gc [--dry-run]` does only that, and
-`bin/worktree list` shows what exists. Only databases named with the `_wt_` marker and keys under
-a `wt_<id>:` prefix recorded by this clone are ever removed.
+their Redis keys, removes their E2E stack with its volumes and images, frees their slot),
+`bin/worktree gc [--dry-run]` does only that, and `bin/worktree list` shows what exists. Only
+databases named with the `_wt_` marker, keys under a `wt_<id>:` prefix and Compose projects named
+`fundamento-e2e-wt-<id>` recorded by this clone are ever removed.
 
 Keep the worktree when opening a PR, so review follow-ups don't need it set up again. When
-removing one by hand, run `bin/worktree teardown` in it first, and `docker compose -p <project>
-down --volumes` for any stack it started (`docker compose ls` lists them).
+removing one by hand, run `bin/worktree teardown` in it first.
 
 ## Development Seeds
 

@@ -191,7 +191,7 @@ RSpec.describe Worktree do
 
       expect(context.registry.entries[kept]).to eq(
         "id" => "kept", "databases" => %w[fundamento_development_wt_kept fundamento_test_wt_kept],
-        "redis_key_prefix" => "wt_kept:", "slot" => 1
+        "redis_key_prefix" => "wt_kept:", "slot" => 1, "e2e_project" => "fundamento-e2e-wt-kept"
       )
       expect(orphans.keys).to eq([gone])
     end
@@ -211,6 +211,7 @@ RSpec.describe Worktree do
       third = add_worktree(main, "third")
       expect(registry.register(Worktree::Context.detect(third))["slot"]).to eq(1)
       expect(Worktree::Context.detect(third).ports).to eq("rails" => 20_010, "vite" => 20_011, "blocknote" => 20_012)
+      expect(Worktree::Context.detect(third).e2e_ports).to include("rails" => 22_010, "postgres" => 22_011)
     end
 
     it "refuses a second live worktree with the same id" do
@@ -231,14 +232,27 @@ RSpec.describe Worktree do
 
       expect(context.ports).to eq("rails" => 3000, "vite" => 3036, "blocknote" => 3002)
       expect(context.redis_key_prefix).to eq("")
+      expect(context.e2e_project).to eq("e2e-tests")
+      expect(context.e2e_ports).to include("rails" => 4000, "postgres" => 6432, "redis" => 7379, "minio" => 10_000)
+    end
+
+    it "gives a worktree its own E2E project, and no E2E ports before it has a slot" do
+      worktree = add_worktree(create_repo, "Feature-X")
+      context = Worktree::Context.detect(worktree)
+
+      expect(context.e2e_project).to eq("fundamento-e2e-wt-feature_x")
+      expect(context.e2e_ports).to be_nil
     end
 
     it "gives slots non-overlapping port blocks below the ephemeral range" do
-      blocks = (1..Worktree::MAX_SLOTS).map { |slot| Worktree.ports(slot).values + Worktree.debug_ports(slot).to_a }
+      blocks = (1..Worktree::MAX_SLOTS).map do |slot|
+        Worktree.ports(slot).values + Worktree.debug_ports(slot).to_a + Worktree.e2e_ports(slot).values
+      end
+      fixed = Worktree::DEFAULT_PORTS.values + Worktree::DEFAULT_E2E_PORTS.values + [3037, 5432, 6379, 9000, 9001]
 
       expect(blocks.flatten.uniq.size).to eq(blocks.flatten.size)
       expect(blocks.flatten.max).to be < 32_768
-      expect(blocks.flatten & ([3000, 3036, 3037, 3002, 4000, 4002, 5432, 6379] + (9200..9299).to_a)).to be_empty
+      expect(blocks.flatten & (fixed + (9200..9299).to_a)).to be_empty
     end
 
     it "writes an env file that reads back with the worktree's values" do
@@ -249,6 +263,14 @@ RSpec.describe Worktree do
         "PORT" => "20030", "HTTP_HOST" => "localhost:20030", "VITE_RUBY_PORT" => "20031",
         "BLOCKNOTE_PORT" => "20032", "REDIS_KEY_PREFIX" => "wt_x:"
       )
+    end
+  end
+
+  describe Worktree::E2EStack do
+    it "refuses any Compose project but a worktree's E2E project" do
+      expect { Worktree::E2EStack.new("e2e-tests") }.to raise_error(Worktree::Error, /Refusing/)
+      expect { Worktree::E2EStack.new("fundamento-cloud") }.to raise_error(Worktree::Error, /Refusing/)
+      expect { Worktree::E2EStack.new(Worktree.e2e_project("feature_x")) }.not_to raise_error
     end
   end
 

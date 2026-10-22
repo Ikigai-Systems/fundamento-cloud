@@ -67,7 +67,9 @@ class WorktreeCLI < Thor
       "WORKTREE_VITE_PORT" => ports["vite"].to_s,
       "WORKTREE_BLOCKNOTE_PORT" => ports["blocknote"].to_s,
       "WORKTREE_DEBUG_PORT_BASE" => (context.slot && Worktree.debug_ports(context.slot).first).to_s,
-      "WORKTREE_REDIS_KEY_PREFIX" => context.redis_key_prefix
+      "WORKTREE_REDIS_KEY_PREFIX" => context.redis_key_prefix,
+      "WORKTREE_E2E_PROJECT" => context.e2e_project,
+      "WORKTREE_E2E_PORT" => context.e2e_ports&.fetch("rails").to_s
     }
 
     if options[:format] == "shell"
@@ -82,6 +84,7 @@ class WorktreeCLI < Thor
         puts "Slot:          #{context.slot}" unless context.main?
         puts "Ports:         rails #{ports["rails"]}, vite #{ports["vite"]}, blocknote #{ports["blocknote"]}"
         puts "Redis prefix:  #{context.redis_key_prefix}" unless context.main?
+        puts "E2E:           project #{context.e2e_project}, rails #{context.e2e_ports["rails"]}"
       else
         puts "Ports:         none yet; run bin/worktree setup"
       end
@@ -119,13 +122,13 @@ class WorktreeCLI < Thor
     unknown.each { |name| puts "  #{name}" }
   end
 
-  desc "gc", "Drop the databases and Redis keys of this clone's worktrees that no longer exist"
+  desc "gc", "Drop the databases, Redis keys and E2E stacks of this clone's worktrees that no longer exist"
   option :dry_run, type: :boolean, default: false, desc: "Only list what would be removed"
   def gc
     collect_garbage(dry_run: options[:dry_run])
   end
 
-  desc "teardown", "Drop this worktree's databases and Redis keys (run before `git worktree remove`)"
+  desc "teardown", "Drop this worktree's databases, Redis keys and E2E stack (run before `git worktree remove`)"
   def teardown
     raise Worktree::Error, "The main checkout has no resources of its own to tear down" if context.main?
 
@@ -138,6 +141,7 @@ class WorktreeCLI < Thor
       end
     end
     delete_redis_keys(entry["redis_key_prefix"], dry_run: false)
+    remove_e2e_stack(entry["e2e_project"] || context.e2e_project, dry_run: false)
     context.registry.remove(context.root)
     database_stamps.each_value(&:delete!)
   end
@@ -260,6 +264,7 @@ class WorktreeCLI < Thor
           server.drop(name) unless dry_run
         end
         delete_redis_keys(entry["redis_key_prefix"], dry_run: dry_run)
+        remove_e2e_stack(entry["e2e_project"], dry_run: dry_run)
         context.registry.remove(path) unless dry_run
       end
     end
@@ -278,6 +283,21 @@ class WorktreeCLI < Thor
     warn "Skipped Redis keys under #{prefix}: #{e.message}"
   ensure
     redis&.close
+  end
+
+  # Removes the worktree's E2E containers, volumes and images. A missing Docker only warns, like
+  # Redis: the stack holds nothing but test data.
+  def remove_e2e_stack(project, dry_run:)
+    return if project.nil?
+
+    stack = Worktree::E2EStack.new(project)
+    return unless stack.exists?
+    return puts("Would remove E2E stack #{project}") if dry_run
+
+    puts "Removing E2E stack #{project} (containers, volumes, images)..."
+    stack.remove
+  rescue Worktree::Error => e
+    warn "Skipped E2E stack #{project}: #{e.message}"
   end
 
   def with_server

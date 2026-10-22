@@ -1,23 +1,13 @@
 #!/usr/bin/env ruby
 require "bundler/setup"
 require "thor"
+require_relative "lib/worktree"
 
+# The main checkout runs the stack as Compose project `e2e-tests` on ports 4000, 6432, ...; each
+# git worktree gets its own project and ports from its bin/worktree slot, so several worktrees
+# can run E2E at once. `bin/worktree info` shows both.
 class DevE2E < Thor
-  PROJECT = "e2e-tests"
   WEBSITE_CONTAINER = "website"
-
-  ENV_VARS = {
-    "RAILS_ENV" => "e2e",
-    "RAILS_PORT" => "4000",
-    "RAILS_LOG_LEVEL" => "debug",
-    "POSTGRES_PORT" => "6432",
-    "REDIS_PORT" => "7379",
-    "MINIO_PORT" => "10000",
-    "MINIO_URL" => "http://localhost:10000",
-    "MINIO_CONSOLE_PORT" => "10001",
-    "BLOCKNOTE_PORT" => "4002",
-    "HTTP_HOST" => "localhost:4000",
-  }.freeze
 
   default_command :up
 
@@ -52,6 +42,11 @@ class DevE2E < Thor
     puts ""
 
     warn_build_cache_size! if options[:build]
+    unless context.main?
+      puts "This worktree's E2E images use up to ~1.3 GB of disk; `bin/worktree teardown` (or `gc`"
+      puts "once the worktree is gone) removes them with the stack's containers and volumes."
+      puts ""
+    end
 
     if options[:test]
       run_cypress
@@ -96,13 +91,44 @@ class DevE2E < Thor
   desc "test", "Run Cypress tests (assumes environment already running)"
   option :device, type: :string, default: "desktop", desc: "Device profile: desktop, phone or tablet (spec/e2e/cypress/support/devices.cjs)"
   def test
+    setup_env!
     run_cypress(device: options[:device])
   end
 
   private
 
+  def context
+    @context ||= Worktree::Context.detect
+  end
+
+  def project
+    context.e2e_project
+  end
+
+  # Registering records the stack for `bin/worktree gc` and gives a worktree that never ran
+  # bin/worktree setup its slot; the stack needs nothing else from setup, as it builds its own images.
+  def ports
+    @ports ||= begin
+      context.registry.register(context) unless context.main?
+      context.e2e_ports
+    end
+  end
+
   def setup_env!
-    ENV_VARS.each { |key, value| ENV[key] = value }
+    rails = ports.fetch("rails")
+    {
+      "RAILS_ENV" => "e2e",
+      "RAILS_PORT" => rails,
+      "RAILS_LOG_LEVEL" => "debug",
+      "POSTGRES_PORT" => ports.fetch("postgres"),
+      "REDIS_PORT" => ports.fetch("redis"),
+      "MINIO_PORT" => ports.fetch("minio"),
+      "MINIO_URL" => "http://localhost:#{ports.fetch("minio")}",
+      "MINIO_CONSOLE_PORT" => ports.fetch("minio_console"),
+      "BLOCKNOTE_PORT" => ports.fetch("blocknote"),
+      "HTTP_HOST" => "localhost:#{rails}",
+      "CYPRESS_BASE_URL" => ENV["CYPRESS_BASE_URL"] || "http://localhost:#{rails}"
+    }.each { |key, value| ENV[key] = value.to_s }
   end
 
   def load_rails_master_key!
@@ -188,7 +214,7 @@ class DevE2E < Thor
     puts "  To free space, try these commands (from least to most aggressive):"
     puts ""
     puts "  # Remove only this project's images (triggers a full rebuild next time)"
-    puts "  docker compose -p #{PROJECT} down --rmi local"
+    puts "  docker compose -p #{project} down --rmi local"
     puts ""
     puts "  # Remove unused build cache layers (keeps layers referenced by existing images)"
     puts "  docker builder prune"
@@ -234,16 +260,16 @@ class DevE2E < Thor
   end
 
   def compose(*args)
-    cmd = ["docker", "compose", "--ansi", "never", "-p", PROJECT, *args]
+    cmd = ["docker", "compose", "--ansi", "never", "-p", project, *args]
     system(*cmd)
   end
 
   def exec_compose(*args)
-    Kernel.exec("docker", "compose", "--ansi", "never", "-p", PROJECT, *args)
+    Kernel.exec("docker", "compose", "--ansi", "never", "-p", project, *args)
   end
 
   def exec_in_container(*command)
-    container_id = `docker compose -p #{PROJECT} ps -q #{WEBSITE_CONTAINER}`.strip
+    container_id = `docker compose -p #{project} ps -q #{WEBSITE_CONTAINER}`.strip
 
     if container_id.empty?
       abort "Error: #{WEBSITE_CONTAINER} container is not running. Start with: bin/dev-e2e up"
@@ -260,12 +286,22 @@ class DevE2E < Thor
   end
 
   def run_cypress(device: "desktop")
-    system("npx", "cypress", "run", "--project", "spec/e2e", "--expose", "device=#{device}")
+    system(*virtual_display, "npx", "cypress", "run", "--project", "spec/e2e", "--expose", "device=#{device}")
     exit($?.exitstatus || 1)
   end
 
+  # Without a display Cypress starts its own Xvfb, always on :99, so a second run at the same time
+  # fails with "Display :99 is already in use". xvfb-run -a finds a free display instead, starting
+  # from one per worktree slot so runs launched together don't race for the same number.
+  def virtual_display
+    return [] unless RUBY_PLATFORM.include?("linux") && ENV["DISPLAY"].to_s.empty?
+    return [] unless system("command -v xvfb-run >/dev/null 2>&1")
+
+    ["xvfb-run", "-a", "-n", (99 + context.slot.to_i).to_s, "-s", "-screen 0 1920x1080x24"]
+  end
+
   def print_status
-    puts "Starting E2E test environment with offset ports..."
+    puts "Starting E2E test environment (Compose project #{project})..."
     puts "  Rails:         http://localhost:#{ENV['RAILS_PORT']}"
     puts "  MinIO Console: http://localhost:#{ENV['MINIO_CONSOLE_PORT']}"
     puts "  PostgreSQL:    localhost:#{ENV['POSTGRES_PORT']}"
@@ -277,7 +313,7 @@ class DevE2E < Thor
     puts "Quick commands:"
     puts "  Run tests:  bin/dev-e2e test"
     puts "  As a phone: bin/dev-e2e test --device phone"
-    puts "  Open UI:    npx cypress open --project spec/e2e"
+    puts "  Open UI:    CYPRESS_BASE_URL=#{ENV["CYPRESS_BASE_URL"]} npx cypress open --project spec/e2e"
     puts "  Logs:       bin/dev-e2e logs"
     puts "  Console:    bin/dev-e2e console"
     puts "  Shell:      bin/dev-e2e shell"
