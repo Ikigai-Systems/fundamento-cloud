@@ -88,7 +88,7 @@ describe("Document Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover over the first timestamp
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
 
     // Popup should appear with local and UTC time sections
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
@@ -107,14 +107,42 @@ describe("Document Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover to show popup
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
 
     // Leave to dismiss
-    cy.get("#details_sidebar_tab time").first().trigger("mouseleave");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerleave", { pointerType: "mouse" });
 
     // Popup should disappear (150ms delay + buffer)
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("not.exist");
+  });
+
+  it("keeps the popup open after a click, until Escape", function () {
+    cy.visit("/d/one");
+    cy.waitForEditor();
+
+    openDetailsSidebar();
+
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" }).click();
+    cy.get("#details_sidebar_tab time").first().trigger("pointerleave", { pointerType: "mouse" });
+
+    // Past the 150ms a hover-only popup waits before closing
+    cy.wait(300);
+    cy.get("[data-timestamp-popup]").should("be.visible");
+
+    cy.document().trigger("keydown", { key: "Escape" });
+    cy.get("[data-timestamp-popup]").should("not.exist");
+  });
+
+  it("opens from the keyboard", function () {
+    cy.visit("/d/one");
+    cy.waitForEditor();
+
+    openDetailsSidebar();
+
+    cy.get("#details_sidebar_tab time").first().focus().trigger("keydown", { key: "Enter" });
+    cy.get("[data-timestamp-popup]").should("be.visible");
+    cy.get("#details_sidebar_tab time").first().should("have.attr", "aria-expanded", "true");
   });
 
   it("shows copy feedback when clicking clipboard button", function () {
@@ -126,7 +154,7 @@ describe("Document Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover to show popup
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
 
     // Click the first copy button
