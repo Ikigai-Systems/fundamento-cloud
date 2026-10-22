@@ -198,3 +198,6 @@ bin/dev-e2e clean
 | Redis | 6379 | 7379 | +1000 |
 | MinIO API | 9000 | 10000 | +1000 |
 | MinIO Console | 9001 | 10001 | +1000 |
+
+These are the main checkout's ports. A git worktree runs its own E2E stack (Compose project
+`fundamento-e2e-wt-<id>`, Rails on `22000 + slot * 10`); `bin/worktree info` shows it.

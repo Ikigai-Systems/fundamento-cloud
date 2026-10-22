@@ -75,6 +75,17 @@ module Worktree
       main? ? DEFAULT_PORTS : (slot && Worktree.ports(slot))
     end
 
+    # Host ports of the E2E stack (bin/dev-e2e): today's fixed ones in the main checkout, the
+    # slot's E2E range in a worktree. nil when a worktree has no slot yet.
+    def e2e_ports
+      main? ? DEFAULT_E2E_PORTS : (slot && Worktree.e2e_ports(slot))
+    end
+
+    # The Compose project bin/dev-e2e runs; the main checkout keeps `e2e-tests`.
+    def e2e_project
+      main? ? DEFAULT_E2E_PROJECT : Worktree.e2e_project(id)
+    end
+
     # One registry per clone, in the git directory all its worktrees share.
     def registry
       Registry.new(File.join(common_dir, "fundamento-worktrees.json"))
@@ -131,6 +142,30 @@ module Worktree
   def self.debug_ports(slot)
     base = DEBUG_PORT_BASE + (slot * SLOT_SIZE)
     base...(base + SLOT_SIZE)
+  end
+
+  # The E2E stack (bin/dev-e2e) publishes its Rails app, Postgres, Redis and MinIO on the host.
+  # Worktrees take them from their own block, so stacks of several worktrees run side by side.
+  E2E_PORT_BASE = 22_000
+  DEFAULT_E2E_PORTS = {
+    "rails" => 4000, "postgres" => 6432, "redis" => 7379, "minio" => 10_000, "minio_console" => 10_001,
+    "blocknote" => 4002
+  }.freeze
+
+  def self.e2e_ports(slot)
+    base = E2E_PORT_BASE + (slot * SLOT_SIZE)
+    {
+      "rails" => base, "postgres" => base + 1, "redis" => base + 2, "minio" => base + 3,
+      "minio_console" => base + 4, "blocknote" => base + 5
+    }
+  end
+
+  DEFAULT_E2E_PROJECT = "e2e-tests".freeze
+  # Only Compose projects named like this are ever removed by `gc` and `teardown`.
+  E2E_PROJECT = /\Afundamento-e2e-wt-[a-z0-9_]+\z/
+
+  def self.e2e_project(id)
+    "fundamento-e2e-wt-#{id}"
   end
 
   REDIS_KEY_PREFIX = /\Awt_[a-z0-9_]+:\z/
@@ -250,6 +285,7 @@ module Worktree
         entry = data[context.root] ||= {"id" => context.id, "databases" => []}
         entry["databases"] = (entry["databases"] | context.own_databases.values).sort
         entry["redis_key_prefix"] = context.redis_key_prefix
+        entry["e2e_project"] = context.e2e_project
         entry["slot"] ||= free_slot(data.except(context.root))
         entry
       end
@@ -356,6 +392,34 @@ module Worktree
 
     def close
       @redis.close
+    end
+  end
+
+  # A worktree's E2E Compose project, removed with its containers, volumes and the images it
+  # built. Compose finds a project's resources by label, so no compose file is needed.
+  class E2EStack
+    def initialize(project)
+      raise Error, "Refusing to touch Compose project #{project.inspect}: not a worktree E2E project" unless project.match?(E2E_PROJECT)
+
+      @project = project
+    end
+
+    # Looks for anything labelled with the project, not just containers: after `bin/dev-e2e down`
+    # only volumes and images are left, and `docker compose ls` no longer lists the project.
+    def exists?
+      label = "label=com.docker.compose.project=#{@project}"
+      [%w[ps --all --quiet], %w[volume ls --quiet], %w[image ls --quiet]].any? do |command|
+        out, status = Open3.capture2("docker", *command, "--filter", label)
+        raise Error, "Can't list Docker resources; is Docker running?" unless status.success?
+
+        !out.strip.empty?
+      end
+    end
+
+    def remove
+      _out, err, status = Open3.capture3("docker", "compose", "--ansi", "never", "-p", @project,
+                                         "down", "--volumes", "--remove-orphans", "--rmi", "local")
+      raise Error, "docker compose -p #{@project} down failed: #{err.lines.last&.strip}" unless status.success?
     end
   end
 

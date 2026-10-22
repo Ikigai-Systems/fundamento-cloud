@@ -1,5 +1,21 @@
 # E2E Tests (Cypress): running and judging results
 
+## Project and port depend on the checkout
+
+The main checkout runs Compose project `e2e-tests` on port 4000. A git worktree runs its own
+project on its own port, so several worktrees can run E2E at once. The commands here use `$P` and
+`$URL`; set them first:
+
+```bash
+eval "$(bin/worktree info --format shell)"
+P=$WORKTREE_E2E_PROJECT URL=http://localhost:$WORKTREE_E2E_PORT
+```
+
+`cy.app("clean")` wipes only its own stack's database, so worktrees never interfere with each other.
+Without a display, Cypress always starts Xvfb on `:99`, so a second headless run fails with
+"Display :99 is already in use". `bin/dev-e2e test` wraps it in `xvfb-run -a`; do the same when
+calling `npx cypress run` directly.
+
 ## Running specs
 
 - The E2E images bake the source in: the `website` service builds from context with no volume
@@ -11,12 +27,12 @@
   green, so it reads like a real bug. Before believing a red run on code you just changed, prove
   the image has it:
   ```bash
-  docker compose -p e2e-tests exec -T website sh -c 'grep -n NEW_SYMBOL app/javascript/path/file.ts'
-  docker compose -p e2e-tests exec -T website sh -c 'grep -rl "new-event-name" public/vite/assets'
+  docker compose -p $P exec -T website sh -c 'grep -n NEW_SYMBOL app/javascript/path/file.ts'
+  docker compose -p $P exec -T website sh -c 'grep -rl "new-event-name" public/vite/assets'
   ```
   When only JS/TS changed, `bin/vite build` on the host, then
-  `docker cp public/vite e2e-tests-website-1:/rails/public/` and
-  `docker compose -p e2e-tests restart website` takes minutes instead of a full image build. The
+  `docker cp public/vite $P-website-1:/rails/public/` and
+  `docker compose -p $P restart website` takes minutes instead of a full image build. The
   container is hand-patched afterwards, so rebuild before trusting a final result.
 - Every remaining spec failing in under a second (1 failing, the rest skipped) means the app is
   unreachable, e.g. the stack was stopped mid-run, not a regression.
@@ -25,14 +41,14 @@
   its root first. Without it every spec fails to compile ("Can't resolve 'cypress-real-events'")
   and reports 0 tests, 1 failing, which is not a real result.
 - Never run multiple Cypress specs in parallel against the same E2E database — `cy.app("clean")` in `beforeEach` wipes all tables, causing cross-spec interference.
-- Use `bin/dev-e2e up --test` to run the full suite, or `npx cypress run --project spec/e2e --spec <path> --config baseUrl=http://localhost:4000` for individual specs.
+- Use `bin/dev-e2e up --test` to run the full suite, or `npx cypress run --project spec/e2e --spec <path> --config baseUrl=$URL` for individual specs.
 
 ## Stability verification
 
 A test is considered stable if it passes 10 consecutive solo runs:
 ```bash
 for i in $(seq 1 10); do
-  npx cypress run --project spec/e2e --spec "<path>" --config baseUrl=http://localhost:4000 || break
+  npx cypress run --project spec/e2e --spec "<path>" --config baseUrl=$URL || break
 done
 ```
 
