@@ -86,5 +86,48 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
       end
     end
 
+    describe "who may trigger it" do
+      fixtures :automations
+
+      def token_for(membership)
+        ApiToken.create!(organization: membership.organization, organization_membership: membership, title: "Webhook")
+      end
+
+      def trigger(automation_id, membership)
+        post api_v1_automation_invocations_path(automation_id),
+          params: { "test" => 1 }.to_json,
+          headers: {
+            "Content-Type" => "application/json",
+            "Authorization" => "Bearer #{token_for(membership).encrypted_token}",
+          }
+      end
+
+      it "does not find an automation of another organization" do
+        expect {
+          trigger(automations(:hc_webhook_automation).id, organization_memberships(:om_is_stefan))
+        }.not_to change(AutomationInvocation, :count)
+
+        expect(response).to have_http_status(:not_found)
+        expect(AutomationInvocationJob).not_to have_been_enqueued
+      end
+
+      it "refuses a member who cannot edit the automation's space" do
+        expect {
+          trigger(automations(:hc_restricted_automation).id, organization_memberships(:om_hc_maria))
+        }.not_to change(AutomationInvocation, :count)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(AutomationInvocationJob).not_to have_been_enqueued
+      end
+
+      it "accepts a member who can edit the automation's space" do
+        expect {
+          trigger(automations(:hc_webhook_automation).id, organization_memberships(:om_hc_maria))
+        }.to change(AutomationInvocation, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(AutomationInvocation.last.run_as).to eq(organization_memberships(:om_hc_maria))
+      end
+    end
   end
 end

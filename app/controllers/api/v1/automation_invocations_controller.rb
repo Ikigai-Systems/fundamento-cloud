@@ -45,8 +45,12 @@ class Api::V1::AutomationInvocationsController < Api::ApiController
 
   private
 
+  # The invocation runs the automation's formula as the caller, so the caller must be able to
+  # edit the automation: it belongs to their token's organization, and they can edit its space.
   def load_automation
-    @automation = Automation.find(params[:automation_id])
+    @automation = current_organization.automations.find(params[:automation_id])
+
+    authorize @automation, :update?
   end
 
 end
