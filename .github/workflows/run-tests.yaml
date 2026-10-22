@@ -27,10 +27,11 @@ jobs:
       DATABASE_URL: postgres://postgres:password@localhost/postgres
 
     steps:
-      # apt mirrors occasionally stop responding mid-update and hang the job.
+      # apt mirrors occasionally stop responding mid-update and hang the job. On the current
+      # Ubuntu runner image the pandoc download alone can take over 5 minutes.
       - name: Install dependencies
         shell: bash
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: |
           sudo apt-get update && sudo apt-get install -y pandoc
 
