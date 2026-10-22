@@ -178,6 +178,28 @@ describe("Touch device smoke", function () {
     })
   })
 
+  describe("timestamps", () => {
+    beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
+
+    // A finger can't hover, so a tap opens the exact time, and it stays until a tap elsewhere
+    it("opens the exact time with a tap, fits it on screen, and closes it with a tap outside", () => {
+      cy.visit("/d/one")
+      cy.waitForEditor()
+
+      cy.openSidebar("details").find('[aria-label="Details"]').realTouch()
+      cy.get("#details_sidebar_tab time").first().realTouch()
+      cy.get("[data-timestamp-popup]").should("be.visible")
+      // Overflow and the copy buttons' size, with the popup open
+      cy.checkPageHealth()
+
+      cy.get("[data-timestamp-popup] button[data-copy-value]").first().realTouch()
+      cy.get("[data-timestamp-popup] .icon-\\[heroicons--check\\]").should("exist")
+
+      cy.contains("#details_sidebar_tab p", "Created at").realTouch()
+      cy.get("[data-timestamp-popup]").should("not.exist")
+    })
+  })
+
   describe("hover styles", () => {
     beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
 

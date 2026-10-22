@@ -55,7 +55,7 @@ describe("Table Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover over the first timestamp
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
 
     // Popup should appear with local and UTC time sections
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
@@ -74,11 +74,11 @@ describe("Table Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover to show popup
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
 
     // Leave to dismiss
-    cy.get("#details_sidebar_tab time").first().trigger("mouseleave");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerleave", { pointerType: "mouse" });
 
     // Popup should disappear (150ms delay + buffer)
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("not.exist");
@@ -93,7 +93,7 @@ describe("Table Sidebar Timestamps", function () {
     openDetailsSidebar();
 
     // Hover to show popup
-    cy.get("#details_sidebar_tab time").first().trigger("mouseenter");
+    cy.get("#details_sidebar_tab time").first().trigger("pointerenter", { pointerType: "mouse" });
     cy.get("[data-timestamp-popup]", { timeout: 5000 }).should("be.visible");
 
     // Click the first copy button

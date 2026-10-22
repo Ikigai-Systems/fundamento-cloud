@@ -4,45 +4,106 @@ import utc from "dayjs/plugin/utc"
 
 dayjs.extend(utc)
 
-export default class TimestampController extends Controller {
+// A relative time ("3 days") that shows the exact time, on this device and in UTC, with buttons
+// to copy each.
+//
+// A mouse opens it by hovering. A tap, a click or Enter / Space toggles it, and then it stays
+// until a tap outside, Escape or another toggle: a finger can't hover, and a tap still sends a
+// compatibility `mouseenter`, so hover alone would open it by accident and leave it stuck. Pointer
+// events tell the two apart.
+export default class TimestampController extends Controller<HTMLElement> {
   static values = {
     datetime: String,
   }
 
   declare datetimeValue: string
+  private popup: HTMLElement | null = null
+  private pinned = false
   private hideTimeout: ReturnType<typeof setTimeout> | null = null
 
   connect(): void {
-    this.element.classList.add("cursor-default")
-    this.element.addEventListener("mouseenter", this.handleMouseEnter)
-    this.element.addEventListener("mouseleave", this.handleMouseLeave)
+    this.element.classList.add("cursor-pointer")
+    this.element.setAttribute("tabindex", "0")
+    this.element.setAttribute("role", "button")
+    this.element.setAttribute("aria-expanded", "false")
+    this.element.addEventListener("pointerenter", this.handlePointerEnter)
+    this.element.addEventListener("pointerleave", this.handlePointerLeave)
+    this.element.addEventListener("click", this.toggle)
+    this.element.addEventListener("keydown", this.handleKeydown)
+    window.addEventListener("timestamp:opened", this.handleOtherOpened)
   }
 
   disconnect(): void {
-    this.element.removeEventListener("mouseenter", this.handleMouseEnter)
-    this.element.removeEventListener("mouseleave", this.handleMouseLeave)
-    this.removePopup()
-    if (this.hideTimeout) clearTimeout(this.hideTimeout)
+    this.element.removeEventListener("pointerenter", this.handlePointerEnter)
+    this.element.removeEventListener("pointerleave", this.handlePointerLeave)
+    this.element.removeEventListener("click", this.toggle)
+    this.element.removeEventListener("keydown", this.handleKeydown)
+    window.removeEventListener("timestamp:opened", this.handleOtherOpened)
+    this.close()
   }
 
-  private handleMouseEnter = (): void => {
-    if (this.hideTimeout) {
-      clearTimeout(this.hideTimeout)
-      this.hideTimeout = null
+  private handlePointerEnter = (event: PointerEvent): void => {
+    if (event.pointerType !== "mouse") return
+
+    this.cancelHide()
+    if (!this.popup) this.open()
+  }
+
+  private handlePointerLeave = (event: PointerEvent): void => {
+    if (event.pointerType !== "mouse" || this.pinned) return
+
+    this.scheduleHide()
+  }
+
+  // A hover may already have opened it: the click then keeps it open rather than closing it
+  private toggle = (): void => {
+    if (this.popup && this.pinned) {
+      this.close()
+    } else {
+      if (!this.popup) this.open()
+      this.pinned = true
     }
-
-    // Remove existing popup if any
-    this.removePopup()
-    this.showPopup()
   }
 
-  private handleMouseLeave = (): void => {
-    this.hideTimeout = setTimeout(() => {
-      this.removePopup()
-    }, 150)
+  private handleKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== "Enter" && event.key !== " ") return
+
+    event.preventDefault()
+    this.toggle()
   }
 
-  private showPopup(): void {
+  private handleOutsidePointerDown = (event: PointerEvent): void => {
+    const target = event.target as Node
+    if (this.element.contains(target) || this.popup?.contains(target)) return
+
+    this.close()
+  }
+
+  private handleEscape = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return
+
+    this.close()
+    this.element.focus()
+  }
+
+  // Only one popup at a time: opening another closes this one
+  private handleOtherOpened = (event: Event): void => {
+    if ((event as CustomEvent).detail !== this) this.close()
+  }
+
+  private scheduleHide(): void {
+    this.cancelHide()
+    this.hideTimeout = setTimeout(() => this.close(), 150)
+  }
+
+  private cancelHide(): void {
+    if (this.hideTimeout) clearTimeout(this.hideTimeout)
+    this.hideTimeout = null
+  }
+
+  private open(): void {
+    window.dispatchEvent(new CustomEvent("timestamp:opened", { detail: this }))
+
     const parsed = dayjs(this.datetimeValue)
     const utcTime = parsed.utc()
 
@@ -60,46 +121,38 @@ export default class TimestampController extends Controller {
 
     const popup = document.createElement("div")
     popup.setAttribute("data-timestamp-popup", "")
-    popup.className = "fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm whitespace-nowrap"
-    popup.addEventListener("mouseenter", () => {
-      if (this.hideTimeout) {
-        clearTimeout(this.hideTimeout)
-        this.hideTimeout = null
-      }
+    popup.setAttribute("role", "dialog")
+    popup.setAttribute("aria-label", "Exact time")
+    popup.className = "fixed z-50 max-w-[calc(100vw-16px)] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm"
+    popup.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") this.cancelHide()
     })
-    popup.addEventListener("mouseleave", () => {
-      this.hideTimeout = setTimeout(() => {
-        this.removePopup()
-      }, 150)
+    popup.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse" && !this.pinned) this.scheduleHide()
     })
 
+    // Each label sits above its time, which keeps the popup narrow enough for a phone screen.
+    // The copy buttons reach 24px on touch without moving the layout elsewhere.
+    const row = (icon: string, label: string, note: string, value: string, copyLabel: string) => `
+      <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+          <span class="${icon} size-4 shrink-0"></span>
+          <span class="font-medium">${label}</span>
+          ${note}
+        </div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="whitespace-nowrap text-gray-900 dark:text-gray-100">${value}</span>
+          <button type="button" class="flex rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors touch:p-1 touch:-m-1" data-copy-value="${value}" aria-label="${copyLabel}">
+            <span class="icon-[heroicons--clipboard] size-4"></span>
+          </button>
+        </div>
+      </div>
+    `
+
     popup.innerHTML = `
-      <div class="flex flex-col gap-2">
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-            <span class="icon-[heroicons--computer-desktop] size-4 shrink-0"></span>
-            <span class="font-medium">Your device</span>
-            <span class="text-xs text-gray-400">${offsetLabel}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-gray-900 dark:text-gray-100">${localFormatted}</span>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${localFormatted}">
-              <span class="icon-[heroicons--clipboard] size-4"></span>
-            </button>
-          </div>
-        </div>
-        <div class="flex items-center justify-between gap-4">
-          <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-            <span class="icon-[heroicons--globe-alt] size-4 shrink-0"></span>
-            <span class="font-medium">UTC</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="text-gray-900 dark:text-gray-100">${utcFormatted}</span>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors" data-copy-value="${utcFormatted}">
-              <span class="icon-[heroicons--clipboard] size-4"></span>
-            </button>
-          </div>
-        </div>
+      <div class="flex flex-col gap-3">
+        ${row("icon-[heroicons--computer-desktop]", "Your device", `<span class="text-xs text-gray-400">${offsetLabel}</span>`, localFormatted, "Copy your device's time")}
+        ${row("icon-[heroicons--globe-alt]", "UTC", "", utcFormatted, "Copy UTC time")}
       </div>
     `
 
@@ -110,32 +163,41 @@ export default class TimestampController extends Controller {
 
     // Append to body with fixed positioning to escape sidebar overflow clipping
     document.body.appendChild(popup)
+    this.popup = popup
+    this.position()
 
-    // Position relative to trigger element
-    const rect = this.element.getBoundingClientRect()
-    const popupRect = popup.getBoundingClientRect()
-
-    // Position above the trigger, aligned to the right edge
-    let top = rect.top - popupRect.height - 8
-    let left = rect.right - popupRect.width
-
-    // If it would go above the viewport, show below instead
-    if (top < 8) {
-      top = rect.bottom + 8
-    }
-
-    // Keep within viewport horizontally
-    if (left < 8) {
-      left = 8
-    }
-
-    popup.style.top = `${top}px`
-    popup.style.left = `${left}px`
+    this.element.setAttribute("aria-expanded", "true")
+    document.addEventListener("pointerdown", this.handleOutsidePointerDown)
+    document.addEventListener("keydown", this.handleEscape)
   }
 
-  private removePopup(): void {
-    const popup = document.querySelector("[data-timestamp-popup]")
-    if (popup) popup.remove()
+  // Above the trigger and aligned to its right edge, below it when there is no room above, and
+  // always inside the screen
+  private position(): void {
+    if (!this.popup) return
+
+    const margin = 8
+    const rect = this.element.getBoundingClientRect()
+    const popupRect = this.popup.getBoundingClientRect()
+
+    let top = rect.top - popupRect.height - margin
+    if (top < margin) top = rect.bottom + margin
+
+    const maxLeft = window.innerWidth - popupRect.width - margin
+    const left = Math.max(margin, Math.min(rect.right - popupRect.width, maxLeft))
+
+    this.popup.style.top = `${top}px`
+    this.popup.style.left = `${left}px`
+  }
+
+  private close(): void {
+    this.cancelHide()
+    this.popup?.remove()
+    this.popup = null
+    this.pinned = false
+    this.element.setAttribute("aria-expanded", "false")
+    document.removeEventListener("pointerdown", this.handleOutsidePointerDown)
+    document.removeEventListener("keydown", this.handleEscape)
   }
 
   copyValue(event: Event): void {
