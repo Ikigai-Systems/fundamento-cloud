@@ -89,7 +89,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
       );
 
       const configureButtonClassNames = clsx(
-        "flex items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0",
+        "flex items-center px-1 py-1 border-l -ml-[1px] group-hover:opacity-100 opacity-0 touch:opacity-100",
         colorNameToClass(color),
         colorNameToHoverAndActiveClass(color),
         sizeClassNames.height,

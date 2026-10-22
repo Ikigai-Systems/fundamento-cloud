@@ -107,7 +107,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
       );
 
       const configureButtonClassNames = clsx(
-        "flex items-center px-1 py-1 border-l -ml-[1px] -mr-1 group-hover:opacity-100 opacity-0 bg-gray-200 dark:group-hover:bg-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
+        "flex items-center px-1 py-1 border-l -ml-[1px] -mr-1 group-hover:opacity-100 opacity-0 touch:opacity-100 bg-gray-200 dark:group-hover:bg-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-50",
       );
 
       let displayResult = <span>[]</span>;

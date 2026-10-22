@@ -72,7 +72,7 @@
 
             /* A touch screen can't hover to reveal them, and an invisible button still takes the tap.
                So they stay visible, beside the title rather than over it, and look like buttons. */
-            @media (hover: none) {
+            @media (hover: none), (pointer: coarse) {
                 /* Archived rows hide with the hidden attribute, which a plain display: flex would undo */
                 .content-link-container:not([hidden]) {
                     @apply flex items-center;

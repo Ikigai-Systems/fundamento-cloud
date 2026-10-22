@@ -178,6 +178,28 @@ describe("Touch device smoke", function () {
     })
   })
 
+  describe("hover styles", () => {
+    beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
+
+    // A touch browser leaves the last element tapped in the hover state, so a hover: style would
+    // stay on a button after the tap. hover: applies only where a pointer can hover.
+    it("leaves no hover style on a button after tapping it", () => {
+      cy.visit("/d/one")
+      cy.waitForEditor()
+
+      cy.get("nav button[aria-label='Search']").realTouch()
+      cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible")
+      cy.get("ninja-keys").shadow().find("ninja-header").shadow().find("#search").type("{esc}")
+      cy.get("ninja-keys").shadow().find(".modal").should("not.have.class", "visible")
+
+      // The notifications button beside it has the same style and was never touched
+      cy.get("[data-testid='notifications-button']").then(($untouched) => {
+        const { backgroundColor } = getComputedStyle($untouched[0])
+        cy.get("nav button[aria-label='Search']").should("have.css", "background-color", backgroundColor)
+      })
+    })
+  })
+
   describe("switching organization", () => {
     it("switches by tapping, and the confirmation fits on screen", () => {
       cy.visit("/organizations")

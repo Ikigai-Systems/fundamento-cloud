@@ -1,5 +1,6 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 const {addDynamicIconSelectors} = require('@iconify/tailwind');
+const plugin = require('tailwindcss/plugin');
 
 module.exports = {
   content: [
@@ -23,6 +24,11 @@ module.exports = {
     'flash-error-icon',
     'flash-error-button',
   ],
+  future: {
+    // hover: styles apply only where a pointer can hover. A touch browser leaves the last element
+    // tapped hovered, so they would otherwise stay on a button after the tap.
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       fontFamily: {
@@ -104,5 +110,11 @@ module.exports = {
     require('@tailwindcss/typography'),
     require('@tailwindcss/container-queries'),
     addDynamicIconSelectors(),
+    // Input capability rather than screen width: a wide iPad is touch, a narrow window is a mouse.
+    // touch: is where hover: doesn't apply, so a control revealed on hover needs it too
+    // (`opacity-0 group-hover:opacity-100 touch:opacity-100`), or a touch screen never shows it.
+    plugin(({addVariant}) => {
+      addVariant('touch', '@media (hover: none), (pointer: coarse)');
+    }),
   ]
 }

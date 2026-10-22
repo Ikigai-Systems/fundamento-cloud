@@ -142,7 +142,7 @@
     }
 
     /* A touch screen can't hover to find the toggle, so it is always shown there */
-    @media (hover: none) {
+    @media (hover: none), (pointer: coarse) {
         .sidebar-trigger-button {
             @apply opacity-100;
         }
