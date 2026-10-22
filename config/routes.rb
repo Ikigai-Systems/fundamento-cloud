@@ -198,10 +198,6 @@ Rails.application.routes.draw do
 
   get "/mcp" => "ai_assistants#show", as: :ai_assistants
 
-  resources :packs do
-    # get :suggest_members, on: :collection
-  end
-
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get "/api/v1/attachments/:id", to: "attachments#show"
 
@@ -220,18 +216,6 @@ Rails.application.routes.draw do
     end
 
     namespace :v1 do
-      resources :packs do
-        member do
-          post :next_version
-        end
-
-        resources :versions, controller: "pack_versions", param: :version do
-          member do
-            post :register
-          end
-        end
-      end
-
       resources :automations, only: [] do
         resources :invocations, controller: "automation_invocations", only: [:create]
       end

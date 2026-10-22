@@ -53,6 +53,9 @@ module Tenant
       # created, which is one more place embedded ids would have to be rewritten.
       "import_sessions" => "the staging area for an import, not its result",
       "import_files" => "the staging area for an import, not its result",
+      # Left behind by a feature that was removed; a follow-up migration drops both tables.
+      "packs" => "a removed feature, its table awaiting a drop",
+      "pack_versions" => "a removed feature, its table awaiting a drop",
     }.freeze
 
     # The tenant itself.
@@ -71,8 +74,6 @@ module Tenant
       object_references
       object_tags
       organization_memberships
-      pack_versions
-      packs
       public_links
       space_memberships
       spaces

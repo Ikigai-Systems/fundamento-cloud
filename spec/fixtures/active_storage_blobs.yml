@@ -4,16 +4,6 @@
 _fixture:
   model_class: ActiveStorage::Blob
 
-pack_bundle:
-  id: 9401
-  key: pack-bundle-key
-  filename: bundle.zip
-  content_type: application/zip
-  service_name: test
-  byte_size: 1024
-  checksum: aGVsbG8gcGFjayBidW5kbGU=
-  metadata: '{"identified":true}'
-
 document_file:
   id: 9402
   key: document-file-key

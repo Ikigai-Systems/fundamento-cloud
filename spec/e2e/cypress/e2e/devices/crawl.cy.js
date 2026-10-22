@@ -40,10 +40,6 @@ const PAGES = {
   "/import_sessions": "/import_sessions",
   "/import_sessions/new": "/import_sessions/new",
   "/import_sessions/:id": "/import_sessions/issession01",
-  "/packs": "/packs",
-  "/packs/new": "/packs/new",
-  "/packs/:id": "/packs/test_pack_1",
-  "/packs/:id/edit": "/packs/test_pack_1/edit",
   "/organizations": "/organizations",
   "/organizations/new": "/organizations/new",
   "/organizations/:id": "/organizations/is",
@@ -132,7 +128,7 @@ const ROUTES_SCRIPT = `
 
 const FIXTURES = [
   "organizations", "users", "organization_memberships", "spaces", "space_memberships",
-  "documents", "versions", "teams", "team_memberships", "packs", "automations", "public_links",
+  "documents", "versions", "teams", "team_memberships", "automations", "public_links",
   "import_sessions", "tables/tables", "tables/columns", "tables/rows", "tables/cells",
 ]
 

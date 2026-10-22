@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_02_170600) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_175342) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -880,9 +880,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_02_170600) do
   add_foreign_key "organization_membership_properties", "organization_memberships"
   add_foreign_key "organization_memberships", "organizations"
   add_foreign_key "organization_memberships", "users"
-  add_foreign_key "pack_versions", "organizations"
+  add_foreign_key "pack_versions", "organizations", on_delete: :cascade
   add_foreign_key "pack_versions", "packs"
-  add_foreign_key "packs", "organizations"
+  add_foreign_key "packs", "organizations", on_delete: :cascade
   add_foreign_key "packs", "pack_versions", column: "active_version_id"
   add_foreign_key "public_links", "organizations"
   add_foreign_key "public_links", "users", column: "updated_by_id"

@@ -69,6 +69,28 @@ RSpec.describe Organization, type: :model do
     end
   end
 
+  # The packs feature is gone but its tables remain until a later migration drops them, so the
+  # database has to clear their rows when an organization is purged.
+  describe "destroying an organization with rows left in the removed packs tables" do
+    it "removes those rows" do
+      organization = Organization.create!(name: "Leftover packs")
+      connection = ActiveRecord::Base.connection
+      quoted = connection.quote(organization.id)
+      connection.execute(<<~SQL)
+        INSERT INTO packs (id, name, organization_id, created_at, updated_at)
+          VALUES ('leftover_pack', 'Pack', #{quoted}, now(), now());
+        INSERT INTO pack_versions (id, pack_id, version, organization_id, created_at, updated_at)
+          VALUES ('leftover_v1', 'leftover_pack', 1, #{quoted}, now(), now());
+        UPDATE packs SET active_version_id = 'leftover_v1' WHERE id = 'leftover_pack';
+      SQL
+
+      organization.destroy!
+
+      expect(connection.select_value("SELECT count(*) FROM packs WHERE organization_id = #{quoted}")).to eq(0)
+      expect(connection.select_value("SELECT count(*) FROM pack_versions WHERE organization_id = #{quoted}")).to eq(0)
+    end
+  end
+
   describe "default space creation" do
     it "creates a default space after creation" do
       organization = Organization.create!(name: "Test Organization")

@@ -178,8 +178,7 @@ module Tenant
       when "active_storage_attachments"
         "SELECT * FROM active_storage_attachments WHERE " \
           "(record_type = 'Attachment' AND record_id IN (SELECT id::text FROM attachments WHERE organization_id = #{quoted})) OR " \
-          "(record_type = 'Tables::Version' AND record_id IN (SELECT id FROM table_versions WHERE organization_id = #{quoted})) OR " \
-          "(record_type = 'PackVersion' AND record_id IN (SELECT id::text FROM pack_versions WHERE organization_id = #{quoted}))"
+          "(record_type = 'Tables::Version' AND record_id IN (SELECT id FROM table_versions WHERE organization_id = #{quoted}))"
       when "active_storage_blobs"
         "SELECT * FROM active_storage_blobs WHERE id IN (SELECT blob_id FROM (#{scope_sql('active_storage_attachments')}) AS a)"
       when "active_storage_variant_records"
