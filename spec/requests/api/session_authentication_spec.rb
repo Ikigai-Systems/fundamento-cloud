@@ -3,7 +3,7 @@ require "rails_helper"
 # API endpoints authenticate from the Authorization header only. A browser session must not
 # authenticate a write, and token requests must not create one.
 RSpec.describe "API authentication with a browser session", type: :request do
-  fixtures :users, :organizations, :organization_memberships, :spaces, :documents, :packs,
+  fixtures :users, :organizations, :organization_memberships, :spaces, :documents,
     :oauth_applications, :oauth_access_tokens
 
   let(:pawel) { users(:pawel) }
@@ -56,9 +56,9 @@ RSpec.describe "API authentication with a browser session", type: :request do
 
     it "does not accept a form-encoded write" do
       expect {
-        post "/api/v1/packs/#{packs(:test_pack_1).id}/versions", params: "a=b",
+        post "/api/v1/spaces", params: "space[name]=From+a+form",
           headers: { "Content-Type" => "application/x-www-form-urlencoded" }
-      }.not_to change(PackVersion, :count)
+      }.not_to change(Space, :count)
 
       expect_token_challenge
     end
