@@ -149,7 +149,7 @@ sentry:
 # Development
 sops -d config/secrets/development.sops.yaml
 
-# Production
+# Production (needs the admin key; the build key can't decrypt it)
 sops -d config/secrets/production.sops.yaml
 
 # Extract a specific value
@@ -162,7 +162,7 @@ sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sop
 # Development
 sops config/secrets/development.sops.yaml
 
-# Production
+# Production (admin key only)
 sops config/secrets/production.sops.yaml
 ```
 
@@ -233,7 +233,8 @@ The workflows will:
 GitHub runs Dependabot-triggered `pull_request` workflows against a **separate**
 secret store from Actions. `SOPS_AGE_KEY` is therefore configured **twice**:
 
-- **Actions store** → the build/CI key (`age18p3re8…`), a recipient on every SOPS file.
+- **Actions store** → the build key (`age1m2ksw2…`), a recipient on every SOPS file
+  except `production.sops.yaml`, which is admin-only.
 - **Dependabot store** → a dedicated, lower-privilege key (`age1et3r…`) that is a
   recipient on **`build`/`test`/`e2e` only**. A Dependabot job runs untrusted
   updated-dependency code, so it must never be able to decrypt production. This key
@@ -271,6 +272,12 @@ Never add it to `production.sops.yaml` or `development.sops.yaml`.
    ```bash
    sops updatekeys config/secrets/*.sops.yaml
    ```
+
+**If the old key leaked, `updatekeys` is not enough.** It re-wraps the same data key,
+and anyone holding the old key can read that data key from any earlier commit. Generate
+a new data key with `sops rotate -i <file>` (while the old key can still decrypt), then
+`sops updatekeys -y <file>`. Then rotate the values themselves: everything the old key
+could decrypt in any commit is exposed, whatever the files say now.
 
 ### Rotating Rails Master Keys
 

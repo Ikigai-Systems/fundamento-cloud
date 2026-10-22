@@ -3,20 +3,28 @@
 #
 # Age recipients:
 #   age193z7... — admin/owner key (recovery; held privately, never in CI)
-#   age18p3re8... — build/CI key (Actions SOPS_AGE_KEY, dockerfiles/sops-age-key.secret)
+#   age1m2ksw2... — build key (Actions SOPS_AGE_KEY, dockerfiles/sops-age-key.secret)
 #   age1et3rc4... — dependabot key (Dependabot SOPS_AGE_KEY; scoped to non-prod only)
 #
 # IMPORTANT: creation_rules are first-match. The scoped rules below MUST stay
 # above the generic ones. The dependabot key is deliberately NOT a recipient on
 # production or development, so a Dependabot job can never decrypt those (in any
 # commit). Do not add it there.
+#
+# Production is admin-only: no workflow or build reads it, and the build key
+# lives in CI and on developer machines. Keep the build key off it.
 
 creation_rules:
-  # Production & development: build/CI key + admin only (never the Dependabot key)
-  - path_regex: config/secrets/(production|development)\.sops\.yaml$
+  # Production: admin only
+  - path_regex: config/secrets/production\.sops\.yaml$
+    age: >-
+      age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk
+
+  # Development: build key + admin (never the Dependabot key)
+  - path_regex: config/secrets/development\.sops\.yaml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8
 
   # CI-facing non-prod secrets: build key + admin + Dependabot key.
   # These are the only files a Dependabot job ever decrypts (test/e2e master
@@ -24,29 +32,29 @@ creation_rules:
   - path_regex: config/secrets/(test|e2e|build)\.sops\.yaml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s,
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8,
       age1et3rc4fv40lc4czn9ug7ryvcmw2gfs2mls8c5ca0xcr2pvv9tdys4p0yv7
 
   # Fallback for any other file in config/secrets/: build key + admin
   - path_regex: config/secrets/.*\.sops\.yaml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8
 
   # Encrypt environment files with sops in the name
   - path_regex: .*\.sops\.env$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8
 
   # Encrypt any YAML file with .sops in the name
   - path_regex: .*\.sops\.ya?ml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8
 
   # Encrypt JSON files with .sops in the name
   - path_regex: .*\.sops\.json$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
-      age18p3re8vk23zc4sepnl6f83ljl4zglgxzacuzn9meg4egfhwmmp9scn5d3s
+      age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8

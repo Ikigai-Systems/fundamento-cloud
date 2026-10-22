@@ -18,7 +18,8 @@ FileUtils.chdir APP_ROOT do
 
   puts "== Extracting Rails credential keys from SOPS =="
   FileUtils.mkdir_p("config/credentials")
-  %w[development test e2e production].each do |env|
+  # production.sops.yaml is encrypted for the admin key only, not the build key.
+  %w[development test e2e].each do |env|
     sops_file = "config/secrets/#{env}.sops.yaml"
     key_file = "config/credentials/#{env}.key"
     next unless File.exist?(sops_file)
