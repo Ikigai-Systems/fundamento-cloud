@@ -38,7 +38,7 @@
   "dependencies": {
     "@blocknote/server-util": "^0.55.0",
     "@types/node": "^26.6.5",
-    "fastify": "^5.12.5",
+    "fastify": "^5.12.6",
     "hast-util-to-html": "^9.0.5",
     "rehype-parse": "^9.0.1",
     "rehype-raw": "^7.0.0",
