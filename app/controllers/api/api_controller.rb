@@ -3,7 +3,10 @@ module Api
     include Pundit::Authorization
     include ActiveStorage::SetCurrent
 
-    skip_before_action :verify_authenticity_token
+    # Token clients send no CSRF token, so a write without one runs with an empty session
+    # instead of being rejected. A browser session then can't authenticate it; only the
+    # Authorization header can. Must run before authenticate_user_from_headers!.
+    protect_from_forgery with: :null_session
 
     before_action :authenticate_user_from_headers!
     before_action :set_current_attributes
@@ -55,7 +58,8 @@ module Api
 
       Current.organization = membership.organization
 
-      sign_in(membership.user, scope: :user)
+      # For this request only: a bearer token authenticates every request on its own.
+      sign_in(membership.user, scope: :user, store: false)
       true
     end
 
