@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
 
   def pundit_user
     # Argument order matters: current_user must be evaluated before current_organization.
-    # Warden's JWT/API-token strategies (config/initializers/devise.rb) assign
+    # Warden's API-token strategy (config/initializers/devise.rb) assigns
     # Current.organization as a side effect of authenticating the user, so
     # current_organization only has the right value once current_user has run. Ruby evaluates
     # method arguments left-to-right, which makes this safe — but reordering these two

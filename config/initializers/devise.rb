@@ -9,50 +9,7 @@
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 
-class JwtAuthenticatableStrategy < Devise::Strategies::Base
-  def valid?
-    jwt.present?
-  end
-
-  def store?; false; end
-
-  def authenticate!
-    jwt_secret_key = Rails.application.credentials.formula_eval.jwt_secret_key!
-
-    payload, _headers = JWT.decode(jwt, jwt_secret_key, true, algorithm: "HS256")
-
-    organization_membership = GlobalID::Locator.locate(payload["sub"]) rescue nil
-    # space = GlobalID::Locator.locate payload["aud"]
-
-    if organization_membership
-      Current.organization = organization_membership.organization
-
-      success!(organization_membership.user)
-    else
-      fail!("User not found: #{payload["sub"]}")
-    end
-  rescue JWT::DecodeError => e
-    fail!("Invalid token: #{e.message}")
-  end
-
-  protected
-
-  def extract_bearer_token(authorization_header, token_type = "Bearer")
-    return nil unless authorization_header.present? && authorization_header.start_with?("#{token_type} ")
-
-    authorization_header.split(" ").last
-  end
-
-  private
-
-  def jwt
-    authorization_header = env["HTTP_AUTHORIZATION"]
-
-    extract_bearer_token(authorization_header, "JWT")
-  end
-end
-
-class ApiTokenAuthenticatableStrategy < JwtAuthenticatableStrategy
+class ApiTokenAuthenticatableStrategy < Devise::Strategies::Base
   def valid?
     api_token.present?
   end
@@ -69,12 +26,15 @@ class ApiTokenAuthenticatableStrategy < JwtAuthenticatableStrategy
     end
   end
 
+  def store?; false; end
+
   private
 
   def api_token
     authorization_header = env["HTTP_AUTHORIZATION"]
+    return nil unless authorization_header.present? && authorization_header.start_with?("Bearer ")
 
-    extract_bearer_token(authorization_header)
+    authorization_header.split(" ").last
   end
 end
 
@@ -402,7 +362,6 @@ Devise.setup do |config|
   # end
 
   config.warden do |manager|
-    manager.strategies.add(:jwt, JwtAuthenticatableStrategy)
     manager.strategies.add(:api_token, ApiTokenAuthenticatableStrategy)
   end
 
