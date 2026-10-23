@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_201826) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_085919) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -825,7 +825,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_201826) do
   add_foreign_key "automation_invocations", "organization_memberships", column: "run_as_id"
   add_foreign_key "automation_invocations", "organizations"
   add_foreign_key "automation_invocations", "spaces"
-  add_foreign_key "automations", "organization_memberships", column: "run_as_id"
+  add_foreign_key "automations", "organization_memberships", column: "run_as_id", on_delete: :nullify
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
   add_foreign_key "document_editing_sessions", "documents"

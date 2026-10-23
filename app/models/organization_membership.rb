@@ -9,7 +9,6 @@ class OrganizationMembership < ApplicationRecord
   has_many :api_tokens, dependent: :delete_all
   has_many :favorites, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
-  has_many :automations, inverse_of: :run_as
   has_many :automation_invocations, inverse_of: :run_as
   has_many :organization_membership_properties, dependent: :delete_all
   has_many :import_sessions, dependent: :destroy
