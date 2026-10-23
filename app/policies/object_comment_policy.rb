@@ -1,10 +1,4 @@
 class ObjectCommentPolicy < ApplicationPolicy
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      scope.where(space: Pundit.policy_scope!(user_context, ObjectComment))
-    end
-  end
-
   def show?
     Pundit.policy!(user_context, record.object).show?
   end
