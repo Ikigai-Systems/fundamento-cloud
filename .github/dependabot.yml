@@ -17,6 +17,9 @@ updates:
     commit-message:
       prefix: deps
     directory: "/"
+    # Dependabot evaluates the Gemfile (Ruby code) to resolve it, and with a private registry
+    # configured it does so only when allowed. The Gemfile is ours and already gets this token.
+    insecure-external-code-execution: allow
     registries:
       - fontawesome
     schedule:
