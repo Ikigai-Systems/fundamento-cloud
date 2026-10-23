@@ -192,7 +192,8 @@ class Table < ApplicationRecord
       columns.each do |column|
         cell_values[column.name] = row[column.id]
       end
-      { id: row["id"] }.merge(cell_values).merge(row)
+      # A string key, so row's own "id" replaces it rather than adding a second "id".
+      { "id" => row["id"] }.merge(cell_values).merge(row)
     end
   end
 
