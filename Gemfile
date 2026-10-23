@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.11"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.4"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -84,7 +84,7 @@ gem "activerecord-like"
 # emoji exactly the way the browser's /\p{RGI_Emoji}/v does.
 gem "unicode-emoji"
 
-gem "lograge", "~> 0.14.0"
+gem "lograge", "~> 0.15.1"
 gem "logstash-event", "~> 1.2"
 
 gem "aws-sdk-s3", require: false
@@ -94,7 +94,7 @@ gem "docx"
 
 gem "wannabe_bool"
 
-gem "good_job", "~> 4.4"
+gem "good_job", "~> 4.22"
 
 gem "net-http2"
 gem "jwt"
