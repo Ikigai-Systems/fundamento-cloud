@@ -72,6 +72,15 @@ disappears (see "Deployment" in `CLAUDE.md`).
 - **relax `NOT NULL` if the column has it.** This is the step that's easy to miss: with
   `ignored_columns` set, Rails leaves the column out of `INSERT`s, so a `NOT NULL` column with no
   default rejects every record creation and every fixture load.
+- **relax the foreign keys it holds.** With the association gone, nothing in Rails clears or
+  deletes the reference any more, so a plain foreign key blocks deleting the row it points at
+  until release 2. Replace it in a release 1 migration: `on_delete: :nullify` when the
+  referenced row is something users remove (a member, a document) and the doomed data must
+  survive, `on_delete: :cascade` only when the parent owns it outright. Removing a member
+  must never delete what they made. A whole table that's going (its models deleted first)
+  needs the same for the foreign keys its rows hold, usually `:cascade` on the one to the
+  organization, or purging an organization fails on the leftover rows. The packs removal
+  (#308) needed it, and so does `automations.run_as_id`.
 
 **Release 2:** `remove_column` / `remove_reference`, then delete the `ignored_columns` line and any
 defences that existed only to hide the column (`audited except:`, `as_json` overrides,
