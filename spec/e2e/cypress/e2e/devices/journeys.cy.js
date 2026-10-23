@@ -17,6 +17,14 @@ const tapOnScreen = ($element) => {
   cy.get("body").realTouch({ x: x + width / 2, y: y + height / 2, scrollBehavior: false })
 }
 
+// A tap aims at coordinates, so it waits for the page to stop moving: frames that load after the
+// page push down what's below them. On a slow CI runner a tap sent before then landed beside its
+// target and did nothing.
+const visitSettled = (path) => {
+  cy.visit(path)
+  cy.waitForFrames()
+}
+
 const FIXTURES = [
   "organizations", "users", "organization_memberships", "spaces", "documents", "versions",
   "tables/tables", "tables/columns", "tables/rows", "tables/cells",
@@ -37,7 +45,7 @@ describe("Touch journeys", function () {
 
   describe("signing in and out", () => {
     it("signs in through the form and picks an organization", () => {
-      cy.visit("/users/sign_in")
+      visitSettled("/users/sign_in")
       cy.get("input[name='user[email]']").realTouch()
       cy.focused().type("pawel@ikigai.systems")
       cy.contains("input[type=submit]", "Continue").realTouch()
@@ -56,7 +64,7 @@ describe("Touch journeys", function () {
     it("signs out from the user menu", () => {
       cy.loginWithSession("pawel@ikigai.systems", "password")
       cy.setCookie("organization_id", isOrganizationCookie)
-      cy.visit("/d/one")
+      visitSettled("/d/one")
       cy.waitForEditor()
 
       cy.get("#user-dropdown").realTouch()
@@ -72,7 +80,7 @@ describe("Touch journeys", function () {
     })
 
     it("switches organization from the user menu", () => {
-      cy.visit("/d/one")
+      visitSettled("/d/one")
       cy.waitForEditor()
 
       cy.get("#user-dropdown").realTouch()
@@ -86,7 +94,7 @@ describe("Touch journeys", function () {
 
     it("switches space from the navigation", () => {
       cy.appEval(`Space.create!(organization_id: "is", name: "Second IS Space", access_mode: :public)`)
-      cy.visit("/d/one")
+      visitSettled("/d/one")
       cy.waitForEditor()
 
       cy.openSidebar().find("#spaces-dropdown").realTouch()
@@ -98,7 +106,7 @@ describe("Touch journeys", function () {
     })
 
     it("searches from the top bar", () => {
-      cy.visit("/d/one")
+      visitSettled("/d/one")
       cy.waitForEditor()
 
       cy.get("nav button[aria-label='Search']").should("be.visible").realTouch()
@@ -120,7 +128,7 @@ describe("Touch journeys", function () {
     })
 
     it("opens a recently updated document from the dashboard", () => {
-      cy.visit("/")
+      visitSettled("/")
       cy.get("button#recently-updated").realTouch()
       cy.get("#recently_updated_list").contains("a", "Two").should("be.visible").realTouch()
 
@@ -131,12 +139,14 @@ describe("Touch journeys", function () {
     it("edits a paragraph and saves the document", () => {
       cy.intercept("POST", "/d/*/versions").as("saveVersion")
       // Two has a saved version, so it opens for reading; One has none and opens in the editor
-      cy.visit("/d/two")
+      visitSettled("/d/two")
       cy.waitForEditor()
 
       cy.get("[aria-label='Edit document']").realTouch()
-      cy.url().should("include", "/d/two/edit")
-      cy.waitForEditor()
+      // Turbo changes the URL before the edit page arrives, and the page being left has a
+      // read-only editor of its own: wait for the editable one
+      cy.get("[data-document-editor] [role='textbox'][contenteditable='true']").should("exist")
+      cy.waitForFrames()
       cy.get("[data-document-editor] [role='textbox']").first().realTouch()
       cy.focused().type("{moveToEnd} Written on a phone.")
       cy.get("[aria-label='Save document']").should("not.be.disabled").realTouch()
@@ -148,7 +158,7 @@ describe("Touch journeys", function () {
 
     describe("comments", () => {
       const startComment = () => {
-        cy.visit("/d/two")
+        visitSettled("/d/two")
         cy.waitForEditor()
         cy.contains("turbo-frame#add_object_comment a", "Comment").realTouch()
         cy.get("turbo-frame#new_object_comment [role='textbox']").should("be.visible").realTouch()
@@ -180,7 +190,7 @@ describe("Touch journeys", function () {
 
     it("reacts to a document", () => {
       cy.intercept("POST", "/reactions*").as("addReaction")
-      cy.visit("/d/two")
+      visitSettled("/d/two")
       cy.waitForEditor()
 
       cy.get(".create-reaction-button").should("be.visible").realTouch()
@@ -199,9 +209,13 @@ describe("Touch journeys", function () {
     describe("tables", () => {
       beforeEach(() => {
         cy.intercept("PUT", "/t/projects/update_by_rowstack").as("updateTable")
-        cy.visit("/t/projects")
+        visitSettled("/t/projects")
         cy.get(".edit-table-button").realTouch()
         cy.contains("Changes are saved automatically").should("be.visible")
+        // The editable grid replaces the read-only one a moment after the page, adding a column
+        // of row checkboxes that moves every cell sideways
+        cy.get(".rs-table input[type=checkbox]").should("exist")
+        cy.waitForFrames()
       })
 
       it("adds a row", () => {
@@ -215,8 +229,8 @@ describe("Touch journeys", function () {
       // A cell opens for editing on a double-click. Chrome turns a double tap into one; whether
       // iOS Safari does, rather than zooming, needs a real device.
       it("edits a cell with a double tap", () => {
-        cy.contains("[role='gridcell']", "MON").realTouch()
-        cy.contains("[role='gridcell']", "MON").realTouch()
+        // Both taps on one element, with no query between them to stretch the gap
+        cy.contains("[role='gridcell']", "MON").realTouch().realTouch()
         cy.focused().should("have.class", "rs-input").clear().type("TAPPED")
         cy.contains("[role='gridcell']", "JIRA").realTouch()
 
@@ -227,7 +241,7 @@ describe("Touch journeys", function () {
 
     it("opens the notifications from the top bar", () => {
       cy.appScenario("create_document_with_user_mention", { space_id: "is_default", organization_id: "is", user_email: "pawel@ikigai.systems" })
-      cy.visit("/d/one")
+      visitSettled("/d/one")
       cy.waitForEditor()
 
       cy.get("[data-testid='notifications-button']").should("be.visible").realTouch()

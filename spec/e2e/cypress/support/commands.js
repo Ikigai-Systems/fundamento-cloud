@@ -214,6 +214,33 @@ Cypress.Commands.add("waitForEditor", () => {
   cy.get("[data-document-editor] [role='textbox']", {timeout: 10000}).should("exist");
 });
 
+/**
+ * Wait until the page has loaded, frames included. Frames load after the page and push down
+ * what is below them, so a real tap (`.realTouch()`, which aims at coordinates) sent before then
+ * can land beside its target. Lazy frames count only while shown on screen: hidden (an inactive
+ * tab, a closed dropdown), off screen or in a closed drawer, they never load.
+ * @example
+ *   cy.visit("/d/abc123");
+ *   cy.waitForFrames();
+ */
+Cypress.Commands.add("waitForFrames", () => {
+  cy.document({log: false}).should((doc) => {
+    const onScreen = (frame) => {
+      if (!frame.checkVisibility()) return false;
+      const {top, bottom, left, right} = frame.getBoundingClientRect();
+      const view = doc.defaultView;
+      return bottom >= 0 && top <= view.innerHeight && right >= 0 && left <= view.innerWidth;
+    };
+    const loading = [...doc.querySelectorAll("turbo-frame[busy], turbo-frame[src]:not([complete])")]
+      .filter((frame) => frame.hasAttribute("busy") || frame.getAttribute("loading") !== "lazy" || onScreen(frame))
+      .map((frame) => `#${frame.id}`)
+      .join(", ");
+
+    expect(doc.readyState, "document").to.eq("complete");
+    expect(loading, "frames still loading").to.eq("");
+  });
+});
+
 // =============================================================================
 // CSRF TOKEN USAGE EXAMPLES
 // =============================================================================
