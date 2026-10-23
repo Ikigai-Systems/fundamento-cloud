@@ -93,3 +93,20 @@ and no touch, so hover-only UI and tap behaviour look fine when they aren't. Run
 profile (`--expose device=phone|tablet|tablet-landscape`, see
 `spec/e2e/cypress/support/devices.cjs`) and use `realTouch` from cypress-real-events when the touch
 itself is under test.
+
+## A real tap needs a page that has stopped moving
+
+`realTouch` reads the element's position once, then taps those screen coordinates; it has none of
+`.click()`'s actionability waits. If the element moves or is replaced in between, the tap lands
+beside it and nothing happens. On a slow CI runner this failed the touch journeys about one run in
+thirty, always the ones that tapped right after a page change. Before tapping:
+
+- after `cy.visit`, call `cy.waitForFrames()`: frames load after the page and push down what is
+  below them (the reactions row moves the Comment link);
+- after an in-page navigation, wait for the new page's own state, not just the URL: Turbo changes
+  the URL before the response arrives, so the old page is still there (the document's read-only
+  editor before the editable one, the read-only table grid before the editable one).
+
+To reproduce a timing-dependent failure locally, slow the browser with Chrome's CPU throttling
+(`Cypress.automation("remote:debugger:protocol", { command: "Emulation.setCPUThrottlingRate",
+params: { rate: 20 } })` in a `beforeEach`), not the containers.
