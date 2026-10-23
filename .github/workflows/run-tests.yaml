@@ -63,7 +63,9 @@ jobs:
           # Values derived from secrets aren't masked automatically, and these logs are public.
           echo "::add-mask::${FONTAWESOME_TOKEN}"
           echo "::add-mask::${RAILS_MASTER_KEY}"
-          echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
+          # dl.fontawesome.com takes the token as the basic-auth password; a bare value is
+          # sent as the username and refused. The username is arbitrary.
+          echo "BUNDLE_DL__FONTAWESOME__COM=fontawesome:${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
           echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx

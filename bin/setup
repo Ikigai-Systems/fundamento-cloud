@@ -14,7 +14,13 @@ FileUtils.chdir APP_ROOT do
   # Add necessary setup steps to this file.
   puts "== Getting secrets ready =="
   system!("op document get --account my.1password.com 57od4h7zivbd6pfr2yvapqttwm --out-file dockerfiles/sops-age-key.secret")
-  system!("SOPS_AGE_KEY_FILE=dockerfiles/sops-age-key.secret sops -d --extract '[\"fontawesome\"][\"auth_token\"]' --output dockerfiles/fontawesome-auth.secret config/secrets/build.sops.yaml")
+  # The Bundler credential for dl.fontawesome.com, used as is by bundle config below and by
+  # Docker builds. The server takes the token as the basic-auth password; the username is
+  # arbitrary. No trailing newline: Bundler rejects a credential that ends in one.
+  fontawesome_token = IO.popen({ "SOPS_AGE_KEY_FILE" => "dockerfiles/sops-age-key.secret" },
+    ["sops", "-d", "--extract", '["fontawesome"]["auth_token"]', "config/secrets/build.sops.yaml"], &:read).strip
+  raise "Could not extract the Font Awesome token from SOPS" unless $?.success? && !fontawesome_token.empty?
+  File.write("dockerfiles/fontawesome-auth.secret", "fontawesome:#{fontawesome_token}", perm: 0o600)
 
   puts "== Extracting Rails credential keys from SOPS =="
   FileUtils.mkdir_p("config/credentials")
@@ -31,16 +37,10 @@ FileUtils.chdir APP_ROOT do
   puts "== Installing and configuring bundler =="
   system! "gem install bundler --conservative"
 
-  # Extract FontAwesome token from SOPS secrets
-  fontawesome_token = File.read("dockerfiles/fontawesome-auth.secret").strip
-  if fontawesome_token.empty?
-    puts "WARNING: Could not extract FontAwesome token from SOPS. Bundle install may fail."
-  else
-    # Bundler echoes config values in its warnings (the old one when replacing it), so its
-    # output is discarded to keep the token out of the terminal.
-    system!("bundle", "config", "set", "--global", "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/", fontawesome_token,
-      out: File::NULL, err: File::NULL)
-  end
+  # Bundler echoes config values in its warnings (the old one when replacing it), so its
+  # output is discarded to keep the token out of the terminal.
+  system!("bundle", "config", "set", "--global", "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/",
+    File.read("dockerfiles/fontawesome-auth.secret"), out: File::NULL, err: File::NULL)
 
   puts "== Installing dependencies =="
   system("bundle check") || system!("bundle install")

@@ -53,7 +53,10 @@ jobs:
 
       - name: Decrypt secrets for Docker build
         run: |
-          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > /tmp/fontawesome-auth.secret
+          # Bundler credential for dl.fontawesome.com: the token goes in as the password.
+          # Assigned first so a sops failure stops the step (it would not inside printf).
+          token=$(sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml)
+          printf 'fontawesome:%s' "$token" > /tmp/fontawesome-auth.secret
           echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
 
       - name: Docker build setup

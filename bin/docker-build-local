@@ -36,7 +36,7 @@ echo ""
 SECRET_FILE="dockerfiles/fontawesome-auth.secret"
 if [ ! -f "$SECRET_FILE" ]; then
   echo -e "${RED}Error: ${SECRET_FILE} not found${NC}"
-  echo "Run: sops -d --extract '[\"fontawesome\"][\"auth_token\"]' config/secrets/${RAILS_ENV}.sops.yaml > ${SECRET_FILE}"
+  echo "Run bin/setup: it writes the Bundler credential for dl.fontawesome.com there."
   exit 1
 fi
 

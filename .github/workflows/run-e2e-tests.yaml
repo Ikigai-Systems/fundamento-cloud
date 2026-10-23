@@ -84,7 +84,9 @@ jobs:
           # Values derived from secrets aren't masked automatically, and these logs are public.
           echo "::add-mask::${FONTAWESOME_TOKEN}"
           echo "::add-mask::${RAILS_MASTER_KEY}"
-          echo "BUNDLE_DL__FONTAWESOME__COM=${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
+          # dl.fontawesome.com takes the token as the basic-auth password; a bare value is
+          # sent as the username and refused. The username is arbitrary.
+          echo "BUNDLE_DL__FONTAWESOME__COM=fontawesome:${FONTAWESOME_TOKEN}" >> $GITHUB_ENV
           echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 
           # FontAwesome token: env var for bundle install + secret file for Docker build.
@@ -92,7 +94,7 @@ jobs:
           # verbatim as BUNDLE_DL__FONTAWESOME__COM via --mount=type=secret,env=..., and a
           # trailing newline in the credential makes Bundler 4 fail with "Please CGI escape
           # your usernames and passwords" (exit 17).          
-          printf '%s' "${FONTAWESOME_TOKEN}" > dockerfiles/fontawesome-auth.secret
+          printf 'fontawesome:%s' "${FONTAWESOME_TOKEN}" > dockerfiles/fontawesome-auth.secret
           chmod 600 dockerfiles/fontawesome-auth.secret
 
       - name: Setup tmate session
