@@ -240,6 +240,31 @@ RSpec.describe OrganizationMembership, type: :model do
       end
     end
 
+    # automations.run_as_id is ignored and on its way out; until it's dropped the database
+    # clears it, so it can't stop the member who created an automation from being removed.
+    describe "automations created by the member" do
+      it "keeps the automation when the member is removed" do
+        automation = Automation.create!(
+          title: "Test Automation",
+          organization: organization,
+          space: space,
+          kind: :webhook,
+          formula: "1 + 1"
+        )
+        Automation.connection.execute(
+          "UPDATE automations SET run_as_id = #{Automation.connection.quote(organization_membership.id)} " \
+          "WHERE id = #{Automation.connection.quote(automation.id)}"
+        )
+
+        organization_membership.destroy!
+
+        expect(Automation.exists?(automation.id)).to be true
+        expect(Automation.connection.select_value(
+          "SELECT run_as_id FROM automations WHERE id = #{Automation.connection.quote(automation.id)}"
+        )).to be_nil
+      end
+    end
+
     describe "has_many :automation_invocations, inverse_of: :run_as" do
       it "can access automation_invocations where organization_membership is run_as" do
         automation = Automation.create!(
