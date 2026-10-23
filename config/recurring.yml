@@ -12,3 +12,8 @@ trash_purge:
   class: TrashPurgeJob
   cron: "40 3 * * *"
   description: "Permanently destroy records trashed longer ago than the retention window"
+
+tenant_backup:
+  class: TenantBackupJob
+  cron: "0 4 * * *"
+  description: "Archive every organization to the exports bucket, one at a time"

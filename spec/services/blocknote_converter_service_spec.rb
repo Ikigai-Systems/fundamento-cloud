@@ -1,6 +1,20 @@
 require "rails_helper"
 
 RSpec.describe BlocknoteConverterService do
+  describe ".blocks_to_markdown" do
+    # The converter's output is read in binary mode, which Yjs payloads need. Markdown is
+    # text: tagged binary, it can't be serialised to JSON once it holds non-ASCII characters.
+    it "returns UTF-8 text that serialises to JSON" do
+      blocks = described_class.markdown_to_blocks("Zażółć gęślą jaźń — “quoted”")
+
+      markdown = described_class.blocks_to_markdown(blocks)
+
+      expect(markdown.encoding).to eq(Encoding::UTF_8)
+      expect(markdown).to be_valid_encoding
+      expect(JSON.parse(JSON.generate(text: markdown))["text"]).to include("Zażółć gęślą jaźń")
+    end
+  end
+
   describe ".markdown_to_blocks_and_yjs" do
     let(:markdown) { "# Heading\n\nA paragraph with a [link](https://example.com).\n\n- one\n- two\n" }
 
