@@ -1,5 +1,5 @@
 import {BlockTypeSelectItem, useExtensionState} from '@blocknote/react'
-import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, useDictionary, usePortalElement} from '@blocknote/react'
+import {blockTypeSelectItems, useBlockNoteEditor, useComponentsContext, usePortalElement} from '@blocknote/react'
 import {ReactNode, useMemo} from "react";
 import {SideMenuExtension} from "@blocknote/core/extensions";
 import type {PartialBlock} from "@blocknote/core";
@@ -7,7 +7,6 @@ import type {PartialBlock} from "@blocknote/core";
 const TurnIntoItem = (props: { children: ReactNode }) => {
   const editor = useBlockNoteEditor();
   const Components = useComponentsContext();
-  const dictionary = useDictionary();
   const portalElement = usePortalElement();
 
   const block = useExtensionState(SideMenuExtension, {
@@ -15,11 +14,8 @@ const TurnIntoItem = (props: { children: ReactNode }) => {
     selector: (state) => state?.block,
   });
 
-  const availableItems: BlockTypeSelectItem[] = useMemo(() => {
-    return blockTypeSelectItems(dictionary).filter(
-      (item) => item.type in editor.schema.blockSchema
-    );
-  }, [editor, dictionary]);
+  // Already limited to the block types in the editor's schema
+  const availableItems: BlockTypeSelectItem[] = useMemo(() => blockTypeSelectItems(editor), [editor]);
 
   const shouldShow: boolean = useMemo(
     () => block !== undefined && availableItems.find((item) => item.type === block.type) !== undefined,
