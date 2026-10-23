@@ -36,7 +36,10 @@ FileUtils.chdir APP_ROOT do
   if fontawesome_token.empty?
     puts "WARNING: Could not extract FontAwesome token from SOPS. Bundle install may fail."
   else
-    system!("bundle config https://dl.fontawesome.com/basic/fontawesome-pro/ruby/ #{fontawesome_token}")
+    # Bundler echoes config values in its warnings (the old one when replacing it), so its
+    # output is discarded to keep the token out of the terminal.
+    system!("bundle", "config", "set", "--global", "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/", fontawesome_token,
+      out: File::NULL, err: File::NULL)
   end
 
   puts "== Installing dependencies =="
