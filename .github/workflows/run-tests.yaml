@@ -67,9 +67,9 @@ jobs:
           echo "RAILS_MASTER_KEY=${RAILS_MASTER_KEY}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-      - uses: ruby/setup-ruby@v1
+      - uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
         with:
           bundler-cache: true
 
@@ -94,14 +94,14 @@ jobs:
       # network/registry error, aborting the whole job. Pre-pull with retries so a
       # flaky pull doesn't waste the whole CI run.
       - name: Pull external Docker images (with retry)
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           timeout_minutes: 5
           command: docker compose pull postgresql redis
 
       # Run rspec
-      - uses: hoverkraft-tech/compose-action@v3.2.0
+      - uses: hoverkraft-tech/compose-action@b659c744ee9bed25aea2307c017ad849bd104433 # v3.2.0
         with:
           services: |
             postgresql
@@ -131,7 +131,7 @@ jobs:
 
       - name: Publish test report
         if: always()
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d # v6.6.1
         with:
           report_paths: tmp/rspec-results.xml
           check_name: RSpec Test Results
