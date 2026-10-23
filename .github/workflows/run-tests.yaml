@@ -27,13 +27,22 @@ jobs:
       DATABASE_URL: postgres://postgres:password@localhost/postgres
 
     steps:
-      # apt mirrors occasionally stop responding mid-update and hang the job. On the current
-      # Ubuntu runner image the pandoc download alone can take over 5 minutes.
+      # pandoc comes from its GitHub release rather than apt: the runner's Ubuntu mirror stalls
+      # on the download often enough to time the job out before any test runs. The version
+      # matches the production image (Debian trixie). A stalled attempt is cut off and retried.
       - name: Install dependencies
         shell: bash
-        timeout-minutes: 10
+        timeout-minutes: 5
+        env:
+          PANDOC_VERSION: 3.1.11.1
+          PANDOC_SHA256: ab0ac0aa1c3f9b23243d14e43023e06cbce51a52420aba17d27bd0d9c28f73ac
         run: |
-          sudo apt-get update && sudo apt-get install -y pandoc
+          deb="pandoc-${PANDOC_VERSION}-1-amd64.deb"
+          curl -fsSL --retry 5 --retry-all-errors --connect-timeout 20 --speed-limit 100000 --speed-time 20 \
+            -o "$RUNNER_TEMP/$deb" "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/${deb}"
+          echo "${PANDOC_SHA256}  $RUNNER_TEMP/$deb" | sha256sum -c -
+          sudo dpkg -i "$RUNNER_TEMP/$deb"
+          pandoc --version | head -1
 
       - name: Checkout repository
         uses: actions/checkout@v7
