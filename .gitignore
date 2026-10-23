@@ -1,6 +1,8 @@
 # Logs
 logs
 *.log
+# Rotated logs (test.log.0 and so on)
+*.log.[0-9]*
 log/cypress/*
 !log/cypress/.keep
 npm-debug.log*
