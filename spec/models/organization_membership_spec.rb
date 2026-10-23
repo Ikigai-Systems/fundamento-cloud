@@ -50,28 +50,6 @@ RSpec.describe OrganizationMembership, type: :model do
       expect(favorite.organization_membership_id).to eq(organization_membership.id)
       expect(favorite.organization_membership_id).to eq("testou02")
     end
-
-    it "has string run_as_id in automations" do
-      organization = organizations(:another)
-      space = organization.spaces.create!(id: "anothersp1", name: "Another Space")
-      organization_membership = OrganizationMembership.create!(
-        id: "testou03",
-        organization: organization,
-        user: users(:john),
-        role: :manager
-      )
-      automation = organization_membership.automations.create!(
-        title: "Test Automation",
-        organization: organization,
-        space: space,
-        kind: :webhook,
-        formula: "1 + 1"
-      )
-
-      expect(automation.run_as_id).to be_a(String)
-      expect(automation.run_as_id).to eq(organization_membership.id)
-      expect(automation.run_as_id).to eq("testou03")
-    end
   end
 
   describe "associations" do
@@ -259,51 +237,6 @@ RSpec.describe OrganizationMembership, type: :model do
         )
 
         expect(organization_membership.organization_membership_properties).to include(prop)
-      end
-    end
-
-    describe "has_many :automations, inverse_of: :run_as" do
-      it "can access automations where organization_membership is run_as" do
-        automation = organization_membership.automations.create!(
-          title: "Test Automation",
-          organization: organization,
-          space: space,
-          kind: :webhook,
-          formula: "1 + 1"
-        )
-
-        expect(organization_membership.automations).to include(automation)
-        expect(automation.run_as).to eq(organization_membership)
-      end
-
-      it "run_as_id is string type (NPI)" do
-        automation = organization_membership.automations.create!(
-          title: "Test Automation",
-          organization: organization,
-          space: space,
-          kind: :webhook,
-          formula: "1 + 1"
-        )
-
-        expect(automation.run_as_id).to be_a(String)
-        expect(automation.run_as_id).to eq(organization_membership.id)
-      end
-
-      it "prevents destroying organization_membership with associated automations (foreign key constraint)" do
-        automation = organization_membership.automations.create!(
-          title: "Test Automation",
-          organization: organization,
-          space: space,
-          kind: :webhook,
-          formula: "1 + 1"
-        )
-
-        expect {
-          organization_membership.destroy
-        }.to raise_error(ActiveRecord::InvalidForeignKey)
-
-        expect(Automation.exists?(automation.id)).to be true
-        expect(OrganizationMembership.exists?(organization_membership.id)).to be true
       end
     end
 

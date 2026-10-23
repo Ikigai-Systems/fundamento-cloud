@@ -49,7 +49,6 @@ RSpec.describe "Api::V1::AutomationInvocations", type: :request do
   let(:automation) do
     space.automations.create!(
       organization: organization,
-      run_as: organization_membership,
       title: "Webhook Automation",
       kind: "webhook",
       formula: 'ForEach(Dig([WebhookBody], "data", "raw_data", "rows"), AddRow("id", "column_npi", First(CurrentValue), "another_npi", Last(CurrentValue)))',
