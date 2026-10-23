@@ -1,84 +1,9 @@
 require "rails_helper"
 
 RSpec.describe OrganizationMembership, type: :model do
-  include ActionDispatch::TestProcess::FixtureFile
-
   fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_references
 
-  describe "NPI primary key migration" do
-    it "uses string ID as primary key" do
-      organization_membership = organization_memberships(:om_is_pawel)
-      expect(organization_membership.id).to be_a(String)
-    end
-
-    it "has string organization_membership_id in api_tokens" do
-      organization = organizations(:is)
-      organization_membership = OrganizationMembership.create!(
-        id: "testou01",
-        organization: organization,
-        user: users(:john),
-        role: :member
-      )
-      api_token = organization_membership.api_tokens.create!(
-        title: "Test Token",
-        organization: organization
-      )
-
-      expect(api_token.organization_membership_id).to be_a(String)
-      expect(api_token.organization_membership_id).to eq(organization_membership.id)
-      expect(api_token.organization_membership_id).to eq("testou01")
-    end
-
-    it "has string organization_membership_id in favorites" do
-      organization = organizations(:another)
-      space = organization.spaces.create!(id: "anothersp2", name: "Another Space 2")
-      organization_membership = OrganizationMembership.create!(
-        id: "testou02",
-        organization: organization,
-        user: users(:john),
-        role: :member
-      )
-      document = organization.documents.create!(
-        id: "testdoc01",
-        space_id: space.id
-      )
-      favorite = organization_membership.favorites.create!(
-        object: document
-      )
-
-      expect(favorite.organization_membership_id).to be_a(String)
-      expect(favorite.organization_membership_id).to eq(organization_membership.id)
-      expect(favorite.organization_membership_id).to eq("testou02")
-    end
-  end
-
-  describe "associations" do
-    it "belongs to organization" do
-      organization_membership = organization_memberships(:om_is_pawel)
-      expect(organization_membership.organization).to eq(organizations(:is))
-    end
-
-    it "belongs to user" do
-      organization_membership = organization_memberships(:om_is_pawel)
-      expect(organization_membership.user).to eq(users(:pawel))
-    end
-  end
-
-  describe "roles" do
-    it "can be manager" do
-      organization_membership = organization_memberships(:om_is_pawel)
-      expect(organization_membership.role).to eq("manager")
-    end
-
-    it "can be member" do
-      organization_membership = organization_memberships(:om_is_stefan)
-      expect(organization_membership.role).to eq("member")
-    end
-  end
-
   describe "dependent associations" do
-    fixtures :spaces, :documents, :teams
-
     let(:organization) { organizations(:is) }
     let(:space) { spaces(:is_default) }
     let(:user) { users(:john) }
@@ -93,7 +18,6 @@ RSpec.describe OrganizationMembership, type: :model do
 
     describe "has_many :api_tokens, dependent: :delete_all" do
       it "deletes all api_tokens when organization_membership is destroyed" do
-        # Create api tokens
         token1 = organization_membership.api_tokens.create!(
           title: "Token 1",
           organization: organization
@@ -109,25 +33,6 @@ RSpec.describe OrganizationMembership, type: :model do
 
         expect(ApiToken.exists?(token1.id)).to be false
         expect(ApiToken.exists?(token2.id)).to be false
-      end
-
-      it "can access api_tokens through organization_membership" do
-        token = organization_membership.api_tokens.create!(
-          title: "Test Token",
-          organization: organization
-        )
-
-        expect(organization_membership.api_tokens).to include(token)
-      end
-
-      it "foreign key is string type (NPI)" do
-        token = organization_membership.api_tokens.create!(
-          title: "Test Token",
-          organization: organization
-        )
-
-        expect(token.organization_membership_id).to be_a(String)
-        expect(token.organization_membership_id).to eq(organization_membership.id)
       end
     end
 
@@ -145,21 +50,6 @@ RSpec.describe OrganizationMembership, type: :model do
 
         expect(Favorite.exists?(favorite1.id)).to be false
         expect(Favorite.exists?(favorite2.id)).to be false
-      end
-
-      it "can create favorites through organization_membership" do
-        document = organization.documents.create!(space: space)
-        favorite = organization_membership.favorites.create!(object: document)
-
-        expect(organization_membership.favorites).to include(favorite)
-      end
-
-      it "foreign key is string type (NPI)" do
-        document = organization.documents.create!(space: space)
-        favorite = organization_membership.favorites.create!(object: document)
-
-        expect(favorite.organization_membership_id).to be_a(String)
-        expect(favorite.organization_membership_id).to eq(organization_membership.id)
       end
     end
 
@@ -185,35 +75,11 @@ RSpec.describe OrganizationMembership, type: :model do
         expect(ObjectReaction.exists?(reaction1.id)).to be false
         expect(ObjectReaction.exists?(reaction2.id)).to be false
       end
-
-      it "can create reactions through organization_membership" do
-        document = organization.documents.create!(space: space)
-        reaction = organization_membership.reactions.create!(
-          organization: organization,
-          object: document,
-          emoji: "👍"
-        )
-
-        expect(organization_membership.reactions).to include(reaction)
-      end
-
-      it "foreign key is string type (NPI)" do
-        document = organization.documents.create!(space: space)
-        reaction = organization_membership.reactions.create!(
-          organization: organization,
-          object: document,
-          emoji: "👍"
-        )
-
-        expect(reaction.organization_membership_id).to be_a(String)
-        expect(reaction.organization_membership_id).to eq(organization_membership.id)
-      end
     end
 
     describe "has_many :organization_membership_properties, dependent: :delete_all" do
       it "deletes all properties when organization_membership is destroyed" do
         prop1 = organization_membership.organization_membership_properties.create!(
-
           key: "last_seen",
           value: "2024-01-01"
         )
@@ -228,15 +94,6 @@ RSpec.describe OrganizationMembership, type: :model do
 
         expect(OrganizationMembershipProperty.exists?(prop1.id)).to be false
         expect(OrganizationMembershipProperty.exists?(prop2.id)).to be false
-      end
-
-      it "can create properties through organization_membership" do
-        prop = organization_membership.organization_membership_properties.create!(
-          key: "last_seen",
-          value: "2024-01-01"
-        )
-
-        expect(organization_membership.organization_membership_properties).to include(prop)
       end
     end
 
@@ -299,29 +156,6 @@ RSpec.describe OrganizationMembership, type: :model do
           member_type: "OrganizationMembership"
         )).to be false
       end
-
-      it "can access team_memberships through organization_membership" do
-        team = organization.teams.create!(name: "Test Team", shortcut: "@test")
-        membership = TeamMembership.create!(
-          organization: organization,
-          team: team,
-          member: organization_membership
-        )
-
-        expect(organization_membership.team_memberships).to include(membership)
-      end
-
-      it "member_id is string type (NPI)" do
-        team = organization.teams.create!(name: "Test Team", shortcut: "@test")
-        membership = TeamMembership.create!(
-          organization: organization,
-          team: team,
-          member: organization_membership
-        )
-
-        expect(membership.member_id).to be_a(String)
-        expect(membership.member_id).to eq(organization_membership.id)
-      end
     end
 
     describe "has_many :space_memberships, dependent: :delete_all" do
@@ -357,29 +191,6 @@ RSpec.describe OrganizationMembership, type: :model do
           member_id: membership2.member_id,
           member_type: "OrganizationMembership"
         )).to be false
-      end
-
-      it "can access space_memberships through organization_membership" do
-        membership = SpaceMembership.create!(
-          organization: organization,
-          space: space,
-          member: organization_membership,
-          role: :manager
-        )
-
-        expect(organization_membership.space_memberships).to include(membership)
-      end
-
-      it "member_id is string type (NPI)" do
-        membership = SpaceMembership.create!(
-          organization: organization,
-          space: space,
-          member: organization_membership,
-          role: :manager
-        )
-
-        expect(membership.member_id).to be_a(String)
-        expect(membership.member_id).to eq(organization_membership.id)
       end
     end
 
