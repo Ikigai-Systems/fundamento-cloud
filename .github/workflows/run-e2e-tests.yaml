@@ -110,8 +110,13 @@ jobs:
           # Only the person who started the run can connect; this repository is public.
           limit-access-to-actor: true
 
+      # Removing the builder at the end of the job took 17-50 s, and the job isn't done
+      # until it is. A hosted runner is discarded after the job anyway. A persistent
+      # self-hosted runner would need the cleanup back, or its disk fills with builders.
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          cleanup: false
 
       # The build cache lives in GHCR rather than the Actions cache: a mode=max cache
       # for this image is ~10 GB, which alone exceeds the repo's 10 GB Actions cache
