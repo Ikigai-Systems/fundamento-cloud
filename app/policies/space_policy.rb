@@ -1,8 +1,10 @@
 class SpacePolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     def resolve
+      scope = self.scope.where(organization: current_organization)
+
       if organization_membership.manager?
-        # Managers can see all spaces
+        # Managers can see all spaces of their organization
         scope.all
       else
         # Everyone can see public and restricted spaces
@@ -43,11 +45,13 @@ class SpacePolicy < ApplicationPolicy
   end
 
   def show?
-    # Everyone can show an organization it belongs to
+    return false unless in_current_organization?
+
     record.public_access_mode? || record.restricted_access_mode? || update? || organization_membership.manager?
   end
 
   def update?
+    return false unless in_current_organization?
     return false if record.archived? && !organization_membership.manager?
 
     record.public_access_mode? ||
@@ -67,10 +71,19 @@ class SpacePolicy < ApplicationPolicy
   end
 
   def archive?
-    !record.archived? && organization_membership.manager?
+    in_current_organization? && !record.archived? && organization_membership.manager?
   end
 
   def unarchive?
-    record.archived? && organization_membership.manager?
+    in_current_organization? && record.archived? && organization_membership.manager?
+  end
+
+  private
+
+  # Access modes, memberships and the manager role all describe the current organization.
+  # Documents, tables, automations, comments and attachments defer to this policy, so a
+  # record found by id alone can't be reached from another organization.
+  def in_current_organization?
+    current_organization.present? && record.organization_id == current_organization.id
   end
 end

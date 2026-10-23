@@ -15,7 +15,7 @@ class Api::V1::TablesController < Api::ApiController
   end
 
   def self.find_relevant_table(id_or_name, space_id, organization_membership, for_update: true)
-    space = Space.find(space_id)
+    space = organization_membership.organization.spaces.find(space_id)
 
     pundit_user = PolicyUserContext.new(organization_membership.user, organization_membership.organization)
 
