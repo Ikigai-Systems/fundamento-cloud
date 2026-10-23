@@ -64,6 +64,48 @@ RSpec.describe SpacePolicy, type: :model do
     end
   end
 
+  describe "Scope" do
+    # A manager of one organization sees none of another's spaces, even when handed the
+    # unscoped class.
+    let(:organization_membership) { organization_memberships(:om_hc_pawel) }
+
+    it "returns only spaces of the current organization" do
+      scope = SpacePolicy::Scope.new(policy_user_context, Space.all)
+
+      expect(scope.resolve.map(&:organization_id).uniq).to eq(["hc"])
+    end
+  end
+
+  # A space is reached only through the organization it belongs to: access modes, space
+  # memberships and the manager role all describe the current organization.
+  context "space in another organization" do
+    let(:another_manager) do
+      OrganizationMembership.create!(organization: organizations(:another), user: users(:maria), role: :manager)
+    end
+
+    permissions :show?, :update?, :destroy? do
+      it "denies a member of another organization a public space" do
+        expect(subject).not_to permit(PolicyUserContext.new(organization_memberships(:om_hc_maria)), spaces(:is_default))
+      end
+
+      it "denies a manager of another organization a private space" do
+        expect(subject).not_to permit(PolicyUserContext.new(another_manager), spaces(:is_stefans))
+      end
+    end
+
+    permissions :archive? do
+      it "denies a manager of another organization" do
+        expect(subject).not_to permit(PolicyUserContext.new(another_manager), spaces(:is_default))
+      end
+    end
+
+    permissions :unarchive? do
+      it "denies a manager of another organization" do
+        expect(subject).not_to permit(PolicyUserContext.new(another_manager), spaces(:is_archived))
+      end
+    end
+  end
+
   permissions :show? do
     it "grants access if space access mode is public" do
       expect(subject).to permit(PolicyUserContext.new(organization_memberships(:om_is_stefan)), spaces(:is_default))
