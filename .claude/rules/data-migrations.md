@@ -84,8 +84,8 @@ disappears (see "Deployment" in `CLAUDE.md`).
 
 **Release 2:** `remove_column` / `remove_reference`, then delete the `ignored_columns` line and any
 defences that existed only to hide the column (`audited except:`, `as_json` overrides,
-`:except => [...]` in controllers). Keep those through release 1 in case it's rolled back while the
-column still exists.
+`:except => [...]` in controllers), and any spec that existed only to cover the column during
+release 1. Keep those through release 1 in case it's rolled back while the column still exists.
 
 `ignored_columns` does real work: it turns a missed call site into a `NoMethodError` instead of a
 silent read of stale data, and caught four spec assertions during the `documents.sync` move.
@@ -93,6 +93,15 @@ silent read of stale data, and caught four spec assertions during the `documents
 **Run the chain from zero** on a scratch database (`db:create` + `db:migrate` with a `DATABASE_URL`
 override) whenever one migration backfills from a column a later one drops. Timestamp order has to
 put the backfill first, and only a from-zero run proves it.
+
+## Review the specs that touch the changed structure
+
+Do it in the same PR as the schema change. When a column, association or table goes or changes
+type, a spec that only proved it existed, held a type, or was readable through Rails has nothing
+left to test: delete it rather than editing its setup until it passes. Specs written to verify a
+migration (string ids, backfills) go once the migration has shipped. The switch to string ids left
+an "NPI primary key migration" block in nine model specs for years, and dropping
+`automations.run_as_id` left two association re-tests behind until review caught them.
 
 ## A failed migration blocks every deploy
 
