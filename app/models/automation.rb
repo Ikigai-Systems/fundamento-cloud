@@ -6,10 +6,6 @@ class Automation < ApplicationRecord
   belongs_to :organization
   belongs_to :space
 
-  # Webhooks run as the caller (see AutomationInvocation#run_as); this column was never read.
-  # Ignored until a later migration drops it, so containers still on the old code keep working.
-  self.ignored_columns += ["run_as_id"]
-
   has_many :invocations, class_name: "AutomationInvocation", dependent: :delete_all
 
   validates_presence_of :title
