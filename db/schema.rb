@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_175342) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_201826) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -521,29 +521,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_175342) do
     t.index ["id"], name: "index_organizations_on_id", unique: true
   end
 
-  create_table "pack_versions", id: :string, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "description", default: "", null: false
-    t.string "organization_id", null: false
-    t.string "pack_id", null: false
-    t.datetime "updated_at", null: false
-    t.integer "version", null: false
-    t.index ["organization_id"], name: "index_pack_versions_on_organization_id"
-    t.index ["pack_id", "version"], name: "index_pack_versions_on_pack_id_and_version", unique: true
-    t.index ["pack_id"], name: "index_pack_versions_on_pack_id"
-  end
-
-  create_table "packs", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "active_version_id"
-    t.datetime "created_at", null: false
-    t.string "description", default: "", null: false
-    t.string "name", null: false
-    t.string "organization_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["id"], name: "index_packs_on_id", unique: true
-    t.index ["organization_id"], name: "index_packs_on_organization_id"
-  end
-
   create_table "public_links", id: :string, force: :cascade do |t|
     t.text "allowed_emails", default: [], array: true
     t.datetime "created_at", null: false
@@ -880,10 +857,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_175342) do
   add_foreign_key "organization_membership_properties", "organization_memberships"
   add_foreign_key "organization_memberships", "organizations"
   add_foreign_key "organization_memberships", "users"
-  add_foreign_key "pack_versions", "organizations", on_delete: :cascade
-  add_foreign_key "pack_versions", "packs"
-  add_foreign_key "packs", "organizations", on_delete: :cascade
-  add_foreign_key "packs", "pack_versions", column: "active_version_id"
   add_foreign_key "public_links", "organizations"
   add_foreign_key "public_links", "users", column: "updated_by_id"
   add_foreign_key "space_memberships", "organizations"
