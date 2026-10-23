@@ -150,7 +150,7 @@ jobs:
       # the 17 MB font-awesome-pro-sass gem from dl.fontawesome.com -- ~4.9 GB/month
       # against a 2 GB Font Awesome bandwidth quota. `up` below reuses these images.
       - name: Build app images (with layer cache)
-        run: docker compose build website jobs
+        run: docker compose build website  # `jobs` runs the same image
         env:
           BUILD_CACHE_FROM: type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache
           # Master is the only writer, so the cache always reflects the merge base and
