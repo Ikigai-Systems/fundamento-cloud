@@ -84,3 +84,17 @@ RSpec.describe Table, type: :model do
     end
   end
 end
+
+RSpec.describe Table, "#data_to_hash", type: :model do
+  fixtures :organizations, :spaces, "tables/tables", "tables/columns", "tables/rows", "tables/cells"
+
+  # Rows are rendered as JSON by the formula API. A row holding both :id and "id" serialised
+  # with "id" twice; json 3 refuses to generate that.
+  it "gives each row a single id key" do
+    rows = tables_tables(:projects).data_to_hash
+
+    expect(rows).not_to be_empty
+    rows.each { |row| expect(row.keys.count { |key| key.to_s == "id" }).to eq(1) }
+    expect(JSON.parse(JSON.generate(rows)).map { |row| row["id"] }).to eq(rows.map { |row| row["id"] })
+  end
+end
