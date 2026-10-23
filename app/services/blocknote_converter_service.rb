@@ -31,8 +31,10 @@ module BlocknoteConverterService
     run("convert-blocks-to-yjs", blocks.to_json, "document to YJS", timeout:)
   end
 
+  # The converter writes UTF-8, but run reads it in binary mode for the Yjs payloads.
   def self.blocks_to_markdown(blocknote, timeout: TIMEOUT)
     run("convert-blocks-to-markdown", blocknote.to_json, "document to markdown", timeout:)
+      .force_encoding(Encoding::UTF_8)
   end
 
   def self.markdown_to_blocks(markdown, timeout: TIMEOUT)
