@@ -1,6 +1,7 @@
 const { defineConfig } = require('cypress')
 const os = require('os')
 const { DEVICES } = require('./cypress/support/devices.cjs')
+const cypressSplit = require("cypress-split")
 
 module.exports = defineConfig({
   viewportWidth: 1280,
@@ -51,6 +52,10 @@ module.exports = defineConfig({
           return launchOptions
         })
       }
+
+      // CI runs the desktop suite in shards: SPLIT and SPLIT_INDEX1 pick this run's specs,
+      // balanced by the timings in SPLIT_FILE. Without SPLIT it leaves the specs alone.
+      cypressSplit(on, config)
 
       return config
     },

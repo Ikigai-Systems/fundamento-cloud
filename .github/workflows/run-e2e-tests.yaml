@@ -19,24 +19,30 @@ concurrency:
 
 jobs:
   run-e2e-tests:
-    name: run-e2e-tests (${{ matrix.device }})
+    name: run-e2e-tests (${{ matrix.device }}${{ matrix.shard && format(' {0}/{1}', matrix.shard, matrix.shards) || '' }})
     runs-on: ubuntu-latest
-    # A normal desktop run takes 20-24 minutes. Without a limit a hung step runs to
+    # A normal desktop shard takes about 7 minutes. Without a limit a hung step runs to
     # GitHub's 6-hour default.
     timeout-minutes: 45
     if: "!contains(github.event.head_commit.message, '[skip-tests]')"
 
     # Each device gets its own runner and environment, so they run side by side.
     # Profiles live in spec/e2e/cypress/support/devices.cjs.
+    #
+    # Desktop runs the whole suite, split by cypress-split into shards of equal duration; on
+    # one runner it took ~13 minutes of the job's ~17. The base matrix makes the desktop
+    # shards; the `desktop` include adds its settings to each of them, and the other devices,
+    # matching no base combination, become jobs of their own.
     strategy:
       fail-fast: false
       matrix:
+        device: [desktop]
+        shard: [1, 2, 3, 4]
         include:
           - device: desktop
-            spec: ""  # the whole suite
+            shards: 4  # keep in step with `shard` above
             expose: device=desktop
             results: tmp/cypress-results-*.xml
-            check_name: Cypress Desktop Test Results
             fail_on_failure: true
           # The touch specs gate the build like the desktop suite: a phone regression fails CI.
           # Both touch jobs also crawl every page (~45s each), so a control too small to tap,
@@ -45,14 +51,12 @@ jobs:
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
             expose: device=phone,crawl=true
             results: tmp/cypress-phone-results-*.xml
-            check_name: Cypress Phone Test Results
             fail_on_failure: true
           # The desktop layout driven by touch: where controls built for a mouse meet a finger
           - device: tablet-landscape
             spec: spec/e2e/cypress/e2e/devices/**/*.cy.js
             expose: device=tablet-landscape,crawl=true
             results: tmp/cypress-tablet-landscape-results-*.xml
-            check_name: Cypress Landscape Tablet Test Results
             fail_on_failure: true
 
     permissions:
@@ -63,6 +67,9 @@ jobs:
     env:
       RAILS_ENV: e2e
       DATABASE_URL: postgres://postgres:password@localhost/postgres
+      # Names the job's artifacts and report check: every leg uploads, and a repeated
+      # artifact name fails.
+      LEG: ${{ matrix.device }}${{ matrix.shard && format('-{0}', matrix.shard) || '' }}
 
     steps:
       - name: Checkout repository
@@ -147,16 +154,26 @@ jobs:
         env:
           BUILD_CACHE_FROM: type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache
           # Master is the only writer, so the cache always reflects the merge base and
-          # no branch can overwrite it with its own Gemfile.lock. Only the desktop leg
-          # writes: both legs build identical images, and two concurrent ~10 GB exports
+          # no branch can overwrite it with its own Gemfile.lock. Only the first desktop
+          # shard writes: all legs build identical images, and concurrent ~10 GB exports
           # to one tag would only race. Note the expression order: `cond && '' || X`
           # would misfire, because an empty string is falsy in GitHub expressions and
           # would always yield X.
-          BUILD_CACHE_TO: ${{ github.ref == 'refs/heads/master' && matrix.device == 'desktop' && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
+          BUILD_CACHE_TO: ${{ github.ref == 'refs/heads/master' && matrix.device == 'desktop' && matrix.shard == 1 && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
 
       - uses: hoverkraft-tech/compose-action@b659c744ee9bed25aea2307c017ad849bd104433 # v3.2.0
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
+
+      # Spec durations from the latest run, kept by the merge-e2e-timings job below. A PR
+      # finds its own branch's first, then master's. With none, cypress-split splits by name.
+      - name: Restore spec timings
+        if: matrix.shard
+        uses: actions/cache/restore@v6
+        with:
+          path: tmp/e2e-timings.json
+          key: e2e-timings-${{ github.run_id }}
+          restore-keys: e2e-timings-
 
       - name: Cypress run
         uses: cypress-io/github-action@c541a95ea92d9239347a2355f2e895cd4b3f8060 # v7.4.6
@@ -169,26 +186,41 @@ jobs:
           expose: ${{ matrix.expose }}
         env:
           DEBUG: "@cypress/github-action"
+          # cypress-split (spec/e2e/cypress.config.cjs); empty outside the desktop shards.
+          # SPLIT_FILE must be relative: it is looked up from the working directory upwards,
+          # and an absolute path is never found, silently splitting by name instead.
+          SPLIT: ${{ matrix.shards }}
+          SPLIT_INDEX1: ${{ matrix.shard }}
+          SPLIT_FILE: ${{ matrix.shard && 'tmp/e2e-timings.json' || '' }}
+          SPLIT_OUTPUT_FILE: ${{ matrix.shard && format('{0}/tmp/e2e-timings-shard.json', github.workspace) || '' }}
         continue-on-error: true  # Allow workflow to continue to publish results
 
       - name: Dump app container logs
         if: always()
         run: docker compose logs --no-color website jobs > log/docker-compose-app.log
 
-      # Artifact names carry the device: both legs upload, and a repeated name fails.
       - name: Upload app container logs
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: docker-compose-app-logs-${{ matrix.device }}
+          name: docker-compose-app-logs-${{ env.LEG }}
           path: log/docker-compose-app.log
           retention-days: 7
+
+      - name: Upload spec timings
+        if: always() && matrix.shard
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-timings-${{ env.LEG }}
+          path: tmp/e2e-timings-shard.json
+          retention-days: 1
+          if-no-files-found: warn
 
       - name: Upload E2E test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: cypress-results-${{ matrix.device }}
+          name: cypress-results-${{ env.LEG }}
           path: ${{ matrix.results }}
           retention-days: 30
           if-no-files-found: error
@@ -198,7 +230,7 @@ jobs:
         uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d # v6.6.1
         with:
           report_paths: ${{ matrix.results }}
-          check_name: ${{ matrix.check_name }}
+          check_name: Cypress Test Results (${{ env.LEG }})
           summary: true
           detailed_summary: true
           annotate_only: false
@@ -214,7 +246,7 @@ jobs:
         if: failure() || !matrix.fail_on_failure
         uses: actions/upload-artifact@v7
         with:
-          name: cypress-screenshots-${{ matrix.device }}
+          name: cypress-screenshots-${{ env.LEG }}
           path: log/cypress/screenshots
           retention-days: 7  # Shorter retention for debug artifacts
           if-no-files-found: warn
@@ -223,7 +255,63 @@ jobs:
         if: failure() || !matrix.fail_on_failure
         uses: actions/upload-artifact@v7
         with:
-          name: cypress-videos-${{ matrix.device }}
+          name: cypress-videos-${{ env.LEG }}
           path: log/cypress/videos
           retention-days: 7  # Shorter retention for debug artifacts
           if-no-files-found: warn
+
+  # Merges the shards' spec timings, and the previous ones, into the cache the next run
+  # splits by. cypress-split-merge averages a spec found in several files, which also evens
+  # out a run on a slow runner. Saved from every branch: a PR's cache is visible only to
+  # that PR, so master's stays its own.
+  merge-e2e-timings:
+    needs: run-e2e-tests
+    if: ${{ !cancelled() && needs.run-e2e-tests.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: ".tool-versions"
+          cache: "npm"
+
+      - run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: 0  # only cypress-split-merge is needed
+
+      - name: Restore previous spec timings
+        uses: actions/cache/restore@v6
+        with:
+          path: tmp/e2e-timings.json
+          key: e2e-timings-${{ github.run_id }}
+          restore-keys: e2e-timings-
+
+      - name: Download shard timings
+        uses: actions/download-artifact@v8
+        with:
+          pattern: e2e-timings-*
+          path: tmp/timings
+
+      # The previous timings join the merge as one more file of the same name. When no
+      # shard got as far as writing timings, the previous ones are saved again as they are.
+      - name: Merge spec timings
+        run: |
+          if ! find tmp/timings -name e2e-timings-shard.json 2>/dev/null | grep -q .; then
+            echo "No shard wrote spec timings; keeping the previous ones."
+            exit 0
+          fi
+          if [ -f tmp/e2e-timings.json ]; then
+            mkdir -p tmp/timings/previous
+            mv tmp/e2e-timings.json tmp/timings/previous/e2e-timings-shard.json
+          fi
+          npx cypress-split-merge --parent-folder tmp/timings --split-file e2e-timings-shard.json --output tmp/e2e-timings.json
+
+      - name: Save spec timings
+        if: hashFiles('tmp/e2e-timings.json') != ''
+        uses: actions/cache/save@v6
+        with:
+          path: tmp/e2e-timings.json
+          key: e2e-timings-${{ github.run_id }}-${{ github.run_attempt }}
