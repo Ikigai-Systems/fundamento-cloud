@@ -70,6 +70,37 @@ describe("Object icon alignment", function () {
     })
   })
 
+  // ninja-keys draws each row in a shadow root of its own: ninja-keys > ninja-action >
+  // .ninja-icon (an svg, or a span holding the title emoji) and .ninja-title.
+  it("aligns labels in command palette results", function () {
+    cy.visit("/")
+    cy.intercept("GET", "/search*").as("paletteSearch")
+    cy.window().then((win) => win.dispatchEvent(new win.CustomEvent("command-palette:open")))
+    cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible")
+    cy.get("ninja-keys").shadow().find("ninja-header").shadow().find("#search").type("document")
+    cy.wait("@paletteSearch")
+
+    cy.get("ninja-keys").shadow().find("ninja-action")
+      .should(($actions) => {
+        const titles = [...$actions].map((action) => action.shadowRoot.querySelector(".ninja-title").textContent)
+        // Plain, family, flag and the long title, which the palette truncates from the front.
+        expect(titles.filter((title) => title.includes("Default IS")), "results").to.have.length(4)
+      })
+      .then(($actions) => {
+        const rows = [...$actions].map((action) => {
+          const slot = action.shadowRoot.querySelector(".ninja-icon")
+          let icon = slot
+          if (slot.tagName.toLowerCase() === "span") {
+            icon = slot.ownerDocument.createRange()
+            icon.selectNodeContents(slot)
+          }
+          return { slot, icon, label: action.shadowRoot.querySelector(".ninja-title") }
+        })
+        assertAlignedRows(rows)
+        assertEqualHeights([...$actions])
+      })
+  })
+
   // The switcher's label is bare text beside the slot, so the slot sits on the text's
   // baseline rather than in a flex row that centres it.
   it("centres the space switcher's icon on the space name", function () {
