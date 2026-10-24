@@ -29,13 +29,13 @@
         <nav data-tabs-target="list" aria-label="Space sidebar tabs">
           <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab">
             <%= render Object::SidebarTabIcon.new(label: "Hierarchy") do %>
-              <span class="tabs-tab-icon align-top size-5 icon-[tabler--sitemap]"></span>
+              <span class="tabs-tab-icon icon-[tabler--sitemap]"></span>
             <% end %>
           </button>
 
           <button id="starred" data-action="click->tabs#change" data-tabs-target="tab">
             <%= render Object::SidebarTabIcon.new(label: "Starred") do %>
-              <span class="tabs-tab-icon align-top size-5 icon-[tabler--star]"></span>
+              <span class="tabs-tab-icon icon-[tabler--star]"></span>
             <% end %>
           </button>
         </nav>
