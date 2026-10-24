@@ -12,20 +12,11 @@
       style: "padding-left: #{local_assigns.fetch(:level, 0) * 16}px",
       class: "document-padding-left flex items-center w-full",
     ) do %>
-      <%= tag.div(
-        data: {  "action" => "click->collapsible#toggle:prevent"  },
-        class: {
-          "multi-items-expander size-6 ml-1" => true,
-          "hidden" => !local_assigns.fetch(:has_children, false),
-        }
-      ) do %>
-        <div data-collapsible-target="icon" class="icon-[heroicons--chevron-right-16-solid] size-4 m-1 transition-transform"></div>
-      <% end %>
-
-      <%= tag.div("•", class: {
-        "single-item-dot pt-1 mx-2.5 -mt-[0.3rem]" => true,
-        "hidden" => local_assigns.fetch(:has_children, false),
-      } ) %>
+      <%# The same leading box as a leaf in the documents tree above (the sidebar's <template>),
+          so a table row's icon and title line up with a document row's. Tables have no children. %>
+      <span class="collapsible-trigger is-leaf">
+        <span class="collapsible-dot">•</span>
+      </span>
 
       <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
         <%= render ObjectIcon.new(object: content) %>

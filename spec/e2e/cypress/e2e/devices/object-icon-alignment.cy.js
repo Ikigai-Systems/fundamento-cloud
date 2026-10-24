@@ -1,5 +1,5 @@
 import { isOrganizationCookie } from "../../support/organization-cookies.js"
-import { assertAlignedRows, objectIconContent } from "../../support/alignment.js"
+import { assertAlignedRows, assertEqualHeights, assertIconInSlot, objectIconContent, rowsOf } from "../../support/alignment.js"
 
 // Object rows list one under another with an icon or a title emoji in a fixed .object-icon
 // slot. The labels must start at the same x in every row and the icon or emoji must stay
@@ -39,32 +39,14 @@ describe("Object icon alignment", function () {
     cy.setCookie("organization_id", isOrganizationCookie)
   })
 
-  const expectEqualHeights = ($rows) => {
-    const heights = [...$rows].map((row) => row.getBoundingClientRect().height)
-    expect(new Set(heights).size, `row heights ${heights.join(", ")}`).to.equal(1)
-  }
-
-  it("aligns labels in the sidebar tree", function () {
+  it("aligns labels across the sidebar's Documents and Tables lists", function () {
     cy.visit("/d/align_plain")
 
-    cy.openSidebar().find("li[data-node-id]").should("have.length", 5).then(($rows) => {
-      assertAlignedRows([...$rows].map((row) => {
-        const slot = row.querySelector(".object-icon")
-        return { slot, icon: objectIconContent(slot), label: row.querySelector("span.truncate") }
-      }))
-      expectEqualHeights($rows)
-    })
-  })
-
-  it("aligns labels in the sidebar's tables list", function () {
-    cy.visit("/d/align_plain")
-
-    cy.openSidebar().find(".section-content-list > li:not([data-node-id])").should("have.length", 2).then(($rows) => {
-      assertAlignedRows([...$rows].map((row) => {
-        const slot = row.querySelector(".object-icon")
-        return { slot, icon: objectIconContent(slot), label: row.querySelector("span.truncate") }
-      }))
-      expectEqualHeights($rows)
+    // One comparison for both sections: a table row must start its icon and label where a
+    // document row does.
+    cy.openSidebar().find(".section-content-list > li").should("have.length", 7).then(($rows) => {
+      assertAlignedRows(rowsOf($rows, "span.truncate"))
+      assertEqualHeights($rows)
     })
   })
 
@@ -73,11 +55,8 @@ describe("Object icon alignment", function () {
 
     cy.openSidebar().find("#starred").click()
     cy.get("#space_starred_list .content-link-container").should("have.length", 2).then(($rows) => {
-      assertAlignedRows([...$rows].map((row) => {
-        const slot = row.querySelector(".object-icon")
-        return { slot, icon: objectIconContent(slot), label: row.querySelector(".font-semibold") }
-      }))
-      expectEqualHeights($rows)
+      assertAlignedRows(rowsOf($rows, ".font-semibold"))
+      assertEqualHeights($rows)
     })
   })
 
@@ -86,11 +65,31 @@ describe("Object icon alignment", function () {
 
     cy.get("#favorites").click()
     cy.get("#favorites_list > div").should("have.length", 2).then(($rows) => {
-      assertAlignedRows([...$rows].map((row) => {
-        const slot = row.querySelector(".object-icon")
-        return { slot, icon: objectIconContent(slot), label: row.querySelector(".font-semibold a") }
-      }))
-      expectEqualHeights($rows)
+      assertAlignedRows(rowsOf($rows, ".font-semibold a"))
+      assertEqualHeights($rows)
+    })
+  })
+
+  // The switcher's label is bare text beside the slot, so the slot sits on the text's
+  // baseline rather than in a flex row that centres it.
+  it("centres the space switcher's icon on the space name", function () {
+    cy.visit("/d/align_plain")
+
+    cy.openSidebar().find("#spaces-dropdown .object-icon").then(($slot) => {
+      const slot = $slot[0]
+      // The first text after the slot. Development wraps ERB output in spans of its own,
+      // so this doesn't assume the name is the slot's next sibling.
+      const walker = slot.ownerDocument.createTreeWalker(slot.parentElement, NodeFilter.SHOW_TEXT)
+      walker.currentNode = slot
+      let text = walker.nextNode()
+      while (text && (!text.textContent.trim() || slot.contains(text))) text = walker.nextNode()
+      const start = text.textContent.search(/\S/)
+      const label = slot.ownerDocument.createRange()
+      label.setStart(text, start)
+      label.setEnd(text, text.textContent.trimEnd().length)
+
+      expect(label.toString()).to.equal("Default IS")
+      assertIconInSlot({ slot, icon: objectIconContent(slot), label })
     })
   })
 })
