@@ -46,7 +46,7 @@ Rails.application.credentials.dig(:sentry, :frontend_dsn)
 Rails.application.credentials.recaptcha[:site_key]
 ```
 
-**SOPS is only used for infrastructure keys** (minio credentials, Rails master keys). These are extracted by `bin/setup`, CI workflows, and Docker builds -- the running Rails app does not use SOPS.
+**SOPS is only used for infrastructure keys** (minio credentials, Rails master keys). These are extracted by `bin/setup` and CI workflows -- the running Rails app does not use SOPS.
 
 **See [SECRETS.md](SECRETS.md) for complete documentation.**
 

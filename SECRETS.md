@@ -30,7 +30,7 @@ These contain only:
 - `rails.master_key` -- Rails credential encryption key (extracted into `config/credentials/*.key`)
 - `minio.access_key` / `minio.secret_key` -- MinIO S3 credentials for docker-compose
 
-The running Rails app does **not** use SOPS directly. SOPS keys are extracted by `bin/setup`, CI workflows, and Docker builds.
+The running Rails app does **not** use SOPS directly. SOPS keys are extracted by `bin/setup` and CI workflows. Docker builds need none of them.
 
 ## Prerequisites
 

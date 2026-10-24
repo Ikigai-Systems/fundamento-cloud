@@ -112,8 +112,9 @@ jobs:
       # quota and would evict the npm/bundler caches the other workflows rely on.
       #
       # It is a tag on the existing (private) fundamento-cloud package, not a package
-      # of its own: a fresh GHCR package is created *public*, which would expose the
-      # cached layers, which hold the built app, to anyone.
+      # of its own, and must stay private: the cached layers hold the built app,
+      # including the encrypted credentials files and the compiled assets, and a fresh
+      # GHCR package is created *public*.
       - name: Log in to the Container registry
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:
