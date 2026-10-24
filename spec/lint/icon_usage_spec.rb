@@ -17,7 +17,7 @@ module IconUsageGuard
 
   FA_CLASS = /(?<![\w-])fa-[a-z0-9-]+/
   # The Pro gem and its token are gone: nothing in the build may name them again.
-  FA_BUILD = /font[-_]?awesome/i
+  FA_BUILD = /font[\s_-]?awesome/i
   BUILD_FILES = %w[Gemfile Gemfile.lock Dockerfile docker-compose.yml].freeze
   BUILD_GLOBS = %w[.github/**/* bin/**/*].freeze
   HEROICONS = /heroicons--/
