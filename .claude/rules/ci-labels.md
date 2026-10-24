@@ -14,7 +14,11 @@ elsewhere. `skip-deploy` also follows `.dockerignore`: a path that reaches the i
 
 - **Fail safe.** Any error, a fork PR, a direct push, `workflow_dispatch`, an empty file list or
   3000+ changed files means no labels: everything runs and deploys. Unknown paths run too.
-- **Lint & Typecheck always runs.** Labels never touch it.
+- **Lint & Typecheck always runs.** Labels never touch it. Its `ci-labels-specs` job runs
+  `spec/ci` there, so a bug in the rules can't label its own PR `skip-rspec` and skip the specs
+  that would catch it. It uses the runner's Ruby and installs only the gems `spec_helper` loads
+  (rspec, `warning`) at their `Gemfile.lock` versions: keep `spec/ci` and `spec_helper.rb` free
+  of anything else from the bundle.
 - **Changing a workflow, or a local action it uses, runs that workflow**, whatever the paths say.
 - **No `paths-ignore` on any trigger.** A skipped check still reports success, so these checks
   can become required later. Don't reintroduce path filters.

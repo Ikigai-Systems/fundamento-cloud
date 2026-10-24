@@ -11,6 +11,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The ci-labels rules decide whether `bin/rspec` runs, so their own specs run here, where no
+  # label can skip them. The runner's Ruby and only the gems spec_helper needs, at the versions in
+  # Gemfile.lock: the full bundle needs private-registry credentials and isn't needed here.
+  ci-labels-specs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install the spec gems
+        run: |
+          locked() {
+            version=$(sed -n "s/^    $1 (\(.*\))$/\1/p" Gemfile.lock)
+            if [ -z "$version" ]; then echo "$1 is not in Gemfile.lock" >&2; exit 1; fi
+            echo "$1:$version"
+          }
+          gems=""
+          for gem in rspec-core rspec-expectations rspec-mocks rspec-support diff-lcs warning; do
+            gems="$gems $(locked "$gem")"
+          done
+          echo "GEM_HOME=$RUNNER_TEMP/gems" >> "$GITHUB_ENV"
+          echo "$RUNNER_TEMP/gems/bin" >> "$GITHUB_PATH"
+          # shellcheck disable=SC2086
+          GEM_HOME="$RUNNER_TEMP/gems" gem install --no-document --ignore-dependencies $gems
+
+      - name: Run the ci-labels specs
+        run: rspec spec/ci
+
   lint-and-typecheck:
     runs-on: ubuntu-latest
 
