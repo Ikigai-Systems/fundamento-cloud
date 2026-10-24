@@ -72,6 +72,21 @@ describe("Table Versions", function () {
     cy.contains("AFTER").should("be.visible");
   });
 
+  // A Tabler icon in running text must sit on the text's centre, not on its baseline.
+  it("centres the history icon on the heading text of a version page", function () {
+    snapshot("initial");
+    cy.visit("/t/projects/versions/1");
+
+    cy.contains("Historical versions").then(($heading) => {
+      const icon = $heading.find("i[class*='icon-[tabler--history]']")[0];
+      const range = document.createRange();
+      range.selectNodeContents([...$heading[0].childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim()));
+      const text = range.getBoundingClientRect();
+      const box = icon.getBoundingClientRect();
+      expect(box.top + box.height / 2, "icon centre").to.be.closeTo(text.top + text.height / 2, 1);
+    });
+  });
+
   it("restores a version and keeps the state it replaced", function () {
     snapshot("initial");
 
