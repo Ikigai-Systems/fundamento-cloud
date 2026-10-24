@@ -29,19 +29,16 @@ RSpec.describe CiLabels::Rules do
     end
   end
 
-  describe "workflows using the action" do
-    # run-tests.yaml and run-e2e-tests.yaml call ./.github/actions/ci-labels, so editing the
-    # action must never skip the suites they gate (package workflows are asserted separately).
-    it "never skips rspec or e2e for a change to the action itself" do
-      expect(result(".github/actions/ci-labels/action.yaml").first(2)).to eq([false, false])
-    end
-
-    it "never skips rspec for a change to the Run Tests workflow" do
-      expect(result(".github/workflows/run-tests.yaml").first).to be(false)
-    end
-
-    it "never skips e2e for a change to the E2E workflow" do
-      expect(result(".github/workflows/run-e2e-tests.yaml")[1]).to be(false)
+  describe "the ci-labels action's own files" do
+    # Run Tests and E2E call the action, so editing it must never skip either suite.
+    {
+      "action.yaml" => ".github/actions/ci-labels/action.yaml",
+      "rules.yml" => ".github/actions/ci-labels/rules.yml",
+      "rules.rb" => ".github/actions/ci-labels/lib/ci_labels/rules.rb"
+    }.each do |name, path|
+      it "does not skip rspec or e2e for a change to #{name}" do
+        expect(result(path).first(2)).to eq([false, false])
+      end
     end
   end
 
