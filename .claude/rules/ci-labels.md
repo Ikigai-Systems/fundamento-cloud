@@ -34,6 +34,15 @@ merged PR only if that status is present. Without it the labels might be stale o
 master ignores them and runs everything. Labels written with `GITHUB_TOKEN` don't trigger
 workflows, so each workflow runs its own `decide` job rather than waiting for the labeler.
 
+## Every master commit runs
+
+Run Tests and E2E group their concurrency by commit on `push`, by ref otherwise. A shared
+group on `master` would let a newer queued run replace an older pending one, which is harmless
+only if every commit runs the same steps. With per-commit decisions it isn't: a docs-only commit
+that skips the deploy could replace a pending run for app code, which then never gets tested or
+deployed. Pull requests keep cancelling their older runs. The deploy and standalone publish
+still queue in their own groups, which only runs that actually deploy reach.
+
 ## Changing the rules
 
 Add a path to the matching list in `rules.yml` (`skippable`, `except`, or the shared `no_check`).

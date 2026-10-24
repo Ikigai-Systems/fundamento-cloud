@@ -14,9 +14,12 @@ on:
         required: false
         default: false
 
+# A pull request keeps only its newest run. On master every commit carries its own skip decision,
+# so each push gets its own group: a shared one would let a newer run (say a docs-only commit that
+# skips E2E) replace an older pending one, and the older commit would never run E2E.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Which steps a change may skip comes from its changed paths: see .github/actions/ci-labels.
