@@ -227,9 +227,7 @@ GEM
     http-2 (1.2.1)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    image_processing (1.14.0)
-      mini_magick (>= 4.9.5, < 6)
-      ruby-vips (>= 2.0.17, < 3)
+    image_processing (2.2.0)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -278,8 +276,6 @@ GEM
     marcel (1.2.1)
     mcp (0.25.0)
       json_schemer (>= 2.4)
-    mini_magick (5.3.1)
-      logger
     mini_mime (1.1.5)
     mini_portile2 (2.8.9)
     minitest (6.0.6)
@@ -597,7 +593,7 @@ DEPENDENCIES
   font-awesome-pro-sass!
   good_job (~> 4.22)
   hash_diff
-  image_processing (~> 1.2)
+  image_processing (~> 2.2)
   importmap-rails
   initials
   js_from_routes
@@ -626,6 +622,7 @@ DEPENDENCIES
   rspec (~> 3.13)
   rspec-rails
   rspec_junit_formatter
+  ruby-vips (~> 2.3)
   sentry-rails
   sentry-ruby
   solid_assert

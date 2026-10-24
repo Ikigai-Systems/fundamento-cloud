@@ -39,7 +39,10 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.2"
+# image_processing 2 no longer depends on ruby-vips, which Active Storage variants use.
+# Not required at boot, so the app starts on machines without libvips.
+gem "ruby-vips", "~> 2.3", require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors", "~> 3.0"
