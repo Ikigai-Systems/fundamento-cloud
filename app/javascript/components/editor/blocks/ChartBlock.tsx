@@ -4,6 +4,7 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import type {SingleValue} from "react-select";
 import {useQuery} from "@tanstack/react-query";
@@ -126,9 +127,9 @@ export const createChartBlock = createReactBlockSpec(
 
       if (isLoading) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-slate-400 dark:text-gray-500">
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center gap-2 text-slate-400 dark:text-gray-500">
             Loading data source table...
-            <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+            <SpinnerIcon/>
           </div>
         )
       }
@@ -144,7 +145,7 @@ export const createChartBlock = createReactBlockSpec(
                   editor.removeBlocks([props.block]);
                 }}
               >
-                <div className="size-5 icon-[heroicons--x-mark]"></div>
+                <div className="size-5 icon-[tabler--x]"></div>
               </button>}
             </div>
             <div className="px-4 py-3 sm:p-6">
@@ -204,7 +205,7 @@ export const createChartBlock = createReactBlockSpec(
                   editor.removeBlocks([props.block]);
                 }}
               >
-                <div className="size-5 icon-[heroicons--x-mark]"></div>
+                <div className="size-5 icon-[tabler--x]"></div>
               </button>
             </div>
             {editor.isEditable && <div className="px-4 py-3 sm:p-6">

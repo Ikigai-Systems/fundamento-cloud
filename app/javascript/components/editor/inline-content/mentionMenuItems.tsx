@@ -44,7 +44,7 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
     createMentionItem("table", table.id, table.name, <ObjectIcon type="Table" icon={table.icon}/>));
   const userMenuItems = users.map((user: User) =>
     createMentionItem("user", user.id, `${user.firstName} ${user.lastName}`,
-      <span className="object-icon"><i className="fa-regular fa-user"/></span>));
+      <span className="object-icon"><i className="icon-[tabler--user]"/></span>));
 
   const menuItems = [...documentMenuItems, ...tableMenuItems, ...userMenuItems];
   return menuItems;

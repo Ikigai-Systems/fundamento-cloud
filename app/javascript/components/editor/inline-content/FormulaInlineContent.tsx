@@ -8,6 +8,7 @@ import createFlash from "../../../utils/createFlash.ts";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import clsx from "clsx";
+import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 import {useQuery} from "@tanstack/react-query";
 
 const FormulaInlineContent = createReactInlineContentSpec(
@@ -117,12 +118,12 @@ const FormulaInlineContent = createReactInlineContentSpec(
       } else if (formulaResult?.result !== undefined) {
         displayResult = <span className={clsx({"max-w-[calc(100%_-_18px)]": isEditable})}>{JSON.stringify(formulaResult.result)}</span>
       } else if (formulaResult?.commands?.length > 0) {
-        displayResult = <div className=""><span className="relative top-0.5 size-4 icon-[heroicons--bolt]"></span>Action</div>
+        displayResult = <div className=""><span className="inline-flex items-center gap-1"><span className="size-4 icon-[tabler--bolt]"></span>Action</span></div>
       }
 
       return (<>
         <span {...getReferenceProps()} className={spanClassNames}>
-          {isLoading && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
+          {isLoading && <SpinnerIcon className="size-4 mr-2 self-center"/>}
           {!isLoading && displayResult}
 
           {isEditable && !isLoading && <button
@@ -132,7 +133,7 @@ const FormulaInlineContent = createReactInlineContentSpec(
               setIsConfigurationOpen(!isConfigurationOpen);
             }}
           >
-            <span className="icon-[heroicons--cog-6-tooth]"/>
+            <span className="icon-[tabler--settings]"/>
           </button>}
 
           {isConfigurationOpen && <FloatingPortal>

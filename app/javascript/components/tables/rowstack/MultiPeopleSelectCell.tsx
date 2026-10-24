@@ -90,7 +90,7 @@ function MultiPeopleSelectCell({
     return (
       <div className="ml-0.5 h-8 flex flex-row items-center gap-0.5" onClick={() => !isViewOnly && setFocus("editing")}>
         {renderSelectedUsers()}
-        {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
+        {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] size-5 icon-[tabler--chevron-down]"></span>}
       </div>
     );
   } else if (focusState === "editing" && !isViewOnly) {

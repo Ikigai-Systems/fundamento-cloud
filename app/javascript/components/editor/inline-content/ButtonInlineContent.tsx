@@ -9,6 +9,7 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import {colorNameToClass, colorNameToHoverAndActiveClass} from "./button/buttonColorUtils.ts";
 import handleFormulaResultCommands from "../../formulas/handleFormulaResultCommands.ts";
 import clsx from "clsx";
+import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 
 const ButtonInlineContent = createReactInlineContentSpec(
   {
@@ -81,6 +82,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
       );
 
       const buttonClassNames = clsx(
+        "inline-flex items-center justify-center",
         colorNameToClass(color),
         colorNameToHoverAndActiveClass(color),
         sizeClassNames.height,
@@ -130,7 +132,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
             disabled={isExecuting}
             onClick={executeButtonFormula}
           >
-            {isExecuting && <i className={"fa-regular fa-spinner fa-spin mr-2"}/>}
+            {isExecuting && <SpinnerIcon className="size-4 mr-2"/>}
             {label || "Button"}
           </button>
 
@@ -143,7 +145,7 @@ const ButtonInlineContent = createReactInlineContentSpec(
             <span className={
               clsx(
                 color === "white" ? "bg-gray-400" : "bg-white",
-                "icon-[heroicons--cog-6-tooth]",
+                "icon-[tabler--settings]",
                 sizeClassNames.cog
               )
             }/>
