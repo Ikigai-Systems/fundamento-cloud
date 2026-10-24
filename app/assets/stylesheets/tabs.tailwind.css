@@ -57,6 +57,18 @@
         @apply bg-indigo-500 hover:bg-indigo-400;
     }
 
+    /* Tabs that pair an icon with a text label (the dashboard). The icon is not the tab's only
+       content, so it must not use .tabs-tab-icon, which turns the button into a centred icon box.
+       The button centres the icon on the text line instead, and the icon takes the text's em so it
+       reads as large as the Spaces tab's object icon beside it. */
+    nav.tabs-with-labels[data-tabs-target="list"] button {
+        @apply inline-flex items-center gap-1.5;
+    }
+
+    nav.tabs-with-labels[data-tabs-target="list"] button .tabs-label-icon {
+        @apply block size-[1.25em] shrink-0;
+    }
+
     /* Tab content container */
     :where(div[data-controller~="tabs"] div[data-tabs-target="panel"]) {
         @apply py-4;

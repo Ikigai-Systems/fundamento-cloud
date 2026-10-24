@@ -1,6 +1,6 @@
 <%= form_for(document, url: move_document_path, method: :post, data: { controller: "prevent-double-submit" }) do |f| %>
   <% content_for :modal_icon do %>
-    <span class="icon-[tabler--alert-triangle] h-6 w-6 text-red-600 dark:text-red-200" aria-hidden="true"></span>
+    <span class="modal-icon icon-[tabler--alert-triangle]" aria-hidden="true"></span>
   <% end %>
 
   <% content_for :modal_title do %>

@@ -661,7 +661,7 @@ describe("Document References and Mentions", function () {
           .should("have.attr", "role", "button");
 
         // Verify icon is hidden from screen readers
-        cy.get('[data-testid="notifications-button"] .icon-\\[heroicons--bell\\]')
+        cy.get('[data-testid="notifications-button"] .icon-\\[tabler--bell\\]')
           .should("have.attr", "aria-hidden", "true");
 
         // Verify badge count is programmatically accessible
