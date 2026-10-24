@@ -116,11 +116,6 @@ gem "blueprinter", "~> 1.1"
 gem "parslet", "~> 2.0"
 gem "dotenv-rails", "~> 3.1"
 
-# Pawel's font-awesome token
-source "https://dl.fontawesome.com/basic/fontawesome-pro/ruby/" do
-  gem "font-awesome-pro-sass"
-end
-
 # Dockerfile excludes everything in the development group (also if it's in multiple groups)
 group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]

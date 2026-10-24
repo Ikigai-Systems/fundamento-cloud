@@ -33,13 +33,6 @@ else
 fi
 echo ""
 
-SECRET_FILE="dockerfiles/fontawesome-auth.secret"
-if [ ! -f "$SECRET_FILE" ]; then
-  echo -e "${RED}Error: ${SECRET_FILE} not found${NC}"
-  echo "Run: sops -d --extract '[\"fontawesome\"][\"auth_token\"]' config/secrets/${RAILS_ENV}.sops.yaml > ${SECRET_FILE}"
-  exit 1
-fi
-
 if [ "$PUSH" = true ]; then
   TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%S.000Z")
   GIT_SHA=$(git rev-parse --short HEAD)
@@ -57,7 +50,6 @@ if [ "$PUSH" = true ]; then
     --platform linux/amd64 \
     --build-arg RAILS_ENV="${RAILS_ENV}" \
     --build-arg NODE_MAJOR=24 \
-    --secret id=fontawesome-auth,src="${SECRET_FILE}" \
     --tag "${REGISTRY}:${TIMESTAMP}" \
     --tag "${REGISTRY}:sha-${GIT_SHA}" \
     --push \
@@ -76,7 +68,6 @@ else
     --target "${TARGET}" \
     --build-arg RAILS_ENV="${RAILS_ENV}" \
     --build-arg NODE_MAJOR=24 \
-    --secret id=fontawesome-auth,src="${SECRET_FILE}" \
     --tag "fundamento-cloud:${TARGET}" \
     --load \
     .

@@ -21,7 +21,6 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  SOPS_VERSION: 3.11.0
   NODE_MAJOR: 24
   IMAGE_NAME: fundamento
 
@@ -44,17 +43,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-
-      - name: Setup SOPS with age
-        uses: ./.github/actions/setup-sops
-        with:
-          age-key: ${{ secrets.SOPS_AGE_KEY }}
-          sops-version: ${{ env.SOPS_VERSION }}
-
-      - name: Decrypt secrets for Docker build
-        run: |
-          sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/build.sops.yaml > /tmp/fontawesome-auth.secret
-          echo "FONTAWESOME_SECRET_FILE=/tmp/fontawesome-auth.secret" >> $GITHUB_ENV
 
       - name: Docker build setup
         id: build-setup
@@ -88,8 +76,6 @@ jobs:
             NODE_MAJOR=${{ env.NODE_MAJOR }}
             RAILS_ENV=standalone
           target: standalone
-          secret-files: |
-            "fontawesome-auth=${{ env.FONTAWESOME_SECRET_FILE }}"
           cache-from: |
             type=gha,scope=${{ env.IMAGE_NAME }}-${{ matrix.platform }}
             type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest${{ matrix.tag-suffix }}

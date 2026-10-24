@@ -28,8 +28,8 @@ creation_rules:
 
   # CI-facing non-prod secrets: build key + admin + Dependabot key.
   # These are the only files a Dependabot job ever decrypts (test/e2e master
-  # keys, build.sops.yaml FontAwesome token).
-  - path_regex: config/secrets/(test|e2e|build)\.sops\.yaml$
+  # keys).
+  - path_regex: config/secrets/(test|e2e)\.sops\.yaml$
     age: >-
       age193z7fgdkklf8f290ye6zj8ee07g6rudls8hhpfqsj6c6tms2fshsxk9lfk,
       age1m2ksw2sfnvdp5wyw4yn395dytkw408ml2sluwlffxz7w5qgce9sqx2jzd8,
