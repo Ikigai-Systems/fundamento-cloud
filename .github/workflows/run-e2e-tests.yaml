@@ -5,6 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ "**" ]
+    types: [ opened, synchronize, reopened, labeled, unlabeled ]
   workflow_dispatch:
     inputs:
       debug_enabled:
@@ -18,13 +19,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Which steps a change may skip comes from its changed paths: see .github/actions/ci-labels.
+  decide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: read
+    outputs:
+      skip_rspec: ${{ steps.decide.outputs.skip_rspec }}
+      skip_e2e: ${{ steps.decide.outputs.skip_e2e }}
+      skip_deploy: ${{ steps.decide.outputs.skip_deploy }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: decide
+        uses: ./.github/actions/ci-labels
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
   run-e2e-tests:
     name: run-e2e-tests (${{ matrix.device }}${{ matrix.shard && format(' {0}/{1}', matrix.shard, matrix.shards) || '' }})
     runs-on: ubuntu-latest
     # A normal desktop shard takes about 7 minutes. Without a limit a hung step runs to
     # GitHub's 6-hour default.
     timeout-minutes: 45
-    if: "!contains(github.event.head_commit.message, '[skip-tests]')"
+    needs: decide
+    if: needs.decide.outputs.skip_e2e != 'true'
 
     # Each device gets its own runner and environment, so they run side by side.
     # Profiles live in spec/e2e/cypress/support/devices.cjs.
