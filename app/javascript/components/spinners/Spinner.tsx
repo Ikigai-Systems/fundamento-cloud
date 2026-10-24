@@ -5,12 +5,13 @@ export const SpinnerIcon = ({className = "size-5"}: {className?: string}) => (
 );
 
 // Tailwind only sees complete class names, so the supported sizes are spelled out.
-const SIZE_CLASSES: Record<number, string> = {4: "size-4", 6: "size-6", 8: "size-8"};
+const SIZE_CLASSES = {4: "size-4", 6: "size-6", 8: "size-8"} as const;
 
-const Spinner = ({size = 8}) => {
+// The orange accent is the same in light and dark, as the old track-and-arc spinner had it.
+const Spinner = ({size = 8}: {size?: keyof typeof SIZE_CLASSES}) => {
   return (
     <div role="status">
-      <SpinnerIcon className={`${SIZE_CLASSES[size] ?? "size-8"} text-gray-400 dark:text-gray-500`}/>
+      <SpinnerIcon className={`${SIZE_CLASSES[size]} text-primary-orange-600`}/>
       <span className="sr-only">Loading...</span>
     </div>
   );
