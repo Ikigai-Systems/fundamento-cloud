@@ -22,7 +22,7 @@ RSpec.describe ObjectIcon, type: :component do
       expect(result.css("i")).to be_empty
     end
 
-    # Emoji are wider than the icon font, so both branches have to share one
+    # Emoji are wider than the icons, so both branches have to share one
     # fixed-width slot or list labels step sideways from row to row.
     it "uses the same slot element as the default glyph" do
       document = Document.create!(title: "🔥 Hot Topic", organization: organization, space: space)
@@ -38,7 +38,7 @@ RSpec.describe ObjectIcon, type: :component do
 
       slot = render_icon(object: document).css("span.object-icon").first
 
-      expect(slot["data-fallback-icon"]).to eq("fa-regular fa-file-lines")
+      expect(slot["data-fallback-icon"]).to eq("icon-[tabler--file-text]")
     end
 
     it "accepts an icon passed directly, for rows that carry it on a struct" do
@@ -54,24 +54,24 @@ RSpec.describe ObjectIcon, type: :component do
 
       result = render_icon(object: document)
 
-      expect(result.css("span.object-icon i.fa-file-lines")).to be_present
+      expect(result.css("span.object-icon i.icon-\\[tabler--file-text\\]")).to be_present
       expect(result.css("span.object-icon").text.strip).to eq("")
     end
 
     it "falls back to the table glyph" do
       table = Table.create!(name: "Metrics", organization: organization, space: space)
 
-      expect(render_icon(object: table).css("i.fa-table")).to be_present
+      expect(render_icon(object: table).css("span.object-icon i.icon-\\[tabler--table\\]")).to be_present
     end
 
     it "falls back to the space glyph" do
-      expect(render_icon(object: space).css("i.fa-space-station-moon")).to be_present
+      expect(render_icon(object: space).css("span.object-icon i.icon-\\[tabler--planet\\]")).to be_present
     end
   end
 
   context "when only a type is given" do
     it "renders the default glyph for a section header" do
-      expect(render_icon(type: Document).css("i.fa-file-lines")).to be_present
+      expect(render_icon(type: Document).css("span.object-icon i.icon-\\[tabler--file-text\\]")).to be_present
     end
   end
 

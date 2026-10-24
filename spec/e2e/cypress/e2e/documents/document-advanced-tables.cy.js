@@ -253,8 +253,9 @@ describe("Advanced Table Title in Document", function () {
       cy.get(".fundamento-react-select-container").first().click();
       cy.get(".fundamento-react-select__option", {timeout: 10000})
         .filter(":contains('Plain Metrics')")
-        .find(".object-icon i.fa-table")
-        .should("exist");
+        .find(".object-icon i.icon-\\[tabler--table\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
     });
   });
 });

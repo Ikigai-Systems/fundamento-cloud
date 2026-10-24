@@ -324,7 +324,9 @@ describe("Space sidebar tree", function () {
     it("falls back to the document glyph when there is no icon", function () {
       cy.visit("/d/one");
 
-      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.icon-\\[tabler--file-text\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
       cy.get("#space-sidebar li[data-node-id='one'] .object-icon").should("have.text", "");
     });
 
@@ -332,7 +334,9 @@ describe("Space sidebar tree", function () {
     // icon and paste the raw new title next to it, showing the emoji twice.
     it("swaps the icon live when the document is renamed", function () {
       cy.visit("/d/one");
-      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.icon-\\[tabler--file-text\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
 
       cy.intercept("PATCH", "/d/one").as("rename");
       cy.get("nav .editable-content-title.editable").click();
@@ -357,7 +361,9 @@ describe("Space sidebar tree", function () {
       cy.get("nav .editable-content-title input").blur();
       cy.wait("@rename");
 
-      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.icon-\\[tabler--file-text\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
       cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Roadmap");
     });
 
@@ -366,7 +372,9 @@ describe("Space sidebar tree", function () {
       cy.appEval(`Document.find("one").update!(title: "✓ Reviewed")`);
       cy.visit("/d/one");
 
-      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.fa-file-lines").should("exist");
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon i.icon-\\[tabler--file-text\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
       cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "✓ Reviewed");
     });
   });
