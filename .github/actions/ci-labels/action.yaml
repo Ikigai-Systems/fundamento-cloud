@@ -1,0 +1,35 @@
+name: CI labels
+description: Decides which CI steps a change may skip, from its changed paths.
+
+inputs:
+  apply:
+    description: Write the skip-* labels and the ci-labels status to the PR
+    required: false
+    default: "false"
+  github-token:
+    description: Token used for the GitHub API
+    required: true
+
+outputs:
+  skip_rspec:
+    description: '"true" when the Rails specs may be skipped'
+    value: ${{ steps.decide.outputs.skip_rspec }}
+  skip_e2e:
+    description: '"true" when the E2E tests may be skipped'
+    value: ${{ steps.decide.outputs.skip_e2e }}
+  skip_deploy:
+    description: '"true" when the deploy may be skipped'
+    value: ${{ steps.decide.outputs.skip_deploy }}
+
+runs:
+  using: composite
+  steps:
+    - id: decide
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        APPLY: ${{ inputs.apply }}
+      run: |
+        flag=""
+        if [ "$APPLY" = "true" ]; then flag="--apply"; fi
+        ruby "${{ github.action_path }}/ci_labels.rb" decide $flag
