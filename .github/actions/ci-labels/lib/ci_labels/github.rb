@@ -64,7 +64,13 @@ module CiLabels
       pr = Array(pulls).find { |candidate| candidate["merge_commit_sha"] == sha }
       return unless pr
 
-      { number: pr["number"], head_sha: pr.dig("head", "sha"), labels: Array(pr["labels"]).map { |label| label["name"] } }
+      { number: pr["number"], head_sha: pr.dig("head", "sha") }
+    end
+
+    # Current label names of an issue or PR.
+    def labels_for(number)
+      pages = json(@runner.call("api", "--paginate", "--slurp", "repos/#{@repo}/issues/#{number}/labels?per_page=100"))
+      Array(pages).flatten.map { |label| label["name"] }
     end
 
     private

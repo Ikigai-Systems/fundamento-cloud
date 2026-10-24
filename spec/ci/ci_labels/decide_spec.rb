@@ -2,14 +2,16 @@ require_relative "../../../.github/actions/ci-labels/lib/ci_labels"
 
 RSpec.describe CiLabels::Decide do
   class FakeGitHub
-    attr_reader :writes, :file_calls
-    attr_accessor :files, :status, :merged_pr, :status_error
+    attr_reader :writes, :file_calls, :reads
+    attr_accessor :files, :status, :merged_pr, :status_error, :labels
 
     def initialize
       @writes = []
+      @reads = []
       @file_calls = 0
       @files = []
       @status = false
+      @labels = []
     end
 
     def pr_files(_number)
@@ -29,8 +31,14 @@ RSpec.describe CiLabels::Decide do
       @writes << [:status, sha, description]
     end
 
-    def status_ok?(_sha)
+    def status_ok?(sha)
+      @reads << [:status, sha]
       @status
+    end
+
+    def labels_for(number)
+      @reads << [:labels, number]
+      @labels
     end
 
     def merged_pr_for(_sha)
@@ -100,12 +108,14 @@ RSpec.describe CiLabels::Decide do
       expect(decide("pull_request", event, apply: true)).to eq(all_false)
     end
 
-    it "trusts the event labels on labeled when a status exists" do
+    it "reads the current labels on labeled when a status exists" do
       github.status = true
+      github.labels = ["skip-e2e", "bug"]
 
-      result = decide("pull_request", pull_request(action: "labeled", labels: ["skip-e2e", "bug"]), apply: true)
+      result = decide("pull_request", pull_request(action: "labeled", labels: ["skip-rspec"]), apply: true)
 
       expect(result).to eq("skip-rspec" => false, "skip-e2e" => true, "skip-deploy" => false)
+      expect(github.reads).to eq([[:status, "head1"], [:labels, 9]])
       expect(github.file_calls).to eq(0)
       expect(github.writes).to be_empty
     end
@@ -129,19 +139,23 @@ RSpec.describe CiLabels::Decide do
   end
 
   describe "push and workflow_run" do
-    let(:merged) { { number: 4, head_sha: "pr-head", labels: ["skip-deploy"] } }
+    let(:merged) { { number: 4, head_sha: "pr-head" } }
 
-    it "uses the merged PR labels when it has a status" do
+    it "uses the merged PR labels, read after its status, when it has one" do
       github.merged_pr = merged
       github.status = true
+      github.labels = ["skip-deploy"]
 
       expect(decide("push", { "after" => "m1" })).to eq(all_false.merge("skip-deploy" => true))
+      expect(github.reads).to eq([[:status, "pr-head"], [:labels, 4]])
     end
 
-    it "is all false without a status" do
+    it "is all false without a status, and reads no labels" do
       github.merged_pr = merged
+      github.labels = ["skip-deploy"]
 
       expect(decide("push", { "after" => "m1" })).to eq(all_false)
+      expect(github.reads).to eq([[:status, "pr-head"]])
     end
 
     it "is all false without a PR" do

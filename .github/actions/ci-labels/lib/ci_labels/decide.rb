@@ -39,8 +39,7 @@ module CiLabels
 
       action = @event["action"]
       if LABEL_ACTIONS.include?(action) && @github.status_ok?(pr.dig("head", "sha"))
-        names = Array(pr["labels"]).map { |label| label["name"] }
-        LABELS.to_h { |label| [label, names.include?(label)] }
+        current_labels(pr["number"])
       elsif PR_ACTIONS.include?(action) || LABEL_ACTIONS.include?(action)
         compute(pr)
       end
@@ -76,7 +75,14 @@ module CiLabels
       pr = @github.merged_pr_for(sha)
       return unless pr && @github.status_ok?(pr[:head_sha])
 
-      LABELS.to_h { |label| [label, pr[:labels].include?(label)] }
+      current_labels(pr[:number])
+    end
+
+    # Read after the status check, never from an event payload or an earlier response: the
+    # labeler writes labels before the status, so labels read later are at least that fresh.
+    def current_labels(number)
+      names = @github.labels_for(number)
+      LABELS.to_h { |label| [label, names.include?(label)] }
     end
   end
 end

@@ -45,13 +45,22 @@ RSpec.describe CiLabels::GitHub do
     it "picks the PR whose merge commit matches" do
       responses["commits/abc/pulls"] = JSON.generate(pulls)
 
-      expect(github.merged_pr_for("abc")).to eq(number: 2, head_sha: "h2", labels: ["skip-e2e"])
+      expect(github.merged_pr_for("abc")).to eq(number: 2, head_sha: "h2")
     end
 
     it "returns nil when none matches" do
       responses["commits/zzz/pulls"] = JSON.generate(pulls)
 
       expect(github.merged_pr_for("zzz")).to be_nil
+    end
+  end
+
+  describe "#labels_for" do
+    it "returns the current label names of an issue or PR" do
+      responses["issues/5/labels"] = JSON.generate([[{ "name" => "skip-e2e" }], [{ "name" => "bug" }]])
+
+      expect(github.labels_for(5)).to eq(["skip-e2e", "bug"])
+      expect(calls.first).to include("--paginate", "repos/acme/app/issues/5/labels?per_page=100")
     end
   end
 
