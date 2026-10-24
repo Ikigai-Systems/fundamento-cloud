@@ -16,6 +16,8 @@ RSpec.describe CiLabels::Rules do
     [".github/workflows/run-tests.yaml"] => [false, true, true],
     [".github/workflows/lint-and-typecheck.yaml"] => [true, true, true],
     [".github/workflows/package-fundamento-cloud.yaml"] => [true, true, false],
+    [".github/workflows/publish-standalone.yaml"] => [true, true, false],
+    [".github/actions/ci-labels/rules.yml"] => [false, false, false],
     [".github/actions/setup-sops/action.yaml"] => [false, false, false],
     [".github/actions/docker-build-setup/action.yaml"] => [true, true, false],
     ["app/models/user.rb", "CLAUDE.md"] => [false, false, false],
