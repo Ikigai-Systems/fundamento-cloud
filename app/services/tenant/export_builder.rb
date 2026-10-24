@@ -134,10 +134,11 @@ module Tenant
       sql = scope_sql(table)
       return if sql.nil?
 
+      order = order_by(table)
       offset = 0
       loop do
         batch = ApplicationRecord.connection.select_all(
-          "#{sql} ORDER BY 1 LIMIT #{BATCH_SIZE} OFFSET #{offset}"
+          "#{sql} ORDER BY #{order} LIMIT #{BATCH_SIZE} OFFSET #{offset}"
         ).to_a
         break if batch.empty?
 
@@ -146,6 +147,18 @@ module Tenant
 
         offset += BATCH_SIZE
       end
+    end
+
+    # Paging with OFFSET is only complete if the order is total, so it is the primary key.
+    # Not `ORDER BY 1`: that is whichever column is physically first, which differs between
+    # a database built from schema.rb and one that has been migrated. Where an id was
+    # dropped and re-added it is a json column Postgres refuses to sort, and where it is
+    # merely not unique, rows on a batch boundary are silently skipped or repeated.
+    def order_by(table)
+      columns = ApplicationRecord.connection.primary_keys(table)
+      raise ArgumentError, "#{table} has no primary key to page through" if columns.empty?
+
+      columns.map { |column| ApplicationRecord.connection.quote_column_name(column) }.join(", ")
     end
 
     def scope_sql(table)

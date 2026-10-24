@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.4.11"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.4"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -40,9 +40,12 @@ gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.2"
+# image_processing 2 no longer depends on ruby-vips, which Active Storage variants use.
+# Not required at boot, so the app starts on machines without libvips.
+gem "ruby-vips", "~> 2.3", require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
-gem "rack-cors", "~> 2.0"
+gem "rack-cors", "~> 3.0"
 
 gem "pg"
 
@@ -84,7 +87,7 @@ gem "activerecord-like"
 # emoji exactly the way the browser's /\p{RGI_Emoji}/v does.
 gem "unicode-emoji"
 
-gem "lograge", "~> 0.14.0"
+gem "lograge", "~> 0.15.1"
 gem "logstash-event", "~> 1.2"
 
 gem "aws-sdk-s3", require: false
@@ -94,7 +97,7 @@ gem "docx"
 
 gem "wannabe_bool"
 
-gem "good_job", "~> 4.4"
+gem "good_job", "~> 4.22"
 
 gem "net-http2"
 gem "jwt"
