@@ -9,19 +9,19 @@
       <nav data-tabs-target="list" aria-label="Tabs">
         <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Details") do %>
-            <i class="fa-regular fa-memo-circle-info"></i>
+            <span class="tabs-tab-icon align-top size-5 icon-[tabler--info-circle]"></span>
           <% end %>
         </button>
 
         <button id="visitors" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Visitors") do %>
-            <i class="fa-regular fa-screen-users"></i>
+            <span class="tabs-tab-icon align-top size-5 icon-[tabler--users]"></span>
           <% end %>
         </button>
 
         <button id="connections" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Connections") do %>
-            <i class="fa-regular fa-chart-network"></i>
+            <span class="tabs-tab-icon align-top size-5 icon-[tabler--affiliate]"></span>
           <% end %>
         </button>
       </nav>

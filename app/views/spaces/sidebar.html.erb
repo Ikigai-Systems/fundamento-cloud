@@ -29,13 +29,13 @@
         <nav data-tabs-target="list" aria-label="Space sidebar tabs">
           <button id="hierarchy" data-action="click->tabs#change" data-tabs-target="tab">
             <%= render Object::SidebarTabIcon.new(label: "Hierarchy") do %>
-              <i class="fa-regular fa-sitemap"></i>
+              <span class="tabs-tab-icon align-top size-5 icon-[tabler--sitemap]"></span>
             <% end %>
           </button>
 
           <button id="starred" data-action="click->tabs#change" data-tabs-target="tab">
             <%= render Object::SidebarTabIcon.new(label: "Starred") do %>
-              <i class="fa-regular fa-star"></i>
+              <span class="tabs-tab-icon align-top size-5 icon-[tabler--star]"></span>
             <% end %>
           </button>
         </nav>
@@ -65,7 +65,7 @@
                   data: { turbo: false },
                   aria: { label: "Create new document" } do
                 %>
-                  <i class="fa-regular fa-plus"></i>
+                  <i class="icon-[tabler--plus]"></i>
                 <% end %>
               </div>
 
@@ -96,7 +96,7 @@
                         <div class="document-padding-left flex items-center w-full">
                           <button type="button" class="collapsible-trigger flex items-center justify-center"
                             data-action="click->sidebar-tree#toggle:prevent">
-                            <div class="collapsible-icon icon-[heroicons--chevron-right-16-solid] size-4"></div>
+                            <div class="collapsible-icon icon-[tabler--chevron-right] size-4"></div>
                             <div class="collapsible-dot">•</div>
                           </button>
 
@@ -115,10 +115,10 @@
                           class: "content-link-button",
                           data: { turbo: false } do
                         %>
-                          <i class="fa-regular fa-plus"></i>
+                          <i class="icon-[tabler--plus]"></i>
                         <% end %>
 
-                        <a class="content-link-button" data-turbo-frame="content"><i class="fa-regular fa-pencil"></i></a>
+                        <a class="content-link-button" data-turbo-frame="content"><i class="icon-[tabler--pencil]"></i></a>
                       </div>
                     </div>
 
@@ -148,7 +148,7 @@
                   data: { turbo: false },
                   aria: { label: "Create new table" } do
                 %>
-                  <i class="fa-regular fa-plus"></i>
+                  <i class="icon-[tabler--plus]"></i>
                 <% end %>
               </div>
 
