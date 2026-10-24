@@ -8,7 +8,8 @@ A PR can skip CI steps it cannot affect. The `ci-labels` action
 - `skip-deploy`: the cloud package/deploy and the standalone publish may be skipped.
 
 Which paths each label covers lives in `rules.yml` next to the action. Don't copy the lists
-elsewhere. `skip-deploy` also follows `.dockerignore`: a path that reaches the image never skips.
+elsewhere. `skip-deploy` also follows `.dockerignore`: a path in the Docker build context never
+skips, except `spec/**` and root `*.md`, which the production and standalone stages never copy.
 
 ## Rules of thumb
 
@@ -20,15 +21,18 @@ elsewhere. `skip-deploy` also follows `.dockerignore`: a path that reaches the i
   (rspec, `warning`) at their `Gemfile.lock` versions: keep `spec/ci` and `spec_helper.rb` free
   of anything else from the bundle.
 - **Changing a workflow, or a local action it uses, runs that workflow**, whatever the paths say.
-- **No `paths-ignore` on any trigger.** A skipped check still reports success, so these checks
-  can become required later. Don't reintroduce path filters.
+- **No `paths-ignore` on any trigger.** A job skipped by its `if:` reports *skipped*, which a
+  required check accepts; a workflow that a path filter never starts leaves a required check
+  pending. So these checks can become required later. Don't reintroduce path filters.
 - `[skip-tests]` / `[skip-deploy]` in commit messages no longer do anything.
 
 ## Overriding by hand
 
 Add or remove a label on the PR. Any label change re-runs the RSpec and E2E checks under the
 current labels. The override lasts until the next push: the labeler recomputes from the paths on
-`opened` / `synchronize` / `reopened`, not on label events, and overwrites your change.
+`opened` / `synchronize` / `reopened` and overwrites your change. A label event recomputes too
+when the PR head has no `ci-labels` status (the labeler failed or hasn't finished), so an
+override on such a commit doesn't stick: wait for the status, then change the label again.
 
 ## Why the `ci-labels` status
 
