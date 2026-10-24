@@ -1,18 +1,15 @@
 require "json"
 
-# Guards the move to Tabler icons. MIGRATION_PENDING lists files that may still use Font Awesome,
-# Heroicons or pasted SVGs; each migration PR deletes the entries it clears.
+# Guards against Font Awesome, Heroicons and hand-pasted SVGs: icons come from Tabler.
 module IconUsageGuard
   ROOT = File.expand_path("../..", __dir__)
-
-  MIGRATION_PENDING = [
-    "app/assets/stylesheets/multiselect.css",
-  ].freeze
 
   ALLOWED_SVG_FILES = [
     "app/views/devise/shared/_google_auth_button.html.erb",
     # Rewrites the imported Tabler <svg tag to add the class and part ninja-keys needs.
     "app/javascript/stimulus/controllers/command_palette_icons.js",
+    # A CSS background can't use a mask class, and the SVG is Tabler's chevron-down.
+    "app/assets/stylesheets/multiselect.css",
   ].freeze
 
   # PR 9 removes this exception together with the stylesheet's Font Awesome rules.
@@ -47,29 +44,25 @@ module IconUsageGuard
       "#{file}:#{index + 1}" if line.valid_encoding? && line.match?(pattern)
     end
   end
-
-  def pending_offences(file)
-    [
-      FONT_AWESOME, HEROICONS, INLINE_SVG, DATA_SVG
-    ].any? { |pattern| matches(file, pattern).any? }
-  end
 end
 
 RSpec.describe "Icon usage" do
   let(:guard) { IconUsageGuard }
-  let(:pending_files) { guard::MIGRATION_PENDING }
 
   it "uses no Font Awesome classes" do
-    skip = pending_files + guard::STYLESHEET_EXCEPTIONS
+    skip = guard::STYLESHEET_EXCEPTIONS
     expect(guard.offences(guard::ICON_DIRS, guard::FONT_AWESOME, skip: skip)).to be_empty
   end
 
   it "uses no Heroicons" do
-    expect(guard.offences(guard::ICON_DIRS, guard::HEROICONS, skip: pending_files)).to be_empty
+    expect(guard.offences(guard::ICON_DIRS, guard::HEROICONS)).to be_empty
+
+    package = JSON.parse(File.read(File.join(guard::ROOT, "package.json")))
+    expect(package["devDependencies"]).not_to include("@iconify-json/heroicons")
   end
 
   it "has no hand-pasted icon SVGs" do
-    skip = pending_files + guard::ALLOWED_SVG_FILES
+    skip = guard::ALLOWED_SVG_FILES
     offenders = guard.offences(guard::SVG_DIRS, guard::INLINE_SVG, skip: skip) +
       guard.offences(["app/assets/stylesheets"], guard::DATA_SVG, skip: skip)
     expect(offenders).to be_empty
@@ -100,13 +93,5 @@ RSpec.describe "Icon usage" do
     end
 
     expect(unknown_classes + missing_imports).to be_empty
-  end
-
-  it "lists only files that still need migrating" do
-    missing = pending_files.reject { |file| File.exist?(File.join(guard::ROOT, file)) }
-    clean = pending_files.select { |file| File.exist?(File.join(guard::ROOT, file)) && !guard.pending_offences(file) }
-
-    expect(missing).to be_empty, "MIGRATION_PENDING lists missing files: #{missing.join(", ")}"
-    expect(clean).to be_empty, "MIGRATION_PENDING lists migrated files: #{clean.join(", ")}"
   end
 end

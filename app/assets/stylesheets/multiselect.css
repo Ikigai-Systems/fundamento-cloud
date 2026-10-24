@@ -4,7 +4,7 @@
     padding-bottom: 0.4rem;
     padding-right: 1.75rem;
     padding-left: 0.5rem;
-    background: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right #ddd;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6l6 -6'/></svg>") no-repeat right #ddd;
     background-color: transparent;
     border-radius: 0.25rem;
     appearance: none;
@@ -21,7 +21,7 @@
 
 @media (prefers-color-scheme: dark) {
     .multiselect__container {
-        background: url("data:image/svg+xml;utf8,<svg fill='rgb(164,164,164)' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>") no-repeat right #ddd;
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(164,164,164)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6l6 -6'/></svg>") no-repeat right #ddd;
         background-color: transparent;
         border-color: rgb(107 114 128);
     }
