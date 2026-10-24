@@ -355,9 +355,10 @@ GEM
       activesupport (>= 3.0.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.2.6)
-    rack-cors (2.0.2)
-      rack (>= 2.0.0)
+    rack (3.2.7)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-protection (4.2.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -602,7 +603,7 @@ DEPENDENCIES
   pg
   puma (>= 5.0)
   pundit
-  rack-cors (~> 2.0)
+  rack-cors (~> 3.0)
   rails (~> 8.1.1)
   rails-controller-testing
   rails-static-router
