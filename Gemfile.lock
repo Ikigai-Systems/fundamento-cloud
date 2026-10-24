@@ -365,8 +365,9 @@ GEM
     raabro (1.5.0)
     racc (1.8.1)
     rack (3.2.7)
-    rack-cors (2.0.2)
-      rack (>= 2.0.0)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-protection (4.2.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
@@ -492,8 +493,8 @@ GEM
       hashie (>= 0.1.0, < 6)
       version_gem (~> 1.1, >= 1.1.16)
     solid_assert (1.1.0)
-    sprockets (4.2.2)
-      concurrent-ruby (~> 1.0)
+    sprockets (4.4.1)
+      concurrent-ruby (~> 1.1)
       logger
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.5.2)
@@ -615,7 +616,7 @@ DEPENDENCIES
   pg
   puma (>= 5.0)
   pundit
-  rack-cors (~> 2.0)
+  rack-cors (~> 3.0)
   rails (~> 8.1.4)
   rails-controller-testing
   rails-static-router
