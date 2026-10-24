@@ -234,6 +234,11 @@ semver-tagged images from `.github/workflows/package-*.yaml`.
 release; a merged PR can be live on the cloud while the latest tag is older. Check the package
 run instead: `gh run list --workflow package-fundamento-cloud.yaml`.
 
+**A change can skip its deploy.** A PR that touches only paths the images never contain (specs,
+Markdown) gets the `skip-deploy` label, set from the changed paths, and merging it deploys
+nothing. `[skip-tests]` / `[skip-deploy]` in commit messages no longer do anything. See
+`.claude/rules/ci-labels.md`.
+
 ## Code formatting
 
 Whenever possible, use the following rules:
