@@ -1,6 +1,7 @@
 // Slash menu item to insert an Advanced table block
 
 import schema from "../schema.ts";
+import {SlashMenuIcon} from "../SlashMenuIcon.tsx";
 
 const AdvancedTableMenuItem = () => ({
   title: "Advanced table",
@@ -20,7 +21,7 @@ const AdvancedTableMenuItem = () => ({
     "table",
   ],
   group: "Advanced",
-  icon: <span className="relative top-[3px] m-[-4px_-1px]"><span className="size-5 icon-[heroicons--table-cells]"></span></span>,
+  icon: <SlashMenuIcon icon="icon-[tabler--table]"/>,
 });
 
 export default AdvancedTableMenuItem;

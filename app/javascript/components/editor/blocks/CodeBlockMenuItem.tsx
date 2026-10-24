@@ -1,4 +1,5 @@
 import schema from "../schema.ts";
+import {SlashMenuIcon} from "../SlashMenuIcon.tsx";
 
 const CodeBlockMenuItem = () => ({
   title: "Code",
@@ -17,7 +18,7 @@ const CodeBlockMenuItem = () => ({
     "code",
   ],
   group: "Advanced",
-  icon: <span className="relative top-[3px] m-[-6px_-3px]"><span className="size-6 icon-[heroicons--code-bracket-square]"></span></span>,
+  icon: <SlashMenuIcon icon="icon-[tabler--code]"/>,
 });
 
 export default CodeBlockMenuItem;

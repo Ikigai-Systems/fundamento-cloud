@@ -1,6 +1,7 @@
 // Slash menu item to insert a Chart block
 
 import schema from "../schema.ts";
+import {SlashMenuIcon} from "../SlashMenuIcon.tsx";
 
 const ChartBlockMenuItem = () => ({
   title: "Chart",
@@ -20,7 +21,7 @@ const ChartBlockMenuItem = () => ({
     "barchart",
   ],
   group: "Advanced",
-  icon: <span className="relative top-[3px] m-[-4px_-1px]"><span className="size-5 icon-[heroicons--chart-pie]"></span></span>,
+  icon: <SlashMenuIcon icon="icon-[tabler--chart-pie]"/>,
 });
 
 export default ChartBlockMenuItem;

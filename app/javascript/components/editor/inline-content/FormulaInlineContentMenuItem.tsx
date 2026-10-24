@@ -1,4 +1,5 @@
 import schema from "../schema.ts";
+import {SlashMenuIcon} from "../SlashMenuIcon.tsx";
 
 const ButtonInlineContentMenuItem = () => ({
   title: "Formula",
@@ -13,7 +14,7 @@ const ButtonInlineContentMenuItem = () => ({
     "calculation",
   ],
   group: "Advanced",
-  icon: <span className="size-4 m-px relative left-0.5 text-base fa-regular fa-sigma"></span>,
+  icon: <SlashMenuIcon icon="icon-[tabler--sum]"/>,
 });
 
 export default ButtonInlineContentMenuItem;
