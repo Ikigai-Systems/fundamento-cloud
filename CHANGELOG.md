@@ -10,6 +10,44 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.4.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.3.0...v1.4.0) (2026-10-24)
+
+
+### Features
+
+* open search from a button in the top bar, so it works on touch ([#290](https://github.com/Ikigai-Systems/fundamento-cloud/issues/290)) ([ca22232](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ca22232d43494c0cac2c5d9dc8ee39e60143174a))
+
+
+### Bug Fixes
+
+* **automations:** members who made automations can be removed ([#324](https://github.com/Ikigai-Systems/fundamento-cloud/issues/324)) ([6a31e42](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6a31e42605a965868f726cf6b18178ec07fe8aaf))
+* buttons no longer stay highlighted after a tap on touch screens ([#300](https://github.com/Ikigai-Systems/fundamento-cloud/issues/300)) ([ef0dfa2](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ef0dfa21511e8d9d041895b9aac096e1a9c1023a))
+* **editor:** drop blocks into toggles, including empty ones ([#320](https://github.com/Ikigai-Systems/fundamento-cloud/issues/320)) ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* **editor:** Enter in an open toggle adds a block inside it ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* **editor:** the / and @ menus no longer jump while you type ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* give each table row a single id in formula results ([#351](https://github.com/Ikigai-Systems/fundamento-cloud/issues/351)) ([32549f6](https://github.com/Ikigai-Systems/fundamento-cloud/commit/32549f60681aee85e20e67e562191f64d5b78a88))
+* label star and stop-editing icon buttons for screen readers ([f5b909d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f5b909d0d95c82d95084c321f520370ac055c81f))
+* organization backups no longer fail on migrated databases ([#354](https://github.com/Ikigai-Systems/fundamento-cloud/issues/354)) ([9a4e635](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9a4e6351cd015d0a4fe28ee86df684b1e5e3b6cb))
+* organizations are backed up every night ([#310](https://github.com/Ikigai-Systems/fundamento-cloud/issues/310)) ([507bcba](https://github.com/Ikigai-Systems/fundamento-cloud/commit/507bcba536c71aeb0bb369104459c1cebb09414d))
+* return document markdown as UTF-8 text ([#350](https://github.com/Ikigai-Systems/fundamento-cloud/issues/350)) ([4e16c88](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4e16c88ff8743399b10de85c063f7dc31955a1f2))
+* small links and buttons are big enough to tap on phones and tablets ([#301](https://github.com/Ikigai-Systems/fundamento-cloud/issues/301)) ([f5b909d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f5b909d0d95c82d95084c321f520370ac055c81f))
+* timestamp popups open by tap or keyboard and fit phone screens ([#306](https://github.com/Ikigai-Systems/fundamento-cloud/issues/306)) ([f2122ad](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f2122ad9218761f1d2d9a006c22ae0a295d5adb9))
+
+
+### Security
+
+* **api:** browser sessions no longer authorize API writes ([#307](https://github.com/Ikigai-Systems/fundamento-cloud/issues/307)) ([6fb1e62](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6fb1e628fcdfc71108844fecd247d448f974515a))
+* **automations:** webhooks need edit rights on the space ([#309](https://github.com/Ikigai-Systems/fundamento-cloud/issues/309)) ([475fed3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/475fed31ee46df99e580e7825afd9d99c93068af))
+* keep spaces and their content inside their organization ([#321](https://github.com/Ikigai-Systems/fundamento-cloud/issues/321)) ([10a6d52](https://github.com/Ikigai-Systems/fundamento-cloud/commit/10a6d52330397dacba6596f3aae67267ec8e0cad))
+* **mcp:** MCP connections no longer receive a session cookie ([6fb1e62](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6fb1e628fcdfc71108844fecd247d448f974515a))
+* remove the unused JWT authentication from the API ([#305](https://github.com/Ikigai-Systems/fundamento-cloud/issues/305)) ([2f76519](https://github.com/Ikigai-Systems/fundamento-cloud/commit/2f76519f2f8501b894aa0d72401fdec1ca13575d))
+* rotate the Google sign-in, Reddit and reCAPTCHA credentials ([#326](https://github.com/Ikigai-Systems/fundamento-cloud/issues/326)) ([0ad435f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0ad435fefbc315737083603db02ff8b84f900423))
+
+
+### Upgrade Notes
+
+* set TENANT_EXPORT_SERVICE to back up organizations every night ([507bcba](https://github.com/Ikigai-Systems/fundamento-cloud/commit/507bcba536c71aeb0bb369104459c1cebb09414d))
+
 ## [1.3.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.2.0...v1.3.0) (2026-10-22)
 
 
