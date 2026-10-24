@@ -58,7 +58,9 @@ RSpec.describe "Icon usage" do
     expect(guard.offences(guard::ICON_DIRS, guard::HEROICONS)).to be_empty
 
     package = JSON.parse(File.read(File.join(guard::ROOT, "package.json")))
-    expect(package["devDependencies"]).not_to include("@iconify-json/heroicons")
+    %w[dependencies devDependencies].each do |group|
+      expect(package.fetch(group, {})).not_to include("@iconify-json/heroicons")
+    end
   end
 
   it "has no hand-pasted icon SVGs" do

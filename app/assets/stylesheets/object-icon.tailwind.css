@@ -8,7 +8,17 @@
      * as half a glyph.
      */
     .object-icon {
-        @apply inline-flex shrink-0 items-center justify-center w-[1.25em] leading-[1.25];
+        @apply inline-flex shrink-0 items-center justify-center w-[1.25em] h-[1.25em];
+
+        /*
+         * The slot is 1.25em tall, taller than the line of a heading whose
+         * line-height is under 1.25 (a 36px title on a 40px line). It takes its
+         * parent's line-height, so `1lh` is that line, and pulls its margins in by
+         * half of what it exceeds the line by. The slot keeps its 1.25em box while
+         * its line box in the parent never grows past the surrounding text's.
+         */
+        line-height: inherit;
+        margin-block: min(0px, calc((1lh - 1.25em) / 2));
 
         /*
          * A Tabler icon draws inside a padded 24-unit grid, so at 1em its ink is
