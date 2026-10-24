@@ -93,4 +93,33 @@ RSpec.describe Tenant::ExportBuilder do
         "#{table} is global and must not appear in a tenant archive"
     end
   end
+
+  # `ORDER BY 1` sorted by whichever column is physically first. Built from schema.rb that
+  # is always the id, so every spec passed; in production a migrated table led with a json
+  # column and every export failed. The fixtures can't reproduce the column order, so this
+  # asserts what the order is built from instead.
+  it "pages every table by its primary key" do
+    queries = []
+    subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+      queries << payload[:sql] if payload[:sql].include?(" LIMIT #{described_class::BATCH_SIZE} OFFSET ")
+    end
+    begin
+      result
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber)
+    end
+
+    expect(queries).not_to be_empty
+    expect(queries.grep(/ORDER BY 1 /)).to eq([])
+    expect(queries.grep(/FROM space_memberships /)).to all(include('ORDER BY "space_id", "member_id", "member_type"'))
+  end
+
+  it "exports every row exactly once when a table spans several batches" do
+    stub_const("#{described_class}::BATCH_SIZE", 2)
+
+    ids = rows_for(result, "spaces").map { |row| row["id"] }
+
+    expect(organization.spaces.count).to be > 2
+    expect(ids).to match_array(organization.spaces.ids)
+  end
 end
