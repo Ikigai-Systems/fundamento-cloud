@@ -125,3 +125,23 @@
         @apply bg-transparent;
     }
 }
+/*
+ * Command palette (ninja-keys). Its rows live in shadow roots: custom properties inherit into
+ * them, and each icon carries part="ninja-icon" so ::part can reach it. Every icon, Tabler SVG
+ * or title emoji, takes the same 16px slot as icons elsewhere in the app, so titles line up.
+ */
+ninja-keys {
+    --ninja-icon-size: 16px;
+}
+
+ninja-keys::part(ninja-icon) {
+    flex-shrink: 0;
+    width: var(--ninja-icon-size);
+    height: var(--ninja-icon-size);
+    /* An emoji is about 1.25em wide, so this fits it to the slot. */
+    font-size: calc(var(--ninja-icon-size) * 0.8);
+    line-height: var(--ninja-icon-size);
+    text-align: center;
+    /* ninja-keys' 1em margin was sized for its larger default icon */
+    margin-right: 10px;
+}

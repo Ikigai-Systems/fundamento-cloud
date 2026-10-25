@@ -493,9 +493,56 @@ describe("Command Palette (Ctrl+K)", () => {
         expect(result, "a result for One").to.exist;
 
         // ninja-keys renders into a shadow root the app stylesheet cannot reach,
-        // so the fallback is an inline SVG rather than the Font Awesome <i>.
+        // so the fallback is an inline SVG rather than an icon class.
         expect(result.shadowRoot.querySelector("svg"), "fallback glyph").to.exist;
       });
+    });
+  });
+
+  describe("Icon size", () => {
+    // Every row shares one 16px slot, whether it holds a Tabler icon or an emoji, so titles
+    // line up and the icons match the 16px icons in the rest of the app.
+    const assertIconsAt16px = ($actions) => {
+      [...$actions].forEach(action => {
+        const shadow = action.shadowRoot;
+        const title = shadow.querySelector(".ninja-title").textContent.trim();
+        const box = shadow.querySelector(".ninja-icon").getBoundingClientRect();
+
+        expect(box.width, `"${title}" icon width`).to.be.closeTo(16, 0.5);
+        expect(box.height, `"${title}" icon height`).to.be.closeTo(16, 0.5);
+        shadow.querySelectorAll("svg").forEach(svg => {
+          expect(svg.getAttribute("part"), `"${title}" svg part`).to.equal("ninja-icon");
+        });
+      });
+    };
+
+    it("draws command and result icons at 16px", () => {
+      cy.appEval(`
+        Document.find_or_create_by!(id: "iconsize") do |document|
+          document.assign_attributes(title: "🧭 Onboarding notes", organization_id: "is", space_id: "is_default")
+        end.id
+      `);
+
+      cy.visit("/");
+      cy.get("body").type("{ctrl}k");
+      cy.get("ninja-keys").shadow().find(".modal").should("have.class", "visible");
+
+      cy.get("ninja-keys").shadow().find("ninja-action")
+        .should("have.length.at.least", 5)
+        .then(assertIconsAt16px);
+
+      cy.intercept("GET", "/search*").as("sizeSearch");
+      cy.get("ninja-keys").shadow()
+        .find("ninja-header").shadow()
+        .find("#search").type("on");
+      // Matches the fixture "One" (a Tabler icon) and "Onboarding notes" (an emoji).
+      cy.wait("@sizeSearch");
+
+      cy.get("ninja-keys").shadow().find("ninja-action").should($actions => {
+        const icons = [...$actions].map(action => action.shadowRoot.querySelector(".ninja-icon"));
+        expect(icons.some(icon => icon.textContent.trim() === "🧭"), "an emoji result").to.be.true;
+        expect(icons.some(icon => icon.tagName.toLowerCase() === "svg"), "an icon result").to.be.true;
+      }).then(assertIconsAt16px);
     });
   });
 

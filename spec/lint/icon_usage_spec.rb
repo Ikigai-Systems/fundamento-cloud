@@ -7,13 +7,13 @@ module IconUsageGuard
 
   MIGRATION_PENDING = [
     "app/assets/stylesheets/multiselect.css",
-    "app/javascript/stimulus/controllers/command_palette_controller.js",
-    "app/views/documents/edit.html.erb",
-    "app/views/documents/show.html.erb",
-    "app/views/tables/show.html.erb",
   ].freeze
 
-  ALLOWED_SVG_FILES = ["app/views/devise/shared/_google_auth_button.html.erb"].freeze
+  ALLOWED_SVG_FILES = [
+    "app/views/devise/shared/_google_auth_button.html.erb",
+    # Rewrites the imported Tabler <svg tag to add the class and part ninja-keys needs.
+    "app/javascript/stimulus/controllers/command_palette_icons.js",
+  ].freeze
 
   # PR 9 removes this exception together with the stylesheet's Font Awesome rules.
   STYLESHEET_EXCEPTIONS = ["app/assets/stylesheets/application.css.scss"].freeze
