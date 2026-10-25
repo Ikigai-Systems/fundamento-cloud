@@ -28,10 +28,9 @@ Infrastructure keys are stored encrypted in `config/secrets/`:
 
 These contain only:
 - `rails.master_key` -- Rails credential encryption key (extracted into `config/credentials/*.key`)
-- `fontawesome.auth_token` -- FontAwesome Pro npm/bundler auth token
 - `minio.access_key` / `minio.secret_key` -- MinIO S3 credentials for docker-compose
 
-The running Rails app does **not** use SOPS directly. SOPS keys are extracted by `bin/setup`, CI workflows, and Docker builds.
+The running Rails app does **not** use SOPS directly. SOPS keys are extracted by `bin/setup` and CI workflows. Docker builds need none of them.
 
 ## Prerequisites
 
@@ -153,7 +152,7 @@ sops -d config/secrets/development.sops.yaml
 sops -d config/secrets/production.sops.yaml
 
 # Extract a specific value
-sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml
+sops -d --extract '["rails"]["master_key"]' config/secrets/development.sops.yaml
 ```
 
 ### Editing SOPS Secrets
@@ -197,10 +196,6 @@ Infrastructure keys follow this structure:
 rails:
   master_key: xxx
 
-# FontAwesome Pro token
-fontawesome:
-  auth_token: xxx
-
 # MinIO credentials
 minio:
   access_key: xxx
@@ -225,8 +220,7 @@ The workflows will:
 1. Install age and sops
 2. Create the age key file from the secret
 3. Extract Rails master keys from SOPS into `config/credentials/*.key`
-4. Extract FontAwesome token for bundler/npm auth
-5. Rails then boots normally using standard encrypted credentials
+4. Rails then boots normally using standard encrypted credentials
 
 ### Dependabot (separate secret store)
 
@@ -236,7 +230,7 @@ secret store from Actions. `SOPS_AGE_KEY` is therefore configured **twice**:
 - **Actions store** → the build key (`age1m2ksw2…`), a recipient on every SOPS file
   except `production.sops.yaml`, which is admin-only.
 - **Dependabot store** → a dedicated, lower-privilege key (`age1et3r…`) that is a
-  recipient on **`build`/`test`/`e2e` only**. A Dependabot job runs untrusted
+  recipient on **`test`/`e2e` only**. A Dependabot job runs untrusted
   updated-dependency code, so it must never be able to decrypt production. This key
   cannot — in any commit — because it was never a production recipient.
 

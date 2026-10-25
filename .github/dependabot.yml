@@ -1,17 +1,5 @@
 version: 2
 
-# The Gemfile pulls Font Awesome Pro from its private gem server. Without credentials,
-# Dependabot can't resolve the Gemfile and skips every Ruby update. The token is a
-# Dependabot secret (Settings → Secrets and variables → Dependabot), not an Actions one.
-# The server takes the token as the basic-auth password; sent as the username (`token:`)
-# it answers 401. Any username works.
-registries:
-  fontawesome:
-    type: rubygems-server
-    url: https://dl.fontawesome.com/basic/fontawesome-pro/ruby/
-    username: fontawesome
-    password: ${{secrets.FONTAWESOME_TOKEN}}
-
 # Every ecosystem prefixes its commits with `deps`, which release-please-config.json
 # marks hidden — so dependency bumps never reach CHANGELOG.md. Bot pull requests are
 # also skipped by .github/workflows/changelog.yml.
@@ -20,11 +8,6 @@ updates:
     commit-message:
       prefix: deps
     directory: "/"
-    # Dependabot evaluates the Gemfile (Ruby code) to resolve it, and with a private registry
-    # configured it does so only when allowed. The Gemfile is ours and already gets this token.
-    insecure-external-code-execution: allow
-    registries:
-      - fontawesome
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

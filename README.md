@@ -33,7 +33,7 @@ chmod 600 ~/.config/sops/age/keys.txt
 - **Secret files**: `config/secrets/*.sops.yaml` (encrypted in git)
 - **View secrets**: `sops -d config/secrets/development.sops.yaml`
 - **Edit secrets**: `sops config/secrets/development.sops.yaml`
-- **Extract value**: `sops -d --extract '["fontawesome"]["auth_token"]' config/secrets/development.sops.yaml`
+- **Extract value**: `sops -d --extract '["rails"]["master_key"]' config/secrets/development.sops.yaml`
 
 ### In Application Code
 
@@ -46,7 +46,7 @@ Rails.application.credentials.dig(:sentry, :frontend_dsn)
 Rails.application.credentials.recaptcha[:site_key]
 ```
 
-**SOPS is only used for infrastructure keys** (fontawesome token, minio credentials, Rails master keys). These are extracted by `bin/setup`, CI workflows, and Docker builds -- the running Rails app does not use SOPS.
+**SOPS is only used for infrastructure keys** (minio credentials, Rails master keys). These are extracted by `bin/setup` and CI workflows -- the running Rails app does not use SOPS.
 
 **See [SECRETS.md](SECRETS.md) for complete documentation.**
 

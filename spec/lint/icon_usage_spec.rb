@@ -12,13 +12,14 @@ module IconUsageGuard
     "app/assets/stylesheets/multiselect.css",
   ].freeze
 
-  # PR 9 removes this exception together with the stylesheet's Font Awesome rules.
-  STYLESHEET_EXCEPTIONS = ["app/assets/stylesheets/application.css.scss"].freeze
-
   ICON_DIRS = %w[app/views app/components app/helpers app/javascript app/assets/stylesheets].freeze
   SVG_DIRS = %w[app/views app/components app/javascript].freeze
 
-  FONT_AWESOME = /(?<![\w-])fa-[a-z0-9-]+/
+  FA_CLASS = /(?<![\w-])fa-[a-z0-9-]+/
+  # The Pro gem and its token are gone: nothing in the build may name them again.
+  FA_BUILD = /font[\s_-]?awesome/i
+  BUILD_FILES = %w[Gemfile Gemfile.lock Dockerfile docker-compose.yml].freeze
+  BUILD_GLOBS = %w[.github/**/* bin/**/*].freeze
   HEROICONS = /heroicons--/
   INLINE_SVG = /<svg/
   DATA_SVG = /data:image\/svg\+xml/
@@ -50,8 +51,15 @@ RSpec.describe "Icon usage" do
   let(:guard) { IconUsageGuard }
 
   it "uses no Font Awesome classes" do
-    skip = guard::STYLESHEET_EXCEPTIONS
-    expect(guard.offences(guard::ICON_DIRS, guard::FONT_AWESOME, skip: skip)).to be_empty
+    expect(guard.offences(guard::ICON_DIRS, guard::FA_CLASS)).to be_empty
+  end
+
+  it "has no Font Awesome in the build" do
+    globbed = guard::BUILD_GLOBS.flat_map { |glob| Dir.glob(File.join(guard::ROOT, glob), File::FNM_DOTMATCH) }
+      .select { |path| File.file?(path) }
+      .map { |path| path.delete_prefix("#{guard::ROOT}/") }
+    files = (guard::BUILD_FILES + globbed).uniq.select { |file| File.file?(File.join(guard::ROOT, file)) }
+    expect(files.flat_map { |file| guard.matches(file, guard::FA_BUILD) }).to be_empty
   end
 
   it "uses no Heroicons" do
