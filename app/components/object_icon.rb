@@ -1,7 +1,7 @@
 class ObjectIcon < ViewComponent::Base
   # Both branches share one fixed-width slot. Emoji glyphs are wider than the
-  # icon font's, so without it the labels in a list step sideways depending on
-  # whether an object happens to have an icon.
+  # 1em Tabler icons, so without it the labels in a list step sideways depending
+  # on whether an object happens to have an icon.
   erb_template <<-ERB
     <% if slot? %>
       <span class="object-icon" data-fallback-icon="<%= fallback_icon_class %>"><% if @icon %><%= @icon %><% else %><i class="<%= fallback_icon_class %>"></i><% end %></span>
@@ -9,9 +9,9 @@ class ObjectIcon < ViewComponent::Base
   ERB
 
   FALLBACK_ICON_CLASSES = {
-    "Document" => "fa-regular fa-file-lines",
-    "Table" => "fa-regular fa-table",
-    "Space" => "fa-sharp fa-regular fa-space-station-moon"
+    "Document" => "icon-[tabler--file-text]",
+    "Table" => "icon-[tabler--table]",
+    "Space" => "icon-[tabler--planet]"
   }.freeze
 
   # Pass `object` for a record, or `type` alone for a section header that has no

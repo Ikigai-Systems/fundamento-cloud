@@ -1,12 +1,34 @@
 @layer components {
     /*
-     * An emoji icon occupies the slot a Font Awesome <i> would otherwise fill.
-     * Emoji glyphs are wider than the icon font's, so without a fixed advance
-     * width the labels in a list would not line up between objects that have an
-     * icon and objects that fall back to the default glyph.
+     * An emoji icon occupies the slot a Tabler icon <i> would otherwise fill.
+     * Colour emoji advance about 1.25em wide and their line box is 1.25em tall,
+     * ZWJ sequences and flags included. The slot is sized for the emoji so either
+     * one sits inside it and the labels in a list line up whichever an object
+     * shows. Nothing is clipped: a wider emoji should show as a misalignment, not
+     * as half a glyph.
      */
     .object-icon {
-        @apply inline-flex shrink-0 items-center justify-center w-[1.125em] leading-none;
+        @apply inline-flex shrink-0 items-center justify-center w-[1.25em] leading-[1.25];
+
+        /*
+         * A Tabler icon draws inside a padded 24-unit grid, so at 1em its ink is
+         * about 0.83em against an emoji's 1.1em and it reads a size smaller.
+         * Filling the slot brings it to about 1.04em.
+         */
+        > i {
+            @apply size-[1.25em];
+        }
+
+        /*
+         * Gives the slot a line of text to sit on. An emoji is text, so its slot
+         * shares the label's baseline and centres on it; an <i> alone has no
+         * baseline, and an inline slot would rest its bottom edge on the label's
+         * baseline and ride high. The zero-width space makes both kinds align the
+         * same way, in a sentence as well as in a flex row.
+         */
+        &::before {
+            content: "\200b";
+        }
     }
 
     /*

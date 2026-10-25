@@ -6,9 +6,9 @@ export type ObjectType = "Document" | "Table" | "Space";
 // Three class strings of pure presentation config; plumbing them through the
 // server would cost more than keeping the two lists in step.
 const FALLBACK_GLYPHS: Record<ObjectType, string> = {
-  Document: "fa-regular fa-file-lines",
-  Table: "fa-regular fa-table",
-  Space: "fa-sharp fa-regular fa-space-station-moon",
+  Document: "icon-[tabler--file-text]",
+  Table: "icon-[tabler--table]",
+  Space: "icon-[tabler--planet]",
 };
 
 type ObjectIconProps = {

@@ -722,7 +722,9 @@ describe("Document References and Mentions", function () {
       createDocuments();
       openMentionMenu();
 
-      targetItem().find(".object-icon i.fa-file-lines").should("exist");
+      targetItem().find(".object-icon i.icon-\\[tabler--file-text\\]")
+        .should("be.visible")
+        .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
     });
 
     // Inline is the opposite: a generic file glyph dropped into the middle of a
