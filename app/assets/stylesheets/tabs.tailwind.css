@@ -42,6 +42,17 @@
         @apply bg-gray-600 dark:bg-gray-200;
     }
 
+    /* One size and one centring for every icon tab bar (documents, tables, spaces), so the bars
+       keep the same height: the icon is a block centred in its tab, not an inline box sitting on a
+       baseline. */
+    nav[data-tabs-target="list"] button:has(.tabs-tab-icon) {
+        @apply inline-flex items-center justify-center;
+    }
+
+    nav[data-tabs-target="list"] button .tabs-tab-icon {
+        @apply block size-5 shrink-0;
+    }
+
     nav[data-tabs-target="list"] button.active-tab .tabs-tab-icon {
         @apply bg-indigo-500 hover:bg-indigo-400;
     }

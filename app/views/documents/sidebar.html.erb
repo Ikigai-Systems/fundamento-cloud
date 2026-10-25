@@ -7,35 +7,33 @@
     <%# Sticky tabs header %>
     <div class="shrink-0 border-b">
       <nav data-tabs-target="list" aria-label="Tabs">
-        <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab"
-                class="flex flex-row items-center"
-        >
+        <button id="table_of_contents" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Structure") do %>
-            <span class="tabs-tab-icon size-6 icon-[heroicons--clipboard-document-list]"></span>
+            <span class="tabs-tab-icon icon-[tabler--clipboard-list]"></span>
           <% end %>
         </button>
 
         <button id="details" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Details") do %>
-            <i class="fa-regular fa-memo-circle-info"></i>
+            <span class="tabs-tab-icon icon-[tabler--info-circle]"></span>
           <% end %>
         </button>
 
         <button id="visitors" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Visitors") do %>
-            <i class="fa-regular fa-screen-users"></i>
+            <span class="tabs-tab-icon icon-[tabler--users]"></span>
           <% end %>
         </button>
 
         <button id="connections" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Connections") do %>
-            <i class="fa-regular fa-chart-network"></i>
+            <span class="tabs-tab-icon icon-[tabler--affiliate]"></span>
           <% end %>
         </button>
 
         <button id="attachments" data-action="click->tabs#change" data-tabs-target="tab">
           <%= render Object::SidebarTabIcon.new(label: "Attachments") do %>
-            <i class="fa-regular fa-paperclip"></i>
+            <span class="tabs-tab-icon icon-[tabler--paperclip]"></span>
           <% end %>
         </button>
       </nav>

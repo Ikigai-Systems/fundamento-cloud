@@ -20,8 +20,8 @@ class SidebarDrawerButton < ViewComponent::Base
   # Classes are literal so Tailwind's scanner finds them. The toolbar button's own left margin
   # spaces it from its neighbours, so the leftmost one drops it, and pushes the rest away instead.
   SIDES = {
-    left: { sidebar_id: "space-sidebar", label: "Open navigation", icon: "icon-[heroicons--chevron-right-16-solid]", class: "ml-0 mr-auto" },
-    right: { sidebar_id: "content-sidebar", label: "Show details", icon: "icon-[heroicons--chevron-left-16-solid]", class: nil },
+    left: { sidebar_id: "space-sidebar", label: "Open navigation", icon: "icon-[tabler--chevron-right]", class: "ml-0 mr-auto" },
+    right: { sidebar_id: "content-sidebar", label: "Show details", icon: "icon-[tabler--chevron-left]", class: nil },
   }.freeze
 
   def initialize(side:)

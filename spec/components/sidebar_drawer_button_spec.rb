@@ -13,14 +13,14 @@ RSpec.describe SidebarDrawerButton, type: :component do
 
     expect(button["aria-controls"]).to eq("space-sidebar")
     expect(button["aria-expanded"]).to eq("false")
-    expect(button.css("span.icon-\\[heroicons--chevron-right-16-solid\\]")).to be_present
+    expect(button.css("span.icon-\\[tabler--chevron-right\\]")).to be_present
   end
 
   it "opens the content sidebar with a chevron pointing into the page" do
     button = render_button(:right)
 
     expect(button["aria-controls"]).to eq("content-sidebar")
-    expect(button.css("span.icon-\\[heroicons--chevron-left-16-solid\\]")).to be_present
+    expect(button.css("span.icon-\\[tabler--chevron-left\\]")).to be_present
   end
 
   it "hides where the sidebars fit beside the content" do

@@ -198,4 +198,51 @@ describe("Space sidebar tabs", function () {
     // The tab the user was on survives, because only the content frame navigated.
     cy.get("#space-sidebar #starred").should("have.attr", "aria-selected", "true");
   });
+
+  // Documents, tables and spaces share one tab-bar treatment: the same bar height, the same icon
+  // size, and every icon centred in its tab. Each page is measured on its own, then compared.
+  it("draws every sidebar tab bar with the same height, icon size and centring", function () {
+    cy.appEval(`
+      Table.create!(id: "tabtable", name: "Tab Table", organization_id: "is", space_id: "is_default")
+    `);
+
+    const measure = (win) => {
+      const navs = [...win.document.querySelectorAll("nav[data-tabs-target='list']")]
+        .filter((nav) => nav.getBoundingClientRect().height > 0);
+      return navs.map((nav) => ({
+        id: nav.closest("[id]")?.id,
+        height: nav.getBoundingClientRect().height,
+        tabs: [...nav.querySelectorAll("button")].map((button) => {
+          const icon = button.querySelector(".tabs-tab-icon").getBoundingClientRect();
+          const box = button.getBoundingClientRect();
+          return {
+            width: icon.width,
+            height: icon.height,
+            // Against the tab above its 2px underline: clientHeight leaves the border out
+            offCentre: Math.abs(icon.top + icon.height / 2 - (box.top + button.clientHeight / 2)),
+          };
+        }),
+      }));
+    };
+
+    const bars = [];
+    ["/d/one", "/t/tabtable", "/s/is_default"].forEach((path) => {
+      cy.visit(path);
+      cy.get("nav[data-tabs-target='list'] .tabs-tab-icon").should("exist");
+      cy.window().then((win) => bars.push(...measure(win)));
+    });
+
+    cy.then(() => {
+      expect(bars.length, "tab bars measured").to.be.at.least(4);
+      const first = bars[0];
+      bars.forEach((bar) => {
+        expect(bar.height, `${bar.id} bar height`).to.be.closeTo(first.height, 0.5);
+        bar.tabs.forEach((tab) => {
+          expect(tab.width, `${bar.id} icon width`).to.be.closeTo(first.tabs[0].width, 0.5);
+          expect(tab.height, `${bar.id} icon height`).to.be.closeTo(first.tabs[0].height, 0.5);
+          expect(tab.offCentre, `${bar.id} icon centre`).to.be.lessThan(1);
+        });
+      });
+    });
+  });
 });

@@ -1,6 +1,6 @@
 <% if comment.removed? %>
   <div class="rounded-xl border border-dashed flex flex-row gap-2 items-center px-3 py-2 text-sm text-gray-400">
-    <i class="fa fa-trash text-xs"></i>
+    <i class="icon-[tabler--trash] text-xs"></i>
     <span>
       Comment by <strong class="text-gray-500"><%= comment.organization_membership.display_name %></strong>
       was removed
@@ -56,7 +56,7 @@
           <button data-action="click->edit-comment#startEdit"
                   class="rounded-button"
                   title="Edit">
-            <i class="fa fa-pencil"></i>
+            <i class="icon-[tabler--pencil]"></i>
           </button>
 
           <%= button_to comment_path(comment, object_gid: resource.to_gid_param),
@@ -65,7 +65,7 @@
               class: "rounded-button hover:text-red-600",
               title: "Delete",
               data: {turbo_frame: "object_comments"} do %>
-            <i class="fa fa-trash"></i>
+            <i class="icon-[tabler--trash]"></i>
           <% end %>
         </div>
       <% end %>

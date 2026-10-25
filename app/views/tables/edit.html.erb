@@ -15,7 +15,7 @@
     class: "document-toolbar-button",
     aria: { label: "Stop editing" },
     title: "Stop editing" do %>
-    <i class="fa-regular fa-turn-left"></i>
+    <i class="icon-[tabler--arrow-back-up]"></i>
   <% end %>
 
   <%= render partial: "content/document_menu", locals: { space: @space, content: @table } %>
@@ -37,7 +37,7 @@
   } %>
 
   <p class="mx-auto p-3 text-sm text-center">
-    <i class="fa-solid fa-circle-info"></i>
+    <i class="icon-[tabler--info-circle]"></i>
     Changes are saved automatically
   </p>
 </article>
