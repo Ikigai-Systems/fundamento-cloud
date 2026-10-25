@@ -7,11 +7,6 @@ module IconUsageGuard
 
   MIGRATION_PENDING = [
     "app/assets/stylesheets/multiselect.css",
-    "app/javascript/components/editor/blocks/AdvancedTableMenuItem.tsx",
-    "app/javascript/components/editor/blocks/ChartBlockMenuItem.tsx",
-    "app/javascript/components/editor/blocks/CodeBlockMenuItem.tsx",
-    "app/javascript/components/editor/inline-content/ButtonInlineContentMenuItem.tsx",
-    "app/javascript/components/editor/inline-content/FormulaInlineContentMenuItem.tsx",
     "app/javascript/stimulus/controllers/command_palette_controller.js",
     "app/views/documents/edit.html.erb",
     "app/views/documents/show.html.erb",

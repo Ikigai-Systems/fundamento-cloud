@@ -1,4 +1,5 @@
 import schema from "../schema.ts";
+import {SlashMenuIcon} from "../SlashMenuIcon.tsx";
 
 const ButtonInlineContentMenuItem = () => ({
   title: "Button",
@@ -13,7 +14,7 @@ const ButtonInlineContentMenuItem = () => ({
     "interaction",
   ],
   group: "Advanced",
-  icon: <span className="relative top-[3px] m-[-4px_-1px]"><span className="size-5 icon-[heroicons--bolt]"></span></span>,
+  icon: <SlashMenuIcon icon="icon-[tabler--bolt]"/>,
 });
 
 export default ButtonInlineContentMenuItem;
