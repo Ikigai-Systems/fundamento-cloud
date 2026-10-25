@@ -14,6 +14,13 @@ updates:
     groups:
       ruby-minor-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # The Gemfile pins tailwindcss-ruby to the Tailwind 3 CLI on purpose. Tailwind 4
+      # drops config/tailwind.config.js for CSS-first config, so `theme(colors...)`
+      # lookups no longer resolve and the CSS build fails (see PR #371). Remove this
+      # entry when doing the Tailwind 4 migration.
+      - dependency-name: "tailwindcss-ruby"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     commit-message:
