@@ -38,7 +38,7 @@
     "js-cookie": "^3.0.5",
     "ninja-keys": "github:ikigai-systems/ninja-keys#dcdc6d3",
     "patch-package": "^8.0.0",
-    "posthog-js": "^1.438.14",
+    "posthog-js": "^1.438.15",
     "react": "^18.2.0",
     "react-apexcharts": "^2.1.1",
     "react-dom": "^18.2.0",
