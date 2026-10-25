@@ -58,4 +58,9 @@
         @apply size-8 rounded-full p-0;
         @apply flex items-center justify-center;
     }
+
+    /* The large icon beside "No spaces", "No mentions" and the other empty lists. */
+    .empty-state-icon {
+        @apply size-12 mr-4 shrink-0 text-gray-500 dark:text-gray-300;
+    }
 }

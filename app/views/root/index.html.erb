@@ -5,10 +5,10 @@
     data-tabs-active-tab-class="active-tab"
   >
     <div class="border-b">
-      <nav data-tabs-target="list" aria-label="Tabs">
+      <nav class="tabs-with-labels" data-tabs-target="list" aria-label="Tabs">
         <% if @show_shared_tab %>
           <button id="shared" data-action="click->tabs#change" data-tabs-target="tab">
-            <i class="fa-solid fa-share-nodes"></i>
+            <span class="tabs-label-icon icon-[tabler--share]" aria-hidden="true"></span>
             Shared with you
           </button>
         <% end %>
@@ -19,17 +19,17 @@
         </button>
 
         <button id="recently-updated" data-action="click->tabs#change" data-tabs-target="tab">
-          <i class="fa-solid fa-clock"></i>
+          <span class="tabs-label-icon icon-[tabler--clock]" aria-hidden="true"></span>
           Recently updated
         </button>
 
         <button id="favorites" data-action="click->tabs#change" data-tabs-target="tab">
-          <i class="fa-regular fa-star"></i>
+          <span class="tabs-label-icon icon-[tabler--star]" aria-hidden="true"></span>
           Favorites
         </button>
 
         <button id="mentions" data-action="click->tabs#change" data-tabs-target="tab">
-          <i class="fa-solid fa-at"></i>
+          <span class="tabs-label-icon icon-[tabler--at]" aria-hidden="true"></span>
           Mentions
           <%= render(partial: 'mentions/count_badge', locals: { mentions_count: @mentions.count }) %>
         </button>

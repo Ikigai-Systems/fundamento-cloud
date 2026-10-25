@@ -162,7 +162,7 @@ describe("Document Sidebar Timestamps", function () {
 
     // Icon should change to checkmark
     cy.get("[data-timestamp-popup] button[data-copy-value]").first().within(() => {
-      cy.get(".icon-\\[heroicons--check\\]").should("exist");
+      cy.get(".icon-\\[tabler--check\\]").should("exist");
     });
   });
 });

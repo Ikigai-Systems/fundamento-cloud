@@ -193,7 +193,7 @@ describe("Touch device smoke", function () {
       cy.checkPageHealth()
 
       cy.get("[data-timestamp-popup] button[data-copy-value]").first().realTouch()
-      cy.get("[data-timestamp-popup] .icon-\\[heroicons--check\\]").should("exist")
+      cy.get("[data-timestamp-popup] .icon-\\[tabler--check\\]").should("exist")
 
       cy.contains("#details_sidebar_tab p", "Created at").realTouch()
       cy.get("[data-timestamp-popup]").should("not.exist")

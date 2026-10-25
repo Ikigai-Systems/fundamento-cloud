@@ -143,7 +143,7 @@ export default class TimestampController extends Controller<HTMLElement> {
         <div class="flex items-center justify-between gap-2">
           <span class="whitespace-nowrap text-gray-900 dark:text-gray-100">${value}</span>
           <button type="button" class="flex rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors touch:p-1 touch:-m-1" data-copy-value="${value}" aria-label="${copyLabel}">
-            <span class="icon-[heroicons--clipboard] size-4"></span>
+            <span class="icon-[tabler--clipboard] size-4"></span>
           </button>
         </div>
       </div>
@@ -151,8 +151,8 @@ export default class TimestampController extends Controller<HTMLElement> {
 
     popup.innerHTML = `
       <div class="flex flex-col gap-3">
-        ${row("icon-[heroicons--computer-desktop]", "Your device", `<span class="text-xs text-gray-400">${offsetLabel}</span>`, localFormatted, "Copy your device's time")}
-        ${row("icon-[heroicons--globe-alt]", "UTC", "", utcFormatted, "Copy UTC time")}
+        ${row("icon-[tabler--device-desktop]", "Your device", `<span class="text-xs text-gray-400">${offsetLabel}</span>`, localFormatted, "Copy your device's time")}
+        ${row("icon-[tabler--world]", "UTC", "", utcFormatted, "Copy UTC time")}
       </div>
     `
 
@@ -208,9 +208,9 @@ export default class TimestampController extends Controller<HTMLElement> {
     navigator.clipboard.writeText(value).then(() => {
       const icon = button.querySelector("span")
       if (icon) {
-        icon.className = "icon-[heroicons--check] size-4 text-green-500"
+        icon.className = "icon-[tabler--check] size-4 text-green-500"
         setTimeout(() => {
-          icon.className = "icon-[heroicons--clipboard] size-4"
+          icon.className = "icon-[tabler--clipboard] size-4"
         }, 1500)
       }
     }).catch(() => {
