@@ -7,7 +7,8 @@
     <%= link_to polymorphic_path([object]), class: "content-link min-w-0", data: { turbo_frame: "content" } do %>
       <div class="flex flex-grow min-w-0 gap-2 p-2 items-start">
         <%# The row is two lines tall, so the icon needs a box as tall as the title's line to
-            centre against it — .object-icon is leading-none and would otherwise ride high. %>
+            centre against it — .object-icon inherits its parent's line-height, so left alone it sits
+            at the top of the two lines. %>
         <span class="flex items-center h-6 shrink-0">
           <%= render ObjectIcon.new(object: object) %>
         </span>

@@ -67,6 +67,18 @@
 }
 
 @layer components {
+    /*
+     * Iconify emits a Tabler icon as an inline-block 1em square with no vertical-align, so one
+     * dropped into running text rests its bottom edge on the baseline and rides 2-3px above the
+     * text's centre. Lowering it by 0.125em centres it on the x-height of the adjacent text.
+     * The rule is for bare <i> icons only: vertical-align does nothing on flex items, which covers
+     * the icons in flex rows. The named icon slots and the reaction button, whose icon is the
+     * only content of its box, are left out because they size and align themselves.
+     */
+    i[class*="icon-[tabler--"]:not(.tabs-tab-icon, .tabs-label-icon, .modal-icon, .empty-state-icon, .object-icon > *, .create-reaction-button > *) {
+        vertical-align: -0.125em;
+    }
+
     .top-nav-bar {
         @apply bg-white border-gray-200;
         @apply dark:border-gray-600 dark:bg-gray-800;

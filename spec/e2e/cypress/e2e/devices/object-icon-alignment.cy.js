@@ -123,4 +123,19 @@ describe("Object icon alignment", function () {
       assertIconInSlot({ slot, icon: objectIconContent(slot), label })
     })
   })
+
+  // The slot is taller than the line of a large heading (a 36px title on a 40px line), so
+  // without care it stretches the heading and pushes the page down. Whole lines only: the
+  // heading wraps on a phone, the height must be a multiple of its line-height.
+  it("keeps the History heading a whole number of lines when the title has an icon", function () {
+    for (const id of ["align_plain", "align_launch"]) {
+      cy.visit(`/d/${id}/versions`)
+      cy.get("h1").should("contain.text", "History").then(($h1) => {
+        const height = $h1[0].getBoundingClientRect().height
+        const line = parseFloat(getComputedStyle($h1[0]).lineHeight)
+        const lines = Math.round(height / line)
+        expect(height, `${id} heading height for ${lines} line(s) of ${line}px`).to.be.closeTo(lines * line, 0.5)
+      })
+    }
+  })
 })
