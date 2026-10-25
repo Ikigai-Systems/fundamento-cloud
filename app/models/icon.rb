@@ -23,6 +23,7 @@ class Icon
   # cannot get this right: they miss keycaps (1️⃣), flags (🇺🇸) and anything added
   # after they were written, while wrongly matching dingbats like ✓ and ✂.
   LEADING_EMOJI = /\A(#{Unicode::Emoji::REGEX})[[:space:]]*/
+  SINGLE_EMOJI = /\A#{Unicode::Emoji::REGEX}\z/
 
   attr_reader :type, :value
 
@@ -47,6 +48,15 @@ class Icon
 
     def emoji(value)
       new(type: EMOJI, value: value)
+    end
+
+    # Whether a string is exactly one emoji, as an icon set on its own must be.
+    #
+    #   Icon.single_emoji?("🔥")    # => true
+    #   Icon.single_emoji?("🔥🔥")  # => false
+    #   Icon.single_emoji?("✓")     # => false
+    def single_emoji?(string)
+      SINGLE_EMOJI.match?(string.to_s)
     end
 
     # Builds an Icon from the persisted columns, or nil when the record has none.

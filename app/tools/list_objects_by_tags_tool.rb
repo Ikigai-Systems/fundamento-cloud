@@ -128,6 +128,7 @@ class ListObjectsByTagsTool < ApplicationTool
       {
         id: object.id,
         title: object.title,
+        icon: object.icon&.as_json,
         object_type: "Document",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,
         space_id: object.space.id,
@@ -137,6 +138,7 @@ class ListObjectsByTagsTool < ApplicationTool
       {
         id: object.id,
         name: object.name,
+        icon: object.icon&.as_json,
         object_type: "Table",
         tags: object.tags.map { |tag| "##{tag.name}" }.sort,
         space_id: object.space.id,

@@ -229,6 +229,57 @@ RSpec.describe HasIcon do
     end
   end
 
+  describe "#assign_title_and_icon" do
+    let(:document) { new_document("🔥 Hot Topic").tap(&:save!) }
+
+    it "renames without touching the icon" do
+      document.assign_title_and_icon(title: "Cold Topic")
+      document.save!
+
+      expect(document.reload.title).to eq("Cold Topic")
+      expect(document.icon).to eq(Icon.emoji("🔥"))
+    end
+
+    it "stores a title as given, without promoting a leading emoji" do
+      document.assign_title_and_icon(title: "❄️ Cold Topic")
+      document.save!
+
+      expect(document.reload.title).to eq("❄️ Cold Topic")
+      expect(document.icon).to eq(Icon.emoji("🔥"))
+    end
+
+    it "sets the icon without touching the title" do
+      document.assign_title_and_icon(icon: "❄️")
+      document.save!
+
+      expect(document.reload.title).to eq("Hot Topic")
+      expect(document.icon).to eq(Icon.emoji("❄️"))
+    end
+
+    it "removes the icon when given an empty string" do
+      document.assign_title_and_icon(icon: "")
+      document.save!
+
+      expect(document.reload.icon).to be_nil
+    end
+
+    it "rejects an icon that isn't a single emoji" do
+      ["x", "🔥🔥", "🔥 Hot", "✓"].each do |icon|
+        expect { document.assign_title_and_icon(icon: icon) }.to raise_error(ArgumentError)
+      end
+    end
+
+    it "renames tables through their name" do
+      table = create_table("📊 Metrics")
+
+      table.assign_title_and_icon(title: "KPIs")
+      table.save!
+
+      expect(table.reload.name).to eq("KPIs")
+      expect(table.icon).to eq(Icon.emoji("📊"))
+    end
+  end
+
   describe "models whose icon derives from name rather than title" do
     it "promotes for tables" do
       table = create_table("📊 Metrics")

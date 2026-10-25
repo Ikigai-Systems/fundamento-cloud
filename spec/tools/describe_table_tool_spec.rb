@@ -17,6 +17,15 @@ RSpec.describe DescribeTableTool, type: :model do
   end
 
   describe ".call" do
+    it "returns the icon separately from the name" do
+      table.update!(name: "📁 Projects")
+
+      content = DescribeTableTool.call(table_id: table.id, server_context: server_context).structured_content
+
+      expect(content[:name]).to eq("Projects")
+      expect(content[:icon]).to eq(type: "emoji", value: "📁")
+    end
+
     it "returns table schema by id" do
       response = DescribeTableTool.call(
         table_id: table.id,

@@ -17,6 +17,16 @@ RSpec.describe ReadDocumentTool, type: :model do
     context "happy case - user has access to document" do
       let(:document) { documents(:one) }
 
+      it "returns the icon separately from the title" do
+        document.update!(title: "🔥 Hot Topic")
+
+        response = ReadDocumentTool.call(id: document.id, server_context: server_context)
+
+        json_response = JSON.parse(response.content.first[:text])
+        expect(json_response["title"]).to eq("Hot Topic")
+        expect(json_response["icon"]).to eq("type" => "emoji", "value" => "🔥")
+      end
+
       it "returns document content as Markdown" do
         response = ReadDocumentTool.call(
           id: document.id,

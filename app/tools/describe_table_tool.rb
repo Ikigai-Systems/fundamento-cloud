@@ -44,6 +44,7 @@ class DescribeTableTool < ApplicationTool
     MCP::Tool::Response.new(structured_content: {
       id: table.id,
       name: table.name,
+      icon: table.icon&.as_json,
       space_id: table.space_id,
       archived: table.archived,
       row_count: table.rows.count,

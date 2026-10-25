@@ -4,7 +4,8 @@ RSpec.describe SpaceBlueprint do
   fixtures :organizations, :users, :organization_memberships, :spaces, :documents
 
   describe ".render_as_hash" do
-    it "returns a nested id/npi/title/children shape for a two-level hierarchy" do
+    it "returns a nested id/npi/title/icon/children shape for a two-level hierarchy" do
+      documents(:one).update_columns(icon_type: Icon::EMOJI, icon_value: "🔥")
       space = spaces(:is_default)
       space.update!(hierarchy: [
         { "id" => documents(:one).id, "children" => [
@@ -19,11 +20,13 @@ RSpec.describe SpaceBlueprint do
           id: documents(:one).id,
           npi: documents(:one).id,
           title: documents(:one).title,
+          icon: { type: "emoji", value: "🔥" },
           children: [
             {
               id: documents(:two).id,
               npi: documents(:two).id,
               title: documents(:two).title,
+              icon: nil,
               children: [],
             },
           ],
@@ -65,6 +68,7 @@ RSpec.describe SpaceBlueprint do
           id: documents(:one).id,
           npi: documents(:one).id,
           title: documents(:one).title,
+          icon: nil,
           children: [],
         },
       ])

@@ -8,7 +8,9 @@ class DocumentService
     @pundit_user = pundit_user
   end
 
-  def create!(space_id:, parent_document_id: nil, title:, markdown:)
+  # Titles are stored as given and the icon is a field of its own; see
+  # HasIcon#assign_title_and_icon.
+  def create!(space_id:, parent_document_id: nil, title:, markdown:, icon: nil)
     ActiveRecord::Base.transaction do
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
@@ -16,11 +18,8 @@ class DocumentService
       parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
-      document = space.documents.new(
-        title: title || "Untitled",
-        space: space,
-        organization: space.organization,
-      )
+      document = space.documents.new(space: space, organization: space.organization)
+      document.assign_title_and_icon(title: title || "Untitled", icon: icon)
 
       authorize document, :create?
 
@@ -55,10 +54,20 @@ class DocumentService
     end
   end
 
-  def update!(document_id:, markdown:)
+  # Renames, changes the icon, replaces the content, or any mix of them. A rename or icon
+  # change alone creates no version: versions snapshot content, and neither is part of it.
+  def update!(document_id:, markdown: nil, title: nil, icon: nil)
+    raise ArgumentError, "Provide a title, icon, or markdown" if [markdown, title, icon].all?(&:nil?)
+    raise ArgumentError, "Title can't be blank" if !title.nil? && title.blank?
+
     ActiveRecord::Base.transaction do
       document = pundit_user.current_organization.documents.find(document_id)
       authorize document, :update?
+
+      document.assign_title_and_icon(title: title, icon: icon)
+      document.save!
+
+      next document if markdown.nil?
 
       # Extract and process frontmatter
       markdown, frontmatter_data = extract_frontmatter(markdown)
@@ -85,7 +94,7 @@ class DocumentService
     end
   end
 
-  def create_from_file!(space_id:, file:, parent_document_id: nil, title: nil)
+  def create_from_file!(space_id:, file:, parent_document_id: nil, title: nil, icon: nil)
     ActiveRecord::Base.transaction do
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
@@ -103,11 +112,8 @@ class DocumentService
       markdown, frontmatter_data = extract_frontmatter(conversion_result[:markdown])
 
       # Create document
-      document = space.documents.new(
-        title: document_title,
-        space: space,
-        organization: space.organization,
-      )
+      document = space.documents.new(space: space, organization: space.organization)
+      document.assign_title_and_icon(title: document_title, icon: icon)
 
       authorize document, :create?
       document.save!

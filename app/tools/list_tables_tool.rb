@@ -39,6 +39,7 @@ class ListTablesTool < ApplicationTool
       {
         id: table.id,
         name: table.name,
+        icon: table.icon&.as_json,
         space_id: table.space_id,
         space_name: table.space&.name,
         archived: table.archived,

@@ -16,6 +16,14 @@ RSpec.describe ListTablesTool, type: :model do
   end
 
   describe ".call" do
+    it "returns each table's icon" do
+      tables_tables(:projects).update!(name: "📁 Projects")
+
+      tables = ListTablesTool.call(server_context: server_context).structured_content[:tables]
+
+      expect(tables.find { _1[:id] == tables_tables(:projects).id }[:icon]).to eq(type: "emoji", value: "📁")
+    end
+
     it "lists all non-archived tables in the organization" do
       response = ListTablesTool.call(server_context: server_context)
 

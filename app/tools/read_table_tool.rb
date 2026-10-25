@@ -53,6 +53,7 @@ class ReadTableTool < ApplicationTool
     MCP::Tool::Response.new(structured_content: {
       id: table.id,
       name: table.name,
+      icon: table.icon&.as_json,
       space_id: table.space_id,
       columns: serialized[:columns],
       rows: serialized[:rows],

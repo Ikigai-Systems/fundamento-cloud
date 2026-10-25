@@ -62,6 +62,28 @@ module HasIcon
     [icon_value, read_attribute(self.class.icon_source_attribute).presence].compact.join(" ")
   end
 
+  # The API and MCP treat the icon as a field of its own rather than a prefix of
+  # the title, the way it should work everywhere once a picker exists. So a title
+  # assigned here is stored as given, with no emoji promoted out of it, and the
+  # icon only changes when one is passed: a single emoji sets it, "" removes it.
+  # nil leaves either one alone. Assigns without saving.
+  def assign_title_and_icon(title: nil, icon: nil)
+    write_attribute(self.class.icon_source_attribute, title) unless title.nil?
+
+    return if icon.nil?
+
+    icon = icon.strip
+    if icon.empty?
+      self.icon_type = nil
+      self.icon_value = nil
+    elsif Icon.single_emoji?(icon)
+      self.icon_type = Icon::EMOJI
+      self.icon_value = icon
+    else
+      raise ArgumentError, "Icon must be a single emoji"
+    end
+  end
+
   # The friendly nested shape rides along with the two columns it is built from,
   # so any endpoint that already serializes the record gets it for free and every
   # consumer sees one icon shape. Keying off icon_type means `only:`, `except:`

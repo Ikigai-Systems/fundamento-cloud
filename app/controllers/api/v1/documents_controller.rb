@@ -7,14 +7,7 @@ module Api
 
         documents = policy_scope(space.documents).order(:title)
 
-        render json: documents.map { |doc|
-          {
-            id: doc.id,
-            title: doc.title,
-            created_at: doc.created_at,
-            updated_at: doc.updated_at
-          }
-        }
+        render json: DocumentBlueprint.render(documents)
       end
 
       def create
@@ -28,6 +21,7 @@ module Api
             create_from_file!(
               space_id: params[:space_id],
               title: document_params[:title],
+              icon: document_params[:icon],
               parent_document_id: document_params[:parent_document_id],
               file: document_params[:file],
             )
@@ -36,21 +30,19 @@ module Api
             create!(
               space_id: params[:space_id],
               title: document_params[:title],
+              icon: document_params[:icon],
               parent_document_id: document_params[:parent_document_id],
               markdown: document_params[:markdown],
             )
         end
 
-        render json: {
-          id: document.id,
-          title: document.title,
-          created_at: document.created_at,
-          updated_at: document.updated_at
-        }, status: :created
+        render json: DocumentBlueprint.render(document), status: :created
       rescue BlocknoteConverterService::ConversionError
         render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
       rescue PandocConverterService::ConversionError => e
         render json: { errors: { file: e.message } }, status: :unprocessable_entity
+      rescue ArgumentError => e
+        render json: { errors: { base: e.message } }, status: :unprocessable_entity
       rescue ActiveRecord::RecordInvalid => invalid
         render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
       end
@@ -67,14 +59,10 @@ module Api
 
         respond_to do |format|
           format.json do
-            render json: {
-              id: document.id,
-              title: document.title,
-              created_at: document.created_at,
-              updated_at: document.updated_at,
+            render json: DocumentBlueprint.render_as_hash(document).merge(
               content: blocks,
               tags: document.tags.map { |tag| "##{tag.name}" }
-            }
+            )
           end
 
           format.md do
@@ -88,17 +76,16 @@ module Api
           document = DocumentService.new(pundit_user: pundit_user).
             update!(
               document_id: params[:id],
-              markdown: document_params[:markdown]
+              markdown: document_params[:markdown],
+              title: document_params[:title],
+              icon: document_params[:icon]
             )
 
-          render json: {
-            id: document.id,
-            title: document.title,
-            created_at: document.created_at,
-            updated_at: document.updated_at
-          }
+          render json: DocumentBlueprint.render(document)
         rescue BlocknoteConverterService::ConversionError
           render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
+        rescue ArgumentError => e
+          render json: { errors: { base: e.message } }, status: :unprocessable_entity
         rescue ActiveRecord::RecordInvalid => invalid
           render json: { errors: invalid.record.errors.full_messages }, status: :unprocessable_entity
         end
@@ -107,7 +94,7 @@ module Api
       private
 
       def document_params
-        params.require(:document).permit(:title, :markdown, :parent_document_id, :file)
+        params.require(:document).permit(:title, :icon, :markdown, :parent_document_id, :file)
       end
     end
   end
