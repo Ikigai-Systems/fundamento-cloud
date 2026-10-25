@@ -231,7 +231,7 @@ Rails.application.routes.draw do
         resources :object_references, only: [:index]
       end
 
-      resources :tables, only: [:show]
+      resources :tables, only: [:show, :update]
 
       post "formulas/eval", to: "formulas#eval"
 

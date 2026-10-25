@@ -155,6 +155,99 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
     end
 
+    context "renaming" do
+      it "renames the document without creating a version" do
+        expect {
+          @response = UpdateDocumentTool.call(
+            id: document.id,
+            title: "Renamed",
+            server_context: server_context
+          )
+        }.not_to change(Version, :count)
+
+        expect(@response.error?).to be false
+        expect(document.reload.title).to eq("Renamed")
+        expect(JSON.parse(@response.content.first[:text])["title"]).to eq("Renamed")
+      end
+
+      it "renames and replaces content in one call" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([{ "id" => "1", "type" => "paragraph" }])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync")
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
+
+        expect {
+          UpdateDocumentTool.call(
+            id: document.id,
+            title: "Renamed",
+            markdown: "# Updated",
+            server_context: server_context
+          )
+        }.to change(Version, :count).by(1)
+
+        expect(document.reload.title).to eq("Renamed")
+      end
+
+      it "keeps the document's icon" do
+        document.update!(title: "🔥 Hot Topic")
+
+        UpdateDocumentTool.call(id: document.id, title: "Cold Topic", server_context: server_context)
+
+        expect(document.reload.title).to eq("Cold Topic")
+        expect(document.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "stores a title with a leading emoji as given" do
+        UpdateDocumentTool.call(id: document.id, title: "🔥 Hot Topic", server_context: server_context)
+
+        expect(document.reload.title).to eq("🔥 Hot Topic")
+        expect(document.icon).to be_nil
+      end
+
+      it "rejects a blank title" do
+        response = UpdateDocumentTool.call(id: document.id, title: " ", server_context: server_context)
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+        expect(document.reload.title).not_to be_blank
+      end
+    end
+
+    context "icon" do
+      it "sets the icon without creating a version and returns it" do
+        expect {
+          @response = UpdateDocumentTool.call(id: document.id, icon: "🔥", server_context: server_context)
+        }.not_to change(Version, :count)
+
+        expect(document.reload.icon).to eq(Icon.emoji("🔥"))
+        expect(JSON.parse(@response.content.first[:text])["icon"]).to eq("type" => "emoji", "value" => "🔥")
+      end
+
+      it "removes the icon when given an empty string" do
+        document.update!(title: "🔥 Hot Topic")
+
+        UpdateDocumentTool.call(id: document.id, icon: "", server_context: server_context)
+
+        expect(document.reload.icon).to be_nil
+        expect(document.title).to eq("Hot Topic")
+      end
+
+      it "rejects an icon that isn't a single emoji" do
+        response = UpdateDocumentTool.call(id: document.id, icon: "fire", server_context: server_context)
+
+        expect(response.structured_content[:error]).to eq("invalid_input")
+        expect(document.reload.icon).to be_nil
+      end
+    end
+
+    context "with neither title nor markdown" do
+      it "returns an invalid input error" do
+        response = UpdateDocumentTool.call(id: document.id, server_context: server_context)
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+      end
+    end
+
     context "with invalid document id" do
       it "returns not found error response" do
         response = UpdateDocumentTool.call(

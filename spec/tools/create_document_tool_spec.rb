@@ -15,6 +15,26 @@ RSpec.describe CreateDocumentTool, type: :model do
   end
 
   describe ".call" do
+    context "with an icon" do
+      it "stores the title as given and the icon separately" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync")
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("")
+
+        response = CreateDocumentTool.call(
+          space_id: space.id,
+          title: "Roadmap",
+          icon: "🗺️",
+          markdown: "Plans",
+          server_context: server_context
+        )
+
+        document = Document.find(JSON.parse(response.content.first[:text])["id"])
+        expect(document.title).to eq("Roadmap")
+        expect(document.icon).to eq(Icon.emoji("🗺️"))
+      end
+    end
+
     context "happy case - creates document with title and markdown" do
       it "creates a new document and returns its details" do
         sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Hello World" }] }]

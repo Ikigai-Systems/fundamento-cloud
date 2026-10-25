@@ -80,6 +80,16 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
     end
 
+    it "returns the icon separately from the title" do
+      document_one.update!(title: "🔥 Hot Topic")
+      allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return([])
+
+      get "/api/v1/documents/#{document_one.id}.json",
+        headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+      expect(response.parsed_body).to include("title" => "Hot Topic", "icon" => { "type" => "emoji", "value" => "🔥" })
+    end
+
     context "when requesting markdown format (with .markdown or format=markdown)" do
       it "returns document with content as markdown string" do
         # Mock the BlocknoteConverterService methods
@@ -247,6 +257,15 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(is_default_space.hierarchy).to include(
           hash_including("id" => created_doc.id)
         )
+      end
+
+      it "creates a document with an icon" do
+        post api_v1_documents_path(space_id: is_default_space.id),
+          params: { document: { title: "Roadmap", icon: "🗺️", markdown: "Plans" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body).to include("title" => "Roadmap", "icon" => { "type" => "emoji", "value" => "🗺️" })
       end
 
       it "creates a document without title (defaults to 'Untitled')" do
@@ -718,6 +737,56 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
         document_one.reload
         expect(document_one.content.sync).to eq(sample_sync)
+      end
+    end
+
+    context "renaming" do
+      it "renames the document without creating a version" do
+        expect {
+          patch api_v1_document_path(id: document_one.id),
+            params: { document: { title: "Renamed" } },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.not_to change(Version, :count)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["title"]).to eq("Renamed")
+        expect(document_one.reload.title).to eq("Renamed")
+      end
+
+      it "rejects a blank title" do
+        patch api_v1_document_path(id: document_one.id),
+          params: { document: { title: "" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "rejects a request with neither title nor markdown" do
+        patch api_v1_document_path(id: document_one.id),
+          params: { document: { parent_document_id: "x" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "icon" do
+      it "sets the icon and returns it" do
+        patch api_v1_document_path(id: document_one.id),
+          params: { document: { icon: "🔥" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["icon"]).to eq("type" => "emoji", "value" => "🔥")
+        expect(document_one.reload.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "rejects an icon that isn't a single emoji" do
+        patch api_v1_document_path(id: document_one.id),
+          params: { document: { icon: "fire" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
       end
     end
 

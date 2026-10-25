@@ -6,6 +6,7 @@ class ImportDocumentTool < ApplicationTool
       space_id: { type: :string },
       parent_document_id: { type: :string },
       title: { type: :string },
+      icon: { type: :string, description: "Optional single emoji to use as the document's icon." },
       file_content: {
         type: :string,
         description: "Base64-encoded file content"
@@ -23,7 +24,7 @@ class ImportDocumentTool < ApplicationTool
     destructive_hint: false,
   )
 
-  def self.perform(space_id:, file_content:, filename:, title: nil, parent_document_id: nil, server_context:)
+  def self.perform(space_id:, file_content:, filename:, title: nil, icon: nil, parent_document_id: nil, server_context:)
     pundit_user = pundit_user_from_context(server_context)
 
     # Decode Base64 file content
@@ -48,6 +49,7 @@ class ImportDocumentTool < ApplicationTool
         space_id:,
         file: uploaded_file,
         title: title,
+        icon: icon,
         parent_document_id:
       )
 

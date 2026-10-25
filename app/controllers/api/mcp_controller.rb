@@ -16,7 +16,9 @@ class Api::McpController < Api::ApiController
         Documents are identified by a short non-predictable string ID (visible in URLs like /d/<id>).
         Tables are identified by a short non-predictable string ID (URLs like /t/<id>); use DescribeTable before reading or writing rows.
         RunFormula evaluates Excel-like formulas against the workspace data — see https://docs.fundamento.it/formulas/reference.
-        All write operations (CreateDocument, UpdateDocument, AddRow, UpdateRows, AddOrUpdateRows) are permanent.
+        All write operations (CreateDocument, UpdateDocument, UpdateTable, AddRow, UpdateRows, AddOrUpdateRows) are permanent.
+        Icons are a separate field from titles: a single emoji, returned as {type, value} and set with the icon parameter.
+        UpdateDocument renames a document, changes its icon and/or replaces its content; UpdateTable renames a table and/or changes its icon.
         Use ArchiveSpace and UnarchiveSpace to archive or unarchive spaces (manager role required).
       INSTRUCTIONS
       tools: [
@@ -26,6 +28,7 @@ class Api::McpController < Api::ApiController
         ReadDocumentTool,
         CreateDocumentTool,
         UpdateDocumentTool,
+        UpdateTableTool,
         ImportDocumentTool,
         ListObjectsByTagsTool,
         AddTagsTool,

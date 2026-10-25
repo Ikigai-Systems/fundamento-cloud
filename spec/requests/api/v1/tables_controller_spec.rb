@@ -25,6 +25,14 @@ RSpec.describe "Api::V1::Tables", type: :request do
       expect(response.parsed_body.dig("table", "name")).to eq("Public in HC")
     end
 
+    it "returns the icon separately from the name" do
+      table = spaces(:hc_default).tables.create!(organization: organizations(:hc), name: "📊 Metrics")
+
+      get_table(table, as: membership)
+
+      expect(response.parsed_body["table"]).to include("name" => "Metrics", "icon" => { "type" => "emoji", "value" => "📊" })
+    end
+
     # Knowing an id from another organization (a pasted link, a former membership) must not
     # open its table. Maria belongs only to "hc".
     context "with a table in another organization" do
@@ -46,6 +54,69 @@ RSpec.describe "Api::V1::Tables", type: :request do
         expect(response).to have_http_status(:not_found)
         expect(response.body).not_to include("Private in IS")
       end
+    end
+  end
+
+  describe "PATCH /api/v1/tables/:id" do
+    let(:table) { spaces(:hc_default).tables.create!(organization: organizations(:hc), name: "Metrics") }
+
+    def rename(table, name, as:)
+      patch "/api/v1/tables/#{table.id}", params: { table: { name: name } }, headers: bearer(as)
+    end
+
+    it "renames the table" do
+      rename(table, "KPIs", as: membership)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("id" => table.id, "name" => "KPIs", "space_id" => table.space_id)
+      expect(table.reload.name).to eq("KPIs")
+    end
+
+    it "sets the icon and returns it" do
+      patch "/api/v1/tables/#{table.id}", params: { table: { icon: "📊" } }, headers: bearer(membership)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["icon"]).to eq("type" => "emoji", "value" => "📊")
+      expect(table.reload.name).to eq("Metrics")
+    end
+
+    it "rejects a request with neither name nor icon" do
+      patch "/api/v1/tables/#{table.id}", params: { table: { other: "x" } }, headers: bearer(membership)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "rejects an icon that isn't a single emoji" do
+      patch "/api/v1/tables/#{table.id}", params: { table: { icon: "chart" } }, headers: bearer(membership)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+
+    it "rejects a name already taken in the space" do
+      spaces(:hc_default).tables.create!(organization: organizations(:hc), name: "Taken")
+
+      rename(table, "Taken", as: membership)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(table.reload.name).to eq("Metrics")
+    end
+
+    it "refuses a table in another organization" do
+      other = spaces(:is_default).tables.create!(organization: organizations(:is), name: "Public in IS")
+
+      rename(other, "Hijacked", as: membership)
+
+      expect(response).to have_http_status(:not_found)
+      expect(other.reload.name).to eq("Public in IS")
+    end
+
+    it "refuses a user who can't edit the table" do
+      private_table = spaces(:hc_pawels).tables.create!(organization: organizations(:hc), name: "Private")
+
+      rename(private_table, "Hijacked", as: membership)
+
+      expect(response).to have_http_status(:forbidden)
+      expect(private_table.reload.name).to eq("Private")
     end
   end
 end
