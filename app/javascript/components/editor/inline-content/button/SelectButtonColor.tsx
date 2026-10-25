@@ -162,7 +162,7 @@ export default function SelectButtonColor({
           A
         </div>}
         {!selectedColor && "Select..."}
-        <span className="p-2 icon-[heroicons--chevron-down]"/>
+        <span className="size-5 shrink-0 icon-[tabler--chevron-down]"/>
       </div>
       <FloatingPortal>
         {open && (

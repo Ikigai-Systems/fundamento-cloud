@@ -56,7 +56,7 @@ function PeopleSelectCell({
       } else if (selectedUser === null) {
         return (<>
           <div className="flex flex-row items-center flex-grow h-8" onClick={() => {}}>
-            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
+            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] size-5 icon-[tabler--chevron-down]"></span>}
           </div>
         </>);
       } else {
@@ -68,7 +68,7 @@ function PeopleSelectCell({
               {initials}
             </div>
             {displayName}
-            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] mt-[-2px] size-6 icon-[heroicons--chevron-down-16-solid]"></span>}
+            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] size-5 icon-[tabler--chevron-down]"></span>}
           </div>
         </>);
       }

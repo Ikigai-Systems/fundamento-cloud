@@ -117,7 +117,7 @@ export default function SelectButton({
         {...getReferenceProps()}
       >
         {selectedItemLabel || "Select..."}
-        <span className="p-2 icon-[heroicons--chevron-down]"/>
+        <span className="size-5 shrink-0 icon-[tabler--chevron-down]"/>
       </div>
       {isOpen && (
         <FloatingPortal>

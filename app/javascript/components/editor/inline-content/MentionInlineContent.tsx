@@ -8,10 +8,11 @@ import {useEffect, useRef} from "react";
 import clsx from "clsx";
 import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 
 const Loading = () => {
-  return <span className="relative top-1">
-    <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+  return <span className="inline-flex items-center align-middle">
+    <SpinnerIcon/>
   </span>;
 }
 

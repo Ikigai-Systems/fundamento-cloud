@@ -6,6 +6,7 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
@@ -92,7 +93,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
             editor.removeBlocks([block]);
           }}
         >
-          <div className="size-5 icon-[heroicons--x-mark]"></div>
+          <div className="size-5 icon-[tabler--x]"></div>
         </button>
       </div>
       <div className="px-4 py-3 sm:p-6">
@@ -127,7 +128,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
               }
             }}
           >
-            <div className="-ml-1 mr-1 size-5 icon-[heroicons--plus-circle-solid]"></div>
+            <div className="-ml-1 mr-1 size-5 icon-[tabler--circle-plus-filled]"></div>
             Start blank
           </button>
           <input type="file" accept="text/csv" className="hidden" ref={inputFile} onChange={async (e) => {
@@ -171,7 +172,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
               inputFile?.current?.click();
             }}
           >
-            <div className="-ml-1 mr-1 size-5 icon-[heroicons--arrow-down-on-square]"></div>
+            <div className="-ml-1 mr-1 size-5 icon-[tabler--download]"></div>
             Import data
           </button>
         </div>
@@ -285,9 +286,9 @@ export const createAdvancedTable = createReactBlockSpec(
 
       if (isLoading) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-slate-400 dark:text-gray-500">
+          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center gap-2 text-slate-400 dark:text-gray-500">
             Loading table...
-            <span className="animate-spin size-5 pt-4 icon-[heroicons--arrow-path]"></span>
+            <SpinnerIcon/>
           </div>
         )
       }

@@ -201,7 +201,7 @@ const MoveColumnLeftMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
         queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
       }}
     >
-      <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-left-circle]"></div>
+      <div className="w-5 h-5 mr-1 icon-[tabler--circle-arrow-left]"></div>
       Move column left
     </div>
   );
@@ -225,7 +225,7 @@ const MoveColumnRightMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
         queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
       }}
     >
-      <div className="w-5 h-5 mr-1 icon-[heroicons--arrow-right-circle]"></div>
+      <div className="w-5 h-5 mr-1 icon-[tabler--circle-arrow-right]"></div>
       Move column right
     </div>
   );
@@ -262,9 +262,17 @@ const DownloadCsvToolbarItem = ({table}: {table: Table}) => {
           setIsDownloadingAsCsv(false);
         }
       }}>
-      <div className="bg-slate-500 size-5 icon-[heroicons--arrow-down-tray]"></div>
+      <div className="bg-slate-500 size-5 icon-[tabler--download]"></div>
     </button>
   </>);
+};
+
+// The icon rowstack draws next to a column type; it passes the size and spacing as className, so
+// every type, CalendarDaysIcon included, sits on the same box. The icon class is a complete literal
+// at each call site for Tailwind to see.
+const columnTypeIcon = (iconClass: string) => {
+  const ColumnTypeIcon = ({className}: {className?: string}) => <span className={`${className ?? ""} ${iconClass}`} aria-hidden="true"/>;
+  return ColumnTypeIcon;
 };
 
 const extraColumnHeaderPopupActions = [{
@@ -278,7 +286,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--edit]"></div>
         Edit formula
       </div>
     );
@@ -294,7 +302,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--device-desktop]"></div>
         Display {column.type === "datetime" ? "date" : ""} format
       </div>
     );
@@ -310,7 +318,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--clock]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--clock]"></div>
         Display time format
       </div>
     );
@@ -326,7 +334,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--database]"></div>
         Stored format
       </div>
     );
@@ -342,7 +350,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--computer-desktop]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--device-desktop]"></div>
         Display format
       </div>
     );
@@ -358,7 +366,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--circle-stack]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--database]"></div>
         Stored format
       </div>
     );
@@ -380,7 +388,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[heroicons--pencil-square]"></div>
+        <div className="w-5 h-5 mr-1 icon-[tabler--edit]"></div>
         Edit button
       </div>
     );
@@ -431,17 +439,17 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             extraColumnTypes: [{
               type: "people",
               cell: PeopleSelectCell,
-              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--user]"></div>,
+              icon: columnTypeIcon("icon-[tabler--user]"),
               name: "Single Person",
             }, {
               type: "multiPeople",
               cell: MultiPeopleSelectCell,
-              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--users]"></div>,
+              icon: columnTypeIcon("icon-[tabler--users]"),
               name: "Multiple People",
             }, {
               type: "documents",
               cell: DocumentsSelectCell,
-              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--document-text]"></div>,
+              icon: columnTypeIcon("icon-[tabler--file-text]"),
               name: "Documents",
             }, {
               type: "datetime",
@@ -451,7 +459,7 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
             }, {
               type: "button",
               cell: ButtonCell,
-              icon: () => <div className="w-4 h-4 mr-2 icon-[heroicons--bolt]"></div>,
+              icon: columnTypeIcon("icon-[tabler--bolt]"),
               name: "Button",
             }],
             extraColumnHeaderPopupActions: extraColumnHeaderPopupActions,

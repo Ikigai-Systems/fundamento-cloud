@@ -119,19 +119,19 @@ function EditFormulaPopup({
               setPreviewRow(previewValue => (previewValue + 1) % (rows?.length ?? 1));
             }}
           >
-            <div className="size-4 icon-[heroicons--chevron-down]"></div>
+            <div className="size-4 icon-[tabler--chevron-down]"></div>
           </div>
           <div className="flex items-center justify-center size-6 mr-2 hover:bg-neutral-200 dark:hover:bg-gray-600 active:bg-neutral-300 dark:active:bg-gray-500"
             onClick={() => {
               setPreviewRow(previewRow => ((rows?.length ?? 1) + previewRow - 1) % (rows?.length ?? 1));
             }}
           >
-            <div className="size-4 icon-[heroicons--chevron-up]"></div>
+            <div className="size-4 icon-[tabler--chevron-up]"></div>
           </div>
         </div>
       </div>
       {formula.match(/CurrentRow.*".*"/) && <div className="flex flex-row items-center p-2 gap-2">
-        <div className="min-w-6 min-h-6 icon-[heroicons--exclamation-triangle]"></div>
+        <div className="min-w-6 min-h-6 icon-[tabler--alert-triangle]"></div>
         <div>
           Formulas depending on other cells require full page refresh after editing those cells to see up-to-date table
           values.
