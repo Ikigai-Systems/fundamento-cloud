@@ -4,16 +4,18 @@
   <div class="object-reactions-container relative">
     <div class="object-current-reactions-container">
       <% @reactions_grouped.each_pair do |emoji, (count, reaction, destroyable)| %>
+        <%# Hover or keyboard focus shows who reacted; on touch, a long press %>
         <div
-          data-controller="popover"
-          data-popover-url-value="<%= reaction_path(reaction, object_gid: @resource.to_gid_param) %>"
-          data-action="mouseenter->popover#show mouseleave->popover#hide"
+          class="object-reaction"
+          data-controller="reaction-popover"
+          data-reaction-popover-url-value="<%= reaction_path(reaction, object_gid: @resource.to_gid_param) %>"
+          data-action="pointerenter->reaction-popover#enter pointerleave->reaction-popover#leave pointerdown->reaction-popover#press pointermove->reaction-popover#move pointerup->reaction-popover#release pointercancel->reaction-popover#release click->reaction-popover#click:capture contextmenu->reaction-popover#contextmenu focusin->reaction-popover#focus focusout->reaction-popover#hide pointerdown@document->reaction-popover#closeOutside keydown.esc@document->reaction-popover#hide"
         >
           <%= button_to destroyable.present? ? reaction_path(destroyable, object_gid: @resource.to_gid_param) : "#",
             method: :delete,
             disabled: destroyable.nil?,
             class: "destroy-reaction-button",
-            data: { turbo_frame: dom_id(@resource, :reactions), "action" => "click->popover#hide" } do
+            data: { turbo_frame: dom_id(@resource, :reactions), reaction_popover_target: "button" } do
           %>
             <%= emoji %>
             <span class="reaction-count"><%= count %></span>

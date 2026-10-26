@@ -231,13 +231,41 @@ describe("Document Reactions", function () {
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
 
     // Hover over the reaction to show popover
-    cy.get(".destroy-reaction-button").contains("👋").trigger("mouseenter");
+    cy.contains(".object-reaction", "👋").trigger("pointerenter", {pointerType: "mouse"});
 
     // Wait for popover to appear
     cy.get(".popover-reaction-card", {timeout: 5000}).should("be.visible");
 
     // Verify the user's name appears in the popover
     cy.get(".popover-reaction-card").should("contain", "Pawel Wiadomski");
+
+    cy.contains(".object-reaction", "👋").trigger("pointerleave", {pointerType: "mouse"});
+    cy.get(".popover-reaction-card").should("not.exist");
+  });
+
+  it("shows who reacted when the reaction has keyboard focus", function () {
+    const documentId = "two";
+
+    cy.appEval(`
+      document = Document.find('${documentId}')
+      membership = OrganizationMembership.find('om_is_pawel')
+      document.reactions.create!(
+        organization: document.organization,
+        organization_membership: membership,
+        emoji: '👋'
+      )
+    `);
+
+    cy.visit(`/d/${documentId}`);
+    cy.waitForEditor();
+    cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+
+    // With no mouse used yet, the browser treats focus from a script as keyboard focus
+    cy.contains(".object-reaction", "👋").find("button").focus();
+    cy.get(".popover-reaction-card", {timeout: 5000}).should("be.visible").and("contain", "Pawel Wiadomski");
+
+    cy.realPress("Escape");
+    cy.get(".popover-reaction-card").should("not.exist");
   });
 
   it("shows real-time updates when another user removes their reaction", function () {

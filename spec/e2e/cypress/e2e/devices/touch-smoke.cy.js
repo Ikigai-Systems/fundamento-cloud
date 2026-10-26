@@ -1,5 +1,17 @@
 import { isOrganizationCookie } from "../../support/organization-cookies.js"
 import { isTouch } from "../../support/device.js"
+import { getCypressElementCoordinates } from "cypress-real-events/getCypressElementCoordinates"
+
+// `.realTouch()` lifts the finger at once; this holds it down first
+const longPress = ($element) => {
+  const touchPoint = getCypressElementCoordinates($element)
+  const touch = (type, touchPoints) => Cypress.automation("remote:debugger:protocol", {
+    command: "Input.dispatchTouchEvent", params: { type, touchPoints },
+  })
+  cy.wrap(null, { log: false }).then(() => touch("touchStart", [touchPoint]))
+  cy.wait(800)
+  cy.wrap(null, { log: false }).then(() => touch("touchEnd", []))
+}
 
 // What a phone or tablet user meets first. Runs only as a touch device:
 //   npx cypress run --project spec/e2e --expose device=phone --spec "**/devices/*"
@@ -217,6 +229,58 @@ describe("Touch device smoke", function () {
 
       cy.contains("#details_sidebar_tab p", "Contributors").realTouch()
       cy.get("#details_sidebar_tab .popover-card").should("not.exist")
+    })
+  })
+
+  describe("reactions", () => {
+    const REACTION = (emoji) => cy.contains(".object-reaction", emoji)
+
+    beforeEach(() => {
+      cy.setCookie("organization_id", isOrganizationCookie)
+      cy.appEval(`
+        document = Document.find("two")
+        { "om_is_pawel" => "👍", "om_is_stefan" => "🎉" }.each do |membership_id, emoji|
+          document.reactions.create!(organization: document.organization, emoji: emoji,
+            organization_membership: OrganizationMembership.find(membership_id))
+        end
+      `)
+      // Reactions show on the view page, not in the editor
+      cy.visit("/d/two")
+      cy.waitForEditor()
+      cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible")
+      cy.waitForFrames()
+    })
+
+    // Who reacted showed only on hover. A tap on your own reaction removes it, so a long press shows it
+    it("shows who reacted with a long press, without removing the reaction", () => {
+      cy.intercept("POST", "/reactions/*", cy.spy().as("removeReaction"))
+
+      REACTION("👍").then(longPress)
+      cy.get(".popover-reaction-card").should("be.visible").and("contain", "Pawel Wiadomski")
+        .then(($card) => {
+          const { left, right } = $card[0].getBoundingClientRect()
+          expect(left).to.be.at.least(0)
+          expect(right).to.be.at.most(Cypress.config("viewportWidth"))
+        })
+      // The view page's top bar doesn't fit a phone yet: 2px too wide, with a narrow drawer button
+      cy.checkPageHealth({ overflow: false, ignore: [".document-toolbar-button"] })
+      cy.get("@removeReaction").should("not.have.been.called")
+      REACTION("👍").find(".reaction-count").should("have.text", "1")
+
+      cy.get(".object-reactions-container").realTouch({ position: "right" })
+      cy.get(".popover-reaction-card").should("not.exist")
+    })
+
+    it("shows who reacted with a tap on someone else's reaction", () => {
+      REACTION("🎉").realTouch()
+      cy.get(".popover-reaction-card").should("be.visible").and("contain", "Stefan")
+    })
+
+    it("still removes your own reaction with a tap", () => {
+      cy.intercept("POST", "/reactions/*").as("removeReaction")
+      REACTION("👍").find("button").realTouch()
+      cy.wait("@removeReaction")
+      cy.contains(".object-reaction", "👍").should("not.exist")
     })
   })
 

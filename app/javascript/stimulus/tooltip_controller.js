@@ -9,8 +9,8 @@ import FixedPopover from "./popover_controller.js"
 // only takes it back on the next tap elsewhere — a tooltip wired to it sticks after every tap.
 //
 // Popovers whose content is the point must not be hidden from touch: the rest of an avatar list
-// opens with a tap through `disclosure-popover`; who reacted is still on the `popover` controller.
-// The tooltip and the popover share FixedPopover, so neither stacks a second card when re-entered
+// opens with a tap through `disclosure-popover`, who reacted with a long press (`reaction-popover`).
+// The tooltip and reaction-popover share FixedPopover, so neither stacks a second card when re-entered
 // while shown.
 export default class TooltipController extends FixedPopover {
   show(event) {
