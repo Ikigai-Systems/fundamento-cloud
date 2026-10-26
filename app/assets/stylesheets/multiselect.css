@@ -245,12 +245,7 @@
     }
 }
 
-/*
- * Two classes so it outranks `.default-form .form-field label { display: block }`:
- * inside a form the row otherwise lays out inline and an avatar rides above
- * the text.
- */
-.multiselect__dropdown .multiselect__list li label {
+.multiselect__list li label {
     padding: 0.75rem;
     align-items: center;
     cursor: pointer;
