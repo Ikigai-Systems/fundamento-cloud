@@ -2,6 +2,7 @@
 
 class TeamsController < ApplicationController
   include EnsureOrganization
+  include MemberPickerItems
 
   after_action :verify_authorized, except: [:suggest_members]
 
@@ -73,12 +74,7 @@ class TeamsController < ApplicationController
     query = params[:q]
     preselects = params[:preselects].split(",")
 
-    @organization_memberships = current_organization.organization_memberships.query(query).map do |organization_membership|
-      {
-        value: "#{organization_membership.class}|#{organization_membership.id}",
-        text: organization_membership.user.display_name
-      }
-    end
+    @organization_memberships = organization_memberships_for_picker(query).map { member_picker_item(_1) }
 
     render json: @organization_memberships.reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
@@ -109,9 +105,7 @@ class TeamsController < ApplicationController
   end
 
   def team_memberships_to_multiselect_value(team)
-    team.team_memberships.map do |membership|
-      { value: "#{membership.member_type}|#{membership.member_id}", text: membership.display_name }
-    end.to_json
+    team.team_memberships.includes(:member).filter_map { member_picker_item(_1.member) if _1.member }.to_json
   end
 
   def team_params

@@ -138,8 +138,6 @@ Rails.application.routes.draw do
     get "/onboarding_contents/*path" => "onboarding_contents#show"
 
     resources :users, only: [:index, :show] do
-      get :suggestions, on: :collection
-
       resources :api_tokens, only: [:index, :new, :create, :destroy]
 
       resources :user_properties, only: [:update], module: :users
