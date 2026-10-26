@@ -6,6 +6,7 @@ import SearchesApi from "@/api/SearchesApi.js";
 import TablesApi from "~/api/Tables/TablesApi.js";
 import SpacesApi from "@/api/SpacesApi.js";
 import {paletteIcon} from "./command_palette_icons.js";
+import escapeHtml from "../../utils/escapeHtml";
 
 // Connects to data-controller="command-palette"
 // ninja-keys renders into its own shadow root, so icons are SVG markup from paletteIcon rather
@@ -15,18 +16,12 @@ import {paletteIcon} from "./command_palette_icons.js";
 // there is no point spending a round trip on it.
 const MIN_QUERY_LENGTH = 2;
 
-// The icon value can only ever be an RGI emoji, but it is interpolated into
-// markup here, so escape it rather than rely on that.
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, character => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[character]);
-}
-
 const OBJECT_ICONS = {Document: "file-text", Table: "table", Space: "planet"};
 
 function objectIcon(object) {
   if (object.icon) {
+    // The icon value can only ever be an RGI emoji, but it is interpolated into
+    // markup here, so escape it rather than rely on that.
     return `<span class="ninja-icon" part="ninja-icon">${escapeHtml(object.icon.value)}</span>`;
   }
 

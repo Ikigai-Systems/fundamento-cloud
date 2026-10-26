@@ -1,11 +1,5 @@
 import {Multiselect} from "@wizardhealth/stimulus-multiselect";
-
-const escapeHtml = (value) => String(value ?? "")
-  .replaceAll("&", "&amp;")
-  .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll("\"", "&quot;")
-  .replaceAll("'", "&#39;");
+import escapeHtml from "../../utils/escapeHtml";
 
 // The library's templates, with two changes:
 //
