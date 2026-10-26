@@ -6,6 +6,7 @@ import SidebarDrawerButtonController from "./sidebar_drawer_button_controller.js
 import CommandPaletteButtonController from "./command_palette_button_controller.js";
 import FixedPopover from "./popover_controller.js";
 import TooltipController from "./tooltip_controller.js";
+import DisclosurePopoverController from "./disclosure_popover_controller.js";
 import ReactLoader from "./react_loader_controller"
 import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
@@ -55,6 +56,7 @@ application.register("sidebar-drawer-button", SidebarDrawerButtonController);
 
 application.register('popover', FixedPopover);
 application.register("tooltip", TooltipController);
+application.register("disclosure-popover", DisclosurePopoverController);
 
 application.register('auto-submit', AutoSubmit);
 

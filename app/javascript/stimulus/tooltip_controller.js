@@ -8,9 +8,10 @@ import FixedPopover from "./popover_controller.js"
 // still sends `mouseenter` for compatibility, with nothing to tell it apart from a mouse, and
 // only takes it back on the next tap elsewhere — a tooltip wired to it sticks after every tap.
 //
-// Popovers whose content is the point (who reacted, the rest of an avatar list) stay on the
-// `popover` controller: hiding them from touch would make their content unreachable. Both share
-// FixedPopover, so neither stacks a second card when re-entered while shown.
+// Popovers whose content is the point must not be hidden from touch: the rest of an avatar list
+// opens with a tap through `disclosure-popover`; who reacted is still on the `popover` controller.
+// The tooltip and the popover share FixedPopover, so neither stacks a second card when re-entered
+// while shown.
 export default class TooltipController extends FixedPopover {
   show(event) {
     if (event.type === "pointerenter" && event.pointerType !== "mouse") return

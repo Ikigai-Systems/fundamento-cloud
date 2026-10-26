@@ -42,6 +42,10 @@ class UserAvatarsGroup < ViewComponent::Base
     @users.length - (@max - 1)
   end
 
+  def overflow_label
+    "#{overflow_count} more #{overflow_count == 1 ? "person" : "people"}"
+  end
+
   def z_class(index)
     Z_INDEX_CLASSES[index] || "z-0"
   end

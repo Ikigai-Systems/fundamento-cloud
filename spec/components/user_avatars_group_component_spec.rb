@@ -47,8 +47,18 @@ RSpec.describe UserAvatarsGroup, type: :component do
       users = User.where(id: ["user_pawel", "user_stefan", "user_maria"])
       result = render_inline(described_class.new(users: users, organization: organization, max: 2))
 
-      popover_template = result.css("template[data-popover-target='content']")
+      popover_template = result.css("template[data-disclosure-popover-target='content']")
       expect(popover_template).to be_present
+    end
+
+    # A finger can't hover, so the overflow opens from a button that a tap, click or Enter reaches
+    it "opens the overflow from a button named after how many people it hides" do
+      users = User.where(id: ["user_pawel", "user_stefan", "user_maria"])
+      result = render_inline(described_class.new(users: users, organization: organization, max: 2))
+
+      button = result.css("button[data-disclosure-popover-target='button']")
+      expect(button.attr("aria-label").value).to eq("2 more people")
+      expect(button.attr("aria-expanded").value).to eq("false")
     end
   end
 end
