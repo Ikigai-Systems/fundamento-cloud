@@ -45,6 +45,16 @@ RSpec.describe "Users JSON", type: :request do
     end
   end
 
+  describe "GET /users" do
+    it "sends names and avatars but not email addresses" do
+      get users_path(format: :json)
+
+      result = find_user(JSON.parse(response.body), pawel)
+      expect(result).to include("first_name" => pawel.first_name, "display_name" => pawel.display_name)
+      expect(result).not_to have_key("email")
+    end
+  end
+
   describe "GET /users?user_ids[]=" do
     it "sends the avatar url for the users asked for" do
       attach_avatar(pawel)
