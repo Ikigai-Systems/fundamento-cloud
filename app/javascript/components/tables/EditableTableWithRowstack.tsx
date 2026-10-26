@@ -201,7 +201,7 @@ const MoveColumnLeftMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
         queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
       }}
     >
-      <div className="w-5 h-5 mr-1 icon-[tabler--circle-arrow-left]"></div>
+      <div className="w-4 h-4 mr-2 icon-[tabler--circle-arrow-left]"></div>
       Move column left
     </div>
   );
@@ -225,7 +225,7 @@ const MoveColumnRightMenuItem = ({column}: ColumnHeaderMenuItemProps) => {
         queryClient.invalidateQueries({queryKey: ["tables", spaceId, tableId]});
       }}
     >
-      <div className="w-5 h-5 mr-1 icon-[tabler--circle-arrow-right]"></div>
+      <div className="w-4 h-4 mr-2 icon-[tabler--circle-arrow-right]"></div>
       Move column right
     </div>
   );
@@ -286,7 +286,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--edit]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--edit]"></div>
         Edit formula
       </div>
     );
@@ -302,7 +302,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--device-desktop]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--device-desktop]"></div>
         Display {column.type === "datetime" ? "date" : ""} format
       </div>
     );
@@ -318,7 +318,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--clock]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--clock]"></div>
         Display time format
       </div>
     );
@@ -334,7 +334,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--database]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--database]"></div>
         Stored format
       </div>
     );
@@ -350,7 +350,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--device-desktop]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--device-desktop]"></div>
         Display format
       </div>
     );
@@ -366,7 +366,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--database]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--database]"></div>
         Stored format
       </div>
     );
@@ -388,7 +388,7 @@ const extraColumnHeaderPopupActions = [{
       <div className="flex flex-row items-center px-3 py-1 hover:bg-hover-light cursor-default"
         onClick={showPopup}
       >
-        <div className="w-5 h-5 mr-1 icon-[tabler--edit]"></div>
+        <div className="w-4 h-4 mr-2 icon-[tabler--edit]"></div>
         Edit button
       </div>
     );
