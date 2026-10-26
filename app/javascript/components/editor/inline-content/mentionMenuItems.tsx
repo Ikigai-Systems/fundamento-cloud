@@ -5,6 +5,7 @@ import UsersApi from "../../../api/UsersApi.js";
 import TablesApi from "../../../api/Tables/TablesApi";
 import schema from "../schema.ts";
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {UserIcon} from "../../UserAvatar.tsx";
 
 function createMentionItem(entity: string, entityId: string | number, title: string, icon?: JSX.Element) {
   return {
@@ -37,14 +38,14 @@ export const getMentionMenuItems = async (): Promise<DefaultReactSuggestionItem[
   ]);
 
   // Titles no longer carry the emoji, so without the icon the menu would have
-  // lost it entirely. Users get a glyph too, or the rows would not line up.
+  // lost it entirely. Users get their avatar in the same slot so rows line up.
   const documentMenuItems = documents.map((document: Document) =>
     createMentionItem("document", document.id, document.title, <ObjectIcon type="Document" icon={document.icon}/>));
   const tableMenuItems = tables.map((table: Table) =>
     createMentionItem("table", table.id, table.name, <ObjectIcon type="Table" icon={table.icon}/>));
   const userMenuItems = users.map((user: User) =>
-    createMentionItem("user", user.id, `${user.firstName} ${user.lastName}`,
-      <span className="object-icon"><i className="icon-[tabler--user]"/></span>));
+    createMentionItem("user", user.id, user.displayName ?? `${user.firstName} ${user.lastName}`,
+      <UserIcon user={user}/>));
 
   const menuItems = [...documentMenuItems, ...tableMenuItems, ...userMenuItems];
   return menuItems;

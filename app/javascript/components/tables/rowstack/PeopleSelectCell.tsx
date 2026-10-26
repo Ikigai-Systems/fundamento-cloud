@@ -5,12 +5,13 @@ import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 import {User} from "../../../types.ts";
+import UserAvatar from "../../UserAvatar.tsx";
 
 type FocusState = "none" | "focused" | "editing";
 
 type UserOption = {
   value: number | undefined;
-  initials: string;
+  avatarUrl?: string | null;
   displayName: string;
 };
 
@@ -60,13 +61,10 @@ function PeopleSelectCell({
           </div>
         </>);
       } else {
-        const initials = userQuery.data ? `${userQuery.data.firstName[0]}${userQuery.data.lastName[0]}` : userId ?? undefined;
-        const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : userId ?? undefined;
+        const displayName = userQuery.data?.displayName ?? userId ?? undefined;
         return (<>
           <div className="flex flex-row items-center flex-grow" onClick={() => {}}>
-            <div title={displayName} className="w-6 h-6 m-1 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-              {initials}
-            </div>
+            {userQuery.data && <UserAvatar user={userQuery.data} className="size-6 m-1"/>}
             {displayName}
             {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] size-5 icon-[tabler--chevron-down]"></span>}
           </div>
@@ -98,28 +96,25 @@ function PeopleSelectCell({
           autoFocus
           cacheOptions
           defaultOptions
-          // value={{value: userId, initials: selectedUser.firstName[0] + selectedUser.lastName[0], displayName: `${selectedUser.firstName} ${selectedUser.lastName}`}}
           loadOptions={async (_query): Promise<UserOption[]> => {
             const emptyOption: UserOption = {
-              value: undefined, initials: "n/a", displayName: "leave empty",
+              value: undefined, displayName: "leave empty",
             };
             return [emptyOption].concat(
               (usersQuery.data ?? []).map((user): UserOption => ({
                 value: user.id,
-                initials: user.firstName[0] + user.lastName[0],
-                displayName: `${user.firstName} ${user.lastName}`
+                avatarUrl: user.avatarUrl,
+                displayName: user.displayName ?? `${user.firstName} ${user.lastName}`
               }))
             );
           }}
-          formatOptionLabel={({value, initials, displayName}) => {
+          formatOptionLabel={({value, avatarUrl, displayName}) => {
             if (!value) {
               return <div className="italic">Empty</div>
             }
             return (
               <div className="flex flex-row items-center ml-2">
-                <div title={displayName} className="w-6 h-6 -m-2 mr-1 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-                  {initials}
-                </div>
+                <UserAvatar user={{displayName, avatarUrl}} className="size-6 -m-2 mr-1"/>
                 {displayName}
               </div>
             )}

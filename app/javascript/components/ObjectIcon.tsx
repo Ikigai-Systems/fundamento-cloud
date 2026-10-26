@@ -14,8 +14,8 @@ const FALLBACK_GLYPHS: Record<ObjectType, string> = {
 type ObjectIconProps = {
   type: ObjectType;
   icon?: ObjectIconValue | null;
-  // Inline contexts -- a mention sitting inside a sentence -- want the icon or
-  // nothing at all. A generic file glyph mid-paragraph is noise, not meaning.
+  // A title the user edits wants the icon or nothing at all: a generic glyph
+  // in front of it would read as part of what they typed.
   fallback?: boolean;
 };
 

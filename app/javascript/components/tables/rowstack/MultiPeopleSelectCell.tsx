@@ -6,14 +6,21 @@ import Spinner from "../../spinners/Spinner.tsx";
 import {join} from "lodash";
 import UsersApi from "../../../api/UsersApi.js";
 import {User} from "../../../types.ts";
+import UserAvatar from "../../UserAvatar.tsx";
 
 type FocusState = "none" | "focused" | "editing";
 
 type UserOption = {
   value: number;
-  initials: string;
+  avatarUrl?: string | null;
   displayName: string;
 };
+
+const userOption = (user: User): UserOption => ({
+  value: user.id,
+  avatarUrl: user.avatarUrl,
+  displayName: user.displayName ?? `${user.firstName} ${user.lastName}`,
+});
 
 type MultiPeopleSelectCellProps = {
   data: string | null;
@@ -66,13 +73,9 @@ function MultiPeopleSelectCell({
           </div>
         );
       } else if (userQuery.isSuccess) {
-        const initials = userQuery.data ? `${userQuery.data.firstName[0]}${userQuery.data.lastName[0]}` : undefined;
-        const displayName = userQuery.data ? `${userQuery.data.firstName} ${userQuery.data.lastName}` : undefined;
         return (
           <div className="flex flex-row items-center" onClick={() => {}}>
-            <div title={displayName} className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-              {initials}
-            </div>
+            {userQuery.data && <UserAvatar user={userQuery.data} className="size-6"/>}
           </div>
         );
       }
@@ -104,23 +107,17 @@ function MultiPeopleSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          value={selectedUsers.flatMap((user): UserOption[] => user ? [{ value: user.id, initials: user.firstName[0] + user.lastName[0], displayName: `${user.firstName} ${user.lastName}`}] : [])}
+          value={selectedUsers.flatMap((user): UserOption[] => user ? [userOption(user)] : [])}
           loadOptions={async (_query): Promise<UserOption[]> => {
-            return (usersQuery.data ?? []).map((user): UserOption => ({
-              value: user.id,
-              initials: user.firstName[0] + user.lastName[0],
-              displayName: `${user.firstName} ${user.lastName}`
-            }));
+            return (usersQuery.data ?? []).map(userOption);
           }}
-          formatOptionLabel={({value, initials, displayName}) => {
+          formatOptionLabel={({value, avatarUrl, displayName}) => {
             if (!value) {
               return <div className="italic">Empty</div>
             }
             return (
               <div className="flex flex-row items-center ml-2">
-                <div title={displayName} className="w-6 h-6 -m-2 mr-1 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">
-                  {initials}
-                </div>
+                <UserAvatar user={{displayName, avatarUrl}} className="size-6 -m-2 mr-1"/>
                 {displayName}
               </div>
             )}

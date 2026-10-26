@@ -1,6 +1,11 @@
 @layer components {
+    /*
+     * A mention is a bordered chip with an icon in front, so it stays on one
+     * line: wrapped, it would split the border and could leave the icon
+     * stranded at the end of the line above its title.
+     */
     .mention {
-        @apply border rounded py-0.5 px-1 text-sky-500
+        @apply border rounded py-0.5 px-1 text-sky-500 whitespace-nowrap
     }
 
     .mention--broken {
