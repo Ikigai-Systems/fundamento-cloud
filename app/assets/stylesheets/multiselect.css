@@ -290,3 +290,20 @@
 .multiselect__dropdown--open {
     display: block;
 }
+
+/* A user's avatar or a team's glyph in front of an item and its pill (MemberAvatar). */
+.member-avatar {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+}
+
+.member-avatar--team i {
+    width: 1rem;
+    height: 1rem;
+}
+
+.multiselect__pill .member-avatar {
+    margin-right: 0.25rem;
+}

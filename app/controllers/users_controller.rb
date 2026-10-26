@@ -19,11 +19,4 @@ class UsersController < ApplicationController
       format.all { head :unprocessable_content }
     end
   end
-
-  def suggestions
-    query = params[:query]
-    users = current_organization.users.query(query).limit(10)
-
-    render json: users.map { |user| { id: user.id, display_name: user.display_name } }
-  end
 end

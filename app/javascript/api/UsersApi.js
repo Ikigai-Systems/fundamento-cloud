@@ -2,7 +2,6 @@
 import { definePathHelper } from '@js-from-routes/axios'
 
 export default {
-  suggestions: /* #__PURE__ */ definePathHelper('get', '/users/suggestions'),
   index: /* #__PURE__ */ definePathHelper('get', '/users'),
   show: /* #__PURE__ */ definePathHelper('get', '/users/:id'),
 }

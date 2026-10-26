@@ -388,6 +388,25 @@ RSpec.describe SpacesController, type: :request do
 
       expect(names).to eq(names.sort)
     end
+
+    it "sends a user's uploaded avatar" do
+      member.avatar.attach(io: StringIO.new(Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")), filename: "stefan.png", content_type: "image/png")
+
+      get suggest_owners_spaces_path, params: { q: "Stefan", preselects: "" }
+
+      stefan_result = JSON.parse(response.body).find { |item| item["text"].include?("Stefan") }
+      expect(stefan_result["avatar"]).to include("stefan.png")
+    end
+
+    it "sends initials for a user without an avatar and a glyph for a team" do
+      get suggest_owners_spaces_path, params: { q: "", preselects: "" }
+
+      json_response = JSON.parse(response.body)
+      stefan_result = json_response.find { |item| item["text"].include?("Stefan") }
+      team_result = json_response.find { |item| item["text"] == "Administrators" }
+      expect(stefan_result["avatar"]).to include("<svg")
+      expect(team_result["avatar"]).to include("tabler--users-group")
+    end
   end
 
   describe "GET #index" do
