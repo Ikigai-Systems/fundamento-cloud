@@ -1,5 +1,6 @@
 class SpacesController < ApplicationController
   include EnsureOrganization
+  include MemberPickerItems
 
   after_action :verify_authorized, except: [:suggest_owners]
 
@@ -147,19 +148,8 @@ class SpacesController < ApplicationController
     query = params[:q]
     preselects = params[:preselects].split(",")
 
-    @organization_memberships = current_organization.organization_memberships.query(query).map do |organization_membership|
-      {
-        value: "#{organization_membership.class}|#{organization_membership.id}",
-        text: organization_membership.user.display_name
-      }
-    end
-
-    @teams = current_organization.teams.query(query).map do |team|
-      {
-        value: "#{team.class}|#{team.id}",
-        text: team.name
-      }
-    end
+    @organization_memberships = organization_memberships_for_picker(query).map { member_picker_item(_1) }
+    @teams = current_organization.teams.query(query).map { member_picker_item(_1) }
 
     render json: (@organization_memberships + @teams).reject { preselects.include?(_1[:value]) }.sort_by { _1[:text] }
   end
@@ -207,9 +197,9 @@ class SpacesController < ApplicationController
   end
 
   def space_memberships_to_multiselect_value(space)
-    space.space_memberships.map do |membership|
-      { value: "#{membership.member_type}|#{membership.member_id}", text: membership.display_name }
-    end.to_json
+    # A deleted team leaves its space memberships behind; they grant nothing, so
+    # they drop out here and the next save removes them.
+    space.space_memberships.includes(:member).filter_map { member_picker_item(_1.member) if _1.member }.to_json
   end
 
   def update_space_memberships!(space, space_memberships_param)

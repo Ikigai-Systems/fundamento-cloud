@@ -8,6 +8,7 @@ import {useEffect, useRef} from "react";
 import clsx from "clsx";
 import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {UserIcon} from "../../UserAvatar.tsx";
 import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 
 const Loading = () => {
@@ -33,7 +34,7 @@ const DocumentMention = ({documentNpi, fragment}: {documentNpi: string, fragment
       href={href}
       className="mention"
     >
-      @<ObjectIcon type="Document" icon={document?.icon} fallback={false}/>{displayName}
+      <ObjectIcon type="Document" icon={document?.icon}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )
@@ -55,7 +56,7 @@ const TableMention = ({tableNpi}: {tableNpi: string}) => {
       href={TablesApi.show.path({id: content?.table?.id})}
       className="mention"
     >
-      @<ObjectIcon type="Table" icon={content?.table?.icon} fallback={false}/>{displayName}
+      <ObjectIcon type="Table" icon={content?.table?.icon}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )
@@ -82,7 +83,7 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | 
 
   const isLoading = userQuery.isLoading;
   const user = userQuery.data;
-  const displayName = user ? `${user.firstName} ${user.lastName}` : userId;
+  const displayName = user ? (user.displayName ?? `${user.firstName} ${user.lastName}`) : userId;
   
   return (
     <span
@@ -93,16 +94,23 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | 
         isTargeted && "bg-sky-500 text-white",
       )}
     >
-      @{displayName}
+      <UserIcon user={user}/>{displayName}
       {isLoading && <Loading/>}
     </span>
   )
 };
 
+// Mentions read like the references in a table cell: the object's icon, or its
+// type's glyph when it has none, then the title. No "@" in front.
 const BrokenMention = ({title, targetType}: {title: string, targetType: string}) => {
+  // "Document" from an object reference, "document" from a mention's entity.
+  const type = targetType.toLowerCase();
   return (
-    <span className="mention mention--broken" title={`Broken ${targetType.toLowerCase()} link`}>
-      @{title}
+    <span className="mention mention--broken" title={`Broken ${type} link`}>
+      {type === "user" && <UserIcon/>}
+      {type === "document" && <ObjectIcon type="Document"/>}
+      {type === "table" && <ObjectIcon type="Table"/>}
+      {title}
     </span>
   );
 };

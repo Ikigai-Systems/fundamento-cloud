@@ -12,7 +12,6 @@ import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
 import CollapsibleController from "./collapsible_controller";
 import DraggableController from "./draggable_controller";
-import UserSelectorController from "./controllers/user_selector_controller.js";
 import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts";
 import ScrollIntoViewController from "./scroll_into_view_controller.ts";
 import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
@@ -21,7 +20,7 @@ import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controlle
 import CommandPaletteController from "./controllers/command_palette_controller.js";
 import Clipboard from '@stimulus-components/clipboard';
 import AutoSubmit from '@stimulus-components/auto-submit';
-import {Multiselect} from "@wizardhealth/stimulus-multiselect";
+import MultiselectController from "./controllers/multiselect_controller.js";
 import MultiselectNoopAddableController from "./controllers/multiselect-noop-addable-controller.js";
 import FlashManagerController from "./controllers/flash_manager_controller";
 import ContentTitleSyncController from "./content_title_sync_controller.ts";
@@ -60,7 +59,7 @@ application.register("disclosure-popover", DisclosurePopoverController);
 
 application.register('auto-submit', AutoSubmit);
 
-application.register('multiselect', Multiselect);
+application.register('multiselect', MultiselectController);
 application.register('multiselect-noop-addable', MultiselectNoopAddableController);
 
 application.register("react-loader", ReactLoader)
@@ -72,8 +71,6 @@ application.register("toggle-button", ToggleButtonController);
 application.register("collapsible", CollapsibleController);
 
 application.register("draggable", DraggableController);
-
-application.register("user-selector", UserSelectorController);
 
 application.register("prevent-double-submit", PreventDoubleSubmitController);
 

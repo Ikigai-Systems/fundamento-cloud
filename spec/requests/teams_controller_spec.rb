@@ -327,5 +327,14 @@ RSpec.describe TeamsController, type: :request do
 
       expect(stefan_result).to be_nil
     end
+
+    it "sends a user's uploaded avatar" do
+      member.avatar.attach(io: StringIO.new(Base64.decode64("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=")), filename: "stefan.png", content_type: "image/png")
+
+      get suggest_members_teams_path, params: { q: "stefan", preselects: "" }
+
+      stefan_result = JSON.parse(response.body).find { |ou| ou["text"].include?("Stefan") }
+      expect(stefan_result["avatar"]).to include("stefan.png")
+    end
   end
 end

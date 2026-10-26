@@ -1,6 +1,6 @@
 import {Controller} from "@hotwired/stimulus";
 import "ninja-keys";
-import {debounce} from "lodash";
+import {debounce, escape} from "lodash";
 import DocumentsApi from "../../api/DocumentsApi.js";
 import SearchesApi from "@/api/SearchesApi.js";
 import TablesApi from "~/api/Tables/TablesApi.js";
@@ -15,19 +15,13 @@ import {paletteIcon} from "./command_palette_icons.js";
 // there is no point spending a round trip on it.
 const MIN_QUERY_LENGTH = 2;
 
-// The icon value can only ever be an RGI emoji, but it is interpolated into
-// markup here, so escape it rather than rely on that.
-function escapeHtml(value) {
-  return value.replace(/[&<>"']/g, character => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  })[character]);
-}
-
 const OBJECT_ICONS = {Document: "file-text", Table: "table", Space: "planet"};
 
 function objectIcon(object) {
   if (object.icon) {
-    return `<span class="ninja-icon" part="ninja-icon">${escapeHtml(object.icon.value)}</span>`;
+    // The icon value can only ever be an RGI emoji, but it is interpolated into
+    // markup here, so escape it rather than rely on that.
+    return `<span class="ninja-icon" part="ninja-icon">${escape(object.icon.value)}</span>`;
   }
 
   return paletteIcon(OBJECT_ICONS[object.type] ?? "table");

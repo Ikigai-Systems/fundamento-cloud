@@ -1,0 +1,5 @@
+<% if team? %>
+  <span class="member-avatar member-avatar--team" aria-hidden="true"><i class="icon-[tabler--users-group]"></i></span>
+<% else %>
+  <span class="member-avatar" aria-hidden="true"><%= render UserAvatar.new(user: user, variant: "xs") %></span>
+<% end %>

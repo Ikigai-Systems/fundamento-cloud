@@ -191,8 +191,13 @@ bin/browser-session-for --headless sarah@brightpath.example.com &
 Each session gets its own Chrome profile (`tmp/browser-sessions/<email>/`) with persistent cookies. The remote-debugging port is written to `tmp/browser-sessions/<email>/debug-port` and printed to stdout, so agent-browser can drive the session:
 
 ```bash
-npx agent-browser --cdp $(cat tmp/browser-sessions/sarah@brightpath.example.com/debug-port) snapshot
+eval "$(bin/worktree info --format shell)"
+npx agent-browser --session "${WORKTREE_ID:-main}" --cdp $(cat tmp/browser-sessions/sarah@brightpath.example.com/debug-port) snapshot
 ```
+
+Always pass `--session`. agent-browser runs one daemon per machine, shared by every Claude session,
+and without a session name they all drive the same `default` browser connection: one session's
+`open` lands in another's tab, and screenshots and checks read a page some other session loaded.
 
 In a linked worktree the session opens that worktree's dev server (port from `bin/worktree info`) and takes debug ports from the worktree's own block (`24000 + slot * 10`, one per account, kept across launches), so sessions in several worktrees run side by side. The main checkout keeps port 3000 and debug ports 9200–9299.
 

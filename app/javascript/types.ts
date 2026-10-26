@@ -25,6 +25,9 @@ export type User = {
   lastName: string,
   organizationRole: number
   updatedAt: string, //date
+  // Name, or the email when there is none. See User#display_name.
+  displayName?: string,
+  avatarUrl?: string | null,
 }
 
 export type Table = {

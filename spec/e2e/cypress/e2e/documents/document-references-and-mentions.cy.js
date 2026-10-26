@@ -727,17 +727,73 @@ describe("Document References and Mentions", function () {
         .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
     });
 
-    // Inline is the opposite: a generic file glyph dropped into the middle of a
-    // sentence is noise, so an icon-less mention renders no slot at all.
-    it("renders no glyph on an inline mention of an object without an icon", function () {
+    // An inserted mention reads like a reference in a table cell: the type's
+    // glyph when the object has no icon, then the title, with no "@" in front.
+    it("falls back to the document glyph on an inline mention", function () {
       createDocuments();
       openMentionMenu();
 
       targetItem().click();
 
       cy.get("a.mention").filter(":contains('Target Document')").as("mention");
-      cy.get("@mention").should("exist");
-      cy.get("@mention").find(".object-icon").should("not.exist");
+      cy.get("@mention").find(".object-icon i.icon-\\[tabler--file-text\\]").should("be.visible");
+      cy.get("@mention").invoke("text").should("not.contain", "@");
+    });
+  });
+
+  // Users get the same avatar React draws everywhere else: the uploaded
+  // picture, or initials when there is none.
+  describe("User avatars on mentions", function () {
+    // 1x1 PNG; public/ is not in the E2E image, so there is no file to attach.
+    const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+    function giveUserAnAvatar() {
+      cy.appEval(`
+        User.find_by(email: "pawel@ikigai.systems").avatar.attach(
+          io: StringIO.new(Base64.decode64("${PNG}")), filename: "avatar.png", content_type: "image/png"
+        )
+      `);
+    }
+
+    function visitDocumentWithUserMention() {
+      cy.appScenario("create_document_with_user_mention", {
+        space_id: "is_default",
+        organization_id: "is",
+        user_email: "pawel@ikigai.systems"
+      });
+      cy.appEval("Document.find_by(title: 'Document with Mention').id").then((docId) => {
+        cy.visit(`/d/${docId}`);
+      });
+    }
+
+    it("shows initials on a mention of a user without an avatar", function () {
+      visitDocumentWithUserMention();
+
+      cy.get(".mention .object-icon svg text", {timeout: 10000}).invoke("text").should("match", /^[A-Z]{1,2}$/);
+      cy.get(".mention").invoke("text").should("not.contain", "@");
+    });
+
+    it("shows the uploaded avatar on a mention", function () {
+      giveUserAnAvatar();
+      visitDocumentWithUserMention();
+
+      cy.get(".mention .object-icon img", {timeout: 10000})
+        .should("have.attr", "src").and("include", "avatar.png");
+    });
+
+    it("shows the uploaded avatar in the @ menu", function () {
+      giveUserAnAvatar();
+      cy.appScenario("create_two_documents", {space_id: "is_default", organization_id: "is"});
+      cy.appEval("Document.find_by(title: 'Source Document').id").then((sourceDocId) => {
+        cy.visit(`/d/${sourceDocId}/edit`);
+        cy.waitForEditor();
+        cy.get("[data-document-editor] [role=\"textbox\"]").first().type("@");
+      });
+
+      cy.appEval(`User.find_by(email: "pawel@ikigai.systems").display_name`).then((name) => {
+        cy.get(".bn-suggestion-menu-item", {timeout: 10000}).filter(`:contains('${name}')`)
+          .find(".object-icon img").should("have.attr", "src").and("include", "avatar.png");
+      });
     });
   });
 });

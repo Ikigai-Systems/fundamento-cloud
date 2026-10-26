@@ -10,6 +10,10 @@ module IconUsageGuard
     "app/javascript/stimulus/controllers/command_palette_icons.js",
     # A CSS background can't use a mask class, and the SVG is Tabler's chevron-down.
     "app/assets/stylesheets/multiselect.css",
+    # Draws a user's initials, not an icon: SVG text scales with the avatar's size.
+    "app/javascript/components/UserAvatar.tsx",
+    # Overrides the stimulus-multiselect pill template and keeps its delete glyph as is.
+    "app/javascript/stimulus/controllers/multiselect_controller.js",
   ].freeze
 
   ICON_DIRS = %w[app/views app/components app/helpers app/javascript app/assets/stylesheets].freeze

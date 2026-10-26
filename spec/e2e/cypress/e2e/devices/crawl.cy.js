@@ -79,7 +79,7 @@ const NOT_PAGES = {
     "/t/:id/sidebar", "/favorites", "/mentions", "/inline_comments/threads/:thread_id",
   ]),
   ...reasons("JSON for the page's scripts", [
-    "/d", "/t", "/search", "/users", "/users/:id", "/users/suggestions", "/s/suggest_owners",
+    "/d", "/t", "/search", "/users", "/users/:id", "/s/suggest_owners",
     "/teams/suggest_members", "/s/:space_id/tags/suggest", "/d/:document_id/object_references",
     "/t/:table_id/columns", "/t/:table_id/rows", "/t/:table_id/rows/:row_id/cells", "/version",
     "/oauth/token/info", "/.well-known/oauth-authorization-server",

@@ -35,16 +35,19 @@
         @apply mt-3 text-gray-700 dark:text-white flex flex-col gap-2;
     }
 
+    /* A default for a field's own label, not for every label a widget inside the field draws.
+       Wrapping the ancestors in :where() drops this to (0,0,1), so the multiselect's list rows,
+       which are labels too, keep their own `display: flex` instead of being forced to block. */
+    :where(.default-form .form-field) label {
+        @apply block text-sm/6 font-medium;
+    }
+
     .default-form {
         .form-hint {
             @apply mt-3 text-sm text-slate-500 dark:text-gray-300;
         }
 
         .form-field {
-            label {
-                @apply block text-sm/6 font-medium;
-            }
-
             em {
                 @apply mt-1;
             }
