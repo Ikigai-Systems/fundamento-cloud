@@ -8,7 +8,7 @@ class ApplicationTool < MCP::Tool
   end
 
   def self.call(**kwargs)
-    perform(**kwargs)
+    with_text_content(perform(**kwargs))
   rescue ActiveRecord::RecordNotFound => e
     tool_error_response("not_found", "Resource not found: #{e.message}")
   rescue Pundit::NotAuthorizedError
@@ -33,6 +33,20 @@ class ApplicationTool < MCP::Tool
   end
 
   def self.tool_error_response(type, message)
-    MCP::Tool::Response.new(error: true, structured_content: { error: type, message: message })
+    with_text_content(MCP::Tool::Response.new(error: true, structured_content: { error: type, message: message }))
+  end
+
+  # Clients that ignore structuredContent read only content, so a structured-only result is
+  # mirrored into a JSON text block, as the MCP spec recommends.
+  def self.with_text_content(response)
+    return response unless response.is_a?(MCP::Tool::Response)
+    return response if response.structured_content.nil? || response.content.any?
+
+    MCP::Tool::Response.new(
+      [{ type: "text", text: response.structured_content.to_json }],
+      error: response.error?,
+      structured_content: response.structured_content,
+      meta: response.meta,
+    )
   end
 end
