@@ -19,6 +19,18 @@
         @apply reaction-button;
     }
 
+    /* A long press shows who reacted, so it mustn't select the emoji or open the iOS callout */
+    .object-reaction {
+        @apply select-none;
+        -webkit-touch-callout: none;
+    }
+
+    /* Someone else's reaction: let presses reach the wrapper, since some browsers send a disabled
+       button no events at all */
+    .destroy-reaction-button:disabled {
+        @apply pointer-events-none;
+    }
+
     .destroy-reaction-button:not(:disabled) {
         @apply border-blue-600;
     }

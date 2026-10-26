@@ -221,7 +221,7 @@ describe("Table Reactions", function () {
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
 
     // Hover over the reaction to show popover
-    cy.get(".destroy-reaction-button").contains("🌟").trigger("mouseenter");
+    cy.contains(".object-reaction", "🌟").trigger("pointerenter", { pointerType: "mouse" });
 
     // Wait for popover to appear
     cy.get(".popover-reaction-card", { timeout: 5000 }).should("be.visible");
