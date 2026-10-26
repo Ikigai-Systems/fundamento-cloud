@@ -19,7 +19,7 @@ class DevE2E < Thor
     load_rails_master_key!
     print_status
 
-    compose("down")
+    stop_stack
 
     if options[:build]
       fix_permissions!
@@ -58,7 +58,7 @@ class DevE2E < Thor
   desc "down", "Stop E2E containers"
   def down
     setup_env!
-    compose("down")
+    stop_stack
   end
 
   desc "clean", "Remove all containers, volumes, and local images"
@@ -257,6 +257,15 @@ class DevE2E < Thor
 
     puts "Fixed permissions for #{count} file(s)"
     puts ""
+  end
+
+  # The redis and minio images declare volumes (/data, /certs) that docker-compose.yml doesn't
+  # map, so Docker gives each container an unnamed one. `down` leaves those behind, two per
+  # restart. `rm --volumes` removes them with the containers; the named postgres and minio
+  # volumes stay, as with a plain `down`.
+  def stop_stack
+    compose("rm", "--stop", "--force", "--volumes")
+    compose("down")
   end
 
   def compose(*args)
