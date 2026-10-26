@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import escapeHtml from "../../utils/escapeHtml"
+import { escape } from "lodash"
 
 type FlashOptions = {
   type?: "notice" | "alert" | "error"
@@ -119,7 +119,7 @@ export default class extends Controller<HTMLElement> {
             </div>
             <div class="w-0 flex-1">
               <p class="font-bold">Heads up!</p>
-              <p class="text-sm">${escapeHtml(options.message)}</p>
+              <p class="text-sm">${escape(options.message)}</p>
             </div>
             <div class="ml-4 flex-shrink-0 flex">
               <button data-action="alert#close" class="inline-flex p-1 -m-1 flash-${type}-button focus:outline-none focus:text-gray-300 transition ease-in-out duration-150" aria-label="Close">

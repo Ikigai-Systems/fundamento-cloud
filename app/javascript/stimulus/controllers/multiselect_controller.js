@@ -1,5 +1,5 @@
 import {Multiselect} from "@wizardhealth/stimulus-multiselect";
-import escapeHtml from "../../utils/escapeHtml";
+import {escape} from "lodash";
 
 // The library's templates, with two changes:
 //
@@ -24,9 +24,9 @@ export default class extends Multiselect {
     return `
       <li>
         <label>
-          <input type="checkbox" ${selected} data-value="${escapeHtml(item.value)}" data-text="${escapeHtml(item.text)}"
+          <input type="checkbox" ${selected} data-value="${escape(item.value)}" data-text="${escape(item.text)}"
           data-action="multiselect#checkBoxChange" data-multiselect-target="item" tabindex="-1">
-          ${this.avatarFor(item)}<span>${escapeHtml(item.text)}</span>
+          ${this.avatarFor(item)}<span>${escape(item.text)}</span>
         </label>
       </li>
     `;
@@ -41,8 +41,8 @@ export default class extends Multiselect {
         </svg>
       </span>`;
 
-    return `<div class="multiselect__pill" data-value="${escapeHtml(item.value)}" title="${escapeHtml(item.text)}">
-      ${this.avatarFor(item)}<span class="multiselect__pill-text">${escapeHtml(item.text)}</span>${deleteButton}
+    return `<div class="multiselect__pill" data-value="${escape(item.value)}" title="${escape(item.text)}">
+      ${this.avatarFor(item)}<span class="multiselect__pill-text">${escape(item.text)}</span>${deleteButton}
     </div>`;
   }
 }

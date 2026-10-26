@@ -1,12 +1,11 @@
 import {Controller} from "@hotwired/stimulus";
 import "ninja-keys";
-import {debounce} from "lodash";
+import {debounce, escape} from "lodash";
 import DocumentsApi from "../../api/DocumentsApi.js";
 import SearchesApi from "@/api/SearchesApi.js";
 import TablesApi from "~/api/Tables/TablesApi.js";
 import SpacesApi from "@/api/SpacesApi.js";
 import {paletteIcon} from "./command_palette_icons.js";
-import escapeHtml from "../../utils/escapeHtml";
 
 // Connects to data-controller="command-palette"
 // ninja-keys renders into its own shadow root, so icons are SVG markup from paletteIcon rather
@@ -22,7 +21,7 @@ function objectIcon(object) {
   if (object.icon) {
     // The icon value can only ever be an RGI emoji, but it is interpolated into
     // markup here, so escape it rather than rely on that.
-    return `<span class="ninja-icon" part="ninja-icon">${escapeHtml(object.icon.value)}</span>`;
+    return `<span class="ninja-icon" part="ninja-icon">${escape(object.icon.value)}</span>`;
   }
 
   return paletteIcon(OBJECT_ICONS[object.type] ?? "table");
