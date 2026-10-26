@@ -7,7 +7,7 @@ import queryClient from "../../.././contextes/ReactQueryClient.tsx";
 import {useEffect, useRef} from "react";
 import clsx from "clsx";
 import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
-import ObjectIcon, {ObjectType} from "../../ObjectIcon.tsx";
+import ObjectIcon from "../../ObjectIcon.tsx";
 import {UserIcon} from "../../UserAvatar.tsx";
 import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 
@@ -103,11 +103,13 @@ const UserMention = ({mentionId, userId}: { mentionId: string, userId: string | 
 // Mentions read like the references in a table cell: the object's icon, or its
 // type's glyph when it has none, then the title. No "@" in front.
 const BrokenMention = ({title, targetType}: {title: string, targetType: string}) => {
-  const type = targetType.charAt(0).toUpperCase() + targetType.slice(1);
+  // "Document" from an object reference, "document" from a mention's entity.
+  const type = targetType.toLowerCase();
   return (
-    <span className="mention mention--broken" title={`Broken ${targetType.toLowerCase()} link`}>
-      {type === "User" && <UserIcon/>}
-      {(type === "Document" || type === "Table") && <ObjectIcon type={type as ObjectType}/>}
+    <span className="mention mention--broken" title={`Broken ${type} link`}>
+      {type === "user" && <UserIcon/>}
+      {type === "document" && <ObjectIcon type="Document"/>}
+      {type === "table" && <ObjectIcon type="Table"/>}
       {title}
     </span>
   );
