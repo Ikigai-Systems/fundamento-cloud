@@ -6,15 +6,23 @@
   <% end %>
 
   <% if overflow? %>
+    <%# Opens on hover for a mouse, and on a tap, click or Enter for everyone else %>
     <div class="relative <%= overflow_z_class %> inline-block"
-         data-controller="popover"
-         data-action="mouseenter->popover#show mouseleave->popover#hide">
-      <div class="<%= avatar_size_class %> rounded-full bg-gray-200 dark:bg-gray-600 ring-1 ring-white dark:ring-gray-900 flex items-center justify-center <%= overflow_text_class %> font-medium text-gray-600 dark:text-gray-300">
-        +<%= overflow_count %>
-      </div>
+         data-controller="disclosure-popover"
+         data-action="pointerenter->disclosure-popover#enter pointerleave->disclosure-popover#leave pointerdown@document->disclosure-popover#closeOutside keydown.esc@document->disclosure-popover#escape">
+      <button type="button"
+              class="flex rounded-full touch:p-1 touch:-m-1"
+              aria-label="<%= overflow_label %>"
+              aria-expanded="false"
+              data-disclosure-popover-target="button"
+              data-action="disclosure-popover#toggle">
+        <span class="<%= avatar_size_class %> rounded-full bg-gray-200 dark:bg-gray-600 ring-1 ring-white dark:ring-gray-900 flex items-center justify-center <%= overflow_text_class %> font-medium text-gray-600 dark:text-gray-300" aria-hidden="true">
+          +<%= overflow_count %>
+        </span>
+      </button>
 
-      <template data-popover-target="content">
-        <div class="popover-card p-2 whitespace-nowrap right-0 mt-1" data-popover-target="card">
+      <template data-disclosure-popover-target="content">
+        <div class="popover-card p-2 whitespace-nowrap right-0 mt-1">
           <ul class="space-y-2">
             <% overflow_users.each do |user| %>
               <li class="flex items-center gap-2">

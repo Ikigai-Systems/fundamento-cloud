@@ -200,6 +200,26 @@ describe("Touch device smoke", function () {
     })
   })
 
+  describe("contributors", () => {
+    beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
+
+    // The people behind "+N" were listed only on hover, which a finger can't do
+    it("lists the hidden contributors with a tap and closes them with a tap outside", () => {
+      cy.appScenario("document_with_many_contributors", { document_id: "one" })
+      // An empty document opens in the editor, whose top bar fits a phone; the view page's doesn't yet
+      cy.visit("/d/one")
+      cy.waitForEditor()
+
+      cy.openSidebar("details").find('[aria-label="Details"]').realTouch()
+      cy.get("#details_sidebar_tab button[aria-label='2 more people']").realTouch()
+      cy.get("#details_sidebar_tab .popover-card").should("be.visible").and("contain", "Zofia Nowak")
+      cy.checkPageHealth()
+
+      cy.contains("#details_sidebar_tab p", "Contributors").realTouch()
+      cy.get("#details_sidebar_tab .popover-card").should("not.exist")
+    })
+  })
+
   describe("hover styles", () => {
     beforeEach(() => cy.setCookie("organization_id", isOrganizationCookie))
 

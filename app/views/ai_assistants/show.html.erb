@@ -22,7 +22,7 @@
           <div class="flex flex-row items-center gap-2" data-controller="clipboard" data-clipboard-success-content-value="Copied!">
             <input type="text" id="mcp_url" value="<%= @mcp_url %>" readonly class="form-input mt-0 h-10"
                    data-clipboard-target="source" data-testid="mcp-url">
-            <button type="button" title="Copy to clipboard" class="secondary-button px-2 shadow-md h-10"
+            <button type="button" aria-label="Copy the URL" title="Copy to clipboard" class="secondary-button px-2 shadow-md h-10"
                     data-clipboard-target="button" data-action="clipboard#copy" data-testid="copy-mcp-url">
               <span class="icon-[tabler--clipboard] size-6"></span>
             </button>

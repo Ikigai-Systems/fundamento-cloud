@@ -55,6 +55,7 @@
         <div class="flex gap-1 ml-auto shrink-0">
           <button data-action="click->edit-comment#startEdit"
                   class="rounded-button"
+                  aria-label="Edit comment"
                   title="Edit">
             <i class="icon-[tabler--pencil]"></i>
           </button>
@@ -63,6 +64,7 @@
               method: :delete,
               form_class: "inline",
               class: "rounded-button hover:text-red-600",
+              aria: { label: "Delete comment" },
               title: "Delete",
               data: {turbo_frame: "object_comments"} do %>
             <i class="icon-[tabler--trash]"></i>
