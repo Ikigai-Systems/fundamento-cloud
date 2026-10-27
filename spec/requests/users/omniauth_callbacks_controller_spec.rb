@@ -51,6 +51,12 @@ RSpec.describe Users::OmniauthCallbacksController, type: :request do
         expect(response).to redirect_to(root_path)
       end
 
+      it "remembers the user, so the session outlives the browser's session cookie" do
+        get user_google_oauth2_omniauth_callback_path
+
+        expect(response.cookies["remember_user_token"]).to be_present
+      end
+
       it "does not create a new identity" do
         expect { get user_google_oauth2_omniauth_callback_path }.not_to change(UserIdentity, :count)
       end

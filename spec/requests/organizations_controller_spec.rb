@@ -53,6 +53,17 @@ RSpec.describe OrganizationsController, type: :request do
         expect(flash[:notice]).to eq("You've been switched to #{hc_org.name}.")
       end
 
+      # A browser-session cookie is lost whenever iOS Safari unloads the tab, which sent
+      # people back to the organization picker after every sign-in.
+      it "remembers the selected organization for a year" do
+        freeze_time do
+          post select_organization_path(hc_org)
+
+          expect(current_organization_id_from_cookie).to eq(hc_org.id)
+          expect(response_cookie_expiry("organization_id")).to be_within(1.minute).of(1.year.from_now)
+        end
+      end
+
       it "does not redirect to an archived space" do
         post select_organization_path(hc_org)
 

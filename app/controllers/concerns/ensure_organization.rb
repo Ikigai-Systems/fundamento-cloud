@@ -36,7 +36,7 @@ module EnsureOrganization
       first_organization = current_user.organizations.first
 
       self.current_organization = first_organization
-      cookies.encrypted[:organization_id] = first_organization.id
+      remember_organization(first_organization)
     else
       redirect_to organizations_path, notice: "Please select an organization you want to switch to."
     end

@@ -4,6 +4,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def google_oauth2
     auth = request.env["omniauth.auth"]
     @user = find_or_create_from_omniauth(auth)
+    # There is no "Remember me" checkbox on the Google button: signing in with Google keeps
+    # you signed in, as it does in most apps. Without it the session cookie was all there
+    # was, and iOS Safari drops that within a day.
+    @user.remember_me = true
     sign_in_and_redirect @user, event: :authentication
   end
 

@@ -51,6 +51,43 @@ RSpec.describe Users::SessionsController, type: :request do
         expect(response).to redirect_to(root_path)
         expect(response.cookies["remember_user_token"]).to be_present
       end
+
+      it "remembers the user for 30 days" do
+        freeze_time do
+          sign_in_with_password(remember_me: "1")
+
+          expect(response_cookie_expiry("remember_user_token")).to be_within(1.minute).of(30.days.from_now)
+        end
+      end
+    end
+
+    # iOS Safari drops the session cookie often, so the remember cookie is what keeps a phone
+    # signed in. Each time it restores a session its 30 days start again.
+    context "when the session cookie is gone and the remember cookie restores the session" do
+      let(:session_key) { Rails.application.config.session_options[:key] }
+
+      it "keeps a user who comes back within 30 days signed in, for another 30 days" do
+        sign_in_with_password(remember_me: "1")
+
+        travel 20.days do
+          cookies.delete(session_key)
+          get root_path
+
+          expect(controller.current_user).to eq(user)
+          expect(response_cookie_expiry("remember_user_token")).to be_within(1.minute).of(30.days.from_now)
+        end
+      end
+
+      it "signs out a user who stays away for more than 30 days" do
+        sign_in_with_password(remember_me: "1")
+
+        travel 31.days do
+          cookies.delete(session_key)
+          get root_path
+
+          expect(response).to redirect_to(new_user_session_path)
+        end
+      end
     end
 
     context "without remember_me" do
@@ -113,5 +150,16 @@ RSpec.describe Users::SessionsController, type: :request do
         expect(response.body).not_to include('checked="checked"')
       end
     end
+  end
+
+  def sign_in_with_password(remember_me:)
+    post user_session_path, params: {
+      user: {
+        email: user.email,
+        password: "password",
+        authentication_method: "password",
+        remember_me: remember_me
+      }
+    }
   end
 end

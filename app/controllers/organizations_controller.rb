@@ -65,7 +65,7 @@ class OrganizationsController < ApplicationController
   def select
     authorize @organization, :select?
 
-    cookies.encrypted[:organization_id] = @organization.id
+    remember_organization(@organization)
 
     # Pick a stable, non-archived space to land on. Falls back to any space
     # (extreme edge case where every space is archived), then to the

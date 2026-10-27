@@ -30,6 +30,16 @@ RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
       # Verify cookie was set
       expect(current_organization_id_from_cookie).to eq(hc_org.id)
     end
+
+    it "remembers the auto-selected organization for a year" do
+      sign_in(maria)
+
+      freeze_time do
+        get root_path
+
+        expect(response_cookie_expiry("organization_id")).to be_within(1.minute).of(1.year.from_now)
+      end
+    end
   end
 
   describe "User with multiple organizations" do
