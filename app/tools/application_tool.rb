@@ -10,7 +10,7 @@ class ApplicationTool < MCP::Tool
   def self.call(**kwargs)
     with_text_content(perform(**kwargs))
   rescue ActiveRecord::RecordNotFound => e
-    tool_error_response("not_found", "Resource not found: #{e.message}")
+    tool_error_response("not_found", not_found_message(e))
   rescue Pundit::NotAuthorizedError
     tool_error_response("unauthorized", "You are not authorized to perform this action.")
   rescue ArgumentError => e
@@ -30,6 +30,15 @@ class ApplicationTool < MCP::Tool
       user,
       organization
     )
+  end
+
+  # A finder's message carries the SQL WHERE clause, which tells an agent nothing it can act on.
+  # A RecordNotFound raised by hand has no model and keeps its own message.
+  def self.not_found_message(error)
+    return error.message if error.model.nil?
+
+    ids = Array(error.id).join(", ")
+    ["#{error.model.demodulize.titleize} not found", ids.presence].compact.join(": ")
   end
 
   def self.tool_error_response(type, message)
