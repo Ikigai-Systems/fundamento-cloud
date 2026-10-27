@@ -6,6 +6,7 @@ import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 import {User} from "../../../types.ts";
 import UserAvatar from "../../UserAvatar.tsx";
+import {FailedReference} from "../../BrokenReference.tsx";
 
 type FocusState = "none" | "focused" | "editing";
 
@@ -50,8 +51,9 @@ function PeopleSelectCell({
     } else {
       if (userQuery.isError) {
         return (
-          <div className="flex flex-row items-center text-red-800">
-            Unable to load user with id '{userId}'
+          <div className="flex flex-row items-center flex-grow">
+            <FailedReference type="user" error={userQuery.error} className="truncate"/>
+            {focusState === "focused" && !isViewOnly && <span className="ml-auto mr-[7px] size-5 icon-[tabler--chevron-down]"></span>}
           </div>
         );
       } else if (selectedUser === null) {

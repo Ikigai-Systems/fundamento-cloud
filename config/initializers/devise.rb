@@ -243,13 +243,18 @@ Devise.setup do |config|
 
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
-  # config.remember_for = 2.weeks
+  config.remember_for = 30.days
 
   # Invalidates all the remember me tokens when the user signs out.
-  config.expire_all_remember_me_on_sign_out = true
+  # Off: signing out affects only this device. "Sign out everywhere" on the Account page
+  # (User#sign_out_everywhere!) ends every session and remember cookie instead.
+  config.expire_all_remember_me_on_sign_out = false
 
   # If true, extends the user's remember period when remembered via cookie.
-  # config.extend_remember_period = false
+  # Devise extends it only when the cookie restores a lost session, so the 30 days run from
+  # the last visit rather than the sign-in: active users stay signed in on phones too, where
+  # iOS Safari drops the session cookie often.
+  config.extend_remember_period = true
 
   # Options to be passed to the created cookie. For instance, you can set
   # secure: true in order to force SSL only cookies.

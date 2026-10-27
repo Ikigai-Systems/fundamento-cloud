@@ -22,6 +22,27 @@ RSpec.describe DocumentsController, type: :request do
         json_response = JSON.parse(response.body)
         expect(json_response["id"]).to eq(document_one.id)
       end
+
+      # Table cells and mentions tell "deleted" from "no access" by these two statuses.
+      it "answers 403 with JSON for a document in a space the user can't open" do
+        sign_in users(:stefan)
+        post select_organization_path(ikigai_systems)
+        private_space = ikigai_systems.spaces.create!(name: "Locked Room", access_mode: :private)
+        document = private_space.documents.create!(title: "Secret Checklist", organization: ikigai_systems)
+
+        get document_path(document, format: :json)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.body).not_to include("Secret Checklist")
+      end
+
+      it "answers 404 with JSON for a trashed document" do
+        document_one.trash!
+
+        get document_path(document_one, format: :json)
+
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 

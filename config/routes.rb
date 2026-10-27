@@ -34,6 +34,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     get "/users/confirmation/pending" => "users/confirmations#pending", as: :users_confirmation_pending
+    delete "/users/sign_out_everywhere" => "users/sessions#destroy_everywhere", as: :sign_out_everywhere
   end
 
   devise_for :invited_users, controllers: {

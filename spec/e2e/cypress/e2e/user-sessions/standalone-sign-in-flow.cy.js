@@ -50,8 +50,8 @@ describe('Standalone sign-in flow', function () {
   it('displays remember me checkbox', () => {
     cy.visit('/users/sign_in');
 
-    // Remember me checkbox should be visible
-    cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible');
+    // Remember me checkbox should be visible and checked by default
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible').and('be.checked');
     cy.contains('Remember me').should('be.visible');
   });
 
@@ -83,7 +83,8 @@ describe('Standalone sign-in flow', function () {
     cy.get('input[name="user[email]"]').type('standalone@example.com');
     cy.get('input[name="user[password]"]').type('Password123!');
 
-    // Ensure remember me is not checked
+    // Uncheck remember me, which is checked by default
+    cy.get('input[type="checkbox"][name="user[remember_me]"]').uncheck();
     cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
 
     cy.get('input[type=submit]').click();

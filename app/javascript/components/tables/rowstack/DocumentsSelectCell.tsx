@@ -7,6 +7,7 @@ import Spinner from "../../spinners/Spinner.tsx";
 import {join} from "lodash";
 import {Document, ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import ObjectIcon from "../../ObjectIcon.tsx";
+import {FailedReference} from "../../BrokenReference.tsx";
 
 type FocusState = "none" | "focused" | "editing";
 
@@ -61,11 +62,7 @@ function DocumentsSelectCell({
           </div>
         )
       } else if (documentQuery.isError) {
-        return (
-          <div className="flex items-center border rounded text-red-800  px-1 truncate">
-            Unable to load document
-          </div>
-        );
+        return <FailedReference type="document" error={documentQuery.error} className="truncate"/>;
       } else if (documentQuery.isSuccess) {
         const title = documentQuery.data ? documentQuery.data.title : undefined;
         return (

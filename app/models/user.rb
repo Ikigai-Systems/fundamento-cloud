@@ -1,4 +1,7 @@
 class User < ApplicationRecord
+  # session_token signs a user in, so the audit records only that it changed
+  audited redacted: :session_token
+
   include NpiOrdering
 
   # Include default devise modules. Others available are:
@@ -124,6 +127,17 @@ class User < ApplicationRecord
   # Helper method to check if user has password set
   def has_password?
     encrypted_password.present?
+  end
+
+  # Devise checks this salt on every session and remember cookie, so a new session_token
+  # signs the user out on every device. Until the first rotation it is nil and the salt is
+  # Devise's own, which keeps existing sessions valid.
+  def authenticatable_salt
+    session_token.nil? ? super : "#{super}#{session_token}"
+  end
+
+  def sign_out_everywhere!
+    update!(session_token: SecureRandom.base58(24))
   end
 
   def avatar_variant(size = :lg)

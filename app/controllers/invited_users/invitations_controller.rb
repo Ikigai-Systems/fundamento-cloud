@@ -65,7 +65,7 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
         # Destroy the invited user record
         resource.destroy!
 
-        cookies.encrypted[:organization_id] = resource.organization.id
+        remember_organization(resource.organization)
         flash[:notice] = "Welcome to #{resource.organization.name}!" if is_flashing_format?
         respond_with user, location: after_accept_path_for(user)
         return # break out of super

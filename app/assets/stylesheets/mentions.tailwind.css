@@ -11,4 +11,9 @@
     .mention--broken {
         @apply border-red-400 text-red-400 bg-red-50 line-through decoration-red-400/50
     }
+
+    /* Not struck through: what it points to still exists, the viewer just can't open it. */
+    .mention--restricted {
+        @apply border-gray-300 text-gray-500 bg-gray-50
+    }
 }

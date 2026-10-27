@@ -408,6 +408,25 @@ describe("Document References and Mentions", function () {
     });
   });
 
+  describe("Mention of someone no longer in the organization", function () {
+    it("shows the broken lozenge with the remembered name", function () {
+      // Maria has a user record but no membership here, so her lookup 404s while the
+      // reference still points at her.
+      cy.appScenario("create_document_with_user_mention", {
+        space_id: "is_default",
+        organization_id: "is",
+        user_email: "maria@ikigai.systems"
+      });
+
+      cy.appEval("Document.find_by(title: 'Document with Mention').id").then((docId) => {
+        cy.visit(`/d/${docId}`);
+
+        cy.contains(".mention--broken", "Maria Awaria", { timeout: 10000 }).should("be.visible");
+        cy.contains(".mention", "user_maria").should("not.exist");
+      });
+    });
+  });
+
   describe("User Mentions Tab on Root Page", function () {
     it("displays user mentions in mentions tab", function () {
       // Create a document with user mention

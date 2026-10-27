@@ -7,6 +7,7 @@ import {join} from "lodash";
 import UsersApi from "../../../api/UsersApi.js";
 import {User} from "../../../types.ts";
 import UserAvatar from "../../UserAvatar.tsx";
+import {referenceFailure} from "../../../utils/referenceFailure.ts";
 
 type FocusState = "none" | "focused" | "editing";
 
@@ -67,10 +68,16 @@ function MultiPeopleSelectCell({
           </div>
         )
       } else if (userQuery.isError) {
+        // Avatars only, like the people around it: a full lozenge would crowd them out.
+        const label = referenceFailure(userQuery.error) === "missing" ? "Deleted user" : "Unavailable user";
         return (
-          <div className="flex items-center border rounded text-red-800  px-1 truncate">
-            Unable to load document
-          </div>
+          <span
+            className="mention mention--broken flex items-center justify-center size-6 p-0 rounded-full"
+            title={label}
+            aria-label={label}
+          >
+            <i className="icon-[tabler--user-off]" aria-hidden="true"/>
+          </span>
         );
       } else if (userQuery.isSuccess) {
         return (
