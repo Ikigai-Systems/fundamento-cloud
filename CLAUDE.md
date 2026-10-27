@@ -104,6 +104,14 @@ blocknote-converter), the converter build and the Tailwind build. Each step is s
 inputs haven't changed, so rerunning it is cheap; `--force` reruns everything. A new gitignored
 file that worktrees need goes into `.worktreeinclude`, not into a manual copy step.
 
+Every worktree copies from the main checkout, so keep it current: `git pull --ff-only` there
+before starting worktrees. The keys in `config/credentials/` are gitignored, so a pull alone
+keeps the old one after a credentials key rotation (a change to `config/secrets/*.sops.yaml`).
+Worktrees then copy a key that can't decrypt their branch's credentials, and `bin/worktree
+setup` fails with `ActiveSupport::MessageEncryptor::InvalidMessage`. The fix is `bin/setup` in
+the main checkout, which needs a human (it signs in to 1Password): don't run it, ask the user
+to.
+
 Each linked worktree gets its own databases: `fundamento_development_wt_<id>` (created and
 seeded on the first `setup`, migrated after that) and `fundamento_test_wt_<id>`. So `bin/rspec`
 can run in several checkouts at once, and `bin/dev` in a worktree runs that branch's migrations
