@@ -12,9 +12,15 @@ RSpec.describe "API tokens page", type: :request do
   end
 
   it "explains what a token is for and points assistants to AI Assistants" do
-    get user_api_tokens_path(user)
+    get api_tokens_path
 
     expect(response).to have_http_status(:ok)
     expect(response.body).to include("Bearer", "funcli", ai_assistants_path)
+  end
+
+  it "redirects the old per-user path" do
+    get "/users/#{user.id}/api_tokens"
+
+    expect(response).to redirect_to("/integrations/api-tokens")
   end
 end

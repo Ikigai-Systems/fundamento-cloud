@@ -19,7 +19,7 @@
   </td>
   <td>
     <%= button_to "Delete",
-      user_api_token_path(current_user, api_token),
+      api_token_path(api_token),
       method: :delete,
       class: "link-button",
       form: { data: { turbo_confirm: 'Are you sure? Removing API Token might break existing integrations.' } },

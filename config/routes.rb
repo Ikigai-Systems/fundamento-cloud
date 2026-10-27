@@ -138,9 +138,9 @@ Rails.application.routes.draw do
 
     get "/onboarding_contents/*path" => "onboarding_contents#show"
 
-    resources :users, only: [:index, :show] do
-      resources :api_tokens, only: [:index, :new, :create, :destroy]
+    resources :api_tokens, path: "integrations/api-tokens", only: [:index, :new, :create, :destroy]
 
+    resources :users, only: [:index, :show] do
       resources :user_properties, only: [:update], module: :users
 
       resource :avatar, only: [:edit, :update, :destroy], module: :users
@@ -195,7 +195,12 @@ Rails.application.routes.draw do
     get :suggest_members, on: :collection
   end
 
-  get "/mcp" => "ai_assistants#show", as: :ai_assistants
+  get "/integrations/ai-assistants" => "ai_assistants#show", as: :ai_assistants
+  get "/integrations" => redirect("/integrations/ai-assistants"), as: :integrations
+
+  # Where these pages lived before they shared the /integrations prefix
+  get "/mcp" => redirect("/integrations/ai-assistants")
+  get "/users/:user_id/api_tokens" => redirect("/integrations/api-tokens")
 
   # Redirect /api/v1/attachments/:id to AttachmentsController#show
   get "/api/v1/attachments/:id", to: "attachments#show"

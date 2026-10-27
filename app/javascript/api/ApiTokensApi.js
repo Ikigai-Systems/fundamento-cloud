@@ -2,8 +2,8 @@
 import { definePathHelper } from '@js-from-routes/axios'
 
 export default {
-  index: /* #__PURE__ */ definePathHelper('get', '/users/:user_id/api_tokens'),
-  create: /* #__PURE__ */ definePathHelper('post', '/users/:user_id/api_tokens'),
-  new: /* #__PURE__ */ definePathHelper('get', '/users/:user_id/api_tokens/new'),
-  destroy: /* #__PURE__ */ definePathHelper('delete', '/users/:user_id/api_tokens/:id'),
+  index: /* #__PURE__ */ definePathHelper('get', '/integrations/api-tokens'),
+  create: /* #__PURE__ */ definePathHelper('post', '/integrations/api-tokens'),
+  new: /* #__PURE__ */ definePathHelper('get', '/integrations/api-tokens/new'),
+  destroy: /* #__PURE__ */ definePathHelper('delete', '/integrations/api-tokens/:id'),
 }

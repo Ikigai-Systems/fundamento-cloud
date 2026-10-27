@@ -1,7 +1,7 @@
 <%= turbo_stream_from [current_organization, current_user, :api_tokens_list] %>
 
 <% content_for :focused_header do %>
-  API Tokens
+  Integrations
 <% end %>
 
 <% content_for :focused_header_buttons do %>
@@ -12,7 +12,7 @@
     %>
     <% if policy(ApiToken).create? %>
       <%= link_to "Create",
-        new_user_api_token_path(current_user),
+        new_api_token_path,
         class: "secondary-button",
         data: { turbo_frame: "modal", action: "modal#open" }
       %>
@@ -21,6 +21,8 @@
 <% end %>
 
 <% content_for :focused_content do %>
+  <%= render "integrations/tabs" %>
+
   <div class="table-legend">
     <div class="table-legend-description">
       <p>A list of all API tokens you created for this organization.</p>
