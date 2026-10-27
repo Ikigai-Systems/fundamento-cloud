@@ -47,7 +47,7 @@ export const RestrictedReference = ({type, className}: Omit<BrokenReferenceProps
   const referenceType = type.toLowerCase() as ReferenceType;
   return (
     <span className={clsx("mention mention--restricted", className)} title={`You don't have access to this ${referenceType}`}>
-      <i className="icon-[tabler--lock]" aria-hidden="true"/>
+      <span className="object-icon" aria-hidden="true"><i className="icon-[tabler--lock]"/></span>
       No access
     </span>
   );
