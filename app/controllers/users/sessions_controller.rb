@@ -1,4 +1,7 @@
 class Users::SessionsController < Devise::SessionsController
+  # authenticate_user! is a no-op in Devise controllers unless forced
+  before_action -> { authenticate_user!(force: true) }, only: :destroy_everywhere
+
   def new
     @show_authorization_options = !Flipper.enabled?(:standalone) && params.dig(:user, :authentication_method) == "password"
 
@@ -27,6 +30,13 @@ class Users::SessionsController < Devise::SessionsController
       # Step 1: Email collection
       handle_email_step
     end
+  end
+
+  def destroy_everywhere
+    current_user.sign_out_everywhere!
+    sign_out(:user)
+
+    redirect_to new_user_session_path, notice: "You've been signed out on every device.", status: :see_other
   end
 
   protected
