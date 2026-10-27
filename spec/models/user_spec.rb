@@ -18,4 +18,16 @@ RSpec.describe User, type: :model do
       expect(user.organizations.reload).not_to include(trashed)
     end
   end
+
+  describe "#sign_out_everywhere!" do
+    let(:user) { users(:pawel) }
+
+    it "audits that it happened without storing the token" do
+      user.sign_out_everywhere!
+
+      changes = user.audits.reorder(:id).last.audited_changes
+      expect(changes.keys).to eq(["session_token"])
+      expect(changes.to_json).not_to include(user.session_token)
+    end
+  end
 end

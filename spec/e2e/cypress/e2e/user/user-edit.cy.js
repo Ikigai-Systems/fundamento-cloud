@@ -63,4 +63,20 @@ describe("User Edit", function() {
     cy.get('input[name="user[email]"]').should("have.value", "pawel@ikigai.systems");
     cy.get('input[name="user[first_name]"]').invoke("val").should("not.be.empty");
   });
+
+  it("signs out everywhere after confirming", function() {
+    cy.on("window:confirm", (text) => {
+      expect(text).to.eq("Sign out on every device, including this one?");
+      return true;
+    });
+
+    cy.contains("h2", "Signed-in devices", { matchCase: false }).should("be.visible");
+    cy.contains("button", "Sign out everywhere").click();
+
+    cy.url().should("include", "/users/sign_in");
+    cy.contains("You've been signed out on every device.").should("be.visible");
+
+    cy.visit("/users/edit");
+    cy.url().should("include", "/users/sign_in");
+  });
 });
