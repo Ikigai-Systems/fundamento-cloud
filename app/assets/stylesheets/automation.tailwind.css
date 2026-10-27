@@ -4,6 +4,8 @@
 
         pre {
             @apply bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto;
+            scrollbar-width: thin;
+            scrollbar-color: theme('colors.gray.500') theme('colors.gray.800');
         }
     }
 }
