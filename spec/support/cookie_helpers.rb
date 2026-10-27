@@ -11,6 +11,15 @@ module CookieHelpers
     jar = ActionDispatch::Cookies::CookieJar.build(request, cookies.to_hash)
     jar.encrypted[:organization_id]
   end
+
+  # Expiry the last response gave a cookie, or nil for a cookie that lasts only the browser session
+  def response_cookie_expiry(name)
+    line = Array(response.headers["Set-Cookie"]).flat_map { it.split("\n") }.find { it.start_with?("#{name}=") }
+    raise "response sets no #{name} cookie" unless line
+
+    expires = line[/expires=([^;]+)/i, 1]
+    expires && Time.httpdate(expires)
+  end
 end
 
 RSpec.configure do |config|

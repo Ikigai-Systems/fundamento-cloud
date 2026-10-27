@@ -19,6 +19,12 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Lasts a year rather than the browser session: iOS Safari drops session cookies whenever it
+  # unloads the tab, which sent people with several organizations back to the picker.
+  def remember_organization(organization)
+    cookies.encrypted[:organization_id] = { value: organization.id, expires: 1.year }
+  end
+
   # A form posted with a token the session no longer accepts — typically a page iOS Safari
   # restored from its cache after the session rotated. Rails answers 422, which a Turbo form
   # submission renders as nothing, so the button seems dead. Going back reloads the page with a

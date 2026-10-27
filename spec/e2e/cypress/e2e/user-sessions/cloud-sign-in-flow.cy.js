@@ -97,8 +97,8 @@ describe('Cloud sign-in flow', function () {
       cy.get('input[name="user[email]"]').type('password@example.com');
       cy.get('input[type=submit]').click();
 
-      // Step 2: Should see remember me checkbox
-      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible');
+      // Step 2: Should see remember me checkbox, checked by default
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').should('be.visible').and('be.checked');
       cy.contains('Remember me').should('be.visible');
     });
 
@@ -135,7 +135,8 @@ describe('Cloud sign-in flow', function () {
       cy.get('input[name="user[email]"]').type('password@example.com');
       cy.get('input[type=submit]').click();
 
-      // Step 2: Sign in without checking remember me
+      // Step 2: Uncheck remember me and sign in
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').uncheck();
       cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
       cy.get('input[name="user[password]"]').type('Password123!');
       cy.get('input[type=submit]').contains('Sign in with password').click();
@@ -171,8 +172,9 @@ describe('Cloud sign-in flow', function () {
     it('does not check remember me on password step when not checked on email step', () => {
       cy.visit('/users/sign_in');
 
-      // Step 1: Enter email without checking remember me
+      // Step 1: Enter email and uncheck remember me
       cy.get('input[name="user[email]"]').type('password@example.com');
+      cy.get('input[type="checkbox"][name="user[remember_me]"]').uncheck();
       cy.get('input[type="checkbox"][name="user[remember_me]"]').should('not.be.checked');
       cy.get('input[type=submit]').click();
 
