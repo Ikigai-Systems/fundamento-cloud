@@ -90,7 +90,7 @@
     /* Page tabs: links between sibling pages (Integrations). They look like the tabs above, with
        the current page marked by aria-current. */
     nav.page-tabs {
-        @apply -mb-px flex space-x-8 border-b border-gray-200 dark:border-gray-700 px-5;
+        @apply -mb-px flex gap-8 border-b border-gray-200 dark:border-gray-700 px-5;
     }
 
     nav.page-tabs a {
