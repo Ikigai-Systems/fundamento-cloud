@@ -1,4 +1,5 @@
 require "rails_helper"
+require "sentry/test_helper"
 
 RSpec.describe "MCP endpoint", type: :request do
   fixtures :users, :organizations, :organization_memberships, :oauth_applications, :oauth_access_tokens
@@ -115,6 +116,38 @@ RSpec.describe "MCP endpoint", type: :request do
       result = response.parsed_body["result"]
       expect(result["isError"]).to be(true)
       expect(JSON.parse(result.dig("content", 0, "text"))).to include("error" => "not_found")
+    end
+
+    it "names what wasn't found without the SQL behind the lookup" do
+      rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "read_document_tool", arguments: { id: "missing" } } })
+
+      expect(response.parsed_body.dig("result", "structuredContent", "message")).to eq("Document not found: missing")
+    end
+
+    context "when a tool fails" do
+      include Sentry::TestHelper
+
+      before do
+        Sentry.init do |config|
+          config.dsn = Sentry::TestHelper::DUMMY_DSN
+          config.background_worker_threads = 0
+        end
+        setup_sentry_test
+        allow(ListSpacesTool).to receive(:perform).and_raise(StandardError, "boom")
+      end
+
+      after do
+        teardown_sentry_test
+        Sentry.close
+      end
+
+      it "reports the error with the user and organization behind the request" do
+        rpc({ jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "list_spaces_tool", arguments: {} } })
+
+        expect(response.parsed_body.dig("result", "structuredContent", "error")).to eq("internal_error")
+        expect(last_sentry_event.user).to eq(id: users(:pawel).id)
+        expect(last_sentry_event.tags).to include(organization_id: organizations(:is).id)
+      end
     end
 
     it "serves a request of the 2026-07-28 stateless lifecycle" do
