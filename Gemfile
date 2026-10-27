@@ -67,7 +67,7 @@ gem "omniauth-rails_csrf_protection"
 
 gem "tailwindcss-rails", "~> 3.0"
 # pin to tailwindcss version:
-gem "tailwindcss-ruby", "3.4.17"
+gem "tailwindcss-ruby", "3.4.19"
 gem "vite_rails"
 gem "view_component"
 gem "reactionview"
