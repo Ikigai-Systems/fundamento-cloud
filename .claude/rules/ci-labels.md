@@ -1,0 +1,60 @@
+# CI skip labels
+
+A PR can skip CI steps it cannot affect. The `ci-labels` action
+(`.github/actions/ci-labels/`) decides from the changed paths and writes three labels:
+
+- `skip-rspec`: the Rails specs may be skipped.
+- `skip-e2e`: the Cypress run may be skipped.
+- `skip-deploy`: the cloud package/deploy and the standalone publish may be skipped.
+
+Which paths each label covers lives in `rules.yml` next to the action. Don't copy the lists
+elsewhere. `skip-deploy` also follows `.dockerignore`: a path in the Docker build context never
+skips, except `spec/**` and root `*.md`, which the production and standalone stages never copy.
+
+## Rules of thumb
+
+- **Fail safe.** Any error, a fork PR, a direct push, `workflow_dispatch`, an empty file list or
+  3000+ changed files means no labels: everything runs and deploys. Unknown paths run too.
+- **Lint & Typecheck always runs.** Labels never touch it. Its `ci-labels-specs` job runs
+  `spec/ci` there, so a bug in the rules can't label its own PR `skip-rspec` and skip the specs
+  that would catch it. It uses the runner's Ruby and installs only the gems `spec_helper` loads
+  (rspec, `warning`) at their `Gemfile.lock` versions: keep `spec/ci` and `spec_helper.rb` free
+  of anything else from the bundle.
+- **Changing a workflow, or a local action it uses, runs that workflow**, whatever the paths say.
+- **No `paths-ignore` on any trigger.** A job skipped by its `if:` reports *skipped*, which a
+  required check accepts; a workflow that a path filter never starts leaves a required check
+  pending. So these checks can become required later. Don't reintroduce path filters.
+- `[skip-tests]` / `[skip-deploy]` in commit messages no longer do anything.
+
+## Overriding by hand
+
+Add or remove a label on the PR. Any label change re-runs the RSpec and E2E checks under the
+current labels. The override lasts until the next push: the labeler recomputes from the paths on
+`opened` / `synchronize` / `reopened` and overwrites your change. A label event recomputes too
+when the PR head has no `ci-labels` status (the labeler failed or hasn't finished), so an
+override on such a commit doesn't stick: wait for the status, then change the label again.
+
+## Why the `ci-labels` status
+
+The labeler sets a `ci-labels` commit status on the PR head once it has written the labels.
+After merge, `master` workflows (the push and `workflow_run` triggers) read the labels of the
+merged PR only if that status is present. Without it the labels might be stale or hand-made, so
+master ignores them and runs everything. Labels written with `GITHUB_TOKEN` don't trigger
+workflows, so each workflow runs its own `decide` job rather than waiting for the labeler.
+
+## Every master commit runs
+
+Run Tests and E2E group their concurrency by commit on `push`, by ref otherwise. A shared
+group on `master` would let a newer queued run replace an older pending one, which is harmless
+only if every commit runs the same steps. With per-commit decisions it isn't: a docs-only commit
+that skips the deploy could replace a pending run for app code, which then never gets tested or
+deployed. Pull requests keep cancelling their older runs. The deploy and standalone publish
+still queue in their own groups, which only runs that actually deploy reach.
+
+## Changing the rules
+
+Add a path to the matching list in `rules.yml` (`skippable`, `except`, or the shared `no_check`).
+`bin/rspec spec/ci` pins the expectations: add a case there for the new path, in the same change.
+
+The action is meant to move to `release-kit` once it has proven itself, so keep it free of
+anything specific to this repository.

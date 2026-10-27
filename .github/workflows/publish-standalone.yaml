@@ -1,0 +1,118 @@
+name: "Publish: fundamento-standalone"
+
+on: workflow_call
+
+env:
+  REGISTRY: ghcr.io
+  NODE_MAJOR: 24
+  IMAGE_NAME: fundamento
+
+jobs:
+  build-platform-images:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            tag-suffix: -amd64
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            tag-suffix: -arm64
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Docker build setup
+        id: build-setup
+        uses: ./.github/actions/docker-build-setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Platform-specific tags (suffixed with -amd64 / -arm64)
+      # These are intermediate — the merge job combines them into final multi-arch tags
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            suffix=${{ matrix.tag-suffix }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=raw,value=${{ steps.build-setup.outputs.released-version }},enable=${{ steps.build-setup.outputs.released-version != '' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NODE_MAJOR=${{ env.NODE_MAJOR }}
+            RAILS_ENV=standalone
+          target: standalone
+          cache-from: |
+            type=gha,scope=${{ env.IMAGE_NAME }}-${{ matrix.platform }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest${{ matrix.tag-suffix }}
+          cache-to: type=gha,mode=max,scope=${{ env.IMAGE_NAME }}-${{ matrix.platform }}
+
+  create-multi-arch-manifest:
+    runs-on: ubuntu-latest
+    needs: build-platform-images
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Docker build setup
+        id: build-setup
+        uses: ./.github/actions/docker-build-setup
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Final user-facing tags (no platform suffix)
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=raw,value=${{ steps.build-setup.outputs.released-version }},enable=${{ steps.build-setup.outputs.released-version != '' }}
+
+      - name: Create multi-arch manifests
+        run: |
+          echo '${{ steps.meta.outputs.tags }}' | while read -r TAG; do
+            [ -z "$TAG" ] && continue
+            echo "Creating manifest for: $TAG"
+            docker buildx imagetools create \
+              --tag "$TAG" \
+              "${TAG}-amd64" \
+              "${TAG}-arm64"
+          done
+
+  notify-fundamento-cli:
+    runs-on: ubuntu-latest
+    needs: create-multi-arch-manifest
+    permissions:
+      contents: read
+    steps:
+      - name: Trigger Fundamento CLI integration tests
+        uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 # v4.0.1
+        with:
+          token: ${{ secrets.FUNDAMENTO_CLI_PAT }}
+          repository: Ikigai-Systems/fundamento-cli
+          event-type: fundamento-standalone-image-published
+          client-payload: '{"version": "${{ needs.create-multi-arch-manifest.outputs.version }}"}'

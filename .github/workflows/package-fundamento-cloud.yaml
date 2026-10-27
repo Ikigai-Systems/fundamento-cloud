@@ -10,23 +10,42 @@ on:
   # `branches` matches the head branch name only, so a pull request from a fork's own `master`
   # also triggers this. The jobs check that the tests ran for a push to this repository.
 
-# One production deploy at a time. Overlapping deploys finish in any order, so an older one
-# could roll production back. A running deploy is never cancelled; GitHub keeps one waiting and
-# drops older waiting ones, which loses nothing because each build checks out the current master.
-# Runs that will skip the deploy (failed tests, [skip-deploy]) get a group of their own, so they
-# can't take the waiting slot from one that deploys.
-concurrency:
-  group: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') && 'production-deploy' || format('production-deploy-noop-{0}', github.run_id) }}
-  cancel-in-progress: false
-
 env:
   REGISTRY: ghcr.io
   NODE_MAJOR: 24
 
 jobs:
+  # Whether this change may skip the deploy comes from its changed paths: see .github/actions/ci-labels.
+  decide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped')
+    permissions:
+      contents: read
+      pull-requests: read
+      statuses: read
+    outputs:
+      skip_deploy: ${{ steps.decide.outputs.skip_deploy }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: decide
+        uses: ./.github/actions/ci-labels
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  # One production deploy at a time. Overlapping deploys finish in any order, so an older one
+  # could roll production back. A running deploy is never cancelled; GitHub keeps one waiting and
+  # drops older waiting ones, which loses nothing because each build checks out the current master.
+  # Runs that skip the deploy (failed tests, skip-deploy) never reach the group, so they can't
+  # take the waiting slot from one that deploys.
   build-and-push-images:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository && (github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'skipped') && !contains(github.event.workflow_run.head_commit.message, '[skip-deploy]') }}
+    needs: decide
+    if: needs.decide.outputs.skip_deploy != 'true'
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
     permissions:
       contents: read
       packages: write
