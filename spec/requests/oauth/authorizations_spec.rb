@@ -89,6 +89,13 @@ RSpec.describe "OAuth authorization", type: :request do
       expect(exchange_code_for_token.organization_membership_id).to eq("om_hc_pawel")
     end
 
+    it "names the organization on the consent page" do
+      sign_in pawel
+      authorize_for("http://www.example.com/api/mcp/organizations/hc")
+
+      expect(response.body).to include("connect to #{organizations(:hc).name} in Fundamento")
+    end
+
     it "refuses an organization the user isn't in, rather than picking another" do
       sign_in users(:maria)
 
