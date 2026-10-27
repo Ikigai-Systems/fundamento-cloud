@@ -49,7 +49,21 @@ class Api::McpController < Api::ApiController
       },
     )
 
-    render(json: server.handle_json(request.body.read))
+    # A server is built per request, so no session outlives it: stateless mode stops `initialize` from
+    # promising list-changed notifications we can't deliver, and `render` can't hold open the SSE stream
+    # `subscriptions/listen` needs. Rails' host authorization already checks Host; the transport still
+    # checks Origin.
+    transport = MCP::Server::Transports::StreamableHTTPTransport.new(
+      server,
+      stateless: true,
+      enable_json_response: true,
+      serve_subscriptions_listen: false,
+      allowed_hosts: [request.host],
+    )
+    status, headers, body = transport.handle_request(request)
+
+    response.headers.merge!(headers.except("content-type"))
+    render(body: body.join, status: status, content_type: headers["content-type"])
   end
 
   alias_method :show, :create
