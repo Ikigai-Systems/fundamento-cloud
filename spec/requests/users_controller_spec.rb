@@ -76,5 +76,12 @@ RSpec.describe "Users JSON", type: :request do
       expect(result["display_name"]).to eq(pawel.display_name)
       expect(result["avatar_url"]).to include("avatar.png")
     end
+
+    # A people cell or mention shows "Deleted user" on a 404.
+    it "answers 404 for someone outside the organization" do
+      get user_path(users(:maria), format: :json)
+
+      expect(response).to have_http_status(:not_found)
+    end
   end
 end
