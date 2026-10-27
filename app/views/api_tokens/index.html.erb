@@ -24,6 +24,19 @@
   <div class="table-legend">
     <div class="table-legend-description">
       <p>A list of all API tokens you created for this organization.</p>
+      <p>
+        An API token lets a program act as you in <strong><%= current_organization.name %></strong>, with your
+        permissions. Send it as a <code>Bearer</code> token in the <code>Authorization</code> header to:
+      </p>
+      <ul class="list-disc pl-5">
+        <li>call the REST API under <code>/api/v1</code>: spaces, documents, tables, formulas, imports, automations and packs;</li>
+        <li>sign in the <code>funcli</code> command-line client;</li>
+        <li>connect an MCP client that sends a header instead of signing in.</li>
+      </ul>
+      <p>
+        A token works for this organization only. To connect an AI assistant that can sign in on its own, use
+        <%= link_to "AI Assistants", ai_assistants_path, class: "underline" %> instead, which needs no token.
+      </p>
     </div>
   </div>
 

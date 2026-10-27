@@ -2,7 +2,7 @@
   <h1 class="form-header"><%= @pre_auth.client.name %></h1>
 
   <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
-    wants to connect to your Fundamento workspace.
+    wants to connect to <%= selected_organization ? "#{selected_organization.name} in Fundamento" : "your Fundamento workspace" %>.
   </p>
 
   <% if @pre_auth.scopes.any? %>

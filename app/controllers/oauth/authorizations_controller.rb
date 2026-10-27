@@ -5,6 +5,8 @@ class Oauth::AuthorizationsController < Doorkeeper::AuthorizationsController
 
   before_action :ensure_organization_selected!, only: [:new, :create]
 
+  helper_method :selected_organization
+
   private
 
   MCP_ORGANIZATION_PATH = %r{\A/api/mcp/organizations/(?<id>[^/]+)\z}
@@ -49,6 +51,10 @@ class Oauth::AuthorizationsController < Doorkeeper::AuthorizationsController
   # when it belongs to the approving user.
   def pre_auth_params
     super.merge(organization_membership_id: selected_organization_membership&.id)
+  end
+
+  def selected_organization
+    selected_organization_membership&.organization
   end
 
   def selected_organization_membership
