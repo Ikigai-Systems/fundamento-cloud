@@ -21,4 +21,4 @@ bin/worktree gc
 
 # --no-create-session-in-dir: otherwise one session works in the main checkout itself, where a
 # branch switch moves HEAD for everyone else.
-exec claude remote-control --spawn=worktree --no-create-session-in-dir --permission-mode auto "$@"
+exec claude remote-control --spawn=worktree --permission-mode auto "$@"
