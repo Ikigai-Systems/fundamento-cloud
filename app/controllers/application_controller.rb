@@ -76,7 +76,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # The page exists only as HTML; a JSON request would otherwise fail on the missing
+  # template with a 500, which React can't tell apart from a server error.
   def access_denied
+    return head :forbidden unless request.format.html?
+
     render "application/access_denied",
       layout: "application",
       status: :forbidden
