@@ -18,7 +18,7 @@ RSpec.describe CiLabels::Rules do
     [".github/workflows/package-fundamento-cloud.yaml"] => [true, true, false],
     [".github/workflows/publish-standalone.yaml"] => [true, true, false],
     [".github/actions/ci-labels/rules.yml"] => [false, false, false],
-    [".github/actions/setup-sops/action.yaml"] => [false, false, false],
+    [".github/actions/setup-sops/action.yaml"] => [false, false, true],
     [".github/actions/docker-build-setup/action.yaml"] => [true, true, false],
     ["app/models/user.rb", "CLAUDE.md"] => [false, false, false],
     ["version.txt", "CHANGELOG.md", ".release-please-manifest.json"] => [false, false, false],
@@ -48,9 +48,10 @@ RSpec.describe CiLabels::Rules do
     it "follows local actions referenced from the label's workflows" do
       expect(rules.trigger_paths("skip-deploy")).to include(
         ".github/workflows/package-fundamento-cloud.yaml",
-        ".github/actions/setup-sops/",
+        ".github/workflows/publish-standalone.yaml",
         ".github/actions/docker-build-setup/"
       )
+      expect(rules.trigger_paths("skip-rspec")).to include(".github/actions/setup-sops/")
     end
   end
 end
