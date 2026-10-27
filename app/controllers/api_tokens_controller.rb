@@ -39,7 +39,7 @@ class ApiTokensController < ApplicationController
 
     @api_token.destroy!
 
-    redirect_to user_api_tokens_path(current_user), notice: "API Token was removed."
+    redirect_to api_tokens_path, notice: "API Token was removed."
   end
 
   protected
@@ -49,6 +49,6 @@ class ApiTokensController < ApplicationController
   end
 
   def ensure_turbo_request
-    redirect_to user_api_tokens_path(current_user) unless turbo_frame_request?
+    redirect_to api_tokens_path unless turbo_frame_request?
   end
 end

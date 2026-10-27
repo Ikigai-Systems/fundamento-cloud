@@ -48,7 +48,7 @@ const PAGES = {
   "/teams/new": "/teams/new",
   "/teams/:id": "/teams/:team",
   "/teams/:id/edit": "/teams/:team/edit",
-  "/mcp": "/mcp",
+  "/integrations/ai-assistants": "/integrations/ai-assistants",
   "/users/edit": "/users/edit",
   "/users/invitation/new": "/users/invitation/new",
   "/users/confirmation/pending": "/users/confirmation/pending",
@@ -71,7 +71,8 @@ const NOT_PAGES = {
   ...reasons("redirects to a page crawled under another route", [
     "/d/:id", "/spaces/:space_id/documents/:id", "/spaces/:space_id/documents/:id/edit",
     "/spaces/:space_id/tables/:id", "/spaces/:space_id/tables/:id/edit", "/oauth/authorize",
-    "/public_links/:id", "/users/:user_id/avatar/edit", "/users/:user_id/api_tokens/new",
+    "/public_links/:id", "/users/:user_id/avatar/edit", "/integrations/api-tokens/new",
+    "/integrations", "/mcp", "/users/:user_id/api_tokens",
     "/organization_memberships/:id/change_password",
   ]),
   ...reasons("loaded into a page, not visited on its own", [
@@ -113,7 +114,7 @@ const NOT_PAGES = {
     "/superintendent/password/new", "/superintendent/confirmation/new", "/superintendent/unlock/new",
   ]),
   // Visited as a page, so it belongs in PAGES once it renders in the E2E environment
-  "/users/:user_id/api_tokens": "fails in the E2E environment, which has no Active Record encryption key",
+  "/integrations/api-tokens": "fails in the E2E environment, which has no Active Record encryption key",
   "/t/:table_id/versions/:id": "the fixtures have no table version, so it redirects to the list",
   "/organization_memberships/new": "forbidden to the crawling user, who doesn't manage the organization",
 }

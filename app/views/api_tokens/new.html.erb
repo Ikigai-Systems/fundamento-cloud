@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "modal" do %>
-  <%= form_for(@api_token, url: user_api_tokens_path(current_user),
+  <%= form_for(@api_token, url: api_tokens_path,
     html: { class: "default-form" },
     data: { controller: "prevent-double-submit" }) do |f|
   %>

@@ -23,9 +23,9 @@ describe("AI Assistants", function() {
 
     cy.visit("/");
     cy.get("#user-dropdown").click();
-    cy.contains("[role=menu] a", "AI Assistants").click();
+    cy.contains("[role=menu] a", "Integrations").click();
 
-    cy.url().should("eq", `${Cypress.config().baseUrl}/mcp`);
+    cy.url().should("eq", `${Cypress.config().baseUrl}/integrations/ai-assistants`);
     cy.get("[data-testid=mcp-url]").should("have.value", mcpUrl);
     cy.contains("This URL is for HeroCoders only");
 
