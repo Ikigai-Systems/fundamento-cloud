@@ -8,7 +8,7 @@ class Api::McpController < Api::ApiController
     server = MCP::Server.new(
       name: Rails.application.class.module_parent_name.underscore.dasherize,
       title: "Fundamento",
-      version: "1.0.1",
+      version: Fundamento::VERSION,
       description: "Collaborative workspace platform for documents and structured data.",
       website_url: "https://fundamento.cloud",
       instructions: <<~INSTRUCTIONS,

@@ -95,6 +95,15 @@ RSpec.describe "MCP endpoint", type: :request do
       expect(response.parsed_body.dig("result", "capabilities", "tools")).to eq({})
     end
 
+    it "reports the app's version as the server version" do
+      rpc({
+        jsonrpc: "2.0", id: 1, method: "initialize",
+        params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "spec", version: "1" } },
+      })
+
+      expect(response.parsed_body.dig("result", "serverInfo", "version")).to eq(Fundamento::VERSION)
+    end
+
     it "acknowledges a notification with 202 Accepted" do
       rpc({ jsonrpc: "2.0", method: "notifications/initialized" })
 
