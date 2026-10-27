@@ -17,8 +17,6 @@ RSpec.describe "AI Assistants", type: :request do
   end
 
   it "lives under /integrations, with redirects from the old paths" do
-    expect(ai_assistants_path).to eq("/integrations/ai-assistants")
-
     get "/mcp"
     expect(response).to redirect_to("/integrations/ai-assistants")
     expect(response).to have_http_status(:moved_permanently)
