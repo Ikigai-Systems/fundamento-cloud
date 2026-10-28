@@ -71,6 +71,6 @@ describe("Content frame navigation — sidebar stability", function () {
     cy.url().should("include", "/d/does-not-exist");
     cy.contains("Content missing").should("not.exist");
     cy.get("#content").should("not.exist");
-    cy.get("body").invoke("text").should("not.be.empty");
+    cy.contains("RecordNotFound");
   });
 });
