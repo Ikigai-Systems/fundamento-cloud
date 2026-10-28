@@ -183,4 +183,79 @@ RSpec.describe MarkdownFrontmatter do
       expect(instance.frontmatter_icon("🔥")).to be_nil
     end
   end
+
+  describe "#build_frontmatter" do
+    fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_contents
+
+    let(:document) { documents(:one) }
+
+    def tag!(document, *names)
+      TagsService.new(object: document, organization: document.organization).update_tags(names)
+    end
+
+    it "emits title, tags, icon and color in that order, framed by --- lines and a blank line" do
+      document.assign_title_and_icon(title: "Plan", icon: "🔥")
+      document.assign_color("indigo")
+      document.save!
+      tag!(document, "#blog", "ikigai/blog")
+
+      block = instance.build_frontmatter(document.reload)
+
+      expect(block).to start_with("---\ntitle: Plan\n")
+      expect(block).to end_with("---\n\n")
+      keys = block.lines.grep(/\A[a-z\/]+:/).map { |line| line[/\A[a-z\/]+/] }
+      expect(keys).to eq(["title", "tags", "fundamento/icon", "fundamento/color"])
+    end
+
+    it "omits tags, icon and color when the document has none" do
+      document.update!(title: "Plain", color: nil, icon_type: nil, icon_value: nil)
+
+      expect(instance.build_frontmatter(document.reload)).to eq("---\ntitle: Plain\n---\n\n")
+    end
+
+    it "writes tag names without a leading #, which import accepts" do
+      tag!(document, "#Blog")
+
+      _body, data = instance.extract_frontmatter(instance.build_frontmatter(document.reload) + "body")
+
+      expect(data["tags"]).to eq(["blog"])
+    end
+
+    [
+      ["a colon", "Plan: Q4"],
+      ["a leading #", "#1 priority"],
+      ["quotes", "Plan: Q4 \"launch\" #1 and 'more'"],
+      ["template braces", "Hello {{x}} there"],
+      ["only template braces", "{{x}}"],
+      ["a quoted template", "Say \"{{x}}\" now"],
+      ["a number", "123"],
+      ["true", "true"],
+      ["null", "null"],
+      ["a date", "2024-01-01"],
+      ["a line break", "Line one\nLine two"],
+      ["a --- line", "Above\n---\nBelow"],
+      ["an emoji", "Launch 🚀 day"],
+      ["a trailing space", "Trailing "],
+      ["a leading space", " Leading"],
+      ["a very long title", "Long " * 200],
+      ["a backslash", "C:\\path\\file"],
+      ["a dash", "- not a list"],
+    ].each do |label, title|
+      it "round trips a title with #{label}" do
+        document.assign_title_and_icon(title: title, icon: "🔥")
+        document.assign_color("teal")
+        document.save!
+        tag!(document, "alpha", "beta/gamma")
+        document.reload
+
+        body, data = instance.extract_frontmatter(instance.build_frontmatter(document) + "body")
+
+        expect(body).to eq("body")
+        expect(data["title"]).to eq(document.title)
+        expect(data["tags"]).to match_array(["alpha", "beta/gamma"])
+        expect(instance.frontmatter_icon(data)).to eq("🔥")
+        expect(instance.frontmatter_color(data)).to eq("teal")
+      end
+    end
+  end
 end

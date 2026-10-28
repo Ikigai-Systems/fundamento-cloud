@@ -68,7 +68,9 @@ module Api
           end
 
           format.md do
-            render locals: { content: BlocknoteConverterService.blocks_to_markdown(blocks) }
+            # Opt in with exactly `frontmatter=true`; any other value leaves the output as it was.
+            frontmatter = params[:frontmatter] == "true" ? DocumentService.new(pundit_user: pundit_user).build_frontmatter(document) : ""
+            render locals: { content: BlocknoteConverterService.blocks_to_markdown(blocks), frontmatter: frontmatter }
           end
         end
       end

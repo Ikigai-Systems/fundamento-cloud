@@ -54,6 +54,37 @@ RSpec.describe ReadDocumentTool, type: :model do
       end
     end
 
+    context "frontmatter option" do
+      let(:document) { documents(:one) }
+
+      before do
+        document.assign_title_and_icon(title: "Plan: Q4", icon: "🔥")
+        document.assign_color("indigo")
+        document.save!
+        TagsService.new(object: document, organization: organization).update_tags(["blog"])
+      end
+
+      def read(**options)
+        response = ReadDocumentTool.call(id: document.id, server_context: server_context, **options)
+        JSON.parse(response.content.first[:text])
+      end
+
+      it "default content has no frontmatter" do
+        expect(read["content"]).to eq(File.read("app/templates/space.markdown"))
+        expect(read(frontmatter: false)["content"]).to eq(File.read("app/templates/space.markdown"))
+      end
+
+      it "frontmatter: true prefixes content, structured fields unchanged" do
+        plain = read
+        with_frontmatter = read(frontmatter: true)
+
+        expect(with_frontmatter.except("content")).to eq(plain.except("content"))
+        expect(with_frontmatter["content"]).to eq(
+          "---\ntitle: 'Plan: Q4'\ntags:\n- blog\nfundamento/icon: \"🔥\"\nfundamento/color: indigo\n---\n\n" + plain["content"]
+        )
+      end
+    end
+
     context "document not found" do
       it "returns not found error response" do
         response = ReadDocumentTool.call(

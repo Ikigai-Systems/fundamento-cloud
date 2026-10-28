@@ -120,6 +120,78 @@ RSpec.describe "Api::V1::Documents", type: :request do
       end
     end
 
+    context "with the frontmatter parameter" do
+      let(:markdown) { "# Hello World\n\nThis is markdown content." }
+      let(:headers) { { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" } }
+
+      before do
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(markdown)
+      end
+
+      def style_document!
+        document_one.assign_title_and_icon(title: "Plan: Q4 \"launch\" #1", icon: "🔥")
+        document_one.assign_color("indigo")
+        document_one.save!
+        TagsService.new(object: document_one, organization: ikigai_systems).update_tags(["blog", "ikigai/blog"])
+      end
+
+      it "default markdown output has no frontmatter" do
+        style_document!
+
+        get "/api/v1/documents/#{document_one.id}.md", headers: headers
+
+        expect(response.body).to eq(markdown)
+      end
+
+      it "frontmatter=true includes title, tags, fundamento/icon and fundamento/color" do
+        style_document!
+
+        get "/api/v1/documents/#{document_one.id}.md?frontmatter=true", headers: headers
+
+        expect(response).to have_http_status(:ok)
+        body, data = Class.new { include MarkdownFrontmatter }.new.extract_frontmatter(response.body)
+        expect(data).to eq(
+          "title" => "Plan: Q4 \"launch\" #1",
+          "tags" => ["blog", "ikigai/blog"],
+          "fundamento/icon" => "🔥",
+          "fundamento/color" => "indigo"
+        )
+        expect(body).to eq(markdown)
+        expect(response.body).to end_with("---\n\n#{markdown}")
+      end
+
+      it "frontmatter=true omits keys that are empty (no tags, no icon, no color)" do
+        document_one.update!(title: "Bare", color: nil, icon_type: nil, icon_value: nil)
+
+        get "/api/v1/documents/#{document_one.id}.md?frontmatter=true", headers: headers
+
+        expect(response.body).to eq("---\ntitle: Bare\n---\n\n#{markdown}")
+      end
+
+      %w[1 yes false TRUE].each do |value|
+        it "frontmatter=#{value} is off" do
+          style_document!
+
+          get "/api/v1/documents/#{document_one.id}.md?frontmatter=#{value}", headers: headers
+
+          expect(response.body).to eq(markdown)
+        end
+      end
+
+      it "the JSON format ignores the parameter" do
+        style_document!
+
+        get "/api/v1/documents/#{document_one.id}.json", headers: headers
+        plain = response.parsed_body
+
+        get "/api/v1/documents/#{document_one.id}.json?frontmatter=true", headers: headers
+
+        expect(response.parsed_body).to eq(plain)
+        expect(response.parsed_body["content"]).to eq([])
+      end
+    end
+
     context "when document has versions" do
       it "returns content from the latest version" do
         # Create a version for the document

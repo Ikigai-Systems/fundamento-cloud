@@ -362,4 +362,27 @@ RSpec.describe ImportDocumentJob, type: :job do
       end
     end
   end
+
+  describe "importing an exported frontmatter block" do
+    fixtures :documents, :object_contents
+
+    it "reproduces title, tags, icon and color" do
+      source = documents(:one)
+      source.assign_title_and_icon(title: "Plan: Q4 \"launch\" #1 {{x}}", icon: "🔥")
+      source.assign_color("indigo")
+      source.save!
+      TagsService.new(object: source, organization: org).update_tags(["blog", "ikigai/blog"])
+      exported = Class.new { include MarkdownFrontmatter }.new.build_frontmatter(source.reload) + "Body"
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
+      import_file = build_import_file(relative_path: "Notes/exported.md", content: exported)
+
+      described_class.perform_now(import_file)
+
+      imported = import_file.reload.document
+      expect(imported.title).to eq("Plan: Q4 \"launch\" #1 {{x}}")
+      expect(imported.icon).to eq(Icon.emoji("🔥"))
+      expect(imported.color).to eq("indigo")
+      expect(imported.tags.map(&:name)).to match_array(["blog", "ikigai/blog"])
+    end
+  end
 end

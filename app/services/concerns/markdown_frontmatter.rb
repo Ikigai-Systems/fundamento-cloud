@@ -47,6 +47,34 @@ module MarkdownFrontmatter
     Icon.single_emoji?(value) ? value : nil
   end
 
+  # The frontmatter block for a document, in the form the importers read back: `title`, then
+  # `tags` (names without a leading #), `fundamento/icon` and `fundamento/color`, each only
+  # when present. Built from a Hash and dumped as YAML, never by interpolation, so awkward
+  # titles stay a single string value.
+  #
+  # `quote_template_variables` rewrites any line holding `{{` by wrapping its value in double
+  # quotes, which would turn a dumped `'{{x}}'` into a string with literal quote characters.
+  # A scalar containing `{{` is therefore written as a double-quoted string with its braces
+  # escaped, so the line never contains `{{` and the import helper leaves it alone. Emoji get
+  # the same double-quoted form, because Psych would write them as `\U0001F525` escapes.
+  def build_frontmatter(document)
+    data = {"title" => document.title.to_s}
+    tag_names = document.tags.map(&:name).sort
+    data["tags"] = tag_names if tag_names.any?
+    data["fundamento/icon"] = document.icon.value if document.icon
+    data["fundamento/color"] = document.color if document.color.present?
+
+    lines = data.map do |key, value|
+      if value.is_a?(String) && (value.include?("{{") || value.each_char.any? { |char| char.ord > 0xFFFF })
+        "#{key}: #{JSON.generate(value).gsub("{", "\\u007B")}\n"
+      else
+        YAML.dump({key => value}).delete_prefix("---\n")
+      end
+    end
+
+    "---\n#{lines.join}---\n\n"
+  end
+
   private
 
   def quote_template_variables(yaml_text)

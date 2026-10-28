@@ -116,4 +116,48 @@ RSpec.describe DocumentService do
       end
     end
   end
+
+  describe "round trip of an exported frontmatter block" do
+    let(:exporter) { Class.new { include MarkdownFrontmatter }.new }
+    let(:title) { "Plan: Q4 \"launch\" #1 {{x}}" }
+    let(:source) do
+      documents(:one).tap do |doc|
+        doc.assign_title_and_icon(title: title, icon: "🔥")
+        doc.assign_color("indigo")
+        doc.save!
+        TagsService.new(object: doc, organization: organization).update_tags(["blog", "ikigai/blog"])
+      end.reload
+    end
+    let(:exported) { exporter.build_frontmatter(source) + "Body" }
+
+    def tag_names(document)
+      document.tags.reload.map(&:name)
+    end
+
+    it "update! reproduces icon, color and tags" do
+      target = documents(:two)
+
+      service.update!(document_id: target.id, markdown: exported)
+
+      target.reload
+      expect(target.icon).to eq(Icon.emoji("🔥"))
+      expect(target.color).to eq("indigo")
+      expect(tag_names(target)).to match_array(["blog", "ikigai/blog"])
+    end
+
+    it "create! reproduces icon, color and tags" do
+      created = service.create!(space_id: space.id, title: "Whatever", markdown: exported).reload
+
+      expect(created.icon).to eq(Icon.emoji("🔥"))
+      expect(created.color).to eq("indigo")
+      expect(tag_names(created)).to match_array(["blog", "ikigai/blog"])
+    end
+
+    it "the exported title is the stored title and survives extract_frontmatter" do
+      _body, data = exporter.extract_frontmatter(exported)
+
+      expect(data["title"]).to eq(source.title)
+      expect(data["title"]).to eq(title)
+    end
+  end
 end

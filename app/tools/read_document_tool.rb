@@ -4,6 +4,10 @@ class ReadDocumentTool < ApplicationTool
   input_schema(
     properties: {
       id: { type: :string },
+      frontmatter: {
+        type: :boolean,
+        description: "Prefix the Markdown content with a YAML frontmatter block holding title, tags, icon and color. Default false."
+      },
     },
     required: [:id]
   )
@@ -14,18 +18,21 @@ class ReadDocumentTool < ApplicationTool
     destructive_hint: false,
   )
 
-  def self.perform(id:, server_context:)
+  def self.perform(id:, server_context:, frontmatter: false)
     pundit_user = pundit_user_from_context(server_context)
 
     document  = pundit_user.current_organization.documents.find(id)
 
     Pundit.authorize(pundit_user, document, :show?)
 
-    MCP::Tool::Response.new([
-      {
-        type: "text",
-        text: DocumentBlueprint.render(document, view: :mcp)
-      }
-    ])
+    text = if frontmatter == true
+      json = JSON.parse(DocumentBlueprint.render(document, view: :mcp))
+      json["content"] = DocumentService.new(pundit_user: pundit_user).build_frontmatter(document) + json["content"]
+      json.to_json
+    else
+      DocumentBlueprint.render(document, view: :mcp)
+    end
+
+    MCP::Tool::Response.new([{type: "text", text: text}])
   end
 end
