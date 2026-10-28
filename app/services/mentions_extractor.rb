@@ -1,6 +1,6 @@
 # object_icon comes straight off the already-loaded record. The title is stored
 # clean, so there is nothing to derive here any more.
-Mention = Struct.new(:mention_id, :object_title, :object_icon, :object_path, :created_at)
+Mention = Struct.new(:mention_id, :object_title, :object_icon, :object_color, :object_path, :created_at)
 
 class MentionsExtractor
   extend Rails.application.routes.url_helpers
@@ -34,6 +34,7 @@ class MentionsExtractor
         created_at: ref.created_at,
         object_title: doc.title,
         object_icon: doc.icon,
+        object_color: doc.color,
         object_path: mention_path_for(ref, doc, versions_by_id)
       )
     end.compact

@@ -115,8 +115,20 @@ RSpec.describe "GET /search", type: :request do
       result = search("checklist").first
 
       expect(result.keys).to match_array(%w[object space])
-      expect(result["object"].keys).to match_array(%w[id title icon parent_path type])
+      expect(result["object"].keys).to match_array(%w[id title icon color parent_path type])
       expect(result["space"].keys).to eq(%w[name])
+    end
+
+    it "returns color for documents and tables in search results" do
+      document("Colored Checklist").update!(color: "indigo")
+      document("Plain Checklist")
+      Table.find_by!(name: "Users").update!(color: "slate")
+
+      checklists = search("checklist").to_h { [_1.dig("object", "title"), _1.dig("object", "color")] }
+      expect(checklists).to eq("Colored Checklist" => "indigo", "Plain Checklist" => nil)
+
+      users_table = search("Users").find { _1.dig("object", "type") == "Table" }
+      expect(users_table.dig("object", "color")).to eq("slate")
     end
 
     it "sends the containing space's name for a document" do

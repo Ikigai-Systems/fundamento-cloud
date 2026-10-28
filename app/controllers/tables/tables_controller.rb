@@ -18,12 +18,12 @@ class Tables::TablesController < ApplicationController
     query = params[:query]
     @tables = @tables.where.like(name: "%#{query}%") if query.present?
 
-    @tables = @tables.select(:id, :name, :icon_type, :icon_value) if params[:mention].to_b
+    @tables = @tables.select(:id, :name, *HasIcon::COLUMNS, *HasColor::COLUMNS) if params[:mention].to_b
 
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: @tables, only: [:id, :name, :icon_type, :icon_value]
+          render json: @tables, only: [:id, :name, *HasIcon::COLUMNS, *HasColor::COLUMNS]
         else
           render json: @tables
         end

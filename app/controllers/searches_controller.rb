@@ -28,13 +28,13 @@ class SearchesController < ApplicationController
 
   # Never `select *`: documents.sync is the Y.js CRDT blob, megabytes per space, and the
   # palette never looks at it. HasIcon::COLUMNS is named rather than restated so a narrowed
-  # select cannot forget the icon.
+  # select cannot forget the icon or the color.
   def documents
     @documents ||= policy_scope(current_organization.documents)
       .without_archived
       .where(space_id: unarchived_space_ids)
       .matching_title(query)
-      .select(:id, :title, :space_id, :updated_at, *HasIcon::COLUMNS)
+      .select(:id, :title, :space_id, :updated_at, *HasIcon::COLUMNS, *HasColor::COLUMNS)
       .limit(PER_TYPE_LIMIT)
       .to_a
   end
@@ -44,7 +44,7 @@ class SearchesController < ApplicationController
       .without_archived
       .where(space_id: unarchived_space_ids)
       .matching_title(query)
-      .select(:id, :name, :space_id, :updated_at, *HasIcon::COLUMNS)
+      .select(:id, :name, :space_id, :updated_at, *HasIcon::COLUMNS, *HasColor::COLUMNS)
       .limit(PER_TYPE_LIMIT)
       .to_a
   end
@@ -122,6 +122,8 @@ class SearchesController < ApplicationController
         id: record.id,
         title: record.title,
         icon: record.icon,
+        # try: Space records also come through here and have no color column.
+        color: record.try(:color),
         parent_path: record.is_a?(Document) ? paths.path_for(record.id) : "",
         type: record.class.to_s,
       },

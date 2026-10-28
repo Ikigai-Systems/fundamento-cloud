@@ -37,6 +37,20 @@ RSpec.describe SidebarConnectionsTab, type: :component do
     expect(rendered_content).not_to include(target.title)
   end
 
+  it "connections list carries the referenced object's color" do
+    target.update!(color: "magenta")
+    # Exercises the narrowed select in with_link_details directly; replace with a
+    # rendered-HTML assertion once the view renders color.
+    component = described_class.new(object: source, pundit_user: pundit_user)
+    # Path helpers need a controller, which only exists while rendering.
+    allow(component).to receive(:document_path).and_return("/d/#{target.id}")
+
+    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to eq("magenta")
+
+    target.update!(color: nil)
+    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to be_nil
+  end
+
   it "still renders a connection whose target is kept" do
     render_inline(described_class.new(object: source, pundit_user: pundit_user))
 

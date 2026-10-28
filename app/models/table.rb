@@ -12,10 +12,12 @@ class Table < ApplicationRecord
   MAX_CELL_VALUE_LENGTH = 100_000
 
   include ToReactProps
-  set_react_props :id, :name, :icon, :title_for_editing, :organization_id, :space_id, :created_at, :updated_at, :archived
+  set_react_props :id, :name, :icon, :color, :title_for_editing, :organization_id, :space_id, :created_at, :updated_at, :archived
 
   include HasIcon
   has_icon derived_from: :name
+
+  include HasColor
 
   include TitleSearch
   searchable_by :name

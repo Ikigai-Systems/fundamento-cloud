@@ -669,7 +669,7 @@ RSpec.describe ReferencesExtractor do
   end
 
   describe "DocumentReference" do
-    # Both fields are filled in by SidebarConnectionsTab#with_link_details, which
+    # The title, icon and color are filled in by SidebarConnectionsTab#with_link_details, which
     # is where the referenced record is loaded; nothing is derived here.
     it "carries the referenced object's title and icon" do
       ref = DocumentReference.new(

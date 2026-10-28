@@ -8,6 +8,22 @@ RSpec.describe Tables::TablesController, type: :request do
   let(:ikigai_systems) { organizations(:is) }
   let(:table) { tables_tables(:projects) }
 
+  describe "GET /t.json?mention=true" do
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+    end
+
+    it "returns color for a colored table" do
+      table.update!(color: "blue")
+
+      get tables_path(format: :json, mention: true)
+
+      rows = JSON.parse(response.body).index_by { _1["id"] }
+      expect(rows[table.id]["color"]).to eq("blue")
+    end
+  end
+
   describe "DELETE /t/:id" do
     before do
       sign_in pawel
