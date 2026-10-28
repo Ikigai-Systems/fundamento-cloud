@@ -45,8 +45,9 @@ RSpec.describe Tenant::TableRegistry do
   # The check above can only see columns the database constrains, and the one rule I got
   # wrong was in the blind spot: resource_owner_id looks like the tenant link on the oauth
   # tables and points at users instead, so the export would have contained no tokens and
-  # reported nothing. This makes the blind spot explicit -- a new unconstrained rule fails
-  # here until somebody adds it to UNCONSTRAINED, which means somebody has looked at it.
+  # reported nothing. Those tables have a foreign key now, so the check above covers them.
+  # This makes the remaining blind spot explicit -- a new unconstrained rule fails here
+  # until somebody adds it to UNCONSTRAINED, which means somebody has looked at it.
   it "keeps the list of unverifiable rules honest" do
     conn = ActiveRecord::Base.connection
 
