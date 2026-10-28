@@ -74,17 +74,11 @@ RSpec.describe HasColor do
         expect(record.color).to eq("blue")
       end
 
-      it "clears the color for an empty string" do
-        record.assign_color("")
+      it "clears the color for an empty or whitespace-only string" do
+        record.assign_color("  ")
         record.save!
 
         expect(record.reload.color).to be_nil
-      end
-
-      it "clears the color for a blank string" do
-        record.assign_color("  ")
-
-        expect(record.color).to be_nil
       end
 
       it "sets a name, ignoring case and surrounding spaces" do

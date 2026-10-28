@@ -122,6 +122,7 @@ class SearchesController < ApplicationController
         id: record.id,
         title: record.title,
         icon: record.icon,
+        # try: Space records also come through here and have no color column.
         color: record.try(:color),
         parent_path: record.is_a?(Document) ? paths.path_for(record.id) : "",
         type: record.class.to_s,

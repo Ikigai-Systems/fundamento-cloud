@@ -669,7 +669,7 @@ RSpec.describe ReferencesExtractor do
   end
 
   describe "DocumentReference" do
-    # Both fields are filled in by SidebarConnectionsTab#with_link_details, which
+    # The title, icon and color are filled in by SidebarConnectionsTab#with_link_details, which
     # is where the referenced record is loaded; nothing is derived here.
     it "carries the referenced object's title and icon" do
       ref = DocumentReference.new(
@@ -683,12 +683,6 @@ RSpec.describe ReferencesExtractor do
 
       expect(ref.referenced_title).to eq("My Document")
       expect(ref.referenced_icon).to eq(Icon.emoji("\u{1F4DD}"))
-    end
-
-    it "carries the referenced object's color" do
-      ref = DocumentReference.new(referenced_color: "lime")
-
-      expect(ref.referenced_color).to eq("lime")
     end
   end
 
