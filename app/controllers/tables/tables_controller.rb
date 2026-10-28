@@ -55,6 +55,7 @@ class Tables::TablesController < ApplicationController
   end
 
   def create
+    # Create ignores color on purpose: it is set through update, which routes it through assign_color.
     create_params = table_params.except(:csv_file, :color)
     if create_params[:name].nil?
       create_params[:name] = "Table " + Nanoid.generate(size: 4)

@@ -25,7 +25,7 @@ RSpec.describe Tables::TablesController, type: :request do
   end
 
   describe "PATCH /t/:id" do
-    let(:all_names) { "crimson, orange, lime, teal, blue, indigo, magenta, slate" }
+    let(:all_names) { HasColor::NAMES.join(", ") }
 
     before do
       sign_in pawel

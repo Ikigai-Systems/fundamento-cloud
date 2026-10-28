@@ -185,7 +185,7 @@ RSpec.describe DocumentsController, type: :request do
       end
 
       context "color" do
-        let(:all_names) { "crimson, orange, lime, teal, blue, indigo, magenta, slate" }
+        let(:all_names) { HasColor::NAMES.join(", ") }
 
         def patch_color(document, color)
           patch document_path(document, format: :json), params: { document: { color: color } }, as: :json

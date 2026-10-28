@@ -54,6 +54,7 @@ class DocumentsController < ApplicationController
   end
 
   def create
+    # Create ignores color on purpose: it is set through update, which routes it through assign_color.
     @document = current_organization.documents.new(document_params.except(:color))
     @document.space = @space
 

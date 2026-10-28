@@ -793,7 +793,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
     context "color" do
       let(:headers) { { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" } }
-      let(:all_names) { "crimson, orange, lime, teal, blue, indigo, magenta, slate" }
+      let(:all_names) { HasColor::NAMES.join(", ") }
 
       def patch_color(document, color, headers: self.headers)
         patch api_v1_document_path(id: document.id), params: { document: { color: color } }, headers: headers, as: :json

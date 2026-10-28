@@ -88,7 +88,7 @@ RSpec.describe "Api::V1::Tables", type: :request do
     end
 
     context "color" do
-      let(:all_names) { "crimson, orange, lime, teal, blue, indigo, magenta, slate" }
+      let(:all_names) { HasColor::NAMES.join(", ") }
 
       def patch_color(table, color, as: membership)
         patch "/api/v1/tables/#{table.id}", params: { table: { color: color } }, headers: bearer(as), as: :json
