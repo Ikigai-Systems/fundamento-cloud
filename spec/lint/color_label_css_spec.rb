@@ -1,3 +1,5 @@
+require "rails_helper"
+
 # Drift guard for the colour label contract: the stylesheet must carry exactly the
 # eight colours HasColor allows, each with its approved hex (one value for light and
 # dark themes). The table below is the contract.
