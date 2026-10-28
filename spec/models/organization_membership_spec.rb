@@ -236,7 +236,6 @@ RSpec.describe OrganizationMembership, type: :model do
     end
   end
 
-  # Drives the unread badge rendered on every page by root#notifications.
   # Removing a member has to take their connected assistants with them. The tokens could no
   # longer authenticate, but the rows stayed forever, out of the owner's sight on the
   # authorized applications page, and a refresh token kept minting new ones.
@@ -267,6 +266,7 @@ RSpec.describe OrganizationMembership, type: :model do
     end
   end
 
+  # Drives the unread badge rendered on every page by root#notifications.
   describe "#unread_mentions_count" do
     let(:membership) { organization_memberships(:om_is_stefan) }
     let(:scope) { organizations(:is).documents }
