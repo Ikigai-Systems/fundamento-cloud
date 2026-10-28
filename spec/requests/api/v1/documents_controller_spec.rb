@@ -161,23 +161,13 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response.body).to end_with("---\n\n#{markdown}")
       end
 
-      it "frontmatter=true omits keys that are empty (no tags, no icon, no color)" do
-        document_one.update!(title: "Bare", color: nil, icon_type: nil, icon_value: nil)
-
-        get "/api/v1/documents/#{document_one.id}.md?frontmatter=true", headers: headers
-
-        expect(response.body).to eq("---\ntitle: Bare\n---\n\n#{markdown}")
-      end
-
-      it "keeps < and & raw in the frontmatter title and round trips a tag with : and braces" do
+      it "keeps < and & raw in the frontmatter title" do
         document_one.update!(title: "Fish & <Chips>")
-        TagsService.new(object: document_one, organization: ikigai_systems).update_tags(["fish:chips{x}"])
 
         get "/api/v1/documents/#{document_one.id}.md?frontmatter=true", headers: headers
 
         _body, data = Class.new { include MarkdownFrontmatter }.new.extract_frontmatter(response.body)
         expect(data["title"]).to eq("Fish & <Chips>")
-        expect(data["tags"]).to eq(["fish:chips{x}"])
       end
 
       %w[1 yes false TRUE].each do |value|

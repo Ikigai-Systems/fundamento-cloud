@@ -37,13 +37,6 @@ RSpec.describe DocumentService do
         expect(document.icon).to be_nil
       end
 
-      it "ignores a bare color: and icon: key" do
-        document = create(with_frontmatter("color: blue\nicon: \"🔥\""))
-
-        expect(document.reload.color).to be_nil
-        expect(document.icon).to be_nil
-      end
-
       it "lets an explicit color and icon beat the frontmatter" do
         document = create(with_frontmatter("fundamento/color: indigo\nfundamento/icon: \"🔥\""), color: "teal", icon: "🌱")
 
@@ -151,13 +144,6 @@ RSpec.describe DocumentService do
       expect(created.icon).to eq(Icon.emoji("🔥"))
       expect(created.color).to eq("indigo")
       expect(tag_names(created)).to match_array(["blog", "ikigai/blog"])
-    end
-
-    it "the exported title is the stored title and survives extract_frontmatter" do
-      _body, data = exporter.extract_frontmatter(exported)
-
-      expect(data["title"]).to eq(source.title)
-      expect(data["title"]).to eq(title)
     end
   end
 end

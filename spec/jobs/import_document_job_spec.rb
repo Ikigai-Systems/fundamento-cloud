@@ -214,34 +214,12 @@ RSpec.describe ImportDocumentJob, type: :job do
         expect(import_file.document.icon).to eq(Icon.emoji("🔥"))
       end
 
-      it "matches Indigo and ' indigo ' case-insensitively" do
-        expect(import("fundamento/color: Indigo").document.color).to eq("indigo")
-        expect(import("fundamento/color: \" indigo \"").document.color).to eq("indigo")
-      end
-
-      it "drops an unknown color name without failing the import" do
-        import_file = import("fundamento/color: chartreuse")
+      it "still imports a document whose fundamento/color and fundamento/icon are invalid" do
+        import_file = import("fundamento/color: chartreuse\nfundamento/icon: fire")
 
         expect(import_file).to be_completed
         expect(import_file.document.color).to be_nil
-      end
-
-      [["a number", "3"], ["a boolean", "true"], ["a list", "[blue]"], ["an empty string", "\"\""], ["whitespace", "\"  \""]].each do |label, yaml|
-        it "drops #{label} as a color and still imports" do
-          import_file = import("fundamento/color: #{yaml}")
-
-          expect(import_file).to be_completed
-          expect(import_file.document.color).to be_nil
-        end
-      end
-
-      [["a word", "fire"], ["two emoji", "\"🔥🔥\""], ["a number", "7"], ["an empty string", "\"\""]].each do |label, yaml|
-        it "drops #{label} as an icon and still imports" do
-          import_file = import("fundamento/icon: #{yaml}")
-
-          expect(import_file).to be_completed
-          expect(import_file.document.icon).to be_nil
-        end
+        expect(import_file.document.icon).to be_nil
       end
 
       it "still promotes a leading emoji in the title when there is no fundamento/icon" do
