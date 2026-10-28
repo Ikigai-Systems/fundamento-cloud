@@ -32,6 +32,6 @@ class SidebarColorField < ViewComponent::Base
   def controller_data
     return {} unless editable?
 
-    {controller: "color-picker", color_picker_type_value: object_type, color_picker_id_value: @object.id, color_picker_color_value: color}
+    {controller: "color-picker", color_picker_type_value: object_type, color_picker_id_value: @object.id, color_picker_color_value: color.to_s}
   end
 end

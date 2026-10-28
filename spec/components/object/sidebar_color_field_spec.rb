@@ -61,6 +61,13 @@ RSpec.describe SidebarColorField, type: :component do
 
       expect(container["data-color-picker-type-value"]).to eq("document")
       expect(container["data-color-picker-id-value"]).to eq(document.id)
+      expect(container["data-color-picker-color-value"]).to eq("")
+    end
+
+    it "hands the controller the current color name" do
+      document.update!(color: "lime")
+
+      expect(html.at_css("[data-controller='color-picker']")["data-color-picker-color-value"]).to eq("lime")
     end
   end
 

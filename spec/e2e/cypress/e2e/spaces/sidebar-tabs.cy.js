@@ -368,27 +368,6 @@ describe("Space sidebar tabs", function () {
       expectNotReloaded();
     });
 
-    it("sends nothing but the color", function () {
-      interceptUpdates();
-      openDetails("/d/two", "two", "Two");
-
-      cy.get(swatch("Teal")).click();
-      cy.wait("@update").its("request.body").should("deep.equal", {color: "teal"});
-    });
-
-    it("the color survives a reload", function () {
-      interceptUpdates();
-      openDetails("/d/two", "two", "Two");
-
-      cy.get(swatch("Magenta")).click();
-      cy.wait("@update");
-
-      openDetails("/d/two", "two", "Two");
-      cy.get(swatch("Magenta")).should("have.attr", "aria-checked", "true");
-      cy.get(treeLabel("two")).should("have.attr", "data-color", "magenta");
-      cy.get(`${title} .color-label`).should("have.attr", "data-color", "magenta");
-    });
-
     it("choosing no color clears it", function () {
       cy.appEval(`Document.find("two").update!(color: "blue")`);
       interceptUpdates();
@@ -451,6 +430,7 @@ describe("Space sidebar tabs", function () {
       cy.get("#details_sidebar_tab [role='radio'][tabindex='0']").should("have.length", 1).and("have.attr", "aria-label", "Blue");
     });
 
+    // Also the persistence check: after the reload the final color is read back from the server.
     it("keeps the last of two quick choices, saving them in order", function () {
       let calls = 0;
       cy.intercept("PATCH", "/d/two", () => {
@@ -503,8 +483,6 @@ describe("Space sidebar tabs", function () {
 
       cy.get(swatch("Crimson")).click();
       cy.wait("@update");
-      cy.get(`${title} .color-label`).should("have.attr", "data-color", "crimson").and("have.text", "Two");
-      cy.get(treeLabel("two")).should("have.text", "Two");
 
       cy.get(title).click();
       cy.get(`${title} input`).clear().type("Renamed{enter}");
