@@ -1,7 +1,20 @@
 if defined?(DatabaseCleaner)
   # cleaning the database using database_cleaner
   DatabaseCleaner.strategy = :truncation
-  DatabaseCleaner.clean
+
+  # TRUNCATE takes its table locks one by one, so a connection still writing from the previous
+  # test (a request or background job finishing up) can deadlock with it and Postgres aborts the
+  # truncation. Truncating is idempotent, and the other connection finishes in moments, so retry.
+  attempts = 0
+  begin
+    attempts += 1
+    DatabaseCleaner.clean
+  rescue ActiveRecord::Deadlocked
+    raise if attempts >= 3
+
+    sleep 0.5 * attempts
+    retry
+  end
 else
   logger.warn "add database_cleaner or update cypress/app_commands/clean.rb"
   Post.delete_all if defined?(Post)
