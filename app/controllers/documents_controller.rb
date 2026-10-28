@@ -20,8 +20,8 @@ class DocumentsController < ApplicationController
     respond_to do |format|
       format.json do
         if params[:mention].to_b
-          render json: policy_scope(current_organization.documents).select(:id, :title, :icon_type, :icon_value),
-            only: [:id, :title, :icon_type, :icon_value]
+          render json: policy_scope(current_organization.documents).select(:id, :title, *HasIcon::COLUMNS, *HasColor::COLUMNS),
+            only: [:id, :title, *HasIcon::COLUMNS, *HasColor::COLUMNS]
         else
           render json: policy_scope(current_organization.documents)
         end

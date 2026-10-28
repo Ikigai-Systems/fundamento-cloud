@@ -684,6 +684,12 @@ RSpec.describe ReferencesExtractor do
       expect(ref.referenced_title).to eq("My Document")
       expect(ref.referenced_icon).to eq(Icon.emoji("\u{1F4DD}"))
     end
+
+    it "carries the referenced object's color" do
+      ref = DocumentReference.new(referenced_color: "lime")
+
+      expect(ref.referenced_color).to eq("lime")
+    end
   end
 
   # The connections sidebar renders on every document, so this has to stay flat in

@@ -41,13 +41,13 @@ class SidebarConnectionsTab < ViewComponent::Base
 
       case reference.referenced_type
       when "Table"
-        referenced = organization.tables.select(:name, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+        referenced = organization.tables.select(:name, *HasIcon::COLUMNS, *HasColor::COLUMNS).find_by(id: reference.referenced_id)
         return nil if referenced.nil?
 
         reference.referenced_title = referenced.name
         reference.referenced_path = table_path(reference.referenced_id)
       when "Document"
-        referenced = organization.documents.select(:title, *HasIcon::COLUMNS).find_by(id: reference.referenced_id)
+        referenced = organization.documents.select(:title, *HasIcon::COLUMNS, *HasColor::COLUMNS).find_by(id: reference.referenced_id)
         return nil if referenced.nil?
 
         reference.referenced_title = referenced.title
@@ -57,6 +57,7 @@ class SidebarConnectionsTab < ViewComponent::Base
       end
 
       reference.referenced_icon = referenced.icon
+      reference.referenced_color = referenced.color
     end
   end
 

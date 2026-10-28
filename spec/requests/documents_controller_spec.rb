@@ -46,6 +46,23 @@ RSpec.describe DocumentsController, type: :request do
     end
   end
 
+  describe "GET /d.json?mention=true" do
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+    end
+
+    it "returns color for a colored document and nil for an uncolored one" do
+      document_one.update!(color: "crimson")
+
+      get documents_path(format: :json, mention: true)
+
+      rows = JSON.parse(response.body).index_by { _1["id"] }
+      expect(rows[document_one.id]["color"]).to eq("crimson")
+      expect(rows.except(document_one.id).values.map { _1["color"] }.uniq).to eq([nil])
+    end
+  end
+
   describe "GET /d/:id/edit" do
     context "when authenticated" do
       before do

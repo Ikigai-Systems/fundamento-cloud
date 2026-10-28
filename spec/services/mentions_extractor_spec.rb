@@ -262,6 +262,20 @@ RSpec.describe MentionsExtractor do
     expect(mentions.first.object_icon).to eq(Icon.emoji("📝"))
   end
 
+  it "mention carries the color of the mentioning document" do
+    document = documents(:one)
+    document.update!(color: "orange")
+    document.versions.create!(
+      content_blocks: mention_content(unique_id("mention"), entity: "user", entity_id: user.id),
+      created_by: author
+    )
+
+    expect(described_class.get_all_mentions([document], user).first.object_color).to eq("orange")
+
+    document.update!(color: nil)
+    expect(described_class.get_all_mentions([document], user).first.object_color).to be_nil
+  end
+
   # The notification bell is a lazy Turbo frame in every layout, so this has to stay
   # flat in the number of documents — it used to run two queries per document.
   context "query count" do

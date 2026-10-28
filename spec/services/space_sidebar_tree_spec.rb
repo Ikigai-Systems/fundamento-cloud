@@ -49,6 +49,17 @@ RSpec.describe SpaceSidebarTree do
     expect(result["nodes"].first["icon"].as_json).to eq({type: "emoji", value: "🔥"})
   end
 
+  it "includes the color of a colored document and no color key for an uncolored one" do
+    one.update!(color: "teal")
+    space.update!(hierarchy: [node(one), node(two)])
+
+    result = described_class.new(space: space, can_update_space: true).as_json
+    nodes = result["nodes"].index_by { _1["id"] }
+
+    expect(nodes[one.id]["color"]).to eq("teal")
+    expect(nodes[two.id]).not_to have_key("color")
+  end
+
   it "labels an emoji-only title with the emoji itself" do
     # HasIcon leaves these alone rather than stripping the title to nothing, so
     # there is no icon to render and the emoji is simply the label.

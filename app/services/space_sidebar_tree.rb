@@ -24,7 +24,8 @@ class SpaceSidebarTree
   # multiple megabytes per space and the sidebar never looks at it.
   SELECTED_COLUMNS = [
     "documents.id", "documents.title", "documents.archived",
-    *HasIcon::COLUMNS.map { |column| "documents.#{column}" }
+    *HasIcon::COLUMNS.map { |column| "documents.#{column}" },
+    *HasColor::COLUMNS.map { |column| "documents.#{column}" }
   ].join(", ")
 
   # `@space.documents` excludes trashed documents, which is the whole mechanism behind
@@ -56,6 +57,7 @@ class SpaceSidebarTree
         "title" => document.title,
       }
       payload_node["icon"] = document.icon if document.icon
+      payload_node["color"] = document.color if document.color
       payload_node["archived"] = true if document.archived?
       payload_node["draft"] = true if document.draft?
       payload_node["children"] = built_children if built_children.any?

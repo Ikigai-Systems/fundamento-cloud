@@ -37,6 +37,17 @@ RSpec.describe SidebarConnectionsTab, type: :component do
     expect(rendered_content).not_to include(target.title)
   end
 
+  it "connections list carries the referenced object's color" do
+    target.update!(color: "magenta")
+    component = described_class.new(object: source, pundit_user: pundit_user)
+    render_inline(component)
+
+    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to eq("magenta")
+
+    target.update!(color: nil)
+    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to be_nil
+  end
+
   it "still renders a connection whose target is kept" do
     render_inline(described_class.new(object: source, pundit_user: pundit_user))
 
