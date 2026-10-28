@@ -404,6 +404,52 @@ describe("Space sidebar tree", function () {
       cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
     });
 
+    // The underline is padding on the label: a coloured row must not grow or shift its icon.
+    it("a colored row is as tall as an uncolored one and keeps text and icon aligned", function () {
+      const measure = ($li) => {
+        const row = $li.find(".content-link-container")[0].getBoundingClientRect();
+        const label = $li.find("span.truncate")[0];
+        const range = document.createRange();
+        range.selectNodeContents(label);
+        return {
+          height: row.height,
+          textTop: range.getBoundingClientRect().top - row.top,
+          iconTop: $li.find(".object-icon")[0].getBoundingClientRect().top - row.top,
+        };
+      };
+
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one']").then(($li) => {
+        cy.wrap(measure($li)).as("uncolored");
+      });
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: "indigo"}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+      cy.get("#space-sidebar li[data-node-id='one']").then(($li) => {
+        cy.get("@uncolored").then((before) => {
+          const after = measure($li);
+          expect(after.height, "row height").to.equal(before.height);
+          expect(after.textTop, "text offset").to.equal(before.textTop);
+          expect(after.iconTop, "icon offset").to.equal(before.iconTop);
+        });
+      });
+    });
+
+    it("a draft-only event keeps the tree row's color", function () {
+      cy.appEval(`Document.find("one").update!(color: "indigo")`);
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", draft: false}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+    });
+
     it("a document without a color has no underline", function () {
       cy.visit("/d/one");
 

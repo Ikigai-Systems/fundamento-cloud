@@ -246,6 +246,20 @@ describe("Editable Content Title", function () {
       });
     });
 
+    it("renaming a colored table keeps the color on its sidebar row", function () {
+      cy.appEval(`Table.first.tap { |t| t.update!(color: "teal") }.id`).then((tableId) => {
+        cy.visit(`/t/${tableId}`);
+        const row = `#space-sidebar [data-document-id='${tableId}'] span.truncate`;
+        cy.get(row).should("have.attr", "data-color", "teal");
+
+        cy.window().then((win) => {
+          win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: tableId, title: "Renamed table", icon: null}}));
+        });
+        cy.get(row).should("have.text", "Renamed table");
+        cy.get(row).should("have.attr", "data-color", "teal");
+      });
+    });
+
     it("a title that truncates keeps the underline within the visible text", function () {
       cy.appEval(`Document.find("one").update!(color: "teal", title: ${JSON.stringify(LONG_TITLE)})`);
       cy.viewport(480, 800);
