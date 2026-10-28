@@ -18,7 +18,10 @@ class DocumentService
       parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
-      markdown, frontmatter_data = extract_frontmatter(markdown) if markdown.present?
+      # Frontmatter alone leaves an empty body, which must still count as content given so
+      # that its tags are applied.
+      content_given = markdown.present?
+      markdown, frontmatter_data = extract_frontmatter(markdown) if content_given
 
       document = space.documents.new(space: space, organization: space.organization)
       document.assign_title_and_icon(title: title || "Untitled", icon: icon.nil? ? frontmatter_icon(frontmatter_data) : icon)
@@ -29,7 +32,7 @@ class DocumentService
       document.save!
 
       # Create initial version with content if provided
-      if markdown.present?
+      if content_given
         blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
         sync = BlocknoteConverterService.blocks_to_yjs(blocks)
 

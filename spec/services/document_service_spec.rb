@@ -37,6 +37,15 @@ RSpec.describe DocumentService do
         expect(document.icon).to be_nil
       end
 
+      it "keeps tags, color and icon when the markdown is only frontmatter" do
+        document = create("---\ntags: [alpha, beta]\nfundamento/color: indigo\nfundamento/icon: \"🔥\"\n---\n")
+
+        document.reload
+        expect(document.tags.map(&:name)).to match_array(%w[alpha beta])
+        expect(document.color).to eq("indigo")
+        expect(document.icon).to eq(Icon.emoji("🔥"))
+      end
+
       it "lets an explicit color and icon beat the frontmatter" do
         document = create(with_frontmatter("fundamento/color: indigo\nfundamento/icon: \"🔥\""), color: "teal", icon: "🌱")
 
