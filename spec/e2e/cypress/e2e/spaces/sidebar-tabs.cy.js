@@ -424,16 +424,18 @@ describe("Space sidebar tabs", function () {
       cy.get(treeLabel("two")).should("have.attr", "data-color", "slate");
     });
 
-    it("shows a focus ring on every swatch it lands on", function () {
+    it("shows a focus ring on every swatch it lands on, the checked one included", function () {
       openDetails("/d/two", "two", "Two");
 
-      cy.get(swatch("No color")).focus();
-      ["Slate", "Magenta", "Indigo", "Blue", "Teal", "Lime", "Orange", "Crimson"].forEach((name) => {
+      cy.get(swatch("Crimson")).focus();
+      // Walking left from the first swatch wraps to "No color", which is the checked one here.
+      ["No color", "Slate", "Magenta", "Indigo", "Blue", "Teal", "Lime", "Orange", "Crimson"].forEach((name) => {
         cy.realPress("ArrowLeft");
         cy.focused().should("have.attr", "aria-label", name).should(($swatch) => {
           const style = getComputedStyle($swatch[0]);
           // A white gap then a dark ring: not currentColor (white on the swatches) and not none.
           expect(style.boxShadow, `${name} focus ring`).to.contain("rgb(31, 41, 55)").and.to.contain("rgb(255, 255, 255)");
+          if (name === "No color") expect($swatch.attr("aria-checked"), "checked and focused").to.equal("true");
         });
       });
     });
@@ -451,10 +453,11 @@ describe("Space sidebar tabs", function () {
 
     it("keeps the last of two quick choices, saving them in order", function () {
       let calls = 0;
-      cy.intercept("PATCH", "/d/two", (req) => {
+      cy.intercept("PATCH", "/d/two", () => {
         calls += 1;
-        // Only the first response is held back: unserialized, it would land after the second save.
-        if (calls === 1) req.on("response", (res) => res.setDelay(1500));
+        // Hold only the first request back before it reaches the server: unserialized, the second
+        // one overtakes it and the server ends on Teal.
+        if (calls === 1) return new Promise((resolve) => setTimeout(resolve, 1500));
       }).as("update");
       openDetails("/d/two", "two", "Two");
 
@@ -463,8 +466,12 @@ describe("Space sidebar tabs", function () {
       cy.wait("@update");
       cy.wait("@update");
 
+      cy.get("@update.all").then((requests) => {
+        expect(requests.map((request) => request.request.body)).to.deep.equal([{color: "teal"}, {color: "orange"}]);
+      });
       cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");
       cy.appEval(`Document.find("two").color`).should("eq", "orange");
+
       openDetails("/d/two", "two", "Two");
       cy.get(swatch("Orange")).should("have.attr", "aria-checked", "true");
       cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");

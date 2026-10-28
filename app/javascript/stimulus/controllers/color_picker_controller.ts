@@ -43,7 +43,8 @@ export default class ColorPickerController extends Controller<HTMLElement> {
 
     this.show(color)
     this.pending++
-    this.chain = this.chain.then(() => this.save(color))
+    // The catch keeps one failure from leaving the chain rejected, which would drop later saves.
+    this.chain = this.chain.then(() => this.save(color)).catch(() => {})
   }
 
   private async save(color: string): Promise<void> {

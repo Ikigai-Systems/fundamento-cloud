@@ -95,7 +95,7 @@
 /*
  * Focus ring: two tones, a white gap then a dark ring, so one of them contrasts with any
  * background (the sidebar is white in the light theme and dark in the dark one) and with every
- * swatch fill. Last in the file so it also outranks the checked and no-color rules above. The
+ * swatch fill. The doubled class selector outranks the checked and no-color rules above, whatever the order. The
  * transparent outline keeps a ring in forced-colors mode, where box-shadow is dropped.
  */
 .color-swatch.color-swatch:focus-visible {
