@@ -169,6 +169,17 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response.body).to eq("---\ntitle: Bare\n---\n\n#{markdown}")
       end
 
+      it "keeps < and & raw in the frontmatter title and round trips a tag with : and braces" do
+        document_one.update!(title: "Fish & <Chips>")
+        TagsService.new(object: document_one, organization: ikigai_systems).update_tags(["fish:chips{x}"])
+
+        get "/api/v1/documents/#{document_one.id}.md?frontmatter=true", headers: headers
+
+        _body, data = Class.new { include MarkdownFrontmatter }.new.extract_frontmatter(response.body)
+        expect(data["title"]).to eq("Fish & <Chips>")
+        expect(data["tags"]).to eq(["fish:chips{x}"])
+      end
+
       %w[1 yes false TRUE].each do |value|
         it "frontmatter=#{value} is off" do
           style_document!

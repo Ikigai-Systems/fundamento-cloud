@@ -74,6 +74,17 @@ RSpec.describe ReadDocumentTool, type: :model do
         expect(read(frontmatter: false)["content"]).to eq(File.read("app/templates/space.markdown"))
       end
 
+      it "differs from the default response only by the prefix on content, even with <, > and &" do
+        document.assign_title_and_icon(title: "<b>&</b>")
+        document.save!
+        plain = ReadDocumentTool.call(id: document.id, server_context: server_context).content.first[:text]
+        prefixed = ReadDocumentTool.call(id: document.id, server_context: server_context, frontmatter: true).content.first[:text]
+        prefix = Class.new { include MarkdownFrontmatter }.new.build_frontmatter(document.reload)
+
+        expect(prefixed).to include("<b>&</b>")
+        expect(prefixed.sub(JSON.generate(prefix)[1..-2], "")).to eq(plain)
+      end
+
       it "frontmatter: true prefixes content, structured fields unchanged" do
         plain = read
         with_frontmatter = read(frontmatter: true)

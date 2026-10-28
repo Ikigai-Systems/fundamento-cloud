@@ -221,6 +221,14 @@ RSpec.describe MarkdownFrontmatter do
       expect(data["tags"]).to eq(["blog"])
     end
 
+    it "round trips tags containing template braces and colons" do
+      tag!(document, "{{x}}", "a:b", "2024")
+
+      _body, data = instance.extract_frontmatter(instance.build_frontmatter(document.reload) + "body")
+
+      expect(data["tags"]).to match_array(["{{x}}", "a:b", "2024"])
+    end
+
     [
       ["a colon", "Plan: Q4"],
       ["a leading #", "#1 priority"],

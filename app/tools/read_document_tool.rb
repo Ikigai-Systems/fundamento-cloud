@@ -28,7 +28,7 @@ class ReadDocumentTool < ApplicationTool
     text = if frontmatter == true
       json = JSON.parse(DocumentBlueprint.render(document, view: :mcp))
       json["content"] = DocumentService.new(pundit_user: pundit_user).build_frontmatter(document) + json["content"]
-      json.to_json
+      JSON.generate(json)
     else
       DocumentBlueprint.render(document, view: :mcp)
     end

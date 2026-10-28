@@ -65,8 +65,10 @@ module MarkdownFrontmatter
     data["fundamento/color"] = document.color if document.color.present?
 
     lines = data.map do |key, value|
-      if value.is_a?(String) && (value.include?("{{") || value.each_char.any? { |char| char.ord > 0xFFFF })
-        "#{key}: #{JSON.generate(value).gsub("{", "\\u007B")}\n"
+      if value.is_a?(String) && escape_scalar?(value)
+        "#{key}: #{escaped_scalar(value)}\n"
+      elsif value.is_a?(Array) && value.any? { |item| escape_scalar?(item) }
+        "#{key}:\n#{value.map { |item| "- #{escaped_scalar(item)}\n" }.join}"
       else
         YAML.dump({key => value}).delete_prefix("---\n")
       end
@@ -76,6 +78,14 @@ module MarkdownFrontmatter
   end
 
   private
+
+  def escape_scalar?(value)
+    value.include?("{{") || value.each_char.any? { |char| char.ord > 0xFFFF }
+  end
+
+  def escaped_scalar(value)
+    JSON.generate(value).gsub("{", "\\u007B")
+  end
 
   def quote_template_variables(yaml_text)
     return yaml_text unless yaml_text.include?("{{")
