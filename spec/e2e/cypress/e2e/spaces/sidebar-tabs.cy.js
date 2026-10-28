@@ -477,6 +477,50 @@ describe("Space sidebar tabs", function () {
       });
     });
 
+    // The name is a flex item next to the heading, and a color label's padding-bottom would make
+    // that row taller. Measures the row and where the name sits against the "Color" heading.
+    function measureColorRow() {
+      return cy.get("#details_sidebar_tab").contains("li", "Color").then(($row) => {
+        const heading = $row.find("p")[0].getBoundingClientRect();
+        const name = $row.find("span.text-sm\\/6")[0].getBoundingClientRect();
+        return {height: $row[0].getBoundingClientRect().height, nameOffset: name.top - heading.top};
+      });
+    }
+
+    it("keeps the Color row the same height and alignment once colored", function () {
+      interceptUpdates();
+      openDetails("/d/two", "two", "Two");
+      measureColorRow().then((uncolored) => {
+        cy.get(swatch("Teal")).click();
+        cy.wait("@update");
+        cy.get("#details_sidebar_tab [data-color-picker-target='name'].color-label").should("have.attr", "data-color", "teal");
+        measureColorRow().should("deep.equal", uncolored);
+      });
+    });
+
+    it("keeps the read-only Color row the same height and alignment once colored", function () {
+      cy.appEval(`Space.find("is_default").update!(access_mode: :restricted)`);
+      cy.loginWithSession("stefan@ikigai.systems", "password", "stefan-session");
+      cy.setCookie("organization_id", isOrganizationCookie);
+      const openReadOnlyDetails = () => {
+        cy.visit("/d/two");
+        cy.get(treeLabel("two")).should("exist");
+        cy.openSidebar("details").within(() => {
+          cy.get('[aria-label="Details"]').click();
+        });
+        cy.get("#details_sidebar_tab").contains("li", "Color").should("be.visible");
+      };
+
+      openReadOnlyDetails();
+      cy.get("#details_sidebar_tab .color-label").should("not.exist");
+      measureColorRow().then((uncolored) => {
+        cy.appEval(`Document.find("two").update!(color: "lime")`);
+        openReadOnlyDetails();
+        cy.get("#details_sidebar_tab .color-label").should("have.attr", "data-color", "lime");
+        measureColorRow().should("deep.equal", uncolored);
+      });
+    });
+
     it("changing the color does not alter the title and renaming does not clear the color", function () {
       interceptUpdates();
       openDetails("/d/two", "two", "Two");

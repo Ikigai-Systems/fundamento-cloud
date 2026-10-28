@@ -1,9 +1,13 @@
 <%= tag.li(class: "py-5", data: controller_data) do %>
   <div class="flex justify-between gap-x-6">
     <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Color</p>
-    <%= tag.span(color_name,
-      class: ["text-sm/6 text-gray-900 dark:text-gray-100", name_attributes[:class]],
-      data: (name_attributes[:data] || {}).merge(color_picker_target: ("name" if editable?)).compact) %>
+    <%# The flex item is a plain span and the label sits inline inside it: a label that is itself
+        the flex item is blockified and its padding-bottom makes the row taller. %>
+    <span class="text-sm/6 text-gray-900 dark:text-gray-100">
+      <%= tag.span(color_name,
+        class: name_attributes[:class],
+        data: (name_attributes[:data] || {}).merge(color_picker_target: ("name" if editable?)).compact) %>
+    </span>
   </div>
 
   <% if editable? %>
