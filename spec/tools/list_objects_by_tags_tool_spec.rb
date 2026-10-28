@@ -136,7 +136,6 @@ RSpec.describe ListObjectsByTagsTool, type: :model do
       it "returns the color of tables and documents" do
         table.update!(color: "blue")
         document.update!(color: "orange")
-        ObjectTag.create!(tag: tags(:is_status_wip), object: table, organization: organization) unless table.tags.include?(tags(:is_status_wip))
 
         response = ListObjectsByTagsTool.call(tags: ["#status/wip"], server_context: server_context)
 

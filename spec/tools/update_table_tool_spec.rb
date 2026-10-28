@@ -78,6 +78,7 @@ RSpec.describe UpdateTableTool, type: :model do
 
       expect(response.structured_content[:color]).to be_nil
       expect(table.reload.color).to be_nil
+      expect(table.name).to eq("Projects")
     end
 
     it "rejects an unknown color and keeps the current one" do

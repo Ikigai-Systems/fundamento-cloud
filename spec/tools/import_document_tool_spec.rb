@@ -123,8 +123,9 @@ RSpec.describe ImportDocumentTool do
         server_context: server_context
       )
 
-      expect(JSON.parse(response.content.first[:text])["color"]).to eq("orange")
-      expect(Document.last.color).to eq("orange")
+      json = JSON.parse(response.content.first[:text])
+      expect(json["color"]).to eq("orange")
+      expect(Document.find(json["id"]).color).to eq("orange")
     end
 
     it "rejects an unknown color without creating a document" do
