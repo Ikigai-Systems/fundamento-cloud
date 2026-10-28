@@ -97,7 +97,7 @@ RSpec.describe "API authentication with a browser session", type: :request do
   end
 
   describe "an OAuth token" do
-    let(:oauth_headers) { json.merge("Authorization" => "Bearer #{oauth_access_tokens(:is_pawel).token}") }
+    let(:oauth_headers) { json.merge("Authorization" => "Bearer is-access-token") }
 
     it "does not start a session" do
       post "/api/mcp", params: mcp_request, headers: oauth_headers

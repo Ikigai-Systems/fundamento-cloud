@@ -10,7 +10,7 @@ RSpec.describe "MCP endpoint", type: :request do
     post path, params: { jsonrpc: "2.0", id: 1, method: "tools/list" }.to_json, headers: headers
   end
 
-  let(:oauth_token) { oauth_access_tokens(:is_pawel).token }
+  let(:oauth_token) { "is-access-token" }
 
   describe "/api/mcp" do
     it "serves any organization the token belongs to" do
