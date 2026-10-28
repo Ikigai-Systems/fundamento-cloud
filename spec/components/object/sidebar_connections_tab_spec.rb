@@ -39,8 +39,11 @@ RSpec.describe SidebarConnectionsTab, type: :component do
 
   it "connections list carries the referenced object's color" do
     target.update!(color: "magenta")
+    # Exercises the narrowed select in with_link_details directly; replace with a
+    # rendered-HTML assertion once the view renders color.
     component = described_class.new(object: source, pundit_user: pundit_user)
-    render_inline(component)
+    # Path helpers need a controller, which only exists while rendering.
+    allow(component).to receive(:document_path).and_return("/d/#{target.id}")
 
     expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to eq("magenta")
 

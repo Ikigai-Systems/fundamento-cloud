@@ -127,8 +127,6 @@ RSpec.describe "tenant archive round trip" do
     end
   end
 
-  # The property the whole matching apparatus exists for. A restore that is not idempotent is a
-  # restore nobody can run twice, and an operator working an incident will run it twice.
   it "keeps the color of a colored document and table" do
     documents(:one).update!(color: "indigo")
     tables_tables(:projects).update!(color: "lime")
@@ -142,6 +140,8 @@ RSpec.describe "tenant archive round trip" do
     expect(Table.find(tables_tables(:projects).id).color).to eq("lime")
   end
 
+  # The property the whole matching apparatus exists for. A restore that is not idempotent is a
+  # restore nobody can run twice, and an operator working an incident will run it twice.
   it "inserts nothing the second time it is run" do
     export do |reader|
       organization.destroy!
