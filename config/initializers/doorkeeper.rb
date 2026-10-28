@@ -26,6 +26,13 @@ Doorkeeper.configure do
 
   access_token_expires_in 2.hours
 
+  # Store only a SHA-256 digest of grants, access and refresh tokens, and application secrets,
+  # so a copy of the database holds no working credentials. Refresh tokens never expire, so
+  # they matter most. The fallback still accepts rows written before hashing; a token's row is
+  # rewritten as a digest the first time it is used.
+  hash_token_secrets fallback: :plain
+  hash_application_secrets fallback: :plain
+
   # Allow localhost redirect URIs so Claude Desktop and similar desktop apps can
   # receive the authorization code via a local server.
   force_ssl_in_redirect_uri { |uri| uri.host != "localhost" }
