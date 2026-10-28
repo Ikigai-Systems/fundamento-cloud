@@ -130,4 +130,51 @@ RSpec.describe MarkdownFrontmatter do
       end
     end
   end
+
+  describe "#frontmatter_color" do
+    it "returns a valid name, matched case-insensitively after trimming" do
+      expect(instance.frontmatter_color("fundamento/color" => "indigo")).to eq("indigo")
+      expect(instance.frontmatter_color("fundamento/color" => "Indigo")).to eq("indigo")
+      expect(instance.frontmatter_color("fundamento/color" => " indigo ")).to eq("indigo")
+    end
+
+    it "ignores a bare color key" do
+      expect(instance.frontmatter_color("color" => "blue")).to be_nil
+    end
+
+    [["an unknown name", "chartreuse"], ["a number", 3], ["a boolean", true], ["a list", ["blue"]],
+      ["an empty string", ""], ["whitespace", "  "], ["nil", nil]].each do |label, value|
+      it "returns nil for #{label}" do
+        expect(instance.frontmatter_color("fundamento/color" => value)).to be_nil
+      end
+    end
+
+    it "returns nil for missing or non-hash data" do
+      expect(instance.frontmatter_color(nil)).to be_nil
+      expect(instance.frontmatter_color("blue")).to be_nil
+      expect(instance.frontmatter_color(["blue"])).to be_nil
+    end
+  end
+
+  describe "#frontmatter_icon" do
+    it "returns a single emoji" do
+      expect(instance.frontmatter_icon("fundamento/icon" => "🔥")).to eq("🔥")
+      expect(instance.frontmatter_icon("fundamento/icon" => " 🔥 ")).to eq("🔥")
+    end
+
+    it "ignores a bare icon key" do
+      expect(instance.frontmatter_icon("icon" => "🔥")).to be_nil
+    end
+
+    [["a word", "fire"], ["two emoji", "🔥🔥"], ["a number", 7], ["a list", ["🔥"]], ["an empty string", ""]].each do |label, value|
+      it "returns nil for #{label}" do
+        expect(instance.frontmatter_icon("fundamento/icon" => value)).to be_nil
+      end
+    end
+
+    it "returns nil for missing or non-hash data" do
+      expect(instance.frontmatter_icon(nil)).to be_nil
+      expect(instance.frontmatter_icon("🔥")).to be_nil
+    end
+  end
 end

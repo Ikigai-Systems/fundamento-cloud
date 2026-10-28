@@ -39,10 +39,18 @@ class ImportDocumentJob < ApplicationJob
       locked_file = ImportFile.lock.find(import_file.id)
       raise ActiveRecord::Rollback if locked_file.completed? || locked_file.failed? || locked_file.skipped?
 
-      document = session.space.documents.create!(
-        organization: session.organization,
-        title: title
-      )
+      # Invalid values come back nil, so a bad key never fails the import. With an icon the
+      # title goes through assign_title_and_icon: the plain title writer arms the leading-emoji
+      # promotion, which would overwrite the icon on save.
+      document = session.space.documents.new(organization: session.organization)
+      icon = frontmatter_icon(frontmatter)
+      if icon
+        document.assign_title_and_icon(title: title, icon: icon)
+      else
+        document.title = title
+      end
+      document.assign_color(frontmatter_color(frontmatter))
+      document.save!
 
       document.versions.create!(
         content_blocks: blocks,

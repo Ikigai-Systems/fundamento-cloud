@@ -195,6 +195,64 @@ RSpec.describe ImportDocumentJob, type: :job do
       end
     end
 
+    context "when frontmatter contains fundamento/color and fundamento/icon" do
+      before do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
+      end
+
+      def import(frontmatter)
+        import_file = build_import_file(relative_path: "styled-#{SecureRandom.hex(4)}.md", content: "---\n#{frontmatter}\n---\n\nBody")
+        described_class.perform_now(import_file)
+        import_file.reload
+      end
+
+      it "applies fundamento/color and fundamento/icon on import" do
+        import_file = import("fundamento/color: indigo\nfundamento/icon: \"🔥\"")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to eq("indigo")
+        expect(import_file.document.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "matches Indigo and ' indigo ' case-insensitively" do
+        expect(import("fundamento/color: Indigo").document.color).to eq("indigo")
+        expect(import("fundamento/color: \" indigo \"").document.color).to eq("indigo")
+      end
+
+      it "drops an unknown color name without failing the import" do
+        import_file = import("fundamento/color: chartreuse")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to be_nil
+      end
+
+      [["a number", "3"], ["a boolean", "true"], ["a list", "[blue]"], ["an empty string", "\"\""], ["whitespace", "\"  \""]].each do |label, yaml|
+        it "drops #{label} as a color and still imports" do
+          import_file = import("fundamento/color: #{yaml}")
+
+          expect(import_file).to be_completed
+          expect(import_file.document.color).to be_nil
+        end
+      end
+
+      [["a word", "fire"], ["two emoji", "\"🔥🔥\""], ["a number", "7"], ["an empty string", "\"\""]].each do |label, yaml|
+        it "drops #{label} as an icon and still imports" do
+          import_file = import("fundamento/icon: #{yaml}")
+
+          expect(import_file).to be_completed
+          expect(import_file.document.icon).to be_nil
+        end
+      end
+
+      it "ignores a bare color: and icon: key" do
+        import_file = import("color: blue\nicon: \"🔥\"")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to be_nil
+        expect(import_file.document.icon).to be_nil
+      end
+    end
+
     context "when the file is stuck in :processing (interrupted job retry)" do
       it "processes the file instead of returning early" do
         import_file = build_import_file(relative_path: "interrupted.md")

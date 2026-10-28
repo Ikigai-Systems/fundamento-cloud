@@ -16,6 +16,20 @@ RSpec.describe UpdateDocumentTool, type: :model do
   end
 
   describe ".call" do
+    context "with fundamento/color in the submitted markdown" do
+      it "colors the document" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync")
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("Plans")
+
+        UpdateDocumentTool.call(
+          id: document.id, markdown: "---\nfundamento/color: teal\n---\nPlans", server_context: server_context
+        )
+
+        expect(document.reload.color).to eq("teal")
+      end
+    end
+
     context "happy case - updates document with markdown content" do
       it "updates document and creates new version" do
         markdown_content = file_fixture("documents/updated_content.md").read

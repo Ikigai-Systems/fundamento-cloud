@@ -22,6 +22,31 @@ module MarkdownFrontmatter
     [markdown, frontmatter_data]
   end
 
+  # The color named by `fundamento/color`, as a lower-case name, or nil. Only the prefixed key
+  # is read: a bare `color:` belongs to whatever tool wrote the file. Anything that is not a
+  # known name (a number, a list, an empty string, a typo) is dropped rather than raised, so a
+  # stray value never fails an import.
+  def frontmatter_color(data)
+    return nil unless data.is_a?(Hash)
+
+    value = data["fundamento/color"]
+    return nil unless value.is_a?(String)
+
+    name = value.strip.downcase
+    HasColor::NAMES.include?(name) ? name : nil
+  end
+
+  # The emoji in `fundamento/icon`, or nil unless it is exactly one emoji.
+  def frontmatter_icon(data)
+    return nil unless data.is_a?(Hash)
+
+    value = data["fundamento/icon"]
+    return nil unless value.is_a?(String)
+
+    value = value.strip
+    Icon.single_emoji?(value) ? value : nil
+  end
+
   private
 
   def quote_template_variables(yaml_text)
