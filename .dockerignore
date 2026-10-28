@@ -32,6 +32,11 @@
 # Ignore any assets
 /public/*
 !/public/.keep
+# The tracked static files. Without the error pages Rails answers 404/500 with an empty body.
+!/public/*.html
+!/public/icon.png
+!/public/icon.svg
+!/public/robots.txt
 
 # Ignore any tests files (as we're not running tests in docker)
 /test/

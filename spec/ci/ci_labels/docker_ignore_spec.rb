@@ -11,7 +11,8 @@ RSpec.describe CiLabels::DockerIgnore do
     "spec/models/x_spec.rb",
     "micro-services/blocknote-converter/node_modules/a.js",
     "config/secrets/production.sops.yaml",
-    ".env.development.local"
+    ".env.development.local",
+    "public/vite/assets/application.js"
   ].each do |path|
     it "excludes #{path}" do
       expect(ignore.excluded?(path)).to be(true)
@@ -26,7 +27,10 @@ RSpec.describe CiLabels::DockerIgnore do
     ".dockerignore",
     "version.txt",
     "app/CLAUDE.md",
-    ".env.production.erb"
+    ".env.production.erb",
+    "public/404.html",
+    "public/500.html",
+    "public/robots.txt"
   ].each do |path|
     it "keeps #{path}" do
       expect(ignore.excluded?(path)).to be(false)
