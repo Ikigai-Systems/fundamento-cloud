@@ -17,6 +17,7 @@
 @import "./flash.tailwind.css";
 @import "./badge.tailwind.css";
 @import "./object-icon.tailwind.css";
+@import "./color_label.css";
 
 @tailwind base;
 @tailwind components;
