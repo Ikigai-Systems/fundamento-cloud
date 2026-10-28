@@ -30,12 +30,13 @@ div.truncate:has(.color-label) {
 }
 
 /*
- * A colour label that is a flex item (the title next to an icon in a chip or a select option) adds
+ * A colour label that is a flex item (the title next to an icon in a chip, a select option or a selected value) adds
  * its 3px padding to the flex container's height, so a coloured row would be taller than an uncoloured
  * one. There the strip is drawn over the bottom of the line box instead, which has room to spare.
  */
 .flex.truncate > .color-label,
-.fundamento-react-select__option .flex > .color-label {
+.fundamento-react-select__option .flex > .color-label,
+.fundamento-react-select__multi-value__label .flex > .color-label {
     padding-bottom: 0;
 }
 

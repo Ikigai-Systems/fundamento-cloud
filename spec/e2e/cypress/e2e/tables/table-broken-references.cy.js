@@ -111,4 +111,29 @@ describe("Table cells referencing missing objects", function () {
       });
     });
   });
+
+  it("keeps a colored selected document chip as tall as a plain one in the open picker", function () {
+    cy.appEval(`
+      Document.find("two").update!(color: "indigo")
+      table = Table.create!(id: "chipdocs", name: "Chip Docs", organization_id: "is", space_id: "is_default")
+      docs = table.columns.create!(id: "chipcol", name: "Pick", organization_id: "is", kind: :documents)
+      table.rows.create!(organization_id: "is").cells.create!(table: table, column: docs, organization_id: "is", value: "one,two")
+    `);
+
+    cy.loginWithSession("pawel@ikigai.systems", "password");
+    cy.setCookie("organization_id", isOrganizationCookie);
+    cy.visit("/t/chipdocs/edit");
+    cy.get('[role=gridcell] a[href="/d/one"]').should("be.visible");
+
+    cy.get('[role=gridcell] a[href="/d/one"]').closest("[role=gridcell]").click("right");
+    cy.get("[role=gridcell] .ring-2 .h-8").click("right");
+
+    cy.get(".fundamento-react-select__multi-value").filter(":contains('Two')")
+      .find(".color-label").should(($label) => expectColorLabel($label, "indigo"));
+    cy.get(".fundamento-react-select__multi-value").filter(":contains('One')").then(($plain) => {
+      cy.get(".fundamento-react-select__multi-value").filter(":contains('Two')").should(($colored) => {
+        expect($colored[0].getBoundingClientRect().height, "chip height").to.equal($plain[0].getBoundingClientRect().height);
+      });
+    });
+  });
 });
