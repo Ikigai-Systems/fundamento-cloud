@@ -54,4 +54,23 @@ describe("Content frame navigation — sidebar stability", function () {
     cy.get("#content-sidebar").should("exist");
     cy.get("#content").should("exist");
   });
+
+  it("shows the not-found page, not an empty frame, when a linked document does not exist", function () {
+    cy.visit("/d/one");
+    cy.get("#content").should("exist");
+
+    cy.get("#content").then(($content) => {
+      const link = $content[0].ownerDocument.createElement("a");
+      link.href = "/d/does-not-exist";
+      link.id = "missing-document-link";
+      link.textContent = "Missing document";
+      $content[0].prepend(link);
+    });
+    cy.get("#missing-document-link").click();
+
+    cy.url().should("include", "/d/does-not-exist");
+    cy.contains("Content missing").should("not.exist");
+    cy.get("#content").should("not.exist");
+    cy.contains("RecordNotFound");
+  });
 });
