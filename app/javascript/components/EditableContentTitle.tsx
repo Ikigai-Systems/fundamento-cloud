@@ -1,9 +1,10 @@
 import {useState, useRef, useEffect} from "react";
-import {Document, ObjectIcon as ObjectIconValue, Table} from "../types.js";
+import {ColorName, Document, ObjectIcon as ObjectIconValue, Table} from "../types.js";
 import ObjectIcon, {ObjectType} from "./ObjectIcon.tsx";
+import ColorLabel from "./ColorLabel.tsx";
 import createFlash from "../utils/createFlash.ts";
 import DocumentsApi from "../api/DocumentsApi.js";
-import {publishContentUpdate} from "../content_updated.js";
+import {CONTENT_UPDATED, contentUpdateFrom, publishContentUpdate} from "../content_updated.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 
 export const UNTITLED_CONTENT = "Untitled";
@@ -89,6 +90,7 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
   const initialEditingTitle = getEditingTitle(props);
   const [isEditing, setIsEditing] = useState(false);
   const [icon, setIcon] = useState<ObjectIconValue | null>(contentOf(props).icon ?? null);
+  const [color, setColor] = useState<ColorName | null>(contentOf(props).color ?? null);
   const [displayTitle, setDisplayTitle] = useState(getDisplayTitle(props));
   const [title, setTitle] = useState(initialEditingTitle);
   const [originalTitle, setOriginalTitle] = useState(initialEditingTitle);
@@ -100,6 +102,19 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
       inputRef.current.select();
     }
   }, [isEditing]);
+
+  // A color changed elsewhere (the picker, an MCP client) arrives as a content-updated event.
+  // Only a color-carrying event for this object counts: a rename sends no color, so it must
+  // leave this one alone.
+  const contentId = contentOf(props).id;
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const update = contentUpdateFrom(event);
+      if (update?.id === contentId && update.color !== undefined) setColor(update.color);
+    };
+    window.addEventListener(CONTENT_UPDATED, handler);
+    return () => window.removeEventListener(CONTENT_UPDATED, handler);
+  }, [contentId]);
 
   const save = async (newTitle: string) => {
     const trimmed = newTitle.trim();
@@ -151,7 +166,7 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
   if (!props.editable) {
     return (
       <div className="editable-content-title">
-        {iconSlot}{displayTitle}
+        {iconSlot}<ColorLabel color={color}>{displayTitle}</ColorLabel>
       </div>
     );
   }
@@ -177,7 +192,7 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
       className="editable-content-title editable"
       onClick={() => setIsEditing(true)}
     >
-      {iconSlot}{displayTitle}
+      {iconSlot}<ColorLabel color={color}>{displayTitle}</ColorLabel>
     </div>
   );
 };

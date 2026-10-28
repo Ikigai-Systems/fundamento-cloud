@@ -378,4 +378,88 @@ describe("Space sidebar tree", function () {
       cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "✓ Reviewed");
     });
   });
+
+  describe("color labels", function () {
+    const LONG_TITLE = "A very long document title that cannot possibly fit into the narrow sidebar without being truncated";
+
+    // The strip is a background on the title element itself: look at what it paints.
+    function expectUnderlineWithinBox($el) {
+      const style = getComputedStyle($el[0]);
+      expect(style.backgroundImage, "background-image").to.not.equal("none");
+      expect(style.backgroundSize, "background-size").to.contain("3px");
+      expect(style.backgroundPosition, "background-position").to.match(/100%$/);
+    }
+
+    it("a colored document shows the underline in the tree", function () {
+      cy.appEval(`Document.find("one").update!(color: "indigo")`);
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate")
+        .should("have.class", "color-label")
+        .and("have.attr", "data-color", "indigo");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should(expectUnderlineWithinBox);
+      // The icon is a sibling of the label, so it never carries the underline
+      cy.get("#space-sidebar li[data-node-id='one'] .object-icon")
+        .should("not.have.class", "color-label");
+      cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
+    });
+
+    it("a document without a color has no underline", function () {
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.class", "color-label");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
+    });
+
+    it("a title that truncates keeps the underline within the visible text", function () {
+      cy.appEval(`Document.find("one").update!(color: "teal", title: ${JSON.stringify(LONG_TITLE)})`);
+      cy.viewport(1280, 800);
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "teal");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate")
+        .should(expectUnderlineWithinBox)
+        .and(($label) => {
+          const label = $label[0];
+          const row = label.closest(".content-link-container").getBoundingClientRect();
+          const box = label.getBoundingClientRect();
+          // Truncated: the text is wider than the box that shows it ...
+          expect(label.scrollWidth, "text overflows").to.be.greaterThan(label.clientWidth);
+          // ... and the box, which is where the strip is painted, sits inside the row
+          // and is not cut off at the bottom by the label's own overflow clipping.
+          expect(box.right, "right edge").to.be.at.most(row.right);
+          expect(box.bottom, "bottom edge").to.be.at.most(row.bottom);
+          expect(label.clientHeight, "padding for the strip is visible").to.be.at.least(label.scrollHeight);
+        });
+    });
+
+    it("a color event updates the tree row without touching its title", function () {
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: "indigo"}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: null}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+    });
+
+    it("a rename keeps the color of the tree row", function () {
+      cy.appEval(`Document.find("one").update!(color: "indigo")`);
+      cy.visit("/d/one");
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", title: "Renamed", icon: null}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Renamed");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+    });
+  });
 });
