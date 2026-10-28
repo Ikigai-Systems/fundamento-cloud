@@ -137,7 +137,10 @@ describe("Space sidebar tabs", function () {
     cy.get("#space_starred_list a.content-link[href='/d/two']").should("exist");
     cy.openSidebar().contains("No starred items").should("not.be.visible");
 
+    // The row arrives over the cable, which can beat the POST response that swaps the button
+    // to "Remove star": clicking before the swap would star a second time instead of unstarring.
     cy.closeSidebar();
+    cy.get("#favorite_document_two button[aria-label='Remove star']").should("exist");
     cy.get("#favorite_document_two button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
@@ -158,6 +161,8 @@ describe("Space sidebar tabs", function () {
     cy.get("#favorite_table_startable button").click();
 
     cy.get("#space_starred_list a.content-link[href='/t/startable']").should("exist");
+    // Wait for the button to swap to "Remove star" before clicking it again (see the document example).
+    cy.get("#favorite_table_startable button[aria-label='Remove star']").should("exist");
 
     cy.get("#favorite_table_startable button").click();
 
