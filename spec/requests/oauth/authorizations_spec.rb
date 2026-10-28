@@ -142,9 +142,67 @@ RSpec.describe "OAuth authorization", type: :request do
         expires_in: 7200,
       )
 
-      call_mcp(token.token)
+      call_mcp(token.plaintext_token)
 
       expect(response).to have_http_status(:unauthorized)
+    end
+  end
+
+  # A copy of the database must not hand out working credentials, so only a SHA-256 digest of
+  # each token is stored. The fixtures hold plain values, like rows written before hashing.
+  describe "storing tokens" do
+    def digest(value) = Digest::SHA256.hexdigest(value)
+
+    def refresh(refresh_token)
+      post oauth_token_path, params: {
+        grant_type: "refresh_token",
+        refresh_token: refresh_token,
+        client_id: application.uid,
+        client_secret: "mcp-client-secret",
+      }
+    end
+
+    it "stores only digests of the grant and the tokens it issues" do
+      sign_in users(:maria)
+      get oauth_authorization_path(authorize_params)
+      post oauth_authorization_path, params: authorize_params
+      code = Rack::Utils.parse_query(URI(response.location).query).fetch("code")
+
+      expect(Doorkeeper::AccessGrant.order(:created_at).last.token).to eq(digest(code))
+
+      token = exchange_code_for_token
+      issued = response.parsed_body
+
+      expect(token.token).to eq(digest(issued.fetch("access_token")))
+      expect(token.refresh_token).to eq(digest(issued.fetch("refresh_token")))
+    end
+
+    it "refreshes a token it issued" do
+      sign_in users(:maria)
+      get oauth_authorization_path(authorize_params)
+      post oauth_authorization_path, params: authorize_params
+      exchange_code_for_token
+
+      refresh(response.parsed_body.fetch("refresh_token"))
+
+      expect(response).to have_http_status(:ok)
+      call_mcp(response.parsed_body.fetch("access_token"))
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "accepts a token stored before hashing and replaces it with its digest" do
+      call_mcp("is-access-token")
+
+      expect(response).to have_http_status(:ok)
+      expect(oauth_access_tokens(:is_pawel).reload.token).to eq(digest("is-access-token"))
+    end
+
+    it "refreshes a token stored before hashing" do
+      refresh("is-refresh-token")
+
+      expect(response).to have_http_status(:ok)
+      call_mcp(response.parsed_body.fetch("access_token"))
+      expect(response).to have_http_status(:ok)
     end
   end
 end
