@@ -8,7 +8,7 @@
 
   <% if editable? %>
     <div role="radiogroup" aria-label="Color" class="color-swatches mt-3"
-         data-action="keydown->color-picker#navigate">
+         data-action="keydown->color-picker#navigate focusout->color-picker#resetTabStop">
       <% HasColor::NAMES.each do |name| %>
         <%= tag.button(
           type: "button",

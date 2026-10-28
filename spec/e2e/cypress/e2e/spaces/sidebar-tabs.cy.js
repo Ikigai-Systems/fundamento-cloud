@@ -328,14 +328,14 @@ describe("Space sidebar tabs", function () {
 
     // Both lazily loaded parts (the tree row and the Details frame) must exist before anything is
     // clicked: acting earlier races the frames connecting.
-    function openDetails(path, id) {
+    function openDetails(path, id, pageTitle) {
       cy.visit(path);
       cy.get(treeLabel(id)).should("exist");
       cy.openSidebar("details").within(() => {
         cy.get('[aria-label="Details"]').click();
       });
       cy.get("#details_sidebar_tab [role='radiogroup']").should("be.visible");
-      cy.get(`${title} span, ${title}`).first().should("exist");
+      cy.get(title).should("contain.text", pageTitle);
     }
 
     function interceptUpdates() {
@@ -354,7 +354,7 @@ describe("Space sidebar tabs", function () {
 
     it("choosing a color updates the sidebar tree row and the page title without a reload", function () {
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
       markPage();
 
       cy.get(swatch("Indigo")).click();
@@ -370,7 +370,7 @@ describe("Space sidebar tabs", function () {
 
     it("sends nothing but the color", function () {
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
 
       cy.get(swatch("Teal")).click();
       cy.wait("@update").its("request.body").should("deep.equal", {color: "teal"});
@@ -378,12 +378,12 @@ describe("Space sidebar tabs", function () {
 
     it("the color survives a reload", function () {
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
 
       cy.get(swatch("Magenta")).click();
       cy.wait("@update");
 
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
       cy.get(swatch("Magenta")).should("have.attr", "aria-checked", "true");
       cy.get(treeLabel("two")).should("have.attr", "data-color", "magenta");
       cy.get(`${title} .color-label`).should("have.attr", "data-color", "magenta");
@@ -392,7 +392,7 @@ describe("Space sidebar tabs", function () {
     it("choosing no color clears it", function () {
       cy.appEval(`Document.find("two").update!(color: "blue")`);
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
       cy.get(treeLabel("two")).should("have.attr", "data-color", "blue");
       cy.get(swatch("Blue")).should("have.attr", "aria-checked", "true");
       markPage();
@@ -412,7 +412,7 @@ describe("Space sidebar tabs", function () {
 
     it("moves between swatches with the arrow keys and chooses with Enter", function () {
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
 
       cy.get(swatch("No color")).focus().type("{leftArrow}");
       cy.focused().should("have.attr", "aria-label", "Slate");
@@ -422,6 +422,52 @@ describe("Space sidebar tabs", function () {
       cy.wait("@update");
       cy.get(swatch("Slate")).should("have.attr", "aria-checked", "true");
       cy.get(treeLabel("two")).should("have.attr", "data-color", "slate");
+    });
+
+    it("shows a focus ring on every swatch it lands on", function () {
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("No color")).focus();
+      ["Slate", "Magenta", "Indigo", "Blue", "Teal", "Lime", "Orange", "Crimson"].forEach((name) => {
+        cy.realPress("ArrowLeft");
+        cy.focused().should("have.attr", "aria-label", name).should(($swatch) => {
+          const style = getComputedStyle($swatch[0]);
+          // A white gap then a dark ring: not currentColor (white on the swatches) and not none.
+          expect(style.boxShadow, `${name} focus ring`).to.contain("rgb(31, 41, 55)").and.to.contain("rgb(255, 255, 255)");
+        });
+      });
+    });
+
+    it("returns the tab stop to the checked swatch when focus leaves the group", function () {
+      cy.appEval(`Document.find("two").update!(color: "blue")`);
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Blue")).focus();
+      cy.realPress("ArrowRight");
+      cy.focused().should("have.attr", "aria-label", "Indigo");
+      cy.realPress("Tab");
+      cy.get("#details_sidebar_tab [role='radio'][tabindex='0']").should("have.length", 1).and("have.attr", "aria-label", "Blue");
+    });
+
+    it("keeps the last of two quick choices, saving them in order", function () {
+      let calls = 0;
+      cy.intercept("PATCH", "/d/two", (req) => {
+        calls += 1;
+        // Only the first response is held back: unserialized, it would land after the second save.
+        if (calls === 1) req.on("response", (res) => res.setDelay(1500));
+      }).as("update");
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Teal")).click();
+      cy.get(swatch("Orange")).click();
+      cy.wait("@update");
+      cy.wait("@update");
+
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");
+      cy.appEval(`Document.find("two").color`).should("eq", "orange");
+      openDetails("/d/two", "two", "Two");
+      cy.get(swatch("Orange")).should("have.attr", "aria-checked", "true");
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");
     });
 
     it("a viewer cannot change the color", function () {
@@ -446,7 +492,7 @@ describe("Space sidebar tabs", function () {
 
     it("changing the color does not alter the title and renaming does not clear the color", function () {
       interceptUpdates();
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
 
       cy.get(swatch("Crimson")).click();
       cy.wait("@update");
@@ -472,7 +518,7 @@ describe("Space sidebar tabs", function () {
         statusCode: 422,
         body: {errors: {base: "Color must be one of: crimson, orange"}},
       }).as("failedUpdate");
-      openDetails("/d/two", "two");
+      openDetails("/d/two", "two", "Two");
       cy.get(swatch("Blue")).should("have.attr", "aria-checked", "true");
 
       cy.get(swatch("Teal")).click();
@@ -488,7 +534,7 @@ describe("Space sidebar tabs", function () {
     it("sets a table's color in its Details tab, updating the tree row and the page title", function () {
       cy.appFixtures({fixtures_dir: "spec/fixtures", fixtures: ["tables/tables"]});
       interceptUpdates();
-      openDetails("/t/orders", "orders");
+      openDetails("/t/orders", "orders", "Orders");
       markPage();
 
       cy.get(swatch("Lime")).click();

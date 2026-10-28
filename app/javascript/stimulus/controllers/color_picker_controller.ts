@@ -26,27 +26,46 @@ export default class ColorPickerController extends Controller<HTMLElement> {
   declare idValue: string
   declare colorValue: string
 
-  // Bumped per choice: when saves overlap, only the latest one may restore the selection.
-  private latestSave = 0
+  // Saves run one after another, so the server ends on the last choice however slowly the
+  // responses come back. `saved` is what the server holds, which is where a failure restores to.
+  private saved = ""
+  private pending = 0
+  private chain: Promise<void> = Promise.resolve()
 
-  async choose(event: Event): Promise<void> {
+  connect(): void {
+    this.saved = this.colorValue
+  }
+
+  choose(event: Event): void {
     const swatch = event.currentTarget as HTMLButtonElement
     const color = swatch.dataset.color ?? ""
     if (color === this.colorValue) return
 
-    const previous = this.colorValue
-    const save = ++this.latestSave
     this.show(color)
+    this.pending++
+    this.chain = this.chain.then(() => this.save(color))
+  }
 
+  private async save(color: string): Promise<void> {
     try {
       await this.api().update({params: {id: this.idValue}, data: {color}})
+      this.saved = color
       publishContentUpdate({id: this.idValue, color: (color || null) as ColorName | null})
     } catch (e: unknown) {
-      if (save !== this.latestSave) return
-
-      this.show(previous)
+      // A newer choice is already queued and on screen: it decides what the row shows.
+      if (this.pending === 1) this.show(this.saved)
       createFlash({type: "error", message: this.errorMessage(e)})
+    } finally {
+      this.pending--
     }
+  }
+
+  // Leaving the group puts the tab stop back on the checked swatch, after arrow keys moved it.
+  resetTabStop(event: FocusEvent): void {
+    if (event.relatedTarget instanceof Node && this.element.contains(event.relatedTarget) &&
+        this.swatchTargets.includes(event.relatedTarget as HTMLButtonElement)) return
+
+    this.show(this.colorValue)
   }
 
   // Arrow keys move between the swatches, as in any radiogroup. Moving only focuses: choosing
