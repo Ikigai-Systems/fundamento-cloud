@@ -332,6 +332,12 @@ class Formula::ActionExecutor
       raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} accepts #{list} (got #{unknown.join(", ")})")
     end
 
+    %w[title name icon].each do |key|
+      if values.key?(key) && !values[key].nil? && !values[key].is_a?(String)
+        raise FormulaEvaluationError.new(formula: action, cause_message: "#{action}: #{key} must be text")
+      end
+    end
+
     if values.empty?
       raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} needs at least one of #{list}")
     end
@@ -339,9 +345,10 @@ class Formula::ActionExecutor
     values
   end
 
-  # Scoped like find_table: the executor's space when it has one, otherwise the
-  # organization. Authorizing show? first means a document the user cannot see
-  # is denied rather than revealed by what happens next.
+  # Same as find_table: scoped to the executor's space (the organization when it
+  # has none) and authorized with show? here, update? when executing. Unlike
+  # TableLookup it matches by id only, not by name. Authorizing show? first means
+  # a document the user cannot see is denied rather than revealed by what happens next.
   def find_document(document_identifier)
     scope = @space ? @space.documents : @organization_membership.organization.documents
     document = scope.find(document_identifier)

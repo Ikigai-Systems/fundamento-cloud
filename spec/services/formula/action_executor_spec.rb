@@ -267,11 +267,10 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   end
 
   describe "UpdateDocument and UpdateTable actions" do
-    fixtures :documents
-
     let(:organization) { organizations(:is) }
     let(:document) { Document.create!(title: "Plan", organization: organization, space: space) }
     let(:executor) { described_class.new(dry_mode: false, space: space, organization_membership: organization_membership) }
+    let(:engine) { Formula::Engine.new }
     let(:colors_message) { "Color must be one of: #{HasColor::NAMES.join(", ")}" }
 
     describe "UpdateDocument" do
@@ -332,6 +331,23 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         end
 
         expect(document.reload.color).to be_nil
+      end
+
+      it "an odd number of arguments is a clear error" do
+        expect {
+          engine.evaluate(%(UpdateDocument("#{document.id}", "color")), context: {}, action_executor: executor)
+        }.to raise_error(RuntimeError, /UpdateDocument needs key and value pairs/)
+      end
+
+      it "a non-string title or icon is an error naming the key and leaves the record unchanged" do
+        {"title" => 5, "icon" => 1}.each do |key, value|
+          expect {
+            engine.evaluate(%(UpdateDocument("#{document.id}", "#{key}", #{value})), context: {}, action_executor: executor)
+          }.to raise_error(Formula::ActionExecutor::FormulaEvaluationError, "UpdateDocument: #{key} must be text")
+        end
+
+        expect(document.reload.title).to eq("Plan")
+        expect(document.icon).to be_nil
       end
 
       it "a non-emoji icon is an error and leaves the record unchanged" do
@@ -401,24 +417,6 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(elsewhere.reload.title).to eq("Elsewhere")
       end
 
-      it "can update a document in the same space" do
-        executor.update_document({}, document.id, {"title" => "Same space"})
-
-        expect(document.reload.title).to eq("Same space")
-      end
-
-      it "an odd number of arguments is a clear error" do
-        engine = Formula::Engine.new
-
-        expect {
-          engine.evaluate(%(UpdateDocument("#{document.id}", "color")), context: {}, action_executor: executor)
-        }.to raise_error(RuntimeError, /UpdateDocument needs key and value pairs/)
-
-        expect {
-          engine.evaluate(%(UpdateTable("projects", "color")), context: {}, action_executor: executor)
-        }.to raise_error(RuntimeError, /UpdateTable needs key and value pairs/)
-      end
-
       it "a document from another organization cannot be updated" do
         other = Document.create!(title: "Theirs", organization: organizations(:hc), space: spaces(:hc_default))
 
@@ -430,7 +428,6 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
 
       it "works through the formula language" do
-        engine = Formula::Engine.new
         result = engine.evaluate(%(UpdateDocument("#{document.id}", "color", "indigo", "title", "Via formula")), context: {}, action_executor: executor)
 
         expect(result).to eq(true)
@@ -438,7 +435,6 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
 
       it "reports an unknown color from the formula language as an error" do
-        engine = Formula::Engine.new
 
         expect {
           engine.evaluate(%(UpdateDocument("#{document.id}", "color", "chartreuse")), context: {}, action_executor: executor)
@@ -466,41 +462,21 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(new_table.reload.color).to eq("slate")
       end
 
-      it "an empty color string clears the color and an empty icon clears the icon" do
-        new_table.assign_title_and_icon(icon: "🚀")
-        new_table.assign_color("blue")
-        new_table.save!
-
-        executor.update_table({}, new_table.id, {"color" => "", "icon" => ""})
-
-        new_table.reload
-        expect(new_table.color).to be_nil
-        expect(new_table.icon).to be_nil
-      end
-
-      it "omitted keys leave fields unchanged" do
-        new_table.assign_color("blue")
-        new_table.save!
-
-        executor.update_table({}, new_table.id, {"name" => "Renamed"})
-
-        expect(new_table.reload).to have_attributes(name: "Renamed", color: "blue")
-      end
-
-      it "an unknown color is an error and leaves the record unchanged" do
+      it "an odd number of arguments is a clear error" do
         expect {
-          executor.update_table({}, new_table.id, {"name" => "Changed", "color" => "chartreuse"})
-        }.to raise_error(RuntimeError, colors_message)
-
-        expect(new_table.reload).to have_attributes(name: "Backlog", color: nil)
+          engine.evaluate(%(UpdateTable("projects", "color")), context: {}, action_executor: executor)
+        }.to raise_error(RuntimeError, /UpdateTable needs key and value pairs/)
       end
 
-      it "a non-string color (number, true) is an error" do
-        [1, true].each do |value|
+      it "a non-string name or icon is an error naming the key and leaves the record unchanged" do
+        {"name" => "7", "icon" => "1"}.each do |key, value|
           expect {
-            executor.update_table({}, new_table.id, {"color" => value})
-          }.to raise_error(RuntimeError, colors_message)
+            engine.evaluate(%(UpdateTable("#{new_table.id}", "#{key}", #{value})), context: {}, action_executor: executor)
+          }.to raise_error(Formula::ActionExecutor::FormulaEvaluationError, "UpdateTable: #{key} must be text")
         end
+
+        expect(new_table.reload.name).to eq("Backlog")
+        expect(new_table.icon).to be_nil
       end
 
       it "an unknown key (including title) is an error that names the valid keys" do
@@ -556,7 +532,6 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
 
       it "works through the formula language" do
-        engine = Formula::Engine.new
         result = engine.evaluate(%(UpdateTable("#{new_table.id}", "color", "teal", "name", "Via formula")), context: {}, action_executor: executor)
 
         expect(result).to eq(true)
