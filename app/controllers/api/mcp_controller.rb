@@ -18,7 +18,8 @@ class Api::McpController < Api::ApiController
         RunFormula evaluates Excel-like formulas against the workspace data — see https://docs.fundamento.it/formulas/reference.
         All write operations (CreateDocument, UpdateDocument, UpdateTable, AddRow, UpdateRows, AddOrUpdateRows) are permanent.
         Icons are a separate field from titles: a single emoji, returned as {type, value} and set with the icon parameter.
-        UpdateDocument renames a document, changes its icon and/or replaces its content; UpdateTable renames a table and/or changes its icon.
+        Colors are a separate field too: one of #{HasColor::NAMES.join(", ")}, set with the color parameter.
+        UpdateDocument renames a document, changes its icon and/or color and/or replaces its content; UpdateTable renames a table and/or changes its icon and/or color.
         Use ArchiveSpace and UnarchiveSpace to archive or unarchive spaces (manager role required).
       INSTRUCTIONS
       tools: [
