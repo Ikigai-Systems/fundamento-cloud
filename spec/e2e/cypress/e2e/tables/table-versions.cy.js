@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 describe("Table Versions", function () {
   beforeEach(() => {
@@ -125,5 +126,15 @@ describe("Table Versions", function () {
     cy.get("[data-testid='no-versions-notice']").should("be.visible");
     cy.contains("No versions yet").should("be.visible");
     cy.contains("a few minutes after this table changes").should("be.visible");
+  });
+
+  it("underlines the table's title in a version page's heading without resizing it", function () {
+    snapshot("initial");
+
+    expectColorLabelKeepsLayout({
+      record: `Table.find("projects")`,
+      visit: () => cy.visit("/t/projects/versions"),
+      title: "h1.text-4xl",
+    });
   });
 });

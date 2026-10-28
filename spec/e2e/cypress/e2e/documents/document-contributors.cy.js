@@ -1,5 +1,6 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
 import {isTouch} from "../../support/device.js";
+import {expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 // The details sidebar shows four contributors at most; the rest sit behind a "+N" button
 describe("Document contributors", function () {
@@ -57,5 +58,13 @@ describe("Document contributors", function () {
 
     cy.contains("#details_sidebar_tab p", "Contributors").click();
     cy.get(`${OVERFLOW} .popover-card`).should("not.exist");
+  });
+
+  it("underlines the document's title in the history heading without resizing it", function () {
+    expectColorLabelKeepsLayout({
+      record: `Document.find("two")`,
+      visit: () => cy.visit("/d/two/versions"),
+      title: "h1.text-4xl",
+    });
   });
 });

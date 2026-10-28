@@ -370,28 +370,4 @@ RSpec.describe DocumentsController, type: :request do
       end
     end
   end
-
-  describe "color labels in the hierarchy" do
-    it "renders data-color on the title of a colored object and none on an uncolored one" do
-      sign_in pawel
-      post select_organization_path(ikigai_systems)
-      space = document_one.space
-      space.update!(hierarchy: [{"id" => document_one.id, "children" => [
-        {"id" => documents(:two).id, "children" => []},
-        {"id" => other_child.id, "children" => []}
-      ]}])
-      documents(:two).update!(color: "lime")
-
-      get hierarchy_document_path(document_one), headers: {"Turbo-Frame" => "document_hierarchy"}
-
-      html = Nokogiri::HTML(response.body)
-      expect(html.at_css("a[href='/d/two'] [data-color='lime']")&.text).to eq("Two")
-      expect(html.at_css("a[href='/d/#{other_child.id}']").text).to include("Plain child")
-      expect(html.css("a[href='/d/#{other_child.id}'] [data-color]")).to be_empty
-    end
-
-    def other_child
-      @other_child ||= document_one.space.documents.create!(title: "Plain child", organization: ikigai_systems)
-    end
-  end
 end

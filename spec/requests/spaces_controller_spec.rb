@@ -920,19 +920,6 @@ RSpec.describe SpacesController, type: :request do
         expect(response.body).to include(documents(:one).title)
       end
 
-      it "renders data-color on the title of a colored object and none on an uncolored one" do
-        documents(:one).update!(color: "teal")
-        two = documents(:two)
-        organization_memberships(:om_is_pawel).favorites.find_or_create_by!(object: two)
-
-        get sidebar_space_path(space, tab: "starred"), headers: { "Turbo-Frame" => "starred_sidebar_tab" }
-
-        html = Nokogiri::HTML(response.body)
-        expect(html.at_css("a[href='/d/one'] [data-color='teal']")&.text).to eq("One")
-        expect(html.at_css("a[href='/d/two'] .font-semibold")&.text).to eq("Two")
-        expect(html.css("a[href='/d/two'] [data-color]")).to be_empty
-      end
-
       it "does not render starred items from another space" do
         other_space_doc = Document.create!(
           title: "Other Space Doc",

@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 const editPageUrl = /\/d\/[_\-a-zA-Z0-9]+\/edit$/;
 
@@ -812,6 +813,32 @@ describe("Document References and Mentions", function () {
       cy.appEval(`User.find_by(email: "pawel@ikigai.systems").display_name`).then((name) => {
         cy.get(".bn-suggestion-menu-item", {timeout: 10000}).filter(`:contains('${name}')`)
           .find(".object-icon img").should("have.attr", "src").and("include", "avatar.png");
+      });
+    });
+  });
+
+  describe("Connections tab color labels", function () {
+    it("underlines the titles of referenced and referencing documents without resizing their rows", function () {
+      cy.appEval(`
+        ObjectReference.create!(
+          organization_id: "is", source: Document.find("one"), target_type: "Document",
+          target_id: "two", title: "Two", current: true,
+          source_node_id: "550e8400-e29b-41d4-a716-446655440098"
+        )
+      `);
+
+      expectColorLabelKeepsLayout({
+        record: `Document.find("two")`,
+        visit: () => {
+          cy.visit("/d/one");
+          cy.openSidebar("details").within(() => {
+            cy.get('[aria-label="Connections"]').click();
+          });
+          cy.get("#connections_sidebar_tab").contains("References:").should("be.visible");
+        },
+        title: "#connections_sidebar_tab div.truncate",
+        // The row, not the title: the title's own box is padded 3px and pulled back by a margin.
+        box: "#connections_sidebar_tab div.flex-row.items-center",
       });
     });
   });

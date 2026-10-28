@@ -187,19 +187,4 @@ RSpec.describe Documents::VersionsController, type: :request do
       expect(response).to have_http_status(:ok)
     end
   end
-
-  describe "GET /d/:document_id/versions" do
-    it "renders data-color on the title of a colored object and none on an uncolored one" do
-      document.update!(color: "indigo")
-      get document_versions_path(document)
-
-      html = Nokogiri::HTML(response.body)
-      expect(html.at_css("h1 [data-color='indigo']")&.text).to eq("Two")
-
-      document.update!(color: nil)
-      get document_versions_path(document)
-
-      expect(Nokogiri::HTML(response.body).css("h1 [data-color]")).to be_empty
-    end
-  end
 end
