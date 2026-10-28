@@ -5,10 +5,12 @@ class Document < ApplicationRecord
   include Trashable
 
   include ToReactProps
-  set_react_props :id, :title, :icon, :title_for_editing
+  set_react_props :id, :title, :icon, :color, :title_for_editing
 
   include HasIcon
   has_icon derived_from: :title
+
+  include HasColor
 
   include TitleSearch
   searchable_by :title
