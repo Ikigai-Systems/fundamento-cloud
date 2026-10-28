@@ -118,5 +118,73 @@ RSpec.describe "Api::V1::ImportSessions#manifest", type: :request do
       changed = json.find { |f| f["relative_path"] == "Notes/hello.md" }
       expect(changed["direct_upload_url"]).to be_present
     end
+
+    describe "files imported by an earlier session" do
+      let(:earlier_session) do
+        ImportSession.create!(
+          organization: org, space: space,
+          organization_membership: membership, status: :completed
+        )
+      end
+
+      def complete_in_earlier_session(relative_path, checksum, object_id)
+        earlier_session.import_files.create!(
+          relative_path: relative_path, checksum: checksum, file_size: 1,
+          format: "markdown", file_type: :document, status: :completed
+        )
+        earlier_session.merge_path_map!(relative_path, object_id)
+      end
+
+      def manifest_entry_for(path)
+        post manifest_api_v1_import_session_path(session),
+          params: { files: manifest_files },
+          headers: auth_headers
+        JSON.parse(response.body).find { |f| f["relative_path"] == path }
+      end
+
+      let(:imported_document) { space.documents.create!(organization: org, title: "hello") }
+
+      it "skips a file whose imported document still exists" do
+        complete_in_earlier_session("Notes/hello.md", "abc123", imported_document.id)
+
+        entry = manifest_entry_for("Notes/hello.md")
+
+        expect(entry["status"]).to eq("skipped")
+        expect(entry["skipped_reason"]).to eq("already_imported")
+      end
+
+      it "imports a file again once its imported document was destroyed" do
+        complete_in_earlier_session("Notes/hello.md", "abc123", imported_document.id)
+        imported_document.destroy!
+
+        entry = manifest_entry_for("Notes/hello.md")
+
+        expect(entry["status"]).to eq("pending")
+        expect(entry["direct_upload_url"]).to be_present
+      end
+
+      it "imports a file again while its imported document is in the trash" do
+        complete_in_earlier_session("Notes/hello.md", "abc123", imported_document.id)
+        imported_document.trash!
+
+        entry = manifest_entry_for("Notes/hello.md")
+
+        expect(entry["direct_upload_url"]).to be_present
+      end
+
+      it "imports an attachment again once the imported attachment was deleted" do
+        attachment = Attachment.create!(organization: org, parent: space, filename: "image.png", mime_type: "image/png")
+        complete_in_earlier_session("assets/image.png", "def456", "attachment:#{attachment.id}.png")
+        kept = manifest_entry_for("assets/image.png")
+        expect(kept["skipped_reason"]).to eq("already_imported")
+
+        attachment.destroy!
+        session.import_files.destroy_all
+
+        entry = manifest_entry_for("assets/image.png")
+
+        expect(entry["direct_upload_url"]).to be_present
+      end
+    end
   end
 end

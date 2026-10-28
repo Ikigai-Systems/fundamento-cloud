@@ -31,22 +31,49 @@ module ImportSessionActions
     file_entries = Array(params[:files])
 
     # Pre-fetch to avoid N+1: one query for existing files in this session, one for
-    # files already completed in previous sessions for the same space.
+    # files already imported in previous sessions for the same space.
     existing_files = session.import_files.index_by(&:relative_path)
-    completed_elsewhere = ImportFile
-      .joins(:import_session)
-      .where(import_sessions: { space_id: session.space_id }, status: ImportFile.statuses[:completed])
-      .where.not(import_session_id: session.id)
-      .pluck(:relative_path, :checksum)
-      .to_set
+    imported_before = previously_imported(session)
 
     results = file_entries.map { |entry|
-      process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
+      process_manifest_entry(session, entry, existing_files:, previously_imported: imported_before)
     }
 
     session.update!(status: :uploading)
 
     results
+  end
+
+  # Set of [relative_path, checksum] for files that earlier sessions in this space imported
+  # and whose result is still there. A completed ImportFile outlives what it produced, so a
+  # document or attachment that was deleted (or is in the trash) since must not make the same
+  # file skip: the user is importing it again because it is gone.
+  #
+  # What each file produced is in its session's path_map: a document id, or
+  # "attachment:<id>.<ext>".
+  def previously_imported(session)
+    rows = ImportFile
+      .joins(:import_session)
+      .where(import_sessions: { space_id: session.space_id }, status: ImportFile.statuses[:completed])
+      .where.not(import_session_id: session.id)
+      .pluck(:relative_path, :checksum, Arel.sql("import_sessions.path_map ->> import_files.relative_path"))
+
+    # "attachment:<id>.<ext>" -> "attachment:<id>"; a document id stays as it is.
+    produced = rows.map { |_, _, object|
+      object&.start_with?("attachment:") ? object.delete_suffix(File.extname(object)) : object
+    }
+    attachment_ids = produced.compact.select { |object| object.start_with?("attachment:") }
+    document_ids = produced.compact - attachment_ids
+
+    still_there = session.space.documents.where(id: document_ids).pluck(:id).to_set
+    still_there.merge(
+      session.organization.attachments.where(id: attachment_ids.map { |object| object.delete_prefix("attachment:") })
+        .pluck(:id).map { |id| "attachment:#{id}" }
+    )
+
+    rows.zip(produced).each_with_object(Set.new) do |((path, checksum, _), object), result|
+      result << [path, checksum] if still_there.include?(object)
+    end
   end
 
   # Returns nil on success, or an error message string on validation failure.
@@ -65,7 +92,7 @@ module ImportSessionActions
     nil
   end
 
-  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: Set.new)
+  def process_manifest_entry(session, entry, existing_files: {}, previously_imported: Set.new)
     import_file = existing_files[entry[:relative_path]] ||
       session.import_files.build(relative_path: entry[:relative_path])
 
@@ -76,7 +103,7 @@ module ImportSessionActions
     end
 
     # Skip files already imported in a previous session for this space
-    already_imported = completed_elsewhere.include?([entry[:relative_path], entry[:checksum]])
+    already_imported = previously_imported.include?([entry[:relative_path], entry[:checksum]])
 
     if already_imported
       import_file.assign_attributes(status: :skipped)
