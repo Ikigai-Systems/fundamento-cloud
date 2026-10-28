@@ -15,7 +15,8 @@ class ApiTokenAuthenticatableStrategy < Devise::Strategies::Base
   end
 
   def authenticate!
-    if (token = ApiToken.find_by_encrypted_token(api_token))
+    # A trashed organization keeps its tokens, so untrashing it needs no new ones.
+    if (token = ApiToken.find_by_encrypted_token(api_token)) && token.organization.kept?
       token.update!(used_at: Time.now)
 
       Current.organization = token.organization

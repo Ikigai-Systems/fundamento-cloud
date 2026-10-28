@@ -53,6 +53,8 @@ module Api
 
       membership = OrganizationMembership.find_by(id: membership_id)
       return false unless membership && membership.user_id == oauth_token.resource_owner_id
+      # A trashed organization keeps its tokens, so untrashing it needs no reconnecting.
+      return false if membership.organization.trashed?
 
       oauth_token.update_column(:used_at, Time.current)
 
