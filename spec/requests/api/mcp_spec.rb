@@ -75,6 +75,43 @@ RSpec.describe "MCP endpoint", type: :request do
     end
   end
 
+  # Trash is reversible, so a deleted organization keeps its credentials. They must still stop
+  # working: the web UI hides a trashed organization, and the API must not keep serving it to
+  # connected assistants for the whole recovery window.
+  describe "a trashed organization" do
+    let(:api_token) do
+      ApiToken.create!(
+        organization: organizations(:is),
+        organization_membership: organization_memberships(:om_is_pawel),
+        title: "Infinite Sites MCP",
+      ).encrypted_token
+    end
+
+    before { organizations(:is).trash! }
+
+    it "refuses its OAuth tokens" do
+      call_mcp("/api/mcp/organizations/is", oauth_token)
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "refuses its API tokens" do
+      call_mcp("/api/mcp/organizations/is", api_token)
+
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "accepts the same tokens again once untrashed" do
+      organizations(:is).untrash!
+
+      call_mcp("/api/mcp/organizations/is", oauth_token)
+      expect(response).to have_http_status(:ok)
+
+      call_mcp("/api/mcp/organizations/is", api_token)
+      expect(response).to have_http_status(:ok)
+    end
+  end
+
   describe "JSON-RPC exchanges" do
     def rpc(body, headers = {})
       headers = {
