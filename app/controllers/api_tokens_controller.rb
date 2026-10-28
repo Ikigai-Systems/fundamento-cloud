@@ -10,7 +10,6 @@ class ApiTokensController < ApplicationController
 
   def new
     @api_token = pundit_user.organization_membership.api_tokens.new
-    @api_token.generate_api_token
 
     authorize @api_token, :create?
   end
@@ -45,7 +44,7 @@ class ApiTokensController < ApplicationController
   protected
 
   def api_token_params
-    params.require(:api_token).permit(:title, :encrypted_token)
+    params.require(:api_token).permit(:title)
   end
 
   def ensure_turbo_request

@@ -8,8 +8,6 @@
     <% end %>
 
     <% content_for :modal_main_content do %>
-      <%= f.hidden_field :encrypted_token, value: @api_token.encrypted_token %>
-
       <%= render "devise/shared/error_messages", resource: @api_token %>
 
       <div class="form-field">
