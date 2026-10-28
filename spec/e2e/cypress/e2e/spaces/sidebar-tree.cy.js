@@ -500,6 +500,9 @@ describe("Space sidebar tree", function () {
     it("a rename keeps the color of the tree row", function () {
       cy.appEval(`Document.find("one").update!(color: "indigo")`);
       cy.visit("/d/one");
+      // The tree loads lazily and only hears events once it is rendered: an event fired
+      // before that is missed, and the tree then renders its own (older) JSON.
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
 
       cy.window().then((win) => {
         win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", title: "Renamed", icon: null}}));
