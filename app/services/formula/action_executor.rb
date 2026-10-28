@@ -336,6 +336,11 @@ class Formula::ActionExecutor
       if values.key?(key) && !values[key].nil? && !values[key].is_a?(String)
         raise FormulaEvaluationError.new(formula: action, cause_message: "#{action}: #{key} must be text")
       end
+
+      # Same rule as DocumentService#update!; Document has no presence validation of its own.
+      if %w[title name].include?(key) && values[key].is_a?(String) && values[key].blank?
+        raise FormulaEvaluationError.new(formula: action, cause_message: "#{action}: #{key} can't be blank")
+      end
     end
 
     if values.empty?

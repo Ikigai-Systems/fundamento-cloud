@@ -339,6 +339,16 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         }.to raise_error(RuntimeError, /UpdateDocument needs key and value pairs/)
       end
 
+      ["", "   "].each do |blank|
+        it "a blank title (#{blank.inspect}) is an error and leaves the record unchanged" do
+          expect {
+            engine.evaluate(%(UpdateDocument("#{document.id}", "title", "#{blank}")), context: {}, action_executor: executor)
+          }.to raise_error(Formula::ActionExecutor::FormulaEvaluationError, "UpdateDocument: title can't be blank")
+
+          expect(document.reload.title).to eq("Plan")
+        end
+      end
+
       it "a non-string title or icon is an error naming the key and leaves the record unchanged" do
         {"title" => 5, "icon" => 1}.each do |key, value|
           expect {
@@ -466,6 +476,16 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect {
           engine.evaluate(%(UpdateTable("projects", "color")), context: {}, action_executor: executor)
         }.to raise_error(RuntimeError, /UpdateTable needs key and value pairs/)
+      end
+
+      ["", "   "].each do |blank|
+        it "a blank name (#{blank.inspect}) is an error and leaves the record unchanged" do
+          expect {
+            engine.evaluate(%(UpdateTable("#{new_table.id}", "name", "#{blank}")), context: {}, action_executor: executor)
+          }.to raise_error(Formula::ActionExecutor::FormulaEvaluationError, "UpdateTable: name can't be blank")
+
+          expect(new_table.reload.name).to eq("Backlog")
+        end
       end
 
       it "a non-string name or icon is an error naming the key and leaves the record unchanged" do
