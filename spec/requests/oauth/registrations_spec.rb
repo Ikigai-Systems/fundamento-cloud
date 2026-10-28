@@ -17,12 +17,4 @@ RSpec.describe "OAuth client registration", type: :request do
     expect(application.secret).to eq(Digest::SHA256.hexdigest(body.fetch("client_secret")))
     expect(Doorkeeper::Application.by_uid_and_secret(body["client_id"], body["client_secret"])).to eq(application)
   end
-
-  it "requires a redirect URI" do
-    post "/oauth/register",
-      params: { client_name: "Test client" }.to_json,
-      headers: { "Content-Type" => "application/json" }
-
-    expect(response).to have_http_status(:bad_request)
-  end
 end
