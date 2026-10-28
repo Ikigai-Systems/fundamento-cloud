@@ -55,7 +55,7 @@ class Tables::TablesController < ApplicationController
   end
 
   def create
-    create_params = table_params.except(:csv_file)
+    create_params = table_params.except(:csv_file, :color)
     if create_params[:name].nil?
       create_params[:name] = "Table " + Nanoid.generate(size: 4)
     end
@@ -158,7 +158,13 @@ class Tables::TablesController < ApplicationController
   def update
     authorize @table, :update?
 
-    @table.update!(table_params)
+    begin
+      @table.assign_color(table_params[:color])
+    rescue ArgumentError => e
+      return render json: { errors: { base: e.message } }, status: :unprocessable_content
+    end
+
+    @table.update!(table_params.except(:color))
 
     if table_params[:archived].present?
       if table_params[:archived] == "true"
@@ -329,7 +335,7 @@ class Tables::TablesController < ApplicationController
   private
 
   def table_params
-    params.require(:table).permit(:name, :archived, :csv_file)
+    params.require(:table).permit(:name, :color, :archived, :csv_file)
   end
 
   def load_space

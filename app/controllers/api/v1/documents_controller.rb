@@ -22,6 +22,7 @@ module Api
               space_id: params[:space_id],
               title: document_params[:title],
               icon: document_params[:icon],
+              color: document_params[:color],
               parent_document_id: document_params[:parent_document_id],
               file: document_params[:file],
             )
@@ -31,6 +32,7 @@ module Api
               space_id: params[:space_id],
               title: document_params[:title],
               icon: document_params[:icon],
+              color: document_params[:color],
               parent_document_id: document_params[:parent_document_id],
               markdown: document_params[:markdown],
             )
@@ -78,7 +80,8 @@ module Api
               document_id: params[:id],
               markdown: document_params[:markdown],
               title: document_params[:title],
-              icon: document_params[:icon]
+              icon: document_params[:icon],
+              color: document_params[:color]
             )
 
           render json: DocumentBlueprint.render(document)
@@ -94,7 +97,7 @@ module Api
       private
 
       def document_params
-        params.require(:document).permit(:title, :icon, :markdown, :parent_document_id, :file)
+        params.require(:document).permit(:title, :icon, :color, :markdown, :parent_document_id, :file)
       end
     end
   end

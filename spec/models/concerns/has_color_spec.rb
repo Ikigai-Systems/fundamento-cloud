@@ -93,6 +93,14 @@ RSpec.describe HasColor do
           .to raise_error(ArgumentError, "Color must be one of: #{all_names}")
         expect(record.color).to eq("blue")
       end
+
+      it "raises ArgumentError rather than NoMethodError for input that isn't a string" do
+        [5, true, ["blue"]].each do |value|
+          expect { record.assign_color(value) }
+            .to raise_error(ArgumentError, "Color must be one of: #{all_names}")
+        end
+        expect(record.color).to eq("blue")
+      end
     end
   end
 

@@ -10,7 +10,7 @@ class DocumentService
 
   # Titles are stored as given and the icon is a field of its own; see
   # HasIcon#assign_title_and_icon.
-  def create!(space_id:, parent_document_id: nil, title:, markdown:, icon: nil)
+  def create!(space_id:, parent_document_id: nil, title:, markdown:, icon: nil, color: nil)
     ActiveRecord::Base.transaction do
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
@@ -20,6 +20,7 @@ class DocumentService
 
       document = space.documents.new(space: space, organization: space.organization)
       document.assign_title_and_icon(title: title || "Untitled", icon: icon)
+      document.assign_color(color)
 
       authorize document, :create?
 
@@ -54,10 +55,10 @@ class DocumentService
     end
   end
 
-  # Renames, changes the icon, replaces the content, or any mix of them. A rename or icon
+  # Renames, changes the icon or color, replaces the content, or any mix of them. A rename or icon
   # change alone creates no version: versions snapshot content, and neither is part of it.
-  def update!(document_id:, markdown: nil, title: nil, icon: nil)
-    raise ArgumentError, "Provide a title, icon, or markdown" if [markdown, title, icon].all?(&:nil?)
+  def update!(document_id:, markdown: nil, title: nil, icon: nil, color: nil)
+    raise ArgumentError, "Provide a title, icon, color, or markdown" if [markdown, title, icon, color].all?(&:nil?)
     raise ArgumentError, "Title can't be blank" if !title.nil? && title.blank?
 
     ActiveRecord::Base.transaction do
@@ -65,6 +66,7 @@ class DocumentService
       authorize document, :update?
 
       document.assign_title_and_icon(title: title, icon: icon)
+      document.assign_color(color)
       document.save!
 
       next document if markdown.nil?
@@ -94,7 +96,7 @@ class DocumentService
     end
   end
 
-  def create_from_file!(space_id:, file:, parent_document_id: nil, title: nil, icon: nil)
+  def create_from_file!(space_id:, file:, parent_document_id: nil, title: nil, icon: nil, color: nil)
     ActiveRecord::Base.transaction do
       space = pundit_user.current_organization.spaces.find(space_id)
       authorize space, :update?
@@ -114,6 +116,7 @@ class DocumentService
       # Create document
       document = space.documents.new(space: space, organization: space.organization)
       document.assign_title_and_icon(title: document_title, icon: icon)
+      document.assign_color(color)
 
       authorize document, :create?
       document.save!

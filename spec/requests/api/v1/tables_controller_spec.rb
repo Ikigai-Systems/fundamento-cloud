@@ -80,10 +80,86 @@ RSpec.describe "Api::V1::Tables", type: :request do
       expect(table.reload.name).to eq("Metrics")
     end
 
-    it "rejects a request with neither name nor icon" do
+    it "rejects a request with neither name, icon nor color" do
       patch "/api/v1/tables/#{table.id}", params: { table: { other: "x" } }, headers: bearer(membership)
 
       expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["errors"]["base"]).to eq("Provide a name, icon, color, or any mix")
+    end
+
+    context "color" do
+      let(:all_names) { "crimson, orange, lime, teal, blue, indigo, magenta, slate" }
+
+      def patch_color(table, color, as: membership)
+        patch "/api/v1/tables/#{table.id}", params: { table: { color: color } }, headers: bearer(as), as: :json
+      end
+
+      it "sets the color and returns its name" do
+        patch_color(table, "Indigo")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to eq("indigo")
+        expect(table.reload.color).to eq("indigo")
+        expect(table.name).to eq("Metrics")
+      end
+
+      it "clears the color with an empty string" do
+        table.update!(color: "blue")
+
+        patch_color(table, "")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to be_nil
+        expect(table.reload.color).to be_nil
+      end
+
+      it "leaves the color unchanged when omitted" do
+        table.update!(color: "blue")
+
+        rename(table, "KPIs", as: membership)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to eq("blue")
+        expect(table.reload.color).to eq("blue")
+      end
+
+      it "rejects an unknown color with 422 and a message naming the eight colors" do
+        table.update!(color: "blue")
+
+        patch_color(table, "chartreuse")
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+        expect(table.reload.color).to eq("blue")
+      end
+
+      it "rejects a color that isn't a string with 422" do
+        [5, true].each do |value|
+          patch_color(table, value)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+        end
+        expect(table.reload.color).to be_nil
+      end
+
+      it "rejects a user without edit permission and leaves the color alone" do
+        private_table = spaces(:hc_pawels).tables.create!(organization: organizations(:hc), name: "Private", color: "blue")
+
+        patch_color(private_table, "crimson")
+
+        expect(response).to have_http_status(:forbidden)
+        expect(private_table.reload.color).to eq("blue")
+      end
+
+      it "always includes color in the table JSON" do
+        rename(table, "KPIs", as: membership)
+        expect(response.parsed_body).to have_key("color")
+
+        get_table(table, as: membership)
+        expect(response.parsed_body["table"]).to have_key("color")
+        expect(response.parsed_body["table"]["color"]).to be_nil
+      end
     end
 
     it "rejects an icon that isn't a single emoji" do

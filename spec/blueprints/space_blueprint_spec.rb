@@ -21,12 +21,14 @@ RSpec.describe SpaceBlueprint do
           npi: documents(:one).id,
           title: documents(:one).title,
           icon: { type: "emoji", value: "🔥" },
+          color: nil,
           children: [
             {
               id: documents(:two).id,
               npi: documents(:two).id,
               title: documents(:two).title,
               icon: nil,
+              color: nil,
               children: [],
             },
           ],
@@ -69,9 +71,25 @@ RSpec.describe SpaceBlueprint do
           npi: documents(:one).id,
           title: documents(:one).title,
           icon: nil,
+          color: nil,
           children: [],
         },
       ])
+    end
+
+    it "emits the color name, or nil, for each document" do
+      documents(:one).update!(color: "indigo")
+      space = spaces(:is_default)
+      space.update!(hierarchy: [
+        { "id" => documents(:one).id, "children" => [
+          { "id" => documents(:two).id, "children" => [] },
+        ] },
+      ])
+
+      result = SpaceBlueprint.render_as_hash(space, view: :with_documents)
+
+      expect(result[:documents].first[:color]).to eq("indigo")
+      expect(result[:documents].first[:children].first).to include(color: nil)
     end
 
     it "returns an empty tree when every entry is orphaned" do

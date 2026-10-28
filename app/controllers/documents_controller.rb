@@ -54,7 +54,7 @@ class DocumentsController < ApplicationController
   end
 
   def create
-    @document = current_organization.documents.new(document_params)
+    @document = current_organization.documents.new(document_params.except(:color))
     @document.space = @space
 
     authorize @document, :create?
@@ -94,7 +94,15 @@ class DocumentsController < ApplicationController
 
     update_params = document_params
 
-    @document.update!(update_params)
+    # The color is a name, never the stored integer: assign_color validates it
+    # and fails with a message instead of the enum's vague "is invalid".
+    begin
+      @document.assign_color(update_params[:color])
+    rescue ArgumentError => e
+      return render json: { errors: { base: e.message } }, status: :unprocessable_content
+    end
+
+    @document.update!(update_params.except(:color))
 
     if update_params[:archived].present?
       if update_params[:archived] == "true"
@@ -210,7 +218,7 @@ class DocumentsController < ApplicationController
   end
 
   def document_params
-    params.require(:document).permit(:title, :archived, :content_html, :revisions, :operations)
+    params.require(:document).permit(:title, :color, :archived, :content_html, :revisions, :operations)
   end
 
   def document_move_params

@@ -16,10 +16,10 @@ class SpaceBlueprint < Blueprinter::Base
   end
 
   def self.serialize_hierarchy(space)
-    # Only id, title and icon are serialised below; skip the sync blob and the
+    # Only id, title, icon and color are serialised below; skip the sync blob and the
     # has_versions subquery entirely.
     documents_by_id = space
-      .documents_from_hierarchy(scope: space.documents.select(:id, :title, *HasIcon::COLUMNS))
+      .documents_from_hierarchy(scope: space.documents.select(:id, :title, *HasIcon::COLUMNS, *HasColor::COLUMNS))
       .index_by(&:id)
     serialize_hierarchy_nodes(space.hierarchy, documents_by_id)
   end
@@ -39,6 +39,7 @@ class SpaceBlueprint < Blueprinter::Base
         npi: document.id, # FIXME: something still depends on this but we should refactor it
         title: document.title,
         icon: document.icon&.as_json,
+        color: document.color,
         children: serialize_hierarchy_nodes(children, documents_by_id),
       }]
     end

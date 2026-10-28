@@ -9,7 +9,7 @@ class Api::V1::TablesController < Api::ApiController
     )
 
     render json: {
-      table: @table.attributes.merge("icon" => @table.icon&.as_json),
+      table: @table.attributes.merge("icon" => @table.icon&.as_json, "color" => @table.color),
       data: TableDataBlueprint.render(@table.data_to_json(evaluate_formulas: true, evaluate_as: current_organization_membership))
     }
   end
@@ -18,15 +18,16 @@ class Api::V1::TablesController < Api::ApiController
     table = current_organization.tables.find(params[:id])
     authorize table
 
-    attributes = params.require(:table).permit(:name, :icon)
-    if attributes[:name].nil? && attributes[:icon].nil?
-      return render json: { errors: { base: "Provide a name, icon, or both" } }, status: :unprocessable_entity
+    attributes = params.require(:table).permit(:name, :icon, :color)
+    if attributes.values_at(:name, :icon, :color).all?(&:nil?)
+      return render json: { errors: { base: "Provide a name, icon, color, or any mix" } }, status: :unprocessable_entity
     end
 
     table.assign_title_and_icon(title: attributes[:name], icon: attributes[:icon])
+    table.assign_color(attributes[:color])
     table.save!
 
-    render json: { id: table.id, name: table.name, icon: table.icon&.as_json, space_id: table.space_id }
+    render json: { id: table.id, name: table.name, icon: table.icon&.as_json, color: table.color, space_id: table.space_id }
   rescue ArgumentError => e
     render json: { errors: { base: e.message } }, status: :unprocessable_entity
   rescue ActiveRecord::RecordInvalid => invalid

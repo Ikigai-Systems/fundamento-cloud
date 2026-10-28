@@ -17,6 +17,31 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
   end
 
   describe "POST /api/v1/documents" do
+    context "with markdown" do
+      it "sets the color" do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return({})
+
+        post api_v1_documents_path(space_id: is_default_space.id),
+          params: { document: { title: "Colored", markdown: "Hello", color: "magenta" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body["color"]).to eq("magenta")
+        expect(Document.find(response.parsed_body["id"]).color).to eq("magenta")
+      end
+
+      it "rejects an unknown color without creating a document" do
+        expect {
+          post api_v1_documents_path(space_id: is_default_space.id),
+            params: { document: { title: "Colored", markdown: "Hello", color: "chartreuse" } },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+        }.not_to change(Document, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
     context "with valid DOCX file" do
       let(:docx_file) do
         Rack::Test::UploadedFile.new(
@@ -43,6 +68,16 @@ RSpec.describe "Api::V1::Documents#create", type: :request do
 
         expect(json_response["id"]).to be_present
         expect(json_response["title"]).to eq("Imported DOCX Document")
+      end
+
+      it "sets the color when creating from a file" do
+        post api_v1_documents_path(space_id: is_default_space.id),
+          params: { document: { file: docx_file, color: "Teal" } },
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body["color"]).to eq("teal")
+        expect(Document.find(response.parsed_body["id"]).color).to eq("teal")
       end
 
       it "uses filename as title when title not provided" do
