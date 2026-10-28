@@ -185,4 +185,45 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       expect(action_executor.get_actions).to eq([])
     end
   end
+
+  describe "UpdateDocument and UpdateTable" do
+    let(:organization) { organizations(:is) }
+    let(:document) { Document.create!(title: "Plan", organization: organization, space: space) }
+    let!(:new_table) { Table.create!(name: "Backlog", organization: organization, space: space) }
+
+    it "UpdateDocument dry mode records the action and changes nothing" do
+      result = action_executor.update_document({}, document.id, {"title" => "Changed", "color" => "blue"})
+
+      expect(result).to be_nil
+      expect(action_executor.get_actions).to eq([
+        {type: "UpdateDocument", documentId: document.id, values: {"title" => "Changed", "color" => "blue"}}
+      ])
+      expect(document.reload).to have_attributes(title: "Plan", color: nil)
+    end
+
+    it "UpdateTable dry mode records the action and changes nothing" do
+      result = action_executor.update_table({}, new_table.id, {"name" => "Changed", "color" => "blue"})
+
+      expect(result).to be_nil
+      expect(action_executor.get_actions).to eq([
+        {type: "UpdateTable", tableId: new_table.id, values: {"name" => "Changed", "color" => "blue"}}
+      ])
+      expect(new_table.reload).to have_attributes(name: "Backlog", color: nil)
+    end
+
+    it "records through the formula language and changes nothing" do
+      engine.evaluate(%(UpdateDocument("#{document.id}", "color", "indigo")), context: {}, action_executor: action_executor)
+
+      expect(action_executor.get_actions).to eq([
+        {type: "UpdateDocument", documentId: document.id, values: {"color" => "indigo"}}
+      ])
+      expect(document.reload.color).to be_nil
+    end
+
+    it "a bad id or bad key still errors in dry mode" do
+      expect { action_executor.update_document({}, "missing", {"color" => "blue"}) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { action_executor.update_table({}, new_table.id, {"bogus" => "x"}) }.to raise_error(RuntimeError, /UpdateTable accepts/)
+      expect(action_executor.get_actions).to be_empty
+    end
+  end
 end
