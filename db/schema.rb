@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -153,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_140000) do
     t.string "space_id"
     t.string "title"
     t.datetime "updated_at", null: false
+    t.integer "color"
     t.index ["deleted_at"], name: "index_documents_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id"], name: "index_documents_on_id", unique: true
     t.index ["organization_id", "title"], name: "index_documents_on_organization_and_search_term_trgm", opclass: { title: :gin_trgm_ops }, using: :gin
@@ -689,6 +690,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_140000) do
     t.string "organization_id", null: false
     t.string "space_id", null: false
     t.datetime "updated_at", null: false
+    t.integer "color"
     t.index ["deleted_at"], name: "index_tables_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id", "organization_id"], name: "index_tables_on_id_and_organization_id", unique: true
     t.index ["name", "space_id"], name: "index_tables_on_name_and_space_id", unique: true, where: "(deleted_at IS NULL)"
