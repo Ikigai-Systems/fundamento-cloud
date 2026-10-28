@@ -290,4 +290,40 @@ RSpec.describe "Root Controller (EnsureOrganization)", type: :request do
       expect(current_organization_id_from_cookie).to be_nil
     end
   end
+
+  describe "color labels in lists" do
+    fixtures :documents, "tables/tables", :public_links
+
+    before do
+      user = users(:pawel)
+      sign_in user
+      post select_organization_path(organizations(:is))
+      documents(:one).update!(color: "orange")
+    end
+
+    it "renders data-color on the title of a colored object and none on an uncolored one (recently updated)" do
+      tables_tables(:users).update!(color: "slate")
+
+      get recently_updated_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("a[href='/d/one'] [data-color='orange']")&.text).to eq("One")
+      expect(html.at_css("a[href='/t/users'] [data-color='slate']")).to be_present
+      expect(html.at_css("a[href='/d/two']")).to be_present
+      expect(html.css("a[href='/d/two'] [data-color]")).to be_empty
+    end
+
+    it "renders data-color on the title of a colored object and none on an uncolored one (shared with me)" do
+      user = users(:pawel)
+      one_link = PublicLink.create!(organization: organizations(:is), object: documents(:one), updated_by: user, allowed_emails: [user.email])
+      public_links(:public_link_to_two).update!(allowed_emails: [user.email])
+
+      get shared_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("a[href$='/public/#{one_link.id}'] [data-color='orange']")&.text).to eq("One")
+      expect(html.at_css("a[href$='/public/#{public_links(:public_link_to_two).id}']")&.text).to eq("Two")
+      expect(html.css("a[href$='/public/#{public_links(:public_link_to_two).id}'] [data-color]")).to be_empty
+    end
+  end
 end

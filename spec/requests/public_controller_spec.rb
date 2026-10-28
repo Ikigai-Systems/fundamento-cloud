@@ -70,6 +70,19 @@ RSpec.describe PublicController, type: :request do
           expect(response.body).to include("document")
         end
 
+        it "renders data-color on the title of a colored object and none on an uncolored one" do
+          # The title itself is drawn by PublicDocumentViewer (ColorLabel) from these props.
+          document.update!(color: "indigo")
+          get public_url
+          props = Nokogiri::HTML(response.body).at_css("[data-react-loader-component-value='PublicDocumentViewer']")["data-react-loader-props-auto-converted-to-camel-case-value"]
+          expect(JSON.parse(props).dig("document", "color")).to eq("indigo")
+
+          document.update!(color: nil)
+          get public_url
+          props = Nokogiri::HTML(response.body).at_css("[data-react-loader-component-value='PublicDocumentViewer']")["data-react-loader-props-auto-converted-to-camel-case-value"]
+          expect(JSON.parse(props).dig("document", "color")).to be_nil
+        end
+
         it "does not store location when already authenticated" do
           get public_url
 

@@ -14,4 +14,18 @@ module ColorLabelHelper
 
     {class: "color-label", data: {color: name.to_s}}
   end
+
+  # The title wrapped in its label, or the bare title when the object has no colour, so an
+  # uncoloured object renders exactly as before.
+  #
+  # The label's padding only leaves layout alone while the element stays inline. Where the title
+  # would otherwise be a flex or grid item, pass +wrap: true+: the label then sits in a plain span
+  # that takes the blockification, so the colour changes nothing about the row's height.
+  def color_labelled(title, object, wrap: false)
+    label = color_label_attributes(object)
+    return title if label.empty?
+
+    labelled = tag.span(title, **label)
+    wrap ? tag.span(labelled) : labelled
+  end
 end

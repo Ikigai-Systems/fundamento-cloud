@@ -19,6 +19,16 @@
 @import "./object-icon.tailwind.css";
 @import "./color_label.css";
 
+/*
+ * Lists clip a long title with a .truncate block (overflow: hidden), and the colour label's underline
+ * hangs 3px below the text's line box. Give the clipping box that room so the strip isn't cut
+ * off; the negative margin cancels the padding, so nothing around it moves.
+ */
+div.truncate:has(.color-label) {
+    padding-bottom: 3px;
+    margin-bottom: -3px;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

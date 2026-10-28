@@ -166,4 +166,22 @@ RSpec.describe FavoritesController, type: :request do
       end
     end
   end
+
+  describe "color labels" do
+    before do
+      sign_in users(:pawel)
+      post select_organization_path(organizations(:is))
+      documents(:one).update!(color: "magenta")
+      organization_memberships(:om_is_pawel).favorites.find_or_create_by!(object: documents(:two))
+    end
+
+    it "renders data-color on the title of a colored object and none on an uncolored one" do
+      get favorites_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("a[href='/d/one'] [data-color='magenta']")&.text).to eq("One")
+      expect(html.at_css("a[href='/d/two']")&.text).to eq("Two")
+      expect(html.css("a[href='/d/two'] [data-color]")).to be_empty
+    end
+  end
 end

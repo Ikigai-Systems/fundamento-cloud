@@ -71,4 +71,21 @@ RSpec.describe "GET /notifications", type: :request do
 
     expect(badge_count).to eq(3)
   end
+
+  describe "GET /mentions" do
+    it "renders data-color on the title of a colored object and none on an uncolored one" do
+      documents(:one).update!(color: "teal")
+      get mentions_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("a[href^='/d/one'] [data-color='teal']")&.text).to eq("One")
+
+      documents(:one).update!(color: nil)
+      get mentions_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("a[href^='/d/one']")&.text).to eq("One")
+      expect(html.css("[data-color]")).to be_empty
+    end
+  end
 end

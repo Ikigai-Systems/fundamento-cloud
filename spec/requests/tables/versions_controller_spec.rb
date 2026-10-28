@@ -123,4 +123,18 @@ RSpec.describe Tables::VersionsController, type: :request do
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "color labels" do
+    it "renders data-color on the title of a colored object and none on an uncolored one" do
+      table.update!(color: "blue")
+      get table_versions_path(table)
+
+      expect(Nokogiri::HTML(response.body).at_css("h1 [data-color='blue']")&.text).to eq(table.title)
+
+      table.update!(color: nil)
+      get table_versions_path(table)
+
+      expect(Nokogiri::HTML(response.body).css("h1 [data-color]")).to be_empty
+    end
+  end
 end

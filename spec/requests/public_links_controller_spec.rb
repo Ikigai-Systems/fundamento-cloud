@@ -66,4 +66,20 @@ RSpec.describe PublicLinksController, type: :request do
       end.to change { PublicLink.count }.by(-1)
     end
   end
+
+  describe "GET /public_links" do
+    it "renders data-color on the title of a colored object and none on an uncolored one" do
+      two_link = public_links(:public_link_to_two)
+      one_link = PublicLink.create!(organization: organizations(:is), object: document, updated_by: user)
+      document.update!(color: "crimson")
+
+      get public_links_path
+
+      html = Nokogiri::HTML(response.body)
+      expect(html.at_css("tr##{ActionView::RecordIdentifier.dom_id(one_link)} [data-color='crimson']")&.text).to eq("One")
+      row = html.at_css("tr##{ActionView::RecordIdentifier.dom_id(two_link)}")
+      expect(row.text).to include("Two")
+      expect(row.css("[data-color]")).to be_empty
+    end
+  end
 end
