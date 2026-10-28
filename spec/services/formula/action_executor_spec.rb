@@ -365,6 +365,60 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(archived.reload.title).to eq("Frozen")
       end
 
+      it "a role-limited member who can see but not edit the document is denied (record unchanged)" do
+        restricted = Document.create!(title: "Locked", organization: organizations(:hc), space: spaces(:hc_restricted))
+        member = described_class.new(dry_mode: false, space: nil, organization_membership: organization_memberships(:om_hc_stefan))
+
+        expect(Pundit.policy!(PolicyUserContext.new(organization_memberships(:om_hc_stefan)), restricted).show?).to be(true)
+        expect {
+          member.update_document({}, restricted.id, {"title" => "Hacked"})
+        }.to raise_error(Pundit::NotAuthorizedError)
+
+        expect(restricted.reload.title).to eq("Locked")
+      end
+
+      it "a document in a space the user cannot see is denied, even in dry mode" do
+        hidden = Document.create!(title: "Hidden", organization: organizations(:hc), space: spaces(:hc_pawels))
+
+        [true, false].each do |dry|
+          member = described_class.new(dry_mode: dry, space: nil, organization_membership: organization_memberships(:om_hc_stefan))
+          expect {
+            member.update_document({}, hidden.id, {"title" => "Hacked"})
+          }.to raise_error(Pundit::NotAuthorizedError)
+          expect(member.get_actions).to be_empty
+        end
+
+        expect(hidden.reload.title).to eq("Hidden")
+      end
+
+      it "cannot update a document in another space of the same organization" do
+        elsewhere = Document.create!(title: "Elsewhere", organization: organization, space: spaces(:is_stefans))
+
+        expect {
+          executor.update_document({}, elsewhere.id, {"title" => "Mine"})
+        }.to raise_error(ActiveRecord::RecordNotFound)
+
+        expect(elsewhere.reload.title).to eq("Elsewhere")
+      end
+
+      it "can update a document in the same space" do
+        executor.update_document({}, document.id, {"title" => "Same space"})
+
+        expect(document.reload.title).to eq("Same space")
+      end
+
+      it "an odd number of arguments is a clear error" do
+        engine = Formula::Engine.new
+
+        expect {
+          engine.evaluate(%(UpdateDocument("#{document.id}", "color")), context: {}, action_executor: executor)
+        }.to raise_error(RuntimeError, /UpdateDocument needs key and value pairs/)
+
+        expect {
+          engine.evaluate(%(UpdateTable("projects", "color")), context: {}, action_executor: executor)
+        }.to raise_error(RuntimeError, /UpdateTable needs key and value pairs/)
+      end
+
       it "a document from another organization cannot be updated" do
         other = Document.create!(title: "Theirs", organization: organizations(:hc), space: spaces(:hc_default))
 
@@ -478,6 +532,17 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         }.to raise_error(Pundit::NotAuthorizedError)
 
         expect(archived.reload.name).to eq("Frozen")
+      end
+
+      it "a role-limited member who can see but not edit the table is denied (record unchanged)" do
+        restricted = Table.create!(name: "Locked", organization: organizations(:hc), space: spaces(:hc_restricted))
+        member = described_class.new(dry_mode: false, space: nil, organization_membership: organization_memberships(:om_hc_stefan))
+
+        expect {
+          member.update_table({}, restricted.id, {"name" => "Hacked"})
+        }.to raise_error(Pundit::NotAuthorizedError)
+
+        expect(restricted.reload.name).to eq("Locked")
       end
 
       it "a table in another space the executor does not allow is rejected as the other actions do" do

@@ -84,12 +84,12 @@ class Formula::ActionExecutor
         true
       },
       'UpdateDocument' => ->(function_context, document_id, *args) {
-        values = Hash[*args]
+        values = key_value_pairs("UpdateDocument", args)
         update_document(function_context, document_id, values)
         true
       },
       'UpdateTable' => ->(function_context, table_id, *args) {
-        values = Hash[*args]
+        values = key_value_pairs("UpdateTable", args)
         update_table(function_context, table_id, values)
         true
       },
@@ -339,8 +339,24 @@ class Formula::ActionExecutor
     values
   end
 
+  # Scoped like find_table: the executor's space when it has one, otherwise the
+  # organization. Authorizing show? first means a document the user cannot see
+  # is denied rather than revealed by what happens next.
   def find_document(document_identifier)
-    @organization_membership.organization.documents.find(document_identifier)
+    scope = @space ? @space.documents : @organization_membership.organization.documents
+    document = scope.find(document_identifier)
+
+    Pundit.authorize(@pundit_user, document, :show?)
+
+    document
+  end
+
+  def key_value_pairs(action, args)
+    if args.size.odd?
+      raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} needs key and value pairs after the id, got an odd number of arguments")
+    end
+
+    Hash[*args]
   end
 
   def find_table(table_identifier)
