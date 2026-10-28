@@ -112,6 +112,36 @@ RSpec.describe ImportDocumentTool do
       expect(response.structured_content[:error]).to eq("internal_error")
     end
 
+    it "stores a color and returns its name" do
+      base64_content = Base64.strict_encode64(file_fixture("pandoc/Volume-2-Terms-of-Reference.docx").read)
+
+      response = described_class.call(
+        space_id: is_default_space.id,
+        file_content: base64_content,
+        filename: "Volume-2-Terms-of-Reference.docx",
+        color: "orange",
+        server_context: server_context
+      )
+
+      expect(JSON.parse(response.content.first[:text])["color"]).to eq("orange")
+      expect(Document.last.color).to eq("orange")
+    end
+
+    it "rejects an unknown color without creating a document" do
+      base64_content = Base64.strict_encode64(file_fixture("pandoc/Volume-2-Terms-of-Reference.docx").read)
+
+      expect {
+        response = described_class.call(
+          space_id: is_default_space.id,
+          file_content: base64_content,
+          filename: "Volume-2-Terms-of-Reference.docx",
+          color: "chartreuse",
+          server_context: server_context
+        )
+        expect(response.structured_content[:error]).to eq("invalid_input")
+      }.not_to change(Document, :count)
+    end
+
     it "returns DocumentBlueprint MCP response" do
       file_content = file_fixture("pandoc/Volume-2-Terms-of-Reference.docx").read
       base64_content = Base64.strict_encode64(file_content)

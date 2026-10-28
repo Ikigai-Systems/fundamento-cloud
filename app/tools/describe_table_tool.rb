@@ -45,6 +45,7 @@ class DescribeTableTool < ApplicationTool
       id: table.id,
       name: table.name,
       icon: table.icon&.as_json,
+      color: table.color,
       space_id: table.space_id,
       archived: table.archived,
       row_count: table.rows.count,

@@ -26,6 +26,15 @@ RSpec.describe DescribeTableTool, type: :model do
       expect(content[:icon]).to eq(type: "emoji", value: "📁")
     end
 
+    it "returns the color by name, or null when there is none" do
+      content = DescribeTableTool.call(table_id: table.id, server_context: server_context).structured_content
+      expect(content).to include(color: nil)
+
+      table.update!(color: "crimson")
+      content = DescribeTableTool.call(table_id: table.id, server_context: server_context).structured_content
+      expect(content[:color]).to eq("crimson")
+    end
+
     it "returns table schema by id" do
       response = DescribeTableTool.call(
         table_id: table.id,

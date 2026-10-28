@@ -203,6 +203,19 @@ RSpec.describe UpdateTagsTool, type: :model do
         table.reload
         expect(table.tags.pluck(:name)).to contain_exactly("data", "analytics", "reporting")
       end
+
+      it "returns the table's color" do
+        table.update!(color: "indigo")
+
+        response = UpdateTagsTool.call(
+          object_id: table.id,
+          object_type: "Table",
+          tags: ["#data"],
+          server_context: server_context
+        )
+
+        expect(JSON.parse(response.content.first[:text])["color"]).to eq("indigo")
+      end
     end
 
     context "authorization and error cases" do

@@ -72,6 +72,7 @@ class UpdateTagsTool < ApplicationTool
         id: object.id,
         name: object.name,
         icon: object.icon&.as_json,
+        color: object.color,
         tags: object.tags.map { |tag| "##{tag.name}" }
       }.to_json
     else

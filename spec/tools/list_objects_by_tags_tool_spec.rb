@@ -132,6 +132,18 @@ RSpec.describe ListObjectsByTagsTool, type: :model do
         expect(object["tags"]).to include("#status/wip", "#project/nemesis")
         expect(object["space_id"]).to eq(space.id)
       end
+
+      it "returns the color of tables and documents" do
+        table.update!(color: "blue")
+        document.update!(color: "orange")
+        ObjectTag.create!(tag: tags(:is_status_wip), object: table, organization: organization) unless table.tags.include?(tags(:is_status_wip))
+
+        response = ListObjectsByTagsTool.call(tags: ["#status/wip"], server_context: server_context)
+
+        objects = JSON.parse(response.content.first[:text])["objects"]
+        expect(objects.find { _1["id"] == table.id }["color"]).to eq("blue")
+        expect(objects.find { _1["id"] == document.id }["color"]).to eq("orange")
+      end
     end
 
     context "listing both documents and tables" do

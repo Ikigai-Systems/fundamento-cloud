@@ -24,6 +24,15 @@ RSpec.describe ListTablesTool, type: :model do
       expect(tables.find { _1[:id] == tables_tables(:projects).id }[:icon]).to eq(type: "emoji", value: "📁")
     end
 
+    it "returns each table's color by name, or null" do
+      tables_tables(:projects).update!(color: "lime")
+
+      tables = ListTablesTool.call(server_context: server_context).structured_content[:tables]
+
+      expect(tables.find { _1[:id] == tables_tables(:projects).id }[:color]).to eq("lime")
+      expect(tables.reject { _1[:id] == tables_tables(:projects).id }.map { _1[:color] }.uniq).to eq([nil])
+    end
+
     it "lists all non-archived tables in the organization" do
       response = ListTablesTool.call(server_context: server_context)
 

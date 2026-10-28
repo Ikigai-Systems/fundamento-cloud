@@ -54,6 +54,7 @@ class ReadTableTool < ApplicationTool
       id: table.id,
       name: table.name,
       icon: table.icon&.as_json,
+      color: table.color,
       space_id: table.space_id,
       columns: serialized[:columns],
       rows: serialized[:rows],

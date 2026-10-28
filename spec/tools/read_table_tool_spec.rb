@@ -33,6 +33,15 @@ RSpec.describe ReadTableTool, type: :model do
       expect(content[:rows].first["id"]).to be_present
     end
 
+    it "returns the color by name, or null when there is none" do
+      content = ReadTableTool.call(table_id: table.id, server_context: server_context).structured_content
+      expect(content).to include(color: nil)
+
+      table.update!(color: "teal")
+      content = ReadTableTool.call(table_id: table.id, server_context: server_context).structured_content
+      expect(content[:color]).to eq("teal")
+    end
+
     it "honors limit and reports has_more=true" do
       response = ReadTableTool.call(
         table_id: table.id,
