@@ -162,6 +162,12 @@ RSpec.describe MarkdownFrontmatter do
       expect(instance.frontmatter_icon("fundamento/icon" => " 🔥 ")).to eq("🔥")
     end
 
+    {"a flag" => "🇵🇱", "a ZWJ sequence" => "👩‍💻", "a skin-tone emoji" => "👍🏽", "a variation-selector emoji" => "❤️"}.each do |label, emoji|
+      it "returns #{label} unchanged" do
+        expect(instance.frontmatter_icon("fundamento/icon" => emoji)).to eq(emoji)
+      end
+    end
+
     it "ignores a bare icon key" do
       expect(instance.frontmatter_icon("icon" => "🔥")).to be_nil
     end

@@ -244,6 +244,20 @@ RSpec.describe ImportDocumentJob, type: :job do
         end
       end
 
+      it "still promotes a leading emoji in the title when there is no fundamento/icon" do
+        import_file = import("title: \"🔥 Launch plan\"")
+
+        expect(import_file.document.title).to eq("Launch plan")
+        expect(import_file.document.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "keeps a leading-emoji title as given and lets fundamento/icon win" do
+        import_file = import("title: \"🔥 Launch plan\"\nfundamento/icon: \"🌱\"")
+
+        expect(import_file.document.title).to eq("🔥 Launch plan")
+        expect(import_file.document.icon).to eq(Icon.emoji("🌱"))
+      end
+
       it "ignores a bare color: and icon: key" do
         import_file = import("color: blue\nicon: \"🔥\"")
 
