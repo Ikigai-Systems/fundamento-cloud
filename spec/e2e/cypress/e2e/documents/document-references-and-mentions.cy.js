@@ -842,4 +842,45 @@ describe("Document References and Mentions", function () {
       });
     });
   });
+
+  describe("Mention color labels", function () {
+    beforeEach(() => {
+      cy.appEval(`
+        Table.create!(id: "mentioned", name: "Mentioned Table", organization_id: "is", space_id: "is_default")
+        document = Document.create!(id: "mentioner", title: "Mentioner", organization_id: "is", space_id: "is_default")
+        mention = ->(entity, id) { {"type" => "mention", "props" => {"id" => SecureRandom.uuid, "entity" => entity, "entityId" => id}} }
+        Version.create!(
+          document: document, created_by: User.find_by(email: "pawel@ikigai.systems"),
+          content_blocks: [{"id" => "block1", "type" => "paragraph", "content" => [
+            {"type" => "text", "text" => "See "}, mention.("document", "two"),
+            {"type" => "text", "text" => " and "}, mention.("table", "mentioned")
+          ]}]
+        )
+      `);
+    });
+
+    function visitMentioner() {
+      cy.visit("/d/mentioner");
+      // The link only gets its target once the lookup has answered, so its box is final.
+      cy.get('a.mention[href="/d/two"]', {timeout: 10000}).should("be.visible");
+      cy.get('a.mention[href="/t/mentioned"]', {timeout: 10000}).should("be.visible");
+      cy.get(".mention svg.animate-spin, .mention .animate-spin").should("not.exist");
+    }
+
+    it("underlines a mention of a colored document without resizing it", function () {
+      expectColorLabelKeepsLayout({
+        record: `Document.find("two")`,
+        visit: visitMentioner,
+        title: 'a.mention[href="/d/two"]',
+      });
+    });
+
+    it("underlines a mention of a colored table without resizing it", function () {
+      expectColorLabelKeepsLayout({
+        record: `Table.find("mentioned")`,
+        visit: visitMentioner,
+        title: 'a.mention[href="/t/mentioned"]',
+      });
+    });
+  });
 });

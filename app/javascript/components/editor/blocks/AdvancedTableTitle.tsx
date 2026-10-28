@@ -1,5 +1,6 @@
 import {useState, useRef, useEffect} from "react";
 import {Table} from "../../../types.js";
+import ColorLabel from "../../ColorLabel.tsx";
 import {UNTITLED_CONTENT, saveTableTitle, handleTitleSaveError} from "../../EditableContentTitle.tsx";
 
 type AdvancedTableTitleProps = {
@@ -72,7 +73,7 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
   if (!editable) {
     return (
       <div className="advanced-table-title">
-        {title}
+        <ColorLabel color={table.color}>{title}</ColorLabel>
       </div>
     );
   }
@@ -98,7 +99,7 @@ const AdvancedTableTitle = ({table, editable}: AdvancedTableTitleProps) => {
       className="advanced-table-title editable"
       onClick={startEditing}
     >
-      {title}
+      <ColorLabel color={table.color}>{title}</ColorLabel>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {expectColorLabel, expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 // People and documents cells store bare ids. When one no longer resolves, the cell
 // shows the same lozenge a broken mention does in a document, never an error.
@@ -64,5 +65,50 @@ describe("Table cells referencing missing objects", function () {
     // not retried (which would have kept a spinner up for seconds).
     cy.get("@missingUser.all").should("have.length", 1);
     cy.get("@restrictedDocument.all").should("have.length", 1);
+  });
+
+  it("underlines a colored document in a document-link cell without resizing it", function () {
+    expectColorLabelKeepsLayout({
+      record: `Document.find("one")`,
+      visit: () => {
+        cy.visit("/t/brokenrefs");
+        cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
+        cy.contains("a", "One").should("have.attr", "href", "/d/one");
+      },
+      title: '.ikigai-rowstack-overrides a[href="/d/one"]',
+    });
+  });
+
+  it("underlines a colored document in the cell's option list", function () {
+    cy.appEval(`
+      Document.find("two").update!(color: "indigo")
+      Document.create!(id: "plaindoc", title: "Plain Doc", organization_id: "is", space_id: "is_default")
+      table = Table.create!(id: "pickerdocs", name: "Picker Docs", organization_id: "is", space_id: "is_default")
+      docs = table.columns.create!(id: "pickercol", name: "Pick", organization_id: "is", kind: :documents)
+      table.rows.create!(organization_id: "is").cells.create!(table: table, column: docs, organization_id: "is", value: "one")
+    `);
+
+    // Only the edit page lets the cell open its picker, and Stefan, a plain member, can't edit.
+    cy.loginWithSession("pawel@ikigai.systems", "password");
+    cy.setCookie("organization_id", isOrganizationCookie);
+    cy.visit("/t/pickerdocs/edit");
+    cy.get(".ikigai-rowstack-overrides", { timeout: 10000 }).should("exist");
+    cy.get('[role=gridcell] a[href="/d/one"]').should("be.visible");
+
+    // The first click focuses the cell, which then overlays it with a row of chips; a click on the
+    // empty right side of that row opens the picker without following a document link.
+    cy.get('[role=gridcell] a[href="/d/one"]').closest("[role=gridcell]").click("right");
+    cy.get("[role=gridcell] .ring-2 .h-8").click("right");
+
+    cy.get(".fundamento-react-select__option", { timeout: 10000 })
+      .filter(":contains('Two')")
+      .find(".color-label")
+      .should(($label) => expectColorLabel($label, "indigo"));
+    // A colored option is as tall as an uncolored one.
+    cy.get(".fundamento-react-select__option").filter(":contains('Plain Doc')").then(($plain) => {
+      cy.get(".fundamento-react-select__option").filter(":contains('Two')").should(($colored) => {
+        expect($colored[0].getBoundingClientRect().height, "option height").to.equal($plain[0].getBoundingClientRect().height);
+      });
+    });
   });
 });

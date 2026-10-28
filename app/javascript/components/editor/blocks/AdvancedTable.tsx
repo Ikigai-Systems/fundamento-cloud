@@ -6,8 +6,9 @@ import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
 import ObjectIcon from "../../ObjectIcon.tsx";
+import ColorLabel from "../../ColorLabel.tsx";
 import {SpinnerIcon} from "../../spinners/Spinner.tsx";
-import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
+import {ColorName, ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import {Config} from "@js-from-routes/client";
@@ -38,6 +39,7 @@ type TableListItem = {
   id: string,
   name: string,
   icon?: ObjectIconValue | null,
+  color?: ColorName | null,
 };
 
 type TableViewProps = {
@@ -192,12 +194,12 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
                   query,
                 }
               });
-              return tables.map((table) => ({value: table.id, label: table.name, icon: table.icon}));
+              return tables.map((table) => ({value: table.id, label: table.name, icon: table.icon, color: table.color}));
             }}
-            formatOptionLabel={({label, icon}) => (
+            formatOptionLabel={({label, icon, color}) => (
               <div className="flex flex-row items-center gap-1">
                 <ObjectIcon type="Table" icon={icon}/>
-                {label}
+                <ColorLabel color={color}>{label}</ColorLabel>
               </div>
             )}
             onChange={(newOption) => {
