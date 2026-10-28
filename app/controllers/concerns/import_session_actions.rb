@@ -33,10 +33,10 @@ module ImportSessionActions
     # Pre-fetch to avoid N+1: one query for existing files in this session, one for
     # files already imported in previous sessions for the same space.
     existing_files = session.import_files.index_by(&:relative_path)
-    completed_elsewhere = previously_imported(session)
+    imported_before = previously_imported(session)
 
     results = file_entries.map { |entry|
-      process_manifest_entry(session, entry, existing_files:, completed_elsewhere:)
+      process_manifest_entry(session, entry, existing_files:, previously_imported: imported_before)
     }
 
     session.update!(status: :uploading)
@@ -92,7 +92,7 @@ module ImportSessionActions
     nil
   end
 
-  def process_manifest_entry(session, entry, existing_files: {}, completed_elsewhere: Set.new)
+  def process_manifest_entry(session, entry, existing_files: {}, previously_imported: Set.new)
     import_file = existing_files[entry[:relative_path]] ||
       session.import_files.build(relative_path: entry[:relative_path])
 
@@ -103,7 +103,7 @@ module ImportSessionActions
     end
 
     # Skip files already imported in a previous session for this space
-    already_imported = completed_elsewhere.include?([entry[:relative_path], entry[:checksum]])
+    already_imported = previously_imported.include?([entry[:relative_path], entry[:checksum]])
 
     if already_imported
       import_file.assign_attributes(status: :skipped)
