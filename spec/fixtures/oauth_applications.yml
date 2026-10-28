@@ -7,7 +7,7 @@ mcp:
   id: 9301
   name: Fundamento MCP
   uid: mcp-client-uid
-  secret: mcp-client-secret
+  secret: <%= Digest::SHA256.hexdigest("mcp-client-secret") %>
   redirect_uri: "https://example.test/callback"
   scopes: mcp
   confidential: true

@@ -12,7 +12,7 @@ is_pawel:
   application_id: 9301
   organization_membership_id: om_is_pawel
   resource_owner_id: user_pawel
-  token: is-grant-token
+  token: <%= Digest::SHA256.hexdigest("is-grant-token") %>
   expires_in: 600
   redirect_uri: "https://example.test/callback"
   scopes: mcp

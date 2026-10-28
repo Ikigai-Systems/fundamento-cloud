@@ -128,7 +128,7 @@ RSpec.describe "OAuth authorization", type: :request do
 
   describe "using a token" do
     it "accepts a token whose membership belongs to its owner" do
-      call_mcp(oauth_access_tokens(:is_pawel).token)
+      call_mcp("is-access-token")
 
       expect(response).to have_http_status(:ok)
     end
@@ -149,7 +149,7 @@ RSpec.describe "OAuth authorization", type: :request do
   end
 
   # A copy of the database must not hand out working credentials, so only a SHA-256 digest of
-  # each token is stored. The fixtures hold plain values, like rows written before hashing.
+  # each token is stored.
   describe "storing tokens" do
     def digest(value) = Digest::SHA256.hexdigest(value)
 
@@ -190,19 +190,16 @@ RSpec.describe "OAuth authorization", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
-    it "accepts a token stored before hashing and replaces it with its digest" do
-      call_mcp("is-access-token")
+    # What a copy of the database holds is the digest. With a plain fallback it would still be
+    # accepted as the token itself.
+    it "rejects the stored digest presented as a token" do
+      stored = oauth_access_tokens(:is_pawel)
 
-      expect(response).to have_http_status(:ok)
-      expect(oauth_access_tokens(:is_pawel).reload.token).to eq(digest("is-access-token"))
-    end
+      call_mcp(stored.token)
+      expect(response).to have_http_status(:unauthorized)
 
-    it "refreshes a token stored before hashing" do
-      refresh("is-refresh-token")
-
-      expect(response).to have_http_status(:ok)
-      call_mcp(response.parsed_body.fetch("access_token"))
-      expect(response).to have_http_status(:ok)
+      refresh(stored.refresh_token)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end
