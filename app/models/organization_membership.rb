@@ -7,6 +7,10 @@ class OrganizationMembership < ApplicationRecord
   belongs_to :user
 
   has_many :api_tokens, dependent: :delete_all
+  # A removed member's connected assistants go with them. Foreign keys with ON DELETE CASCADE
+  # back these, for the paths that skip callbacks.
+  has_many :oauth_access_grants, class_name: "Doorkeeper::AccessGrant", dependent: :delete_all
+  has_many :oauth_access_tokens, class_name: "Doorkeeper::AccessToken", dependent: :delete_all
   has_many :favorites, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", dependent: :delete_all
   has_many :automation_invocations, inverse_of: :run_as

@@ -237,6 +237,36 @@ RSpec.describe OrganizationMembership, type: :model do
   end
 
   # Drives the unread badge rendered on every page by root#notifications.
+  # Removing a member has to take their connected assistants with them. The tokens could no
+  # longer authenticate, but the rows stayed forever, out of the owner's sight on the
+  # authorized applications page, and a refresh token kept minting new ones.
+  describe "OAuth credentials" do
+    fixtures :oauth_applications, :oauth_access_grants, :oauth_access_tokens
+
+    let(:membership) { organization_memberships(:om_is_pawel) }
+
+    it "deletes the member's grants and tokens when they are removed" do
+      grants = Doorkeeper::AccessGrant.where(organization_membership_id: membership.id)
+      tokens = Doorkeeper::AccessToken.where(organization_membership_id: membership.id)
+      expect(grants).to exist
+      expect(tokens).to exist
+
+      membership.destroy!
+
+      expect(grants).not_to exist
+      expect(tokens).not_to exist
+    end
+
+    # The foreign key, not only the association: paths that skip callbacks (`delete_all`,
+    # raw SQL) must not leave credentials behind either.
+    it "lets the database delete them when callbacks are skipped" do
+      OrganizationMembership.where(id: membership.id).delete_all
+
+      expect(Doorkeeper::AccessGrant.where(organization_membership_id: membership.id)).not_to exist
+      expect(Doorkeeper::AccessToken.where(organization_membership_id: membership.id)).not_to exist
+    end
+  end
+
   describe "#unread_mentions_count" do
     let(:membership) { organization_memberships(:om_is_stefan) }
     let(:scope) { organizations(:is).documents }

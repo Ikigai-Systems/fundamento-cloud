@@ -107,10 +107,9 @@ module Tenant
     # This list exists because getting one wrong is silent. `resource_owner_id` looks like
     # the tenant link on the oauth tables and is not -- it points at users, so an export
     # built on it would have contained zero tokens and said nothing. The real link is
-    # organization_membership_id, populated on all 384 production rows.
+    # organization_membership_id, which now has a foreign key, so the schema vouches for
+    # those two and they left this list.
     UNCONSTRAINED = %w[
-      oauth_access_grants
-      oauth_access_tokens
       object_contents
     ].freeze
 

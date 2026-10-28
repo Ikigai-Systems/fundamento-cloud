@@ -5,7 +5,8 @@ require "rails_helper"
 # document, table and blob under them -- accumulate with them.
 RSpec.describe TrashPurgeJob do
   fixtures :organizations, :users, :organization_memberships, :spaces, :documents,
-           "tables/tables", "tables/columns", "tables/rows"
+           "tables/tables", "tables/columns", "tables/rows",
+           :oauth_applications, :oauth_access_grants, :oauth_access_tokens
 
   let(:user) { users(:pawel) }
   let(:organization) { organizations(:is) }
@@ -50,6 +51,17 @@ RSpec.describe TrashPurgeJob do
     described_class.perform_now
 
     expect(Space.where(id: space_ids)).to be_empty
+  end
+
+  it "deletes the OAuth credentials of a purged organization's members" do
+    membership_ids = organization.organization_memberships.ids
+    expect(Doorkeeper::AccessToken.where(organization_membership_id: membership_ids)).to exist
+    trash_at(organization, (Trashable::RETENTION + 1.day).ago)
+
+    described_class.perform_now
+
+    expect(Doorkeeper::AccessToken.where(organization_membership_id: membership_ids)).not_to exist
+    expect(Doorkeeper::AccessGrant.where(organization_membership_id: membership_ids)).not_to exist
   end
 
   it "leaves organizations still inside the retention window alone" do

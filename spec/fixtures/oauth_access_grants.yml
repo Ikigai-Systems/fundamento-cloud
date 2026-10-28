@@ -1,6 +1,6 @@
 # Reaches the tenant through organization_membership_id -- *not* resource_owner_id, which points
-# at users. An export built on the wrong column contained zero OAuth records and said nothing,
-# which is why Tenant::TableRegistry::UNCONSTRAINED names this rule.
+# at users. An export built on the wrong column contained zero OAuth records and said nothing.
+# A foreign key on organization_membership_id now lets the schema confirm the rule.
 #
 # The export redacts `token`, so a restore withholds this table rather than putting back a grant
 # nothing can redeem.

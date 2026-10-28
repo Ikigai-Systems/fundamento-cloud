@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_27_134440) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_28_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -843,7 +843,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_27_134440) do
   add_foreign_key "inline_comments", "users"
   add_foreign_key "invited_users", "organizations"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_grants", "organization_memberships", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "organization_memberships", on_delete: :cascade
   add_foreign_key "object_comments", "organization_memberships"
   add_foreign_key "object_comments", "organizations"
   add_foreign_key "object_reactions", "organization_memberships"
