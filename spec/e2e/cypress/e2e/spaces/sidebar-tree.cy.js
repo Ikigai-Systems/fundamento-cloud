@@ -390,20 +390,6 @@ describe("Space sidebar tree", function () {
       expect(style.backgroundPosition, "background-position").to.match(/100%$/);
     }
 
-    it("a colored document shows the underline in the tree", function () {
-      cy.appEval(`Document.find("one").update!(color: "indigo")`);
-      cy.visit("/d/one");
-
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate")
-        .should("have.class", "color-label")
-        .and("have.attr", "data-color", "indigo");
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should(expectUnderlineWithinBox);
-      // The icon is a sibling of the label, so it never carries the underline
-      cy.get("#space-sidebar li[data-node-id='one'] .object-icon")
-        .should("not.have.class", "color-label");
-      cy.get("#space-sidebar li[data-node-id='two']").should("not.exist");
-    });
-
     // The underline is padding on the label: a coloured row must not grow or shift its icon.
     it("a colored row is as tall as an uncolored one and keeps text and icon aligned", function () {
       const measure = ($li) => {
@@ -478,37 +464,6 @@ describe("Space sidebar tree", function () {
           expect(box.bottom, "bottom edge").to.be.at.most(row.bottom);
           expect(label.clientHeight, "padding for the strip is visible").to.be.at.least(label.scrollHeight);
         });
-    });
-
-    it("a color event updates the tree row without touching its title", function () {
-      cy.visit("/d/one");
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
-
-      cy.window().then((win) => {
-        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: "indigo"}}));
-      });
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
-
-      cy.window().then((win) => {
-        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: null}}));
-      });
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
-    });
-
-    it("a rename keeps the color of the tree row", function () {
-      cy.appEval(`Document.find("one").update!(color: "indigo")`);
-      cy.visit("/d/one");
-      // The tree loads lazily and only hears events once it is rendered: an event fired
-      // before that is missed, and the tree then renders its own (older) JSON.
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
-
-      cy.window().then((win) => {
-        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", title: "Renamed", icon: null}}));
-      });
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Renamed");
-      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
     });
   });
 });

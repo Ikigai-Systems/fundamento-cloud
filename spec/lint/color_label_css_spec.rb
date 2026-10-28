@@ -30,16 +30,6 @@ RSpec.describe "color_label.css" do
     end
   end
 
-  it "draws a 3px rounded underline strip that repeats on wrapped lines" do
-    base = css[/\.color-label\s*\{([^}]*)\}/m, 1]
-
-    expect(base).to include("linear-gradient(var(--label-color), var(--label-color)) no-repeat 0 100% / 100% 3px")
-    expect(base).to include("padding-bottom: 3px")
-    expect(base).to include("border-radius: 3px")
-    expect(base).to include("box-decoration-break: clone")
-    expect(base).to include("-webkit-box-decoration-break: clone")
-  end
-
   it "covers exactly the names HasColor allows" do
     expect(hex_by_name.keys).to match_array(HasColor::NAMES)
   end

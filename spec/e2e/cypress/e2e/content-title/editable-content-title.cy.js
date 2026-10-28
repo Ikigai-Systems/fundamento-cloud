@@ -320,6 +320,8 @@ describe("Editable Content Title", function () {
       });
       cy.get("nav .editable-content-title .color-label").should("not.exist");
       cy.get("nav .editable-content-title").should("contain", "Renamed colored");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "Renamed colored");
     });
   });
 });
