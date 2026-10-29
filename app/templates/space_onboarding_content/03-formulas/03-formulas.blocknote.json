@@ -2602,7 +2602,7 @@
       },
       {
         "type": "text",
-        "text": "RemoveRows(\"Invoices\")",
+        "text": "DeleteRows(\"Invoices\")",
         "styles": {
           "code": true
         }
@@ -2653,7 +2653,7 @@
       },
       {
         "type": "text",
-        "text": "RunActions(RemoveRows(\"Invoices\"), AddRow(\"Invoices\", \"Name\", \"Sample initial invoice\"))",
+        "text": "RunActions(DeleteRows(\"Invoices\"), AddRow(\"Invoices\", \"Name\", \"Sample initial invoice\"))",
         "styles": {
           "code": true
         }
