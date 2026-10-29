@@ -87,6 +87,24 @@ class Document < ApplicationRecord
     BlocknoteConverterService.yjs_to_blocks(content&.sync)
   end
 
+  # The blocks readers see: the live content of a draft, otherwise the latest saved version.
+  def current_blocks
+    draft? ? to_blocks : versions.last.content_blocks
+  end
+
+  # The YAML frontmatter block the importers read back: `title`, then `tags` (names without a
+  # leading #), `fundamento/icon` and `fundamento/color`, each only when present. Dumped by
+  # Psych from a Hash, never interpolated, so awkward titles stay a single string value.
+  def to_frontmatter
+    data = {"title" => title}
+    tag_names = tags.map(&:name).sort
+    data["tags"] = tag_names if tag_names.any?
+    data["fundamento/icon"] = icon.value if icon
+    data["fundamento/color"] = color if color.present?
+
+    "#{data.to_yaml}---\n\n"
+  end
+
   def nullify_space_home_document_id
     return if space.home_document != self
 

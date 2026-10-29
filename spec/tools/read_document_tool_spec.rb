@@ -79,7 +79,7 @@ RSpec.describe ReadDocumentTool, type: :model do
         document.save!
         plain = ReadDocumentTool.call(id: document.id, server_context: server_context).content.first[:text]
         prefixed = ReadDocumentTool.call(id: document.id, server_context: server_context, frontmatter: true).content.first[:text]
-        prefix = Class.new { include MarkdownFrontmatter }.new.build_frontmatter(document.reload)
+        prefix = document.reload.to_frontmatter
 
         expect(prefixed).to include("<b>&</b>")
         expect(prefixed.sub(JSON.generate(prefix)[1..-2], "")).to eq(plain)
@@ -91,7 +91,7 @@ RSpec.describe ReadDocumentTool, type: :model do
 
         expect(with_frontmatter.except("content")).to eq(plain.except("content"))
         expect(with_frontmatter["content"]).to eq(
-          "---\ntitle: 'Plan: Q4'\ntags:\n- blog\nfundamento/icon: \"🔥\"\nfundamento/color: indigo\n---\n\n" + plain["content"]
+          "---\ntitle: 'Plan: Q4'\ntags:\n- blog\nfundamento/icon: \"\\U0001F525\"\nfundamento/color: indigo\n---\n\n" + plain["content"]
         )
       end
     end

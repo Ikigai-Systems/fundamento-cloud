@@ -93,6 +93,14 @@ RSpec.describe MarkdownFrontmatter do
         expect(data["utworzono"]).to eq("{{date}} {{time}}")
       end
 
+      it "leaves values that are already quoted alone" do
+        markdown = "---\ntitle: \"Say {{x}}\"\ntags:\n- '{{y}}'\n---\n# Content"
+
+        _body, data = instance.extract_frontmatter(markdown)
+
+        expect(data).to eq("title" => "Say {{x}}", "tags" => ["{{y}}"])
+      end
+
       it "parses list items containing {{...}} as literal strings" do
         markdown = "---\ntags:\n  - rok/{{date:YYYY}}/{{date:MM}}\n  - blog\n---\n# Content"
         _content, data = instance.extract_frontmatter(markdown)
@@ -131,60 +139,60 @@ RSpec.describe MarkdownFrontmatter do
     end
   end
 
-  describe "#frontmatter_color" do
+  describe "#frontmatter_to_color" do
     it "returns a valid name, matched case-insensitively after trimming" do
-      expect(instance.frontmatter_color("fundamento/color" => "indigo")).to eq("indigo")
-      expect(instance.frontmatter_color("fundamento/color" => "Indigo")).to eq("indigo")
-      expect(instance.frontmatter_color("fundamento/color" => " indigo ")).to eq("indigo")
+      expect(instance.frontmatter_to_color("fundamento/color" => "indigo")).to eq("indigo")
+      expect(instance.frontmatter_to_color("fundamento/color" => "Indigo")).to eq("indigo")
+      expect(instance.frontmatter_to_color("fundamento/color" => " indigo ")).to eq("indigo")
     end
 
     it "ignores a bare color key" do
-      expect(instance.frontmatter_color("color" => "blue")).to be_nil
+      expect(instance.frontmatter_to_color("color" => "blue")).to be_nil
     end
 
     [["an unknown name", "chartreuse"], ["a number", 3], ["a boolean", true], ["a list", ["blue"]],
       ["an empty string", ""], ["whitespace", "  "], ["nil", nil]].each do |label, value|
       it "returns nil for #{label}" do
-        expect(instance.frontmatter_color("fundamento/color" => value)).to be_nil
+        expect(instance.frontmatter_to_color("fundamento/color" => value)).to be_nil
       end
     end
 
     it "returns nil for missing or non-hash data" do
-      expect(instance.frontmatter_color(nil)).to be_nil
-      expect(instance.frontmatter_color("blue")).to be_nil
-      expect(instance.frontmatter_color(["blue"])).to be_nil
+      expect(instance.frontmatter_to_color(nil)).to be_nil
+      expect(instance.frontmatter_to_color("blue")).to be_nil
+      expect(instance.frontmatter_to_color(["blue"])).to be_nil
     end
   end
 
-  describe "#frontmatter_icon" do
+  describe "#frontmatter_to_icon" do
     it "returns a single emoji" do
-      expect(instance.frontmatter_icon("fundamento/icon" => "🔥")).to eq("🔥")
-      expect(instance.frontmatter_icon("fundamento/icon" => " 🔥 ")).to eq("🔥")
+      expect(instance.frontmatter_to_icon("fundamento/icon" => "🔥")).to eq("🔥")
+      expect(instance.frontmatter_to_icon("fundamento/icon" => " 🔥 ")).to eq("🔥")
     end
 
     {"a flag" => "🇵🇱", "a ZWJ sequence" => "👩‍💻", "a skin-tone emoji" => "👍🏽", "a variation-selector emoji" => "❤️"}.each do |label, emoji|
       it "returns #{label} unchanged" do
-        expect(instance.frontmatter_icon("fundamento/icon" => emoji)).to eq(emoji)
+        expect(instance.frontmatter_to_icon("fundamento/icon" => emoji)).to eq(emoji)
       end
     end
 
     it "ignores a bare icon key" do
-      expect(instance.frontmatter_icon("icon" => "🔥")).to be_nil
+      expect(instance.frontmatter_to_icon("icon" => "🔥")).to be_nil
     end
 
     [["a word", "fire"], ["two emoji", "🔥🔥"], ["a number", 7], ["a list", ["🔥"]], ["an empty string", ""]].each do |label, value|
       it "returns nil for #{label}" do
-        expect(instance.frontmatter_icon("fundamento/icon" => value)).to be_nil
+        expect(instance.frontmatter_to_icon("fundamento/icon" => value)).to be_nil
       end
     end
 
     it "returns nil for missing or non-hash data" do
-      expect(instance.frontmatter_icon(nil)).to be_nil
-      expect(instance.frontmatter_icon("🔥")).to be_nil
+      expect(instance.frontmatter_to_icon(nil)).to be_nil
+      expect(instance.frontmatter_to_icon("🔥")).to be_nil
     end
   end
 
-  describe "#build_frontmatter" do
+  describe "Document#to_frontmatter read back by extract_frontmatter" do
     fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_contents
 
     let(:document) { documents(:one) }
@@ -199,7 +207,7 @@ RSpec.describe MarkdownFrontmatter do
       document.save!
       tag!(document, "#blog", "ikigai/blog")
 
-      block = instance.build_frontmatter(document.reload)
+      block = document.reload.to_frontmatter
 
       expect(block).to start_with("---\ntitle: Plan\n")
       expect(block).to end_with("---\n\n")
@@ -210,13 +218,13 @@ RSpec.describe MarkdownFrontmatter do
     it "omits tags, icon and color when the document has none" do
       document.update!(title: "Plain", color: nil, icon_type: nil, icon_value: nil)
 
-      expect(instance.build_frontmatter(document.reload)).to eq("---\ntitle: Plain\n---\n\n")
+      expect(document.reload.to_frontmatter).to eq("---\ntitle: Plain\n---\n\n")
     end
 
     it "writes tag names without a leading #, which import accepts" do
       tag!(document, "#Blog")
 
-      _body, data = instance.extract_frontmatter(instance.build_frontmatter(document.reload) + "body")
+      _body, data = instance.extract_frontmatter(document.reload.to_frontmatter + "body")
 
       expect(data["tags"]).to eq(["blog"])
     end
@@ -224,7 +232,7 @@ RSpec.describe MarkdownFrontmatter do
     it "round trips tags containing template braces and colons" do
       tag!(document, "{{x}}", "a:b", "2024")
 
-      _body, data = instance.extract_frontmatter(instance.build_frontmatter(document.reload) + "body")
+      _body, data = instance.extract_frontmatter(document.reload.to_frontmatter + "body")
 
       expect(data["tags"]).to match_array(["{{x}}", "a:b", "2024"])
     end
@@ -256,13 +264,13 @@ RSpec.describe MarkdownFrontmatter do
         tag!(document, "alpha", "beta/gamma")
         document.reload
 
-        body, data = instance.extract_frontmatter(instance.build_frontmatter(document) + "body")
+        body, data = instance.extract_frontmatter(document.to_frontmatter + "body")
 
         expect(body).to eq("body")
         expect(data["title"]).to eq(document.title)
         expect(data["tags"]).to match_array(["alpha", "beta/gamma"])
-        expect(instance.frontmatter_icon(data)).to eq("🔥")
-        expect(instance.frontmatter_color(data)).to eq("teal")
+        expect(instance.frontmatter_to_icon(data)).to eq("🔥")
+        expect(instance.frontmatter_to_color(data)).to eq("teal")
       end
     end
   end

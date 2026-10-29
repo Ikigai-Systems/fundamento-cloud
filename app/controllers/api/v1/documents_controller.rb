@@ -53,24 +53,13 @@ module Api
         document = current_organization.documents.find(params[:id])
         authorize document
 
-        blocks = if document.draft?
-          document.to_blocks
-        else
-          document.versions.last.content_blocks
-        end
-
         respond_to do |format|
-          format.json do
-            render json: DocumentBlueprint.render_as_hash(document).merge(
-              content: blocks,
-              tags: document.tags.map { |tag| "##{tag.name}" }
-            )
-          end
+          format.json { render json: DocumentBlueprint.render(document, view: :api) }
 
           format.md do
             # Opt in with exactly `frontmatter=true`; any other value leaves the output as it was.
-            frontmatter = params[:frontmatter] == "true" ? DocumentService.new(pundit_user: pundit_user).build_frontmatter(document) : ""
-            render locals: { content: BlocknoteConverterService.blocks_to_markdown(blocks), frontmatter: frontmatter }
+            markdown = DocumentBlueprint.render_as_hash(document, view: :mcp, frontmatter: params[:frontmatter] == "true")[:content]
+            render body: markdown, content_type: request.format
           end
         end
       end

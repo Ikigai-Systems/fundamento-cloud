@@ -26,7 +26,7 @@ module MarkdownFrontmatter
   # is read: a bare `color:` belongs to whatever tool wrote the file. Anything that is not a
   # known name (a number, a list, an empty string, a typo) is dropped rather than raised, so a
   # stray value never fails an import.
-  def frontmatter_color(data)
+  def frontmatter_to_color(data)
     return nil unless data.is_a?(Hash)
 
     value = data["fundamento/color"]
@@ -37,7 +37,7 @@ module MarkdownFrontmatter
   end
 
   # The emoji in `fundamento/icon`, or nil unless it is exactly one emoji.
-  def frontmatter_icon(data)
+  def frontmatter_to_icon(data)
     return nil unless data.is_a?(Hash)
 
     value = data["fundamento/icon"]
@@ -47,61 +47,21 @@ module MarkdownFrontmatter
     Icon.single_emoji?(value) ? value : nil
   end
 
-  # The frontmatter block for a document, in the form the importers read back: `title`, then
-  # `tags` (names without a leading #), `fundamento/icon` and `fundamento/color`, each only
-  # when present. Built from a Hash and dumped as YAML, never by interpolation, so awkward
-  # titles stay a single string value.
-  #
-  # `quote_template_variables` rewrites any line holding `{{` by wrapping its value in double
-  # quotes, which would turn a dumped `'{{x}}'` into a string with literal quote characters.
-  # A scalar containing `{{` is therefore written as a double-quoted string with its braces
-  # escaped, so the line never contains `{{` and the import helper leaves it alone. Emoji get
-  # the same double-quoted form, because Psych would write them as `\U0001F525` escapes.
-  def build_frontmatter(document)
-    data = {"title" => document.title.to_s}
-    tag_names = document.tags.map(&:name).sort
-    data["tags"] = tag_names if tag_names.any?
-    data["fundamento/icon"] = document.icon.value if document.icon
-    data["fundamento/color"] = document.color if document.color.present?
-
-    lines = data.map do |key, value|
-      if value.is_a?(String) && escape_scalar?(value)
-        "#{key}: #{escaped_scalar(value)}\n"
-      elsif value.is_a?(Array) && value.any? { |item| escape_scalar?(item) }
-        "#{key}:\n#{value.map { |item| "- #{escaped_scalar(item)}\n" }.join}"
-      else
-        YAML.dump({key => value}).delete_prefix("---\n")
-      end
-    end
-
-    "---\n#{lines.join}---\n\n"
-  end
-
   private
 
-  def escape_scalar?(value)
-    value.include?("{{") || value.each_char.any? { |char| char.ord > 0xFFFF }
-  end
-
-  def escaped_scalar(value)
-    JSON.generate(value).gsub("{", "\\u007B")
-  end
-
+  # Turns a value holding `{{` into a double-quoted string so YAML reads it as text, escaping
+  # any quotes or backslashes inside it (a JSON string is a valid YAML double-quoted scalar). A
+  # value that is already quoted (as when we dump it ourselves) is left alone.
   def quote_template_variables(yaml_text)
     return yaml_text unless yaml_text.include?("{{")
 
     yaml_text.lines.map do |line|
-      if line.include?("{{")
-        if line =~ /^(\s*-\s+)(.+)$/
-          "#{$1}\"#{$2.strip}\"\n"
-        elsif line =~ /^(\s*\w[^:]*:\s+)(.+)$/
-          "#{$1}\"#{$2.strip}\"\n"
-        else
-          line
-        end
-      else
-        line
-      end
+      next line unless line.include?("{{")
+
+      match = line.match(/^(\s*-\s+)(.+)$/) || line.match(/^(\s*\w[^:]*:\s+)(.+)$/)
+      next line if match.nil? || match[2].start_with?("\"", "'")
+
+      "#{match[1]}#{JSON.generate(match[2].strip)}\n"
     end.join
   end
 end

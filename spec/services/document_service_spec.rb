@@ -120,7 +120,6 @@ RSpec.describe DocumentService do
   end
 
   describe "round trip of an exported frontmatter block" do
-    let(:exporter) { Class.new { include MarkdownFrontmatter }.new }
     let(:title) { "Plan: Q4 \"launch\" #1 {{x}}" }
     let(:source) do
       documents(:one).tap do |doc|
@@ -130,7 +129,7 @@ RSpec.describe DocumentService do
         TagsService.new(object: doc, organization: organization).update_tags(["blog", "ikigai/blog"])
       end.reload
     end
-    let(:exported) { exporter.build_frontmatter(source) + "Body" }
+    let(:exported) { source.to_frontmatter + "Body" }
 
     def tag_names(document)
       document.tags.reload.map(&:name)

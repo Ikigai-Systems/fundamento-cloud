@@ -350,7 +350,7 @@ RSpec.describe ImportDocumentJob, type: :job do
       source.assign_color("indigo")
       source.save!
       TagsService.new(object: source, organization: org).update_tags(["blog", "ikigai/blog"])
-      exported = Class.new { include MarkdownFrontmatter }.new.build_frontmatter(source.reload) + "Body"
+      exported = source.reload.to_frontmatter + "Body"
       allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
       import_file = build_import_file(relative_path: "Notes/exported.md", content: exported)
 

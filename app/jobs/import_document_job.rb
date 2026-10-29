@@ -43,13 +43,13 @@ class ImportDocumentJob < ApplicationJob
       # title goes through assign_title_and_icon: the plain title writer arms the leading-emoji
       # promotion, which would overwrite the icon on save.
       document = session.space.documents.new(organization: session.organization)
-      icon = frontmatter_icon(frontmatter)
+      icon = frontmatter_to_icon(frontmatter)
       if icon
         document.assign_title_and_icon(title: title, icon: icon)
       else
         document.title = title
       end
-      document.assign_color(frontmatter_color(frontmatter))
+      document.assign_color(frontmatter_to_color(frontmatter))
       document.save!
 
       document.versions.create!(

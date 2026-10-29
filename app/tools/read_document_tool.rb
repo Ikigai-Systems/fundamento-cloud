@@ -25,13 +25,7 @@ class ReadDocumentTool < ApplicationTool
 
     Pundit.authorize(pundit_user, document, :show?)
 
-    text = if frontmatter == true
-      json = JSON.parse(DocumentBlueprint.render(document, view: :mcp))
-      json["content"] = DocumentService.new(pundit_user: pundit_user).build_frontmatter(document) + json["content"]
-      JSON.generate(json)
-    else
-      DocumentBlueprint.render(document, view: :mcp)
-    end
+    text = DocumentBlueprint.render(document, view: :mcp, frontmatter: frontmatter == true)
 
     MCP::Tool::Response.new([{type: "text", text: text}])
   end

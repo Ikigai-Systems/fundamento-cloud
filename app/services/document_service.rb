@@ -24,8 +24,8 @@ class DocumentService
       markdown, frontmatter_data = extract_frontmatter(markdown) if content_given
 
       document = space.documents.new(space: space, organization: space.organization)
-      document.assign_title_and_icon(title: title || "Untitled", icon: icon.nil? ? frontmatter_icon(frontmatter_data) : icon)
-      document.assign_color(color.nil? ? frontmatter_color(frontmatter_data) : color)
+      document.assign_title_and_icon(title: title || "Untitled", icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 
       authorize document, :create?
 
@@ -72,8 +72,8 @@ class DocumentService
 
       # An explicit argument wins; a valid frontmatter key applies otherwise. A missing or
       # invalid key is dropped, so frontmatter can set a color or icon but never clear one.
-      document.assign_title_and_icon(title: title, icon: icon.nil? ? frontmatter_icon(frontmatter_data) : icon)
-      document.assign_color(color.nil? ? frontmatter_color(frontmatter_data) : color)
+      document.assign_title_and_icon(title: title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
       document.save!
 
       next document if markdown.nil?
@@ -119,8 +119,8 @@ class DocumentService
 
       # Create document
       document = space.documents.new(space: space, organization: space.organization)
-      document.assign_title_and_icon(title: document_title, icon: icon.nil? ? frontmatter_icon(frontmatter_data) : icon)
-      document.assign_color(color.nil? ? frontmatter_color(frontmatter_data) : color)
+      document.assign_title_and_icon(title: document_title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 
       authorize document, :create?
       document.save!
