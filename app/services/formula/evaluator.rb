@@ -136,7 +136,7 @@ class Formula::Evaluator
   end
 
   def action_function?(name)
-    %w[AddRow DeleteRows UpdateRows AddOrUpdateRows RunActions].include?(name)
+    %w[AddRow DeleteRows UpdateRows AddOrUpdateRows UpdateDocument UpdateTable RunActions].include?(name)
   end
 
   def eval_action_function_call(node)

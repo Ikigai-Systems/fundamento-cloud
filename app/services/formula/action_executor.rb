@@ -21,6 +21,9 @@ class Formula::ActionExecutor
     end
   end
 
+  DOCUMENT_UPDATE_KEYS = %w[title icon color].freeze
+  TABLE_UPDATE_KEYS = %w[name icon color].freeze
+
   attr_reader :actions
 
   def initialize(dry_mode: true, space:, organization_membership:, additional_context: {})
@@ -80,6 +83,16 @@ class Formula::ActionExecutor
         add_or_update_rows(function_context, table_id, condition_formula, values)
         true
       },
+      'UpdateDocument' => ->(function_context, document_id, *args) {
+        values = key_value_pairs("UpdateDocument", args)
+        update_document(function_context, document_id, values)
+        true
+      },
+      'UpdateTable' => ->(function_context, table_id, *args) {
+        values = key_value_pairs("UpdateTable", args)
+        update_table(function_context, table_id, values)
+        true
+      },
       'RunActions' => ->(function_context, *args) {
         run_actions(function_context, *args)
       }
@@ -125,6 +138,30 @@ class Formula::ActionExecutor
     return { added: [], updated: [] } if @dry_mode
 
     execute_add_or_update_rows(function_context, table, condition_formula:, values:)
+  end
+
+  # Sets a document's title, icon and/or color. nil leaves a field alone, "" clears
+  # the icon or color, anything else must be valid for the field.
+  def update_document(function_context, document_id, values = {})
+    document = find_document(document_id)
+    values = normalize_update_values("UpdateDocument", values, DOCUMENT_UPDATE_KEYS)
+
+    record_action("UpdateDocument", documentId: document.id, values: values)
+
+    return nil if @dry_mode
+
+    execute_update_document(document, values:)
+  end
+
+  def update_table(function_context, table_id, values = {})
+    table = find_table(table_id)
+    values = normalize_update_values("UpdateTable", values, TABLE_UPDATE_KEYS)
+
+    record_action("UpdateTable", tableId: table.id, values: values)
+
+    return nil if @dry_mode
+
+    execute_update_table(table, values:)
   end
 
   def run_actions(function_context, *args)
@@ -260,6 +297,78 @@ class Formula::ActionExecutor
 
       { added: [], updated: matching_rows }
     end
+  end
+
+  def execute_update_document(document, values:)
+    Pundit.authorize(@pundit_user, document, :update?)
+
+    apply_label_update("UpdateDocument", document, title: values["title"], icon: values["icon"], color: values["color"])
+  end
+
+  def execute_update_table(table, values:)
+    Pundit.authorize(@pundit_user, table, :update?)
+
+    apply_label_update("UpdateTable", table, title: values["name"], icon: values["icon"], color: values["color"])
+  end
+
+  # Mirrors the API: assign without saving, so a bad color or icon leaves the
+  # record untouched, then save once.
+  def apply_label_update(action, record, title:, icon:, color:)
+    record.assign_title_and_icon(title: title, icon: icon)
+    record.assign_color(color)
+    record.save!
+    record
+  rescue ArgumentError, ActiveRecord::RecordInvalid => e
+    raise FormulaEvaluationError.new(formula: action, cause_message: sanitize_formula_error(e))
+  end
+
+  # String keys, only the allowed ones, at least one.
+  def normalize_update_values(action, values, allowed)
+    values = (values || {}).to_h.transform_keys(&:to_s)
+    unknown = values.keys - allowed
+    list = "#{allowed[0..-2].join(", ")} and #{allowed.last}"
+
+    if unknown.any?
+      raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} accepts #{list} (got #{unknown.join(", ")})")
+    end
+
+    %w[title name icon].each do |key|
+      if values.key?(key) && !values[key].nil? && !values[key].is_a?(String)
+        raise FormulaEvaluationError.new(formula: action, cause_message: "#{action}: #{key} must be text")
+      end
+
+      # Same rule as DocumentService#update!; Document has no presence validation of its own.
+      if %w[title name].include?(key) && values[key].is_a?(String) && values[key].blank?
+        raise FormulaEvaluationError.new(formula: action, cause_message: "#{action}: #{key} can't be blank")
+      end
+    end
+
+    if values.empty?
+      raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} needs at least one of #{list}")
+    end
+
+    values
+  end
+
+  # Same as find_table: scoped to the executor's space (the organization when it
+  # has none) and authorized with show? here, update? when executing. Unlike
+  # TableLookup it matches by id only, not by name. Authorizing show? first means
+  # a document the user cannot see is denied rather than revealed by what happens next.
+  def find_document(document_identifier)
+    scope = @space ? @space.documents : @organization_membership.organization.documents
+    document = scope.find(document_identifier)
+
+    Pundit.authorize(@pundit_user, document, :show?)
+
+    document
+  end
+
+  def key_value_pairs(action, args)
+    if args.size.odd?
+      raise FormulaEvaluationError.new(formula: action, cause_message: "#{action} needs key and value pairs after the id, got an odd number of arguments")
+    end
+
+    Hash[*args]
   end
 
   def find_table(table_identifier)
