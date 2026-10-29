@@ -5,7 +5,7 @@
         <%= render ObjectIcon.new(object: public_link.object) %>
         <%=
           link_to(polymorphic_path([public_link.object])) do
-            public_link.object.title
+            color_labelled(public_link.object.title, public_link.object, wrap: true)
           end
         %>
       </div>

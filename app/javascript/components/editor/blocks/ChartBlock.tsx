@@ -3,9 +3,10 @@ import {useContext, useState} from "react";
 import CurrentSpaceContext from "../../../contextes/CurrentSpaceContext.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 import AsyncSelect from 'react-select/async';
+import ColorLabel from "../../ColorLabel.tsx";
 import ObjectIcon from "../../ObjectIcon.tsx";
 import {SpinnerIcon} from "../../spinners/Spinner.tsx";
-import {ObjectIcon as ObjectIconValue} from "../../../types.ts";
+import {ColorName, ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import type {SingleValue} from "react-select";
 import {useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
@@ -42,11 +43,13 @@ type SelectOption = {
   value: string;
   label: string;
   icon?: ObjectIconValue | null;
+  color?: ColorName | null;
 };
 type TableIndexItem = {
   id: string;
   name: string;
   icon?: ObjectIconValue | null;
+  color?: ColorName | null;
 };
 type TableShowResponse = {
   data: TableData;
@@ -165,12 +168,12 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon}));
+                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon, color: table.color}));
                   }}
-                  formatOptionLabel={({label, icon}: SelectOption) => (
+                  formatOptionLabel={({label, icon, color}: SelectOption) => (
                     <div className="flex flex-row items-center gap-1">
                       <ObjectIcon type="Table" icon={icon}/>
-                      {label}
+                      <ColorLabel color={color}>{label}</ColorLabel>
                     </div>
                   )}
                   onChange={(newOption: SingleValue<SelectOption>) => {
@@ -224,12 +227,12 @@ export const createChartBlock = createReactBlockSpec(
                         query,
                       }
                     });
-                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon}));
+                    return tables.map(table => ({value: table.id, label: table.name, icon: table.icon, color: table.color}));
                   }}
-                  formatOptionLabel={({label, icon}: SelectOption) => (
+                  formatOptionLabel={({label, icon, color}: SelectOption) => (
                     <div className="flex flex-row items-center gap-1">
                       <ObjectIcon type="Table" icon={icon}/>
-                      {label}
+                      <ColorLabel color={color}>{label}</ColorLabel>
                     </div>
                   )}
                   onChange={(newOption: SingleValue<SelectOption>) => {

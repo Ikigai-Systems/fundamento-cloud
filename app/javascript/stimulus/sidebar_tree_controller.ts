@@ -63,6 +63,10 @@ export default class extends Controller<HTMLElement> {
       node.icon = update.icon;
       changed = true;
     }
+    if (update.color !== undefined && update.color !== (node.color ?? null)) {
+      node.color = update.color;
+      changed = true;
+    }
     if (update.draft !== undefined && update.draft !== (node.draft ?? false)) {
       node.draft = update.draft;
       changed = true;

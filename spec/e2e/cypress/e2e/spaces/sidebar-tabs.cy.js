@@ -1,5 +1,6 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
 import {isTouch} from "../../support/device.js";
+import {expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 describe("Space sidebar tabs", function () {
   beforeEach(() => {
@@ -136,7 +137,10 @@ describe("Space sidebar tabs", function () {
     cy.get("#space_starred_list a.content-link[href='/d/two']").should("exist");
     cy.openSidebar().contains("No starred items").should("not.be.visible");
 
+    // The row arrives over the cable, which can beat the POST response that swaps the button
+    // to "Remove star": clicking before the swap would star a second time instead of unstarring.
     cy.closeSidebar();
+    cy.get("#favorite_document_two button[aria-label='Remove star']").should("exist");
     cy.get("#favorite_document_two button").click();
 
     cy.get("#space_starred_list a.content-link").should("not.exist");
@@ -157,6 +161,8 @@ describe("Space sidebar tabs", function () {
     cy.get("#favorite_table_startable button").click();
 
     cy.get("#space_starred_list a.content-link[href='/t/startable']").should("exist");
+    // Wait for the button to swap to "Remove star" before clicking it again (see the document example).
+    cy.get("#favorite_table_startable button[aria-label='Remove star']").should("exist");
 
     cy.get("#favorite_table_startable button").click();
 
@@ -242,6 +248,75 @@ describe("Space sidebar tabs", function () {
           expect(tab.height, `${bar.id} icon height`).to.be.closeTo(first.tabs[0].height, 0.5);
           expect(tab.offCentre, `${bar.id} icon centre`).to.be.lessThan(1);
         });
+      });
+    });
+  });
+
+  describe("color labels", function () {
+    const openHomeTab = (id) => () => {
+      cy.visit("/");
+      cy.get(`#${id}`).click();
+    };
+
+    it("underlines a starred item's title in its color without changing the row's height", function () {
+      cy.appEval(`OrganizationMembership.find("om_is_pawel").favorites.create!(object: Document.find("one"))`);
+
+      expectColorLabelKeepsLayout({
+        record: `Document.find("one")`,
+        visit: () => {
+          cy.visit("/d/two");
+          cy.openSidebar().find("#starred").click();
+        },
+        title: "#space_starred_list a[href='/d/one'] .font-semibold",
+        box: "#space_starred_list a[href='/d/one']",
+      });
+    });
+
+    it("underlines a child's title in the document's hierarchy chips without resizing the chip", function () {
+      // A document with no versions opens in the editor, so the parent must be one that has a version.
+      cy.appEval(`Space.find("is_default").update!(hierarchy: [{ "id" => "two", "children" => [{ "id" => "one", "children" => [] }] }])`);
+
+      expectColorLabelKeepsLayout({
+        record: `Document.find("one")`,
+        visit: () => cy.visit("/d/two"),
+        title: "#document_hierarchy a[href='/d/one']",
+      });
+    });
+
+    it("underlines a favorite's title on the home page", function () {
+      cy.appEval(`OrganizationMembership.find("om_is_pawel").favorites.create!(object: Document.find("one"))`);
+
+      expectColorLabelKeepsLayout({
+        record: `Document.find("one")`,
+        visit: openHomeTab("favorites"),
+        title: "#favorites_list [id^='favorite_'] .font-semibold",
+        box: "#favorites_list [id^='favorite_']",
+      });
+    });
+
+    it("underlines a recently updated item's title on the home page", function () {
+      expectColorLabelKeepsLayout({
+        record: `Document.find("one")`,
+        visit: openHomeTab("recently-updated"),
+        title: "#recently_updated_list #document_one .font-semibold",
+        box: "#recently_updated_list #document_one",
+      });
+    });
+
+    it("underlines the title of a document that mentions you on the home page", function () {
+      cy.appEval(`
+        ObjectReference.create!(
+          organization_id: "is", source: Document.find("two"), target_type: "User",
+          target_id: User.find_by!(email: "pawel@ikigai.systems").id, title: "Pawel", current: true,
+          source_node_id: "550e8400-e29b-41d4-a716-446655440099"
+        )
+      `);
+
+      expectColorLabelKeepsLayout({
+        record: `Document.find("two")`,
+        visit: openHomeTab("mentions"),
+        title: "#mention_550e8400-e29b-41d4-a716-446655440099 .font-semibold",
+        box: "#mention_550e8400-e29b-41d4-a716-446655440099",
       });
     });
   });

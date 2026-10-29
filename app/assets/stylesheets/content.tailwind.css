@@ -21,6 +21,14 @@
             @apply transition-colors duration-150;
         }
 
+        /* The heading clips its overflow to truncate with an ellipsis, and the colour label's
+           underline hangs below the text's line box: give it room so the strip isn't cut off,
+           without moving anything (the negative margin cancels the padding). */
+        &:has(.color-label) {
+            padding-bottom: 3px;
+            margin-bottom: -3px;
+        }
+
         input {
             @apply text-base font-semibold w-full bg-transparent border-0 p-0 px-1;
             @apply focus:outline-none focus:ring-0 focus:[box-shadow:none];

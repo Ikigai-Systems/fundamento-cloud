@@ -5,8 +5,9 @@ import {useQueries, useQuery} from "@tanstack/react-query";
 import queryClient from "../../../contextes/ReactQueryClient.tsx";
 import Spinner from "../../spinners/Spinner.tsx";
 import {join} from "lodash";
-import {Document, ObjectIcon as ObjectIconValue} from "../../../types.ts";
+import {ColorName, Document, ObjectIcon as ObjectIconValue} from "../../../types.ts";
 import ObjectIcon from "../../ObjectIcon.tsx";
+import ColorLabel from "../../ColorLabel.tsx";
 import {FailedReference} from "../../BrokenReference.tsx";
 
 type FocusState = "none" | "focused" | "editing";
@@ -15,6 +16,7 @@ type DocumentOption = {
   value: string;
   title: string;
   icon?: ObjectIconValue | null;
+  color?: ColorName | null;
 };
 
 type DocumentsSelectCellProps = {
@@ -68,7 +70,7 @@ function DocumentsSelectCell({
         return (
           <a className="flex items-center border rounded gap-1 px-1 truncate" href={DocumentsApi.show.path({id: documentQuery.data?.id})}>
             <ObjectIcon type="Document" icon={documentQuery.data?.icon}/>
-            {title}
+            <ColorLabel color={documentQuery.data?.color}>{title}</ColorLabel>
           </a>
         );
       }
@@ -99,18 +101,19 @@ function DocumentsSelectCell({
           cacheOptions
           defaultOptions
           isMulti={true}
-          value={selectedDocuments.flatMap((document): DocumentOption[] => document ? [{ value: document.id, title: document.title, icon: document.icon }] : [])}
+          value={selectedDocuments.flatMap((document): DocumentOption[] => document ? [{ value: document.id, title: document.title, icon: document.icon, color: document.color }] : [])}
           loadOptions={async (_query): Promise<DocumentOption[]> =>
             (documentsQuery.data ?? []).map((document): DocumentOption => ({
               value: document.id,
               title: document.title,
               icon: document.icon,
+              color: document.color,
             }))}
-          formatOptionLabel={({title, icon}) => {
+          formatOptionLabel={({title, icon, color}) => {
             return (
               <div className="flex flex-row items-center gap-1">
                 <ObjectIcon type="Document" icon={icon}/>
-                {title}
+                <ColorLabel color={color}>{title}</ColorLabel>
               </div>
             )}
           }

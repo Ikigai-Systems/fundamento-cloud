@@ -1,4 +1,5 @@
 import type {ObjectIcon} from "./sidebar/types";
+import type {ColorName} from "./types";
 
 // One announcement for "something about this document or table just changed".
 //
@@ -16,6 +17,8 @@ export interface ContentUpdate {
   id: string;
   title?: string;
   icon?: ObjectIcon | null;
+  // Same rule as icon: undefined leaves the color alone (a rename sends none), null clears it.
+  color?: ColorName | null;
   draft?: boolean;
 }
 

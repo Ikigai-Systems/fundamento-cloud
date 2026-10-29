@@ -1,4 +1,5 @@
 import {Controller} from "@hotwired/stimulus"
+import {applyColorLabel} from "../sidebar/color_label"
 import {applyObjectIcon} from "../sidebar/object_icon"
 import {CONTENT_UPDATED, contentUpdateFrom} from "../content_updated"
 
@@ -17,15 +18,20 @@ export default class extends Controller<HTMLElement> {
   connect() {
     this.handler = (event: Event) => {
       const update = contentUpdateFrom(event);
-      if (!update || update.title === undefined) return;
+      if (!update) return;
 
       const container = this.element.querySelector<HTMLElement>(`[data-document-id="${update.id}"]`);
       if (!container) return;
 
       const label = container.querySelector<HTMLElement>("span.truncate");
-      if (label) label.textContent = update.title;
 
-      applyObjectIcon(container, update.icon);
+      // A color-only event has no title or icon: leave both alone.
+      if (update.title !== undefined) {
+        if (label) label.textContent = update.title;
+        applyObjectIcon(container, update.icon);
+      }
+
+      if (label && update.color !== undefined) applyColorLabel(label, update.color);
     };
     window.addEventListener(CONTENT_UPDATED, this.handler);
   }

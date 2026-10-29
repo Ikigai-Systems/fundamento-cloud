@@ -12,7 +12,7 @@
         <%= render ObjectIcon.new(object: reference.referenced_by) %>
 
         <div class="text-base truncate">
-          <%= link_to reference.referenced_by.title, reference.referenced_by %>
+          <%= link_to helpers.color_labelled(reference.referenced_by.title, reference.referenced_by), reference.referenced_by %>
         </div>
       </div>
     <% end %>
@@ -29,7 +29,7 @@
         <%= render ObjectIcon.new(type: reference.referenced_type, icon: reference.referenced_icon) %>
 
         <div class="text-base truncate">
-          <%= link_to reference.referenced_title, reference.referenced_path %>
+          <%= link_to helpers.color_labelled(reference.referenced_title, reference.referenced_color), reference.referenced_path %>
         </div>
       </div>
     <% end %>

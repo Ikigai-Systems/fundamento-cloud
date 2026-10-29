@@ -1,0 +1,27 @@
+/*
+ * Colour label: an underline drawn under a document's or table's title text, in the
+ * colour the object is labelled with. The text keeps its own colour.
+ *
+ * text-decoration can't round its ends, so the underline is a background strip. It is
+ * a background on the inline element, so it never reaches an icon placed beside the
+ * text, and box-decoration-break repeats it on every wrapped line.
+ *
+ * One hex per colour for light and dark themes. The names mirror HasColor::NAMES;
+ * spec/lint/color_label_css_spec.rb fails when the two drift apart.
+ */
+.color-label {
+    background: linear-gradient(var(--label-color), var(--label-color)) no-repeat 0 100% / 100% 3px;
+    padding-bottom: 3px;
+    border-radius: 3px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
+.color-label[data-color="crimson"] { --label-color: #d4203c; }
+.color-label[data-color="orange"] { --label-color: #e8730c; }
+.color-label[data-color="lime"] { --label-color: #829523; }
+.color-label[data-color="teal"] { --label-color: #0ca19c; }
+.color-label[data-color="blue"] { --label-color: #1262ed; }
+.color-label[data-color="indigo"] { --label-color: #9a5fe7; }
+.color-label[data-color="magenta"] { --label-color: #d946b8; }
+.color-label[data-color="slate"] { --label-color: #6b7a8d; }

@@ -378,4 +378,92 @@ describe("Space sidebar tree", function () {
       cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "✓ Reviewed");
     });
   });
+
+  describe("color labels", function () {
+    const LONG_TITLE = "A very long document title that cannot possibly fit into the narrow sidebar without being truncated";
+
+    // The strip is a background on the title element itself: look at what it paints.
+    function expectUnderlineWithinBox($el) {
+      const style = getComputedStyle($el[0]);
+      expect(style.backgroundImage, "background-image").to.not.equal("none");
+      expect(style.backgroundSize, "background-size").to.contain("3px");
+      expect(style.backgroundPosition, "background-position").to.match(/100%$/);
+    }
+
+    // The underline is padding on the label: a coloured row must not grow or shift its icon.
+    it("a colored row is as tall as an uncolored one and keeps text and icon aligned", function () {
+      const measure = ($li) => {
+        const row = $li.find(".content-link-container")[0].getBoundingClientRect();
+        const label = $li.find("span.truncate")[0];
+        const range = document.createRange();
+        range.selectNodeContents(label);
+        return {
+          height: row.height,
+          textTop: range.getBoundingClientRect().top - row.top,
+          iconTop: $li.find(".object-icon")[0].getBoundingClientRect().top - row.top,
+        };
+      };
+
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one']").then(($li) => {
+        cy.wrap(measure($li)).as("uncolored");
+      });
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", color: "indigo"}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+      cy.get("#space-sidebar li[data-node-id='one']").then(($li) => {
+        cy.get("@uncolored").then((before) => {
+          const after = measure($li);
+          expect(after.height, "row height").to.equal(before.height);
+          expect(after.textTop, "text offset").to.equal(before.textTop);
+          expect(after.iconTop, "icon offset").to.equal(before.iconTop);
+        });
+      });
+    });
+
+    it("a draft-only event keeps the tree row's color", function () {
+      cy.appEval(`Document.find("one").update!(color: "indigo")`);
+      cy.visit("/d/one");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+
+      cy.window().then((win) => {
+        win.dispatchEvent(new win.CustomEvent("content-updated", {detail: {id: "one", draft: false}}));
+      });
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "indigo");
+    });
+
+    it("a document without a color has no underline", function () {
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.text", "One");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.class", "color-label");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("not.have.attr", "data-color");
+    });
+
+    it("a title that truncates keeps the underline within the visible text", function () {
+      cy.appEval(`Document.find("one").update!(color: "teal", title: ${JSON.stringify(LONG_TITLE)})`);
+      cy.viewport(1280, 800);
+      cy.visit("/d/one");
+
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate").should("have.attr", "data-color", "teal");
+      cy.get("#space-sidebar li[data-node-id='one'] span.truncate")
+        .should(expectUnderlineWithinBox)
+        .and(($label) => {
+          const label = $label[0];
+          const row = label.closest(".content-link-container").getBoundingClientRect();
+          const box = label.getBoundingClientRect();
+          // Truncated: the text is wider than the box that shows it ...
+          expect(label.scrollWidth, "text overflows").to.be.greaterThan(label.clientWidth);
+          // ... and the box, which is where the strip is painted, sits inside the row
+          // and is not cut off at the bottom by the label's own overflow clipping.
+          expect(box.right, "right edge").to.be.at.most(row.right);
+          expect(box.bottom, "bottom edge").to.be.at.most(row.bottom);
+          expect(label.clientHeight, "padding for the strip is visible").to.be.at.least(label.scrollHeight);
+        });
+    });
+  });
 });

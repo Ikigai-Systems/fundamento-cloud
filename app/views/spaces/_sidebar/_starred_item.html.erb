@@ -14,7 +14,7 @@
         </span>
 
         <div class="min-w-0">
-          <div class="font-semibold truncate"><%= object.title %></div>
+          <div class="font-semibold truncate"><%= color_labelled(object.title, object) %></div>
           <div class="text-sm font-normal text-gray-500 dark:text-gray-400">
             Last updated <%= time_ago_in_words object.updated_at %>
           </div>

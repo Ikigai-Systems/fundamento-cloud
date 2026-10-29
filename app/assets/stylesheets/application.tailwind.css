@@ -17,6 +17,28 @@
 @import "./flash.tailwind.css";
 @import "./badge.tailwind.css";
 @import "./object-icon.tailwind.css";
+@import "./color_label.css";
+
+/*
+ * Lists clip a long title with a .truncate block (overflow: hidden), and the colour label's underline
+ * hangs 3px below the text's line box. Give the clipping box that room so the strip isn't cut
+ * off; the negative margin cancels the padding, so nothing around it moves.
+ */
+div.truncate:has(.color-label) {
+    padding-bottom: 3px;
+    margin-bottom: -3px;
+}
+
+/*
+ * A colour label that is a flex item (the title next to an icon in a chip, a select option or a selected value) adds
+ * its 3px padding to the flex container's height, so a coloured row would be taller than an uncoloured
+ * one. There the strip is drawn over the bottom of the line box instead, which has room to spare.
+ */
+.flex.truncate > .color-label,
+.fundamento-react-select__option .flex > .color-label,
+.fundamento-react-select__multi-value__label .flex > .color-label {
+    padding-bottom: 0;
+}
 
 @tailwind base;
 @tailwind components;

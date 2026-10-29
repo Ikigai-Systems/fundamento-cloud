@@ -1,4 +1,5 @@
 import DocumentsApi from "../api/DocumentsApi.js"
+import {applyColorLabel} from "./color_label"
 import {applyObjectIcon} from "./object_icon"
 import {RenderContext, TreeNode} from "./types"
 
@@ -45,6 +46,11 @@ export function renderTreeItem(
   const label = li.querySelector<HTMLElement>("span.truncate")!;
   label.textContent = node.title;
   label.parentElement!.dataset.documentId = node.id;
+
+  // The underline goes on the label itself, not on a wrapper or child inside it: span.truncate
+  // clips its overflow, which would cut off a strip drawn by a child's padding, while its own
+  // background and padding are painted inside its box. The icon is a sibling, so it stays clear.
+  applyColorLabel(label, node.color);
 
   // The template carries the type's default <i>; swap in the object's own icon when it has one.
   applyObjectIcon(label.parentElement!, node.icon);

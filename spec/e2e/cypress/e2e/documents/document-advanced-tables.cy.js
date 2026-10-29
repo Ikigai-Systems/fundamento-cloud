@@ -1,4 +1,5 @@
 import {isOrganizationCookie} from "../../support/organization-cookies.js";
+import {expectColorLabel, expectColorLabelKeepsLayout} from "../../support/color-label.js";
 
 const editPageUrl = /\/d\/[_\-a-zA-Z0-9]+\/edit$/;
 
@@ -240,6 +241,33 @@ describe("Advanced Table Title in Document", function () {
         .should("have.text", "⭐");
     });
 
+    it("underlines a colored table's name in the picker", function () {
+      cy.appEval(`
+        Table.create!(
+          id: "colortable", name: "Colored Metrics", organization_id: "is",
+          space_id: "is_default", color: "indigo"
+        ).id
+      `);
+
+      cy.appEval(`
+        Table.create!(id: "plainmetrics", name: "Plain Metrics", organization_id: "is", space_id: "is_default")
+      `);
+
+      openNewTableDialog();
+
+      cy.get(".fundamento-react-select-container").first().click();
+      cy.get(".fundamento-react-select__option", {timeout: 10000})
+        .filter(":contains('Colored Metrics')")
+        .find(".color-label")
+        .should(($label) => expectColorLabel($label, "indigo"));
+      // A colored option is as tall as an uncolored one.
+      cy.get(".fundamento-react-select__option").filter(":contains('Plain Metrics')").then(($plain) => {
+        cy.get(".fundamento-react-select__option").filter(":contains('Colored Metrics')").should(($colored) => {
+          expect($colored[0].getBoundingClientRect().height, "option height").to.equal($plain[0].getBoundingClientRect().height);
+        });
+      });
+    });
+
     it("falls back to the table glyph when a table has no icon", function () {
       cy.appEval(`
         Table.create!(
@@ -256,6 +284,30 @@ describe("Advanced Table Title in Document", function () {
         .find(".object-icon i.icon-\\[tabler--table\\]")
         .should("be.visible")
         .and(($icon) => expect($icon[0].getBoundingClientRect().width).to.be.above(0));
+    });
+  });
+
+  describe("Color labels", function () {
+    beforeEach(() => {
+      cy.appEval(`
+        Table.create!(id: "labelled", name: "Labelled Table", organization_id: "is", space_id: "is_default")
+        document = Document.create!(id: "withtable", title: "With Table", organization_id: "is", space_id: "is_default")
+        Version.create!(
+          document: document, created_by: User.find_by(email: "pawel@ikigai.systems"),
+          content_blocks: [{"id" => "block1", "type" => "advancedTable", "props" => {"tableNpi" => "labelled"}}]
+        )
+      `);
+    });
+
+    it("underlines the title of a colored table without resizing it", function () {
+      expectColorLabelKeepsLayout({
+        record: `Table.find("labelled")`,
+        visit: () => {
+          cy.visit("/d/withtable");
+          cy.get(".advanced-table-title", {timeout: 10000}).should("contain", "Labelled Table");
+        },
+        title: ".advanced-table-title",
+      });
     });
   });
 });

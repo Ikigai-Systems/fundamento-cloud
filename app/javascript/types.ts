@@ -1,10 +1,14 @@
 export type {ObjectIcon} from "./sidebar/types";
 import type {ObjectIcon} from "./sidebar/types";
 
+// Mirrors HasColor::NAMES. See color_label.css for how each one is drawn.
+export type ColorName = "crimson" | "orange" | "lime" | "teal" | "blue" | "indigo" | "magenta" | "slate";
+
 export type Document = {
   id: string,
   title: string,
   icon?: ObjectIcon | null,
+  color?: ColorName | null,
   // Title with the icon put back on the front, for editing. See HasIcon.
   titleForEditing?: string,
 }
@@ -34,6 +38,7 @@ export type Table = {
   archived: boolean,
   createdAt: string, //date
   icon?: ObjectIcon | null,
+  color?: ColorName | null,
   id: string,
   name: string,
   // Name with the icon put back on the front, for editing. See HasIcon.

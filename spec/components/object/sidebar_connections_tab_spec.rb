@@ -37,18 +37,20 @@ RSpec.describe SidebarConnectionsTab, type: :component do
     expect(rendered_content).not_to include(target.title)
   end
 
-  it "connections list carries the referenced object's color" do
+  it "renders data-color on the title of a colored object and none on an uncolored one" do
     target.update!(color: "magenta")
-    # Exercises the narrowed select in with_link_details directly; replace with a
-    # rendered-HTML assertion once the view renders color.
-    component = described_class.new(object: source, pundit_user: pundit_user)
-    # Path helpers need a controller, which only exists while rendering.
-    allow(component).to receive(:document_path).and_return("/d/#{target.id}")
+    # The source mentions the target (outgoing) and the target is referenced in the source (incoming).
+    ObjectReference.create!(organization: organization, source: target, target_type: "Document", target_id: source.id, title: source.title, current: true)
 
-    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to eq("magenta")
+    render_inline(described_class.new(object: source, pundit_user: pundit_user))
+    html = Nokogiri::HTML(rendered_content)
+
+    # Once as "Referenced in" (the target mentions the source), once as "References".
+    expect(html.css("a[href='/d/#{target.id}'] [data-color='magenta']").map(&:text)).to eq([target.title, target.title])
 
     target.update!(color: nil)
-    expect(component.send(:with_link_details, ReferencesExtractor.all_references([source]).first).referenced_color).to be_nil
+    render_inline(described_class.new(object: source, pundit_user: pundit_user))
+    expect(Nokogiri::HTML(rendered_content).css("[data-color]")).to be_empty
   end
 
   it "still renders a connection whose target is kept" do

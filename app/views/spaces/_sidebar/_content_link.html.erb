@@ -21,9 +21,10 @@
       <div data-document-id="<%= content.id %>" class="flex flex-grow min-w-0 gap-1 mx-0 p-2 items-center">
         <%= render ObjectIcon.new(object: content) %>
 
-        <span class="truncate">
-          <%= content.title %>
-        </span>
+        <%# The label's own attributes, not a wrapper: span.truncate clips its overflow, which would
+            cut off the underline of a child. See color_label.css. %>
+        <% label = color_label_attributes(content.color) %>
+        <%= tag.span(content.title, class: ["truncate", label[:class]], data: label[:data]) %>
 
         <% if content.try(:draft?) %>
           <span class="draft-lozenge">Draft</span>
