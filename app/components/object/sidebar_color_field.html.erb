@@ -1,0 +1,39 @@
+<%= tag.li(class: "py-5", data: controller_data) do %>
+  <div class="flex justify-between gap-x-6">
+    <p class="text-sm/6 font-semibold text-gray-900 dark:text-gray-100">Color</p>
+    <%= tag.span(color_name,
+      class: ["text-sm/6 text-gray-900 dark:text-gray-100", name_attributes[:class]],
+      data: (name_attributes[:data] || {}).merge(color_picker_target: ("name" if editable?)).compact) %>
+  </div>
+
+  <% if editable? %>
+    <div role="radiogroup" aria-label="Color" class="color-swatches mt-3"
+         data-action="keydown->color-picker#navigate focusout->color-picker#resetTabStop">
+      <% HasColor::NAMES.each do |name| %>
+        <%= tag.button(
+          type: "button",
+          role: "radio",
+          class: "color-swatch color-label",
+          title: name.capitalize,
+          aria: {label: name.capitalize, checked: (color == name).to_s},
+          tabindex: color == name ? 0 : -1,
+          data: {color: name, color_picker_target: "swatch", action: "click->color-picker#choose"},
+        ) do %>
+          <span class="swatch-check icon-[tabler--check]" aria-hidden="true"></span>
+        <% end %>
+      <% end %>
+      <%= tag.button(
+        type: "button",
+        role: "radio",
+        class: "color-swatch color-swatch--none",
+        title: "No color",
+        aria: {label: "No color", checked: color.blank?.to_s},
+        tabindex: color.blank? ? 0 : -1,
+        data: {color_picker_target: "swatch", action: "click->color-picker#choose"},
+      ) do %>
+        <span class="swatch-none" aria-hidden="true">&empty;</span>
+        <span class="swatch-check icon-[tabler--check]" aria-hidden="true"></span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

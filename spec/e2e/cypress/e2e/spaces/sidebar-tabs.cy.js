@@ -320,4 +320,215 @@ describe("Space sidebar tabs", function () {
       });
     });
   });
+
+  describe("color picker in the Details tab", function () {
+    const treeLabel = (id) => `#space-sidebar [data-document-id='${id}'] span.truncate`;
+    const title = ".editable-content-title";
+    const swatch = (name) => `#details_sidebar_tab [role='radio'][aria-label='${name}']`;
+
+    // Both lazily loaded parts (the tree row and the Details frame) must exist before anything is
+    // clicked: acting earlier races the frames connecting.
+    function openDetails(path, id, pageTitle) {
+      cy.visit(path);
+      cy.get(treeLabel(id)).should("exist");
+      cy.openSidebar("details").within(() => {
+        cy.get('[aria-label="Details"]').click();
+      });
+      cy.get("#details_sidebar_tab [role='radiogroup']").should("be.visible");
+      cy.get(title).should("contain.text", pageTitle);
+    }
+
+    function interceptUpdates() {
+      cy.intercept("PATCH", /\/(d|t)\/[^/]+$/).as("update");
+    }
+
+    function markPage() {
+      cy.window().then((win) => {
+        win.__notReloaded = true;
+      });
+    }
+
+    function expectNotReloaded() {
+      cy.window().its("__notReloaded").should("eq", true);
+    }
+
+    it("choosing a color updates the sidebar tree row and the page title without a reload", function () {
+      interceptUpdates();
+      openDetails("/d/two", "two", "Two");
+      markPage();
+
+      cy.get(swatch("Indigo")).click();
+      cy.wait("@update");
+
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "indigo").and("have.class", "color-label");
+      cy.get(`${title} .color-label`).should("have.attr", "data-color", "indigo");
+      cy.get(swatch("Indigo")).should("have.attr", "aria-checked", "true").find(".swatch-check").should("be.visible");
+      cy.get(swatch("Blue")).should("have.attr", "aria-checked", "false");
+      cy.get("#details_sidebar_tab [data-color-picker-target='name']").should("have.text", "Indigo").and("have.attr", "data-color", "indigo");
+      expectNotReloaded();
+    });
+
+    it("choosing no color clears it", function () {
+      cy.appEval(`Document.find("two").update!(color: "blue")`);
+      interceptUpdates();
+      openDetails("/d/two", "two", "Two");
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "blue");
+      cy.get(swatch("Blue")).should("have.attr", "aria-checked", "true");
+      markPage();
+
+      cy.get(swatch("No color")).click();
+      cy.wait("@update").its("request.body").should("deep.equal", {color: ""});
+
+      cy.get(treeLabel("two")).should("not.have.attr", "data-color");
+      cy.get(treeLabel("two")).should("not.have.class", "color-label");
+      cy.get(`${title} .color-label`).should("not.exist");
+      cy.get(swatch("No color")).should("have.attr", "aria-checked", "true");
+      cy.get("#details_sidebar_tab [data-color-picker-target='name']").should("have.text", "None");
+      cy.get("#details_sidebar_tab [data-color-picker-target='name']").should("not.have.attr", "data-color");
+      expectNotReloaded();
+      cy.appEval(`Document.find("two").color`).should("be.null");
+    });
+
+    it("moves between swatches with the arrow keys and chooses with Enter", function () {
+      interceptUpdates();
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("No color")).focus().type("{leftArrow}");
+      cy.focused().should("have.attr", "aria-label", "Slate");
+      cy.get(swatch("No color")).should("have.attr", "aria-checked", "true");
+
+      cy.focused().type("{enter}");
+      cy.wait("@update");
+      cy.get(swatch("Slate")).should("have.attr", "aria-checked", "true");
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "slate");
+    });
+
+    it("shows a focus ring on every swatch it lands on, the checked one included", function () {
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Crimson")).focus();
+      // Walking left from the first swatch wraps to "No color", which is the checked one here.
+      ["No color", "Slate", "Magenta", "Indigo", "Blue", "Teal", "Lime", "Orange", "Crimson"].forEach((name) => {
+        cy.realPress("ArrowLeft");
+        cy.focused().should("have.attr", "aria-label", name).should(($swatch) => {
+          const style = getComputedStyle($swatch[0]);
+          // A white gap then a dark ring: not currentColor (white on the swatches) and not none.
+          expect(style.boxShadow, `${name} focus ring`).to.contain("rgb(31, 41, 55)").and.to.contain("rgb(255, 255, 255)");
+          if (name === "No color") expect($swatch.attr("aria-checked"), "checked and focused").to.equal("true");
+        });
+      });
+    });
+
+    it("returns the tab stop to the checked swatch when focus leaves the group", function () {
+      cy.appEval(`Document.find("two").update!(color: "blue")`);
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Blue")).focus();
+      cy.realPress("ArrowRight");
+      cy.focused().should("have.attr", "aria-label", "Indigo");
+      cy.realPress("Tab");
+      cy.get("#details_sidebar_tab [role='radio'][tabindex='0']").should("have.length", 1).and("have.attr", "aria-label", "Blue");
+    });
+
+    // Also the persistence check: after the reload the final color is read back from the server.
+    it("keeps the last of two quick choices, saving them in order", function () {
+      let calls = 0;
+      cy.intercept("PATCH", "/d/two", () => {
+        calls += 1;
+        // Hold only the first request back before it reaches the server: unserialized, the second
+        // one overtakes it and the server ends on Teal.
+        if (calls === 1) return new Promise((resolve) => setTimeout(resolve, 1500));
+      }).as("update");
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Teal")).click();
+      cy.get(swatch("Orange")).click();
+      cy.wait("@update");
+      cy.wait("@update");
+
+      cy.get("@update.all").then((requests) => {
+        expect(requests.map((request) => request.request.body)).to.deep.equal([{color: "teal"}, {color: "orange"}]);
+      });
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");
+      cy.appEval(`Document.find("two").color`).should("eq", "orange");
+
+      openDetails("/d/two", "two", "Two");
+      cy.get(swatch("Orange")).should("have.attr", "aria-checked", "true");
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "orange");
+    });
+
+    it("a viewer cannot change the color", function () {
+      cy.appEval(`
+        Space.find("is_default").update!(access_mode: :restricted)
+        Document.find("two").update!(color: "lime")
+      `);
+      cy.loginWithSession("stefan@ikigai.systems", "password", "stefan-session");
+      cy.setCookie("organization_id", isOrganizationCookie);
+
+      cy.visit("/d/two");
+      cy.get(treeLabel("two")).should("exist");
+      cy.openSidebar("details").within(() => {
+        cy.get('[aria-label="Details"]').click();
+      });
+
+      cy.get("#details_sidebar_tab").contains("li", "Color").within(() => {
+        cy.get("span[data-color='lime']").should("have.text", "Lime");
+        cy.get("[role='radiogroup'], [role='radio'], button").should("not.exist");
+      });
+    });
+
+    it("changing the color does not alter the title and renaming does not clear the color", function () {
+      interceptUpdates();
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(swatch("Crimson")).click();
+      cy.wait("@update");
+
+      cy.get(title).click();
+      cy.get(`${title} input`).clear().type("Renamed{enter}");
+      cy.wait("@update");
+      cy.get(`${title} .color-label`).should("have.text", "Renamed").and("have.attr", "data-color", "crimson");
+      cy.get(treeLabel("two")).should("have.text", "Renamed").and("have.attr", "data-color", "crimson");
+      cy.appEval(`Document.find("two").slice(:title, :color).values`).should("deep.equal", ["Renamed", "crimson"]);
+
+      cy.get(swatch("Orange")).click();
+      cy.wait("@update");
+      cy.get(`${title} .color-label`).should("have.text", "Renamed").and("have.attr", "data-color", "orange");
+      cy.appEval(`Document.find("two").title`).should("eq", "Renamed");
+    });
+
+    it("a failed save restores the previous selection and says why", function () {
+      cy.appEval(`Document.find("two").update!(color: "blue")`);
+      cy.intercept("PATCH", "/d/two", {
+        statusCode: 422,
+        body: {errors: {base: "Color must be one of: crimson, orange"}},
+      }).as("failedUpdate");
+      openDetails("/d/two", "two", "Two");
+      cy.get(swatch("Blue")).should("have.attr", "aria-checked", "true");
+
+      cy.get(swatch("Teal")).click();
+      cy.wait("@failedUpdate");
+
+      cy.get(swatch("Blue")).should("have.attr", "aria-checked", "true");
+      cy.get(swatch("Teal")).should("have.attr", "aria-checked", "false");
+      cy.get("#details_sidebar_tab [data-color-picker-target='name']").should("have.text", "Blue");
+      cy.get(treeLabel("two")).should("have.attr", "data-color", "blue");
+      cy.get("#flashes").should("contain", "Color must be one of");
+    });
+
+    it("sets a table's color in its Details tab, updating the tree row and the page title", function () {
+      cy.appFixtures({fixtures_dir: "spec/fixtures", fixtures: ["tables/tables"]});
+      interceptUpdates();
+      openDetails("/t/orders", "orders", "Orders");
+      markPage();
+
+      cy.get(swatch("Lime")).click();
+      cy.wait("@update").its("request.body").should("deep.equal", {color: "lime"});
+
+      cy.get(treeLabel("orders")).should("have.attr", "data-color", "lime");
+      cy.get(`${title} .color-label`).should("have.attr", "data-color", "lime");
+      cy.appEval(`Table.find("orders").color`).should("eq", "lime");
+      expectNotReloaded();
+    });
+  });
 });

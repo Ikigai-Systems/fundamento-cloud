@@ -6,6 +6,8 @@
  * a background on the inline element, so it never reaches an icon placed beside the
  * text, and box-decoration-break repeats it on every wrapped line.
  *
+ * The colour picker's swatches (SidebarColorField) are styled further down, in the swatch block.
+ *
  * One hex per colour for light and dark themes. The names mirror HasColor::NAMES;
  * spec/lint/color_label_css_spec.rb fails when the two drift apart.
  */
@@ -25,3 +27,77 @@
 .color-label[data-color="indigo"] { --label-color: #9a5fe7; }
 .color-label[data-color="magenta"] { --label-color: #d946b8; }
 .color-label[data-color="slate"] { --label-color: #6b7a8d; }
+
+/*
+ * The picker's swatches (SidebarColorField) are the only place a colour is drawn as a dot.
+ * A swatch also carries .color-label, so it reads --label-color from the rules above instead of
+ * restating the hex; .color-swatch then paints that colour as a fill rather than an underline.
+ */
+.color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.color-swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background: var(--label-color);
+    background-clip: padding-box;
+    color: #fff;
+    cursor: pointer;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch[aria-checked="true"] {
+    border-color: rgb(255 255 255 / 0.9);
+    box-shadow: 0 0 0 2px var(--label-color, currentColor);
+}
+
+.color-swatch .swatch-check {
+    display: none;
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+.color-swatch[aria-checked="true"] .swatch-check {
+    display: block;
+}
+
+/* "No color": a dashed outline in place of a fill, with an ∅ that the check replaces. */
+.color-swatch--none {
+    background: transparent;
+    border: 2px dashed currentColor;
+    color: rgb(107 114 128);
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+.color-swatch--none[aria-checked="true"] {
+    border-style: solid;
+    box-shadow: none;
+}
+
+.color-swatch--none[aria-checked="true"] .swatch-none {
+    display: none;
+}
+
+/*
+ * Focus ring: two tones, a white gap then a dark ring, so one of them contrasts with any
+ * background (the sidebar is white in the light theme and dark in the dark one) and with every
+ * swatch fill. The doubled class selector outranks the checked and no-color rules above, whatever the order. The
+ * transparent outline keeps a ring in forced-colors mode, where box-shadow is dropped.
+ */
+.color-swatch.color-swatch:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1f2937;
+}
