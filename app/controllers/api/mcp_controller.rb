@@ -20,6 +20,10 @@ class Api::McpController < Api::ApiController
         Icons are a separate field from titles: a single emoji, returned as {type, value} and set with the icon parameter.
         UpdateDocument renames a document, changes its icon and/or replaces its content; UpdateTable renames a table and/or changes its icon.
         Use ArchiveSpace and UnarchiveSpace to archive or unarchive spaces (manager role required).
+        Use Search to find documents and tables by title, tags, space and update time; it does not search document content.
+        To link to a document or table in Markdown, write a mention, not a URL:
+        <span data-mention="document" data-entity-id="ID">Title</span> (entity: document or table; ID as in /d/<id>, /t/<id>).
+        Search results include a ready-made `mention` snippet. ReadDocument returns existing mentions in the same form, so keep them when you edit.
       INSTRUCTIONS
       tools: [
         ListSpacesTool,
@@ -31,6 +35,7 @@ class Api::McpController < Api::ApiController
         UpdateTableTool,
         ImportDocumentTool,
         ListObjectsByTagsTool,
+        SearchTool,
         AddTagsTool,
         RemoveTagsTool,
         UpdateTagsTool,

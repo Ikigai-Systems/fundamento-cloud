@@ -1,5 +1,9 @@
 class CreateDocumentTool < ApplicationTool
-  description "Use this tool to create a new document from Markdown content."
+  MARKDOWN_HELP = "GitHub-flavored Markdown. Link to another document or table with a mention, not a URL: " \
+                  "<span data-mention=\"document\" data-entity-id=\"ID\">Title</span> (entity \"document\" or \"table\"; " \
+                  "find the ID with the Search tool, which returns the snippet ready to paste)."
+
+  description "Use this tool to create a new document from Markdown content. #{MARKDOWN_HELP}"
 
   input_schema(
     properties: {
@@ -8,7 +12,7 @@ class CreateDocumentTool < ApplicationTool
       title: { type: :string, description: "Title, stored as given." },
       icon: { type: :string, description: "Optional single emoji to use as the document's icon." },
       color: { type: :string, description: "Optional color label, one of #{HasColor::NAMES.join(", ")}." },
-      markdown: { type: :string },
+      markdown: { type: :string, description: MARKDOWN_HELP },
     },
     required: [:space_id, :title, :markdown]
   )
