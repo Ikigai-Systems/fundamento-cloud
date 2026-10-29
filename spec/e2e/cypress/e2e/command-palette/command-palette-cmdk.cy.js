@@ -24,6 +24,16 @@ describe("Command Palette (cmdk)", () => {
     });
   });
 
+  // A document with a version is shown read-only (a draft redirects to its editor), which is
+  // where the "Edit document" page command and its "e" hotkey exist.
+  before(() => {
+    cy.appEval(`
+      d = Document.create!(id: "cmdkview", title: "Cmdk view", organization_id: "is", space_id: "is_default")
+      d.versions.create!(content_blocks: [{"id" => "p1", "type" => "paragraph", "props" => {}, "children" => [], "content" => [{"type" => "text", "text" => "hello", "styles" => {}}]}])
+      d.id
+    `);
+  });
+
   beforeEach(() => {
     cy.loginWithSession(email, password);
     cy.setCookie("organization_id", isOrganizationCookie);
@@ -137,11 +147,11 @@ describe("Command Palette (cmdk)", () => {
 
     it("shows a loading row, then results, and an empty state for no match", () => {
       cy.visit("/");
-      cy.intercept("GET", "/search*", req => req.on("response", res => res.setDelay(800))).as("slow");
+      cy.intercept("GET", "/search*", req => req.on("response", res => res.setDelay(800))).as("slowSearch");
       openWithCtrlK();
       input().type("zzzzqq");
       cy.get("[data-testid=palette-loading]").should("be.visible");
-      cy.wait("@slow");
+      cy.wait("@slowSearch");
       cy.get("[data-testid=palette-loading]").should("not.exist");
       cy.contains("No results.").should("be.visible");
     });
@@ -170,7 +180,7 @@ describe("Command Palette (cmdk)", () => {
       input().type("one");
       cy.wait("@search");
       cy.contains("button", "Tables").click();
-      items().contains("One").should("not.exist");
+      cy.contains("[cmdk-item]", "One").should("not.exist");
       cy.contains("button", "Documents").click();
       items().contains("One").should("be.visible");
     });
@@ -188,7 +198,7 @@ describe("Command Palette (cmdk)", () => {
       openWithCtrlK();
       input().type("Cmdk");
       cy.wait("@search");
-      items().contains("Cmdk coloured").find("span.color-label").should("have.attr", "data-color", "indigo");
+      cy.contains("[cmdk-item] .color-label", "Cmdk coloured").should("have.attr", "data-color", "indigo");
       items().contains("Cmdk plain").parents("[cmdk-item]").find(".color-label").should("not.exist");
       items().contains("Cmdk plain").parents("[cmdk-item]").find(".object-icon i[class*='file-text']").should("exist");
       items().contains("Cmdk emoji").parents("[cmdk-item]").find(".object-icon").should("contain", "⭐");
@@ -197,20 +207,20 @@ describe("Command Palette (cmdk)", () => {
 
   describe("Page commands and hotkeys", () => {
     it("offers the page's command and runs it", () => {
-      cy.visit("/d/one");
+      cy.visit("/d/cmdkview");
       openWithCtrlK();
       items().contains("Edit document").click();
-      cy.url().should("include", "/d/one/edit");
+      cy.url().should("include", "/d/cmdkview/edit");
     });
 
     it("runs a hotkey command with its key while the palette is closed", () => {
-      cy.visit("/d/one");
+      cy.visit("/d/cmdkview");
       cy.get("body").type("e");
-      cy.url().should("include", "/d/one/edit");
+      cy.url().should("include", "/d/cmdkview/edit");
     });
 
     it("does not run page hotkeys while the palette is open", () => {
-      cy.visit("/d/one");
+      cy.visit("/d/cmdkview");
       openWithCtrlK();
       input().type("e");
       cy.url().should("not.include", "/edit");
@@ -226,7 +236,7 @@ describe("Command Palette (cmdk)", () => {
 
   describe("Turbo navigation", () => {
     it("keeps one React instance and swaps page commands per page", () => {
-      cy.visit("/d/one");
+      cy.visit("/d/cmdkview");
       cy.window().then(win => { win.__root = win.document.querySelector("#cmdk-palette-root"); });
       cy.window().its("__paletteMounts").should("eq", 1);
 
@@ -238,7 +248,7 @@ describe("Command Palette (cmdk)", () => {
       cy.url().should("match", /\/s$/);
       openWithCtrlK();
       items().contains("View all spaces").should("exist");
-      items().contains("Edit document").should("not.exist");
+      cy.contains("[cmdk-item]", "Edit document").should("not.exist");
       input().type("{esc}");
 
       cy.window().then(win => {
@@ -246,7 +256,9 @@ describe("Command Palette (cmdk)", () => {
         expect(win.__paletteMounts).to.equal(1);
       });
 
-      cy.window().then(win => win.Turbo.visit("/d/one"));
+      cy.window().then(win => win.Turbo.visit("/d/cmdkview"));
+      cy.url().should("include", "/d/cmdkview");
+      cy.get("#edit_document_cmdkview").should("exist"); // the new page has rendered
       openWithCtrlK();
       items().contains("Edit document").should("exist");
     });
