@@ -237,6 +237,8 @@ Rails.application.routes.draw do
 
       resources :tables, only: [:show, :update]
 
+      resource :search, only: [:show], controller: "search"
+
       post "formulas/eval", to: "formulas#eval"
 
       resources :users, only: [:show]
