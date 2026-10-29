@@ -63,6 +63,8 @@ or above that baseline, push and read CI instead of contorting the spec.
 - `PG::TRDeadlockDetected ... AccessExclusiveLock` in **any** spec's `before each`: a harness race.
   `cy.app("clean")` truncates, and `TRUNCATE` deadlocks against a connection still writing (a
   background job or the previous spec's in-flight request). Match on the message, not the spec.
+  `clean.rb` retries the truncation up to 3 times on `ActiveRecord::Deadlocked`, so one reaching a
+  `before each` means every attempt deadlocked: look for a writer that stays busy, not a one-off.
 - `documents/document-editing-sessions.cy.js` is **not** flaky. It passes deterministically on
   master; a failure there means real-time collaboration is broken (it caught the BlockNote 0.52
   sync regression).
