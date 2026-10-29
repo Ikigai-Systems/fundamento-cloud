@@ -182,17 +182,18 @@ describe("Document References and Mentions", function () {
         // force: true because the "Document has been updated" flash sits over the tab
         // icons, and whether it is still on screen depends on which render consumed it.
         // The wait is on the panel's own fetch — clicking alone says nothing about
-        // which panel ended up loaded.
-        function openConnectionsTab(alias) {
+        // which panel ended up loaded. The sidebar reopens on the tab last used, so on a
+        // second visit that fetch starts at page load: the intercept goes in before visiting.
+        function visitConnectionsTab(alias) {
           cy.intercept("GET", `/d/${sourceDocId}/sidebar?tab=connections`).as(alias);
+          cy.visit(`/d/${sourceDocId}`);
           cy.openSidebar("details").within(() => {
             cy.get('[aria-label="Connections"]').click({ force: true });
           });
           cy.wait(`@${alias}`);
         }
 
-        cy.visit(`/d/${sourceDocId}`);
-        openConnectionsTab("connectionsBefore");
+        visitConnectionsTab("connectionsBefore");
 
         cy.get('#connections_sidebar_tab').within(() => {
           cy.contains("Target Document").should("be.visible");
@@ -211,8 +212,7 @@ describe("Document References and Mentions", function () {
 
         // Saving navigates back to the show page; visiting explicitly avoids racing
         // that navigation with the tab click.
-        cy.visit(`/d/${sourceDocId}`);
-        openConnectionsTab("connectionsAfter");
+        visitConnectionsTab("connectionsAfter");
 
         cy.get('#connections_sidebar_tab').within(() => {
           cy.contains("No references were found.").should("be.visible");
