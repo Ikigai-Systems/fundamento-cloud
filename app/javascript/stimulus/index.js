@@ -1,6 +1,6 @@
 import {Application} from "@hotwired/stimulus"
 // Import and register all TailwindCSS Components or just the ones you need
-import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Tabs, Toggle} from "tailwindcss-stimulus-components"
+import {Alert, Autosave, ColorPreview, Dropdown, Modal, Slideover, Toggle} from "tailwindcss-stimulus-components"
 import SidebarController from "./sidebar_controller.js";
 import SidebarDrawerButtonController from "./sidebar_drawer_button_controller.js";
 import CommandPaletteButtonController from "./command_palette_button_controller.js";
@@ -39,6 +39,7 @@ import ImportLogFilterController from "./controllers/import_log_filter_controlle
 import TableOfContentsController from "./table_of_contents_controller"
 import SidebarActiveController from "./sidebar_active_controller"
 import SidebarTreeController from "./sidebar_tree_controller.ts";
+import TabsController from "./tabs_controller.js";
 
 const application = Application.start()
 
@@ -48,7 +49,7 @@ application.register('color-preview', ColorPreview)
 application.register('dropdown', Dropdown)
 application.register('modal', Modal)
 application.register('slideover', Slideover)
-application.register('tabs', Tabs)
+application.register('tabs', TabsController)
 application.register('toggle', Toggle)
 
 application.register("sidebar", SidebarController);

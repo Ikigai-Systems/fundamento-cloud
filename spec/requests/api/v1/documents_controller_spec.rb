@@ -118,6 +118,18 @@ RSpec.describe "Api::V1::Documents", type: :request do
         # Verify to_markdown was called with the blocks
         expect(BlocknoteConverterService).to have_received(:blocks_to_markdown).with(sample_blocks)
       end
+
+      it "returns the markdown body as written, without HTML escaping" do
+        sample_markdown = "Tom & \"Jerry\" <b>bold</b> it's `a < b`\n\n> quote"
+
+        allow(BlocknoteConverterService).to receive(:yjs_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return(sample_markdown)
+
+        get "/api/v1/documents/#{document_one.id}.markdown",
+          headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
+
+        expect(response.body).to eq(sample_markdown)
+      end
     end
 
     context "with the frontmatter parameter" do

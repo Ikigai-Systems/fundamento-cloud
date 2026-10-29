@@ -205,6 +205,29 @@ describe("Space sidebar tabs", function () {
     cy.get("#space-sidebar #starred").should("have.attr", "aria-selected", "true");
   });
 
+  it("keeps the content sidebar's tab across navigations", function () {
+    cy.appEval(`
+      Table.create!(id: "tabtable", name: "Tab Table", organization_id: "is", space_id: "is_default")
+    `);
+
+    cy.visit("/d/two");
+    cy.openSidebar("details").find("#visitors").click();
+    cy.get("#content-sidebar #visitors").should("have.attr", "aria-selected", "true");
+
+    // A fresh page load rebuilds the sidebar, and so does opening a table
+    cy.visit("/d/one");
+    cy.openSidebar("details").find("#visitors").should("have.attr", "aria-selected", "true");
+
+    cy.visit("/t/tabtable");
+    cy.openSidebar("details").find("#visitors").should("have.attr", "aria-selected", "true");
+
+    // A document-only tab is remembered too, and a table, which lacks it, falls back to the first
+    cy.visit("/d/two");
+    cy.openSidebar("details").find("#attachments").click();
+    cy.visit("/t/tabtable");
+    cy.openSidebar("details").find("#details").should("have.attr", "aria-selected", "true");
+  });
+
   // Documents, tables and spaces share one tab-bar treatment: the same bar height, the same icon
   // size, and every icon centred in its tab. Each page is measured on its own, then compared.
   it("draws every sidebar tab bar with the same height, icon size and centring", function () {

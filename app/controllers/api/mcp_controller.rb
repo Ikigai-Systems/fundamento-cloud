@@ -21,6 +21,10 @@ class Api::McpController < Api::ApiController
         Colors are a separate field too: one of #{HasColor::NAMES.join(", ")}, set with the color parameter.
         UpdateDocument renames a document, changes its icon and/or color and/or replaces its content; UpdateTable renames a table and/or changes its icon and/or color.
         Use ArchiveSpace and UnarchiveSpace to archive or unarchive spaces (manager role required).
+        Use Search to find documents and tables by title, tags, space and update time; it does not search document content.
+        To link to a document or table in Markdown, write a mention, not a URL:
+        <span data-mention="document" data-entity-id="ID">Title</span> (entity: document or table; ID as in /d/<id>, /t/<id>).
+        Search results include a ready-made `mention` snippet. ReadDocument returns existing mentions in the same form, so keep them when you edit.
       INSTRUCTIONS
       tools: [
         ListSpacesTool,
@@ -32,6 +36,7 @@ class Api::McpController < Api::ApiController
         UpdateTableTool,
         ImportDocumentTool,
         ListObjectsByTagsTool,
+        SearchTool,
         AddTagsTool,
         RemoveTagsTool,
         UpdateTagsTool,
