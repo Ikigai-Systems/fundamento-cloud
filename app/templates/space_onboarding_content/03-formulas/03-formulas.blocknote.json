@@ -2251,7 +2251,7 @@
       },
       {
         "type": "text",
-        "text": "CurrentRow(\"First Name\"\")",
+        "text": "CurrentRow(\"First Name\")",
         "styles": {
           "code": true
         }
@@ -2422,7 +2422,7 @@
     "content": [
       {
         "type": "text",
-        "text": "AddOrUpdateRow (tableId, criteria, columnId, columnValue) ",
+        "text": "AddOrUpdateRows (tableId, criteria, columnId, columnValue) ",
         "styles": {}
       },
       {
@@ -2520,7 +2520,7 @@
       },
       {
         "type": "text",
-        "text": "AddOrUpdateRow(\"Invoices\", CurrentRow(\"Sale Date\") == \"05/01/2024\", \"Sale Date\", \"05/01/2024\")",
+        "text": "AddOrUpdateRows(\"Invoices\", CurrentRow(\"Sale Date\") == \"05/01/2024\", \"Sale Date\", \"05/01/2024\")",
         "styles": {
           "code": true
         }
