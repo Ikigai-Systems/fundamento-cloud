@@ -35,6 +35,39 @@ RSpec.describe CreateDocumentTool, type: :model do
       end
     end
 
+    context "with a color" do
+      before do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return([])
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync")
+        allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("")
+      end
+
+      it "stores the color and returns its name" do
+        response = CreateDocumentTool.call(
+          space_id: space.id, title: "Roadmap", color: "Teal", markdown: "Plans", server_context: server_context
+        )
+
+        json = JSON.parse(response.content.first[:text])
+        expect(json["color"]).to eq("teal")
+        expect(Document.find(json["id"]).color).to eq("teal")
+      end
+
+      it "rejects an unknown color without creating a document" do
+        expect {
+          response = CreateDocumentTool.call(
+            space_id: space.id, title: "Roadmap", color: "chartreuse", markdown: "Plans", server_context: server_context
+          )
+          expect(response.structured_content[:error]).to eq("invalid_input")
+        }.not_to change(Document, :count)
+      end
+
+      it "returns a null color when none is given" do
+        response = CreateDocumentTool.call(space_id: space.id, title: "Roadmap", markdown: "Plans", server_context: server_context)
+
+        expect(JSON.parse(response.content.first[:text])).to include("color" => nil)
+      end
+    end
+
     context "happy case - creates document with title and markdown" do
       it "creates a new document and returns its details" do
         sample_blocks = [{ "id" => "1", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Hello World" }] }]

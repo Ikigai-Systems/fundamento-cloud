@@ -24,6 +24,84 @@ RSpec.describe Tables::TablesController, type: :request do
     end
   end
 
+  describe "PATCH /t/:id" do
+    let(:all_names) { HasColor::NAMES.join(", ") }
+
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+    end
+
+    def patch_color(table, color)
+      patch table_path(table, format: :json), params: { table: { color: color } }, as: :json
+    end
+
+    it "sets the color and returns its name" do
+      patch_color(table, "Indigo")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["color"]).to eq("indigo")
+      expect(table.reload.color).to eq("indigo")
+    end
+
+    it "clears the color with an empty string" do
+      table.update!(color: "blue")
+
+      patch_color(table, "")
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["color"]).to be_nil
+      expect(table.reload.color).to be_nil
+    end
+
+    it "leaves the color unchanged when omitted" do
+      table.update!(color: "blue")
+
+      patch table_path(table, format: :json), params: { table: { name: "Renamed Projects" } }
+
+      expect(response.parsed_body["color"]).to eq("blue")
+      expect(table.reload.color).to eq("blue")
+    end
+
+    it "rejects an unknown color with 422 and a message naming the eight colors" do
+      table.update!(color: "blue")
+
+      patch_color(table, "chartreuse")
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+      expect(table.reload.color).to eq("blue")
+    end
+
+    it "rejects a color that isn't a string with 422" do
+      [5, true].each do |value|
+        patch_color(table, value)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+      end
+      expect(table.reload.color).to be_nil
+    end
+
+    it "rejects a user without edit permission and leaves the color alone" do
+      sign_in users(:stefan)
+      post select_organization_path(ikigai_systems)
+      private_space = ikigai_systems.spaces.create!(name: "Locked Room", access_mode: :private)
+      locked = private_space.tables.create!(organization: ikigai_systems, name: "Secret", color: "blue")
+
+      patch_color(locked, "crimson")
+
+      expect(response).to have_http_status(:forbidden)
+      expect(locked.reload.color).to eq("blue")
+    end
+
+    it "always includes color in the table JSON" do
+      get table_path(table, format: :json)
+
+      expect(response.parsed_body["table"]).to have_key("color")
+    end
+  end
+
   describe "DELETE /t/:id" do
     before do
       sign_in pawel

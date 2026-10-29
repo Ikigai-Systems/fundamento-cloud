@@ -183,6 +183,80 @@ RSpec.describe DocumentsController, type: :request do
         document_one.reload
         expect(document_one.title).to eq("Updated Title")
       end
+
+      context "color" do
+        let(:all_names) { HasColor::NAMES.join(", ") }
+
+        def patch_color(document, color)
+          patch document_path(document, format: :json), params: { document: { color: color } }, as: :json
+        end
+
+        it "sets the color and returns its name" do
+          patch_color(document_one, "Indigo")
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body["color"]).to eq("indigo")
+          expect(document_one.reload.color).to eq("indigo")
+        end
+
+        it "clears the color with an empty string" do
+          document_one.update!(color: "blue")
+
+          patch_color(document_one, "")
+
+          expect(response).to have_http_status(:ok)
+          expect(response.parsed_body["color"]).to be_nil
+          expect(document_one.reload.color).to be_nil
+        end
+
+        it "leaves the color unchanged when omitted" do
+          document_one.update!(color: "blue")
+
+          patch document_path(document_one, format: :json), params: { document: { title: "Renamed" } }
+
+          expect(response.parsed_body["color"]).to eq("blue")
+          expect(document_one.reload.color).to eq("blue")
+        end
+
+        it "rejects an unknown color with 422 and a message naming the eight colors" do
+          document_one.update!(color: "blue")
+
+          patch_color(document_one, "chartreuse")
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+          expect(document_one.reload.color).to eq("blue")
+        end
+
+        it "rejects a color that isn't a string with 422" do
+          [5, true].each do |value|
+            patch_color(document_one, value)
+
+            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+          end
+          expect(document_one.reload.color).to be_nil
+        end
+
+        it "rejects a user without edit permission and leaves the color alone" do
+          sign_in users(:stefan)
+          post select_organization_path(ikigai_systems)
+          private_space = ikigai_systems.spaces.create!(name: "Locked Room", access_mode: :private)
+          document = private_space.documents.create!(title: "Secret", organization: ikigai_systems, color: "blue")
+
+          patch_color(document, "crimson")
+
+          expect(response).to have_http_status(:forbidden)
+          expect(document.reload.color).to eq("blue")
+        end
+
+        it "always includes color in the document JSON" do
+          get document_path(document_one, format: :json)
+
+          expect(response.parsed_body).to have_key("color")
+          expect(response.parsed_body["color"]).to be_nil
+        end
+      end
     end
   end
 

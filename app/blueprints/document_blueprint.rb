@@ -4,6 +4,7 @@ class DocumentBlueprint < Blueprinter::Base
   fields :title, :created_at, :updated_at
 
   field(:icon) { |document| document.icon&.as_json }
+  field :color
 
   view :mcp do
     field :content do |document|

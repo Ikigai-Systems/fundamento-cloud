@@ -7,6 +7,7 @@ class CreateDocumentTool < ApplicationTool
       parent_document_id: { type: :string },
       title: { type: :string, description: "Title, stored as given." },
       icon: { type: :string, description: "Optional single emoji to use as the document's icon." },
+      color: { type: :string, description: "Optional color label, one of #{HasColor::NAMES.join(", ")}." },
       markdown: { type: :string },
     },
     required: [:space_id, :title, :markdown]
@@ -17,7 +18,7 @@ class CreateDocumentTool < ApplicationTool
     destructive_hint: false,
   )
 
-  def self.perform(space_id:, title:, markdown:, server_context:, parent_document_id: nil, icon: nil)
+  def self.perform(space_id:, title:, markdown:, server_context:, parent_document_id: nil, icon: nil, color: nil)
     pundit_user = pundit_user_from_context(server_context)
 
     document = DocumentService.new(pundit_user: pundit_user).create!(
@@ -25,6 +26,7 @@ class CreateDocumentTool < ApplicationTool
       parent_document_id:,
       title:,
       icon:,
+      color:,
       markdown:
     )
 

@@ -33,7 +33,7 @@ module HasColor
   def assign_color(value)
     return if value.nil?
 
-    value = value.strip.downcase
+    value = value.to_s.strip.downcase
     if value.empty?
       self.color = nil
     elsif NAMES.include?(value)

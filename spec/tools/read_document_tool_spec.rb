@@ -27,6 +27,15 @@ RSpec.describe ReadDocumentTool, type: :model do
         expect(json_response["icon"]).to eq("type" => "emoji", "value" => "🔥")
       end
 
+      it "returns the color by name, or null when there is none" do
+        response = ReadDocumentTool.call(id: document.id, server_context: server_context)
+        expect(JSON.parse(response.content.first[:text])).to include("color" => nil)
+
+        document.update!(color: "blue")
+        response = ReadDocumentTool.call(id: document.id, server_context: server_context)
+        expect(JSON.parse(response.content.first[:text])["color"]).to eq("blue")
+      end
+
       it "returns document content as Markdown" do
         response = ReadDocumentTool.call(
           id: document.id,

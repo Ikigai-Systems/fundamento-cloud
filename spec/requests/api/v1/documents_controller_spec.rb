@@ -767,6 +767,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]["base"]).to eq("Provide a title, icon, color, or markdown")
       end
     end
 
@@ -787,6 +788,88 @@ RSpec.describe "Api::V1::Documents", type: :request do
           headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" }
 
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "color" do
+      let(:headers) { { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" } }
+      let(:all_names) { HasColor::NAMES.join(", ") }
+
+      def patch_color(document, color, headers: self.headers)
+        patch api_v1_document_path(id: document.id), params: { document: { color: color } }, headers: headers, as: :json
+      end
+
+      it "sets the color and returns its name" do
+        patch_color(document_one, "Indigo")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to eq("indigo")
+        expect(document_one.reload.color).to eq("indigo")
+        expect(document_one.title).to eq(documents(:one).title)
+      end
+
+      it "clears the color with an empty string" do
+        document_one.update!(color: "blue")
+
+        patch_color(document_one, "")
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to be_nil
+        expect(document_one.reload.color).to be_nil
+      end
+
+      it "leaves the color unchanged when omitted" do
+        document_one.update!(color: "blue")
+
+        patch api_v1_document_path(id: document_one.id), params: { document: { title: "Renamed" } }, headers: headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["color"]).to eq("blue")
+        expect(document_one.reload.color).to eq("blue")
+      end
+
+      it "rejects an unknown color with 422 and a message naming the eight colors" do
+        document_one.update!(color: "blue")
+
+        patch_color(document_one, "chartreuse")
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+        expect(document_one.reload.color).to eq("blue")
+      end
+
+      it "rejects a color that isn't a string with 422" do
+        [5, true].each do |value|
+          patch_color(document_one, value)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["errors"]["base"]).to eq("Color must be one of: #{all_names}")
+        end
+        expect(document_one.reload.color).to be_nil
+      end
+
+      it "rejects a user without edit permission and leaves the color alone" do
+        private_space = ikigai_systems.spaces.create!(name: "Locked Room", access_mode: :private)
+        document = private_space.documents.create!(title: "Secret", organization: ikigai_systems, color: "blue")
+        stefan_token = ApiToken.create!(
+          organization: ikigai_systems,
+          organization_membership: organization_memberships(:om_is_stefan),
+          title: "Stefan"
+        )
+
+        patch_color(document, "crimson", headers: { "Authorization" => "Bearer #{stefan_token.encrypted_token}" })
+
+        expect(response).to have_http_status(:forbidden)
+        expect(document.reload.color).to eq("blue")
+      end
+
+      it "always includes color in the document JSON" do
+        get api_v1_document_path(id: document_one.id, format: :json), headers: headers
+        expect(response.parsed_body).to have_key("color")
+        expect(response.parsed_body["color"]).to be_nil
+
+        get api_v1_documents_path(space_id: is_default_space.id), headers: headers
+        expect(response.parsed_body).to all(have_key("color"))
       end
     end
 

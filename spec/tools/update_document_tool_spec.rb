@@ -239,6 +239,34 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
     end
 
+    context "color" do
+      it "sets the color on its own without creating a version and returns its name" do
+        expect {
+          @response = UpdateDocumentTool.call(id: document.id, color: "Indigo", server_context: server_context)
+        }.not_to change(Version, :count)
+
+        expect(document.reload.color).to eq("indigo")
+        expect(JSON.parse(@response.content.first[:text])["color"]).to eq("indigo")
+      end
+
+      it "removes the color when given an empty string" do
+        document.update!(color: "lime")
+
+        UpdateDocumentTool.call(id: document.id, color: "", server_context: server_context)
+
+        expect(document.reload.color).to be_nil
+      end
+
+      it "rejects an unknown color and keeps the current one" do
+        document.update!(color: "lime")
+
+        response = UpdateDocumentTool.call(id: document.id, color: "chartreuse", server_context: server_context)
+
+        expect(response.structured_content[:error]).to eq("invalid_input")
+        expect(document.reload.color).to eq("lime")
+      end
+    end
+
     context "with neither title nor markdown" do
       it "returns an invalid input error" do
         response = UpdateDocumentTool.call(id: document.id, server_context: server_context)

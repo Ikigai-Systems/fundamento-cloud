@@ -62,7 +62,35 @@ RSpec.describe UpdateTableTool, type: :model do
       expect(response.structured_content[:error]).to eq("invalid_input")
     end
 
-    it "rejects a call with neither name nor icon" do
+    it "accepts a color alone and returns its name" do
+      response = UpdateTableTool.call(table_id: table.id, color: "Magenta", server_context: server_context)
+
+      expect(response.error?).to be false
+      expect(response.structured_content[:color]).to eq("magenta")
+      expect(table.reload.color).to eq("magenta")
+      expect(table.name).to eq("Projects")
+    end
+
+    it "removes the color when given an empty string" do
+      table.update!(color: "slate")
+
+      response = UpdateTableTool.call(table_id: table.id, color: "", server_context: server_context)
+
+      expect(response.structured_content[:color]).to be_nil
+      expect(table.reload.color).to be_nil
+      expect(table.name).to eq("Projects")
+    end
+
+    it "rejects an unknown color and keeps the current one" do
+      table.update!(color: "slate")
+
+      response = UpdateTableTool.call(table_id: table.id, color: "chartreuse", server_context: server_context)
+
+      expect(response.structured_content[:error]).to eq("invalid_input")
+      expect(table.reload.color).to eq("slate")
+    end
+
+    it "rejects a call with no name, icon or color" do
       response = UpdateTableTool.call(table_id: table.id, server_context: server_context)
 
       expect(response.structured_content[:error]).to eq("invalid_input")
