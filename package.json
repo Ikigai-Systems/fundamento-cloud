@@ -31,6 +31,7 @@
     "@wizardhealth/stimulus-multiselect": "github:ikigai-systems/stimulus-multiselect#62af7de",
     "@y-rb/actioncable": "^0.3.0",
     "apexcharts": "^8.4.1",
+    "cmdk": "^1.1.1",
     "dayjs": "^1.11.23",
     "deepmerge": "^4.3.1",
     "export-to-csv": "^1.5.0",

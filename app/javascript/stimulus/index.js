@@ -18,6 +18,8 @@ import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
 import HotkeyController from "./hotkey_controller.ts";
 import EmojiPickerController from "@/stimulus/controllers/emoji_picker_controller.js";
 import CommandPaletteController from "./controllers/command_palette_controller.js";
+import PersistentReactLoader from "./persistent_react_loader_controller.ts"; // SPIKE
+import PalettePageCommandsController from "./palette_page_commands_controller.ts"; // SPIKE
 import Clipboard from '@stimulus-components/clipboard';
 import AutoSubmit from '@stimulus-components/auto-submit';
 import MultiselectController from "./controllers/multiselect_controller.js";
@@ -84,6 +86,8 @@ application.register("hotkey", HotkeyController);
 application.register("emoji-picker", EmojiPickerController);
 
 application.register("command-palette", CommandPaletteController);
+application.register("persistent-react-loader", PersistentReactLoader); // SPIKE
+application.register("palette-page-commands", PalettePageCommandsController); // SPIKE
 
 application.register("command-palette-button", CommandPaletteButtonController);
 
