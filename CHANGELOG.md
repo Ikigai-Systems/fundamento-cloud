@@ -10,6 +10,92 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.4.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.3.0...v1.4.0) (2026-10-30)
+
+
+### Features
+
+* **api-tokens:** page explains tokens, links to AI Assistants ([ef7b25e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ef7b25e4d7399b705cb5e1b3f4b91b65743c2f96))
+* **api:** search documents and tables with GET /api/v1/search ([#422](https://github.com/Ikigai-Systems/fundamento-cloud/issues/422)) ([0fbf428](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0fbf42880670bebf6783f89f1fa919de7523c909))
+* combine AI Assistants and API Tokens into one Integrations page ([#395](https://github.com/Ikigai-Systems/fundamento-cloud/issues/395)) ([5bf203d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5bf203da014abf6ad7cb51342ec3b2e34f1e76ce))
+* document and table colors show as a title underline ([#409](https://github.com/Ikigai-Systems/fundamento-cloud/issues/409)) ([c3b53b7](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c3b53b775313deb606ee6e0528afd59cb6290aa7))
+* documents and tables accept a color through the API and MCP ([#408](https://github.com/Ikigai-Systems/fundamento-cloud/issues/408)) ([f17d6a6](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f17d6a6be0a168a03442ece1549a2680fe119e93))
+* **editor:** show icons and user avatars on mentions ([#383](https://github.com/Ikigai-Systems/fundamento-cloud/issues/383)) ([46f22b9](https://github.com/Ikigai-Systems/fundamento-cloud/commit/46f22b93f236b1a455b7d964ef9677067543fcaf))
+* **formulas:** rename, recolor and re-icon documents and tables ([#411](https://github.com/Ikigai-Systems/fundamento-cloud/issues/411)) ([6564d28](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6564d288e328cfb16e63690f5cd20fd70ea72835))
+* import color and icon from frontmatter, export on request ([#412](https://github.com/Ikigai-Systems/fundamento-cloud/issues/412)) ([b108537](https://github.com/Ikigai-Systems/fundamento-cloud/commit/b108537b2816ff58750fb1c379ec8c61d68595ff))
+* **mcp:** assistants link documents with mentions, not URLs ([15d9685](https://github.com/Ikigai-Systems/fundamento-cloud/commit/15d9685f4a01fac042cc3bf93149a211632b6e6e))
+* **mcp:** search documents and tables from AI assistants ([#421](https://github.com/Ikigai-Systems/fundamento-cloud/issues/421)) ([15d9685](https://github.com/Ikigai-Systems/fundamento-cloud/commit/15d9685f4a01fac042cc3bf93149a211632b6e6e))
+* **oauth:** consent page names the organization being connected ([#394](https://github.com/Ikigai-Systems/fundamento-cloud/issues/394)) ([ef7b25e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ef7b25e4d7399b705cb5e1b3f4b91b65743c2f96))
+* open search from a button in the top bar, so it works on touch ([#290](https://github.com/Ikigai-Systems/fundamento-cloud/issues/290)) ([ca22232](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ca22232d43494c0cac2c5d9dc8ee39e60143174a))
+* rename documents and tables, and set icons, via API and MCP ([#381](https://github.com/Ikigai-Systems/fundamento-cloud/issues/381)) ([b15367d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/b15367d4636d3239820c97d30698440258e7fdfd))
+* set a document's or table's color from the Details tab ([#410](https://github.com/Ikigai-Systems/fundamento-cloud/issues/410)) ([4c2a1b4](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4c2a1b4005ce247ea344113dd4497fa75addf0dd))
+* sign out on every device from the Account page ([#393](https://github.com/Ikigai-Systems/fundamento-cloud/issues/393)) ([1639f34](https://github.com/Ikigai-Systems/fundamento-cloud/commit/1639f34f53cbb6856f8512628a956e96e710f15d))
+* **spaces:** show avatars in the space manager and team pickers ([#384](https://github.com/Ikigai-Systems/fundamento-cloud/issues/384)) ([a326b52](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a326b52421cf8b4d87025a1e76970d71782bea0a))
+* **tables:** show user avatars in people columns ([46f22b9](https://github.com/Ikigai-Systems/fundamento-cloud/commit/46f22b93f236b1a455b7d964ef9677067543fcaf))
+* the content sidebar remembers its last active tab ([#419](https://github.com/Ikigai-Systems/fundamento-cloud/issues/419)) ([1354b77](https://github.com/Ikigai-Systems/fundamento-cloud/commit/1354b77b866cedbfabc17f115a04c57bd2f7e987))
+
+
+### Bug Fixes
+
+* a link to a missing document shows the not-found page ([#407](https://github.com/Ikigai-Systems/fundamento-cloud/issues/407)) ([6b13635](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6b13635cbf2ec1b8a2d5a18673ace28dbc1914ad))
+* a missing page shows the not-found page instead of an empty one ([#414](https://github.com/Ikigai-Systems/fundamento-cloud/issues/414)) ([d83cc04](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d83cc04d05664b1028a1deed652e39f69ab83db4))
+* **a11y:** name comment and copy icon buttons for screen readers ([5aaf336](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5aaf336b0f827b39970874799062f9fed67a42f5))
+* **automations:** members who made automations can be removed ([#324](https://github.com/Ikigai-Systems/fundamento-cloud/issues/324)) ([6a31e42](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6a31e42605a965868f726cf6b18178ec07fe8aaf))
+* buttons no longer stay highlighted after a tap on touch screens ([#300](https://github.com/Ikigai-Systems/fundamento-cloud/issues/300)) ([ef0dfa2](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ef0dfa21511e8d9d041895b9aac096e1a9c1023a))
+* **editor:** drop blocks into toggles, including empty ones ([#320](https://github.com/Ikigai-Systems/fundamento-cloud/issues/320)) ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* **editor:** Enter in an open toggle adds a block inside it ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* **editor:** mentions of removed people show as broken links ([5711cd8](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5711cd8706f9395d851272d817bd34de472777aa))
+* **editor:** the / and @ menus no longer jump while you type ([62e9a9a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/62e9a9a9837d76953cd1e8184cddbe5ccc4b4fad))
+* formula names and a stray quote on the formulas onboarding page ([#418](https://github.com/Ikigai-Systems/fundamento-cloud/issues/418)) ([106ea81](https://github.com/Ikigai-Systems/fundamento-cloud/commit/106ea813e193f2dea5254fe60196f3b48b872aac))
+* give each table row a single id in formula results ([#351](https://github.com/Ikigai-Systems/fundamento-cloud/issues/351)) ([32549f6](https://github.com/Ikigai-Systems/fundamento-cloud/commit/32549f60681aee85e20e67e562191f64d5b78a88))
+* importing a file again works after its earlier import was deleted ([#404](https://github.com/Ikigai-Systems/fundamento-cloud/issues/404)) ([7e948c8](https://github.com/Ikigai-Systems/fundamento-cloud/commit/7e948c835a461e1c438f9e57573d9d56dc9fd716))
+* keep the Details color row the same height when colored ([b108537](https://github.com/Ikigai-Systems/fundamento-cloud/commit/b108537b2816ff58750fb1c379ec8c61d68595ff))
+* label star and stop-editing icon buttons for screen readers ([f5b909d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f5b909d0d95c82d95084c321f520370ac055c81f))
+* links to documents you can't open show "No access" ([5711cd8](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5711cd8706f9395d851272d817bd34de472777aa))
+* list the people behind "+N" avatars with a tap or the keyboard ([#382](https://github.com/Ikigai-Systems/fundamento-cloud/issues/382)) ([5aaf336](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5aaf336b0f827b39970874799062f9fed67a42f5))
+* **mcp:** AI assistants see the result of every Fundamento tool ([#389](https://github.com/Ikigai-Systems/fundamento-cloud/issues/389)) ([227dc33](https://github.com/Ikigai-Systems/fundamento-cloud/commit/227dc33a544349107994dbf4917fed04fe0394c0))
+* **mcp:** follow MCP rules for notifications and request headers ([227dc33](https://github.com/Ikigai-Systems/fundamento-cloud/commit/227dc33a544349107994dbf4917fed04fe0394c0))
+* **mcp:** report the app's version as the MCP server version ([1dbd327](https://github.com/Ikigai-Systems/fundamento-cloud/commit/1dbd3276de18cdaf3ee5a7dbb3d642a700ca6af0))
+* **mcp:** tool errors name the missing item, not the database query ([#390](https://github.com/Ikigai-Systems/fundamento-cloud/issues/390)) ([1dbd327](https://github.com/Ikigai-Systems/fundamento-cloud/commit/1dbd3276de18cdaf3ee5a7dbb3d642a700ca6af0))
+* organization backups no longer fail on migrated databases ([#354](https://github.com/Ikigai-Systems/fundamento-cloud/issues/354)) ([9a4e635](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9a4e6351cd015d0a4fe28ee86df684b1e5e3b6cb))
+* organizations are backed up every night ([#310](https://github.com/Ikigai-Systems/fundamento-cloud/issues/310)) ([507bcba](https://github.com/Ikigai-Systems/fundamento-cloud/commit/507bcba536c71aeb0bb369104459c1cebb09414d))
+* removing a member also removes the AI assistants they connected ([#398](https://github.com/Ikigai-Systems/fundamento-cloud/issues/398)) ([6a45706](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6a457064e54c60cda8eef63b262e964f7a0170dc))
+* return document markdown as UTF-8 text ([#350](https://github.com/Ikigai-Systems/fundamento-cloud/issues/350)) ([4e16c88](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4e16c88ff8743399b10de85c063f7dc31955a1f2))
+* scrollbar in example code blocks is now visible ([#396](https://github.com/Ikigai-Systems/fundamento-cloud/issues/396)) ([28ee027](https://github.com/Ikigai-Systems/fundamento-cloud/commit/28ee0271355b1fbf1123d6e1e221f815a440afcc))
+* show who reacted to an emoji with a long press on touch screens ([#387](https://github.com/Ikigai-Systems/fundamento-cloud/issues/387)) ([3fdef2e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/3fdef2ebd0400715b4a36680672ce97c663c32a7))
+* show who reacted when a reaction has keyboard focus ([3fdef2e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/3fdef2ebd0400715b4a36680672ce97c663c32a7))
+* **sidebar:** match icon size and tab-bar height across pages ([53395b8](https://github.com/Ikigai-Systems/fundamento-cloud/commit/53395b8d46fa61566ad5c942496b9d15c3ae7ed2))
+* signing in with Google keeps you signed in ([167f8c2](https://github.com/Ikigai-Systems/fundamento-cloud/commit/167f8c27c57ea3ef482ef9b9bb8b0b1734df9057))
+* signing out on one device keeps your other devices signed in ([1639f34](https://github.com/Ikigai-Systems/fundamento-cloud/commit/1639f34f53cbb6856f8512628a956e96e710f15d))
+* small links and buttons are big enough to tap on phones and tablets ([#301](https://github.com/Ikigai-Systems/fundamento-cloud/issues/301)) ([f5b909d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f5b909d0d95c82d95084c321f520370ac055c81f))
+* **spaces:** deleted teams no longer leave empty pills in pickers ([a326b52](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a326b52421cf8b4d87025a1e76970d71782bea0a))
+* stay signed in on iPhone and keep the selected organization ([#392](https://github.com/Ikigai-Systems/fundamento-cloud/issues/392)) ([167f8c2](https://github.com/Ikigai-Systems/fundamento-cloud/commit/167f8c27c57ea3ef482ef9b9bb8b0b1734df9057))
+* **tables:** show deleted people and documents as broken links ([#391](https://github.com/Ikigai-Systems/fundamento-cloud/issues/391)) ([5711cd8](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5711cd8706f9395d851272d817bd34de472777aa))
+* **tables:** table icons match the rest of the app in size and style ([#388](https://github.com/Ikigai-Systems/fundamento-cloud/issues/388)) ([09551b4](https://github.com/Ikigai-Systems/fundamento-cloud/commit/09551b4bf01f463645965ed33b040c09634be0f1))
+* the API's markdown output is no longer HTML-escaped ([#420](https://github.com/Ikigai-Systems/fundamento-cloud/issues/420)) ([b7e9518](https://github.com/Ikigai-Systems/fundamento-cloud/commit/b7e95186bb8d66623c8e028b9700caae28c971fe))
+* the formulas onboarding page uses DeleteRows, not RemoveRows ([#417](https://github.com/Ikigai-Systems/fundamento-cloud/issues/417)) ([cb2addf](https://github.com/Ikigai-Systems/fundamento-cloud/commit/cb2addf45c679a9a27a86fc83055aa50aafd8553))
+* timestamp popups open by tap or keyboard and fit phone screens ([#306](https://github.com/Ikigai-Systems/fundamento-cloud/issues/306)) ([f2122ad](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f2122ad9218761f1d2d9a006c22ae0a295d5adb9))
+
+
+### Security
+
+* a deleted workspace no longer answers API and AI assistant requests ([#397](https://github.com/Ikigai-Systems/fundamento-cloud/issues/397)) ([a19388c](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a19388c659b61294796701d6bdd9e32a4987e7dd))
+* AI assistant credentials are stored as digests, not plain text ([#400](https://github.com/Ikigai-Systems/fundamento-cloud/issues/400)) ([3932964](https://github.com/Ikigai-Systems/fundamento-cloud/commit/393296465c49948b511a86d598478746caa833c4))
+* API tokens are always generated by the server ([#401](https://github.com/Ikigai-Systems/fundamento-cloud/issues/401)) ([7a39b5d](https://github.com/Ikigai-Systems/fundamento-cloud/commit/7a39b5d45601578fa1839b663a2f8c3a5adeb467))
+* **api:** browser sessions no longer authorize API writes ([#307](https://github.com/Ikigai-Systems/fundamento-cloud/issues/307)) ([6fb1e62](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6fb1e628fcdfc71108844fecd247d448f974515a))
+* **automations:** webhooks need edit rights on the space ([#309](https://github.com/Ikigai-Systems/fundamento-cloud/issues/309)) ([475fed3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/475fed31ee46df99e580e7825afd9d99c93068af))
+* keep spaces and their content inside their organization ([#321](https://github.com/Ikigai-Systems/fundamento-cloud/issues/321)) ([10a6d52](https://github.com/Ikigai-Systems/fundamento-cloud/commit/10a6d52330397dacba6596f3aae67267ec8e0cad))
+* **mcp:** MCP connections no longer receive a session cookie ([6fb1e62](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6fb1e628fcdfc71108844fecd247d448f974515a))
+* names and tags in pickers no longer render as HTML ([a326b52](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a326b52421cf8b4d87025a1e76970d71782bea0a))
+* remove the unused JWT authentication from the API ([#305](https://github.com/Ikigai-Systems/fundamento-cloud/issues/305)) ([2f76519](https://github.com/Ikigai-Systems/fundamento-cloud/commit/2f76519f2f8501b894aa0d72401fdec1ca13575d))
+* rotate the Google sign-in, Reddit and reCAPTCHA credentials ([#326](https://github.com/Ikigai-Systems/fundamento-cloud/issues/326)) ([0ad435f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0ad435fefbc315737083603db02ff8b84f900423))
+* stop sending member email addresses from the users list ([46f22b9](https://github.com/Ikigai-Systems/fundamento-cloud/commit/46f22b93f236b1a455b7d964ef9677067543fcaf))
+
+
+### Upgrade Notes
+
+* set TENANT_EXPORT_SERVICE to back up organizations every night ([507bcba](https://github.com/Ikigai-Systems/fundamento-cloud/commit/507bcba536c71aeb0bb369104459c1cebb09414d))
+
 ## [1.3.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.2.0...v1.3.0) (2026-10-22)
 
 
