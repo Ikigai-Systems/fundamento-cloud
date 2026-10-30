@@ -18,18 +18,21 @@ class DocumentService
       parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
+      # Frontmatter alone leaves an empty body, which must still count as content given so
+      # that its tags are applied.
+      content_given = markdown.present?
+      markdown, frontmatter_data = extract_frontmatter(markdown) if content_given
+
       document = space.documents.new(space: space, organization: space.organization)
-      document.assign_title_and_icon(title: title || "Untitled", icon: icon)
-      document.assign_color(color)
+      document.assign_title_and_icon(title: title || "Untitled", icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 
       authorize document, :create?
 
       document.save!
 
       # Create initial version with content if provided
-      if markdown.present?
-        markdown, frontmatter_data = extract_frontmatter(markdown)
-
+      if content_given
         blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
         sync = BlocknoteConverterService.blocks_to_yjs(blocks)
 
@@ -65,14 +68,15 @@ class DocumentService
       document = pundit_user.current_organization.documents.find(document_id)
       authorize document, :update?
 
-      document.assign_title_and_icon(title: title, icon: icon)
-      document.assign_color(color)
+      markdown, frontmatter_data = extract_frontmatter(markdown) unless markdown.nil?
+
+      # An explicit argument wins; a valid frontmatter key applies otherwise. A missing or
+      # invalid key is dropped, so frontmatter can set a color or icon but never clear one.
+      document.assign_title_and_icon(title: title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
       document.save!
 
       next document if markdown.nil?
-
-      # Extract and process frontmatter
-      markdown, frontmatter_data = extract_frontmatter(markdown)
 
       # Convert markdown to blocks and sync
       blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
@@ -115,8 +119,8 @@ class DocumentService
 
       # Create document
       document = space.documents.new(space: space, organization: space.organization)
-      document.assign_title_and_icon(title: document_title, icon: icon)
-      document.assign_color(color)
+      document.assign_title_and_icon(title: document_title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 
       authorize document, :create?
       document.save!

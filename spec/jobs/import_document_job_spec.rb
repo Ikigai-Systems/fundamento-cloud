@@ -195,6 +195,56 @@ RSpec.describe ImportDocumentJob, type: :job do
       end
     end
 
+    context "when frontmatter contains fundamento/color and fundamento/icon" do
+      before do
+        allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
+      end
+
+      def import(frontmatter)
+        import_file = build_import_file(relative_path: "styled-#{SecureRandom.hex(4)}.md", content: "---\n#{frontmatter}\n---\n\nBody")
+        described_class.perform_now(import_file)
+        import_file.reload
+      end
+
+      it "applies fundamento/color and fundamento/icon on import" do
+        import_file = import("fundamento/color: indigo\nfundamento/icon: \"🔥\"")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to eq("indigo")
+        expect(import_file.document.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "still imports a document whose fundamento/color and fundamento/icon are invalid" do
+        import_file = import("fundamento/color: chartreuse\nfundamento/icon: fire")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to be_nil
+        expect(import_file.document.icon).to be_nil
+      end
+
+      it "still promotes a leading emoji in the title when there is no fundamento/icon" do
+        import_file = import("title: \"🔥 Launch plan\"")
+
+        expect(import_file.document.title).to eq("Launch plan")
+        expect(import_file.document.icon).to eq(Icon.emoji("🔥"))
+      end
+
+      it "keeps a leading-emoji title as given and lets fundamento/icon win" do
+        import_file = import("title: \"🔥 Launch plan\"\nfundamento/icon: \"🌱\"")
+
+        expect(import_file.document.title).to eq("🔥 Launch plan")
+        expect(import_file.document.icon).to eq(Icon.emoji("🌱"))
+      end
+
+      it "ignores a bare color: and icon: key" do
+        import_file = import("color: blue\nicon: \"🔥\"")
+
+        expect(import_file).to be_completed
+        expect(import_file.document.color).to be_nil
+        expect(import_file.document.icon).to be_nil
+      end
+    end
+
     context "when the file is stuck in :processing (interrupted job retry)" do
       it "processes the file instead of returning early" do
         import_file = build_import_file(relative_path: "interrupted.md")
@@ -288,6 +338,29 @@ RSpec.describe ImportDocumentJob, type: :job do
 
         expect(checkins).to eq(0)
       end
+    end
+  end
+
+  describe "importing an exported frontmatter block" do
+    fixtures :documents, :object_contents
+
+    it "reproduces title, tags, icon and color" do
+      source = documents(:one)
+      source.assign_title_and_icon(title: "Plan: Q4 \"launch\" #1 {{x}}", icon: "🔥")
+      source.assign_color("indigo")
+      source.save!
+      TagsService.new(object: source, organization: org).update_tags(["blog", "ikigai/blog"])
+      exported = source.reload.to_frontmatter + "Body"
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
+      import_file = build_import_file(relative_path: "Notes/exported.md", content: exported)
+
+      described_class.perform_now(import_file)
+
+      imported = import_file.reload.document
+      expect(imported.title).to eq("Plan: Q4 \"launch\" #1 {{x}}")
+      expect(imported.icon).to eq(Icon.emoji("🔥"))
+      expect(imported.color).to eq("indigo")
+      expect(imported.tags.map(&:name)).to match_array(["blog", "ikigai/blog"])
     end
   end
 end

@@ -141,6 +141,18 @@ RSpec.describe "MCP endpoint", type: :request do
       expect(response.parsed_body.dig("result", "serverInfo", "version")).to eq(Fundamento::VERSION)
     end
 
+    it "tells clients about colors and that the update tools change them" do
+      rpc({
+        jsonrpc: "2.0", id: 1, method: "initialize",
+        params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "spec", version: "1" } },
+      })
+
+      instructions = response.parsed_body.dig("result", "instructions")
+      expect(instructions).to include(HasColor::NAMES.join(", "))
+      expect(instructions).to include("changes its icon and/or color and/or replaces its content")
+      expect(instructions).to include("renames a table and/or changes its icon and/or color")
+    end
+
     it "acknowledges a notification with 202 Accepted" do
       rpc({ jsonrpc: "2.0", method: "notifications/initialized" })
 

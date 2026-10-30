@@ -52,6 +52,16 @@ RSpec.describe CreateDocumentTool, type: :model do
         expect(Document.find(json["id"]).color).to eq("teal")
       end
 
+      it "colors the document from fundamento/color in the submitted markdown" do
+        response = CreateDocumentTool.call(
+          space_id: space.id, title: "Roadmap", markdown: "---\nfundamento/color: magenta\n---\nPlans", server_context: server_context
+        )
+
+        json = JSON.parse(response.content.first[:text])
+        expect(json["color"]).to eq("magenta")
+        expect(Document.find(json["id"]).color).to eq("magenta")
+      end
+
       it "rejects an unknown color without creating a document" do
         expect {
           response = CreateDocumentTool.call(
