@@ -913,6 +913,18 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(document_one.reload.color).to eq("blue")
       end
 
+      it "rejects a color that is not text instead of dropping it and applying the rest" do
+        document_one.update!(color: "blue", title: "Before")
+
+        [["teal"], {"name" => "teal"}].each do |value|
+          patch api_v1_document_path(id: document_one.id), params: { document: { title: "After", color: value } }, headers: headers, as: :json
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.parsed_body["errors"]["base"]).to eq("color must be text")
+        end
+        expect(document_one.reload).to have_attributes(title: "Before", color: "blue")
+      end
+
       it "rejects an unknown color with 422 and a message naming the eight colors" do
         document_one.update!(color: "blue")
 

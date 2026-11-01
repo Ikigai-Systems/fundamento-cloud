@@ -1,4 +1,5 @@
 class Api::V1::TablesController < Api::ApiController
+  before_action -> { require_text_params(:table, :name, :icon, :color) }, only: :update
 
   def show
     @table = self.class.find_relevant_table(

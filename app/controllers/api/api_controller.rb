@@ -17,6 +17,19 @@ module Api
 
     protected
 
+    # Strong parameters drop an array or hash given for a text field, so the field looks absent
+    # and the rest of the request goes through: a title with `color: ["blue"]` would rename the
+    # record and say nothing about the color. Name the field instead.
+    def require_text_params(root, *fields)
+      attributes = params[root]
+      return unless attributes.respond_to?(:key?)
+
+      invalid = fields.select { |field| attributes[field].is_a?(Array) || attributes[field].respond_to?(:to_unsafe_h) }
+      return if invalid.empty?
+
+      render json: { errors: { base: "#{invalid.join(", ")} must be text" } }, status: :unprocessable_entity
+    end
+
     # Attributes table change events are recorded against. Subclasses override
     # #current_change_source to name a more specific origin.
     def set_current_attributes
