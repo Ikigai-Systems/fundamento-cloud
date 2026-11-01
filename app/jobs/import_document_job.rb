@@ -27,7 +27,7 @@ class ImportDocumentJob < ApplicationJob
     # YAML.safe_load happily returns a String or Array for `--- some bare text ---`;
     # #dig on those raises and would fail the whole file.
     frontmatter = nil unless frontmatter.is_a?(Hash)
-    title = frontmatter&.dig("title") || title_fallback
+    title = frontmatter_to_title(frontmatter) || title_fallback
 
     blocks, sync = BlocknoteConverterService.markdown_to_blocks_and_yjs(markdown)
 

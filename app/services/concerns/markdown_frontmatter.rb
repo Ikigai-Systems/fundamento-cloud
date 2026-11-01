@@ -22,6 +22,16 @@ module MarkdownFrontmatter
     [markdown, frontmatter_data]
   end
 
+  # The frontmatter `title`, or nil. A bare number is read as its text (`title: 2024`); a blank
+  # value or any other type is not a title.
+  def frontmatter_to_title(data)
+    return nil unless data.is_a?(Hash)
+
+    value = data["title"]
+    value = value.to_s if value.is_a?(Integer)
+    value.is_a?(String) ? value.presence : nil
+  end
+
   # The color named by `fundamento/color`, as a lower-case name, or nil. Only the prefixed key
   # is read: a bare `color:` belongs to whatever tool wrote the file. Anything that is not a
   # known name (a number, a list, an empty string, a typo) is dropped rather than raised, so a

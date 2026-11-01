@@ -73,6 +73,18 @@ RSpec.describe DocumentService do
 
         expect(document.reload.color).to eq("slate")
       end
+
+      it "rejects a bad explicit color or icon before converting the file" do
+        expect(PandocConverterService).not_to receive(:convert_upload)
+
+        expect {
+          service.create_from_file!(space_id: space.id, file: double("file"), color: "chartreuse")
+        }.to raise_error(ArgumentError, /Color must be one of/)
+
+        expect {
+          service.create_from_file!(space_id: space.id, file: double("file"), icon: "fire")
+        }.to raise_error(ArgumentError, /Icon must be a single emoji/)
+      end
     end
 
     describe "#update!" do
@@ -85,7 +97,7 @@ RSpec.describe DocumentService do
       end
 
       it "a markdown update without the keys leaves the existing color and icon unchanged" do
-        service.update!(document_id: document.id, markdown: with_frontmatter("title: Hello"))
+        service.update!(document_id: document.id, markdown: with_frontmatter("tags: [a]"))
 
         expect(document.reload.color).to eq("crimson")
         expect(document.icon).to eq(Icon.emoji("🌱"))
@@ -116,6 +128,81 @@ RSpec.describe DocumentService do
 
         expect(document.reload.color).to be_nil
       end
+    end
+  end
+
+  describe "frontmatter title" do
+    let(:document) { documents(:one) }
+
+    it "#create! names the document after it when no title is given" do
+      created = service.create!(space_id: space.id, title: nil, markdown: with_frontmatter("title: From the file"))
+
+      expect(created.reload.title).to eq("From the file")
+    end
+
+    it "#create! lets an explicit title win" do
+      created = service.create!(space_id: space.id, title: "Explicit", markdown: with_frontmatter("title: From the file"))
+
+      expect(created.reload.title).to eq("Explicit")
+    end
+
+    it "#create! falls back to Untitled for a blank or non-text title" do
+      ["title: ''", "title: [a, b]", "title:"].each do |line|
+        created = service.create!(space_id: space.id, title: nil, markdown: with_frontmatter(line))
+
+        expect(created.reload.read_attribute(:title)).to eq("Untitled")
+      end
+    end
+
+    it "#create! reads a bare number as the title's text" do
+      created = service.create!(space_id: space.id, title: nil, markdown: with_frontmatter("title: 2024"))
+
+      expect(created.reload.title).to eq("2024")
+    end
+
+    it "#update! renames the document, so an edited export writes its title back" do
+      service.update!(document_id: document.id, markdown: with_frontmatter("title: Renamed in the file"))
+
+      expect(document.reload.title).to eq("Renamed in the file")
+    end
+
+    it "#update! lets an explicit title win" do
+      service.update!(document_id: document.id, title: "Explicit", markdown: with_frontmatter("title: From the file"))
+
+      expect(document.reload.title).to eq("Explicit")
+    end
+
+    it "#update! keeps the title when the frontmatter has none, or a blank one" do
+      original = document.title
+
+      service.update!(document_id: document.id, markdown: with_frontmatter("tags: [a]"))
+      service.update!(document_id: document.id, markdown: with_frontmatter("title: ''"))
+
+      expect(document.reload.title).to eq(original)
+    end
+
+    it "#create_from_file! prefers it to the file name the converter took a title from" do
+      allow(PandocConverterService).to receive(:convert_upload)
+        .and_return({markdown: with_frontmatter("title: From the file"), title: "report"})
+
+      created = service.create_from_file!(space_id: space.id, file: "x.docx")
+
+      expect(created.reload.title).to eq("From the file")
+    end
+
+    it "#create_from_file! keeps the file name when the frontmatter has no title" do
+      allow(PandocConverterService).to receive(:convert_upload)
+        .and_return({markdown: with_frontmatter("tags: [a]"), title: "report"})
+
+      created = service.create_from_file!(space_id: space.id, file: "x.docx")
+
+      expect(created.reload.title).to eq("report")
+    end
+
+    it "#create! treats a blank title as none given" do
+      created = service.create!(space_id: space.id, title: "  ", markdown: with_frontmatter("title: From the file"))
+
+      expect(created.reload.title).to eq("From the file")
     end
   end
 
