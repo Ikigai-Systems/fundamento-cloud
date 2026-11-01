@@ -353,6 +353,18 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response.parsed_body).to include("title" => "Roadmap", "icon" => { "type" => "emoji", "value" => "🗺️" })
       end
 
+      it "names a field given as an array or hash instead of ignoring it" do
+        expect {
+          post api_v1_documents_path(space_id: is_default_space.id),
+            params: { document: { title: "Roadmap", markdown: ["Plans"], color: { "name" => "teal" } } },
+            headers: { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" },
+            as: :json
+        }.not_to change(Document, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]["base"]).to eq("color, markdown must be text")
+      end
+
       it "creates a document without title (defaults to 'Untitled')" do
         post api_v1_documents_path(space_id: is_default_space.id),
           params: {
