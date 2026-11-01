@@ -6,6 +6,9 @@
  * a background on the inline element, so it never reaches an icon placed beside the
  * text, and box-decoration-break repeats it on every wrapped line.
  *
+ * The strip hangs 3px below the text as padding, which must not change the height of
+ * anything around it. Those rules all live here, in the layout block below the colours.
+ *
  * The colour picker's swatches (SidebarColorField) are styled further down, in the swatch block.
  *
  * One hex per colour for light and dark themes. The names mirror HasColor::NAMES;
@@ -14,6 +17,7 @@
 .color-label {
     background: linear-gradient(var(--label-color), var(--label-color)) no-repeat 0 100% / 100% 3px;
     padding-bottom: 3px;
+    margin-bottom: -3px;
     border-radius: 3px;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
@@ -27,6 +31,33 @@
 .color-label[data-color="indigo"] { --label-color: #9a5fe7; }
 .color-label[data-color="magenta"] { --label-color: #d946b8; }
 .color-label[data-color="slate"] { --label-color: #6b7a8d; }
+
+/*
+ * Layout: the padding under the label must not make a coloured title taller than an uncoloured one.
+ *
+ * - An inline label ignores vertical margins, so the base rule above does nothing to it. A label
+ *   that is a flex or grid item (the sidebar row, the title next to an icon) keeps the padding
+ *   in its height, and the negative margin cancels exactly that.
+ *
+ * - A box that clips its overflow, such as a .truncate block, would cut the strip off where it
+ *   hangs below the text. Give that box the room, and cancel it with the same margin.
+ *
+ * - Where the label is a flex item inside a clipping box (a chip, a select option or a selected
+ *   value) there is no room to hang the strip below, so it is drawn over the bottom of the line
+ *   box instead, which has room to spare. Both the padding and the margin go.
+ */
+div.truncate:has(.color-label),
+.editable-content-title:has(.color-label) {
+    padding-bottom: 3px;
+    margin-bottom: -3px;
+}
+
+.flex.truncate > .color-label,
+.fundamento-react-select__option .flex > .color-label,
+.fundamento-react-select__multi-value__label .flex > .color-label {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
 
 /*
  * The picker's swatches (SidebarColorField) are the only place a colour is drawn as a dot.
