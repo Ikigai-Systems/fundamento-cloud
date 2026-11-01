@@ -11,6 +11,8 @@ describe("Table Button Refresh", function () {
         "users",
         "organization_memberships",
         "spaces",
+        "documents",
+        "versions",
         "tables/tables",
         "tables/columns",
         "tables/rows",
@@ -80,5 +82,59 @@ describe("Table Button Refresh", function () {
     // without needing a page reload. This assertion will fail if
     // the table doesn't auto-refresh after the button formula executes.
     cy.contains('[role="gridcell"]', "user_pawel").should("exist");
+  });
+
+  describe("buttons that rename or recolor", function () {
+    const title = ".editable-content-title";
+    const sidebarLabel = (id) => `#space-sidebar [data-document-id='${id}'] span.truncate`;
+    const swatch = (name) => `#details_sidebar_tab [role='radio'][aria-label='${name}']`;
+
+    beforeEach(() => {
+      cy.appEval(`Space.find("is_default").update!(hierarchy: [{ "id" => "two", "children" => [] }]); "OK"`);
+    });
+
+    function addButton(label, formula) {
+      cy.appEval([
+        "table = Table.find('orders')",
+        "table.columns.create!(",
+        "  name: 'Rename',",
+        "  organization_id: 'is',",
+        "  kind: :button,",
+        "  previous_column_id: table.columns.find_by(name: 'Vote').id,",
+        "  configuration: { 'buttonFormula' => %q[" + formula + "], 'buttonLabel' => '" + label + "' }",
+        ")",
+        "'OK'",
+      ].join("\n"));
+    }
+
+    it("updates the page title, the sidebar and the Details color picker without a reload", function () {
+      addButton("Make teal", 'UpdateTable("Orders", "name", "Orders renamed", "color", "teal")');
+      cy.visit("/t/orders/edit");
+      cy.get(sidebarLabel("orders")).should("contain.text", "Orders");
+      cy.openSidebar("details").within(() => {
+        cy.get('[aria-label="Details"]').click();
+      });
+      cy.get("#details_sidebar_tab [role='radiogroup']").should("be.visible");
+      cy.get(swatch("Teal")).should("have.attr", "aria-checked", "false");
+      cy.window().then((win) => { win.__notReloaded = true; });
+
+      cy.contains("Make teal").click();
+
+      cy.get(title).should("contain.text", "Orders renamed");
+      cy.get(`${title} .color-label`).should("have.attr", "data-color", "teal");
+      cy.get(sidebarLabel("orders")).should("contain.text", "Orders renamed").and("have.attr", "data-color", "teal");
+      cy.get(swatch("Teal")).should("have.attr", "aria-checked", "true");
+      cy.window().its("__notReloaded").should("eq", true);
+    });
+
+    it("updates a document's sidebar row when a button renames and recolors it", function () {
+      addButton("Mark two", 'UpdateDocument("two", "title", "Two renamed", "color", "indigo")');
+      cy.visit("/t/orders/edit");
+      cy.get(sidebarLabel("two")).should("contain.text", "Two");
+
+      cy.contains("Mark two").click();
+
+      cy.get(sidebarLabel("two")).should("contain.text", "Two renamed").and("have.attr", "data-color", "indigo");
+    });
   });
 });

@@ -40,10 +40,9 @@ class Formula::ActionExecutor
 
   # Record an action execution
   def record_action(type, **kwargs)
-    @actions << {
-      type: type,
-      **kwargs
-    }
+    action = {type: type, **kwargs}
+    @actions << action
+    action
   end
 
   # Get all recorded actions
@@ -146,22 +145,22 @@ class Formula::ActionExecutor
     document = find_document(document_id)
     values = normalize_update_values("UpdateDocument", values, DOCUMENT_UPDATE_KEYS)
 
-    record_action("UpdateDocument", documentId: document.id, values: values)
+    action = record_action("UpdateDocument", documentId: document.id, values: values)
 
     return nil if @dry_mode
 
-    execute_update_document(document, values:)
+    execute_update_document(document, values:).tap { |updated| action[:updated] = stored_labels(updated) }
   end
 
   def update_table(function_context, table_id, values = {})
     table = find_table(table_id)
     values = normalize_update_values("UpdateTable", values, TABLE_UPDATE_KEYS)
 
-    record_action("UpdateTable", tableId: table.id, values: values)
+    action = record_action("UpdateTable", tableId: table.id, values: values)
 
     return nil if @dry_mode
 
-    execute_update_table(table, values:)
+    execute_update_table(table, values:).tap { |updated| action[:updated] = stored_labels(updated) }
   end
 
   def run_actions(function_context, *args)
@@ -309,6 +308,19 @@ class Formula::ActionExecutor
     Pundit.authorize(@pundit_user, table, :update?)
 
     apply_label_update("UpdateTable", table, title: values["name"], icon: values["icon"], color: values["color"])
+  end
+
+  # What was actually stored, which is not always what the formula passed: a title with a
+  # leading emoji arrives split into title and icon. The client publishes it as-is, so every
+  # open view of the object follows without a reload.
+  def stored_labels(record)
+    {
+      id: record.id,
+      title: record.read_attribute(record.class.icon_source_attribute),
+      titleForEditing: record.title_for_editing,
+      icon: record.icon&.as_json,
+      color: record.color
+    }
   end
 
   # Mirrors the API: assign without saving, so a bad color or icon leaves the

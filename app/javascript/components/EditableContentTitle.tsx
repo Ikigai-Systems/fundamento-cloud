@@ -95,6 +95,8 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
   const [title, setTitle] = useState(initialEditingTitle);
   const [originalTitle, setOriginalTitle] = useState(initialEditingTitle);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isEditingRef = useRef(false);
+  isEditingRef.current = isEditing;
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -103,14 +105,27 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
     }
   }, [isEditing]);
 
-  // A color changed elsewhere (the picker, an MCP client) arrives as a content-updated event.
-  // Only a color-carrying event for this object counts: a rename sends no color, so it must
-  // leave this one alone.
+  // A change made elsewhere (the picker, a formula action) arrives as a content-updated event.
+  // A field left out of the event is unchanged: a rename sends no color, a color sends no
+  // title. A title that arrives while this one is being edited waits for the edit to finish
+  // rather than replacing what is being typed.
   const contentId = contentOf(props).id;
   useEffect(() => {
     const handler = (event: Event) => {
       const update = contentUpdateFrom(event);
-      if (update?.id === contentId && update.color !== undefined) setColor(update.color);
+      if (update?.id !== contentId) return;
+
+      if (update.color !== undefined) setColor(update.color);
+
+      if (update.title !== undefined && !isEditingRef.current) {
+        const icon = update.icon ?? null;
+        const titleForEditing = [icon?.value, update.title].filter(Boolean).join(" ");
+
+        setIcon(icon);
+        setDisplayTitle(update.title || UNTITLED_CONTENT);
+        setTitle(titleForEditing);
+        setOriginalTitle(titleForEditing);
+      }
     };
     window.addEventListener(CONTENT_UPDATED, handler);
     return () => window.removeEventListener(CONTENT_UPDATED, handler);

@@ -283,6 +283,36 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(document.color).to eq("indigo")
       end
 
+      it "records what was stored, so open views can follow without a reload" do
+        document.assign_title_and_icon(icon: "🔥")
+        document.save!
+
+        executor.update_document({}, document.id, {"title" => "Roadmap", "color" => "Indigo"})
+
+        expect(executor.get_actions).to eq([{
+          type: "UpdateDocument",
+          documentId: document.id,
+          values: {"title" => "Roadmap", "color" => "Indigo"},
+          updated: {
+            id: document.id,
+            title: "Roadmap",
+            titleForEditing: "🔥 Roadmap",
+            icon: {type: "emoji", value: "🔥"},
+            color: "indigo"
+          }
+        }])
+      end
+
+      it "records no stored state in dry mode, where nothing is stored" do
+        dry = described_class.new(dry_mode: true, space: space, organization_membership: organization_membership)
+
+        dry.update_document({}, document.id, {"color" => "teal"})
+
+        expect(dry.get_actions.first).to include(type: "UpdateDocument", documentId: document.id)
+        expect(dry.get_actions.first).not_to have_key(:updated)
+        expect(document.reload.color).to be_nil
+      end
+
       it "accepts symbol keys" do
         executor.update_document({}, document.id, {title: "Symbols", color: "teal"})
 
@@ -464,6 +494,14 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(new_table.name).to eq("Sprint")
         expect(new_table.icon.value).to eq("🚀")
         expect(new_table.color).to eq("lime")
+      end
+
+      it "records what was stored, so open views can follow without a reload" do
+        executor.update_table({}, new_table.id, {"name" => "Sprint", "color" => "lime"})
+
+        expect(executor.get_actions.first[:updated]).to eq(
+          id: new_table.id, title: "Sprint", titleForEditing: "Sprint", icon: nil, color: "lime"
+        )
       end
 
       it "finds the table by name too" do
