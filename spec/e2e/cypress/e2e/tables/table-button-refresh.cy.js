@@ -89,10 +89,6 @@ describe("Table Button Refresh", function () {
     const sidebarLabel = (id) => `#space-sidebar [data-document-id='${id}'] span.truncate`;
     const swatch = (name) => `#details_sidebar_tab [role='radio'][aria-label='${name}']`;
 
-    beforeEach(() => {
-      cy.appEval(`Space.find("is_default").update!(hierarchy: [{ "id" => "two", "children" => [] }]); "OK"`);
-    });
-
     function addButton(label, formula) {
       cy.appEval([
         "table = Table.find('orders')",
@@ -128,6 +124,8 @@ describe("Table Button Refresh", function () {
     });
 
     it("updates a document's sidebar row when a button renames and recolors it", function () {
+      // The sidebar tree lists a document only once the space's hierarchy has it.
+      cy.appEval(`Space.find("is_default").update!(hierarchy: [{ "id" => "two", "children" => [] }]); "OK"`);
       addButton("Mark two", 'UpdateDocument("two", "title", "Two renamed", "color", "indigo")');
       cy.visit("/t/orders/edit");
       cy.get(sidebarLabel("two")).should("contain.text", "Two");

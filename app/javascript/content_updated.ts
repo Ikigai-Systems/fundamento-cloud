@@ -17,6 +17,9 @@ export interface ContentUpdate {
   id: string;
   title?: string;
   icon?: ObjectIcon | null;
+  // The title as typed, with the icon in front, for a title field to put back in its input.
+  // Left out, it is the title.
+  titleForEditing?: string;
   // Same rule as icon: undefined leaves the color alone (a rename sends none), null clears it.
   color?: ColorName | null;
   draft?: boolean;

@@ -43,7 +43,9 @@ export default class ColorPickerController extends Controller<HTMLElement> {
 
   // A color set elsewhere (a formula action) while nothing of ours is in flight. This
   // picker's own saves announce themselves too, and by then a newer choice may be on screen,
-  // so anything arriving while a save is pending is ignored.
+  // so anything arriving while a save is pending is ignored. That includes a foreign change
+  // landing in the same moment: the server has two writers and no order to replay, so the
+  // row shows our last choice, which is also what it ends up as if ours was the later write.
   private followContentUpdate = (event: Event): void => {
     const update = contentUpdateFrom(event)
     if (update?.id !== this.idValue || update.color === undefined || this.pending > 0) return
