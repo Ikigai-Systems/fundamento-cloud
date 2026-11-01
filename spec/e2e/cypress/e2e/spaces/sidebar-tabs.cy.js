@@ -391,6 +391,14 @@ describe("Space sidebar tabs", function () {
       expectNotReloaded();
     });
 
+    it("the swatches keep the same spacing as any other control (the label's margin does not reach them)", function () {
+      openDetails("/d/two", "two", "Two");
+
+      cy.get(`${swatch("Teal")}, #details_sidebar_tab [role='radio'][aria-label='No color']`).each(($swatch) => {
+        expect(getComputedStyle($swatch[0]).marginBottom, $swatch.attr("aria-label")).to.equal("0px");
+      });
+    });
+
     it("choosing no color clears it", function () {
       cy.appEval(`Document.find("two").update!(color: "blue")`);
       interceptUpdates();

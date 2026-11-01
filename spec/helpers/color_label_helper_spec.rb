@@ -30,12 +30,6 @@ RSpec.describe ColorLabelHelper, type: :helper do
       expect(helper.color_labelled("Plain", nil)).to eq("Plain")
     end
 
-    it "nests the label in a plain span for a flex or grid item" do
-      html = helper.color_labelled("Title", "blue", wrap: true)
-
-      expect(html).to eq('<span><span class="color-label" data-color="blue">Title</span></span>')
-      expect(helper.color_labelled("Title", nil, wrap: true)).to eq("Title")
-    end
   end
 
   it "works with a real document" do
