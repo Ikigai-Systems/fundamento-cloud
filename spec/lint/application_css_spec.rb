@@ -1,9 +1,10 @@
 require "rails_helper"
 
-# application.css is the Sprockets manifest linked after tailwind.css. A `require_tree .` in it
-# bundles the raw source of every stylesheet in the directory, including the Tailwind ones that
-# the Tailwind build has already compiled, so each rule is served twice and the copy that comes
-# last wins ties against the compiled one.
+# application.css is the Sprockets stylesheet linked after tailwind.css, and manifest.js decides
+# what is precompiled into public/assets. A `require_tree .` in the first, or a `link_directory`
+# in the second, takes in the raw source of every stylesheet in the directory, including the
+# Tailwind ones that the Tailwind build has already compiled. Each rule is then served twice, and
+# the copy that comes last wins ties against the compiled one.
 RSpec.describe "application.css" do
   let(:bundled) do
     asset = Rails.application.assets.find_asset("application.css")
@@ -12,6 +13,13 @@ RSpec.describe "application.css" do
 
   it "bundles only the plain CSS files Tailwind has no part in" do
     expect(bundled).to match_array(%w[application.css ia-writer-fonts.css multiselect.css])
+  end
+
+  it "publishes only the two stylesheets the layouts link, not the sources behind them" do
+    manifest = Rails.application.assets.find_asset("manifest.js")
+    linked = manifest.metadata[:links].map { |uri| uri.sub(%r{\Afile://}, "").split("?").first }.select { |path| path.end_with?(".css") }
+
+    expect(linked.map { |path| path.sub("#{Rails.root}/", "") }).to match_array(%w[app/assets/builds/tailwind.css app/assets/stylesheets/application.css])
   end
 
   it "has no Tailwind source in it" do
