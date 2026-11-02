@@ -97,7 +97,7 @@ gem "docx"
 
 gem "wannabe_bool"
 
-gem "good_job", "~> 4.22"
+gem "good_job", "~> 4.23"
 
 gem "net-http2"
 gem "jwt"
