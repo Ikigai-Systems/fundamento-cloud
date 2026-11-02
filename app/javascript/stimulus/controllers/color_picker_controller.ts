@@ -1,7 +1,7 @@
 import {Controller} from "@hotwired/stimulus"
 import DocumentsApi from "../../api/DocumentsApi.js"
 import TablesApi from "../../api/Tables/TablesApi.js"
-import {publishContentUpdate} from "../../content_updated"
+import {CONTENT_UPDATED, contentUpdateFrom, publishContentUpdate} from "../../content_updated"
 import {applyColorLabel} from "../../sidebar/color_label"
 import createFlash from "../../utils/createFlash"
 import type {ColorName} from "../../types"
@@ -34,6 +34,25 @@ export default class ColorPickerController extends Controller<HTMLElement> {
 
   connect(): void {
     this.saved = this.colorValue
+    window.addEventListener(CONTENT_UPDATED, this.followContentUpdate)
+  }
+
+  disconnect(): void {
+    window.removeEventListener(CONTENT_UPDATED, this.followContentUpdate)
+  }
+
+  // A color set elsewhere (a formula action) while nothing of ours is in flight. This
+  // picker's own saves announce themselves too, and by then a newer choice may be on screen,
+  // so anything arriving while a save is pending is ignored. That includes a foreign change
+  // landing in the same moment: the server has two writers and no order to replay, so the
+  // row shows our last choice, which is also what it ends up as if ours was the later write.
+  private followContentUpdate = (event: Event): void => {
+    const update = contentUpdateFrom(event)
+    if (update?.id !== this.idValue || update.color === undefined || this.pending > 0) return
+
+    const color = update.color ?? ""
+    this.saved = color
+    this.show(color)
   }
 
   choose(event: Event): void {

@@ -1,10 +1,10 @@
-import {useState, useRef, useEffect} from "react";
+import {useState, useRef, useEffect, useCallback} from "react";
 import {ColorName, Document, ObjectIcon as ObjectIconValue, Table} from "../types.js";
 import ObjectIcon, {ObjectType} from "./ObjectIcon.tsx";
 import ColorLabel from "./ColorLabel.tsx";
 import createFlash from "../utils/createFlash.ts";
 import DocumentsApi from "../api/DocumentsApi.js";
-import {CONTENT_UPDATED, contentUpdateFrom, publishContentUpdate} from "../content_updated.js";
+import {CONTENT_UPDATED, ContentUpdate, contentUpdateFrom, publishContentUpdate} from "../content_updated.js";
 import TablesApi from "../api/Tables/TablesApi.js";
 
 export const UNTITLED_CONTENT = "Untitled";
@@ -35,9 +35,10 @@ function announceRename(id: string, response: RenameResponse, typedTitle: string
 
   // icon is explicitly null rather than omitted when the new title has no leading emoji:
   // omitting it would read as "icon unchanged" and leave the old one in the sidebar.
-  publishContentUpdate({id, title, icon});
+  const titleForEditing = response.titleForEditing ?? title;
+  publishContentUpdate({id, title, icon, titleForEditing});
 
-  return {title, icon, titleForEditing: response.titleForEditing ?? title};
+  return {title, icon, titleForEditing};
 }
 
 // Shared helper exported alongside the component; imported elsewhere, so it stays here despite fast-refresh.
@@ -95,6 +96,10 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
   const [title, setTitle] = useState(initialEditingTitle);
   const [originalTitle, setOriginalTitle] = useState(initialEditingTitle);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isEditingRef = useRef(false);
+  isEditingRef.current = isEditing;
+  // A title that arrived while the input was open, applied when editing ends unchanged.
+  const pendingTitleRef = useRef<ContentUpdate | null>(null);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -103,18 +108,45 @@ const EditableContentTitle = (props: EditableContentTitleProps) => {
     }
   }, [isEditing]);
 
-  // A color changed elsewhere (the picker, an MCP client) arrives as a content-updated event.
-  // Only a color-carrying event for this object counts: a rename sends no color, so it must
-  // leave this one alone.
+  const showTitle = useCallback((update: ContentUpdate) => {
+    const titleForEditing = update.titleForEditing ?? update.title ?? "";
+
+    setIcon(update.icon ?? null);
+    setDisplayTitle(update.title || UNTITLED_CONTENT);
+    setTitle(titleForEditing);
+    setOriginalTitle(titleForEditing);
+  }, []);
+
+  // Editing has ended: a title that arrived meanwhile applies unless the user changed theirs,
+  // in which case their save is what the object ends up with.
+  useEffect(() => {
+    if (isEditing || !pendingTitleRef.current) return;
+
+    const pending = pendingTitleRef.current;
+    pendingTitleRef.current = null;
+    if (title === originalTitle) showTitle(pending);
+  }, [isEditing, title, originalTitle, showTitle]);
+
+  // A change made elsewhere (the picker, a formula action) arrives as a content-updated event.
+  // A field left out of the event is unchanged: a rename sends no color, a color sends no
+  // title. A title that arrives while this one is being edited is held, not applied over
+  // what is being typed.
   const contentId = contentOf(props).id;
   useEffect(() => {
     const handler = (event: Event) => {
       const update = contentUpdateFrom(event);
-      if (update?.id === contentId && update.color !== undefined) setColor(update.color);
+      if (update?.id !== contentId) return;
+
+      if (update.color !== undefined) setColor(update.color);
+
+      if (update.title !== undefined) {
+        if (isEditingRef.current) pendingTitleRef.current = update;
+        else showTitle(update);
+      }
     };
     window.addEventListener(CONTENT_UPDATED, handler);
     return () => window.removeEventListener(CONTENT_UPDATED, handler);
-  }, [contentId]);
+  }, [contentId, showTitle]);
 
   const save = async (newTitle: string) => {
     const trimmed = newTitle.trim();
