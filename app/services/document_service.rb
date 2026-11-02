@@ -9,7 +9,9 @@ class DocumentService
   end
 
   # Titles are stored as given and the icon is a field of its own; see
-  # HasIcon#assign_title_and_icon.
+  # HasIcon#assign_title_and_icon. An explicit title wins over the frontmatter `title`, which
+  # in turn wins over the default, so an exported file keeps its name when it is written back.
+  # A blank title counts as none given, as it does for update!.
   def create!(space_id:, parent_document_id: nil, title:, markdown:, icon: nil, color: nil)
     ActiveRecord::Base.transaction do
       space = pundit_user.current_organization.spaces.find(space_id)
@@ -24,7 +26,7 @@ class DocumentService
       markdown, frontmatter_data = extract_frontmatter(markdown) if content_given
 
       document = space.documents.new(space: space, organization: space.organization)
-      document.assign_title_and_icon(title: title || "Untitled", icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_title_and_icon(title: title.presence || frontmatter_to_title(frontmatter_data) || "Untitled", icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
       document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 
       authorize document, :create?
@@ -72,7 +74,7 @@ class DocumentService
 
       # An explicit argument wins; a valid frontmatter key applies otherwise. A missing or
       # invalid key is dropped, so frontmatter can set a color or icon but never clear one.
-      document.assign_title_and_icon(title: title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
+      document.assign_title_and_icon(title: title || frontmatter_to_title(frontmatter_data), icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
       document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
       document.save!
 
@@ -108,17 +110,24 @@ class DocumentService
       parent_document = space.documents.find(parent_document_id) if parent_document_id.present?
       authorize parent_document, :show? if parent_document
 
+      # Check an explicit color and icon before the conversion: a bad one is a rejected request,
+      # and the conversion is the expensive part. Both are assigned again below, where the
+      # frontmatter may supply a value the caller left out.
+      document = space.documents.new(space: space, organization: space.organization)
+      document.assign_title_and_icon(icon: icon)
+      document.assign_color(color)
+
       # Convert file to markdown
       conversion_result = PandocConverterService.convert_upload(file)
-
-      # Use provided title or extracted title or "Untitled"
-      document_title = title.presence || conversion_result[:title] || "Untitled"
 
       # Extract frontmatter from converted markdown
       markdown, frontmatter_data = extract_frontmatter(conversion_result[:markdown])
 
+      # Provided title, then the frontmatter title, then the one the converter took from the
+      # file name, which is always there, so it must come after the frontmatter.
+      document_title = title.presence || frontmatter_to_title(frontmatter_data) || conversion_result[:title] || "Untitled"
+
       # Create document
-      document = space.documents.new(space: space, organization: space.organization)
       document.assign_title_and_icon(title: document_title, icon: icon.nil? ? frontmatter_to_icon(frontmatter_data) : icon)
       document.assign_color(color.nil? ? frontmatter_to_color(frontmatter_data) : color)
 

@@ -113,6 +113,17 @@ RSpec.describe ImportDocumentJob, type: :job do
       expect(import_file.reload.document.title).to eq("my-note")
     end
 
+    it "falls back to the file name for a blank or non-text frontmatter title" do
+      allow(BlocknoteConverterService).to receive(:markdown_to_blocks_and_yjs).and_return([[], ""])
+
+      ["title: ''", "title: [a, b]"].each_with_index do |line, index|
+        import_file = build_import_file(relative_path: "Notes/note-#{index}.md", content: "---\n#{line}\n---\n\nBody")
+        described_class.perform_now(import_file)
+
+        expect(import_file.reload.document.title).to eq("note-#{index}")
+      end
+    end
+
     it "uses frontmatter title when present" do
       content = "---\ntitle: My Custom Title\n---\n\nBody text"
       import_file = build_import_file(relative_path: "Notes/file.md", content: content)
