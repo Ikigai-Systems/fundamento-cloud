@@ -1,16 +1,14 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
+ * The Sprockets stylesheet, linked after tailwind.css. Almost all styling is Tailwind's:
+ * app/assets/stylesheets/application.tailwind.css imports every *.tailwind.css file (and
+ * color_label.css) and the Tailwind build compiles them into app/assets/builds/tailwind.css.
  *
- * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
- * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ * Only plain CSS that Tailwind has no part in is listed here, one file at a time. Do not use
+ * require_tree: it would bundle the raw sources of the Tailwind files too, serving every rule
+ * twice, once compiled and once as uncompiled source that the browser has to skip over.
+ * spec/lint/application_css_spec.rb fails when that happens.
  *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any other CSS
- * files in this directory. Styles in this file should be added after the last require_* statement.
- * It is generally better to create a new file per style scope.
- *
- *= require_tree .
+ *= require ia-writer-fonts
+ *= require multiselect
  *= require_self
  */
-
