@@ -1,8 +1,6 @@
 module Api
   module V1
     class DocumentsController < Api::ApiController
-      before_action -> { require_text_params(:document, :title, :icon, :color, :markdown, :parent_document_id) }, only: [:create, :update]
-
       def index
         space = current_organization.spaces.find_by_param!(params[:space_id])
         authorize space

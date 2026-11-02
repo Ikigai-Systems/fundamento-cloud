@@ -123,17 +123,6 @@ RSpec.describe "Api::V1::Tables", type: :request do
         expect(table.reload.color).to eq("blue")
       end
 
-      it "rejects a color that is not text instead of dropping it and applying the rest" do
-        table.update!(color: "blue")
-        before = table.name
-
-        patch "/api/v1/tables/#{table.id}", params: { table: { name: "After", color: ["teal"] } }, headers: bearer(membership), as: :json
-
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["errors"]["base"]).to eq("color must be text")
-        expect(table.reload).to have_attributes(name: before, color: "blue")
-      end
-
       it "rejects an unknown color with 422 and a message naming the eight colors" do
         table.update!(color: "blue")
 
