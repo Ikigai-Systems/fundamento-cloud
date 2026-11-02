@@ -34,3 +34,13 @@ RSpec.describe "color_label.css" do
     expect(hex_by_name.keys).to match_array(HasColor::NAMES)
   end
 end
+
+# The same names, as the TypeScript union the front end types colors with.
+RSpec.describe "ColorName in types.ts" do
+  it "lists exactly the names HasColor allows" do
+    source = File.read(File.expand_path("../../app/javascript/types.ts", __dir__))
+    union = source[/export type ColorName =([^;\n]+)/, 1]
+
+    expect(union.scan(/"([^"]+)"/).flatten).to match_array(HasColor::NAMES)
+  end
+end
