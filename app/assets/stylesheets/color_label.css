@@ -60,6 +60,20 @@ div.truncate:has(.color-label),
 }
 
 /*
+ * A mention is a bordered chip, and the chip is already the link, so it takes the colour on its
+ * own bottom edge instead of an underline under the title: the editor's link underline is
+ * switched off for mentions (blocknote.tailwind.css), which would otherwise leave two. The chip
+ * is the same height as an uncoloured one: the 2px the border gains come out of its bottom padding.
+ */
+.mention.color-label {
+    background: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: 3px solid var(--label-color);
+    border-radius: 4px 4px 3px 3px;
+}
+
+/*
  * The picker's swatches (SidebarColorField) are the only place a colour is drawn as a dot.
  * A swatch also carries .color-label, so it reads --label-color from the rules above instead of
  * restating the hex; .color-swatch then paints that colour as a fill rather than an underline.

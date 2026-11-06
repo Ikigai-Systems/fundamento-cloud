@@ -8,7 +8,6 @@ import {useEffect, useRef} from "react";
 import clsx from "clsx";
 import {useCurrentDocumentId, useObjectReference} from "./useObjectReferences";
 import ObjectIcon from "../../ObjectIcon.tsx";
-import ColorLabel from "../../ColorLabel.tsx";
 import {UserIcon} from "../../UserAvatar.tsx";
 import {SpinnerIcon} from "../../spinners/Spinner.tsx";
 import {BrokenReference, FailedReference} from "../../BrokenReference.tsx";
@@ -38,9 +37,10 @@ const DocumentMention = ({documentNpi, fragment, title}: {documentNpi: string, f
   return (
     <a
       href={href}
-      className="mention"
+      className={clsx("mention", document?.color && "color-label")}
+      data-color={document?.color ?? undefined}
     >
-      <ObjectIcon type="Document" icon={document?.icon}/><ColorLabel color={document?.color}>{displayName}</ColorLabel>
+      <ObjectIcon type="Document" icon={document?.icon}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )
@@ -64,9 +64,10 @@ const TableMention = ({tableNpi, title}: {tableNpi: string, title: string}) => {
   return (
     <a
       href={TablesApi.show.path({id: content?.table?.id})}
-      className="mention"
+      className={clsx("mention", content?.table?.color && "color-label")}
+      data-color={content?.table?.color ?? undefined}
     >
-      <ObjectIcon type="Table" icon={content?.table?.icon}/><ColorLabel color={content?.table?.color}>{displayName}</ColorLabel>
+      <ObjectIcon type="Table" icon={content?.table?.icon}/>{displayName}
       {isLoading && <Loading/>}
     </a>
   )

@@ -60,6 +60,15 @@
     @apply underline cursor-pointer text-primary-blue-500;
 }
 
+/* A mention is a chip, which already reads as a link: no underline, a tint on hover instead. */
+[data-document-editor] a.mention {
+    @apply no-underline;
+}
+
+[data-document-editor] a.mention:hover {
+    background-color: rgb(14 165 233 / 0.1);
+}
+
 [data-document-editor].read-only .bn-editor {
     @apply px-5;
 }

@@ -867,19 +867,46 @@ describe("Document References and Mentions", function () {
       cy.get(".mention svg.animate-spin, .mention .animate-spin").should("not.exist");
     }
 
-    it("underlines a mention of a colored document without resizing it", function () {
-      expectColorLabelKeepsLayout({
-        record: `Document.find("two")`,
-        visit: visitMentioner,
-        title: 'a.mention[href="/d/two"]',
+    // The chip itself carries the colour on its bottom edge. The editor's link underline is off for
+    // mentions, so the colour is the only line, and the chip is as tall as an uncoloured one.
+    function expectColoredChip({record, href}) {
+      const chip = `a.mention[href="${href}"]`;
+
+      cy.appEval(`${record}.update!(color: nil)`);
+      visitMentioner();
+      cy.get(chip).should("not.have.class", "color-label").then(($chip) => {
+        cy.wrap($chip[0].getBoundingClientRect().height).as("uncoloredHeight");
       });
+
+      cy.appEval(`${record}.update!(color: "teal")`);
+      visitMentioner();
+      cy.get(`${chip}.color-label[data-color="teal"]`).should(($chip) => {
+        const style = getComputedStyle($chip[0]);
+        expect(style.borderBottomWidth, "colour edge").to.equal("3px");
+        expect(style.borderBottomColor, "colour").to.equal("rgb(12, 161, 156)");
+        expect(style.backgroundImage, "no strip under the title").to.equal("none");
+        expect(style.textDecorationLine, "no link underline").to.equal("none");
+        expect($chip.find(".color-label").length, "no label inside the chip").to.equal(0);
+      });
+      cy.get(chip).then(($chip) => {
+        cy.get("@uncoloredHeight").then((height) => {
+          expect($chip[0].getBoundingClientRect().height, "height of the colored chip").to.equal(height);
+        });
+      });
+    }
+
+    it("colors the bottom edge of a mention of a colored document without resizing it", function () {
+      expectColoredChip({record: `Document.find("two")`, href: "/d/two"});
     });
 
-    it("underlines a mention of a colored table without resizing it", function () {
-      expectColorLabelKeepsLayout({
-        record: `Table.find("mentioned")`,
-        visit: visitMentioner,
-        title: 'a.mention[href="/t/mentioned"]',
+    it("colors the bottom edge of a mention of a colored table without resizing it", function () {
+      expectColoredChip({record: `Table.find("mentioned")`, href: "/t/mentioned"});
+    });
+
+    it("shows no link underline on a mention", function () {
+      visitMentioner();
+      cy.get('a.mention[href="/d/two"]').should(($chip) => {
+        expect(getComputedStyle($chip[0]).textDecorationLine).to.equal("none");
       });
     });
   });
