@@ -9,6 +9,7 @@
  * The strip hangs 3px below the text as padding, which must not change the height of
  * anything around it. Those rules all live here, in the layout block below the colours.
  *
+ * Mentions are the exception: they put the colour on the chip's bottom edge instead (.mention.color-label).
  * The colour picker's swatches (SidebarColorField) are styled further down, in the swatch block.
  *
  * One hex per colour for light and dark themes. The names mirror HasColor::NAMES;
@@ -57,6 +58,20 @@ div.truncate:has(.color-label),
 .fundamento-react-select__multi-value__label .flex > .color-label {
     padding-bottom: 0;
     margin-bottom: 0;
+}
+
+/*
+ * A mention is a bordered chip, and the chip is already the link, so it takes the colour on its
+ * own bottom edge instead of an underline under the title: the editor's link underline is
+ * switched off for mentions (blocknote.tailwind.css), which would otherwise leave two. The chip
+ * is the same height as an uncoloured one: the 2px the border gains come out of its bottom padding.
+ */
+.mention.color-label {
+    background: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: 3px solid var(--label-color);
+    border-radius: 4px 4px 3px 3px;
 }
 
 /*
