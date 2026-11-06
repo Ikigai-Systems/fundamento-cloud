@@ -9,6 +9,7 @@
  * The strip hangs 3px below the text as padding, which must not change the height of
  * anything around it. Those rules all live here, in the layout block below the colours.
  *
+ * Mentions are the exception: they put the colour on the chip's bottom edge instead (.mention.color-label).
  * The colour picker's swatches (SidebarColorField) are styled further down, in the swatch block.
  *
  * One hex per colour for light and dark themes. The names mirror HasColor::NAMES;
