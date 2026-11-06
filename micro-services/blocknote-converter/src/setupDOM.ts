@@ -8,7 +8,7 @@ export function setupDOM() {
   }
 
   const window = new Window({
-    url: "http://localhost",
+    url: "about:blank",
     width: 1024,
     height: 768,
   });
