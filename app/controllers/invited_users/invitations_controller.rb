@@ -80,7 +80,6 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:invite, keys: [:organization_id])
-    devise_parameter_sanitizer.permit(:accept_invitation, keys: [])
   end
 
   # The organization travels with the invitation (stored in devise_invitations.organization_id).

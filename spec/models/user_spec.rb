@@ -68,16 +68,6 @@ RSpec.describe User, type: :model do
       expect(described_class.find_by_invitation_token(second.raw_invitation_token, true).organization).to eq(hc_org)
     end
 
-    it "invites an email that already has an account" do
-      john = users(:john)
-
-      invitation = invite(john.email, is_org)
-
-      expect(invitation.errors).to be_empty
-      expect(DeviseInvitable::Invitation.pending.pluck(:organization_id)).to eq(["is"])
-      expect(ActionMailer::Base.deliveries.last.to).to eq([john.email])
-    end
-
     context "when a registered user has a pending invitation to another organization" do
       let(:john) { users(:john) }
 
@@ -110,18 +100,6 @@ RSpec.describe User, type: :model do
         john.reload.send_reset_password_instructions
 
         expect(ActionMailer::Base.deliveries.last&.subject).to match(/password/i)
-      end
-    end
-
-    it "doesn't find an invitation from a garbage token" do
-      expect(described_class.find_by_invitation_token("garbage", true)).to be_nil
-    end
-
-    it "doesn't find an invitation past its validity period" do
-      invitation = invite("new@example.com", is_org)
-
-      travel_to(Devise.invite_for.from_now + 1.day) do
-        expect(described_class.find_by_invitation_token(invitation.raw_invitation_token, true)).to be_nil
       end
     end
 

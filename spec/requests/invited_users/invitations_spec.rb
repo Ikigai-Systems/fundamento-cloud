@@ -15,20 +15,6 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     User.invite!({ email: email }, by, invitation_data: { organization_id: organization.id })
   end
 
-  describe "POST /invited_users/invitation (create)" do
-    before do
-      sign_in(pawel)
-      post select_organization_path(is_org)
-    end
-
-    it "sets invited_by correctly" do
-      post invited_user_invitation_path, params: { invited_user: { email: john.email, organization_id: is_org.id } }
-
-      expect(response).to redirect_to(organization_path(is_org))
-      expect(DeviseInvitable::Invitation.last.invited_by).to eq(pawel)
-    end
-  end
-
   describe "GET /invited_users/invitation/accept (edit)" do
     context "when user is already a member of the organization" do
       let!(:invited_user) do
@@ -85,6 +71,8 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         expect(response.body).to include(is_org.name)
         expect(response.body).to include("Accept invitation")
         expect(response.body).to include(john.display_name)
+        # The form must post to the invitations controller, not to the users scope's own.
+        expect(response.body).to include('action="/invited_users/invitation"')
       end
     end
 

@@ -49,7 +49,7 @@
       <p>Continuing as <%= current_user.display_name %> (<%= current_user.email %>)</p>
     </div>
 
-    <%= form_for(resource, as: resource_name, url: invitation_path(resource),
+    <%= form_for(resource, as: resource_name, url: invitation_path(resource_name),
       html: { method: :put, class: "default-form" }) do |f| %>
 
       <%= f.hidden_field :invitation_token, value: resource.invitation_token %>
