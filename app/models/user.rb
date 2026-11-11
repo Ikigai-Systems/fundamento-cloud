@@ -18,6 +18,13 @@ class User < ApplicationRecord
     :magic_link_authenticatable,
     :omniauthable, omniauth_providers: [:google_oauth2]
 
+  # Organization invitations live in devise_invitations (deferred: no placeholder User). The organization
+  # is copied into a column when the invitation is created, before the mail goes out.
+  # Pinned by spec/models/user_spec.rb, "organization invitations".
+  before_invitation_created do
+    current_invitation.organization_id = current_invitation.invitation_data.with_indifferent_access[:organization_id]
+  end
+
   before_create :skip_confirmation_if_not_required
   before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
 
@@ -105,6 +112,12 @@ class User < ApplicationRecord
     first_visit
   end
 
+  # devise_invitable refuses to invite an email that already has an account. Invitations here are per
+  # organization, so a registered user can be invited to another one.
+  def invitation_taken? = false
+
+  def organization = current_invitation&.organization
+
   # Do not allow user to reset its password until it accepts the invitation
   # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
   def send_reset_password_instructions
@@ -152,6 +165,12 @@ class User < ApplicationRecord
   end
 
   private
+
+  # devise_invitable refuses to sign in a user with a pending invitation, because in its default mode that
+  # user is a placeholder, and it asks the database on every authenticated request. Invitations here are
+  # deferred, so a User is never a placeholder: skip the question, and the query.
+  # Pinned by spec/models/user_spec.rb, "organization invitations".
+  def block_from_invitation? = false
 
   def derive_name_from_email
     # Extract username part before @

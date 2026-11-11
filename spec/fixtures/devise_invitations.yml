@@ -1,0 +1,15 @@
+# invitation_token, invite_key and invite_key_digest are all redacted by the tenant export, so this
+# table is withheld on restore: an invitation without its token can never be accepted.
+_fixture:
+  model_class: DeviseInvitable::Invitation
+
+is_newcomer:
+  organization_id: "is"
+  invitable_type: User
+  invited_by_type: User
+  invited_by_id: user_pawel
+  invitation_token: is-invitation-token
+  invite_key: <%= { email: "newcomer@ikigai.test" }.to_json %>
+  invite_key_digest: <%= DeviseInvitable::Invitation.digest_for("User", { "email" => "newcomer@ikigai.test" }) %>
+  invitation_created_at: <%= 1.day.ago.iso8601 %>
+  invitation_sent_at: <%= 1.day.ago.iso8601 %>

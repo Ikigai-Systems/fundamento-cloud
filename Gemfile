@@ -60,7 +60,7 @@ gem "y-rb"
 gem "y-rb_actioncable"
 
 gem "devise", github: "heartcombo/devise", branch: "main"
-gem "devise_invitable"
+gem "devise_invitable", "~> 3.1.0"
 gem "devise-passwordless"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"

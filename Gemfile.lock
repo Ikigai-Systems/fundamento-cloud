@@ -150,9 +150,9 @@ GEM
     devise-passwordless (1.1.0)
       devise
       globalid
-    devise_invitable (2.0.14)
-      actionmailer (>= 5.0)
-      devise (>= 4.6)
+    devise_invitable (3.1.0)
+      actionmailer (>= 7.0)
+      devise (>= 5.0)
     diff-lcs (1.6.2)
     docx (0.13.3)
       nokogiri (~> 1.13, >= 1.13.0)
@@ -580,7 +580,7 @@ DEPENDENCIES
   debug
   devise!
   devise-passwordless
-  devise_invitable
+  devise_invitable (~> 3.1.0)
   docx
   doorkeeper
   dotenv-rails (~> 3.1)

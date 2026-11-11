@@ -8,7 +8,7 @@ class Organization < ApplicationRecord
   has_many :documents, -> { kept }, dependent: nil, inverse_of: :organization
   has_many :all_documents, class_name: "Document", dependent: :destroy, inverse_of: :organization
   has_many :import_sessions, dependent: :destroy
-  has_many :invited_users, dependent: :destroy
+  has_many :invitations, class_name: "DeviseInvitable::Invitation", dependent: :destroy
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy

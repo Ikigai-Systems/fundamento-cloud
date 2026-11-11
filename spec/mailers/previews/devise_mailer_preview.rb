@@ -1,18 +1,14 @@
 # test/mailers/previews/devise_mailer_preview.rb
 class DeviseMailerPreview < ActionMailer::Preview
+  # Creates a real (unsent) invitation each time it is opened; InvitationPurgeJob removes them later.
   def invitation_instructions
-    organization = Organization.new(name: "Test")
+    invitee = User.invite!(
+      { email: "test@example.com", skip_invitation: true },
+      User.first,
+      invitation_data: { organization_id: Organization.first.id }
+    )
 
-    user = User.first
-
-    invited_user = InvitedUser.new(first_name: "Test", last_name: "User", email: "test@example.com")
-    invited_user.organization = organization
-    invited_user.invited_by = user
-    invited_user.invitation_sent_at = Time.now
-
-    token = "dummy_token"
-
-    FundamentoDeviseMailer.invitation_instructions(invited_user, token)
+    FundamentoDeviseMailer.invitation_instructions(invitee, invitee.raw_invitation_token)
   end
 
   def reset_password_instructions

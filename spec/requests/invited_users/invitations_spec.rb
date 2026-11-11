@@ -11,6 +11,10 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     ActionMailer::Base.deliveries.clear
   end
 
+  def invite_to(email, organization, by)
+    User.invite!({ email: email }, by, invitation_data: { organization_id: organization.id })
+  end
+
   describe "POST /invited_users/invitation (create)" do
     before do
       sign_in(pawel)
@@ -21,20 +25,14 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       post invited_user_invitation_path, params: { invited_user: { email: john.email, organization_id: is_org.id } }
 
       expect(response).to redirect_to(organization_path(is_org))
-      expect(InvitedUser.last.invited_by).to eq(pawel)
+      expect(DeviseInvitable::Invitation.last.invited_by).to eq(pawel)
     end
   end
 
   describe "GET /invited_users/invitation/accept (edit)" do
     context "when user is already a member of the organization" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: pawel.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(pawel.email, is_org, pawel)
       end
 
       before do
@@ -52,13 +50,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user is logged in with wrong email" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       before do
@@ -78,13 +70,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user is logged in with correct email" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       before do
@@ -104,13 +90,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user exists but is not logged in" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       it "prompts user to sign in" do
@@ -127,13 +107,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user does not exist (new user)" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: "newuser@example.com",
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to("newuser@example.com", is_org, pawel)
       end
 
       it "shows invitation acceptance form" do
@@ -153,13 +127,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
   describe "PUT /invited_users/invitation (update)" do
     context "when accepting invitation for new user" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: "newuser@example.com",
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to("newuser@example.com", is_org, pawel)
       end
 
       let(:valid_params) do
@@ -208,12 +176,12 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         expect(organization_membership.role).to eq("member")
       end
 
-      it "destroys the InvitedUser record" do
+      it "consumes the invitation" do
         expect {
           put invited_user_invitation_path, params: valid_params
-        }.to change(InvitedUser, :count).by(-1)
+        }.to change(DeviseInvitable::Invitation.pending, :count).by(-1)
 
-        expect(InvitedUser.find_by(email: "newuser@example.com")).to be_nil
+        expect(DeviseInvitable::Invitation.pending.where(organization_id: "is")).to be_empty
       end
 
       it "sends confirmation email (cloud mode)" do
@@ -249,13 +217,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user is logged in with correct email" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       let(:valid_params) do
@@ -285,12 +247,12 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         expect(organization_membership.role).to eq("member")
       end
 
-      it "destroys the invited user record" do
+      it "consumes the invitation" do
         expect {
           put invited_user_invitation_path, params: valid_params
-        }.to change(InvitedUser, :count).by(-1)
+        }.to change(DeviseInvitable::Invitation.pending, :count).by(-1)
 
-        expect(InvitedUser.find_by(email: john.email)).to be_nil
+        expect(DeviseInvitable::Invitation.pending.where(organization_id: "is")).to be_empty
       end
 
       it "redirects to root and sets organization cookie" do
@@ -304,13 +266,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user is not logged in" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       let(:valid_params) do
@@ -332,13 +288,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when user is logged in with wrong email" do
       let!(:invited_user) do
-        InvitedUser.invite!(
-          {
-            email: john.email,
-            organization: is_org
-          },
-          pawel
-        )
+        invite_to(john.email, is_org, pawel)
       end
 
       let(:valid_params) do
@@ -357,10 +307,10 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         put invited_user_invitation_path, params: valid_params
 
         expect(flash[:alert]).to include("You must be signed in as #{john.email}")
-        expect(response).to redirect_to(invited_user_invitation_path)
+        expect(response).to redirect_to(accept_invited_user_invitation_path(invitation_token: valid_params[:invited_user][:invitation_token]))
 
         # Verify invitation was NOT consumed
-        expect(InvitedUser.find_by(email: john.email)).to be_present
+        expect(DeviseInvitable::Invitation.pending.where(organization_id: "is")).to exist
 
         # Verify john was NOT added to organization
         expect(is_org.users.reload).not_to include(john)
@@ -388,7 +338,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
       it "creates a pending invitation for the organization and mails it" do
         expect { invite(email: "fresh@example.com") }
-          .to change { is_org.invited_users.where(email: "fresh@example.com").count }.by(1)
+          .to change { is_org.invitations.pending.count }.by(1)
           .and change { ActionMailer::Base.deliveries.count }.by(1)
 
         mail = ActionMailer::Base.deliveries.last
@@ -396,7 +346,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       end
 
       it "doesn't invite an existing member, nor send a mail" do
-        expect { invite(email: stefan.email) }.not_to change(InvitedUser, :count)
+        expect { invite(email: stefan.email) }.not_to change(DeviseInvitable::Invitation.pending, :count)
 
         expect(ActionMailer::Base.deliveries).to be_empty
         expect(response).to redirect_to(organization_path(is_org))
@@ -404,11 +354,11 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       end
 
       it "doesn't create an invitation for a blank email" do
-        expect { invite(email: "") }.not_to change(InvitedUser, :count)
+        expect { invite(email: "") }.not_to change(DeviseInvitable::Invitation.pending, :count)
       end
 
       it "invites a registered user who is not yet a member" do
-        expect { invite(email: john.email) }.to change(InvitedUser, :count).by(1)
+        expect { invite(email: john.email) }.to change(DeviseInvitable::Invitation.pending, :count).by(1)
       end
 
       it "mails again on resend without adding a second invitation" do
@@ -416,7 +366,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
         expect { invite(email: "fresh@example.com") }
           .to change { ActionMailer::Base.deliveries.count }.by(1)
-        expect(is_org.invited_users.where(email: "fresh@example.com").count).to eq(1)
+        expect(is_org.invitations.pending.count).to eq(1)
       end
 
       it "invalidates the link of the first mail once the invitation is resent" do
@@ -441,7 +391,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         invite(email: "fresh@example.com", organization: organizations(:another))
 
         expect(response).to have_http_status(:not_found)
-        expect(InvitedUser.where(organization_id: "another")).to be_empty
+        expect(DeviseInvitable::Invitation.where(organization_id: "another")).to be_empty
       end
     end
 
@@ -452,7 +402,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       end
 
       it "is not allowed to invite" do
-        expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
+        expect { invite(email: "fresh@example.com") }.not_to change(DeviseInvitable::Invitation.pending, :count)
         expect(response).not_to have_http_status(:ok)
         expect(ActionMailer::Base.deliveries).to be_empty
       end
@@ -460,7 +410,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     context "when signed out" do
       it "doesn't create an invitation" do
-        expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
+        expect { invite(email: "fresh@example.com") }.not_to change(DeviseInvitable::Invitation.pending, :count)
         expect(response).to redirect_to(new_user_session_path)
       end
     end
@@ -471,13 +421,13 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       put invited_user_invitation_path, params: { invited_user: { invitation_token: token } }
     end
 
-    let!(:invited_user) { InvitedUser.invite!({ email: "late@example.com", organization: is_org }, pawel) }
+    let!(:invited_user) { invite_to("late@example.com", is_org, pawel) }
 
     it "rejects a garbage token and adds nobody" do
       expect { accept("garbage") }.not_to change(OrganizationMembership, :count)
       expect(response).to redirect_to(new_user_session_path)
       expect(User.find_by(email: "late@example.com")).to be_nil
-      expect(invited_user.reload).to be_persisted
+      expect(DeviseInvitable::Invitation.pending.where(organization_id: "is")).to exist
     end
 
     it "rejects an invitation older than the validity period" do
@@ -508,8 +458,8 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
   describe "the same email invited to two organizations" do
     let(:hc_org) { organizations(:hc) }
     let(:email) { "both@example.com" }
-    let!(:to_is) { InvitedUser.invite!({ email: email, organization: is_org }, pawel) }
-    let!(:to_hc) { InvitedUser.invite!({ email: email, organization: hc_org }, pawel) }
+    let!(:to_is) { invite_to(email, is_org, pawel) }
+    let!(:to_hc) { invite_to(email, hc_org, pawel) }
 
     def accept(invitation)
       put invited_user_invitation_path, params: { invited_user: { invitation_token: invitation.raw_invitation_token } }
@@ -517,20 +467,20 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
     it "lets each be accepted on its own, ending with one user in both organizations" do
       expect { accept(to_is) }.to change(User, :count).by(1)
-      expect(InvitedUser.where(email: email).pluck(:organization_id)).to eq(["hc"])
+      expect(DeviseInvitable::Invitation.pending.pluck(:organization_id)).to eq(["hc"])
 
       expect { accept(to_hc) }.not_to change(User, :count)
 
       user = User.find_by!(email: email)
       expect(user.organizations).to contain_exactly(is_org, hc_org)
-      expect(InvitedUser.where(email: email)).to be_empty
+      expect(DeviseInvitable::Invitation.pending).to be_empty
     end
 
     it "accepting the second one first leaves the other pending" do
       accept(to_hc)
 
       expect(User.find_by!(email: email).organizations).to eq([hc_org])
-      expect(InvitedUser.where(email: email, organization: is_org)).to exist
+      expect(DeviseInvitable::Invitation.pending.where(organization_id: "is")).to exist
     end
 
     it "shows each link its own organization" do
@@ -544,15 +494,21 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     end
   end
 
+  describe "a registered user invited to another organization" do
+    let(:hc_org) { organizations(:hc) }
+    let!(:invitation_user) { invite_to(john.email, hc_org, pawel) }
+
+    it "joins on accept without a second account" do
+      expect { put invited_user_invitation_path, params: { invited_user: { invitation_token: invitation_user.raw_invitation_token } } }
+        .not_to change(User, :count)
+
+      expect(hc_org.users.reload).to include(john)
+    end
+  end
+
   describe "full flow: invitation acceptance followed by email confirmation" do
     let!(:invited_user) do
-      InvitedUser.invite!(
-        {
-          email: "complete@example.com",
-          organization: is_org
-        },
-        pawel
-      )
+      invite_to("complete@example.com", is_org, pawel)
     end
 
     let(:valid_params) do
