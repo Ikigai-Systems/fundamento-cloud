@@ -1,5 +1,5 @@
 name: 'Setup SOPS with age'
-description: 'Install age and SOPS, and configure age key for secrets decryption'
+description: 'Install SOPS, and configure age key for secrets decryption'
 inputs:
   age-key:
     description: 'Age private key for SOPS decryption'
@@ -19,11 +19,6 @@ runs:
       uses: nhedger/setup-sops@187c90dbb4e28c3225263886266a5b92baa7e5a1 # v2.1.1
       with:
         version: ${{ inputs.sops-version }}
-
-    - name: Install age
-      shell: bash
-      run: |
-        sudo apt-get update && sudo apt-get install -y age
 
     - name: Setup SOPS age key
       shell: bash
