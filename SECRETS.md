@@ -217,7 +217,7 @@ To add it:
 4. Paste the entire private key (including the header and footer lines)
 
 The workflows will:
-1. Install age and sops
+1. Install sops (it decrypts with its built-in age support, so no separate age binary)
 2. Create the age key file from the secret
 3. Extract Rails master keys from SOPS into `config/credentials/*.key`
 4. Rails then boots normally using standard encrypted credentials
