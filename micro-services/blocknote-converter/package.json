@@ -54,5 +54,8 @@
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.33"
   },
+  "overrides": {
+    "minimatch": "^11.0.1"
+  },
   "packageManager": "npm@11.6.2"
 }
