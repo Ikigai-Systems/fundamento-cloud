@@ -29,7 +29,7 @@ RSpec.describe FundamentoDeviseMailer, type: :mailer do
     end
 
     it "links to the acceptance page with the raw token" do
-      expect(html).to include(CGI.escapeHTML("invitation_token=#{invitation.raw_invitation_token}"))
+      expect(html).to include(CGI.escapeHTML("invitation_token=#{CGI.escape(invitation.raw_invitation_token)}"))
     end
 
     it "states until when the invitation can be accepted" do
