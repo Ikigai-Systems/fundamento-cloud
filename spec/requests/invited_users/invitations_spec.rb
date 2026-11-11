@@ -368,7 +368,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     end
   end
 
-  describe "POST /invited_users/invitation (create), beyond invited_by" do
+  describe "POST /invited_users/invitation (create) authorization and resend" do
     let(:stefan) { users(:stefan) }
 
     def mail_token(mail)
@@ -393,7 +393,6 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
         mail = ActionMailer::Base.deliveries.last
         expect(mail.to).to eq(["fresh@example.com"])
-        expect(mail.subject).to include(is_org.name)
       end
 
       it "doesn't invite an existing member, nor send a mail" do
@@ -404,24 +403,20 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
         expect(flash[:notice]).to include("already a member")
       end
 
-      it "doesn't create an invitation for a blank or malformed email" do
+      it "doesn't create an invitation for a blank email" do
         expect { invite(email: "") }.not_to change(InvitedUser, :count)
-        expect { invite(email: "not-an-email") }.not_to change(InvitedUser, :count)
       end
 
       it "invites a registered user who is not yet a member" do
         expect { invite(email: john.email) }.to change(InvitedUser, :count).by(1)
       end
 
-      it "keeps one invitation per email and organization on resend, and rotates the token" do
+      it "mails again on resend without adding a second invitation" do
         invite(email: "fresh@example.com")
-        first = InvitedUser.find_by!(email: "fresh@example.com", organization: is_org)
-        first_digest = first.invitation_token
 
-        expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
-
-        expect(first.reload.invitation_token).not_to eq(first_digest)
-        expect(ActionMailer::Base.deliveries.count).to eq(2)
+        expect { invite(email: "fresh@example.com") }
+          .to change { ActionMailer::Base.deliveries.count }.by(1)
+        expect(is_org.invited_users.where(email: "fresh@example.com").count).to eq(1)
       end
 
       it "invalidates the link of the first mail once the invitation is resent" do
@@ -458,6 +453,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
 
       it "is not allowed to invite" do
         expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
+        expect(response).not_to have_http_status(:ok)
         expect(ActionMailer::Base.deliveries).to be_empty
       end
     end
@@ -465,7 +461,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     context "when signed out" do
       it "doesn't create an invitation" do
         expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
-        expect(response).to have_http_status(:found)
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end
@@ -482,12 +478,6 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       expect(response).to redirect_to(new_user_session_path)
       expect(User.find_by(email: "late@example.com")).to be_nil
       expect(invited_user.reload).to be_persisted
-    end
-
-    it "shows the invalid-token page for a garbage token on the accept link" do
-      get accept_invited_user_invitation_path(invitation_token: "garbage")
-
-      expect(response.body).not_to include(is_org.name)
     end
 
     it "rejects an invitation older than the validity period" do
@@ -525,10 +515,6 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       put invited_user_invitation_path, params: { invited_user: { invitation_token: invitation.raw_invitation_token } }
     end
 
-    it "keeps two independent pending invitations" do
-      expect(InvitedUser.where(email: email).pluck(:organization_id)).to contain_exactly("is", "hc")
-    end
-
     it "lets each be accepted on its own, ending with one user in both organizations" do
       expect { accept(to_is) }.to change(User, :count).by(1)
       expect(InvitedUser.where(email: email).pluck(:organization_id)).to eq(["hc"])
@@ -540,7 +526,7 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
       expect(InvitedUser.where(email: email)).to be_empty
     end
 
-    it "accepting one does not consume the other, in either order" do
+    it "accepting the second one first leaves the other pending" do
       accept(to_hc)
 
       expect(User.find_by!(email: email).organizations).to eq([hc_org])

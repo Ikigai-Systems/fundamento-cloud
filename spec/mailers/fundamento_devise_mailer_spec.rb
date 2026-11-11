@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe FundamentoDeviseMailer, type: :mailer do
-  fixtures :organizations, :users, :organization_memberships
+  fixtures :organizations, :users
 
   describe "#invitation_instructions" do
     let(:organization) { organizations(:is) }
