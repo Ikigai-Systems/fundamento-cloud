@@ -368,6 +368,182 @@ RSpec.describe "InvitedUsers::Invitations", type: :request do
     end
   end
 
+  describe "POST /invited_users/invitation (create) authorization and resend" do
+    let(:stefan) { users(:stefan) }
+
+    def mail_token(mail)
+      html = mail.html_part&.body&.decoded || mail.body.decoded
+      CGI.parse(URI.parse(html[/href="([^"]*invitation_token[^"]*)"/, 1].gsub("&amp;", "&")).query)["invitation_token"].first
+    end
+
+    def invite(email:, organization: is_org)
+      post invited_user_invitation_path, params: { invited_user: { email: email, organization_id: organization.id } }
+    end
+
+    context "as a manager" do
+      before do
+        sign_in(pawel)
+        post select_organization_path(is_org)
+      end
+
+      it "creates a pending invitation for the organization and mails it" do
+        expect { invite(email: "fresh@example.com") }
+          .to change { is_org.invited_users.where(email: "fresh@example.com").count }.by(1)
+          .and change { ActionMailer::Base.deliveries.count }.by(1)
+
+        mail = ActionMailer::Base.deliveries.last
+        expect(mail.to).to eq(["fresh@example.com"])
+      end
+
+      it "doesn't invite an existing member, nor send a mail" do
+        expect { invite(email: stefan.email) }.not_to change(InvitedUser, :count)
+
+        expect(ActionMailer::Base.deliveries).to be_empty
+        expect(response).to redirect_to(organization_path(is_org))
+        expect(flash[:notice]).to include("already a member")
+      end
+
+      it "doesn't create an invitation for a blank email" do
+        expect { invite(email: "") }.not_to change(InvitedUser, :count)
+      end
+
+      it "invites a registered user who is not yet a member" do
+        expect { invite(email: john.email) }.to change(InvitedUser, :count).by(1)
+      end
+
+      it "mails again on resend without adding a second invitation" do
+        invite(email: "fresh@example.com")
+
+        expect { invite(email: "fresh@example.com") }
+          .to change { ActionMailer::Base.deliveries.count }.by(1)
+        expect(is_org.invited_users.where(email: "fresh@example.com").count).to eq(1)
+      end
+
+      it "invalidates the link of the first mail once the invitation is resent" do
+        invite(email: "fresh@example.com")
+        old_token = mail_token(ActionMailer::Base.deliveries.last)
+        invite(email: "fresh@example.com")
+        delete destroy_user_session_path
+
+        expect {
+          put invited_user_invitation_path, params: { invited_user: { invitation_token: old_token } }
+        }.not_to change(User, :count)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(is_org.users.reload.pluck(:email)).not_to include("fresh@example.com")
+
+        new_token = mail_token(ActionMailer::Base.deliveries.last)
+        expect {
+          put invited_user_invitation_path, params: { invited_user: { invitation_token: new_token } }
+        }.to change(User, :count).by(1)
+      end
+
+      it "doesn't let a manager invite to an organization they aren't a member of" do
+        invite(email: "fresh@example.com", organization: organizations(:another))
+
+        expect(response).to have_http_status(:not_found)
+        expect(InvitedUser.where(organization_id: "another")).to be_empty
+      end
+    end
+
+    context "as a plain member" do
+      before do
+        sign_in(stefan)
+        post select_organization_path(is_org)
+      end
+
+      it "is not allowed to invite" do
+        expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
+        expect(response).not_to have_http_status(:ok)
+        expect(ActionMailer::Base.deliveries).to be_empty
+      end
+    end
+
+    context "when signed out" do
+      it "doesn't create an invitation" do
+        expect { invite(email: "fresh@example.com") }.not_to change(InvitedUser, :count)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+  end
+
+  describe "tokens" do
+    def accept(token)
+      put invited_user_invitation_path, params: { invited_user: { invitation_token: token } }
+    end
+
+    let!(:invited_user) { InvitedUser.invite!({ email: "late@example.com", organization: is_org }, pawel) }
+
+    it "rejects a garbage token and adds nobody" do
+      expect { accept("garbage") }.not_to change(OrganizationMembership, :count)
+      expect(response).to redirect_to(new_user_session_path)
+      expect(User.find_by(email: "late@example.com")).to be_nil
+      expect(invited_user.reload).to be_persisted
+    end
+
+    it "rejects an invitation older than the validity period" do
+      token = invited_user.raw_invitation_token
+
+      travel_to(3.weeks.from_now) do
+        expect { accept(token) }.not_to change(OrganizationMembership, :count)
+        expect(User.find_by(email: "late@example.com")).to be_nil
+      end
+    end
+
+    it "still accepts one just inside the validity period" do
+      token = invited_user.raw_invitation_token
+
+      travel_to(13.days.from_now) do
+        expect { accept(token) }.to change(OrganizationMembership, :count).by(1)
+      end
+    end
+
+    it "rejects a link that was already used" do
+      token = invited_user.raw_invitation_token
+      accept(token)
+
+      expect { accept(token) }.not_to change(OrganizationMembership, :count)
+    end
+  end
+
+  describe "the same email invited to two organizations" do
+    let(:hc_org) { organizations(:hc) }
+    let(:email) { "both@example.com" }
+    let!(:to_is) { InvitedUser.invite!({ email: email, organization: is_org }, pawel) }
+    let!(:to_hc) { InvitedUser.invite!({ email: email, organization: hc_org }, pawel) }
+
+    def accept(invitation)
+      put invited_user_invitation_path, params: { invited_user: { invitation_token: invitation.raw_invitation_token } }
+    end
+
+    it "lets each be accepted on its own, ending with one user in both organizations" do
+      expect { accept(to_is) }.to change(User, :count).by(1)
+      expect(InvitedUser.where(email: email).pluck(:organization_id)).to eq(["hc"])
+
+      expect { accept(to_hc) }.not_to change(User, :count)
+
+      user = User.find_by!(email: email)
+      expect(user.organizations).to contain_exactly(is_org, hc_org)
+      expect(InvitedUser.where(email: email)).to be_empty
+    end
+
+    it "accepting the second one first leaves the other pending" do
+      accept(to_hc)
+
+      expect(User.find_by!(email: email).organizations).to eq([hc_org])
+      expect(InvitedUser.where(email: email, organization: is_org)).to exist
+    end
+
+    it "shows each link its own organization" do
+      get accept_invited_user_invitation_path(invitation_token: to_is.raw_invitation_token)
+      expect(response.body).to include(is_org.name)
+      expect(response.body).not_to include(hc_org.name)
+
+      get accept_invited_user_invitation_path(invitation_token: to_hc.raw_invitation_token)
+      expect(response.body).to include(hc_org.name)
+      expect(response.body).not_to include(is_org.name)
+    end
+  end
+
   describe "full flow: invitation acceptance followed by email confirmation" do
     let!(:invited_user) do
       InvitedUser.invite!(

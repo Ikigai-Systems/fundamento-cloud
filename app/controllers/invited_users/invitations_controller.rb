@@ -30,6 +30,13 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
 
   def update
     super do |resource|
+      if resource.organization.blank?
+        # An unknown or already used token resolves to a blank record: there is nothing to render.
+        flash[:alert] = "This invitation link is no longer valid." if is_flashing_format?
+        redirect_to new_user_session_path
+        return
+      end
+
       set_form_state_from_resource
 
       # Verify current user email matches invitation
@@ -75,7 +82,9 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
 
   protected
 
+  # The gem reads this as `current_inviter`, so it has to return the user as well as require one.
   def authenticate_inviter!
+    authenticate_user!(force: true)
     current_user
   end
 
