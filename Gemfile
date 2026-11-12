@@ -65,9 +65,9 @@ gem "devise-passwordless"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 
-gem "tailwindcss-rails", "~> 3.0"
+gem "tailwindcss-rails", "~> 4.7"
 # pin to tailwindcss version:
-gem "tailwindcss-ruby", "3.4.19"
+gem "tailwindcss-ruby", "4.3.4"
 gem "vite_rails"
 gem "view_component"
 gem "reactionview"
