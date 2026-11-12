@@ -64,8 +64,8 @@ RSpec.describe User, type: :model do
       second = invite("new@example.com", hc_org)
 
       expect(DeviseInvitable::Invitation.pending.pluck(:organization_id)).to contain_exactly("is", "hc")
-      expect(described_class.find_by_invitation_token(first.raw_invitation_token, true).organization).to eq(is_org)
-      expect(described_class.find_by_invitation_token(second.raw_invitation_token, true).organization).to eq(hc_org)
+      expect(described_class.find_by_invitation_token(first.raw_invitation_token, true).current_invitation.organization).to eq(is_org)
+      expect(described_class.find_by_invitation_token(second.raw_invitation_token, true).current_invitation.organization).to eq(hc_org)
     end
 
     context "when a registered user has a pending invitation to another organization" do

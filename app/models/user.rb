@@ -116,8 +116,6 @@ class User < ApplicationRecord
   # organization, so a registered user can be invited to another one.
   def invitation_taken? = false
 
-  def organization = current_invitation&.organization
-
   # Override to make passwords optional for passwordless authentication
   def password_required?
     # Don't require password if:
