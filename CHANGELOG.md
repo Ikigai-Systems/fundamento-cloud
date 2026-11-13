@@ -10,6 +10,28 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [1.4.1](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.4.0...v1.4.1) (2026-11-13)
+
+
+### Bug Fixes
+
+* a frontmatter title renames the document when markdown is written ([#432](https://github.com/Ikigai-Systems/fundamento-cloud/issues/432)) ([4cceb32](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4cceb3291ab6bc4bf4fd5913a19bf9baeffa303c))
+* **editor:** colored mentions show one underline, not two ([#452](https://github.com/Ikigai-Systems/fundamento-cloud/issues/452)) ([6d8b2a5](https://github.com/Ikigai-Systems/fundamento-cloud/commit/6d8b2a5eab10667790bfb15d44cfc8641579c27c))
+* formula renames and colors show without reloading the page ([#431](https://github.com/Ikigai-Systems/fundamento-cloud/issues/431)) ([d85b262](https://github.com/Ikigai-Systems/fundamento-cloud/commit/d85b26281efb59b0e3d943607282f58029f83cfc))
+* **invitations:** inviting while signed out redirects to sign in ([57e2305](https://github.com/Ikigai-Systems/fundamento-cloud/commit/57e23056358bbbcb30bc360d9275ef2296052632))
+* **invitations:** spent invitation links no longer crash ([#459](https://github.com/Ikigai-Systems/fundamento-cloud/issues/459)) ([57e2305](https://github.com/Ikigai-Systems/fundamento-cloud/commit/57e23056358bbbcb30bc360d9275ef2296052632))
+* reject a bad color or icon before converting an uploaded file ([4cceb32](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4cceb3291ab6bc4bf4fd5913a19bf9baeffa303c))
+
+
+### Performance
+
+* stop serving every stylesheet twice ([#436](https://github.com/Ikigai-Systems/fundamento-cloud/issues/436)) ([531ece2](https://github.com/Ikigai-Systems/fundamento-cloud/commit/531ece25a810858de60c3e6eff34593ca393ffec))
+
+
+### Upgrade Notes
+
+* invitations sent before this upgrade must be resent ([89e6b3f](https://github.com/Ikigai-Systems/fundamento-cloud/commit/89e6b3f32f09a68236dcb8167f2cbadda7eee1dc))
+
 ## [1.4.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.3.0...v1.4.0) (2026-10-30)
 
 
