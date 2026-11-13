@@ -276,12 +276,10 @@ describe("Organization Invitations (Cloud Flow)", function() {
       // Create an invitation for Pawel manually via database using Devise's invite! method
       cy.app("eval", `
         org = Organization.find("is")
-        InvitedUser.invite!(
-          {
-            email: "pawel@ikigai.systems",
-            organization: org
-          },
-          User.find("user_pawel")
+        User.invite!(
+          { email: "pawel@ikigai.systems" },
+          User.find("user_pawel"),
+          invitation_data: { organization_id: org.id }
         )
       `);
 

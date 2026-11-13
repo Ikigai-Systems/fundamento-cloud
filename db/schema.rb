@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_11_210000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -124,6 +124,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
     t.index ["organization_id"], name: "index_automations_on_organization_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
+  end
+
+  create_table "devise_invitations", force: :cascade do |t|
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.datetime "superseded_at"
+    t.string "superseded_reason"
+    t.datetime "revoked_at"
+    t.datetime "resource_created_at"
+    t.json "invite_key", default: {}, null: false
+    t.string "invite_key_digest", null: false
+    t.string "invitable_type"
+    t.string "invitable_id"
+    t.string "invited_by_type"
+    t.string "invited_by_id"
+    t.string "organization_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invitable_type", "invitable_id"], name: "index_devise_invitations_on_invitable"
+    t.index ["invitable_type", "invite_key_digest"], name: "index_devise_invitations_on_type_and_invite_key"
+    t.index ["invitation_token"], name: "index_devise_invitations_on_invitation_token", unique: true
+    t.index ["invited_by_type", "invited_by_id"], name: "index_devise_invitations_on_invited_by"
+    t.index ["organization_id"], name: "index_devise_invitations_on_organization_id"
   end
 
   create_table "document_editing_sessions", id: :string, force: :cascade do |t|
@@ -828,6 +853,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
   add_foreign_key "automation_invocations", "spaces"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
+  add_foreign_key "devise_invitations", "organizations"
   add_foreign_key "document_editing_sessions", "documents"
   add_foreign_key "document_editing_sessions", "organization_memberships", column: "member_id"
   add_foreign_key "document_editing_sessions", "versions"

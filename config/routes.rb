@@ -37,7 +37,8 @@ Rails.application.routes.draw do
     delete "/users/sign_out_everywhere" => "users/sessions#destroy_everywhere", as: :sign_out_everywhere
   end
 
-  devise_for :invited_users, controllers: {
+  # Organization invitations are devise_invitable invitations of a User; the paths keep their old names.
+  devise_for :invited_users, class_name: "User", only: [:invitations], controllers: {
     invitations: "invited_users/invitations"
   }
 

@@ -58,12 +58,14 @@ module Tenant
     # The tenant itself.
     ROOT = "organizations".freeze
 
-    # Carry organization_id, so a single WHERE selects the tenant's rows.
+    # Carry organization_id, so a single WHERE selects the tenant's rows. (invited_users is a legacy table
+    # that no model reads any more; it goes with the migration that drops it.)
     DIRECT = %w[
       api_tokens
       attachments
       automation_invocations
       automations
+      devise_invitations
       documents
       invited_users
       object_comments

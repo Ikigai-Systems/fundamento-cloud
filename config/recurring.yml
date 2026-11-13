@@ -17,3 +17,8 @@ tenant_backup:
   class: TenantBackupJob
   cron: "0 4 * * *"
   description: "Archive every organization to the exports bucket, one at a time"
+
+invitation_purge:
+  class: InvitationPurgeJob
+  cron: "50 3 * * *"
+  description: "Remove invitations that expired, were revoked or accepted long ago"

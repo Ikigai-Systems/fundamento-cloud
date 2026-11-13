@@ -29,55 +29,45 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   end
 
   def update
-    super do |resource|
-      if resource.organization.blank?
-        # An unknown or already used token resolves to a blank record: there is nothing to render.
-        flash[:alert] = "This invitation link is no longer valid." if is_flashing_format?
-        redirect_to new_user_session_path
-        return
-      end
+    self.resource = resource_class.find_by_invitation_token(params.dig(:invited_user, :invitation_token), true)
 
-      set_form_state_from_resource
+    if resource.nil?
+      flash[:alert] = "This invitation link is no longer valid." if is_flashing_format?
+      return redirect_to new_user_session_path
+    end
 
-      # Verify current user email matches invitation
-      if current_user.present? && current_user.email != resource.email
-        flash[:alert] = "You must be signed in as #{resource.email} to accept this invitation" if is_flashing_format?
-        respond_with resource, location: invitation_path(resource, invitation_token: params[:invitation_token])
-        return
-      end
+    set_form_state_from_resource
 
-      if resource.errors.empty?
-        # Find or create User directly (NOT through has_many :through to avoid auto-creating OrganizationUser with wrong role)
-        user = User.find_or_create_by!(email: resource.email) do |new_user|
-          # Passwordless mode - no password set, user will login via magic link
-          # Names will be auto-derived from email by User model's before_validation callback
-          def new_user.password_required?
-            # Turn off password validation for this object
-            false
-          end
-        end
+    # Verify current user email matches invitation
+    if current_user.present? && current_user.email != resource.email
+      flash[:alert] = "You must be signed in as #{resource.email} to accept this invitation" if is_flashing_format?
+      return redirect_to accept_invited_user_invitation_path(invitation_token: params.dig(:invited_user, :invitation_token))
+    end
 
-        # Explicitly create OrganizationUser with member role
-        OrganizationMembership.find_or_create_by!(organization_id: resource.organization_id, user_id: user.id) do |organization_membership|
-          organization_membership.role = :member
-        end
+    invitation = resource.current_invitation
 
-        # Sign in the user (since we're creating a separate User record, Devise can't auto-login)
-        user.skip_confirmation!
-        user.update!(confirmation_token: nil)
-
-        user.after_database_authentication
-        sign_in(:user, user)
-
-        # Destroy the invited user record
-        resource.destroy!
-
-        remember_organization(resource.organization)
-        flash[:notice] = "Welcome to #{resource.organization.name}!" if is_flashing_format?
-        respond_with user, location: after_accept_path_for(user)
-        return # break out of super
+    user = User.find_or_create_by!(email: resource.email) do |new_user|
+      # Passwordless mode - no password set, user will login via magic link
+      def new_user.password_required?
+        false
       end
     end
+
+    OrganizationMembership.find_or_create_by!(organization_id: invitation.organization_id, user_id: user.id) do |organization_membership|
+      organization_membership.role = :member
+    end
+
+    invitation.update!(invitation_accepted_at: Time.current, invitation_token: nil)
+
+    user.skip_confirmation!
+    user.update!(confirmation_token: nil)
+
+    user.after_database_authentication
+    sign_in(:user, user)
+
+    remember_organization(invitation.organization)
+    flash[:notice] = "Welcome to #{invitation.organization.name}!" if is_flashing_format?
+    respond_with user, location: after_accept_path_for(user)
   end
 
   protected
@@ -88,14 +78,31 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
     current_user
   end
 
-  # Permit the new params here.
   def configure_permitted_parameters
-    # Passwordless flow - no additional params needed, names are auto-derived from email
-    devise_parameter_sanitizer.permit(:accept_invitation, keys: [])
+    devise_parameter_sanitizer.permit(:invite, keys: [:organization_id])
+  end
+
+  # The organization travels with the invitation (stored in devise_invitations.organization_id).
+  # Inviting again is a resend: the earlier link for the same email and organization stops working.
+  def invite_resource(&block)
+    revoke_pending_invitations(invite_params[:email], invite_params[:organization_id])
+
+    resource_class.invite!(
+      invite_params.slice(:email),
+      current_inviter,
+      invitation_data: { organization_id: invite_params[:organization_id] },
+      &block
+    )
+  end
+
+  def revoke_pending_invitations(email, organization_id)
+    resource_class.pending_invitations_for(email: email.to_s.strip.downcase)
+      .select { |invitation| invitation.organization_id == organization_id }
+      .each { |invitation| invitation.update!(revoked_at: Time.current, invitation_token: nil) }
   end
 
   def after_invite_path_for(inviter, resource)
-    organization_path(resource.organization)
+    organization_path(@organization)
   end
 
   def pundit_user
@@ -107,35 +114,20 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   end
 
   def set_form_state_from_resource
-    @organization = resource.organization
+    @organization = resource.current_invitation.organization
     @invited_email = resource.email
     @existing_user = User.find_by(email: @invited_email)
 
-    # State 1: User is logged in but email doesn't match
     if current_user.present? && current_user.email != @invited_email
       @state = :wrong_user_logged_in
-      return
-    end
-
-    # State 2: User already in the organization
-    if @existing_user.present? && @organization.users.include?(@existing_user)
+    elsif @existing_user.present? && @organization.users.include?(@existing_user)
       @state = :already_member
-      return
-    end
-
-    # State 3: User logged in with correct email (ready to accept)
-    if current_user.present? && current_user.email == @invited_email
+    elsif current_user.present? && current_user.email == @invited_email
       @state = :logged_in_ready
-      return
-    end
-
-    # State 4: User exists but not logged in
-    if @existing_user.present?
+    elsif @existing_user.present?
       @state = :existing_user_not_logged_in
-      return
+    else
+      @state = :new_user
     end
-
-    # State 5: New user (doesn't exist)
-    @state = :new_user
   end
 end
