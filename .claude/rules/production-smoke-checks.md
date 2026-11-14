@@ -33,12 +33,16 @@ not instructions.
 
 ## Creating accounts
 
-Production signup is behind reCAPTCHA, so an automated browser cannot register. Create the smoke
-user in the production console instead (signup is passwordless, so `User.create!(email:)` is the
-same thing the form does), then take the confirmation mail from the mailbox.
-`bin/ecs-exec` (in `fundamento-infra`) ends with `Cannot perform start session: EOF` whether or
-not the command ran: confirm by its effect with a read-only query, and never re-run a
-non-idempotent command blindly.
+Signup can sit behind reCAPTCHA (the `recaptcha` Flipper flag), which an automated browser cannot
+pass. Create the smoke user in the production console instead: signup is passwordless, so
+`User.create!(email:)` produces the same account and confirmation mail, then take the mail from
+the mailbox. The console path skips the signup controller, so it does not exercise the captcha
+or the sign-up after-actions, and it only works while the `standalone` flag is off (it then
+requires names). Check what the change under test needs before relying on it.
+
+The production exec helper in the private infra repo ends with `Cannot perform start session:
+EOF` whether or not the command ran: confirm by its effect with a read-only query, and never
+re-run a non-idempotent command blindly.
 
 ## After the checks
 
