@@ -67,7 +67,7 @@ existed:
 
 Identity was never enough for a credential whose secret the export drops. A restored `api_tokens`
 row without `encrypted_token` fails `NOT NULL`; a restored OAuth grant or token, or an
-`invited_users` row without its `invitation_token`, inserts fine and can never be used — it
+`devise_invitations` row without its `invitation_token`, inserts fine and can never be used — it
 looks like a working credential and is not. So `RestorePlanner` **withholds** every table with
 a column in `ExportBuilder::REDACTED`, reports it in `plan.withheld`, and the operator
 reissues. The round trip asserts the exact withheld list, so growing it is a decision.
