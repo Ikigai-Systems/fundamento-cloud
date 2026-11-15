@@ -276,12 +276,10 @@ describe("Organization Invitations (Cloud Flow)", function() {
       // Create an invitation for Pawel manually via database using Devise's invite! method
       cy.app("eval", `
         org = Organization.find("is")
-        InvitedUser.invite!(
-          {
-            email: "pawel@ikigai.systems",
-            organization: org
-          },
-          User.find("user_pawel")
+        User.invite!(
+          { email: "pawel@ikigai.systems" },
+          User.find("user_pawel"),
+          invitation_data: { organization_id: org.id }
         )
       `);
 
@@ -304,6 +302,31 @@ describe("Organization Invitations (Cloud Flow)", function() {
         cy.visit("/s/is_default");
         cy.openSidebar().contains("Default IS").should("be.visible");
       });
+    });
+  });
+
+  describe("Pending invitations list", () => {
+    it("manager sees a pending invitation, sends it again and revokes it", function() {
+      cy.loginWithSession("pawel@ikigai.systems", "password", "pawel-session");
+
+      cy.visit("/invited_users/invitation/new?organization_id=is");
+      cy.get('input[name="invited_user[email]"]').type("listed@example.com");
+      cy.get('input[type=submit]').click();
+      cy.contains("An invitation email has been sent").should("be.visible");
+
+      cy.visit("/organizations/is");
+      cy.get("#pending-invitations").should("contain", "Pending invitations");
+      cy.get("table").contains("th", "listed@example.com").should("be.visible");
+
+      // Sending it again replaces the earlier invitation: still exactly one row for that address
+      cy.contains("th", "listed@example.com").parent("tr").contains("button", "Resend").click();
+      cy.contains("Invitation sent again to listed@example.com").should("be.visible");
+      cy.get("#pending-invitations + table th").filter(":contains('listed@example.com')").should("have.length", 1);
+
+      // Revoking removes it from the list (the browser auto-accepts the confirmation)
+      cy.contains("th", "listed@example.com").parent("tr").contains("button", "Revoke").click();
+      cy.contains("Invitation for listed@example.com was revoked").should("be.visible");
+      cy.contains("th", "listed@example.com").should("not.exist");
     });
   });
 });

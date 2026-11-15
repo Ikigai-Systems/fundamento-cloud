@@ -42,7 +42,7 @@ module Tenant
     # carrying on with a token nobody can use.
     REDACTED = {
       "api_tokens" => %w[encrypted_token],
-      "invited_users" => %w[encrypted_password invitation_token],
+      "devise_invitations" => %w[invitation_token invite_key invite_key_digest email],
       "oauth_access_grants" => %w[token],
       "oauth_access_tokens" => %w[token refresh_token previous_refresh_token],
     }.freeze

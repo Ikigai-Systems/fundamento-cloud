@@ -62,7 +62,6 @@ const SIGNED_OUT_PAGES = {
   "/users/sign_up": "/users/sign_up",
   "/users/password/new": "/users/password/new",
   "/users/confirmation/new": "/users/confirmation/new",
-  "/invited_users/sign_in": "/invited_users/sign_in",
 }
 
 const reasons = (reason, routes) => Object.fromEntries(routes.map((route) => [route, reason]))

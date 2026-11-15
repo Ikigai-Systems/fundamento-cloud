@@ -6,7 +6,7 @@ RSpec.describe FundamentoDeviseMailer, type: :mailer do
   describe "#invitation_instructions" do
     let(:organization) { organizations(:is) }
     let(:inviter) { users(:pawel) }
-    let(:invitation) { InvitedUser.invite!({ email: "new@example.com", organization: organization }, inviter) }
+    let(:invitation) { User.invite!({ email: "new@example.com" }, inviter, invitation_data: { organization_id: organization.id }) }
     let(:mail) { ActionMailer::Base.deliveries.last }
     let(:html) { mail.html_part&.body&.decoded || mail.body.decoded }
 

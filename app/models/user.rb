@@ -18,6 +18,24 @@ class User < ApplicationRecord
     :magic_link_authenticatable,
     :omniauthable, omniauth_providers: [:google_oauth2]
 
+  # Organization invitations live in devise_invitations (deferred: no placeholder User). The organization
+  # and the address are copied into columns when the invitation is created, before the mail goes out: the
+  # gem keeps only a digest of the address, and the pending-invitations list needs to show and resend it.
+  # Pinned by spec/models/user_spec.rb, "organization invitations".
+  before_invitation_created do
+    current_invitation.organization_id = current_invitation.invitation_data.with_indifferent_access[:organization_id]
+    current_invitation.email = email
+  end
+
+  # Inviting again is a resend: the earlier link for the same email and organization stops working.
+  def self.invite_to_organization!(email:, organization_id:, invited_by:, &block)
+    pending_invitations_for(email: email.to_s.strip.downcase)
+      .select { |invitation| invitation.organization_id == organization_id }
+      .each { |invitation| invitation.update!(revoked_at: Time.current, invitation_token: nil) }
+
+    invite!({ email: email }, invited_by, invitation_data: { organization_id: organization_id }, &block)
+  end
+
   before_create :skip_confirmation_if_not_required
   before_validation :derive_name_from_email, if: -> { email.present? && first_name.blank? && last_name.blank? }
 
@@ -105,19 +123,15 @@ class User < ApplicationRecord
     first_visit
   end
 
-  # Do not allow user to reset its password until it accepts the invitation
-  # Taken from https://github.com/scambra/devise_invitable/wiki/Disabling-devise-recoverable,-if-invitation-was-not-accepted
-  def send_reset_password_instructions
-    super if invitation_token.nil?
-  end
+  # devise_invitable refuses to invite an email that already has an account. Invitations here are per
+  # organization, so a registered user can be invited to another one.
+  def invitation_taken? = false
 
   # Override to make passwords optional for passwordless authentication
   def password_required?
     # Don't require password if:
-    # 1. User is being invited (has invitation_token)
-    # 2. User is being created without a password (passwordless signup)
-    # 3. User already exists and isn't changing password
-    return false if invitation_token.present?
+    # 1. User is being created without a password (passwordless signup)
+    # 2. User already exists and isn't changing password
     return false if new_record? && encrypted_password.blank?
 
     # Require password validation when explicitly setting/changing password
@@ -152,6 +166,12 @@ class User < ApplicationRecord
   end
 
   private
+
+  # devise_invitable refuses to sign in a user with a pending invitation, because in its default mode that
+  # user is a placeholder, and it asks the database on every authenticated request. Invitations here are
+  # deferred, so a User is never a placeholder: skip the question, and the query.
+  # Pinned by spec/models/user_spec.rb, "organization invitations".
+  def block_from_invitation? = false
 
   def derive_name_from_email
     # Extract username part before @

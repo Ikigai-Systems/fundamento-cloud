@@ -64,8 +64,8 @@ module Tenant
       attachments
       automation_invocations
       automations
+      devise_invitations
       documents
-      invited_users
       object_comments
       object_reactions
       object_references

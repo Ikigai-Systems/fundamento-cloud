@@ -6,7 +6,7 @@ class FundamentoDeviseMailer < Devise::Passwordless::Mailer
   def subject_for(key)
     return super unless key == :invitation_instructions
 
-    "#{resource.invited_by.display_name} invited you to #{resource.organization.name}, an organization on Fundamento."
+    "#{resource.invited_by.display_name} invited you to #{resource.current_invitation.organization.name}, an organization on Fundamento."
   end
 
   def headers_for(action, opts)

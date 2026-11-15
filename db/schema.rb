@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -124,6 +124,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
     t.index ["organization_id"], name: "index_automations_on_organization_id"
     t.index ["space_id"], name: "index_automations_on_space_id"
     t.index ["title", "space_id"], name: "index_automations_on_title_and_space_id", unique: true
+  end
+
+  create_table "devise_invitations", force: :cascade do |t|
+    t.string "invitation_token"
+    t.datetime "invitation_created_at"
+    t.datetime "invitation_sent_at"
+    t.datetime "invitation_accepted_at"
+    t.datetime "superseded_at"
+    t.string "superseded_reason"
+    t.datetime "revoked_at"
+    t.datetime "resource_created_at"
+    t.json "invite_key", default: {}, null: false
+    t.string "invite_key_digest", null: false
+    t.string "invitable_type"
+    t.string "invitable_id"
+    t.string "invited_by_type"
+    t.string "invited_by_id"
+    t.string "organization_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "email"
+    t.index ["invitable_type", "invitable_id"], name: "index_devise_invitations_on_invitable"
+    t.index ["invitable_type", "invite_key_digest"], name: "index_devise_invitations_on_type_and_invite_key"
+    t.index ["invitation_token"], name: "index_devise_invitations_on_invitation_token", unique: true
+    t.index ["invited_by_type", "invited_by_id"], name: "index_devise_invitations_on_invited_by"
+    t.index ["organization_id"], name: "index_devise_invitations_on_organization_id"
   end
 
   create_table "document_editing_sessions", id: :string, force: :cascade do |t|
@@ -337,30 +363,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
     t.string "user_id", null: false
     t.index ["inline_comment_thread_id"], name: "index_inline_comments_on_inline_comment_thread_id"
     t.index ["user_id"], name: "index_inline_comments_on_user_id"
-  end
-
-  create_table "invited_users", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
-    t.text "first_name", default: "", null: false
-    t.datetime "invitation_accepted_at"
-    t.datetime "invitation_created_at"
-    t.integer "invitation_limit"
-    t.datetime "invitation_sent_at"
-    t.string "invitation_token"
-    t.integer "invitations_count", default: 0
-    t.string "invited_by_id"
-    t.string "invited_by_type"
-    t.text "last_name", default: "", null: false
-    t.string "organization_id"
-    t.datetime "updated_at", null: false
-    t.index ["email", "organization_id"], name: "index_invited_users_on_email_and_organization_id", unique: true
-    t.index ["id"], name: "index_invited_users_on_id", unique: true
-    t.index ["invitation_token"], name: "index_invited_users_on_invitation_token", unique: true
-    t.index ["invited_by_id"], name: "index_invited_users_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_invited_users_on_invited_by"
-    t.index ["organization_id"], name: "index_invited_users_on_organization_id"
   end
 
   create_table "oauth_access_grants", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -776,14 +778,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.text "first_name"
-    t.datetime "invitation_accepted_at"
-    t.datetime "invitation_created_at"
-    t.integer "invitation_limit"
-    t.datetime "invitation_sent_at"
-    t.string "invitation_token"
-    t.integer "invitations_count", default: 0
-    t.bigint "invited_by_id"
-    t.string "invited_by_type"
     t.text "last_name"
     t.datetime "last_sign_in_at"
     t.string "last_sign_in_ip"
@@ -799,9 +793,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["id"], name: "index_users_on_id", unique: true
-    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
-    t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
-    t.index ["invited_by_type", "invited_by_id"], name: "index_organization_users_on_invited_by"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -828,6 +819,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
   add_foreign_key "automation_invocations", "spaces"
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
+  add_foreign_key "devise_invitations", "organizations"
   add_foreign_key "document_editing_sessions", "documents"
   add_foreign_key "document_editing_sessions", "organization_memberships", column: "member_id"
   add_foreign_key "document_editing_sessions", "versions"
@@ -843,7 +835,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_28_160000) do
   add_foreign_key "inline_comment_threads", "users", column: "resolved_by"
   add_foreign_key "inline_comments", "inline_comment_threads"
   add_foreign_key "inline_comments", "users"
-  add_foreign_key "invited_users", "organizations"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "organization_memberships", on_delete: :cascade
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

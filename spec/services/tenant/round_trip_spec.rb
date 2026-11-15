@@ -16,7 +16,7 @@ RSpec.describe "tenant archive round trip" do
            :object_reactions, :api_tokens, :attachments, :tags, :object_tags, :object_references,
            :favorites, :teams, :team_memberships, :public_links, :document_editing_sessions,
            :import_sessions, :import_files, :automations, :automation_invocations,
-           :invited_users, :oauth_applications, :oauth_access_grants,
+           :devise_invitations, :oauth_applications, :oauth_access_grants,
            :oauth_access_tokens, :active_storage_blobs, :active_storage_attachments,
            :active_storage_variant_records, :space_memberships, :object_visitors,
            :organization_membership_properties
@@ -110,7 +110,7 @@ RSpec.describe "tenant archive round trip" do
     # rather than quietly excluded, because the day this list grows is a day somebody should
     # have to think about it.
     expect(result.withheld.keys)
-      .to match_array(%w[api_tokens invited_users oauth_access_grants oauth_access_tokens])
+      .to match_array(%w[api_tokens devise_invitations oauth_access_grants oauth_access_tokens])
 
     result.withheld.each_key do |table|
       expect(before_rows.fetch(table)).to be_present, "#{table} had no rows to withhold"
