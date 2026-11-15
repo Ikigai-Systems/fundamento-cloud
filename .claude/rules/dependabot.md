@@ -24,6 +24,8 @@ regression. A bot PR's checks expire once anything merges to master: see
 - **Dependabot's PRs** (green, on a fresh run) are merged during the sweep without asking.
 - **A PR that fixes the Dependabot setup itself** (`.github/dependabot.yml` ignores and groups,
   this file) is merged by the sweep as soon as it is green, without waiting for the user.
+- Either way, re-check the PR against current master right before merging
+  (`ci-merge-order.md`): a green report expires when anything merges.
 - **A dependency bump written by hand** (a replacement for a broken bot PR) is a code change:
   open it and leave the merge to the user.
 
@@ -52,7 +54,6 @@ The failing run uploads a screenshot with the command log and network panel, plu
   `spec/models/user_spec.rb`, `spec/requests/invited_users/` and
   `spec/e2e/cypress/e2e/organization/organization-invitations.cy.js`. The user-spec section is the
   early warning: it fails first if a registered user with a pending invitation could be locked out.
-
 - **A cancelled run shows up as a failure.** A superseded run reports
   `run-e2e-tests (${{ matrix.device }}${{ ... }})` as `fail` after 0s, with the annotation
   "Canceling since a higher priority waiting request". It appears on every PR and is not
@@ -63,7 +64,7 @@ The failing run uploads a screenshot with the command log and network panel, plu
   that keeps the bot's `package.json` changes except `version` (release-please owns it) and
   regenerates the lock with `npm install`, then check `npm ci`, `npm run typecheck` and
   `npm run lint`. Close the bot PRs with a pointer.
-- **Dependabot stops answering `@dependabot rebase`** now and then. `@dependabot recreate`
-  regenerates the PR from current master.
+- **A `@dependabot rebase` can go unanswered for over an hour** (the head SHA never changes).
+  `@dependabot recreate` regenerates the PR from current master.
 - **`tailwindcss-rails` 4 and `tailwindcss-ruby` 4 are one migration**: both majors are ignored
   in `.github/dependabot.yml` until the Tailwind 4 work.
