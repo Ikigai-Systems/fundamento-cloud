@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_15_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_15_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -144,6 +144,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_15_100000) do
     t.string "organization_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
     t.index ["invitable_type", "invitable_id"], name: "index_devise_invitations_on_invitable"
     t.index ["invitable_type", "invite_key_digest"], name: "index_devise_invitations_on_type_and_invite_key"
     t.index ["invitation_token"], name: "index_devise_invitations_on_invitation_token", unique: true

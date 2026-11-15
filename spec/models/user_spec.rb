@@ -53,6 +53,12 @@ RSpec.describe User, type: :model do
       expect(invitation.invited_by).to eq(inviter)
     end
 
+    it "stores the address on the invitation, which the gem otherwise keeps only as a digest" do
+      invite("new@example.com", is_org)
+
+      expect(DeviseInvitable::Invitation.pending.last.email).to eq("new@example.com")
+    end
+
     it "has the organization when the mail is built" do
       invite("new@example.com", is_org)
 

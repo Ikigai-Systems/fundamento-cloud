@@ -71,6 +71,10 @@
     <% end %>
     </tbody>
   </table>
+
+  <% if policy(@organization).invite_user? && !Flipper.enabled?(:standalone) %>
+    <%= render partial: "organizations/pending_invitations", locals: { organization: @organization } %>
+  <% end %>
 <% end %>
 
 <%= render partial: "focused_section" %>

@@ -19,10 +19,21 @@ class User < ApplicationRecord
     :omniauthable, omniauth_providers: [:google_oauth2]
 
   # Organization invitations live in devise_invitations (deferred: no placeholder User). The organization
-  # is copied into a column when the invitation is created, before the mail goes out.
+  # and the address are copied into columns when the invitation is created, before the mail goes out: the
+  # gem keeps only a digest of the address, and the pending-invitations list needs to show and resend it.
   # Pinned by spec/models/user_spec.rb, "organization invitations".
   before_invitation_created do
     current_invitation.organization_id = current_invitation.invitation_data.with_indifferent_access[:organization_id]
+    current_invitation.email = email
+  end
+
+  # Inviting again is a resend: the earlier link for the same email and organization stops working.
+  def self.invite_to_organization!(email:, organization_id:, invited_by:, &block)
+    pending_invitations_for(email: email.to_s.strip.downcase)
+      .select { |invitation| invitation.organization_id == organization_id }
+      .each { |invitation| invitation.update!(revoked_at: Time.current, invitation_token: nil) }
+
+    invite!({ email: email }, invited_by, invitation_data: { organization_id: organization_id }, &block)
   end
 
   before_create :skip_confirmation_if_not_required

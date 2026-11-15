@@ -83,22 +83,13 @@ class InvitedUsers::InvitationsController < Devise::InvitationsController
   end
 
   # The organization travels with the invitation (stored in devise_invitations.organization_id).
-  # Inviting again is a resend: the earlier link for the same email and organization stops working.
   def invite_resource(&block)
-    revoke_pending_invitations(invite_params[:email], invite_params[:organization_id])
-
-    resource_class.invite!(
-      invite_params.slice(:email),
-      current_inviter,
-      invitation_data: { organization_id: invite_params[:organization_id] },
+    resource_class.invite_to_organization!(
+      email: invite_params[:email],
+      organization_id: invite_params[:organization_id],
+      invited_by: current_inviter,
       &block
     )
-  end
-
-  def revoke_pending_invitations(email, organization_id)
-    resource_class.pending_invitations_for(email: email.to_s.strip.downcase)
-      .select { |invitation| invitation.organization_id == organization_id }
-      .each { |invitation| invitation.update!(revoked_at: Time.current, invitation_token: nil) }
   end
 
   def after_invite_path_for(inviter, resource)

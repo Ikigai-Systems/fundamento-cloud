@@ -24,6 +24,12 @@ class Organization < ApplicationRecord
 
   after_create :create_default_space
 
+  # Invitations made before devise_invitations stored the address have none to show or resend; they
+  # expire on their own.
+  def listed_invitations
+    invitations.pending.where.not(email: nil).preload(:invited_by).order(created_at: :desc)
+  end
+
   private
 
   def create_default_space
