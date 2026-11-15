@@ -178,6 +178,12 @@ Rails.application.routes.draw do
     member do
       post :select
     end
+
+    resources :invitations, only: [:destroy], controller: "organization_invitations" do
+      member do
+        post :resend
+      end
+    end
   end
 
   resources :organization_memberships, only: [:new, :create, :update, :destroy] do

@@ -9,6 +9,12 @@ class Organization < ApplicationRecord
   has_many :all_documents, class_name: "Document", dependent: :destroy, inverse_of: :organization
   has_many :import_sessions, dependent: :destroy
   has_many :invitations, class_name: "DeviseInvitable::Invitation", dependent: :destroy
+
+  # Invitations made before devise_invitations stored the address have none to show or resend; they
+  # expire on their own.
+  def listed_invitations
+    invitations.pending.where.not(email: nil).preload(:invited_by).order(created_at: :desc)
+  end
   has_many :organization_memberships, class_name: :OrganizationMembership, dependent: :destroy
   has_many :public_links, dependent: :destroy
   has_many :spaces, dependent: :destroy
