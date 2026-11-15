@@ -19,6 +19,14 @@ carries `retries: {runMode: 2}` for a CI-runner delay whose signature is
 regression. A bot PR's checks expire once anything merges to master: see
 `.claude/rules/ci-merge-order.md`.
 
+## Who merges what
+
+- **Dependabot's PRs** (green, on a fresh run) are merged during the sweep without asking.
+- **A PR that fixes the Dependabot setup itself** (`.github/dependabot.yml` ignores and groups,
+  this file) is merged by the sweep as soon as it is green, without waiting for the user.
+- **A dependency bump written by hand** (a replacement for a broken bot PR) is a code change:
+  open it and leave the merge to the user.
+
 ## E2E artifacts
 
 The failing run uploads a screenshot with the command log and network panel, plus
@@ -44,3 +52,18 @@ The failing run uploads a screenshot with the command log and network panel, plu
   `spec/models/user_spec.rb`, `spec/requests/invited_users/` and
   `spec/e2e/cypress/e2e/organization/organization-invitations.cy.js`. The user-spec section is the
   early warning: it fails first if a registered user with a pending invitation could be locked out.
+
+- **A cancelled run shows up as a failure.** A superseded run reports
+  `run-e2e-tests (${{ matrix.device }}${{ ... }})` as `fail` after 0s, with the annotation
+  "Canceling since a higher priority waiting request". It appears on every PR and is not
+  a result: judge the per-device `run-e2e-tests (desktop 1/4)` jobs instead.
+- **A bot's npm lockfile can fail `npm ci`** with `Missing: @emnapi/core@... from lock file`
+  (optional peers of a wasm binding that npm only writes on a regenerate), so every
+  job dies in seconds. A rebase does not fix it. Replace the PR with one from current master
+  that keeps the bot's `package.json` changes except `version` (release-please owns it) and
+  regenerates the lock with `npm install`, then check `npm ci`, `npm run typecheck` and
+  `npm run lint`. Close the bot PRs with a pointer.
+- **Dependabot stops answering `@dependabot rebase`** now and then. `@dependabot recreate`
+  regenerates the PR from current master.
+- **`tailwindcss-rails` 4 and `tailwindcss-ruby` 4 are one migration**: both majors are ignored
+  in `.github/dependabot.yml` until the Tailwind 4 work.
