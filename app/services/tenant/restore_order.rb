@@ -47,7 +47,6 @@ module Tenant
       object_references
       public_links
       api_tokens
-      invited_users
       devise_invitations
       automations
       automation_invocations
