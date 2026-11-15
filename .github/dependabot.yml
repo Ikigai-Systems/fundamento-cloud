@@ -19,6 +19,10 @@ updates:
       # drops config/tailwind.config.js for CSS-first config, so `theme(colors...)`
       # lookups no longer resolve and the CSS build fails (see PR #371). Remove this
       # entry when doing the Tailwind 4 migration.
+      # tailwindcss-rails 4 depends on tailwindcss-ruby 4, so it is the same migration
+      # and would otherwise come back as its own PR (see PR #472).
+      - dependency-name: "tailwindcss-rails"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "tailwindcss-ruby"
         update-types: ["version-update:semver-major"]
 
