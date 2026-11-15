@@ -1,4 +1,4 @@
-# invitation_token, invite_key and invite_key_digest are all redacted by the tenant export, so this
+# invitation_token, invite_key, invite_key_digest and email are all redacted by the tenant export, so this
 # table is withheld on restore: an invitation without its token can never be accepted.
 _fixture:
   model_class: DeviseInvitable::Invitation
