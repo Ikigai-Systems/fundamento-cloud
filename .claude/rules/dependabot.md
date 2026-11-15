@@ -44,6 +44,5 @@ The failing run uploads a screenshot with the command log and network panel, plu
   `spec/models/user_spec.rb`, `spec/requests/invited_users/` and
   `spec/e2e/cypress/e2e/organization/organization-invitations.cy.js`. The user-spec section is the
   early warning: it fails first if a registered user with a pending invitation could be locked out.
-
 - **`tailwindcss-rails` 4 and `tailwindcss-ruby` 4 are one migration**: both majors are ignored
   in `.github/dependabot.yml` until the Tailwind 4 work.
