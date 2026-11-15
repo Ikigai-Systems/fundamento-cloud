@@ -21,6 +21,10 @@ updates:
       # entry when doing the Tailwind 4 migration.
       - dependency-name: "tailwindcss-ruby"
         update-types: ["version-update:semver-major"]
+      # tailwindcss-rails 4 depends on tailwindcss-ruby 4, so it is the same migration
+      # and would otherwise come back as its own PR (see PR #472).
+      - dependency-name: "tailwindcss-rails"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: npm
     commit-message:
