@@ -258,7 +258,6 @@ RSpec.describe UpdateDocumentTool, type: :model do
         sample_sync = "new_yjs_sync_data"
 
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs_update).and_return(["update", sample_sync])
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 

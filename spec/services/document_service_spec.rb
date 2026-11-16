@@ -87,6 +87,29 @@ RSpec.describe DocumentService do
       end
     end
 
+    describe "#update! and open editors" do
+      it "stores the whole state, and tells nobody, for a document with no content yet" do
+        empty = Document.create!(organization: organization, space: space, title: "Empty")
+        expect(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return("sync")
+        expect(BlocknoteConverterService).not_to receive(:blocks_to_yjs_update)
+        expect(DocumentChannel).not_to receive(:broadcast_update)
+
+        service.update!(document_id: empty.id, markdown: "Body")
+
+        expect(empty.reload.content.sync).to eq("sync")
+      end
+
+      it "stores the new state and sends the change after the commit, for a document with content" do
+        expect(documents(:one).content.sync).to be_present
+        expect(BlocknoteConverterService).to receive(:blocks_to_yjs_update).and_return(["change", "new state"])
+        expect(DocumentChannel).to receive(:broadcast_update).with(documents(:one).id, "change")
+
+        service.update!(document_id: documents(:one).id, markdown: "Body")
+
+        expect(documents(:one).reload.content.sync).to eq("new state")
+      end
+    end
+
     describe "#update! and block ids" do
       let(:document) { documents(:one) }
       let(:blocks) { [{"id" => "keep-1", "type" => "paragraph", "children" => [{"id" => "keep-2"}]}] }

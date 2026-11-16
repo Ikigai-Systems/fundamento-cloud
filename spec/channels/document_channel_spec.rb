@@ -15,6 +15,29 @@ RSpec.describe DocumentChannel, type: :channel do
     )
   end
 
+  describe ".broadcast_update" do
+    let(:organization_membership) { organization_memberships(:om_is_stefan) }
+
+    # A browser reads a sync message: the message type, the sync type (2 is an update), then the
+    # update itself.
+    def decode(data)
+      decoder = Y::Lib0::Decoding.create_decoder(Y::Lib0::Decoding.decode_base64_to_uint8_array(data[:update]))
+      [
+        Y::Lib0::Decoding.read_var_uint(decoder),
+        Y::Lib0::Decoding.read_var_uint(decoder),
+        Y::Lib0::Decoding.read_var_uint8_array(decoder).to_a
+      ]
+    end
+
+    it "sends the update to everyone editing the document, as a sync update from nobody" do
+      expect { described_class.broadcast_update("abc", "\x01\x02\x03".b) }
+        .to have_broadcasted_to("document/abc").with { |data|
+          expect(decode(data)).to eq([0, 2, [1, 2, 3]])
+          expect(data[:origin]).to be_nil
+        }
+    end
+  end
+
   describe "#subscribed" do
     context "when the document belongs to a public space" do
       let(:organization_membership) { organization_memberships(:om_is_stefan) }
