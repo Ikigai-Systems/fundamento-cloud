@@ -23,12 +23,14 @@ class DocumentBlueprint < Blueprinter::Base
     end
   end
 
-  # Content as Markdown. Pass `frontmatter: true` to prefix it with a YAML frontmatter block.
+  # Content as Markdown. Pass `frontmatter: true` to prefix it with a YAML frontmatter block, and
+  # `block_ids: true` to end every block with its " ^id" marker.
   view :mcp do
     include_view :tagged
 
     field :content do |document, options|
-      markdown = BlocknoteConverterService.blocks_to_markdown(document.current_blocks)
+      markers = options[:block_ids] == true ? {block_ids: :all} : {}
+      markdown = BlocknoteConverterService.blocks_to_markdown(document.current_blocks, **markers)
       options[:frontmatter] == true ? document.to_frontmatter + markdown : markdown
     end
   end

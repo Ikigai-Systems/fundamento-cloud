@@ -17,6 +17,18 @@ class BlocknoteBlocks
     end
   end
 
+  # The ids of the blocks themselves: the nodes of the block tree, not the inline nodes (a
+  # mention has an id too) or the blocks-in-cells that walk_blocks also visits.
+  def self.block_ids(blocks)
+    return [] unless blocks.is_a?(Array)
+
+    blocks.flat_map do |block|
+      next [] unless block.is_a?(Hash)
+
+      [block["id"], *block_ids(block["children"])].compact
+    end
+  end
+
   # Table blocks store content as { type: "tableContent", rows: [{ cells: [...] }] }.
   # A cell is either a { type: "tableCell", content: [...] } object or, in content saved
   # before BlockNote 0.25, the inline content array itself. TableContent still declares

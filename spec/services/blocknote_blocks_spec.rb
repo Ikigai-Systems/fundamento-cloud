@@ -189,6 +189,32 @@ RSpec.describe BlocknoteBlocks do
     end
   end
 
+  describe ".block_ids" do
+    it "lists the ids of blocks and their children, in order" do
+      blocks = [
+        {"id" => "a", "children" => [{"id" => "b", "children" => [{"id" => "c"}]}]},
+        {"id" => "d"}
+      ]
+
+      expect(described_class.block_ids(blocks)).to eq(%w[a b c d])
+    end
+
+    it "leaves out the ids of inline nodes and of anything that is not a block" do
+      blocks = [
+        {"id" => "a", "content" => [{"type" => "mention", "id" => "inline"}]},
+        {"id" => "t", "content" => {"type" => "tableContent", "rows" => [{"cells" => [[{"type" => "mention", "id" => "cell"}]]}]}},
+        "junk",
+        {"type" => "paragraph"}
+      ]
+
+      expect(described_class.block_ids(blocks)).to eq(%w[a t])
+    end
+
+    it "is empty for anything but a list" do
+      expect(described_class.block_ids(nil)).to eq([])
+    end
+  end
+
   describe ".each_mention" do
     it "yields only mention nodes" do
       blocks = [

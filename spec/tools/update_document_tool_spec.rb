@@ -16,6 +16,67 @@ RSpec.describe UpdateDocumentTool, type: :model do
   end
 
   describe ".call" do
+    # The real converter, so this proves the whole loop: read with markers, edit, update.
+    context "keeping block ids" do
+      let(:pundit_user) { PolicyUserContext.new(user, organization) }
+      let(:note) do
+        DocumentService.new(pundit_user: pundit_user)
+          .create!(space_id: space.id, title: "Ids", markdown: "# Title\n\nFirst\n\nSecond\n")
+      end
+
+      def block_ids(document)
+        BlocknoteBlocks.block_ids(document.reload.versions.last.content_blocks)
+      end
+
+      def read_with_ids(document)
+        response = ReadDocumentTool.call(id: document.id, block_ids: true, server_context: server_context)
+        JSON.parse(response.content.first[:text])["content"]
+      end
+
+      it "keeps the id of every block whose marker is kept" do
+        ids_before = block_ids(note)
+
+        UpdateDocumentTool.call(
+          id: note.id,
+          markdown: read_with_ids(note).sub("First", "First, edited"),
+          server_context: server_context
+        )
+
+        expect(block_ids(note)).to eq(ids_before)
+        expect(note.versions.last.content_blocks.second["content"].first["text"]).to eq("First, edited")
+      end
+
+      it "gives a new block a new id and drops the block whose marker is gone" do
+        title_id, first_id, second_id = block_ids(note)
+        markdown = read_with_ids(note).lines.reject { |line| line.include?("First") }.join + "\nBrand new\n"
+
+        UpdateDocumentTool.call(id: note.id, markdown: markdown, server_context: server_context)
+
+        ids = block_ids(note)
+        expect(ids).to include(title_id, second_id)
+        expect(ids).not_to include(first_id)
+        expect(ids.size).to eq(3)
+      end
+
+      it "leaves a marker of an id the document does not have as text" do
+        UpdateDocumentTool.call(id: note.id, markdown: "Look at ^elsewhere", server_context: server_context)
+
+        expect(note.reload.versions.last.content_blocks.first["content"].first["text"]).to eq("Look at ^elsewhere")
+      end
+
+      it "keeps no ids when the markdown was read without block_ids" do
+        ids_before = block_ids(note)
+        response = ReadDocumentTool.call(id: note.id, server_context: server_context)
+        markdown = JSON.parse(response.content.first[:text])["content"]
+
+        expect(markdown).not_to include("^")
+
+        UpdateDocumentTool.call(id: note.id, markdown: markdown, server_context: server_context)
+
+        expect(block_ids(note) & ids_before).to be_empty
+      end
+    end
+
     context "happy case - updates document with markdown content" do
       it "updates document and creates new version" do
         markdown_content = file_fixture("documents/updated_content.md").read
