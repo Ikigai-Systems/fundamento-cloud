@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertMarkdownToBlocksAndYjs, convertToBlocks, convertToYjs} from "./converters";
+import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertMarkdownToBlocksAndYjs, convertToBlocks, convertToYjs, convertToYjsUpdate} from "./converters";
+import type {Block} from "@blocknote/core";
 import {Command} from "commander";
 import {startServer, toExistingIds} from "./server";
 import * as Sentry from "@sentry/node";
@@ -144,6 +145,23 @@ program
       options,
       (data) => convertToYjs(JSON.parse(data.toString("utf8"))),
       false
+    );
+  });
+
+program
+  .command("convert-blocks-to-yjs-update")
+  .description("Bring a YJS state to the given blocks; JSON in {sync, blocks}, JSON out {update, state}, both base64")
+  .option("-i, --input <file>", "Input file (default: stdin)")
+  .option("-o, --output <file>", "Output file (default: stdout)")
+  .action((options) => {
+    handleStreamConversion(
+      options,
+      (data) => {
+        const {sync, blocks} = JSON.parse(data.toString("utf8")) as {sync: string; blocks: Block[]};
+        const {update, state} = convertToYjsUpdate(Buffer.from(sync, "base64"), blocks);
+        return {update: Buffer.from(update).toString("base64"), state: Buffer.from(state).toString("base64")};
+      },
+      true
     );
   });
 

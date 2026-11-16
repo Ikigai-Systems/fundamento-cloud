@@ -85,7 +85,16 @@ class DocumentService
 
       # Convert markdown to blocks and sync
       blocks = BlocknoteConverterService.markdown_to_blocks(markdown, existing_ids: existing_block_ids(document, markdown))
-      sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+
+      # A document that already has content is brought to the new blocks by an update, which
+      # merges with an open editor; replacing its state would leave that editor holding one that
+      # no longer matches the stored one, and its next keystroke would undo this change.
+      stored_sync = document.content&.sync
+      if stored_sync.present?
+        update, sync = BlocknoteConverterService.blocks_to_yjs_update(stored_sync, blocks)
+      else
+        sync = BlocknoteConverterService.blocks_to_yjs(blocks)
+      end
 
       # Create new version with updated content
       document.versions.create!(
@@ -95,6 +104,12 @@ class DocumentService
 
       # Update document sync
       document.content_or_build.update!(sync: sync)
+
+      # After the commit, so a connection that takes it up and saves its state never waits on
+      # this transaction's row.
+      if update
+        ActiveRecord.after_all_transactions_commit { DocumentChannel.broadcast_update(document.id, update) }
+      end
 
       # Process tags from frontmatter
       if frontmatter_data && frontmatter_data["tags"].is_a?(Array)
@@ -166,10 +181,17 @@ class DocumentService
   # Markdown read with block_ids carries " ^id" markers, which keep a block's id across an
   # update: whatever points at the block (a comment, a link) still finds it. Only markers naming
   # a block of this document count; any other "^word" is the author's own text. Markdown with no
-  # marker skips the lookup, which for a draft is a conversion of its live content.
+  # marker skips the lookup, which is a conversion of the live content.
+  #
+  # The blocks of the live content count as well as those of the saved version: a client reads
+  # what the editor shows, and a block someone has added since the last save is in the document
+  # for it.
   def existing_block_ids(document, markdown)
     return nil unless markdown.match?(BLOCK_MARKER)
 
-    BlocknoteBlocks.block_ids(document.current_blocks)
+    live = BlocknoteBlocks.block_ids(document.to_blocks)
+    return live if document.draft?
+
+    BlocknoteBlocks.block_ids(document.current_blocks) | live
   end
 end

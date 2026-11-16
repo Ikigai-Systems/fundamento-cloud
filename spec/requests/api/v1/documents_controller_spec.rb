@@ -809,6 +809,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
 
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
         allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs_update).and_return(["update", sample_sync])
 
         patch api_v1_document_path(id: document_one.id),
           params: {

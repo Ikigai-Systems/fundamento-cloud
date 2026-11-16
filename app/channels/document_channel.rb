@@ -1,6 +1,20 @@
 class DocumentChannel < ApplicationCable::Channel
   include Y::Actioncable::Sync
 
+  # Hands a Yjs update made on the server (an edit through the API or MCP) to everyone editing
+  # the document. Each connection's channel takes it into its own copy and persists that, and
+  # passes it to its browser, which applies it next to whatever the person is typing. The
+  # message is the one a browser sends for its own edits, sent as nobody (no origin), so every
+  # connection gets it.
+  def self.broadcast_update(document_id, update)
+    encoder = Y::Lib0::Encoding.create_encoder
+    Y::Lib0::Encoding.write_var_uint(encoder, YJS_MESSAGE_SYNC)
+    Y::Sync.write_update(encoder, update.bytes)
+    message = Y::Lib0::Encoding.encode_uint8_array_to_base64(Y::Lib0::Encoding.to_uint8_array(encoder))
+
+    ActionCable.server.broadcast("document/#{document_id}", {update: message, origin: nil})
+  end
+
   def initialize(connection, identifier, params = nil)
     super
     document_id = params[:documentId]

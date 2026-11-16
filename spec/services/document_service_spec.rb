@@ -91,15 +91,18 @@ RSpec.describe DocumentService do
       let(:document) { documents(:one) }
       let(:blocks) { [{"id" => "keep-1", "type" => "paragraph", "children" => [{"id" => "keep-2"}]}] }
 
-      it "passes the ids of the document when the markdown carries a marker" do
+      it "passes the ids of the saved version and of the live content when the markdown carries a marker" do
+        allow_any_instance_of(Document).to receive(:draft?).and_return(false)
         allow_any_instance_of(Document).to receive(:current_blocks).and_return(blocks)
+        allow_any_instance_of(Document).to receive(:to_blocks).and_return([{"id" => "live-1"}])
         expect(BlocknoteConverterService).to receive(:markdown_to_blocks)
-          .with("Text ^keep-1", existing_ids: %w[keep-1 keep-2]).and_return([])
+          .with("Text ^keep-1", existing_ids: %w[keep-1 keep-2 live-1]).and_return([])
 
         service.update!(document_id: document.id, markdown: "Text ^keep-1")
       end
 
-      it "reads no ids when there is no marker, so a draft is not converted for nothing" do
+      it "reads no ids when there is no marker, so the live content is not converted for nothing" do
+        expect_any_instance_of(Document).not_to receive(:to_blocks)
         expect_any_instance_of(Document).not_to receive(:current_blocks)
         expect(BlocknoteConverterService).to receive(:markdown_to_blocks).with("Plain text", existing_ids: nil).and_return([])
 
