@@ -2,6 +2,9 @@ class DocumentService
   include MarkdownFrontmatter
   include Pundit::Authorization
 
+  # A block id marker as the converter reads it: " ^id" at the end of a line, or a line of its own.
+  BLOCK_MARKER = /(?:\A|[ \n])\^[A-Za-z0-9-]{2,}[ \t]*$/
+
   attr_reader :pundit_user
 
   def initialize(pundit_user:)
@@ -81,7 +84,7 @@ class DocumentService
       next document if markdown.nil?
 
       # Convert markdown to blocks and sync
-      blocks = BlocknoteConverterService.markdown_to_blocks(markdown)
+      blocks = BlocknoteConverterService.markdown_to_blocks(markdown, existing_ids: existing_block_ids(document, markdown))
       sync = BlocknoteConverterService.blocks_to_yjs(blocks)
 
       # Create new version with updated content
@@ -158,4 +161,15 @@ class DocumentService
     end
   end
 
+  private
+
+  # Markdown read with block_ids carries " ^id" markers, which keep a block's id across an
+  # update: whatever points at the block (a comment, a link) still finds it. Only markers naming
+  # a block of this document count; any other "^word" is the author's own text. Markdown with no
+  # marker skips the lookup, which for a draft is a conversion of its live content.
+  def existing_block_ids(document, markdown)
+    return nil unless markdown.match?(BLOCK_MARKER)
+
+    BlocknoteBlocks.block_ids(document.current_blocks)
+  end
 end
