@@ -32,13 +32,24 @@ module BlocknoteConverterService
   end
 
   # The converter writes UTF-8, but run reads it in binary mode for the Yjs payloads.
-  def self.blocks_to_markdown(blocknote, timeout: TIMEOUT)
-    run("convert-blocks-to-markdown", blocknote.to_json, "document to markdown", timeout:)
+  #
+  # block_ids writes an Obsidian-style " ^id" marker after the blocks it names, so their ids
+  # survive markdown: :all, or a list of ids. Without it the markdown carries no ids.
+  def self.blocks_to_markdown(blocknote, block_ids: nil, timeout: TIMEOUT)
+    input = block_ids ? {blocks: blocknote, blockIds: block_ids}.to_json : blocknote.to_json
+
+    run("convert-blocks-to-markdown", input, "document to markdown", *json_flag(block_ids), timeout:)
       .force_encoding(Encoding::UTF_8)
   end
 
-  def self.markdown_to_blocks(markdown, timeout: TIMEOUT)
-    JSON.parse(run("convert-markdown-to-blocks", markdown, "markdown to blocks", timeout:))
+  # existing_ids reads " ^id" markers back as block ids: :any honours every marker, for a new
+  # document; a list honours only markers naming an id in it, for an update to the document
+  # holding those ids. Without it markers are ordinary text.
+  def self.markdown_to_blocks(markdown, existing_ids: nil, timeout: TIMEOUT)
+    JSON.parse(
+      run("convert-markdown-to-blocks", markdown_input(markdown, existing_ids), "markdown to blocks",
+        *json_flag(existing_ids), timeout:)
+    )
   end
 
   # markdown_to_blocks followed by blocks_to_yjs, in one Node process instead of two. Each
@@ -46,9 +57,10 @@ module BlocknoteConverterService
   # typical document, so callers that need both should use this.
   #
   # Returns [blocks, sync].
-  def self.markdown_to_blocks_and_yjs(markdown, timeout: TIMEOUT)
+  def self.markdown_to_blocks_and_yjs(markdown, existing_ids: nil, timeout: TIMEOUT)
     result = JSON.parse(
-      run("convert-markdown-to-blocks-and-yjs", markdown, "markdown to blocks and YJS", timeout:)
+      run("convert-markdown-to-blocks-and-yjs", markdown_input(markdown, existing_ids),
+        "markdown to blocks and YJS", *json_flag(existing_ids), timeout:)
     )
 
     [result["blocks"], Base64.strict_decode64(result["yjs"])]
@@ -61,8 +73,8 @@ module BlocknoteConverterService
   # the parent waits on the process blocks forever, which is the other way this could hang --
   # and the reason not to simply wrap Open3.capture3 in Timeout.timeout, which would leave the
   # subprocess running and the pipes full.
-  def self.run(subcommand, stdin_data, description, timeout: TIMEOUT)
-    Open3.popen3(build_env, "node", SCRIPT, subcommand) do |stdin, out, err, process|
+  def self.run(subcommand, stdin_data, description, *flags, timeout: TIMEOUT)
+    Open3.popen3(build_env, "node", SCRIPT, subcommand, *flags) do |stdin, out, err, process|
       # popen3 takes no binmode: option -- that is a capture3 convenience -- and the payloads
       # here are binary both ways, so the streams are switched over by hand.
       [stdin, out, err].each(&:binmode)
@@ -95,6 +107,19 @@ module BlocknoteConverterService
     end
   end
   private_class_method :run
+
+  # With an option set, the converter reads a JSON envelope instead of the bare payload.
+  def self.markdown_input(markdown, existing_ids)
+    return markdown unless existing_ids
+
+    {markdown:, existingIds: existing_ids == :any ? "any" : existing_ids.to_a}.to_json
+  end
+  private_class_method :markdown_input
+
+  def self.json_flag(option)
+    option ? ["--json"] : []
+  end
+  private_class_method :json_flag
 
   def self.terminate(pid)
     Process.kill("KILL", pid)

@@ -535,19 +535,194 @@ function markdownToHtml(markdown: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Block ids in markdown (Obsidian `^id` syntax)
+// ---------------------------------------------------------------------------
+
+// blocksToHTMLLossy drops block ids, and markdown has no place for them, so a document written
+// out and read back gets fresh random ids -- and anything that points at a block (comments,
+// links) loses it. Obsidian's answer is a ` ^id` at the end of a line, or a `^id` line of its
+// own after a block with no text to hang it on. We use the same syntax, so a file edited in
+// Obsidian and one read through the API look alike.
+const BLOCK_ID = /^[A-Za-z0-9-]{2,}$/;
+const TRAILING_MARKER = /^(.*?) \^([A-Za-z0-9-]{2,})$/s;
+const STANDALONE_MARKER = /^\^([A-Za-z0-9-]{2,})$/;
+
+type LooseBlock = {
+  id?: string;
+  type?: string;
+  content?: unknown;
+  children?: LooseBlock[];
+  props?: Record<string, unknown>;
+};
+
+type InlineText = {type: string; text?: string};
+
+// Code is inline content too, but its text is the code: a marker appended there would be part of
+// the program, so code gets a marker line of its own like the blocks with no inline content.
+function hasMarkableText(block: LooseBlock): boolean {
+  return Array.isArray(block.content) && block.type !== "codeBlock";
+}
+
+// A media block's caption leaves the HTML as a paragraph of its own, so a marker line after the
+// block would land on the caption and take its id. Such a block goes unmarked until captions
+// round-trip as captions.
+function hasCaption(block: LooseBlock): boolean {
+  return typeof block.props?.caption === "string" && block.props.caption !== "";
+}
+
+function markerParagraph(id: string): LooseBlock {
+  return {
+    id: `marker-${id}`,
+    type: "paragraph",
+    props: {},
+    content: [{type: "text", text: `^${id}`, styles: {}}],
+    children: [],
+  };
+}
+
+/**
+ * Returns a copy of the blocks with the marker of each selected block written into it: a
+ * trailing text node when the block has inline content, otherwise a paragraph right after it.
+ */
+function addBlockIdMarkers(blocks: Block[], selection: MarkdownExportOptions["blockIds"]): Block[] {
+  if (!selection) {
+    return blocks;
+  }
+
+  const selected = selection === "all" ? undefined : new Set(selection);
+  const wants = (id: string | undefined): id is string =>
+    typeof id === "string" && BLOCK_ID.test(id) && (selected === undefined || selected.has(id));
+
+  const mark = (list: LooseBlock[]): LooseBlock[] =>
+    list.flatMap((block) => {
+      const children = mark(block.children ?? []);
+
+      if (!wants(block.id) || hasCaption(block)) {
+        return [{...block, children}];
+      }
+
+      if (hasMarkableText(block)) {
+        const content = [...(block.content as unknown[]), {type: "text", text: ` ^${block.id}`, styles: {}}];
+        return [{...block, content, children}];
+      }
+
+      return [{...block, children}, markerParagraph(block.id)];
+    });
+
+  return mark(blocks as unknown as LooseBlock[]) as unknown as Block[];
+}
+
+function lastText(block: LooseBlock): InlineText | undefined {
+  if (!Array.isArray(block.content)) {
+    return undefined;
+  }
+
+  const last = block.content[block.content.length - 1] as InlineText | undefined;
+  return last?.type === "text" ? last : undefined;
+}
+
+/**
+ * Reads the markers written by addBlockIdMarkers (or by hand) back into block ids and removes
+ * them from the text. Works in place on the blocks the parser just made.
+ *
+ * Two blocks claiming one id is possible (a hand-written file, a copied block): the first keeps
+ * it and the rest keep the random id the parser gave them, so ids stay unique in the result.
+ */
+function restoreBlockIds(blocks: unknown[], existingIds: MarkdownImportOptions["existingIds"]): void {
+  if (existingIds === undefined) {
+    return;
+  }
+
+  const taken = new Set<string>();
+  // A marker is read (and stripped) when its id is known; it is applied only the first time.
+  const known = (id: string) => existingIds === "any" || existingIds.has(id);
+  const claim = (id: string) => {
+    if (taken.has(id)) {
+      return false;
+    }
+
+    taken.add(id);
+    return true;
+  };
+
+  const restore = (list: LooseBlock[]): LooseBlock[] => {
+    const result: LooseBlock[] = [];
+
+    for (const block of list) {
+      block.children = restore(block.children ?? []);
+
+      const only =
+        block.type === "paragraph" && Array.isArray(block.content) && block.content.length === 1
+          ? STANDALONE_MARKER.exec((block.content[0] as InlineText).text ?? "")
+          : null;
+      const previous = result[result.length - 1];
+
+      if (only && previous && known(only[1])) {
+        if (claim(only[1])) {
+          previous.id = only[1];
+        }
+        continue;
+      }
+
+      const text = lastText(block);
+      const match = text?.text !== undefined ? TRAILING_MARKER.exec(text.text) : null;
+
+      if (text && match && known(match[2])) {
+        text.text = match[1];
+
+        if (claim(match[2])) {
+          block.id = match[2];
+        }
+
+        if (text.text === "") {
+          (block.content as unknown[]).pop();
+        }
+      }
+
+      result.push(block);
+    }
+
+    return result;
+  };
+
+  const restored = restore(blocks as LooseBlock[]);
+  blocks.splice(0, blocks.length, ...restored);
+}
+
+// ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
 
-export async function convertBlocksToMarkdown(blocks: Block[]) {
+export interface MarkdownExportOptions {
+  /**
+   * Which blocks carry an Obsidian-style ` ^id` marker, so their ids survive a trip through
+   * markdown. "all" marks every block, a list marks only those ids. Omitted: no markers.
+   */
+  blockIds?: "all" | Iterable<string>;
+}
+
+export interface MarkdownImportOptions {
+  /**
+   * Read ` ^id` markers as block ids. "any" honours every marker, as Obsidian does, for a new
+   * document. A set honours only markers naming an id in it, for an update, where the set is
+   * the ids of the document being updated: any other `^word` stays literal text. Omitted:
+   * markers are ordinary text, which is what every caller before this option got.
+   */
+  existingIds?: ReadonlySet<string> | "any";
+}
+
+export async function convertBlocksToMarkdown(blocks: Block[], options: MarkdownExportOptions = {}) {
   const editor = createServerBlockNoteEditor();
-  const html = await editor.blocksToHTMLLossy(blocks);
+  const html = await editor.blocksToHTMLLossy(addBlockIdMarkers(blocks, options.blockIds));
   return htmlToMarkdown(html);
 }
 
-export async function convertMarkdownToBlocks(markdown: string) {
+export async function convertMarkdownToBlocks(markdown: string, options: MarkdownImportOptions = {}) {
   const editor = createServerBlockNoteEditor();
   const html = markdownToHtml(markdown);
-  return await editor.tryParseHTMLToBlocks(html);
+  const blocks = await editor.tryParseHTMLToBlocks(html);
+  restoreBlockIds(blocks, options.existingIds);
+  return blocks;
 }
 
 /**
@@ -558,8 +733,8 @@ export async function convertMarkdownToBlocks(markdown: string) {
  * The blocks go through JSON before the Yjs conversion so the document matches what the two-call
  * path produced, where they crossed into Ruby and back as JSON.
  */
-export async function convertMarkdownToBlocksAndYjs(markdown: string) {
-  const blocks = await convertMarkdownToBlocks(markdown);
+export async function convertMarkdownToBlocksAndYjs(markdown: string, options: MarkdownImportOptions = {}) {
+  const blocks = await convertMarkdownToBlocks(markdown, options);
   const yjs = convertToYjs(JSON.parse(JSON.stringify(blocks)));
   return {blocks, yjs};
 }

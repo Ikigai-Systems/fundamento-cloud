@@ -44,6 +44,10 @@ function withErrorHandling<Body>(handler: RouteHandler<Body>): RouteHandler<Body
   };
 }
 
+export function toExistingIds(ids: string[] | "any" | undefined): ReadonlySet<string> | "any" | undefined {
+  return ids === undefined || ids === "any" ? ids : new Set(ids);
+}
+
 export async function startServer(port: number, host: string) {
   // See also https://github.com/Ikigai-Systems/fundamento-cloud/blob/178c96c3817416509322e06bcdfafe8b37f0f4f2/micro-services/formula-eval/src/server.js
 
@@ -89,7 +93,7 @@ export async function startServer(port: number, host: string) {
   }));
 
   // Convert Markdown to Blocks
-  fastify.post("/convert/markdown/blocks", withErrorHandling<{markdown?: string}>(async (request, reply) => {
+  fastify.post("/convert/markdown/blocks", withErrorHandling<{markdown?: string, existingIds?: string[] | "any"}>(async (request, reply) => {
     const body = request.body;
 
     if (!body.markdown) {
@@ -98,13 +102,13 @@ export async function startServer(port: number, host: string) {
       });
     }
 
-    const blocks = await convertMarkdownToBlocks(body.markdown);
+    const blocks = await convertMarkdownToBlocks(body.markdown, {existingIds: toExistingIds(body.existingIds)});
 
     return {blocks};
   }));
 
   // Convert Blocks to Markdown
-  fastify.post("/convert/blocks/markdown", withErrorHandling<{blocks?: Block[]}>(async (request, reply) => {
+  fastify.post("/convert/blocks/markdown", withErrorHandling<{blocks?: Block[], blockIds?: "all" | string[]}>(async (request, reply) => {
     const body = request.body;
 
     if (!body.blocks) {
@@ -113,7 +117,7 @@ export async function startServer(port: number, host: string) {
       });
     }
 
-    const markdown = await convertBlocksToMarkdown(body.blocks);
+    const markdown = await convertBlocksToMarkdown(body.blocks, {blockIds: body.blockIds});
 
     return {markdown};
   }));
