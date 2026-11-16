@@ -74,15 +74,7 @@ RSpec.describe ObjectComment, type: :model do
 
     it "tells the comments on a block from the comments on the document" do
       expect(document.comments.on_block("block-1").count).to eq(1)
-      expect(document.comments.anchored.count).to eq(2)
       expect(document.comments.unanchored).to contain_exactly(object_comments(:one))
-    end
-  end
-
-  describe "#comments_frame_id" do
-    it "is the document's frame, or the block's own" do
-      expect(build_comment.comments_frame_id).to eq("object_comments")
-      expect(build_comment(anchor_block_id: "block-1").comments_frame_id).to eq("object_comments_block_block-1")
     end
   end
 

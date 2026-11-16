@@ -43,11 +43,19 @@ RSpec.describe CommentsController, type: :request do
       end
 
       it "lists the comments on one block, and only those" do
-        get comments_path(object_gid: document.to_gid_param, block_id: "block-1"), headers: turbo_headers
+        get comments_path(object_gid: document.to_gid_param, block_id: "block-1"),
+          headers: { "Turbo-Frame" => "object_comments_block_block-1" }
 
         expect(response.body).to include("Remark on block one")
         expect(response.body).not_to include("Remark on block two")
         expect(response.body).not_to include("Test comment")
+      end
+
+      it "answers in the block's frame, which is where it is shown" do
+        get comments_path(object_gid: document.to_gid_param, block_id: "block-1"),
+          headers: { "Turbo-Frame" => "object_comments_block_block-1" }
+
+        expect(response.body).to include('id="object_comments_block_block-1"')
       end
     end
 

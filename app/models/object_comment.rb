@@ -26,7 +26,6 @@ class ObjectComment < ApplicationRecord
     )
   }
 
-  scope :anchored, -> { where.not(anchor_block_id: nil) }
   scope :unanchored, -> { where(anchor_block_id: nil) }
   scope :on_block, ->(block_id) { where(anchor_block_id: block_id) }
 
@@ -54,8 +53,13 @@ class ObjectComment < ApplicationRecord
     anchor_block_id.present?
   end
 
+  # The Turbo frame that lists this comment: the document's, or that of its block.
+  def self.frame_id_for(block_id)
+    block_id.present? ? "object_comments_block_#{block_id}" : "object_comments"
+  end
+
   def comments_frame_id
-    anchored? ? "object_comments_block_#{anchor_block_id}" : "object_comments"
+    self.class.frame_id_for(anchor_block_id)
   end
 
   def content

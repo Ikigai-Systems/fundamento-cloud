@@ -8,6 +8,8 @@ class CommentsController < ApplicationController
   after_action :verify_authorized
 
   before_action :load_resource
+
+  helper_method :comments_frame_id
   before_action :ensure_turbo_request, except: [:show]
 
   def index
@@ -71,6 +73,12 @@ class CommentsController < ApplicationController
   end
 
   protected
+
+  # The frame the list is in, which a block's comments have to themselves so that adding or
+  # editing one reloads that block and not the document's list.
+  def comments_frame_id
+    ObjectComment.frame_id_for(params[:block_id])
+  end
 
   # The comments on the document, or those on one of its blocks when a block is named. A block's
   # comments are not part of the document's list: they are shown where the block is.
