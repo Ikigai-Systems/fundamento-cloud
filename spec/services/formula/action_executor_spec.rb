@@ -101,6 +101,28 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         end
       end
 
+      context 'with an organization time zone' do
+        before { organization_membership.organization.update!(time_zone: "Europe/Warsaw") }
+
+        it 'evaluates a value formula in the organization time zone' do
+          action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
+          action_executor.update_rows({}, table.id, nil, { "Description" => "TimeZone()" })
+
+          table.reload.rows.each do |row|
+            expect(row.cells.find_by(column: table.columns.find_by(name: "Description")).value).to eq("Europe/Warsaw")
+          end
+        end
+
+        it 'evaluates a condition formula in the organization time zone' do
+          action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)
+          action_executor.update_rows({}, table.id, 'Equals(TimeZone(), "Europe/Warsaw")', { "Description" => "Matched" })
+
+          table.reload.rows.each do |row|
+            expect(row.cells.find_by(column: table.columns.find_by(name: "Description")).value).to eq("Matched")
+          end
+        end
+      end
+
       it 'does not update rows when condition returns false for all' do
         original_values = {}
         table.rows.each do |row|

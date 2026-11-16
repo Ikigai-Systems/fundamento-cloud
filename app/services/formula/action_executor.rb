@@ -431,6 +431,10 @@ class Formula::ActionExecutor
     message.length > 500 ? "#{message[0, 500]}..." : message
   end
 
+  def time_zone
+    @organization_membership.organization.time_zone
+  end
+
   def evaluate_condition(formula, context)
     # If no condition provided, return true (apply to all rows)
     return true if formula.nil? || (formula.is_a?(String) && formula.empty?)
@@ -449,6 +453,8 @@ class Formula::ActionExecutor
     if context.present?
       functions.merge!(Formula::DefaultFunctions.context_functions(context))
     end
+
+    functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone))
     
     # Create evaluator directly to handle AST nodes
     evaluator = Formula::Evaluator.new(context:, functions:)
@@ -497,7 +503,7 @@ class Formula::ActionExecutor
       end
       
       engine = Formula::Engine.new(additional_functions: additional_functions)
-      engine.evaluate(value, context: context)
+      engine.evaluate(value, context: context, time_zone: time_zone)
     elsif value.respond_to?(:type) || value.is_a?(Hash) 
       # This might be an AST node - evaluate it directly
       # Create evaluator with all functions
@@ -514,6 +520,8 @@ class Formula::ActionExecutor
       if context.present?
         functions.merge!(Formula::DefaultFunctions.context_functions(context))
       end
+
+      functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone))
       
       evaluator = Formula::Evaluator.new(context: context, functions: functions)
       

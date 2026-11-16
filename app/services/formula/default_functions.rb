@@ -214,6 +214,13 @@ class Formula::DefaultFunctions
     }.freeze
   end
 
+  # Functions that depend on the zone the formula evaluates in (the organization's).
+  def self.time_zone_functions(time_zone)
+    {
+      "TimeZone" => -> { time_zone },
+    }.freeze
+  end
+
   private
 
   def self.truthy_value?(value)

@@ -18,7 +18,7 @@ class Formula::Engine
       functions.merge!(Formula::DefaultFunctions.context_functions(context))
     end
 
-    functions["TimeZone"] = -> { time_zone }
+    functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone))
     
     # Create evaluator with functions and action executor
     evaluator = Formula::Evaluator.new(context:, functions:, action_executor:)
