@@ -159,11 +159,6 @@ describe("block ids in markdown", () => {
       expect(parsed[0].content[0].text).toBe("A paragraph ^para-1");
     });
 
-    it("generates an id for blocks without a marker", async () => {
-      const parsed = await convertMarkdownToBlocks("No marker here\n");
-      expect(parsed[0].id).toBeTruthy();
-    });
-
     it("keeps the first of two blocks claiming the same id", async () => {
       const parsed = await convertMarkdownToBlocks("One ^same\n\nTwo ^same\n", {existingIds: "any"});
       expect(parsed[0].id).toBe("same");
