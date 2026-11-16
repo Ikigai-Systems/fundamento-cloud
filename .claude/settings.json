@@ -8,7 +8,11 @@
       "Bash(bin/rake:*)",
       "Bash(bin/rspec:*)",
       "Bash(npx cypress run:*)",
-      "Bash(npx vitest run:*)"
+      "Bash(npx vitest run:*)",
+      "Bash(*merge-and-wait.sh*)",
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr update-branch:*)",
+      "Bash(gh pr close:*)"
     ]
   }
 }
