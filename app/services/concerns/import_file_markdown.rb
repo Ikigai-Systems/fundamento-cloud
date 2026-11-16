@@ -11,6 +11,14 @@ module ImportFileMarkdown
 
   class UnsupportedFormat < StandardError; end
 
+  # Obsidian writes a block's id as " ^id" at the end of its line, and [[note#^id]] links to
+  # it. Importing markdown keeps that id as the block's id, so the link can point at the block.
+  # Only markdown: a converted docx or odt has no such markers, and one that happens to end a
+  # line in "^word" is text. The value for BlocknoteConverterService's existing_ids.
+  def block_id_markers(import_file)
+    :any if import_file.format == "markdown"
+  end
+
   # Returns [body_markdown, frontmatter_hash_or_nil].
   def import_file_markdown(import_file)
     raw = import_file.file.open do |temp_file|

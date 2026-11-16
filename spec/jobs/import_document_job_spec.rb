@@ -32,6 +32,32 @@ RSpec.describe ImportDocumentJob, type: :job do
     import_file
   end
 
+  # The real converter: the marker has to survive from Obsidian's file to the stored block id,
+  # because that is what a [[note#^id]] link later points at.
+  describe "Obsidian block ids" do
+    it "keeps a markdown file's ^id marker as the id of its block, and out of the text" do
+      import_file = build_import_file(relative_path: "Notes/Claims.md", content: "# Claims\n\nThe claim ^claim-1\n")
+
+      described_class.perform_now(import_file)
+
+      blocks = import_file.reload.document.versions.last.content_blocks
+      claim = blocks.find { |block| block["id"] == "claim-1" }
+      expect(claim["content"].first["text"]).to eq("The claim")
+      expect(BlocknoteBlocks.block_ids(blocks)).to include("claim-1")
+    end
+
+    it "leaves a docx's text alone, since its ^word is not a marker" do
+      import_file = build_import_file(relative_path: "Notes/Plan.docx", format: "docx", content: "PK\x03\x04docx")
+      allow(PandocConverterService).to receive(:file_to_markdown).and_return("Raise it to the power ^power\n")
+
+      described_class.perform_now(import_file)
+
+      blocks = import_file.reload.document.versions.last.content_blocks
+      expect(BlocknoteBlocks.block_ids(blocks)).not_to include("power")
+      expect(blocks.first["content"].first["text"]).to eq("Raise it to the power ^power")
+    end
+  end
+
   describe "keeping the source of a converted document" do
     it "attaches the original .docx to the document it produced" do
       # Without this the source is unreachable after import: the document holds only the

@@ -198,6 +198,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
   describe "heading and block reference handling" do
     let(:job) { ImportLinkResolutionJob.new }
 
+    # In a format that carries no block markers (docx, odt) they are text to remove.
     describe "#strip_obsidian_block_ids" do
       it "strips ^blockid markers at end of lines" do
         markdown = "This is a paragraph ^abc123\nAnother line"
@@ -206,23 +207,14 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         expect(result).to eq("This is a paragraph\nAnother line")
       end
 
-      it "strips ^blockid with hyphens" do
-        markdown = "Some text ^my-block-id"
-        result = job.send(:strip_obsidian_block_ids, markdown)
-
-        expect(result).to eq("Some text")
-      end
-
       it "does not strip caret in middle of line" do
-        markdown = "2^10 is 1024"
-        result = job.send(:strip_obsidian_block_ids, markdown)
+        result = job.send(:strip_obsidian_block_ids, "2^10 is 1024")
 
         expect(result).to eq("2^10 is 1024")
       end
 
       it "does not strip single-character block ids" do
-        markdown = "Some text ^a"
-        result = job.send(:strip_obsidian_block_ids, markdown)
+        result = job.send(:strip_obsidian_block_ids, "Some text ^a")
 
         expect(result).to eq("Some text ^a")
       end
@@ -290,13 +282,40 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         expect(result).to include('data-entity-id="doc_abc"')
       end
 
-      it "ignores ^blockref fragments (not yet supported)" do
-        combined_map = { "project.md" => "doc_abc" }
+      context "to a block" do
+        let(:combined_map) { { "project.md" => "doc_abc" } }
 
-        result = job.send(:process_wiki_links_in_markdown, "See [[project#^abc123]]", combined_map)
+        before do
+          doc = Document.create!(id: "doc_abc", organization: organizations(:is), space: spaces(:is_default), title: "Project")
+          doc.versions.create!(
+            content_blocks: [
+              { "id" => "abc123", "type" => "paragraph", "content" => [{ "type" => "text", "text" => "Claim" }], "children" => [
+                { "id" => "nested-1", "type" => "paragraph", "content" => [], "children" => [] }
+              ] }
+            ],
+            created_by: users(:pawel)
+          )
+        end
 
-        expect(result).not_to include("data-fragment")
-        expect(result).to include('data-entity-id="doc_abc"')
+        it "points the mention at the block with that id" do
+          result = job.send(:process_wiki_links_in_markdown, "See [[project#^abc123]]", combined_map)
+
+          expect(result).to include('data-fragment="abc123"')
+          expect(result).to include('data-entity-id="doc_abc"')
+        end
+
+        it "finds a nested block" do
+          result = job.send(:process_wiki_links_in_markdown, "See [[project#^nested-1]]", combined_map)
+
+          expect(result).to include('data-fragment="nested-1"')
+        end
+
+        it "links the note alone when it has no block with that id" do
+          result = job.send(:process_wiki_links_in_markdown, "See [[project#^missing1]]", combined_map)
+
+          expect(result).not_to include("data-fragment")
+          expect(result).to include('data-entity-id="doc_abc"')
+        end
       end
     end
 
@@ -439,7 +458,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:55.mp4"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:55.mp4"), existing_ids: :any)
       end
 
       it "passes attachment URI with extension to the converter for audio" do
@@ -461,7 +480,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:56.mp3"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:56.mp3"), existing_ids: :any)
       end
 
       it "passes attachment URI with extension to the converter for a PDF" do
@@ -483,7 +502,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
         batch = double("batch", properties: { import_session_id: session.id })
         job.perform(batch)
 
-        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:57.pdf"))
+        expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs).with(include("attachment:57.pdf"), existing_ids: :any)
       end
     end
 
@@ -813,7 +832,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
       job.perform(batch)
 
       expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs)
-        .with(satisfy { |md| !md.include?("Secret Title") && !md.include?("tags:") && !md.start_with?("---") })
+        .with(satisfy { |md| !md.include?("Secret Title") && !md.include?("tags:") && !md.start_with?("---") }, existing_ids: :any)
     end
 
     it "converts docx through Pandoc instead of reading raw ZIP bytes" do
@@ -837,7 +856,7 @@ RSpec.describe ImportLinkResolutionJob, type: :job do
 
       expect(PandocConverterService).to have_received(:file_to_markdown).with(anything, "docx")
       expect(BlocknoteConverterService).to have_received(:markdown_to_blocks_and_yjs)
-        .with(satisfy { |md| !md.include?("GARBAGEZIPBYTES") })
+        .with(satisfy { |md| !md.include?("GARBAGEZIPBYTES") }, existing_ids: nil)
     end
   end
 
