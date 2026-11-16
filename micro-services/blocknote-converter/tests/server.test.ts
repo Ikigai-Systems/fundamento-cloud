@@ -119,6 +119,29 @@ describe("Server Tests", () => {
       expect(body.blocks.length).toBeGreaterThan(0);
     });
 
+    it("reads block id markers, only the known ones when given existingIds", async () => {
+      const markdown = "Known ^abc-1\n\nSee ^note\n";
+
+      const ignored = await server.inject({method: "POST", url: "/convert/markdown/blocks", payload: {markdown}});
+      expect(JSON.parse(ignored.body).blocks[0].id).not.toBe("abc-1");
+
+      const all = await server.inject({
+        method: "POST",
+        url: "/convert/markdown/blocks",
+        payload: {markdown, existingIds: "any"},
+      });
+      expect(JSON.parse(all.body).blocks.map((b: any) => b.id)).toEqual(["abc-1", "note"]);
+
+      const known = await server.inject({
+        method: "POST",
+        url: "/convert/markdown/blocks",
+        payload: {markdown, existingIds: ["abc-1"]},
+      });
+      const blocks = JSON.parse(known.body).blocks;
+      expect(blocks[0].id).toBe("abc-1");
+      expect(blocks[1].content[0].text).toBe("See ^note");
+    });
+
     it("should return 400 when markdown field is missing", async () => {
       const response = await server.inject({
         method: "POST",
@@ -173,6 +196,20 @@ describe("Server Tests", () => {
       expect(body).toHaveProperty("markdown");
       expect(typeof body.markdown).toBe("string");
       expect(body.markdown.length).toBeGreaterThan(0);
+    });
+
+    it("writes block id markers only when asked", async () => {
+      const blocks = [{id: "p1-aaaa", type: "paragraph", props: {}, content: [{type: "text", text: "Hi", styles: {}}], children: []}];
+
+      const plain = await server.inject({method: "POST", url: "/convert/blocks/markdown", payload: {blocks}});
+      expect(JSON.parse(plain.body).markdown).not.toContain("^");
+
+      const marked = await server.inject({
+        method: "POST",
+        url: "/convert/blocks/markdown",
+        payload: {blocks, blockIds: "all"},
+      });
+      expect(JSON.parse(marked.body).markdown).toContain("Hi ^p1-aaaa");
     });
 
     it("should return 400 when blocks field is missing", async () => {

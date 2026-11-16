@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import {convertBlocksToMarkdown, convertMarkdownToBlocks, convertMarkdownToBlocksAndYjs, convertToBlocks, convertToYjs} from "./converters";
 import {Command} from "commander";
-import {startServer} from "./server";
+import {startServer, toExistingIds} from "./server";
 import * as Sentry from "@sentry/node";
 
 // Initialize Sentry if DSN is provided
@@ -114,6 +114,17 @@ function handleStreamConversion(options: ConversionOptions, converterFn: (data: 
   });
 }
 
+// With --json the markdown arrives in an envelope that can carry options; without it, as it always
+// did, the bare markdown.
+function markdownInput(data: Buffer, json: boolean | undefined) {
+  if (!json) {
+    return {markdown: data.toString("utf8"), existingIds: undefined};
+  }
+
+  const {markdown, existingIds} = JSON.parse(data.toString("utf8")) as {markdown: string; existingIds?: string[] | "any"};
+  return {markdown, existingIds: toExistingIds(existingIds)};
+}
+
 program
   .command("convert-yjs-to-blocks")
   .description("Convert YJS to blocknote")
@@ -141,10 +152,14 @@ program
   .description("Convert Markdown to Blocknote")
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
+  .option("--json", "Read a JSON envelope on stdin instead of the bare payload, to pass options")
   .action((options) => {
     handleStreamConversion(
       options,
-      (data) => convertMarkdownToBlocks(data.toString("utf8")),
+      (data) => {
+        const {markdown, existingIds} = markdownInput(data, options.json);
+        return convertMarkdownToBlocks(markdown, {existingIds});
+      },
       true
     );
   });
@@ -154,11 +169,13 @@ program
   .description("Convert Markdown to Blocknote and YJS in one pass; YJS is base64 in the JSON output")
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
+  .option("--json", "Read a JSON envelope on stdin instead of the bare payload, to pass options")
   .action((options) => {
     handleStreamConversion(
       options,
       async (data) => {
-        const {blocks, yjs} = await convertMarkdownToBlocksAndYjs(data.toString("utf8"));
+        const {markdown, existingIds} = markdownInput(data, options.json);
+        const {blocks, yjs} = await convertMarkdownToBlocksAndYjs(markdown, {existingIds});
         return {blocks, yjs: Buffer.from(yjs).toString("base64")};
       },
       true
@@ -170,10 +187,16 @@ program
   .description("Convert Blocknote to Markdown")
   .option("-i, --input <file>", "Input file (default: stdin)")
   .option("-o, --output <file>", "Output file (default: stdout)")
+  .option("--json", "Read a JSON envelope on stdin instead of the bare payload, to pass options")
   .action((options) => {
     handleStreamConversion(
       options,
-      (data) => convertBlocksToMarkdown(JSON.parse(data.toString("utf8"))),
+      (data) => {
+        const input = JSON.parse(data.toString("utf8"));
+        return options.json
+          ? convertBlocksToMarkdown(input.blocks, {blockIds: input.blockIds})
+          : convertBlocksToMarkdown(input);
+      },
       false
     );
   });

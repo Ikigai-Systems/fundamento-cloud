@@ -15,6 +15,51 @@ RSpec.describe BlocknoteConverterService do
     end
   end
 
+  describe "block ids in markdown" do
+    let(:blocks) { described_class.markdown_to_blocks("# Title\n\nFirst paragraph\n\n- item\n") }
+    let(:ids) { blocks.map { |block| block["id"] } }
+
+    it "writes no markers unless asked" do
+      expect(described_class.blocks_to_markdown(blocks)).not_to include("^")
+    end
+
+    it "keeps every block id across markdown and back when asked to" do
+      markdown = described_class.blocks_to_markdown(blocks, block_ids: :all)
+      parsed = described_class.markdown_to_blocks(markdown, existing_ids: :any)
+
+      expect(markdown).to include("^#{ids.first}")
+      expect(parsed.map { |block| block["id"] }).to eq(ids)
+    end
+
+    it "marks only the named blocks" do
+      markdown = described_class.blocks_to_markdown(blocks, block_ids: [ids.second])
+
+      expect(markdown.scan("^").size).to eq(1)
+      expect(markdown).to include("First paragraph ^#{ids.second}")
+    end
+
+    it "treats markers as text when not asked to read them" do
+      parsed = described_class.markdown_to_blocks("Some text ^abc-1\n")
+
+      expect(parsed.first["id"]).not_to eq("abc-1")
+      expect(parsed.first["content"].first["text"]).to eq("Some text ^abc-1")
+    end
+
+    it "reads only the markers of ids that exist when updating" do
+      parsed = described_class.markdown_to_blocks("Known ^abc-1\n\nSee ^note\n", existing_ids: ["abc-1"])
+
+      expect(parsed.first["id"]).to eq("abc-1")
+      expect(parsed.second["content"].first["text"]).to eq("See ^note")
+    end
+
+    it "carries the ids through markdown_to_blocks_and_yjs" do
+      parsed, sync = described_class.markdown_to_blocks_and_yjs("Hello ^hello-1\n", existing_ids: :any)
+
+      expect(parsed.first["id"]).to eq("hello-1")
+      expect(described_class.yjs_to_blocks(sync).first["id"]).to eq("hello-1")
+    end
+  end
+
   describe ".markdown_to_blocks_and_yjs" do
     let(:markdown) { "# Heading\n\nA paragraph with a [link](https://example.com).\n\n- one\n- two\n" }
 
