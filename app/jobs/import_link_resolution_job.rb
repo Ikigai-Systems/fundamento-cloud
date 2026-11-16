@@ -81,7 +81,8 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     # also carries block ids, style maps and every other key.
     haystack = content_haystack(blocks)
 
-    # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
+    # Process documents with wiki links, Obsidian block ID markers still in the text (a format
+    # that carries none as ids, or an id claimed twice), or local attachment paths
     has_wiki_links = haystack.include?("[[") # covers ![[embed]] too
     has_block_ids = block_id_anchor?(blocks)
     has_local_attachment_refs = attachment_needles.any? { |path, basename|
