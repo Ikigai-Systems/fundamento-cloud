@@ -1,6 +1,7 @@
 import * as Y from "yjs";
 import {ServerBlockNoteEditor} from "@blocknote/server-util";
 import type {Block} from "@blocknote/core";
+import {updateYFragment} from "y-prosemirror";
 import {toHtml} from "hast-util-to-html";
 import type {Element as HastElement, ElementContent, Nodes as HastNodes, Parents as HastParents} from "hast";
 import type {Handle as H2mHandle, Options as H2mOptions} from "hast-util-to-mdast";
@@ -134,6 +135,35 @@ export function convertToYjs(blocks: Block[]) {
   clampTableSpans(blocks);
 
   return Y.encodeStateAsUpdate(serverBlockNoteEditor.blocksToYDoc(blocks, "document-store"));
+}
+
+/**
+ * Brings a document's current Yjs state to the given blocks and returns only what changed,
+ * together with the whole new state.
+ *
+ * Replacing the state (convertToYjs) throws away the history a connected editor is built on, so
+ * anyone editing the document keeps a state that no longer matches the stored one, and the next
+ * thing they type overwrites the change. An update merges: it is applied to the state an editor
+ * already holds, next to whatever that editor did meanwhile.
+ *
+ * The diff is by structure, so a block that is unchanged (same id, same content) costs nothing
+ * and a block whose id was lost is a delete and an insert. That is why ids must survive the trip
+ * through markdown.
+ */
+export function convertToYjsUpdate(currentSync: Buffer, blocks: Block[]) {
+  const doc = new Y.Doc();
+  Y.applyUpdate(doc, new Uint8Array(currentSync));
+  const before = Y.encodeStateVector(doc);
+
+  clampTableSpans(blocks);
+
+  const node = createServerBlockNoteEditor()._blocksToProsemirrorNode(blocks);
+  updateYFragment(doc, doc.getXmlFragment("document-store"), node, {
+    mapping: new Map(),
+    isOMark: new Map(),
+  } as unknown as Parameters<typeof updateYFragment>[3]);
+
+  return {update: Y.encodeStateAsUpdate(doc, before), state: Y.encodeStateAsUpdate(doc)};
 }
 
 // ---------------------------------------------------------------------------

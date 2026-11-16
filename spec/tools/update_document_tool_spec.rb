@@ -77,6 +77,62 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
     end
 
+    # What an open editor sees: the real converter, and the stored state as the editor holds it.
+    context "while the document is open in an editor" do
+      include ActionCable::TestHelper
+
+      let(:pundit_user) { PolicyUserContext.new(user, organization) }
+      let(:note) do
+        DocumentService.new(pundit_user: pundit_user)
+          .create!(space_id: space.id, title: "Open", markdown: "# Title\n\nFirst\n\nSecond\n")
+      end
+
+      def texts(blocks)
+        blocks.map { |block| block["content"]&.first&.dig("text") }
+      end
+
+      # The message as a browser receives it: a sync update, base64, the payload after two
+      # leading varints (message type and sync type).
+      def update_bytes(data)
+        decoder = Y::Lib0::Decoding.create_decoder(Y::Lib0::Decoding.decode_base64_to_uint8_array(data[:update]))
+        Y::Lib0::Decoding.read_var_uint(decoder)
+        Y::Lib0::Decoding.read_var_uint(decoder)
+        Y::Lib0::Decoding.read_var_uint8_array(decoder).to_a
+      end
+
+      it "sends what changed to the editors, and it turns their copy into the new content" do
+        editor = Y::Doc.new
+        editor.sync(note.content.sync.unpack("C*"))
+        sent = nil
+
+        expect {
+          UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+        }.to have_broadcasted_to("document/#{note.id}").with { |data| sent = data }
+
+        editor.sync(update_bytes(sent))
+
+        expect(texts(BlocknoteConverterService.yjs_to_blocks(editor.diff.pack("C*")))).to eq(["Title", "First, edited", "Second"])
+      end
+
+      it "stores the same content the editors end up with" do
+        UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+
+        stored = BlocknoteConverterService.yjs_to_blocks(note.reload.content.sync)
+        expect(texts(stored)).to eq(["Title", "First, edited", "Second"])
+        expect(stored.map { |block| block["id"] }).to eq(note.versions.last.content_blocks.map { |block| block["id"] })
+      end
+
+      it "sends a change much smaller than the document when little changed" do
+        sent = nil
+
+        expect {
+          UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+        }.to have_broadcasted_to("document/#{note.id}").with { |data| sent = data }
+
+        expect(update_bytes(sent).size).to be < note.reload.content.sync.bytesize
+      end
+    end
+
     context "happy case - updates document with markdown content" do
       it "updates document and creates new version" do
         markdown_content = file_fixture("documents/updated_content.md").read
@@ -202,7 +258,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         sample_sync = "new_yjs_sync_data"
 
         allow(BlocknoteConverterService).to receive(:markdown_to_blocks).and_return(sample_blocks)
-        allow(BlocknoteConverterService).to receive(:blocks_to_yjs).and_return(sample_sync)
+        allow(BlocknoteConverterService).to receive(:blocks_to_yjs_update).and_return(["update", sample_sync])
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 
         UpdateDocumentTool.call(

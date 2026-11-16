@@ -15,6 +15,20 @@ RSpec.describe BlocknoteConverterService do
     end
   end
 
+  describe ".blocks_to_yjs_update" do
+    it "returns the change alone and the whole new state" do
+      blocks, sync = described_class.markdown_to_blocks_and_yjs("One\n\nTwo\n\nThree\n")
+      edited = blocks.deep_dup
+      edited.second["content"].first["text"] = "Two, edited"
+
+      update, state = described_class.blocks_to_yjs_update(sync, edited)
+
+      expect(described_class.yjs_to_blocks(state).second["content"].first["text"]).to eq("Two, edited")
+      expect(update).to be_a(String)
+      expect(update.bytesize).to be < state.bytesize
+    end
+  end
+
   describe "block ids in markdown" do
     let(:blocks) { described_class.markdown_to_blocks("# Title\n\nFirst paragraph\n\n- item\n") }
     let(:ids) { blocks.map { |block| block["id"] } }

@@ -31,6 +31,21 @@ module BlocknoteConverterService
     run("convert-blocks-to-yjs", blocks.to_json, "document to YJS", timeout:)
   end
 
+  # Brings a stored Yjs state to the given blocks as an update that merges with whatever an open
+  # editor holds, rather than a state that replaces it (blocks_to_yjs). The diff follows block
+  # ids, so blocks that kept theirs cost nothing.
+  #
+  # Returns [update, state]: the change alone, to hand to connected editors, and the whole new
+  # state, to store.
+  def self.blocks_to_yjs_update(sync, blocks, timeout: TIMEOUT)
+    result = JSON.parse(
+      run("convert-blocks-to-yjs-update", {sync: Base64.strict_encode64(sync.to_s), blocks:}.to_json,
+        "document to a YJS update", timeout:)
+    )
+
+    [Base64.strict_decode64(result["update"]), Base64.strict_decode64(result["state"])]
+  end
+
   # The converter writes UTF-8, but run reads it in binary mode for the Yjs payloads.
   #
   # block_ids writes an Obsidian-style " ^id" marker after the blocks it names, so their ids
