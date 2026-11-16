@@ -524,6 +524,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
     t.string "deleted_by_id"
     t.string "name"
     t.datetime "updated_at", null: false
+    t.string "time_zone", default: "UTC", null: false
     t.index ["deleted_at"], name: "index_organizations_on_deleted_at", where: "(deleted_at IS NOT NULL)"
     t.index ["id"], name: "index_organizations_on_id", unique: true
   end

@@ -12,6 +12,7 @@ import VisibilityController from "./visibility_controller";
 import ToggleButtonController from "./toggle_button_controller";
 import CollapsibleController from "./collapsible_controller";
 import DraggableController from "./draggable_controller";
+import BrowserTimeZoneController from "./browser_time_zone_controller.ts";
 import PreventDoubleSubmitController from "./prevent_double_submit_controller.ts";
 import ScrollIntoViewController from "./scroll_into_view_controller.ts";
 import ShowIfInputValueEquals from "./show_if_input_value_equals.ts";
@@ -74,6 +75,7 @@ application.register("collapsible", CollapsibleController);
 
 application.register("draggable", DraggableController);
 
+application.register("browser-time-zone", BrowserTimeZoneController);
 application.register("prevent-double-submit", PreventDoubleSubmitController);
 
 application.register("scroll-into-view", ScrollIntoViewController);

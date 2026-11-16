@@ -21,8 +21,14 @@ class Organization < ApplicationRecord
   has_many :favorites, through: :organization_memberships, dependent: :destroy
 
   validates_presence_of :name
+  validates :time_zone, inclusion: { in: ->(_) { TZInfo::Timezone.all_identifiers }, message: "is not a valid time zone" }
 
   after_create :create_default_space
+
+  # The zone formulas evaluate in. Choices for a form: real zones, not the legacy link names.
+  def self.time_zone_choices
+    (TZInfo::Timezone.all_data_zone_identifiers + ["UTC"]).sort
+  end
 
   # Invitations made before devise_invitations stored the address have none to show or resend; they
   # expire on their own.

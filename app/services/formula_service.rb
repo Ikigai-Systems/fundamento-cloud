@@ -20,7 +20,12 @@ class FormulaService
 
       # Create and use Formula::Engine
       engine = Formula::Engine.new(additional_functions: action_executor.get_action_functions.merge(fundamento_functions.functions))
-      result = engine.evaluate(formula, context: context, action_executor: action_executor)
+      result = engine.evaluate(
+        formula,
+        context: context,
+        action_executor: action_executor,
+        time_zone: organization_membership&.organization&.time_zone || "UTC",
+      )
 
       # Get executed actions from action_executor
       commands = action_executor.get_actions

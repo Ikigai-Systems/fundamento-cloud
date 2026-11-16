@@ -186,4 +186,20 @@ RSpec.describe FormulaService, type: :model do
       expect(results[1]["result"]).to eq(5)
     end
   end
+
+  describe "organization time zone" do
+    it "evaluates in UTC by default" do
+      result = FormulaService.evaluate("TimeZone()", nil, organization_membership)
+
+      expect(result["result"]).to eq("UTC")
+    end
+
+    it "evaluates in the time zone of the membership's organization" do
+      organization_membership.organization.update!(time_zone: "Europe/Warsaw")
+
+      result = FormulaService.evaluate("TimeZone()", nil, organization_membership)
+
+      expect(result["result"]).to eq("Europe/Warsaw")
+    end
+  end
 end
