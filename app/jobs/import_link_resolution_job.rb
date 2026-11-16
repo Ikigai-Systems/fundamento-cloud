@@ -81,7 +81,8 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     # also carries block ids, style maps and every other key.
     haystack = content_haystack(blocks)
 
-    # Process documents with wiki links, Obsidian block ID markers, or local attachment paths
+    # Process documents with wiki links, Obsidian block ID markers still in the text (a format
+    # that carries none as ids, or an id claimed twice), or local attachment paths
     has_wiki_links = haystack.include?("[[") # covers ![[embed]] too
     has_block_ids = block_id_anchor?(blocks)
     has_local_attachment_refs = attachment_needles.any? { |path, basename|
@@ -94,13 +95,19 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
     # Pandoc instead of being read as raw bytes, and so frontmatter is stripped — without
     # that, this job reintroduces the YAML that ImportDocumentJob removed.
     body, _frontmatter = import_file_markdown(import_file)
+
+    # A markdown file's block markers become block ids, so [[note#^id]] links keep pointing at
+    # them; in any other format a marker is just text to remove.
+    existing_ids = block_id_markers(import_file)
+    body = strip_obsidian_block_ids(body) unless existing_ids
+
     resolved_markdown = process_wiki_links_in_markdown(body, path_map.merge(basename_map))
 
     return unless resolved_markdown
 
     # One Node call for both: starting the converter costs far more than the Yjs conversion,
     # so computing sync we may discard below is cheaper than a second process when we don't.
-    new_blocks, new_sync = BlocknoteConverterService.markdown_to_blocks_and_yjs(resolved_markdown)
+    new_blocks, new_sync = BlocknoteConverterService.markdown_to_blocks_and_yjs(resolved_markdown, existing_ids: existing_ids)
 
     # This job can be invoked more than once per session (any orchestrator re-run creates a
     # fresh batch, and every batch fires on_finish). Re-resolving is deterministic, so if
@@ -170,9 +177,6 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
   end
 
   def process_wiki_links_in_markdown(markdown, combined_map)
-    # Strip Obsidian block ID markers (^blockid at end of lines)
-    markdown = strip_obsidian_block_ids(markdown)
-
     # Rewrite standard markdown ![alt](path) and ![alt](<path with spaces>) to attachment URIs.
     # Handles Obsidian exports that use angle-bracket syntax for filenames with spaces.
     # Must run before wiki-link gsubs to avoid double-processing.
@@ -265,10 +269,22 @@ class ImportLinkResolutionJob < MemoryIntensiveJob
 
   def resolve_heading_fragment(document_id, heading)
     return nil if heading.blank?
-    return nil if heading.start_with?("^") # Block refs not yet supported
+    return block_fragment(document_id, heading.strip.delete_prefix("^")) if heading.start_with?("^")
 
     heading_map = heading_map_for(document_id)
     heading_map[heading.strip.downcase]
+  end
+
+  # [[note#^id]]: the id is the block's own, kept from the marker when the note was imported. A
+  # block the note does not have (a marker that was dropped, an id mistyped) gives no fragment,
+  # so the link still opens the note.
+  def block_fragment(document_id, block_id)
+    block_ids_for(document_id).include?(block_id) ? block_id : nil
+  end
+
+  def block_ids_for(document_id)
+    @block_ids ||= {}
+    @block_ids[document_id] ||= Set.new(BlocknoteBlocks.block_ids(Document.find_by(id: document_id)&.versions&.last&.content_blocks))
   end
 
   def heading_map_for(document_id)
