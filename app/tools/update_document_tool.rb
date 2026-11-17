@@ -11,7 +11,7 @@ class UpdateDocumentTool < ApplicationTool
       icon: { type: :string, description: "A single emoji to use as the icon, or an empty string to remove it." },
       color: { type: :string, description: "One of #{HasColor::NAMES.join(", ")}, or an empty string to remove it." },
       markdown: { type: :string, description: "New content, replacing the current content entirely, so read the document first and keep its mentions. " \
-                                      "If you read it with block_ids, keep the ` ^id` markers of the blocks you keep: those blocks keep their ids. " \
+                                      "Keep the ` ^id` markers the document came with (every block with block_ids, otherwise the blocks that have comments): those blocks keep their ids. " \
                                       "#{CreateDocumentTool::MARKDOWN_HELP}" },
     },
     required: [:id]

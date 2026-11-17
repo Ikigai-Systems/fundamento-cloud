@@ -36,6 +36,26 @@ RSpec.describe ReadDocumentTool, type: :model do
         expect(JSON.parse(response.content.first[:text])["color"]).to eq("blue")
       end
 
+      it "marks a block that has comments with its id, and no other, unless block_ids is asked for" do
+        blocks = [
+          {"id" => "commented-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Commented"}]},
+          {"id" => "plain-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Plain"}]}
+        ]
+        document.versions.create!(content_blocks: blocks, created_by: user)
+        document.comments.create!(
+          organization: organization,
+          organization_membership: organization_memberships(:om_is_pawel),
+          content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "A comment"}]}],
+          anchor_block_id: "commented-1"
+        )
+
+        read = ->(**options) { JSON.parse(ReadDocumentTool.call(id: document.id, server_context: server_context, **options).content.first[:text])["content"] }
+
+        expect(read.call).to include("Commented ^commented-1")
+        expect(read.call).not_to include("^plain-1")
+        expect(read.call(block_ids: true)).to include("^commented-1", "^plain-1")
+      end
+
       it "returns document content as Markdown" do
         response = ReadDocumentTool.call(
           id: document.id,

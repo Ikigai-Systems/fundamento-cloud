@@ -4,7 +4,7 @@ module BlockCommentsHelper
   def block_comments_props(document)
     {
       objectGid: document.to_gid_param,
-      blockIds: document.comments.anchored.distinct.pluck(:anchor_block_id)
+      blockIds: document.commented_block_ids
     }
   end
 end
