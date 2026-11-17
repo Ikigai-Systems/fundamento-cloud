@@ -120,6 +120,7 @@ class Table < ApplicationRecord
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
+    columns_by_id = columns_in_order.index_by(&:id)
     time_zone = self.organization.time_zone
 
     formulas_to_evaluate = []
@@ -173,7 +174,7 @@ class Table < ApplicationRecord
       results.each_with_index do |formula_result, index|
         formula_evaluation = formulas_to_evaluate[index]
         result = formula_result["error"] || formula_result["result"]
-        column = columns_in_order.find { |column| column.id == formula_evaluation[:column_id] }
+        column = columns_by_id[formula_evaluation[:column_id]]
         result = Tables::FormulaValues.serialized(column, result, time_zone) unless formula_result["error"]
 
         jsonized_rows.find { |row| row["id"] == formula_evaluation[:row_id] }[formula_evaluation[:column_id]] = result

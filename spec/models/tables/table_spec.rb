@@ -164,6 +164,20 @@ RSpec.describe Table, type: :model do
       expect(evaluated(later)).to eq "2024-03-31 13:00" # Days(1) is 24 h, and clocks went forward that night
     end
 
+    it "reads and writes the other stored formats, and ISO text when none is chosen" do
+      us = add_column("US", :date, previous: length, configuration: { "dateStoredFormat" => 0 })
+      eu = add_column("EU", :date, previous: us, configuration: { "dateStoredFormat" => 1 })
+      plain = add_column("Plain", :date, previous: eu)
+      set_cell(us, "1/31/2024")
+      set_cell(eu, "5/02/2024")
+      set_cell(plain, "2024-01-31")
+      us_next = add_column("US next", :formula, previous: plain, formula: "CurrentRow(\"US\") + Days(1)", configuration: { "dateStoredFormat" => 0 })
+      eu_next = add_column("EU next", :formula, previous: us_next, formula: "CurrentRow(\"EU\") + Days(1)", configuration: { "dateStoredFormat" => 1 })
+      plain_next = add_column("Plain next", :formula, previous: eu_next, formula: "CurrentRow(\"Plain\") + Days(1)")
+
+      expect([evaluated(us_next), evaluated(eu_next), evaluated(plain_next)]).to eq ["2/1/2024", "6/02/2024", "2024-02-01"]
+    end
+
     it "does arithmetic on duration columns" do
       doubled = add_column("Doubled", :formula, previous: length, formula: "CurrentRow(\"Length\") * 2")
 
