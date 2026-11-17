@@ -4,8 +4,8 @@
 # "1 day 3 hrs", "365 days". It rolls up to days and no further. Months and years are accepted
 # when parsing and converted to days (see UNIT_SECONDS), so they never appear in the output.
 #
-# The table cell will parse the same way in TypeScript. Both sides are tested against
-# spec/fixtures/files/duration/cases.json, so change the rules and the fixture together.
+# The table cell will need the same rules in TypeScript. spec/fixtures/files/duration/cases.json
+# holds the cases for both sides, so change the rules and the fixture together.
 class Formula::Duration
   include Comparable
 
