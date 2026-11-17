@@ -27,7 +27,7 @@ class Tables::Column < ApplicationRecord
   # have to be captured ahead of it.
   before_destroy :capture_values_for_change_event, prepend: true
 
-  enum :kind, [:string, :number, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :documents, :button, :multi_people], scopes: false, validate: true
+  enum :kind, [:string, :number, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :documents, :button, :multi_people, :duration], scopes: false, validate: true
 
   def self.to_kind(type)
     possible_type = type&.underscore

@@ -120,13 +120,14 @@ class Table < ApplicationRecord
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
+    time_zone = self.organization.time_zone
 
     formulas_to_evaluate = []
 
     jsonized_rows = rows_in_order.map do |row|
       if evaluate_formulas
         current_row_values = columns_in_order.each_with_object({}) do |column, hash|
-          cell_value = cells_by_rows_and_columns.dig([row.id, column.id])&.value
+          cell_value = Tables::FormulaValues.typed(column, cells_by_rows_and_columns.dig([row.id, column.id])&.value, time_zone)
           hash[column.name] = cell_value
           hash[column.id] = cell_value
         end
@@ -172,6 +173,8 @@ class Table < ApplicationRecord
       results.each_with_index do |formula_result, index|
         formula_evaluation = formulas_to_evaluate[index]
         result = formula_result["error"] || formula_result["result"]
+        column = columns_in_order.find { |column| column.id == formula_evaluation[:column_id] }
+        result = Tables::FormulaValues.serialized(column, result, time_zone) unless formula_result["error"]
 
         jsonized_rows.find { |row| row["id"] == formula_evaluation[:row_id] }[formula_evaluation[:column_id]] = result
       end
