@@ -41,6 +41,8 @@
     "ninja-keys": "github:ikigai-systems/ninja-keys#dcdc6d3",
     "patch-package": "^8.0.0",
     "posthog-js": "^1.447.6",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.42.5",
     "react": "^18.2.0",
     "react-apexcharts": "^2.2.0",
     "react-dom": "^18.2.0",

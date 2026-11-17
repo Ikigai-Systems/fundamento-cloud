@@ -7,6 +7,7 @@ import {BlockNoteView} from "@blocknote/mantine";
 import {PartialBlock} from "@blocknote/core";
 import '@blocknote/mantine/style.css';
 import schema from "./editor/schema.ts";
+import {blockCommentsExtension, BlockCommentsOptions} from "./editor/blockComments.ts";
 
 import {createFileUrlResolver} from "./editor/utils/createFileUrlResolver.tsx";
 import {resolveAttachmentLinksInBlocks} from "./editor/utils/attachmentLinks";
@@ -19,9 +20,10 @@ type ShowVersionPanelProps = {
   space: Space,
   currentUser: User,
   features?: Features,
+  blockComments?: BlockCommentsOptions,
 }
 
-const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelProps) => {
+const ShowDocumentVersionPanel = ({version, space, features, blockComments}: ShowVersionPanelProps) => {
   const editor = useCreateBlockNote({
     schema,
     // contentBlocks is persisted BlockNote JSON (typed `unknown` on Version).
@@ -31,6 +33,7 @@ const ShowDocumentVersionPanel = ({version, space, features}: ShowVersionPanelPr
       typeof schema.styleSchema
     >[],
     resolveFileUrl: createFileUrlResolver(),
+    extensions: blockComments ? [blockCommentsExtension(blockComments)] : [],
   });
 
   return <FeaturesContext.Provider value={features || []}>

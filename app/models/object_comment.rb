@@ -26,6 +26,7 @@ class ObjectComment < ApplicationRecord
     )
   }
 
+  scope :anchored, -> { where.not(anchor_block_id: nil) }
   scope :unanchored, -> { where(anchor_block_id: nil) }
   scope :on_block, ->(block_id) { where(anchor_block_id: block_id) }
 

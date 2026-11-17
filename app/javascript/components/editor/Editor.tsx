@@ -19,6 +19,7 @@ import {DefaultThreadStoreAuth} from "@blocknote/core/comments";
 import {YjsThreadStore, withCollaboration} from "@blocknote/core/yjs";
 import tinySimpleHash from "../../utils/tinySimpleHash";
 import resolveUsers from "../../utils/resolveUsers";
+import {blockCommentsExtension, BlockCommentsOptions} from "./blockComments";
 
 // @types/rails__actioncable 8.x narrowed Consumer to Action Cable's *documented* surface,
 // dropping `connection` and the Connection/ConnectionMonitor types entirely. The runtime
@@ -52,12 +53,13 @@ type EditorProps = {
   currentUser: User,
   document: Document,
   editable?: boolean,
+  blockComments?: BlockCommentsOptions,
   onEditorReady?: (editor: EditorInstance) => void,
   onConnectionChange?: (isStale: boolean) => void,
   onDocumentChange?: (blocks: EditorBlock[]) => void,
 }
 
-const Editor = ({currentUser, document, editable = true, databaseId = "", onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
+const Editor = ({currentUser, document, editable = true, databaseId = "", blockComments, onEditorReady, onConnectionChange, onDocumentChange}: EditorProps) => {
   const [editor, setEditor] = useState<EditorInstance | undefined>(undefined);
   const [initialStateReceived, setInitialStateReceived] = useState(false);
   const [, setConnectionStale] = useState(false);
@@ -139,6 +141,7 @@ const Editor = ({currentUser, document, editable = true, databaseId = "", onEdit
           threadStore,
         },
         resolveUsers,
+        extensions: blockComments ? [blockCommentsExtension(blockComments)] : [],
         collaboration: {
           provider: acProvider,
           fragment: ydoc.getXmlFragment("document-store"),

@@ -69,6 +69,7 @@
          data-editor-current-user-value="<%= current_user.to_react_props.to_json %>"
          data-editor-database-id-value="<%= database_id %>"
          data-editor-features-value="<%= enabled_feature_names.to_json %>"
+         data-editor-block-comments-value="<%= block_comments_props(@document).to_json %>"
          data-editor-table-of-contents-outlet="[data-controller~='table-of-contents']">
   <input type="hidden" name="content_blocks" form="save-version-form" data-editor-target="contentBlocksInput">
   <div data-editor-target="editorRoot" class="flex flex-col flex-1"></div>
