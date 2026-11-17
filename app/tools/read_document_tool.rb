@@ -12,7 +12,7 @@ class ReadDocumentTool < ApplicationTool
         type: :boolean,
         description: "End every block with its id as a ` ^id` marker (a `^id` line of its own after code, tables and media). " \
                      "Keep the markers when you update the document and the blocks keep their ids, so comments and links " \
-                     "to them survive. Default false."
+                     "to them survive. Blocks that have comments always carry their marker, whatever this is. Default false."
       },
     },
     required: [:id]

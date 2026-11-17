@@ -92,6 +92,12 @@ class Document < ApplicationRecord
     draft? ? to_blocks : versions.last.content_blocks
   end
 
+  # The blocks that have comments. A reader that sends the document back must keep their ids, or
+  # the comments lose the block they are about.
+  def commented_block_ids
+    comments.anchored.distinct.pluck(:anchor_block_id)
+  end
+
   # The YAML frontmatter block the importers read back: `title`, then `tags` (names without a
   # leading #), `fundamento/icon` and `fundamento/color`, each only when present. Dumped by
   # Psych from a Hash, never interpolated, so awkward titles stay a single string value.

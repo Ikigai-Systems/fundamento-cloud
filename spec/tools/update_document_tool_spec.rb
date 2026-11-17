@@ -75,6 +75,27 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect(block_ids(note) & ids_before).to be_empty
       end
+
+      it "keeps the id of a block that has a comment even when it was read without block_ids" do
+        title_id, first_id, second_id = block_ids(note)
+        note.comments.create!(
+          organization: organization,
+          organization_membership: organization_memberships(:om_is_pawel),
+          content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "About the first one"}]}],
+          anchor_block_id: first_id
+        )
+        response = ReadDocumentTool.call(id: note.id, server_context: server_context)
+        markdown = JSON.parse(response.content.first[:text])["content"]
+
+        expect(markdown.scan("^").size).to eq(1)
+
+        UpdateDocumentTool.call(id: note.id, markdown: markdown.sub("First", "First, edited"), server_context: server_context)
+
+        ids = block_ids(note)
+        expect(ids).to include(first_id)
+        expect(ids & [title_id, second_id]).to be_empty
+        expect(note.versions.last.content_blocks.second["content"].first["text"]).to eq("First, edited")
+      end
     end
 
     # What an open editor sees: the real converter, and the stored state as the editor holds it.
