@@ -7,6 +7,7 @@ import CurrentSpaceContext from "../contextes/CurrentSpaceContext";
 import queryClient from "../contextes/ReactQueryClient";
 import {FeaturesContext} from "../contextes/FeaturesContext";
 import type {Document, Space, User} from "../types";
+import type {BlockCommentsOptions} from "../components/editor/blockComments";
 import {publishContentUpdate} from "../content_updated";
 
 export interface EditorConsumerController {
@@ -28,6 +29,7 @@ export default class extends Controller {
     currentUser: Object,
     databaseId: String,
     features: Array,
+    blockComments: Object,
   };
 
   declare editorRootTarget: HTMLElement;
@@ -40,6 +42,8 @@ export default class extends Controller {
   declare currentUserValue: User;
   declare databaseIdValue: string;
   declare featuresValue: string[];
+  declare blockCommentsValue: BlockCommentsOptions;
+  declare hasBlockCommentsValue: boolean;
 
   private root: Root | undefined;
   private editorInstance: EditorInstance | undefined;
@@ -117,6 +121,7 @@ export default class extends Controller {
               currentUser={this.currentUserValue}
               document={this.documentValue}
               databaseId={this.databaseIdValue}
+              blockComments={this.hasBlockCommentsValue ? this.blockCommentsValue : undefined}
               onEditorReady={(e) => this.onEditorReady(e)}
               onConnectionChange={(s) => this.onConnectionChange(s)}
               onDocumentChange={(b) => this.onDocumentChange(b)}
