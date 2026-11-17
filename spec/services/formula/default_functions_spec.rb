@@ -370,4 +370,14 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
   end
+
+  describe "TimeZone" do
+    it "defaults to UTC" do
+      expect(engine.evaluate("TimeZone()")).to eq("UTC")
+    end
+
+    it "returns the zone the evaluation runs in" do
+      expect(engine.evaluate("TimeZone()", time_zone: "Europe/Warsaw")).to eq("Europe/Warsaw")
+    end
+  end
 end

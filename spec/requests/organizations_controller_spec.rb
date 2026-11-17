@@ -38,6 +38,40 @@ RSpec.describe OrganizationsController, type: :request do
     end
   end
 
+  describe "time zone field" do
+    before { sign_in pawel }
+
+    it "shows the organization's time zone on the edit form" do
+      is_org.update!(time_zone: "Europe/Warsaw")
+
+      get edit_organization_path(is_org)
+
+      expect(response.body).to include('<option selected="selected" value="Europe/Warsaw">')
+    end
+
+    it "offers the time zone on the new organization form" do
+      get new_organization_path
+
+      expect(response.body).to include('data-controller="browser-time-zone"')
+    end
+  end
+
+  describe "PATCH #update" do
+    before { sign_in pawel }
+
+    it "changes the time zone" do
+      patch organization_path(is_org), params: { organization: { time_zone: "Europe/Warsaw" } }
+
+      expect(is_org.reload.time_zone).to eq("Europe/Warsaw")
+    end
+
+    it "keeps the time zone when the new one is invalid" do
+      patch organization_path(is_org), params: { organization: { time_zone: "Mars/Olympus" } }
+
+      expect(is_org.reload.time_zone).to eq("UTC")
+    end
+  end
+
   describe "POST #select" do
     context "when user has access to the organization" do
       before do
