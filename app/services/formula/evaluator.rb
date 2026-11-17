@@ -208,6 +208,10 @@ class Formula::Evaluator
     right = eval_node(node[:right])
     operator = node[:operator]
 
+    if Formula::TypedArithmetic.typed?(left) || Formula::TypedArithmetic.typed?(right)
+      return Formula::TypedArithmetic.apply(operator, left, right)
+    end
+
     case operator
     when '+'
       left + right

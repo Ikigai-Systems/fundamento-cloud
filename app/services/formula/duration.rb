@@ -23,6 +23,10 @@ class Formula::Duration
     "y" => 365 * DAY, "yr" => 365 * DAY, "yrs" => 365 * DAY, "year" => 365 * DAY, "years" => 365 * DAY
   }.freeze
 
+  ROLL_UP = [[DAY, "day", "days"], [HOUR, "hr", "hrs"], [MINUTE, "min", "mins"], [1, "sec", "secs"]].freeze
+
+  ROLL_UP_UNITS = { "day" => 0, "hour" => 1, "minute" => 2, "second" => 3 }.freeze
+
   NUMBER = /\d+(?:[.,]\d+)?/
   UNIT = /[a-z]+/
   CLOCK = /\A(\d+):(\d{1,2})(?::(\d{1,2}))?\z/
@@ -94,18 +98,50 @@ class Formula::Duration
     seconds.negative?
   end
 
-  def to_s
-    remaining = seconds.abs
-    days, remaining = remaining.divmod(DAY)
-    hours, remaining = remaining.divmod(HOUR)
-    minutes, secs = remaining.divmod(MINUTE)
+  def +(other)
+    self.class.new(seconds + other.seconds)
+  end
 
-    parts = [[days, "day", "days"], [hours, "hr", "hrs"], [minutes, "min", "mins"], [secs, "sec", "secs"]]
-      .reject { |count, _, _| count.zero? }
-      .map { |count, singular, plural| "#{count} #{count == 1 ? singular : plural}" }
+  def -(other)
+    self.class.new(seconds - other.seconds)
+  end
+
+  def -@
+    self.class.new(-seconds)
+  end
+
+  def *(factor)
+    self.class.new(seconds * factor)
+  end
+
+  # A duration divided by a number is a duration; by another duration it is a plain ratio.
+  def /(other)
+    return seconds.to_f / other.seconds if other.is_a?(Formula::Duration)
+
+    self.class.new(seconds.to_r / other)
+  end
+
+  # Units run from max_unit down; precision limits how many non-zero units are shown.
+  def format(max_unit: "days", precision: nil)
+    start = ROLL_UP_UNITS[max_unit.to_s.downcase.chomp("s")] or raise ArgumentError, "Unknown unit: #{max_unit}"
+
+    remaining = seconds.abs
+    parts = ROLL_UP.drop(start).filter_map do |size, singular, plural|
+      count, remaining = remaining.divmod(size)
+      "#{count} #{count == 1 ? singular : plural}" unless count.zero?
+    end
+    parts = parts.first(precision.to_i) if precision
 
     return "0 mins" if parts.empty?
 
     "#{"-" if negative?}#{parts.join(" ")}"
+  end
+
+  def to_s
+    format
+  end
+
+  def as_json(*)
+    to_s
   end
 end

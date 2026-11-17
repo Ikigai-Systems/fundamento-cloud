@@ -6,7 +6,7 @@ class Formula::Engine
   end
 
   # Parse and evaluate a formula string
-  def evaluate(formula, context: {}, current_value: nil, action_executor: nil, additional_functions: @additional_functions, time_zone: "UTC")
+  def evaluate(formula, context: {}, current_value: nil, action_executor: nil, additional_functions: @additional_functions, time_zone: "UTC", clock: nil)
     # Get default functions
     functions = Formula::DefaultFunctions.get_functions.dup
 
@@ -18,7 +18,7 @@ class Formula::Engine
       functions.merge!(Formula::DefaultFunctions.context_functions(context))
     end
 
-    functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone))
+    functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone, clock:))
     
     # Create evaluator with functions and action executor
     evaluator = Formula::Evaluator.new(context:, functions:, action_executor:)
