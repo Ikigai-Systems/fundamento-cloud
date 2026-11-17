@@ -76,7 +76,7 @@ const NOT_PAGES = {
   ]),
   ...reasons("loaded into a page, not visited on its own", [
     "/d/:id/sidebar", "/d/:id/hierarchy", "/d/:id/select_destination", "/s/:id/sidebar",
-    "/t/:id/sidebar", "/favorites", "/mentions", "/inline_comments/threads/:thread_id",
+    "/t/:id/sidebar", "/favorites", "/mentions",
   ]),
   ...reasons("JSON for the page's scripts", [
     "/d", "/t", "/search", "/users", "/users/:id", "/s/suggest_owners",
