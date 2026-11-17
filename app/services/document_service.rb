@@ -178,7 +178,7 @@ class DocumentService
 
   private
 
-  # Markdown read with block_ids carries " ^id" markers, which keep a block's id across an
+  # Markdown read with block_ids, or of a block that has comments, carries " ^id" markers, which keep a block's id across an
   # update: whatever points at the block (a comment, a link) still finds it. Only markers naming
   # a block of this document count; any other "^word" is the author's own text. Markdown with no
   # marker skips the lookup, which is a conversion of the live content.
