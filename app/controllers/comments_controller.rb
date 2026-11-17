@@ -3,9 +3,13 @@ class CommentsController < ApplicationController
 
   layout "turbo_rails/frame"
 
+  ANCHOR_PARAMS = %i[anchor_block_id anchor_quote anchor_prefix anchor_suffix anchor_text].freeze
+
   after_action :verify_authorized
 
   before_action :load_resource
+
+  helper_method :comments_frame_id
   before_action :ensure_turbo_request, except: [:show]
 
   def index
@@ -17,7 +21,7 @@ class CommentsController < ApplicationController
   def new
     authorize @resource, :create?
 
-    @comment = @resource.comments.new
+    @comment = @resource.comments.new(anchor_params)
   end
 
   def create
@@ -70,8 +74,17 @@ class CommentsController < ApplicationController
 
   protected
 
+  # The frame the list is in, which a block's comments have to themselves so that adding or
+  # editing one reloads that block and not the document's list.
+  def comments_frame_id
+    ObjectComment.frame_id_for(params[:block_id])
+  end
+
+  # The comments on the document, or those on one of its blocks when a block is named. A block's
+  # comments are not part of the document's list: they are shown where the block is.
   def load_comments
-    @resource.comments.order(:created_at)
+    comments = params[:block_id].present? ? @resource.comments.on_block(params[:block_id]) : @resource.comments.unanchored
+    comments.order(:created_at)
   end
 
   def ensure_turbo_request
@@ -79,7 +92,12 @@ class CommentsController < ApplicationController
   end
 
   def create_params
-    params.require(:comment).permit(:content)
+    params.require(:comment).permit(:content, *ANCHOR_PARAMS)
+  end
+
+  # What the form that starts a comment on a block carries over to the one that saves it.
+  def anchor_params
+    params.permit(*ANCHOR_PARAMS)
   end
 
   def update_params

@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "object_comments" do %>
+<%= turbo_frame_tag comments_frame_id do %>
   <%= turbo_stream_from ["object_comments", @resource] %>
 
   <div class="flex flex-col gap-3">

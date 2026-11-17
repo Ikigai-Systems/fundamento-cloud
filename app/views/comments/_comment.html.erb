@@ -17,7 +17,7 @@
         restore_comment_path(comment, object_gid: resource.to_gid_param),
         method: :post,
         class: "ml-auto text-sm text-blue-600 hover:text-blue-800 underline",
-        data: { turbo_frame: "object_comments" } %>
+        data: { turbo_frame: comment.comments_frame_id } %>
     <% end %>
   </div>
 <% else %>
@@ -66,7 +66,7 @@
               class: "rounded-button hover:text-red-600",
               aria: { label: "Delete comment" },
               title: "Delete",
-              data: {turbo_frame: "object_comments"} do %>
+              data: {turbo_frame: comment.comments_frame_id} do %>
             <i class="icon-[tabler--trash]"></i>
           <% end %>
         </div>
