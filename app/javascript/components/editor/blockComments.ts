@@ -1,6 +1,6 @@
 import {createExtension, ExtensionOptions} from "@blocknote/core";
 import {Plugin, PluginKey} from "prosemirror-state";
-import {Decoration, DecorationSet, EditorView} from "prosemirror-view";
+import {Decoration, DecorationSet} from "prosemirror-view";
 
 export type BlockCommentsOptions = {
   // GlobalID of the document the comments belong to.
@@ -13,7 +13,7 @@ const pluginKey = new PluginKey<Set<string>>("blockComments");
 
 // The frame a block's comments are loaded into. It matches ObjectComment.frame_id_for, which is
 // what a new comment on the block reloads.
-export const blockCommentsFrameId = (blockId: string) => `object_comments_block_${blockId}`;
+const blockCommentsFrameId = (blockId: string) => `object_comments_block_${blockId}`;
 
 const commentsFrame = (objectGid: string, blockId: string) => {
   const wrapper = document.createElement("div");
@@ -39,10 +39,7 @@ export const blockCommentsExtension = createExtension(({options}: ExtensionOptio
       key: pluginKey,
       state: {
         init: () => new Set(options.blockIds),
-        apply: (transaction, blockIds) => {
-          const added: string | undefined = transaction.getMeta(pluginKey);
-          return added ? new Set(blockIds).add(added) : blockIds;
-        },
+        apply: (_transaction, blockIds) => blockIds,
       },
       props: {
         decorations(state) {
@@ -73,8 +70,3 @@ export const blockCommentsExtension = createExtension(({options}: ExtensionOptio
     }),
   ],
 }));
-
-// Starts showing the comments of a block that had none when the editor was created.
-export const showBlockComments = (view: EditorView, blockId: string) => {
-  view.dispatch(view.state.tr.setMeta(pluginKey, blockId));
-}
