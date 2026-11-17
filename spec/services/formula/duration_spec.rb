@@ -36,6 +36,30 @@ RSpec.describe Formula::Duration do
     end
   end
 
+  describe "#to_s" do
+    let(:duration) { described_class.new(100 * 3600 + 5 * 60 + 9) }
+
+    it "stops rolling up at max_unit" do
+      expect(duration.to_s).to eq("4 days 4 hrs 5 mins 9 secs")
+      expect(duration.to_s(max_unit: "hours")).to eq("100 hrs 5 mins 9 secs")
+      expect(duration.to_s(max_unit: "minute")).to eq("6005 mins 9 secs")
+    end
+
+    it "keeps the first non-zero units up to precision" do
+      expect(duration.to_s(precision: 2)).to eq("4 days 4 hrs")
+    end
+
+    it "rejects an unknown unit" do
+      expect { duration.to_s(max_unit: "weeks") }.to raise_error(ArgumentError, /Unknown unit/)
+    end
+  end
+
+  describe "#as_json" do
+    it "is the canonical text" do
+      expect(described_class.new(5400).as_json).to eq("1 hr 30 mins")
+    end
+  end
+
   describe "comparison" do
     it "orders by length and treats equal lengths as equal" do
       expect(described_class.new(60)).to be < described_class.new(120)

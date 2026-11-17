@@ -215,10 +215,9 @@ class Formula::DefaultFunctions
   end
 
   # Functions that depend on the zone the formula evaluates in (the organization's).
-  def self.time_zone_functions(time_zone)
-    {
-      "TimeZone" => -> { time_zone },
-    }.freeze
+  # The clock is injectable so specs can pin "now"; it returns a Time.
+  def self.time_zone_functions(time_zone, clock: nil)
+    { "TimeZone" => -> { time_zone } }.merge(Formula::DateTimeFunctions.build(time_zone, clock:)).freeze
   end
 
   private
