@@ -122,7 +122,7 @@ class Formula::Duration
   end
 
   # Units run from max_unit down; precision limits how many non-zero units are shown.
-  def format(max_unit: "days", precision: nil)
+  def to_s(max_unit: "days", precision: nil)
     start = ROLL_UP_UNITS[max_unit.to_s.downcase.chomp("s")] or raise ArgumentError, "Unknown unit: #{max_unit}"
 
     remaining = seconds.abs
@@ -135,10 +135,6 @@ class Formula::Duration
     return "0 mins" if parts.empty?
 
     "#{"-" if negative?}#{parts.join(" ")}"
-  end
-
-  def to_s
-    format
   end
 
   def as_json(*)

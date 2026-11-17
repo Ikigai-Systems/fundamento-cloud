@@ -44,15 +44,15 @@ class Formula::DateTimeFunctions
       "Minutes" => ->(n) { Formula::Duration.new(n * DURATION_UNITS["minute"]) },
       "Seconds" => ->(n) { Formula::Duration.new(n) },
       "ToDuration" => method(:to_duration),
-      "Year" => ->(value) { local(value).year },
-      "Month" => ->(value) { local(value).month },
-      "Day" => ->(value) { local(value).day },
-      "Weekday" => ->(value) { local(value).cwday },
+      "Year" => ->(value) { to_date(value).year },
+      "Month" => ->(value) { to_date(value).month },
+      "Day" => ->(value) { to_date(value).day },
+      "Weekday" => ->(value) { to_date(value).cwday },
       "Hour" => ->(value) { local_time(value).hour },
       "Minute" => ->(value) { local_time(value).min },
       "Second" => ->(value) { local_time(value).sec },
-      "DayName" => ->(value) { DAY_NAMES[local(value).cwday - 1] },
-      "MonthName" => ->(value) { MONTH_NAMES[local(value).month - 1] },
+      "DayName" => ->(value) { DAY_NAMES[to_date(value).cwday - 1] },
+      "MonthName" => ->(value) { MONTH_NAMES[to_date(value).month - 1] },
       "ToDays" => ->(duration) { in_unit(duration, "day") },
       "ToHours" => ->(duration) { in_unit(duration, "hour") },
       "ToMinutes" => ->(duration) { in_unit(duration, "minute") },
@@ -60,10 +60,10 @@ class Formula::DateTimeFunctions
       "ToWeeks" => ->(duration) { in_unit(duration, "week") },
       "DateAdd" => method(:date_add),
       "DateDiff" => method(:date_diff),
-      "StartOfWeek" => ->(value) { local(value).beginning_of_week },
-      "StartOfMonth" => ->(value) { local(value).beginning_of_month },
-      "StartOfYear" => ->(value) { local(value).beginning_of_year },
-      "EndOfMonth" => ->(value) { local(value).end_of_month },
+      "StartOfWeek" => ->(value) { to_date(value).beginning_of_week },
+      "StartOfMonth" => ->(value) { to_date(value).beginning_of_month },
+      "StartOfYear" => ->(value) { to_date(value).beginning_of_year },
+      "EndOfMonth" => ->(value) { to_date(value).end_of_month },
       "FormatDate" => method(:format_date),
       "FormatDuration" => method(:format_duration)
     }
@@ -104,18 +104,20 @@ class Formula::DateTimeFunctions
     Formula::Duration.parse(value) or raise "Cannot read #{value.inspect} as a duration"
   end
 
-  def local(value)
-    Formula::TypedArithmetic.datetime?(value) ? value.in_time_zone(@zone).to_date : to_date(value)
-  end
-
   def local_time(value)
-    Formula::TypedArithmetic.date?(value) ? to_datetime(value) : value.in_time_zone(@zone)
+    to_datetime(value).in_time_zone(@zone)
   end
 
   def in_unit(duration, unit)
     raise "Expected a Duration, got #{Formula::TypedArithmetic.type_name(duration)}" unless duration.is_a?(Formula::Duration)
 
     duration.seconds.to_f / DURATION_UNITS.fetch(unit)
+  end
+
+  def ensure_moment(value)
+    return if Formula::TypedArithmetic.moment?(value)
+
+    raise "Expected a Date or DateTime, got #{Formula::TypedArithmetic.type_name(value)}, use ToDate or ToDateTime"
   end
 
   def unit_name(unit)
@@ -125,6 +127,7 @@ class Formula::DateTimeFunctions
   # Days, weeks, months and years follow the calendar (a month from Jan 31 is Feb 28 or 29);
   # hours, minutes and seconds are exact and need a DateTime.
   def date_add(value, amount, unit)
+    ensure_moment(value)
     unit = unit_name(unit)
     if DURATION_UNITS.key?(unit) && DURATION_UNITS[unit] < DURATION_UNITS["day"]
       raise "A Date has no #{unit}s, use a DateTime" if Formula::TypedArithmetic.date?(value)
@@ -142,8 +145,13 @@ class Formula::DateTimeFunctions
   end
 
   def date_diff(from, to, unit)
+    ensure_moment(from)
+    ensure_moment(to)
     unit = unit_name(unit)
-    return whole_months(local(from), local(to)) / (unit == "year" ? 12 : 1) if CALENDAR_UNITS.include?(unit)
+    if CALENDAR_UNITS.include?(unit)
+      months = whole_months(to_date(from), to_date(to))
+      return unit == "year" ? months.abs / 12 * (months <=> 0) : months
+    end
     raise "Unknown unit: #{unit}" unless DURATION_UNITS.key?(unit)
 
     both_dates = Formula::TypedArithmetic.date?(from) && Formula::TypedArithmetic.date?(to)
@@ -194,7 +202,7 @@ class Formula::DateTimeFunctions
   def format_duration(duration, max_unit = "days", precision = nil, style = nil)
     raise "Expected a Duration, got #{Formula::TypedArithmetic.type_name(duration)}" unless duration.is_a?(Formula::Duration)
 
-    text = duration.format(max_unit:, precision:)
+    text = duration.to_s(max_unit:, precision:)
     style.to_s.downcase == "ago" && duration.negative? ? "#{text.delete_prefix("-")} ago" : text
   end
 end

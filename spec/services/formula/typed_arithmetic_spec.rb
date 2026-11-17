@@ -95,6 +95,7 @@ RSpec.describe Formula::TypedArithmetic do
       expect { evaluate("Date(2026, 1, 1) - DateTime(2026, 1, 1, 9)") }.to raise_error("Cannot subtract Date and DateTime")
       expect { evaluate("DateTime(2026, 1, 1, 9) + 5") }.to raise_error("Cannot add DateTime and Number")
       expect { evaluate('Hours(1) + If(True(), "soon", "later")') }.to raise_error("Cannot add Duration and Text")
+      expect { evaluate('If(True(), "soon", "later") + Today()') }.to raise_error("Cannot add Text and Date")
       expect { evaluate("Date(2026, 1, 1) * 2") }.to raise_error("Cannot multiply Date and Number")
       expect { evaluate("5 / Hours(1)") }.to raise_error("Cannot divide Number and Duration")
       expect { evaluate("Hours(1) * Hours(1)") }.to raise_error("Cannot multiply Duration and Duration")

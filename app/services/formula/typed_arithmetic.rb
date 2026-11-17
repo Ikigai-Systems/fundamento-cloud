@@ -45,13 +45,13 @@ module Formula::TypedArithmetic
 
   def self.add(left, right)
     # Addition commutes: Days(7) + Date(...) and 30 + Date(...) read as the date moved forward.
-    left, right = right, left if !typed?(left) || (left.is_a?(Formula::Duration) && moment?(right))
+    first, second = !typed?(left) || (left.is_a?(Formula::Duration) && moment?(right)) ? [right, left] : [left, right]
 
-    case [type_name(left), type_name(right)]
-    in ["Duration", "Duration"] then left + right
-    in ["Date", "Duration"] then date_plus_seconds(left, right.seconds)
-    in ["Date", "Number"] then left + whole_days(right)
-    in ["DateTime", "Duration"] then left + right.seconds
+    case [type_name(first), type_name(second)]
+    in ["Duration", "Duration"] then first + second
+    in ["Date", "Duration"] then date_plus_seconds(first, second.seconds)
+    in ["Date", "Number"] then first + whole_days(second)
+    in ["DateTime", "Duration"] then first + second.seconds
     else unsupported("add", left, right)
     end
   end

@@ -29,7 +29,9 @@ RSpec.describe Formula::DateTimeFunctions do
     end
 
     it "uses the real clock when none is given" do
-      expect(engine.evaluate("Today()")).to eq(Time.now.utc.to_date).or eq(Time.now.utc.to_date - 1)
+      travel_to(Time.utc(2026, 5, 6, 7, 8, 9)) do
+        expect(engine.evaluate("Today()")).to eq(Date.new(2026, 5, 6))
+      end
     end
   end
 
@@ -150,6 +152,17 @@ RSpec.describe Formula::DateTimeFunctions do
       expect(evaluate('DateDiff(Date(2026, 1, 15), Date(2026, 4, 15), "months")')).to eq(3)
       expect(evaluate('DateDiff(Date(2026, 4, 15), Date(2026, 1, 16), "months")')).to eq(-2)
       expect(evaluate('DateDiff(Date(2020, 3, 1), Date(2026, 2, 28), "years")')).to eq(5)
+    end
+
+    it "counts years toward zero when going backwards" do
+      expect(evaluate('DateDiff(Date(2026, 3, 1), Date(2025, 2, 1), "years")')).to eq(-1)
+      expect(evaluate('DateDiff(Date(2026, 3, 1), Date(2025, 2, 1), "months")')).to eq(-13)
+    end
+
+    it "needs dates, not text or numbers" do
+      expect { evaluate('DateAdd("2026-01-01", 1, "days")') }.to raise_error(/Expected a Date or DateTime, got Text/)
+      expect { evaluate('DateDiff(Today(), 5, "days")') }.to raise_error(/got Number/)
+      expect { evaluate("Hour(5)") }.to raise_error(/Cannot read 5.0 as a date/)
     end
 
     it "measures date-times in hours" do
