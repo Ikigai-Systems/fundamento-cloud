@@ -115,8 +115,6 @@ class Table < ApplicationRecord
   end
 
   def data_to_json(evaluate_formulas: false, evaluate_as: nil)
-    assert !evaluate_formulas || evaluate_as.present?, "evaluate_as must be set!"
-
     reader = Tables::RowReader.new(self, evaluate_as:)
 
     {

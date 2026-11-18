@@ -17,6 +17,8 @@ class Tables::RowReader
   # Rows keyed by column id, as TableDataBlueprint and the grid expect them. A formula column
   # holds its result as cell text, or the error message.
   def grid_rows(evaluate_formulas:)
+    require_evaluator! if evaluate_formulas
+
     each_row do |row, values_by_column_id|
       formula_row = formula_row_for(values_by_column_id) if evaluate_formulas && columns.any?(&:formula?)
 
@@ -35,7 +37,7 @@ class Tables::RowReader
   # Rows as a formula sees a table through Table("..."): values keyed by column name and id, typed
   # from the column (see Tables::FormulaValues), and a formula column holds its typed result.
   def typed_rows
-    raise ArgumentError, "evaluate_as must be set!" if @evaluate_as.blank?
+    require_evaluator!
 
     each_row do |row, values_by_column_id|
       formula_row = formula_row_for(values_by_column_id)
@@ -58,6 +60,10 @@ class Tables::RowReader
   end
 
   private
+
+  def require_evaluator!
+    raise ArgumentError, "evaluate_as must be set!" if @evaluate_as.blank?
+  end
 
   def each_row
     cells_by_row_and_column = @table.cells.index_by { |cell| [cell.row_id, cell.column_id] }

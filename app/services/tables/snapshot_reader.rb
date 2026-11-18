@@ -39,7 +39,7 @@ module Tables
 
     def row_ids = payload["rows"]
 
-    # Mirrors Table#data_to_json's shape, through the same Tables::Column#grid_value. Formula
+    # Mirrors Tables::RowReader#grid_rows' shape, through the same Tables::Column#grid_value. Formula
     # columns are left null: their values were never stored, and re-evaluating them now
     # would run against a workspace that has since changed.
     def rows
