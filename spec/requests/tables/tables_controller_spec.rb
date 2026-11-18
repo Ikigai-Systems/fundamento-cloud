@@ -241,6 +241,13 @@ RSpec.describe Tables::TablesController, type: :request do
       expect(preview('CurrentRow("Start") - Date(2024, 1, 1)')["result"]).to eq("30 days")
     end
 
+    it "reads the result of a formula column, even one that comes later" do
+      add_column("Later", :formula, previous: @finish, formula: "CurrentRow(\"Start\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+      @finish.update!(formula: "CurrentRow(\"Later\") + Days(1)")
+
+      expect(preview('CurrentRow("End") - CurrentRow("Start")')["result"]).to eq("2 days")
+    end
+
     it "lets a formula read a column by its id, as a formula column can" do
       start = table.columns.find_by!(name: "Start")
 

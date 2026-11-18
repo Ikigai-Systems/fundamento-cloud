@@ -120,61 +120,33 @@ class Table < ApplicationRecord
     columns_in_order = self.columns_in_order
     rows_in_order = self.rows_in_order
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
-    columns_by_id = columns_in_order.index_by(&:id)
     time_zone = self.organization.time_zone
 
-    formulas_to_evaluate = []
+    formula_rows = {}
 
     jsonized_rows = rows_in_order.map do |row|
+      values_by_column_id = columns_in_order.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
+
       if evaluate_formulas
-        values_by_column_id = columns_in_order.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
-        current_row_values = Tables::FormulaValues.current_row(columns_in_order, values_by_column_id, time_zone)
-
-        additional_context = {
-          "currentRow" => current_row_values
-        }
-
-        columns_in_order.each_with_object({}) do |column, hash|
-          if column.formula?
-            formulas_to_evaluate << {
-              row_id: row.id,
-              column_id: column.id,
-              formula: column.formula,
-              additional_context: additional_context,
-            }
-          else
-            if column.kind == "checkbox"
-              hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
-            else
-              hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
-            end
-          end
+        formula_rows[row.id] = Tables::FormulaRow.new(columns_in_order, values_by_column_id, time_zone) do |formula, current_row|
+          FormulaService.evaluate(formula, space, evaluate_as, additional_context: { "currentRow" => current_row })
         end
-      else
-        columns_in_order.each_with_object({}) do |column, hash|
-          if column.kind == "checkbox"
-            hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value == "t"
-          else
-            hash[column.id] = cells_by_rows_and_columns.dig([row.id, column.id])&.value
-          end
-        end
+      end
+
+      columns_in_order.each_with_object({}) do |column, hash|
+        next if evaluate_formulas && column.formula?
+
+        hash[column.id] = column.kind == "checkbox" ? values_by_column_id[column.id] == "t" : values_by_column_id[column.id]
       end.merge({ "id" => row.id }) # this is for Rowstack convenience
     end
 
-    unless formulas_to_evaluate.empty?
-      evaluations = formulas_to_evaluate.map do |e|
-        { formula: e[:formula], additional_context: e[:additional_context] }
-      end
+    jsonized_by_id = jsonized_rows.index_by { |jsonized| jsonized["id"] }
+    formula_rows.each do |row_id, formula_row|
+      jsonized_row = jsonized_by_id[row_id]
 
-      results = FormulaService.batch_evaluate(evaluations, space, evaluate_as)
-
-      results.each_with_index do |formula_result, index|
-        formula_evaluation = formulas_to_evaluate[index]
-        result = formula_result["error"] || formula_result["result"]
-        column = columns_by_id[formula_evaluation[:column_id]]
-        result = Tables::FormulaValues.serialized(column, result, time_zone) unless formula_result["error"]
-
-        jsonized_rows.find { |row| row["id"] == formula_evaluation[:row_id] }[formula_evaluation[:column_id]] = result
+      columns_in_order.select(&:formula?).each do |column|
+        evaluation = formula_row.evaluation_for(column)
+        jsonized_row[column.id] = evaluation["error"] || Tables::FormulaValues.serialized(column, evaluation["result"], time_zone)
       end
     end
 

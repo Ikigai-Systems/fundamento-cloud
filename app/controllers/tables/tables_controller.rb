@@ -299,16 +299,15 @@ class Tables::TablesController < ApplicationController
     time_zone = @table.organization.time_zone
     columns = @table.columns_in_order
     values_by_column_id = row.cells.to_h { |cell| [cell.column_id, cell.value] }
-
-    additional_context = {
-      "currentRow" => Tables::FormulaValues.current_row(columns, values_by_column_id, time_zone)
-    }
+    current_row = Tables::FormulaRow.new(columns, values_by_column_id, time_zone) do |column_formula, formula_row|
+      FormulaService.evaluate(column_formula, @table.space, current_organization_membership, additional_context: { "currentRow" => formula_row })
+    end
 
     formula_evaluation = FormulaService.evaluate(
       formula,
       @table.space,
       current_organization_membership,
-      additional_context: additional_context
+      additional_context: { "currentRow" => current_row }
     )
 
     # Shown as the text the formula column would hold, in the format of the column being edited

@@ -25,7 +25,8 @@ describe("Table duration column", function () {
       "table = Table.find('orders')",
       "start = table.columns.create!(name: 'Start', organization_id: 'is', kind: :date, previous_column_id: 'orders_who', configuration: { 'dateStoredFormat' => 3 })",
       "length = table.columns.create!(name: 'Length', organization_id: 'is', kind: :duration, previous_column: start)",
-      "table.columns.create!(name: 'End', organization_id: 'is', kind: :formula, previous_column: length, formula: 'CurrentRow(\"Start\") + CurrentRow(\"Length\")', configuration: { 'dateStoredFormat' => 3 })",
+      "finish = table.columns.create!(name: 'End', organization_id: 'is', kind: :formula, previous_column: length, formula: 'CurrentRow(\"Start\") + CurrentRow(\"Length\")', configuration: { 'dateStoredFormat' => 3 })",
+      "table.columns.create!(name: 'Elapsed', organization_id: 'is', kind: :formula, previous_column: finish, formula: 'CurrentRow(\"End\") - Date(2024, 1, 1)')",
       "table.cells.create!(organization_id: 'is', row_id: 'orders_row_1', column: start, value: '2024-01-31')",
       "table.cells.create!(organization_id: 'is', row_id: 'orders_row_1', column: length, value: '2 days')",
       "'OK'",
@@ -44,6 +45,16 @@ describe("Table duration column", function () {
 
     cy.contains('[role="gridcell"]', "2 days").should("exist");
     cy.contains('[role="gridcell"]', "2024-02-02").should("exist");
+  });
+
+  it("lets a formula column use the result of the formula column before it", function () {
+    cy.visit("/t/orders/edit");
+
+    cy.get(".ikigai-rowstack-overrides").should("exist");
+    cy.contains("Changes are saved automatically").should("be.visible");
+
+    // End is 2024-02-02, a date, so no conversion is needed to subtract another date from it
+    cy.contains('[role="gridcell"]', "32 days").should("exist");
   });
 
   it("normalizes what is typed into a duration cell", function () {

@@ -43,15 +43,4 @@ class FormulaService
       }
     end
   end
-
-  def self.batch_evaluate(evaluations, space = nil, organization_membership = nil)
-    evaluations.map do |evaluation|
-      evaluate(
-        evaluation[:formula],
-        space,
-        organization_membership,
-        additional_context: evaluation[:additional_context],
-      )
-    end
-  end
 end
