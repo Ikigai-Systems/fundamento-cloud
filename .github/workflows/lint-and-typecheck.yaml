@@ -84,3 +84,7 @@ jobs:
       - name: Typecheck
         run: npm run typecheck --if-present
         working-directory: ${{ matrix.dir }}
+
+      - name: Unit tests
+        run: npm run test:unit --if-present
+        working-directory: ${{ matrix.dir }}
