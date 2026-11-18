@@ -249,11 +249,6 @@ RSpec.describe Formula::DateTimeFunctions do
       expect(evaluate("WorkDays(Date(2026, 11, 23), Date(2026, 11, 16))")).to eq(-6)
       expect(evaluate("WorkDays(Date(2026, 11, 16), Date(2026, 11, 20), Date(2026, 11, 18))")).to eq(4)
     end
-
-    it "has the Excel names" do
-      expect(evaluate("WORKDAY(Date(2026, 11, 20), 1)")).to eq(Date.new(2026, 11, 23))
-      expect(evaluate("NETWORKDAYS(Date(2026, 11, 16), Date(2026, 11, 20))")).to eq(5)
-    end
   end
 
   describe "ISO weeks" do
@@ -286,27 +281,6 @@ RSpec.describe Formula::DateTimeFunctions do
     it "rejects an unknown zone and a non-DateTime" do
       expect { evaluate('ToTimeZone(DateTime(2026, 1, 1), "Mars/Base")') }.to raise_error(/Unknown time zone: Mars\/Base/)
       expect { evaluate('ToTimeZone(Date(2026, 1, 1), "UTC")') }.to raise_error(/needs a DateTime, got Date/)
-    end
-  end
-
-  describe "Excel aliases" do
-    it "adds months with EDATE and finds month ends with EOMONTH" do
-      expect(evaluate("EDATE(Date(2026, 1, 31), 1)")).to eq(Date.new(2026, 2, 28))
-      expect(evaluate("EDATE(Date(2026, 3, 15), -2)")).to eq(Date.new(2026, 1, 15))
-      expect(evaluate("EOMONTH(Date(2026, 1, 15), 0)")).to eq(Date.new(2026, 1, 31))
-      expect(evaluate("EOMONTH(Date(2026, 1, 15), 1)")).to eq(Date.new(2026, 2, 28))
-    end
-
-    it "counts whole years, months and days with DATEDIF" do
-      expect(evaluate('DATEDIF(Date(2020, 3, 15), Date(2026, 3, 14), "Y")')).to eq(5)
-      expect(evaluate('DATEDIF(Date(2020, 3, 15), Date(2026, 3, 15), "y")')).to eq(6)
-      expect(evaluate('DATEDIF(Date(2026, 1, 31), Date(2026, 3, 1), "M")')).to eq(1)
-      expect(evaluate('DATEDIF(Date(2026, 1, 1), Date(2026, 3, 1), "D")')).to eq(59)
-    end
-
-    it "rejects a backwards range and an unsupported unit" do
-      expect { evaluate('DATEDIF(Date(2026, 3, 1), Date(2026, 1, 1), "D")') }.to raise_error(/earlier date/)
-      expect { evaluate('DATEDIF(Date(2026, 1, 1), Date(2026, 3, 1), "MD")') }.to raise_error(/Unknown unit: MD/)
     end
   end
 end

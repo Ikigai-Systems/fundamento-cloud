@@ -15,8 +15,6 @@ class Formula::DateTimeFunctions
     "day" => Formula::Duration::DAY, "week" => 7 * Formula::Duration::DAY
   }.freeze
   CALENDAR_UNITS = %w[month year].freeze
-  # Excel's DATEDIF units. "MD", "YM" and "YD" are left out: Excel documents them as unreliable.
-  DATEDIF_UNITS = { "Y" => "year", "M" => "month", "D" => "day" }.freeze
 
   def self.build(time_zone, clock: nil)
     new(time_zone, clock).functions
@@ -75,20 +73,10 @@ class Formula::DateTimeFunctions
       "WeekNumber" => ->(value) { to_date(value).cweek },
       "WeekYear" => ->(value) { to_date(value).cwyear },
       "ToTimeZone" => method(:to_time_zone)
-    }.merge(excel_aliases)
+    }
   end
 
   private
-
-  def excel_aliases
-    {
-      "WORKDAY" => method(:work_day),
-      "NETWORKDAYS" => method(:work_days),
-      "EDATE" => ->(value, months) { date_add(to_date(value), months, "months") },
-      "EOMONTH" => ->(value, months) { date_add(to_date(value), months, "months").end_of_month },
-      "DATEDIF" => method(:datedif)
-    }
-  end
 
   def now
     @zone.at(@clock.call)
@@ -259,14 +247,6 @@ class Formula::DateTimeFunctions
     first, last = [from, to].minmax
     count = (first..last).count { |date| working_day?(date, holidays) }
     to < from ? -count : count
-  end
-
-  def datedif(from, to, unit)
-    from = to_date(from)
-    to = to_date(to)
-    raise "DATEDIF starts from the earlier date" if to < from
-
-    date_diff(from, to, DATEDIF_UNITS.fetch(unit.to_s.upcase) { raise "Unknown unit: #{unit}, use Y, M or D" }).to_i
   end
 
   # The wall-clock a DateTime shows in another zone, as text: a DateTime result is always
