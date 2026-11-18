@@ -153,7 +153,12 @@ class Table < ApplicationRecord
     }
   end
 
+  # Rows as a formula sees a table through Table("..."): values keyed by column name and id, typed
+  # from the column (see Tables::FormulaValues), and a formula column holds its typed result. Without
+  # `evaluate_formulas` the rows are the plain JSON shape of #data_to_json.
   def data_to_hash(evaluate_formulas: false, evaluate_as: nil)
+    return typed_rows(evaluate_as:) if evaluate_formulas
+
     response_data = self.data_to_json(evaluate_formulas:, evaluate_as:)
     rows = response_data[:rows]
     columns = response_data[:columns]
@@ -266,6 +271,34 @@ class Table < ApplicationRecord
   end
 
   private
+
+  def typed_rows(evaluate_as:)
+    columns = columns_in_order
+    cells_by_rows_and_columns = cells.index_by { |cell| [cell.row_id, cell.column_id] }
+    time_zone = organization.time_zone
+
+    rows_in_order.map do |row|
+      values_by_column_id = columns.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
+      formula_row = Tables::FormulaRow.new(columns, values_by_column_id, time_zone) do |formula, current_row|
+        FormulaService.evaluate(formula, space, evaluate_as, additional_context: { "currentRow" => current_row })
+      end
+
+      columns.each_with_object({}) do |column, hash|
+        value =
+          if column.formula?
+            evaluation = formula_row.evaluation_for(column)
+            evaluation["error"] || evaluation["result"]
+          elsif column.kind == "checkbox"
+            values_by_column_id[column.id] == "t"
+          else
+            formula_row.fetch(column.id)
+          end
+
+        hash[column.name] = value
+        hash[column.id] = value
+      end.merge("id" => row.id)
+    end
+  end
 
   def enqueue_initial_version
     TableVersionSnapshotJob.perform_later(self, kind: :initial)

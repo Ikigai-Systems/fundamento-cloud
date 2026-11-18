@@ -15,6 +15,52 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   let(:table) { tables_tables(:projects) }
 
   describe 'with dry_mode: false' do
+    describe 'date and duration columns' do
+      let(:executor) { described_class.new(dry_mode: false, space: space, organization_membership: organization_membership) }
+      let(:start) do
+        table.columns.create!(name: "Start", kind: :date, previous_column: table.columns_in_order.last, organization_id: table.organization_id, configuration: { "dateStoredFormat" => 2 })
+      end
+      let(:due) { table.columns.create!(name: "Due", kind: :date, previous_column: start, organization_id: table.organization_id, configuration: { "dateStoredFormat" => 2 }) }
+      let(:row) { table.rows_in_order.first }
+
+      before do
+        table.rows.each do |each_row|
+          table.cells.create!(row: each_row, column: start, value: "31.01.2024", organization_id: table.organization_id)
+        end
+        due
+      end
+
+      it 'lets a condition compare a date column without ToDate' do
+        updated = executor.update_rows({}, table.id, 'CurrentRow("Start") < Date(2024, 2, 1)', { "Description" => "early" })
+
+        expect(updated).to match_array(table.rows)
+      end
+
+      it 'matches no row when the date is later' do
+        updated = executor.update_rows({}, table.id, 'CurrentRow("Start") > Date(2024, 2, 1)', { "Description" => "late" })
+
+        expect(updated).to be_empty
+      end
+
+      it 'reads a column by its id as well as its name' do
+        updated = executor.update_rows({}, table.id, "CurrentRow(\"#{start.id}\") < Date(2024, 2, 1)", { "Description" => "early" })
+
+        expect(updated).to match_array(table.rows)
+      end
+
+      it 'stores a date result in the format of the column it is written to' do
+        executor.update_rows({}, table.id, 'Equals(CurrentRow("Key"), CurrentRow("Key"))', { "Due" => 'DateAdd(CurrentRow("Start"), 10, "days")' })
+
+        expect(row.cells.find_by(column: due).value).to eq("10.02.2024")
+      end
+
+      it 'stores a date result when adding a row' do
+        added = executor.add_row({}, table.id, { "Start" => "Date(2024, 3, 5)" })
+
+        expect(added.cells.find_by(column: start).value).to eq("05.03.2024")
+      end
+    end
+
     describe 'AddRow action' do
       it 'adds a new row to the table' do
         action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)

@@ -69,6 +69,16 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to be_a(Array)
         expect(result[0]).to include("Description", "Key", "Name", "Value")
       end
+
+      it 'reports a table that reads itself, instead of overflowing the stack' do
+        table = tables_tables(:projects)
+        table.columns.create!(name: "Itself", kind: :formula, formula: "Table(\"#{table.id}\")", previous_column: table.columns_in_order.last, organization_id: table.organization_id)
+
+        result = engine.evaluate("Table(\"#{table.id}\")")
+
+        expect(result[0]["Itself"]).to include("Circular reference: Projects -> Projects")
+        expect(Thread.current[:formula_tables_being_read]).to be_empty
+      end
     end
   end
 end

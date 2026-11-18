@@ -189,7 +189,7 @@ class Formula::ActionExecutor
 
       row.cells.create!(
         column: column,
-        value: evaluated_value,
+        value: cell_text(column, evaluated_value),
         organization: @organization_membership.organization,
         table: table
       )
@@ -230,7 +230,7 @@ class Formula::ActionExecutor
           new_cell.organization = @organization_membership.organization
           new_cell.table = table
         end
-        cell.update!(value: evaluated_value)
+        cell.update!(value: cell_text(column, evaluated_value))
       end
 
       updated_rows << row
@@ -268,7 +268,7 @@ class Formula::ActionExecutor
 
         row.cells.create!(
           column: column,
-          value: evaluated_value,
+          value: cell_text(column, evaluated_value),
           organization: @organization_membership.organization,
           table: table
         )
@@ -290,7 +290,7 @@ class Formula::ActionExecutor
             new_cell.organization = @organization_membership.organization
             new_cell.table = table
           end
-          cell.update!(value: evaluated_value)
+          cell.update!(value: cell_text(column, evaluated_value))
         end
       end
 
@@ -390,19 +390,26 @@ class Formula::ActionExecutor
   def build_row_context(function_context, row)
     # Start with the function context if available, otherwise use additional_context
     context = (function_context || @additional_context).dup
-    
-    current_row = {}
+
+    # The same typed values a formula column sees, by column name and id (see Tables::FormulaValues)
+    values_by_column_id = row.cells.to_h { |cell| [cell.column_id, cell.value] }
+    current_row = Tables::FormulaValues.current_row(columns_of(row.table), values_by_column_id, time_zone)
 
     # Include row identifiers
     current_row["id"] = row.id
     current_row["npi"] = row.id
 
-    row.cells.includes(:column).each do |cell|
-      current_row[cell.column.name] = cell.value
-    end
-    
     context["currentRow"] = current_row
     context
+  end
+
+  def columns_of(table)
+    (@columns_by_table ||= {})[table.id] ||= table.columns_in_order
+  end
+
+  # A formula can return a Date or a Duration; a cell holds the text its column would show.
+  def cell_text(column, value)
+    Tables::FormulaValues.serialized(column, value, time_zone)
   end
 
   def evaluate_condition_safely(formula, context)

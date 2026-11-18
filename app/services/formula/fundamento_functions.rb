@@ -24,9 +24,21 @@ class Formula::FundamentoFunctions
     OrganizationBlueprint.render_as_hash(@pundit_user.current_organization, view: :formula)
   end
 
+  # Tables being read right now by Table(), so a table that reads itself, directly or through
+  # another table, is an error and not a stack overflow.
   def table_function(*args)
     table = Formula::TableLookup.new(space: @space, pundit_user: @pundit_user).find!(args[0])
 
-    table.data_to_hash(evaluate_formulas: true, evaluate_as: @pundit_user.organization_membership)
+    reading = (Thread.current[:formula_tables_being_read] ||= [])
+    if reading.include?(table.id)
+      raise "Circular reference: #{(reading.drop_while { |id| id != table.id } + [table.id]).map { |id| Table.find(id).name }.join(" -> ")}"
+    end
+
+    reading.push(table.id)
+    begin
+      table.data_to_hash(evaluate_formulas: true, evaluate_as: @pundit_user.organization_membership)
+    ensure
+      reading.pop
+    end
   end
 end
