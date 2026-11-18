@@ -14,6 +14,10 @@ RSpec.describe Formula::ActionExecutor, type: :service do
   let(:organization_membership) { organization_memberships(:om_is_pawel) }
   let(:table) { tables_tables(:projects) }
 
+  def orders_rows
+    Tables::RowReader.new(tables_tables(:orders).reload, evaluate_as: organization_membership).typed_rows
+  end
+
   let(:action_executor) { Formula::ActionExecutor.new(dry_mode: false, space: space, organization_membership: organization_membership) }
   let(:fundamento_functions) { Formula::FundamentoFunctions.new(pundit_user: PolicyUserContext.new(organization_membership), space:) }
 
@@ -67,11 +71,11 @@ EOF
       it "adds and removes value correctly (persisting existing value)" do
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).reload.data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => users(:stefan).id.to_s))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => users(:stefan).id.to_s))
       end
 
       it "adds and removes value correctly (when there was no existing value)" do
@@ -79,11 +83,11 @@ EOF
 
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => "," + organization_membership.user.id.to_s))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => "," + organization_membership.user.id.to_s))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).reload.data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => ""))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => ""))
       end
     end
 
@@ -110,11 +114,11 @@ EOF
       it "adds and removes value correctly (persisting existing value)" do
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => [users(:stefan).id, organization_membership.user.id.to_s].join(",")))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(tables_tables(:orders).reload.data_to_hash(evaluate_as: users(:pawel))).to include(hash_including("Pizza" => "Hawaii", "Who" => users(:stefan).id.to_s))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => users(:stefan).id.to_s))
       end
     end
   end

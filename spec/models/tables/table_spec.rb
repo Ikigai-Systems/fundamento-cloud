@@ -147,9 +147,9 @@ RSpec.describe Table, type: :model do
       expect(evaluated(finish)).to eq "10.02.2024"
     end
 
-    context "rows read through Table() or data_to_hash" do
+    context "rows read through Table()" do
       let!(:finish) { add_column("End", :formula, previous: length, formula: "CurrentRow(\"Start\") + Days(10)", configuration: { "dateStoredFormat" => 2 }) }
-      let(:hash_row) { table.data_to_hash(evaluate_formulas: true, evaluate_as: membership).find { |r| r["id"] == row.id } }
+      let(:hash_row) { Tables::RowReader.new(table, evaluate_as: membership).typed_rows.find { |r| r["id"] == row.id } }
 
       it "holds typed values, by column name and by id" do
         expect(hash_row["Start"]).to eq Date.new(2024, 1, 31)

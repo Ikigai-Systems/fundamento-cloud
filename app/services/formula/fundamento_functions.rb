@@ -37,7 +37,7 @@ class Formula::FundamentoFunctions
 
     reading.push([table.id, table.name])
     begin
-      table.data_to_hash(evaluate_formulas: true, evaluate_as: @pundit_user.organization_membership)
+      Tables::RowReader.new(table, evaluate_as: @pundit_user.organization_membership).typed_rows
     ensure
       reading.pop
     end
