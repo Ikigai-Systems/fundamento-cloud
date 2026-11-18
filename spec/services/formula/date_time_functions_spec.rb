@@ -209,4 +209,78 @@ RSpec.describe Formula::DateTimeFunctions do
       expect { evaluate('FormatDuration(Days(1), "fortnights")') }.to raise_error(/Unknown unit: fortnights/)
     end
   end
+
+  describe "working days" do
+    # 2026-11-20 is a Friday.
+    it "moves WorkDay over weekends" do
+      expect(evaluate("WorkDay(Date(2026, 11, 20), 1)")).to eq(Date.new(2026, 11, 23))
+      expect(evaluate("WorkDay(Date(2026, 11, 20), 6)")).to eq(Date.new(2026, 11, 30))
+      expect(evaluate("WorkDay(Date(2026, 11, 23), -1)")).to eq(Date.new(2026, 11, 20))
+    end
+
+    it "leaves WorkDay by zero on the date, even at a weekend" do
+      expect(evaluate("WorkDay(Date(2026, 11, 21), 0)")).to eq(Date.new(2026, 11, 21))
+    end
+
+    it "skips holidays" do
+      expect(evaluate("WorkDay(Date(2026, 11, 20), 1, Date(2026, 11, 23))")).to eq(Date.new(2026, 11, 24))
+      expect(evaluate('WorkDay(Date(2026, 11, 20), 1, "2026-11-23", "2026-11-24")')).to eq(Date.new(2026, 11, 25))
+    end
+
+    it "takes holidays from an array, such as a column" do
+      functions = described_class.build(time_zone, clock:)
+      holidays = [Date.new(2026, 11, 23), "2026-11-24"]
+
+      expect(functions["WorkDay"].call(Date.new(2026, 11, 20), 1, holidays)).to eq(Date.new(2026, 11, 25))
+      expect(functions["WorkDays"].call(Date.new(2026, 11, 20), Date.new(2026, 11, 25), holidays)).to eq(2)
+    end
+
+    it "rejects a fraction of a day" do
+      expect { evaluate("WorkDay(Date(2026, 11, 20), 1.5)") }.to raise_error(/whole days/)
+    end
+
+    it "counts WorkDays with both ends included" do
+      expect(evaluate("WorkDays(Date(2026, 11, 16), Date(2026, 11, 20))")).to eq(5)
+      expect(evaluate("WorkDays(Date(2026, 11, 16), Date(2026, 11, 23))")).to eq(6)
+      expect(evaluate("WorkDays(Date(2026, 11, 21), Date(2026, 11, 22))")).to eq(0)
+    end
+
+    it "counts backwards as negative and skips holidays" do
+      expect(evaluate("WorkDays(Date(2026, 11, 23), Date(2026, 11, 16))")).to eq(-6)
+      expect(evaluate("WorkDays(Date(2026, 11, 16), Date(2026, 11, 20), Date(2026, 11, 18))")).to eq(4)
+    end
+  end
+
+  describe "ISO weeks" do
+    it "numbers weeks and their year" do
+      expect(evaluate("WeekNumber(Date(2026, 11, 17))")).to eq(47)
+      expect(evaluate("WeekNumber(Date(2026, 1, 1))")).to eq(1)
+    end
+
+    it "gives the year a week belongs to at the turn of the year" do
+      expect(evaluate("WeekNumber(Date(2027, 1, 1))")).to eq(53)
+      expect(evaluate("WeekYear(Date(2027, 1, 1))")).to eq(2026)
+      expect(evaluate("WeekYear(Date(2024, 12, 30))")).to eq(2025)
+    end
+  end
+
+  describe "ToTimeZone" do
+    it "shows a DateTime as the wall-clock of another zone" do
+      expect(evaluate('ToTimeZone(DateTime(2026, 11, 17, 23, 30), "Asia/Tokyo")')).to eq("2026-11-18 08:30")
+      expect(evaluate('ToTimeZone(DateTime(2026, 11, 17, 23, 30), "America/New_York", "h:mm A")')).to eq("6:30 PM")
+    end
+
+    context "in an organization zone" do
+      let(:time_zone) { "Europe/Warsaw" }
+
+      it "converts from the organization zone" do
+        expect(evaluate('ToTimeZone(DateTime(2026, 7, 1, 12), "UTC")')).to eq("2026-07-01 10:00")
+      end
+    end
+
+    it "rejects an unknown zone and a non-DateTime" do
+      expect { evaluate('ToTimeZone(DateTime(2026, 1, 1), "Mars/Base")') }.to raise_error(/Unknown time zone: Mars\/Base/)
+      expect { evaluate('ToTimeZone(Date(2026, 1, 1), "UTC")') }.to raise_error(/needs a DateTime, got Date/)
+    end
+  end
 end
