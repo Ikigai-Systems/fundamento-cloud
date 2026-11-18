@@ -76,7 +76,7 @@ function EditFormulaPopup({
     }
 
     fetchPreview();
-  }, [formula, previewRow, rows, space?.id, table]);
+  }, [formula, previewRow, rows, space?.id, table, column.id]);
 
   return (
     <div className="shadow-md border rounded rounded-2 text-sm bg-header max-w-[400px]">
