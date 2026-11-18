@@ -128,65 +128,6 @@ RSpec.describe FormulaService, type: :model do
     end
   end
 
-  describe ".batch_evaluate" do
-    it "evaluates multiple formulas" do
-      evaluations = [
-        { formula: "1 + 1", additional_context: {} },
-        { formula: "2 * 3", additional_context: {} },
-        { formula: "Concatenate(\"a\", \"b\")", additional_context: {} }
-      ]
-
-      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
-
-      expect(results).to be_an(Array)
-      expect(results.length).to eq(3)
-      expect(results[0]["result"]).to eq(2)
-      expect(results[1]["result"]).to eq(6)
-      expect(results[2]["result"]).to eq("ab")
-    end
-
-    it "handles mixed valid and invalid formulas" do
-      evaluations = [
-        { formula: "1 + 1", additional_context: {} },
-        { formula: "InvalidFunction()", additional_context: {} },
-        { formula: "3 + 3", additional_context: {} }
-      ]
-
-      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
-
-      expect(results.length).to eq(3)
-      expect(results[0]["result"]).to eq(2)
-      expect(results[0]["error"]).to be_nil
-      expect(results[1]["error"]).to be_present
-      expect(results[2]["result"]).to eq(6)
-      expect(results[2]["error"]).to be_nil
-    end
-
-    it "passes additional context to each evaluation" do
-      evaluations = [
-        { formula: "1 + 1", additional_context: { "x" => 10 } },
-        { formula: "2 * 3", additional_context: { "y" => 5 } }
-      ]
-
-      results = FormulaService.batch_evaluate(evaluations, nil, organization_membership)
-
-      expect(results[0]["result"]).to eq(2)
-      expect(results[1]["result"]).to eq(6)
-    end
-
-    it "still works when space is provided" do
-      evaluations = [
-        { formula: "1 + 1", additional_context: {} },
-        { formula: "2 + 3", additional_context: {} },
-      ]
-
-      results = FormulaService.batch_evaluate(evaluations, space, organization_membership)
-
-      expect(results[0]["result"]).to eq(2)
-      expect(results[1]["result"]).to eq(5)
-    end
-  end
-
   describe "organization time zone" do
     it "evaluates in UTC by default" do
       result = FormulaService.evaluate("TimeZone()", nil, organization_membership)

@@ -147,6 +147,61 @@ RSpec.describe Table, type: :model do
       expect(evaluated(finish)).to eq "10.02.2024"
     end
 
+    context "formula columns that read other formula columns" do
+      let!(:finish) { add_column("End", :formula, previous: length, formula: "CurrentRow(\"Start\") + Days(10)", configuration: { "dateStoredFormat" => 2 }) }
+
+      it "reads the typed result of an earlier formula column" do
+        left = add_column("Gap", :formula, previous: finish, formula: "CurrentRow(\"End\") - CurrentRow(\"Start\")")
+
+        expect(evaluated(left)).to eq "10 days"
+      end
+
+      it "reads a formula column that comes later in the table" do
+        early = add_column("Early", :formula, previous: finish, formula: "CurrentRow(\"Late\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+        late = add_column("Late", :formula, previous: early, formula: "CurrentRow(\"End\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+
+        expect(evaluated(early)).to eq "12.02.2024"
+        expect(evaluated(late)).to eq "11.02.2024"
+      end
+
+      it "follows a chain of formula columns and finds them by id" do
+        second = add_column("Second", :formula, previous: finish, formula: "CurrentRow(\"End\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+        third = add_column("Third", :formula, previous: second, formula: "CurrentRow(\"#{second.id}\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+
+        expect(evaluated(third)).to eq "12.02.2024"
+      end
+
+      it "works out each formula once per row" do
+        a = add_column("A", :formula, previous: finish, formula: "CurrentRow(\"End\") + Days(1)", configuration: { "dateStoredFormat" => 2 })
+        add_column("B", :formula, previous: a, formula: "CurrentRow(\"End\") + Days(2)", configuration: { "dateStoredFormat" => 2 })
+        allow(FormulaService).to receive(:evaluate).and_call_original
+
+        table.data_to_json(evaluate_formulas: true, evaluate_as: membership)
+
+        expect(FormulaService).to have_received(:evaluate).with("CurrentRow(\"Start\") + Days(10)", any_args).exactly(table.rows.count).times
+      end
+
+      it "reports a circular reference by naming the loop" do
+        a = add_column("A", :formula, previous: finish, formula: "CurrentRow(\"B\")")
+        add_column("B", :formula, previous: a, formula: "CurrentRow(\"A\")")
+
+        expect(evaluated(a)).to include "Circular reference: A -> B -> A"
+      end
+
+      it "reports a column that reads itself" do
+        selfish = add_column("Selfish", :formula, previous: finish, formula: "CurrentRow(\"Selfish\")")
+
+        expect(evaluated(selfish)).to include "Circular reference: Selfish -> Selfish"
+      end
+
+      it "names the column whose formula failed" do
+        broken = add_column("Broken", :formula, previous: finish, formula: "Nonexistent()")
+        user = add_column("User", :formula, previous: broken, formula: "CurrentRow(\"Broken\")")
+
+        expect(evaluated(user)).to include "Column \"Broken\" has an error: Undefined function: Nonexistent"
+      end
+    end
+
     it "subtracts two date columns into a duration shown as text" do
       other = add_column("Other", :date, previous: length, configuration: { "dateStoredFormat" => 2 })
       set_cell(other, "10.03.2024")
