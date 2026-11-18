@@ -19,6 +19,15 @@ module Tables::FormulaValues
 
   module_function
 
+  # What `CurrentRow` returns for a row: typed values keyed by column name and by column id.
+  def current_row(columns, values_by_column_id, time_zone)
+    columns.each_with_object({}) do |column, row|
+      value = typed(column, values_by_column_id[column.id], time_zone)
+      row[column.name] = value
+      row[column.id] = value
+    end
+  end
+
   def typed(column, value, time_zone)
     return value if value.blank?
 

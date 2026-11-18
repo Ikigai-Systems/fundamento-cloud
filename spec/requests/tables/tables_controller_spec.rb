@@ -241,6 +241,12 @@ RSpec.describe Tables::TablesController, type: :request do
       expect(preview('CurrentRow("Start") - Date(2024, 1, 1)')["result"]).to eq("30 days")
     end
 
+    it "lets a formula read a column by its id, as a formula column can" do
+      start = table.columns.find_by!(name: "Start")
+
+      expect(preview("CurrentRow(\"#{start.id}\") + Days(1)")["result"]).to eq("2024-02-01")
+    end
+
     it "shows a date in ISO when no column is given" do
       expect(preview('CurrentRow("Start") + Days(1)')["result"]).to eq("2024-02-01")
     end

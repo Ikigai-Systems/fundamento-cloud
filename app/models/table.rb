@@ -127,11 +127,8 @@ class Table < ApplicationRecord
 
     jsonized_rows = rows_in_order.map do |row|
       if evaluate_formulas
-        current_row_values = columns_in_order.each_with_object({}) do |column, hash|
-          cell_value = Tables::FormulaValues.typed(column, cells_by_rows_and_columns.dig([row.id, column.id])&.value, time_zone)
-          hash[column.name] = cell_value
-          hash[column.id] = cell_value
-        end
+        values_by_column_id = columns_in_order.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
+        current_row_values = Tables::FormulaValues.current_row(columns_in_order, values_by_column_id, time_zone)
 
         additional_context = {
           "currentRow" => current_row_values

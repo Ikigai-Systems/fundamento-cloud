@@ -298,13 +298,10 @@ class Tables::TablesController < ApplicationController
     # The same typed values a formula column sees, so a date column needs no ToDate here either.
     time_zone = @table.organization.time_zone
     columns = @table.columns_in_order
-    cells = row.cells.index_by(&:column_id)
-    current_row_values = columns.each_with_object({}) do |column, hash|
-      hash[column.name] = Tables::FormulaValues.typed(column, cells[column.id]&.value, time_zone)
-    end
+    values_by_column_id = row.cells.to_h { |cell| [cell.column_id, cell.value] }
 
     additional_context = {
-      "currentRow" => current_row_values
+      "currentRow" => Tables::FormulaValues.current_row(columns, values_by_column_id, time_zone)
     }
 
     formula_evaluation = FormulaService.evaluate(
@@ -314,7 +311,8 @@ class Tables::TablesController < ApplicationController
       additional_context: additional_context
     )
 
-    # Shown as the text the formula column would hold, in the format of the column being edited.
+    # Shown as the text the formula column would hold, in the format of the column being edited
+    # (ISO dates when the column is not given or not found).
     unless formula_evaluation.key?("error")
       target = columns.find { |column| column.id == params["col_id"] } || Tables::Column.new
       formula_evaluation = formula_evaluation.merge("result" => Tables::FormulaValues.serialized(target, formula_evaluation["result"], time_zone))
