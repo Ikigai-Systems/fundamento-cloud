@@ -1,54 +1,53 @@
 <%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
-  <%# BlockNote's mobile formatting toolbar needs the page pinned to the visual viewport:
-      iOS pans the viewport when the keyboard opens, and a fixed toolbar then jumps while
-      scrolling. One such wrapper per page, directly inside <body>. %>
+  <%# BlockNote's mobile formatting toolbar needs the page pinned to the visual viewport: iOS pans
+      the viewport when the keyboard opens, and a fixed toolbar then jumps while scrolling.
+      bn-scroll-container sizes this element to that viewport, so it replaces h-screen. One per
+      page, directly inside <body>. %>
   <div class="bn-scroll-container">
-    <div class="h-screen">
-      <%# Grid layout: spacers create the layout structure %>
-      <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
+    <%# Grid layout: spacers create the layout structure %>
+    <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
 
-        <%# Left sidebar with spacer %>
-        <%= render "application/left_sidebar" %>
+      <%# Left sidebar with spacer %>
+      <%= render "application/left_sidebar" %>
 
-        <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
+      <%= turbo_frame_tag "content", class: "contents", data: { turbo_action: "advance" } do %>
 
-          <%# Column 2: main content area %>
-          <div class="h-screen content-container flex flex-col relative">
-            <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
-              <%= render SidebarDrawerButton.new(side: :left) %>
+        <%# Column 2: main content area %>
+        <div class="h-screen content-container flex flex-col relative">
+          <nav class="w-full flex justify-between p-3 gap-1 items-center min-h-15 max-h-15 border-b">
+            <%= render SidebarDrawerButton.new(side: :left) %>
 
-              <div class="flex-1 min-w-0">
-                <%= content_for :content_title %>
-              </div>
-
-              <div class="flex gap-1 items-center">
-                <%= content_for :content_menu %>
-
-                <%= render "application/search_button" %>
-
-                <%= render "application/notifications_menu" %>
-
-                <%# Spaced like the toolbar buttons beside it, whose .document-toolbar-button carries ml-2 %>
-                <div class="ml-2">
-                  <%= render "application/user_menu" %>
-                </div>
-
-                <%# Rightmost, for what belongs at the page's right edge, like the content sidebar's drawer button %>
-                <%= content_for :content_menu_end %>
-              </div>
-            </nav>
-
-            <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
-              <%= yield %>
+            <div class="flex-1 min-w-0">
+              <%= content_for :content_title %>
             </div>
+
+            <div class="flex gap-1 items-center">
+              <%= content_for :content_menu %>
+
+              <%= render "application/search_button" %>
+
+              <%= render "application/notifications_menu" %>
+
+              <%# Spaced like the toolbar buttons beside it, whose .document-toolbar-button carries ml-2 %>
+              <div class="ml-2">
+                <%= render "application/user_menu" %>
+              </div>
+
+              <%# Rightmost, for what belongs at the page's right edge, like the content sidebar's drawer button %>
+              <%= content_for :content_menu_end %>
+            </div>
+          </nav>
+
+          <div class="flex-1 min-h-0 overflow-y-auto pt-3 flex flex-col">
+            <%= yield %>
           </div>
+        </div>
 
-          <%# Column 3: right sidebar with spacer %>
-          <%= render "application/right_sidebar", object: @document || @table %>
+        <%# Column 3: right sidebar with spacer %>
+        <%= render "application/right_sidebar", object: @document || @table %>
 
-        <% end %>
+      <% end %>
 
-      </div>
     </div>
   </div>
 <% end %>
