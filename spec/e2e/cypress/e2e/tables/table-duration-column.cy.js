@@ -73,4 +73,18 @@ describe("Table duration column", function () {
     };
     waitForPersistence();
   });
+
+  it("reverts what was typed when editing is cancelled with Escape", function () {
+    cy.visit("/t/orders/edit");
+
+    cy.get(".ikigai-rowstack-overrides").should("exist");
+    cy.contains("Changes are saved automatically").should("be.visible");
+
+    cy.contains('[role="gridcell"]', "2 days").dblclick();
+    cy.focused().type("{selectall}1d3h{esc}");
+
+    cy.contains('[role="gridcell"]', "2 days").should("exist");
+    cy.contains('[role="gridcell"]', "1d3h").should("not.exist");
+    cy.contains('[role="gridcell"]', "1 day 3 hrs").should("not.exist");
+  });
 });
