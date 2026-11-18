@@ -23,6 +23,10 @@ describe("duration", () => {
     expect(formatDuration(-3600 * 40)).toBe("-1 day 16 hrs");
   });
 
+  it("rejects a total too large to hold exactly", () => {
+    expect(parseDuration("999999999999999999 years")).toBeNull();
+  });
+
   it("is stable: a canonical text normalizes to itself", () => {
     for (const {canonical} of cases.valid) {
       expect(normalizeDuration(canonical)).toBe(canonical);

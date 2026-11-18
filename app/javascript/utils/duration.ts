@@ -64,7 +64,10 @@ export function parseDuration(input: string): number | null {
   if (text === "") return null;
 
   const seconds = parseClock(text) ?? parseBareNumber(text) ?? parseTerms(text);
-  return seconds === null ? null : sign * seconds;
+  // Ruby has bignums; here a total past 2^53 would lose precision and print as "1e+21 days".
+  if (seconds === null || !Number.isSafeInteger(seconds)) return null;
+
+  return sign * seconds;
 }
 
 export function formatDuration(totalSeconds: number): string {
