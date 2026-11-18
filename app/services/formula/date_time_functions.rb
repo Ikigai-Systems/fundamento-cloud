@@ -2,7 +2,9 @@
 # "today" is, where a DateTime lives), so they are built per evaluation.
 #
 # Weekday is ISO: Monday is 1 and Sunday is 7. DateDiff(a, b, unit) measures from a to b.
-# Names are English only.
+# Names are English only. Working days are Monday to Friday; the optional last argument of
+# WorkDay and WorkDays name holidays that do not count: any number of dates or ISO text, or an
+# array of them such as a column.
 class Formula::DateTimeFunctions
   DAY_NAMES = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday].freeze
   MONTH_NAMES = %w[January February March April May June July August September October November December].freeze
@@ -13,6 +15,8 @@ class Formula::DateTimeFunctions
     "day" => Formula::Duration::DAY, "week" => 7 * Formula::Duration::DAY
   }.freeze
   CALENDAR_UNITS = %w[month year].freeze
+  # Excel's DATEDIF units. "MD", "YM" and "YD" are left out: Excel documents them as unreliable.
+  DATEDIF_UNITS = { "Y" => "year", "M" => "month", "D" => "day" }.freeze
 
   def self.build(time_zone, clock: nil)
     new(time_zone, clock).functions
@@ -65,11 +69,26 @@ class Formula::DateTimeFunctions
       "StartOfYear" => ->(value) { to_date(value).beginning_of_year },
       "EndOfMonth" => ->(value) { to_date(value).end_of_month },
       "FormatDate" => method(:format_date),
-      "FormatDuration" => method(:format_duration)
-    }
+      "FormatDuration" => method(:format_duration),
+      "WorkDay" => method(:work_day),
+      "WorkDays" => method(:work_days),
+      "WeekNumber" => ->(value) { to_date(value).cweek },
+      "WeekYear" => ->(value) { to_date(value).cwyear },
+      "ToTimeZone" => method(:to_time_zone)
+    }.merge(excel_aliases)
   end
 
   private
+
+  def excel_aliases
+    {
+      "WORKDAY" => method(:work_day),
+      "NETWORKDAYS" => method(:work_days),
+      "EDATE" => ->(value, months) { date_add(to_date(value), months, "months") },
+      "EOMONTH" => ->(value, months) { date_add(to_date(value), months, "months").end_of_month },
+      "DATEDIF" => method(:datedif)
+    }
+  end
 
   def now
     @zone.at(@clock.call)
@@ -169,8 +188,11 @@ class Formula::DateTimeFunctions
   end
 
   def format_date(value, pattern = nil)
-    time = local_time(value)
     pattern ||= Formula::TypedArithmetic.date?(value) ? "YYYY-MM-DD" : "YYYY-MM-DD HH:mm"
+    render_date(local_time(value), pattern)
+  end
+
+  def render_date(time, pattern)
     hour12 = time.hour % 12 == 0 ? 12 : time.hour % 12
 
     pattern.gsub(FORMAT_TOKENS) do |token|
@@ -204,5 +226,55 @@ class Formula::DateTimeFunctions
 
     text = duration.to_s(max_unit:, precision:)
     style.to_s.downcase == "ago" && duration.negative? ? "#{text.delete_prefix("-")} ago" : text
+  end
+
+  def holiday_set(holidays)
+    holidays.flatten.map { |holiday| to_date(holiday) }.to_set
+  end
+
+  def working_day?(date, holidays)
+    date.cwday < 6 && !holidays.include?(date)
+  end
+
+  # Moves n working days from the date, which itself is not counted: WorkDay(Friday, 1) is the
+  # next Monday and WorkDay(date, 0) is the date even when it is a weekend.
+  def work_day(value, amount, *holidays)
+    raise "WorkDay moves by whole days" unless amount == amount.to_i
+
+    date = to_date(value)
+    holidays = holiday_set(holidays)
+    step = amount <=> 0
+    amount.to_i.abs.times do
+      date += step
+      date += step until working_day?(date, holidays)
+    end
+    date
+  end
+
+  # Working days from one date to another, both ends included, negative when going backwards.
+  def work_days(from, to, *holidays)
+    from = to_date(from)
+    to = to_date(to)
+    holidays = holiday_set(holidays)
+    first, last = [from, to].minmax
+    count = (first..last).count { |date| working_day?(date, holidays) }
+    to < from ? -count : count
+  end
+
+  def datedif(from, to, unit)
+    from = to_date(from)
+    to = to_date(to)
+    raise "DATEDIF starts from the earlier date" if to < from
+
+    date_diff(from, to, DATEDIF_UNITS.fetch(unit.to_s.upcase) { raise "Unknown unit: #{unit}, use Y, M or D" }).to_i
+  end
+
+  # The wall-clock a DateTime shows in another zone, as text: a DateTime result is always
+  # shown in the organization's zone, so it could not carry the other zone itself.
+  def to_time_zone(value, zone_name, pattern = nil)
+    zone = ActiveSupport::TimeZone[zone_name.to_s] or raise "Unknown time zone: #{zone_name}"
+    raise "ToTimeZone needs a DateTime, got #{Formula::TypedArithmetic.type_name(value)}, use ToDateTime" unless Formula::TypedArithmetic.datetime?(value)
+
+    render_date(value.in_time_zone(zone), pattern || "YYYY-MM-DD HH:mm")
   end
 end
