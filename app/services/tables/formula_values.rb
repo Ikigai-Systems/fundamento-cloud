@@ -5,7 +5,8 @@
 # `dateStoredFormat` (the same index the Rowstack date cell uses); a datetime adds
 # " HH:mm" as a wall-clock time that belongs to the organization's time zone, which is
 # what `Now()` and `Today()` evaluate in. Text that does not parse is passed through
-# unchanged, so a formula reports a type error rather than silently treating it as empty.
+# as Formula::UnreadableText, so a formula reports a type error naming the column rather than
+# silently treating it as empty.
 module Tables::FormulaValues
   # Indexed by `dateStoredFormat`. Each pair is the strptime and the strftime format.
   DATE_FORMATS = [
@@ -33,11 +34,11 @@ module Tables::FormulaValues
 
     case column.kind
     when "date"
-      parse_date(value, column) || value
+      parse_date(value, column) || unreadable(value, column)
     when "datetime"
-      parse_datetime(value, column, time_zone) || value
+      parse_datetime(value, column, time_zone) || unreadable(value, column)
     when "duration"
-      Formula::Duration.parse(value) || value
+      Formula::Duration.parse(value) || unreadable(value, column)
     else
       value
     end
@@ -56,6 +57,10 @@ module Tables::FormulaValues
     else
       result
     end
+  end
+
+  def unreadable(value, column)
+    Formula::UnreadableText.new(value, column_name: column.name, kind: column.kind)
   end
 
   def parse_date(value, column)
