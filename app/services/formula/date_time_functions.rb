@@ -3,7 +3,7 @@
 #
 # Weekday is ISO: Monday is 1 and Sunday is 7. DateDiff(a, b, unit) measures from a to b.
 # Names are English only. Working days are Monday to Friday; the optional last argument of
-# WorkDay and WorkDays name holidays that do not count: any number of dates or ISO text, or an
+# WorkDay and WorkDays take holidays that do not count: any number of dates or ISO text, or an
 # array of them such as a column.
 class Formula::DateTimeFunctions
   DAY_NAMES = %w[Monday Tuesday Wednesday Thursday Friday Saturday Sunday].freeze
