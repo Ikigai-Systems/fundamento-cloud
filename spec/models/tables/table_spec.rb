@@ -112,6 +112,93 @@ RSpec.describe Table, type: :model do
     end
   end
 
+  context "date, datetime and duration columns" do
+    fixtures "tables/columns"
+    fixtures "tables/rows"
+    fixtures "tables/cells"
+
+    let(:table) { tables_tables(:projects) }
+    let(:row) { table.rows_in_order.first }
+    let(:membership) { organization_memberships(:om_is_pawel) }
+
+    def add_column(name, kind, previous:, **attributes)
+      table.columns.create!(name:, kind:, previous_column: previous, organization_id: table.organization_id, **attributes)
+    end
+
+    def set_cell(column, value)
+      table.cells.create!(column:, row:, value:, organization_id: table.organization_id)
+    end
+
+    def evaluated(column)
+      table.data_to_json(evaluate_formulas: true, evaluate_as: membership)[:rows].find { |r| r["id"] == row.id }[column.id]
+    end
+
+    let!(:start) { add_column("Start", :date, previous: tables_columns(:project_value), configuration: { "dateStoredFormat" => 2 }) }
+    let!(:length) { add_column("Length", :duration, previous: start) }
+
+    before do
+      set_cell(start, "31.01.2024")
+      set_cell(length, "5h 30m")
+    end
+
+    it "adds a duration to a date column and returns it in the column's stored format" do
+      finish = add_column("End", :formula, previous: length, formula: "CurrentRow(\"Start\") + Days(10)", configuration: { "dateStoredFormat" => 2 })
+
+      expect(evaluated(finish)).to eq "10.02.2024"
+    end
+
+    it "subtracts two date columns into a duration shown as text" do
+      other = add_column("Other", :date, previous: length, configuration: { "dateStoredFormat" => 2 })
+      set_cell(other, "10.03.2024")
+      gap = add_column("Gap", :formula, previous: other, formula: "CurrentRow(\"Other\") - CurrentRow(\"Start\")")
+
+      expect(evaluated(gap)).to eq "39 days"
+    end
+
+    it "reads a datetime as a wall-clock time in the organization's time zone (across a DST change)" do
+      table.organization.update!(time_zone: "Europe/Warsaw")
+      moment = add_column("At", :datetime, previous: length, configuration: { "dateStoredFormat" => 3 })
+      set_cell(moment, "2024-03-30 12:00")
+      later = add_column("Later", :formula, previous: moment, formula: "CurrentRow(\"At\") + Days(1)", configuration: { "dateStoredFormat" => 3 })
+
+      expect(evaluated(later)).to eq "2024-03-31 13:00" # Days(1) is 24 h, and clocks went forward that night
+    end
+
+    it "reads and writes the other stored formats, and ISO text when none is chosen" do
+      us = add_column("US", :date, previous: length, configuration: { "dateStoredFormat" => 0 })
+      eu = add_column("EU", :date, previous: us, configuration: { "dateStoredFormat" => 1 })
+      plain = add_column("Plain", :date, previous: eu)
+      set_cell(us, "1/31/2024")
+      set_cell(eu, "5/02/2024")
+      set_cell(plain, "2024-01-31")
+      us_next = add_column("US next", :formula, previous: plain, formula: "CurrentRow(\"US\") + Days(1)", configuration: { "dateStoredFormat" => 0 })
+      eu_next = add_column("EU next", :formula, previous: us_next, formula: "CurrentRow(\"EU\") + Days(1)", configuration: { "dateStoredFormat" => 1 })
+      plain_next = add_column("Plain next", :formula, previous: eu_next, formula: "CurrentRow(\"Plain\") + Days(1)")
+
+      expect([evaluated(us_next), evaluated(eu_next), evaluated(plain_next)]).to eq ["2/1/2024", "6/02/2024", "2024-02-01"]
+    end
+
+    it "does arithmetic on duration columns" do
+      doubled = add_column("Doubled", :formula, previous: length, formula: "CurrentRow(\"Length\") * 2")
+
+      expect(evaluated(doubled)).to eq "11 hrs"
+    end
+
+    it "reports unparseable cell text as a formula error rather than treating it as empty" do
+      set_cell(add_column("Bad", :date, previous: length), "not a date")
+      broken = add_column("Broken", :formula, previous: table.columns.find_by(name: "Bad"), formula: "CurrentRow(\"Bad\") + Days(1)")
+
+      expect(evaluated(broken)).to match(/Unable to evaluate formula/)
+    end
+
+    it "leaves date and duration cells as stored text when formulas are not evaluated" do
+      data = table.data_to_json
+
+      expect(data[:rows].first[start.id]).to eq "31.01.2024"
+      expect(data[:rows].first[length.id]).to eq "5h 30m"
+    end
+  end
+
   context "formulas that reference objects" do
     fixtures "tables/advanced_formulas/columns"
     fixtures "tables/rows"
