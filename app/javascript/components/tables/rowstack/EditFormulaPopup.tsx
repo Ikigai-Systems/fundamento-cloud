@@ -3,6 +3,7 @@ import Spinner from "../../spinners/Spinner.tsx";
 import TablesApi from "../../../api/Tables/TablesApi.js";
 
 type FormulaColumn = {
+  id?: string,
   fundamentoFormula?: string,
   options?: {formula?: string},
 };
@@ -67,7 +68,7 @@ function EditFormulaPopup({
       setPreviewIsLoading(true);
       setPreviewResponse({result: undefined, error: undefined});
       try {
-        const response: PreviewResponse = await TablesApi.previewFormula({params: {id: table.id}, data: {formula, rowId: row.id}});
+        const response: PreviewResponse = await TablesApi.previewFormula({params: {id: table.id}, data: {formula, rowId: row.id, colId: column.id}});
         setPreviewResponse(response);
       } finally {
         setPreviewIsLoading(false);

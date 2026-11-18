@@ -210,4 +210,50 @@ RSpec.describe Tables::TablesController, type: :request do
       expect(response.body).to include(%(href="#{table_version_path(table, "latest")}">History</a>))
     end
   end
+
+  describe "POST /t/:id/preview_formula" do
+    fixtures "tables/cells"
+
+    let(:row) { table.rows_in_order.first }
+
+    def add_column(name, kind, previous:, **attributes)
+      table.columns.create!(name:, kind:, previous_column: previous, organization_id: table.organization_id, **attributes)
+    end
+
+    def preview(formula, col_id: nil)
+      post preview_formula_table_path(table, format: :json), params: { formula:, row_id: row.id, col_id: }, as: :json
+      response.parsed_body
+    end
+
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+
+      start = add_column("Start", :date, previous: tables_columns(:project_value), configuration: { "dateStoredFormat" => 2 })
+      length = add_column("Length", :duration, previous: start)
+      table.cells.create!(column: start, row:, value: "31.01.2024", organization_id: table.organization_id)
+      table.cells.create!(column: length, row:, value: "2d", organization_id: table.organization_id)
+      @finish = add_column("End", :formula, previous: length, configuration: { "dateStoredFormat" => 2 })
+    end
+
+    it "reads date and duration columns as dates and durations" do
+      expect(preview('CurrentRow("Start") + CurrentRow("Length")', col_id: @finish.id)["result"]).to eq("02.02.2024")
+      expect(preview('CurrentRow("Start") - Date(2024, 1, 1)')["result"]).to eq("30 days")
+    end
+
+    it "shows a date in ISO when no column is given" do
+      expect(preview('CurrentRow("Start") + Days(1)')["result"]).to eq("2024-02-01")
+    end
+
+    it "leaves other results as they were" do
+      expect(preview('Concatenate("a", "b")')["result"]).to eq("ab")
+    end
+
+    it "reports an error without a result" do
+      body = preview('CurrentRow("Start") + CurrentRow("Start")')
+
+      expect(body["error"]).to match(/Cannot add/)
+      expect(body).not_to have_key("result")
+    end
+  end
 end
