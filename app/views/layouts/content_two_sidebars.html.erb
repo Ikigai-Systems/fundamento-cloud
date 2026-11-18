@@ -1,8 +1,8 @@
-<%= render "layouts/body", body_class: "overflow-hidden content-container" do %>
+<%= render "layouts/body", body_class: "overflow-hidden content-container h-screen" do %>
   <%# BlockNote's mobile formatting toolbar needs the page pinned to the visual viewport: iOS pans
       the viewport when the keyboard opens, and a fixed toolbar then jumps while scrolling.
       bn-scroll-container sizes this element to that viewport, so it replaces h-screen. One per
-      page, directly inside <body>. %>
+      page, directly inside <body>. It is fixed, so the body gets its height from h-screen. %>
   <div class="bn-scroll-container">
     <%# Grid layout: spacers create the layout structure %>
     <div class="h-full lg:grid lg:grid-cols-[auto_minmax(400px,_1fr)_auto]">
