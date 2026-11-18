@@ -122,32 +122,29 @@ class Table < ApplicationRecord
     cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
     time_zone = self.organization.time_zone
 
-    formula_rows = {}
+    formula_columns = columns_in_order.select(&:formula?)
 
     jsonized_rows = rows_in_order.map do |row|
       values_by_column_id = columns_in_order.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
 
-      if evaluate_formulas
-        formula_rows[row.id] = Tables::FormulaRow.new(columns_in_order, values_by_column_id, time_zone) do |formula, current_row|
-          FormulaService.evaluate(formula, space, evaluate_as, additional_context: { "currentRow" => current_row })
-        end
-      end
-
-      columns_in_order.each_with_object({}) do |column, hash|
+      jsonized_row = columns_in_order.each_with_object({}) do |column, hash|
         next if evaluate_formulas && column.formula?
 
         hash[column.id] = column.kind == "checkbox" ? values_by_column_id[column.id] == "t" : values_by_column_id[column.id]
       end.merge({ "id" => row.id }) # this is for Rowstack convenience
-    end
 
-    jsonized_by_id = jsonized_rows.index_by { |jsonized| jsonized["id"] }
-    formula_rows.each do |row_id, formula_row|
-      jsonized_row = jsonized_by_id[row_id]
+      if evaluate_formulas && formula_columns.any?
+        formula_row = Tables::FormulaRow.new(columns_in_order, values_by_column_id, time_zone) do |formula, current_row|
+          FormulaService.evaluate(formula, space, evaluate_as, additional_context: { "currentRow" => current_row })
+        end
 
-      columns_in_order.select(&:formula?).each do |column|
-        evaluation = formula_row.evaluation_for(column)
-        jsonized_row[column.id] = evaluation["error"] || Tables::FormulaValues.serialized(column, evaluation["result"], time_zone)
+        formula_columns.each do |column|
+          evaluation = formula_row.evaluation_for(column)
+          jsonized_row[column.id] = evaluation["error"] || Tables::FormulaValues.serialized(column, evaluation["result"], time_zone)
+        end
       end
+
+      jsonized_row
     end
 
     {
