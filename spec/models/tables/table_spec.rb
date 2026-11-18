@@ -277,11 +277,25 @@ RSpec.describe Table, type: :model do
       expect(evaluated(doubled)).to eq "11 hrs"
     end
 
-    it "reports unparseable cell text as a formula error rather than treating it as empty" do
+    it "reports unparseable cell text as a formula error naming the column and value" do
       set_cell(add_column("Bad", :date, previous: length), "not a date")
-      broken = add_column("Broken", :formula, previous: table.columns.find_by(name: "Bad"), formula: "CurrentRow(\"Bad\") + Days(1)")
+      broken = add_column("Broken", :formula, previous: table.columns.find_by(name: "Bad"), formula: "CurrentRow(\"Bad\") - CurrentRow(\"Start\")")
 
-      expect(evaluated(broken)).to match(/Unable to evaluate formula/)
+      expect(evaluated(broken)).to include 'Cannot subtract Text (column "Bad" holds "not a date", not a valid date) and Date'
+    end
+
+    it "names an unparseable duration or datetime the same way" do
+      set_cell(add_column("Bad length", :duration, previous: length), "soon")
+      broken = add_column("Broken", :formula, previous: table.columns.find_by(name: "Bad length"), formula: "CurrentRow(\"Start\") + CurrentRow(\"Bad length\")")
+
+      expect(evaluated(broken)).to include 'column "Bad length" holds "soon", not a valid duration'
+    end
+
+    it "still lets a formula show or compare the unreadable text" do
+      set_cell(add_column("Bad", :date, previous: length), "not a date")
+      shown = add_column("Shown", :formula, previous: table.columns.find_by(name: "Bad"), formula: "CurrentRow(\"Bad\")")
+
+      expect(evaluated(shown)).to eq "not a date"
     end
 
     it "leaves date and duration cells as stored text when formulas are not evaluated" do

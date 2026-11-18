@@ -26,6 +26,7 @@ module Formula::TypedArithmetic
     when ->(v) { datetime?(v) } then "DateTime"
     when Formula::Duration then "Duration"
     when Numeric then "Number"
+    when Formula::UnreadableText then value.to_description
     when String then "Text"
     else value.class.name
     end
