@@ -70,6 +70,16 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result[0]).to include("Description", "Key", "Name", "Value")
       end
 
+      it 'renders a date column as an ISO date when the rows are returned as JSON' do
+        table = tables_tables(:projects)
+        start = table.columns.create!(name: "Start", kind: :date, previous_column: table.columns_in_order.last, organization_id: table.organization_id, configuration: { "dateStoredFormat" => 2 })
+        table.cells.create!(row: table.rows_in_order.first, column: start, value: "31.01.2024", organization_id: table.organization_id)
+
+        result = FormulaService.evaluate("Table(\"#{table.id}\")", space, organization_membership)
+
+        expect(result["result"].as_json.first["Start"]).to eq("2024-01-31")
+      end
+
       it 'reports a table that reads itself, instead of overflowing the stack' do
         table = tables_tables(:projects)
         table.columns.create!(name: "Itself", kind: :formula, formula: "Table(\"#{table.id}\")", previous_column: table.columns_in_order.last, organization_id: table.organization_id)

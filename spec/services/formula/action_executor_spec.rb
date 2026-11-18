@@ -54,6 +54,14 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(row.cells.find_by(column: due).value).to eq("10.02.2024")
       end
 
+      it 'stores a date-time result as the date and time its column shows' do
+        moment = table.columns.create!(name: "At", kind: :datetime, previous_column: due, organization_id: table.organization_id, configuration: { "dateStoredFormat" => 2 })
+
+        executor.update_rows({}, table.id, nil, { "At" => "DateTime(2024, 3, 5, 8, 15)" })
+
+        expect(row.cells.find_by(column: moment).value).to eq("05.03.2024 08:15")
+      end
+
       it 'stores a date result when adding a row' do
         added = executor.add_row({}, table.id, { "Start" => "Date(2024, 3, 5)" })
 

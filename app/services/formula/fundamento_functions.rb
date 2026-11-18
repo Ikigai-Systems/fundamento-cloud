@@ -30,11 +30,12 @@ class Formula::FundamentoFunctions
     table = Formula::TableLookup.new(space: @space, pundit_user: @pundit_user).find!(args[0])
 
     reading = (Thread.current[:formula_tables_being_read] ||= [])
-    if reading.include?(table.id)
-      raise "Circular reference: #{(reading.drop_while { |id| id != table.id } + [table.id]).map { |id| Table.find(id).name }.join(" -> ")}"
+    if reading.any? { |id, _| id == table.id }
+      names = reading.drop_while { |id, _| id != table.id }.map(&:last) + [table.name]
+      raise "Circular reference: #{names.join(" -> ")}"
     end
 
-    reading.push(table.id)
+    reading.push([table.id, table.name])
     begin
       table.data_to_hash(evaluate_formulas: true, evaluate_as: @pundit_user.organization_membership)
     ensure
