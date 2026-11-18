@@ -137,7 +137,8 @@
 /* Inside the pinned container (see layouts/content_two_sidebars) "screen" is the visual viewport,
  * which BlockNote publishes as --bn-vv-height and which is shorter than 100vh while the keyboard
  * is open. Not height: 100%, which does not resolve for a grid item in an auto-sized row.
- * The body used to clip off-canvas sidebars; the container has to do it now. */
+ * The container scrolls vertically, which makes its x axis scroll too, so off-canvas sidebar
+ * panels need clipping there as well as on the body. */
 body .bn-scroll-container {
     overflow-x: hidden;
 }
