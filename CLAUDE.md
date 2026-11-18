@@ -13,6 +13,11 @@ When possible use scripts from `bin/` instead of using `bundle exec`. For exampl
 `lint` and `test` — the app's `npm run typecheck` does not cover it, and its `npm run build`
 uses esbuild, which does not typecheck. See `.claude/rules/blocknote-converter.md`.
 
+Before pushing a change under `app/javascript/`, run `npm run lint` and `npm run typecheck`. The
+typecheck does not report lint warnings, and CI's `lint-and-typecheck` job fails on any
+(`--max-warnings 0`), so a typecheck alone still costs a failed run. A new `react-hooks/exhaustive-deps`
+warning is the usual one: a value read inside an effect belongs in its dependency array.
+
 ## Architecture Overview
 
 ### Core Application Structure
