@@ -295,13 +295,13 @@ class Tables::TablesController < ApplicationController
     row = @table.rows.find(params["row_id"])
     formula = params["formula"]
 
-    cells = row.cells.index_by(&:column_id)
-    current_row_values = @table.columns_in_order.each_with_object({}) do |column, hash|
-      hash[column.name] = cells[column.id]&.value
-    end
+    # The same typed values a formula column sees, so a date column needs no ToDate here either.
+    time_zone = @table.organization.time_zone
+    columns = @table.columns_in_order
+    values_by_column_id = row.cells.to_h { |cell| [cell.column_id, cell.value] }
 
     additional_context = {
-      "currentRow" => current_row_values
+      "currentRow" => Tables::FormulaValues.current_row(columns, values_by_column_id, time_zone)
     }
 
     formula_evaluation = FormulaService.evaluate(
@@ -310,6 +310,13 @@ class Tables::TablesController < ApplicationController
       current_organization_membership,
       additional_context: additional_context
     )
+
+    # Shown as the text the formula column would hold, in the format of the column being edited
+    # (ISO dates when the column is not given or not found).
+    unless formula_evaluation.key?("error")
+      target = columns.find { |column| column.id == params["col_id"] } || Tables::Column.new
+      formula_evaluation = formula_evaluation.merge("result" => Tables::FormulaValues.serialized(target, formula_evaluation["result"], time_zone))
+    end
 
     respond_to do |format|
       format.json { render json: formula_evaluation }
