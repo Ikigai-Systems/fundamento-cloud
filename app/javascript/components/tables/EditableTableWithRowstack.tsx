@@ -11,6 +11,8 @@ import DocumentsSelectCell from "./rowstack/DocumentsSelectCell.tsx";
 import ButtonCell from "./rowstack/ButtonCell.tsx";
 import DateTimeCell from "./rowstack/DateTimeCell/DateTimeCell.tsx";
 import CalendarDaysIcon from "./rowstack/DateTimeCell/CalendarDaysIcon.tsx"
+import DurationCell from "./rowstack/DurationCell/DurationCell.tsx";
+import DurationIcon from "./rowstack/DurationCell/DurationIcon.tsx";
 import EditFormulaPopup from "./rowstack/EditFormulaPopup.tsx";
 import EditDateDisplayFormatPopup from "./rowstack/DateCell/EditDateDisplayFormatPopup.tsx";
 import EditDateStoredFormatPopup from "./rowstack/DateCell/EditDateStoredFormatPopup.tsx";
@@ -43,7 +45,8 @@ type Kind =
     | "people"
     | "multi_people"
     | "documents"
-    | "button";
+    | "button"
+    | "duration";
 
 const toType = (kind: Kind) => {
   switch (kind) {
@@ -73,6 +76,8 @@ const toType = (kind: Kind) => {
       return "documents";
     case "button":
       return "button";
+    case "duration":
+      return "duration";
     default:
       return "text";
   }
@@ -456,6 +461,11 @@ const EditableTableWithRowstack = ({isEditable = true, table, data, forceRerende
               cell: DateTimeCell,
               icon: CalendarDaysIcon,
               name: "Date and time",
+            }, {
+              type: "duration",
+              cell: DurationCell,
+              icon: DurationIcon,
+              name: "Duration",
             }, {
               type: "button",
               cell: ButtonCell,
