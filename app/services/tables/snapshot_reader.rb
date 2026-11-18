@@ -39,7 +39,7 @@ module Tables
 
     def row_ids = payload["rows"]
 
-    # Mirrors Table#data_to_json's shape, including its checkbox coercion. Formula
+    # Mirrors Table#data_to_json's shape, through the same Tables::Column#grid_value. Formula
     # columns are left null: their values were never stored, and re-evaluating them now
     # would run against a workspace that has since changed.
     def rows
@@ -49,7 +49,7 @@ module Tables
 
         columns.each_with_index do |column, column_index|
           value = values[column_index]
-          row[column.id] = column.kind == "checkbox" ? value == "t" : value
+          row[column.id] = column.grid_value(value)
         end
 
         row["id"] = row_id

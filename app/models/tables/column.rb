@@ -29,6 +29,11 @@ class Tables::Column < ApplicationRecord
 
   enum :kind, [:string, :number, :decimal, :datetime, :date, :formula, :long_text, :select, :multi_select, :url, :checkbox, :people, :documents, :button, :multi_people, :duration], scopes: false, validate: true
 
+  # A cell's stored text as the grid shows it: a checkbox is a boolean, anything else stays text.
+  def grid_value(stored)
+    checkbox? ? stored == "t" : stored
+  end
+
   def self.to_kind(type)
     possible_type = type&.underscore
 

@@ -115,60 +115,14 @@ class Table < ApplicationRecord
   end
 
   def data_to_json(evaluate_formulas: false, evaluate_as: nil)
-    assert !evaluate_formulas || (evaluate_formulas && evaluate_as.present?), "evaluate_as must be set!"
+    assert !evaluate_formulas || evaluate_as.present?, "evaluate_as must be set!"
 
-    columns_in_order = self.columns_in_order
-    rows_in_order = self.rows_in_order
-    cells_by_rows_and_columns = self.cells.index_by { |cell| [cell.row_id, cell.column_id] }
-    time_zone = self.organization.time_zone
-
-    formula_columns = columns_in_order.select(&:formula?)
-
-    jsonized_rows = rows_in_order.map do |row|
-      values_by_column_id = columns_in_order.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
-
-      jsonized_row = columns_in_order.each_with_object({}) do |column, hash|
-        next if evaluate_formulas && column.formula?
-
-        hash[column.id] = column.kind == "checkbox" ? values_by_column_id[column.id] == "t" : values_by_column_id[column.id]
-      end.merge({ "id" => row.id }) # this is for Rowstack convenience
-
-      if evaluate_formulas && formula_columns.any?
-        formula_row = formula_row_for(columns_in_order, values_by_column_id, time_zone, evaluate_as)
-
-        formula_columns.each do |column|
-          evaluation = formula_row.evaluation_for(column)
-          jsonized_row[column.id] = evaluation["error"] || Tables::FormulaValues.serialized(column, evaluation["result"], time_zone)
-        end
-      end
-
-      jsonized_row
-    end
+    reader = Tables::RowReader.new(self, evaluate_as:)
 
     {
-      columns: columns_in_order,
-      rows: jsonized_rows,
+      columns: reader.columns,
+      rows: reader.grid_rows(evaluate_formulas:),
     }
-  end
-
-  # Rows as a formula sees a table through Table("..."): values keyed by column name and id, typed
-  # from the column (see Tables::FormulaValues), and a formula column holds its typed result. Without
-  # `evaluate_formulas` the rows are the plain JSON shape of #data_to_json.
-  def data_to_hash(evaluate_formulas: false, evaluate_as: nil)
-    return typed_rows(evaluate_as:) if evaluate_formulas
-
-    response_data = self.data_to_json(evaluate_formulas:, evaluate_as:)
-    rows = response_data[:rows]
-    columns = response_data[:columns]
-
-    rows.map do |row|
-      cell_values = {}
-      columns.each do |column|
-        cell_values[column.name] = row[column.id]
-      end
-      # A string key, so row's own "id" replaces it rather than adding a second "id".
-      { "id" => row["id"] }.merge(cell_values).merge(row)
-    end
   end
 
   def import_from_csv(csv_file, file_encoding = "utf-8")
@@ -268,40 +222,6 @@ class Table < ApplicationRecord
   end
 
   private
-
-  def formula_row_for(columns, values_by_column_id, time_zone, evaluate_as)
-    Tables::FormulaRow.new(columns, values_by_column_id, time_zone) do |formula, current_row|
-      FormulaService.evaluate(formula, space, evaluate_as, additional_context: { "currentRow" => current_row })
-    end
-  end
-
-  def typed_rows(evaluate_as:)
-    assert evaluate_as.present?, "evaluate_as must be set!"
-
-    columns = columns_in_order
-    cells_by_rows_and_columns = cells.index_by { |cell| [cell.row_id, cell.column_id] }
-    time_zone = organization.time_zone
-
-    rows_in_order.map do |row|
-      values_by_column_id = columns.to_h { |column| [column.id, cells_by_rows_and_columns.dig([row.id, column.id])&.value] }
-      formula_row = formula_row_for(columns, values_by_column_id, time_zone, evaluate_as)
-
-      columns.each_with_object({}) do |column, hash|
-        value =
-          if column.formula?
-            evaluation = formula_row.evaluation_for(column)
-            evaluation["error"] || evaluation["result"]
-          elsif column.kind == "checkbox"
-            values_by_column_id[column.id] == "t"
-          else
-            formula_row.fetch(column.id)
-          end
-
-        hash[column.name] = value
-        hash[column.id] = value
-      end.merge("id" => row.id)
-    end
-  end
 
   def enqueue_initial_version
     TableVersionSnapshotJob.perform_later(self, kind: :initial)
