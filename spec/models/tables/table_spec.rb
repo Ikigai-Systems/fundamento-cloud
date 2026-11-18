@@ -147,6 +147,44 @@ RSpec.describe Table, type: :model do
       expect(evaluated(finish)).to eq "10.02.2024"
     end
 
+    context "rows read through Table() or data_to_hash" do
+      let!(:finish) { add_column("End", :formula, previous: length, formula: "CurrentRow(\"Start\") + Days(10)", configuration: { "dateStoredFormat" => 2 }) }
+      let(:hash_row) { table.data_to_hash(evaluate_formulas: true, evaluate_as: membership).find { |r| r["id"] == row.id } }
+
+      it "holds typed values, by column name and by id" do
+        expect(hash_row["Start"]).to eq Date.new(2024, 1, 31)
+        expect(hash_row[start.id]).to eq Date.new(2024, 1, 31)
+        expect(hash_row["Length"]).to eq Formula::Duration.parse("5h 30m")
+      end
+
+      it "holds the typed result of a formula column" do
+        expect(hash_row["End"]).to eq Date.new(2024, 2, 10)
+      end
+
+      it "holds a formula error as its text" do
+        add_column("Broken", :formula, previous: finish, formula: "Nonexistent()")
+
+        expect(hash_row["Broken"]).to include "Undefined function: Nonexistent"
+      end
+
+      it "holds a checkbox as true or false" do
+        done = add_column("Done", :checkbox, previous: finish)
+        set_cell(done, "t")
+
+        expect(hash_row["Done"]).to eq true
+      end
+
+      it "keeps one id key" do
+        expect(hash_row.keys.count { |key| key.to_s == "id" }).to eq 1
+      end
+
+      it "lets a formula use a date column of another table without ToDate" do
+        result = FormulaService.evaluate("Dig(First(Table(\"#{table.id}\")), \"Start\") - Date(2024, 1, 1)", nil, membership)
+
+        expect(result["result"].to_s).to eq "30 days"
+      end
+    end
+
     context "formula columns that read other formula columns" do
       let!(:finish) { add_column("End", :formula, previous: length, formula: "CurrentRow(\"Start\") + Days(10)", configuration: { "dateStoredFormat" => 2 }) }
 
