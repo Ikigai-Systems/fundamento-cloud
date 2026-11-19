@@ -208,34 +208,8 @@ class Formula::Evaluator
     right = eval_node(node[:right])
     operator = node[:operator]
 
-    if Formula::TypedArithmetic.typed?(left) || Formula::TypedArithmetic.typed?(right)
-      return Formula::TypedArithmetic.apply(operator, left, right)
-    end
+    raise "Unknown operator: #{operator}" unless %w[+ - * / > >= < <= == !=].include?(operator)
 
-    case operator
-    when '+'
-      left + right
-    when '-'
-      left - right
-    when '*'
-      left * right
-    when '/'
-      raise "Division by zero" if right == 0
-      left.to_f / right
-    when '>'
-      left > right
-    when '>='
-      left >= right
-    when '<'
-      left < right
-    when '<='
-      left <= right
-    when '=='
-      left == right
-    when '!='
-      left != right
-    else
-      raise "Unknown operator: #{operator}"
-    end
+    Formula::TypedArithmetic.apply(operator, left, right)
   end
 end

@@ -83,7 +83,7 @@ EOF
 
         # User id should be added to the row
         engine.evaluate(formula, context: context, action_executor: action_executor)
-        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => "," + organization_membership.user.id.to_s))
+        expect(orders_rows).to include(hash_including("Pizza" => "Hawaii", "Who" => organization_membership.user.id.to_s))
 
         # User id should be removed from the row
         engine.evaluate(formula, context: context, action_executor: action_executor)

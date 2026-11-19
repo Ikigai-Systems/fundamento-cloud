@@ -248,6 +248,17 @@ RSpec.describe Formula::Engine, type: :model do
       it 'raises error for invalid number format' do
         expect { engine.evaluate('Number("abc")') }.to raise_error(ArgumentError)
       end
+
+      ["1e3", "0x10", "1_000", "1,5", "1 000", "", "5%", "$5", "1.2.3", "--1"].each do |text|
+        it "rejects #{text.inspect}" do
+          expect { engine.evaluate("Number(#{text.inspect})") }.to raise_error(ArgumentError, /Cannot convert/)
+        end
+      end
+
+      it "accepts a leading decimal point and numbers" do
+        expect(engine.evaluate('Number(".5")')).to eq(0.5)
+        expect(engine.evaluate("Number(7)")).to eq(7)
+      end
     end
 
     describe 'String function' do
