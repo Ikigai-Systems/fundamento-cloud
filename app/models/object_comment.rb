@@ -63,6 +63,11 @@ class ObjectComment < ApplicationRecord
     self.class.frame_id_for(anchor_block_id)
   end
 
+  # The frame the form that starts a comment opens in: the document's, or that of its block.
+  def self.new_frame_id_for(block_id)
+    block_id.present? ? "new_object_comment_block_#{block_id}" : "new_object_comment"
+  end
+
   def content
     # FIXME: workaround for serialization problem
     content = super

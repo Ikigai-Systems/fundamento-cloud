@@ -9,7 +9,7 @@ class CommentsController < ApplicationController
 
   before_action :load_resource
 
-  helper_method :comments_frame_id
+  helper_method :comments_frame_id, :new_comment_frame_id
   before_action :ensure_turbo_request, except: [:show]
 
   def index
@@ -32,7 +32,7 @@ class CommentsController < ApplicationController
     authorize @resource, :create?
 
     if @comment.save
-      render turbo_stream: turbo_stream.update("new_object_comment", "")
+      render turbo_stream: turbo_stream.update(new_comment_frame_id, "")
     else
       render :new, status: :unprocessable_entity
     end
@@ -78,6 +78,12 @@ class CommentsController < ApplicationController
   # editing one reloads that block and not the document's list.
   def comments_frame_id
     ObjectComment.frame_id_for(params[:block_id])
+  end
+
+  # The frame the form is in, which a block's comments have to themselves so that two forms
+  # open on one page do not close each other.
+  def new_comment_frame_id
+    ObjectComment.new_frame_id_for(params[:anchor_block_id] || params.dig(:comment, :anchor_block_id))
   end
 
   # The comments on the document, or those on one of its blocks when a block is named. A block's

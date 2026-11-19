@@ -5,5 +5,31 @@
     <% @comments.each do |comment| %>
       <%= render partial: "comment", locals: { comment: comment, resource: @resource, space: @resource.space } %>
     <% end %>
+
+    <%# A block's comments carry their own form, which the editor opens from the block's comment button. %>
+    <% if params[:block_id].present? && policy(@resource.comments.new).create? %>
+      <% form_frame_id = ObjectComment.new_frame_id_for(params[:block_id]) %>
+
+      <style>
+        turbo-frame[id="<%= form_frame_id %>"]:not(:empty) + [data-block-comment-add] {
+          display: none;
+        }
+      </style>
+
+      <%= turbo_frame_tag form_frame_id %>
+
+      <% if @comments.any? %>
+        <div data-block-comment-add>
+          <%= link_to(
+                new_comment_path(object_gid: @resource.to_gid_param, anchor_block_id: params[:block_id]),
+                data: { turbo_frame: form_frame_id },
+                class: "secondary-button gap-1"
+              ) do %>
+            <i class="icon-[tabler--message]"></i>
+            Comment
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 <% end %>

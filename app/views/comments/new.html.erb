@@ -1,11 +1,11 @@
-<%= turbo_frame_tag "new_object_comment" do %>
+<%= turbo_frame_tag new_comment_frame_id do %>
   <%= form_with scope: :comment,
       url: comments_path(object_gid: @resource.to_gid_param),
       method: :post,
       class: "default-form mb-3",
       data: {
         controller: "new-comment",
-        turbo_frame: "new_object_comment",
+        turbo_frame: new_comment_frame_id,
         new_comment_object_value: @resource.to_react_props.to_json,
         new_comment_space_value: @resource.space.to_react_props.to_json,
       } do |f| %>

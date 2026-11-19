@@ -59,6 +59,31 @@ RSpec.describe CommentsController, type: :request do
       end
     end
 
+    describe "the form for a comment on a block" do
+      it "has a frame of its own in the block's comments, so a block can be commented before it has any" do
+        get comments_path(object_gid: document.to_gid_param, block_id: "block-9"),
+          headers: { "Turbo-Frame" => "object_comments_block_block-9" }
+
+        expect(response.body).to include('id="new_object_comment_block_block-9"')
+      end
+
+      it "opens in the block's frame, not the document's" do
+        get new_comment_path(object_gid: document.to_gid_param, anchor_block_id: "block-1"),
+          headers: { "Turbo-Frame" => "new_object_comment_block_block-1" }
+
+        expect(response.body).to include('id="new_object_comment_block_block-1"')
+        expect(response.body).not_to include('id="new_object_comment"')
+      end
+
+      it "closes in the block's frame once the comment is saved" do
+        post comments_path(object_gid: document.to_gid_param),
+          params: { comment: { content: content.to_json, anchor_block_id: "block-1" } },
+          headers: turbo_headers
+
+        expect(response.body).to include('target="new_object_comment_block_block-1"')
+      end
+    end
+
     describe "GET #new" do
       it "carries the block into the form that saves the comment" do
         get new_comment_path(object_gid: document.to_gid_param, anchor_block_id: "block-1", anchor_quote: "some text"),
