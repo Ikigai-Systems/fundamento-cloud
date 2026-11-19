@@ -118,7 +118,7 @@ class Formula::DateTimeFunctions
   def in_unit(duration, unit)
     raise "Expected a Duration, got #{Formula::TypedArithmetic.type_name(duration)}" unless duration.is_a?(Formula::Duration)
 
-    duration.seconds.to_f / DURATION_UNITS.fetch(unit)
+    Formula::Numbers.normalize(Rational(duration.seconds, DURATION_UNITS.fetch(unit)))
   end
 
   def ensure_moment(value)
@@ -163,7 +163,7 @@ class Formula::DateTimeFunctions
 
     both_dates = Formula::TypedArithmetic.date?(from) && Formula::TypedArithmetic.date?(to)
     difference = both_dates ? (to - from).to_i * Formula::Duration::DAY : (to_datetime(to).to_time - to_datetime(from).to_time)
-    difference.to_f / DURATION_UNITS.fetch(unit)
+    Formula::Numbers.normalize(Rational(difference, DURATION_UNITS.fetch(unit)))
   end
 
   # Complete calendar months from one date to another, negative when going backwards.

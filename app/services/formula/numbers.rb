@@ -1,5 +1,6 @@
 # The numbers of the formula language are exact: a whole number is an Integer and anything else a
-# Rational, so 0.1 + 0.2 is 0.3 and 1 / 3 * 3 is 1. A Float never lives inside the evaluator.
+# Rational, so 0.1 + 0.2 is 0.3 and 1 / 3 * 3 is 1. Roots and logarithms are computed as Floats and
+# read straight back as exact numbers rounded to 15 digits.
 #
 # Numbers enter through parse (literals, text) or exact (a Float or BigDecimal from outside) and
 # leave through external, which gives a plain Integer or Float for JSON and the database.
@@ -11,10 +12,6 @@ module Formula::Numbers
   # denominator it is rounded to a generous number of significant digits.
   MAX_DENOMINATOR_DIGITS = 60
   ROUNDED_DIGITS = 40
-
-  def self.number?(value)
-    value.is_a?(Numeric)
-  end
 
   # Strict: nil when the text is not a plain number.
   def self.parse(text)
