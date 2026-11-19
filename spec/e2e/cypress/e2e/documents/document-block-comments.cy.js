@@ -77,4 +77,38 @@ describe("Comments on a block of a document", function () {
       expect(json).not.to.include("About the second one");
     });
   });
+
+  // A block with no comment yet gets its first one from the button that shows beside it.
+  function commentOnTheFirstParagraph() {
+    cy.appEval(`Document.find("${documentId}").to_blocks.find { |b| b["content"].to_s.include?("First paragraph") }["id"]`).then((firstBlockId) => {
+      cy.contains(".bn-block-content", "First paragraph").realHover();
+      cy.get("[data-block-comment-button]").should("be.visible").click();
+
+      // A synthetic click leaves the focus in the document, so the typing would land there.
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId} [data-comment-editor] [role='textbox']`, {timeout: 10000})
+        .realClick();
+      cy.realType("About the first one");
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId}`).contains("input[type=submit]", "Add").click();
+
+      cy.get(`[data-id="${firstBlockId}"] turbo-frame#object_comments_block_${firstBlockId}`, {timeout: 10000})
+        .should("contain", "About the first one");
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId}`).should("be.empty");
+
+      cy.appEval(`Document.find("${documentId}").comments.on_block("${firstBlockId}").count`).should("eq", 1);
+    });
+  }
+
+  it("starts a comment on a block when reading", function () {
+    cy.visit(`/d/${documentId}`);
+    cy.waitForEditor();
+
+    commentOnTheFirstParagraph();
+  });
+
+  it("starts a comment on a block when editing", function () {
+    cy.visit(`/d/${documentId}/edit`);
+    cy.waitForEditor();
+
+    commentOnTheFirstParagraph();
+  });
 });

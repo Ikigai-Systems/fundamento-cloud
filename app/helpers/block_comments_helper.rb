@@ -4,7 +4,8 @@ module BlockCommentsHelper
   def block_comments_props(document)
     {
       objectGid: document.to_gid_param,
-      blockIds: document.commented_block_ids
+      blockIds: document.commented_block_ids,
+      canComment: policy(document.comments.new).create?
     }
   end
 end

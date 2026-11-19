@@ -4,6 +4,13 @@ RSpec.describe BlockCommentsHelper, type: :helper do
   fixtures :organizations, :users, :organization_memberships, :spaces, :documents
 
   let(:document) { documents(:one) }
+  let(:can_create) { true }
+
+  before do
+    # The view's `policy` comes from Pundit, which a helper spec does not load.
+    policy = double(create?: can_create)
+    helper.define_singleton_method(:policy) { |_record| policy }
+  end
 
   def comment_on(block_id)
     document.comments.create!(
@@ -24,6 +31,18 @@ RSpec.describe BlockCommentsHelper, type: :helper do
 
       expect(props[:objectGid]).to eq(document.to_gid_param)
       expect(props[:blockIds]).to contain_exactly("block-1", "block-2")
+    end
+
+    it "says the user can comment" do
+      expect(helper.block_comments_props(document)[:canComment]).to be(true)
+    end
+
+    context "when the user may not comment" do
+      let(:can_create) { false }
+
+      it "says so" do
+        expect(helper.block_comments_props(document)[:canComment]).to be(false)
+      end
     end
 
     it "has no blocks when only the document has comments" do
