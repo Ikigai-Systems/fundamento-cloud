@@ -1,5 +1,6 @@
 class Formula::Evaluator
-  def initialize(context: {}, functions: {}, action_executor: nil)
+  def initialize(context: {}, functions: {}, action_executor: nil, external_functions: [])
+    @external_functions = external_functions.map(&:to_s)
     @context = context
     @functions = functions.dup
     @current_value_stack = []
@@ -91,8 +92,16 @@ class Formula::Evaluator
       function = @functions[function_name]
       raise "Undefined function: #{function_name}" unless function
       
-      function.call(*arguments)
+      call_function(function_name, function, arguments)
     end
+  end
+
+  # Built-in functions work with exact numbers. Functions supplied by the application get plain
+  # Integers and Floats, and what they return is read back as exact numbers.
+  def call_function(name, function, arguments)
+    return function.call(*arguments) unless @external_functions.include?(name)
+
+    Formula::Numbers.exact_deep(function.call(*Formula::Numbers.external(arguments)))
   end
 
   def iterative_function?(name)
@@ -121,7 +130,7 @@ class Formula::Evaluator
     raise "Undefined function: #{function_name}" unless function
     
     # Pass the current evaluation context as the first argument to action functions
-    function.call(@context, *evaluated_args)
+    Formula::Numbers.exact_deep(function.call(@context, *Formula::Numbers.external(evaluated_args)))
   end
 
   def eval_iterative_function_call(node)

@@ -21,7 +21,7 @@ class Formula::Engine
     functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone, clock:))
     
     # Create evaluator with functions and action executor
-    evaluator = Formula::Evaluator.new(context:, functions:, action_executor:)
+    evaluator = Formula::Evaluator.new(context:, functions:, action_executor:, external_functions: additional_functions&.keys || [])
 
     # Set context variables (avoid modifying hash during iteration)
     context.keys.each { |name| evaluator.set_variable(name, context[name]) }
@@ -33,7 +33,7 @@ class Formula::Engine
     ast = @transform.apply(parse_tree)
     
     # Evaluate
-    evaluator.evaluate(ast, current_value)
+    Formula::Numbers.external(evaluator.evaluate(ast, current_value))
   rescue Parslet::ParseFailed => e
     raise "Parse error: #{e.parse_failure_cause.ascii_tree}"
   end

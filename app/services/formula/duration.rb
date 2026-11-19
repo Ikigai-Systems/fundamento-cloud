@@ -117,7 +117,7 @@ class Formula::Duration
 
   # A duration divided by a number is a duration; by another duration it is a plain ratio.
   def /(other)
-    return seconds.to_f / other.seconds if other.is_a?(Formula::Duration)
+    return Formula::Numbers.normalize(Rational(seconds, other.seconds)) if other.is_a?(Formula::Duration)
 
     self.class.new(seconds.to_r / other)
   end

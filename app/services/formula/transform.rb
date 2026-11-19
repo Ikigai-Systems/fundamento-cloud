@@ -2,7 +2,7 @@ require 'parslet'
 
 # Transform the parse tree into a more usable AST
 class Formula::Transform < Parslet::Transform
-  rule(number: simple(:x)) { x.to_f }
+  rule(number: simple(:x)) { Formula::Numbers.parse(x.to_s) }
   rule(string: simple(:x)) { 
     str = x.to_s
     str.gsub(/\\(.)/) do |match|

@@ -61,7 +61,7 @@ module Formula::TypedArithmetic
   end
 
   def self.add(left, right)
-    return left + right if left.is_a?(Numeric) && right.is_a?(Numeric)
+    return Formula::Numbers.normalize(exact(left) + exact(right)) if left.is_a?(Numeric) && right.is_a?(Numeric)
     return left + right if left.is_a?(String) && right.is_a?(String)
 
     # Addition commutes: Days(7) + Date(...) and 30 + Date(...) read as the date moved forward.
@@ -77,7 +77,7 @@ module Formula::TypedArithmetic
   end
 
   def self.subtract(left, right)
-    return left - right if left.is_a?(Numeric) && right.is_a?(Numeric)
+    return Formula::Numbers.normalize(exact(left) - exact(right)) if left.is_a?(Numeric) && right.is_a?(Numeric)
 
     case [type_name(left), type_name(right)]
     in ["Duration", "Duration"] then left - right
@@ -91,12 +91,12 @@ module Formula::TypedArithmetic
   end
 
   def self.multiply(left, right)
-    return left * right if left.is_a?(Numeric) && right.is_a?(Numeric)
+    return Formula::Numbers.normalize(exact(left) * exact(right)) if left.is_a?(Numeric) && right.is_a?(Numeric)
 
     left, right = right, left if left.is_a?(Numeric)
 
     case [type_name(left), type_name(right)]
-    in ["Duration", "Number"] then left * right
+    in ["Duration", "Number"] then left * exact(right)
     else unsupported("multiply", left, right)
     end
   end
@@ -105,14 +105,14 @@ module Formula::TypedArithmetic
     if left.is_a?(Numeric) && right.is_a?(Numeric)
       raise "Division by zero" if right.zero?
 
-      return left.to_f / right
+      return Formula::Numbers.normalize(Rational(exact(left)) / exact(right))
     end
 
     case [type_name(left), type_name(right)]
     in ["Duration", "Number" | "Duration"]
       raise "Division by zero" if right.is_a?(Numeric) ? right.zero? : right.seconds.zero?
 
-      left / right
+      right.is_a?(Numeric) ? left / exact(right) : Formula::Numbers.normalize(left / right)
     else unsupported("divide", left, right)
     end
   end
@@ -122,8 +122,12 @@ module Formula::TypedArithmetic
       raise "Cannot compare #{type_name(left)} with #{type_name(right)}"
     end
 
-    left, right = [left, right].map { |value| value == true ? 1 : value == false ? 0 : value }
+    left, right = [left, right].map { |value| value == true ? 1 : value == false ? 0 : exact(value) }
     left.public_send(operator, right)
+  end
+
+  def self.exact(value)
+    Formula::Numbers.exact(value)
   end
 
   def self.date_plus_seconds(date, seconds)
@@ -144,5 +148,5 @@ module Formula::TypedArithmetic
     raise "Cannot #{verb} #{type_name(left)} and #{type_name(right)}"
   end
 
-  private_class_method :date_plus_seconds, :whole_days, :unsupported
+  private_class_method :exact, :date_plus_seconds, :whole_days, :unsupported
 end
