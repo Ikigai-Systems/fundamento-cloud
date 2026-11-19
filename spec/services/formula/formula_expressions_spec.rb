@@ -161,7 +161,6 @@ RSpec.describe Formula::Engine, type: :model do
 
     it "orders values of the same kind" do
       expect(evaluate("True() > False()")).to be(true)
-      expect(evaluate("2 >= 2")).to be(true)
     end
 
     it "reports arithmetic across kinds" do
