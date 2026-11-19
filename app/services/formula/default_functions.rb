@@ -85,9 +85,10 @@ class Formula::DefaultFunctions
         elsif value.match?(/^-?\d*\.\d+$/)
           value.to_f
         else
-          Float(value) rescue raise ArgumentError, "Cannot convert '#{value}' to number"
+          raise ArgumentError, "Cannot convert '#{value}' to number"
         end
       },
+      'ToBoolean' => ->(value) { Formula::DefaultFunctions.to_boolean(value) },
       'String' => ->(value) { 
         if value.is_a?(Float) && value == value.to_i
           value.to_i.to_s
@@ -258,6 +259,24 @@ class Formula::DefaultFunctions
     normalized
   end
 
+  # Strict conversion: true/false, the text "true"/"false" or "t"/"f" in any case (a checkbox cell
+  # is stored as "t"), and the numbers 1 and 0. Anything else is an error.
+  def self.to_boolean(value)
+    case value
+    when true, false then value
+    when 1 then true
+    when 0 then false
+    when String
+      case value.strip.downcase
+      when "true", "t" then true
+      when "false", "f" then false
+      else raise ArgumentError, "Cannot convert #{value.inspect} to true or false"
+      end
+    else
+      raise ArgumentError, "Cannot convert #{Formula::TypedArithmetic.type_name(value)} to true or false"
+    end
+  end
+
   def self.deep_equal(a, b)
     # Handle nil cases
     return true if a.nil? && b.nil?
@@ -266,8 +285,8 @@ class Formula::DefaultFunctions
     # Handle same object reference
     return true if a.equal?(b)
     
-    # Handle different types
-    return false unless a.class == b.class
+    # Values of different kinds are never equal; 1 and 1.0 are the same kind of value
+    return false unless Formula::TypedArithmetic.kind(a) == Formula::TypedArithmetic.kind(b)
     
     # Handle arrays
     if a.is_a?(Array)

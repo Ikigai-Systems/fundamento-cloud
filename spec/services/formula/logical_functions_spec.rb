@@ -78,6 +78,28 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
 
+    describe "ToBoolean function" do
+      {
+        "True()" => true, "False()" => false, "1" => true, "0" => false,
+        '"true"' => true, '"True"' => true, '"TRUE"' => true, '"false"' => false, '"False"' => false,
+        '"t"' => true, '"T"' => true, '"f"' => false, '"F"' => false, '" true "' => true
+      }.each do |argument, expected|
+        it "turns #{argument} into #{expected}" do
+          expect(engine.evaluate("ToBoolean(#{argument})")).to be(expected)
+        end
+      end
+
+      ['2', '-1', '0.5', '"yes"', '"no"', '"1"', '"0"', '""', 'List(1)', 'Date(2024, 1, 1)'].each do |argument|
+        it "rejects #{argument}" do
+          expect { engine.evaluate("ToBoolean(#{argument})") }.to raise_error(ArgumentError, /Cannot convert .* to true or false/)
+        end
+      end
+
+      it "rejects a blank value and names it" do
+        expect { engine.evaluate("ToBoolean(CurrentValue)", current_value: nil) }.to raise_error(ArgumentError, "Cannot convert Blank to true or false")
+      end
+    end
+
     describe 'True function' do
       it 'returns true' do
         result = engine.evaluate('True()')

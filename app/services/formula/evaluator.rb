@@ -40,22 +40,6 @@ class Formula::Evaluator
     @current_value_stack.last || @current_value
   end
 
-  def truthy_value?(value)
-    return false if value.nil?
-    return false if value == 0
-    return false if value.to_s.downcase == 'false'
-    return false if value.to_s.empty?
-    true
-  end
-
-  def format_value_for_string(value)
-    if value.is_a?(Float) && value == value.to_i
-      value.to_i.to_s
-    else
-      value.to_s
-    end
-  end
-
   def evaluate_expression_with_current_value(expression_ast, current_value)
     enter_current_value_scope(current_value)
     begin
@@ -63,26 +47,6 @@ class Formula::Evaluator
     ensure
       exit_current_value_scope
     end
-  end
-
-  def normalize_text(text, ignore_case, ignore_accents)
-    normalized = text.to_s
-    
-    if ignore_accents
-      # Use Unicode normalization to decompose characters and remove combining marks
-      # NFD (Normalization Form Decomposed) separates base characters from accents
-      normalized = normalized.unicode_normalize(:nfd)
-      # Remove all combining diacritical marks (Unicode category Mn)
-      normalized = normalized.gsub(/\p{Mn}/, '')
-      # Normalize back to NFC (Normalization Form Composed) for consistency
-      normalized = normalized.unicode_normalize(:nfc)
-    end
-    
-    if ignore_case
-      normalized = normalized.downcase
-    end
-    
-    normalized
   end
 
   def eval_node(node)
@@ -208,34 +172,8 @@ class Formula::Evaluator
     right = eval_node(node[:right])
     operator = node[:operator]
 
-    if Formula::TypedArithmetic.typed?(left) || Formula::TypedArithmetic.typed?(right)
-      return Formula::TypedArithmetic.apply(operator, left, right)
-    end
+    raise "Unknown operator: #{operator}" unless %w[+ - * / > >= < <= == !=].include?(operator)
 
-    case operator
-    when '+'
-      left + right
-    when '-'
-      left - right
-    when '*'
-      left * right
-    when '/'
-      raise "Division by zero" if right == 0
-      left.to_f / right
-    when '>'
-      left > right
-    when '>='
-      left >= right
-    when '<'
-      left < right
-    when '<='
-      left <= right
-    when '=='
-      left == right
-    when '!='
-      left != right
-    else
-      raise "Unknown operator: #{operator}"
-    end
+    Formula::TypedArithmetic.apply(operator, left, right)
   end
 end

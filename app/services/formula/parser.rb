@@ -23,8 +23,6 @@ class Formula::Parser < Parslet::Parser
 
   # Operators (order matters for >= vs >)
   rule(:comparison_op) { str('>=') | str('<=') | str('==') | str('!=') | match('[><]') }
-  rule(:arithmetic_op) { match('[+\\-*/]') }
-  rule(:operator) { comparison_op | arithmetic_op }
 
   # Function calls: Identifier(arg1, arg2, ...)
   rule(:function_call) do
@@ -50,22 +48,16 @@ class Formula::Parser < Parslet::Parser
     ) >> space?
   end
 
-  # Expressions with operator precedence
-  rule(:factor) { term }
-  
-  rule(:multiplicative) do
-    factor >> (space? >> match('[*/]').as(:operator) >> space? >> factor).repeat
+  # Expressions with operator precedence: * and / bind tighter than + and -, which bind tighter
+  # than the comparisons. Every level is left associative.
+  rule(:expression) do
+    infix_expression(
+      term,
+      [match('[*/]'), 3, :left],
+      [match('[+\\-]'), 2, :left],
+      [comparison_op, 1, :left]
+    ).as(:expression)
   end
-  
-  rule(:additive) do
-    multiplicative >> (space? >> match('[+\\-]').as(:operator) >> space? >> multiplicative).repeat
-  end
-  
-  rule(:comparison) do
-    additive >> (space? >> comparison_op.as(:operator) >> space? >> additive).repeat
-  end
-
-  rule(:expression) { comparison.as(:expression) }
 
   # Top-level statement
   rule(:statement) do

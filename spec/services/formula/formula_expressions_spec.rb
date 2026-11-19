@@ -104,6 +104,89 @@ RSpec.describe Formula::Engine, type: :model do
     end
   end
 
+  describe "strict operators" do
+    def evaluate(formula, **options)
+      engine.evaluate(formula, **options)
+    end
+
+    it "compares string literals on either side of an operator" do
+      expect(evaluate('"abc" == "abc"')).to be(true)
+      expect(evaluate('"5" == "5"')).to be(true)
+      expect(evaluate('"5" == "6"')).to be(false)
+      expect(evaluate('"a" != "b"')).to be(true)
+      expect(evaluate('"b" > "a"')).to be(true)
+      expect(evaluate('CurrentValue == "5"', current_value: "5")).to be(true)
+    end
+
+    it "orders text as text and case-sensitively" do
+      expect(evaluate('"10" > "9"')).to be(false)
+      expect(evaluate('"a" > "A"')).to be(true)
+      expect(evaluate('"a" == "A"')).to be(false)
+    end
+
+    it "never equates values of different kinds" do
+      expect(evaluate('"1" == 1')).to be(false)
+      expect(evaluate('1 == "1"')).to be(false)
+      expect(evaluate('"1" != 1')).to be(true)
+      expect(evaluate("True() == 1")).to be(false)
+      expect(evaluate('True() == "true"')).to be(false)
+      expect(evaluate('Equals("5", 5)')).to be(false)
+    end
+
+    it "treats whole and fractional numbers alike" do
+      expect(evaluate('Number("5") == 5')).to be(true)
+      expect(evaluate('Equals(Number("5"), 5)')).to be(true)
+      expect(evaluate('Round(2.4) == 2')).to be(true)
+    end
+
+    it "compares lists element by element with the same rules" do
+      expect(evaluate("List(1, 2) == List(1, 2)")).to be(true)
+      expect(evaluate("List(1, 2) == List(2, 1)")).to be(false)
+      expect(evaluate('List(1, 2) == List("1", "2")')).to be(false)
+      expect(evaluate('List(1, 2) == ForEach(List("1", "2"), Number(CurrentValue))')).to be(true)
+      expect(evaluate('ForEach(List(1, 2), Concatenate(CurrentValue)) == List("1", "2")')).to be(true)
+    end
+
+    it "gives == and Equals the same answer" do
+      [["1", "1"], ["1", "1.0"], ["1", '"1"'], ['"a"', '"A"'], ["True()", "1"], ["List(1)", 'List("1")']].each do |left, right|
+        expect(evaluate("#{left} == #{right}")).to eq(evaluate("Equals(#{left}, #{right})")), "#{left} vs #{right}"
+      end
+    end
+
+    it "reports ordering across kinds" do
+      expect { evaluate('"10" > 9') }.to raise_error(RuntimeError, "Cannot compare Text with Number")
+      expect { evaluate('9 < "10"') }.to raise_error(RuntimeError, "Cannot compare Number with Text")
+      expect { evaluate("True() > 1") }.to raise_error(RuntimeError, "Cannot compare Boolean with Number")
+    end
+
+    it "orders values of the same kind" do
+      expect(evaluate("True() > False()")).to be(true)
+    end
+
+    it "reports arithmetic across kinds" do
+      expect { evaluate('"5" + 1') }.to raise_error(RuntimeError, "Cannot add Text and Number")
+      expect { evaluate('1 + "5"') }.to raise_error(RuntimeError, "Cannot add Number and Text")
+      expect { evaluate('"abc" - 1') }.to raise_error(RuntimeError, "Cannot subtract Text and Number")
+      expect { evaluate('"abc" * 2') }.to raise_error(RuntimeError, "Cannot multiply Text and Number")
+      expect { evaluate('"abc" / 2') }.to raise_error(RuntimeError, "Cannot divide Text and Number")
+      expect { evaluate("True() + 1") }.to raise_error(RuntimeError, "Cannot add Boolean and Number")
+    end
+
+    it "still joins text with +" do
+      expect(evaluate('"a" + "b"')).to eq("ab")
+    end
+
+    it "keeps operator precedence and associativity" do
+      expect(evaluate("2 + 3 * 4")).to eq(14)
+      expect(evaluate("(2 + 3) * 4")).to eq(20)
+      expect(evaluate("10 - 4 - 3")).to eq(3)
+      expect(evaluate("2 * 3 + 4 * 5")).to eq(26)
+      expect(evaluate("1 + 2 == 3")).to be(true)
+      expect(evaluate("8 / 4 / 2")).to eq(1)
+      expect(evaluate("Max(1 + 1, 2 * 3) - 1")).to eq(5)
+    end
+  end
+
   describe 'Function Tests (from commented NextJS tests)' do
     # Additional working function tests
     it 'handles basic function calls' do
