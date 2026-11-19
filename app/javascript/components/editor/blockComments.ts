@@ -14,11 +14,12 @@ const pluginKey = new PluginKey<Set<string>>("blockComments");
 const blockCommentsFrameId = (blockId: string) => `object_comments_block_${blockId}`;
 const newCommentFrameId = (blockId: string) => `new_object_comment_block_${blockId}`;
 
-const commentsFrame = (objectGid: string, blockId: string) => {
+const commentsFrame = ({objectGid, canComment}: BlockCommentsOptions, blockId: string) => {
   const wrapper = document.createElement("div");
   wrapper.className = "block-comments";
   wrapper.contentEditable = "false";
   const params = new URLSearchParams({object_gid: objectGid, block_id: blockId});
+  if (!canComment) params.set("read_only", "1");
   const frame = document.createElement("turbo-frame");
   frame.id = blockCommentsFrameId(blockId);
   frame.setAttribute("src", `/comments?${params}`);
@@ -107,6 +108,17 @@ const commentButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
   };
 }
 
+// A link to a block (`#<block id>`) lands on it, once the editor has laid the blocks out.
+const scrollToLinkedBlock = (view: EditorView) => {
+  const blockId = decodeURIComponent(window.location.hash.slice(1));
+  if (!blockId) return;
+
+  requestAnimationFrame(() => {
+    view.dom.querySelector(`[data-node-type="blockContainer"][data-id="${CSS.escape(blockId)}"]`)
+      ?.scrollIntoView({block: "center"});
+  });
+}
+
 export const blockCommentsExtension = createExtension(({options}: ExtensionOptions<BlockCommentsOptions>) => ({
   key: "blockComments",
   prosemirrorPlugins: [
@@ -119,7 +131,10 @@ export const blockCommentsExtension = createExtension(({options}: ExtensionOptio
           return added ? new Set(blockIds).add(added.add) : blockIds;
         },
       },
-      view: (view) => options.canComment ? commentButton(view, options) : {},
+      view: (view) => {
+        scrollToLinkedBlock(view);
+        return options.canComment ? commentButton(view, options) : {};
+      },
       props: {
         decorations(state) {
           const blockIds = pluginKey.getState(state);
@@ -130,7 +145,7 @@ export const blockCommentsExtension = createExtension(({options}: ExtensionOptio
             const id: string = node.attrs.id;
             if (blockIds.has(id)) {
               const position = pos + 1 + node.firstChild!.nodeSize;
-              decorations.push(Decoration.widget(position, () => commentsFrame(options.objectGid, id), {
+              decorations.push(Decoration.widget(position, () => commentsFrame(options, id), {
                 key: `block-comments-${id}`, side: 1, ignoreSelection: true, stopEvent: () => true,
               }));
             }

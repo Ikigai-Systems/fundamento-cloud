@@ -3,11 +3,15 @@
 
   <div class="flex flex-col gap-3">
     <% @comments.each do |comment| %>
-      <%= render partial: "comment", locals: { comment: comment, resource: @resource, space: @resource.space } %>
+      <% if @orphaned %>
+        <%= render partial: "orphaned_comment", locals: { comment: comment, resource: @resource, space: @resource.space, latest_versions: @latest_versions } %>
+      <% else %>
+        <%= render partial: "comment", locals: { comment: comment, resource: @resource, space: @resource.space } %>
+      <% end %>
     <% end %>
 
     <%# A block's comments carry their own form, which the editor opens from the block's comment button. %>
-    <% if params[:block_id].present? && policy(@resource.comments.new).create? %>
+    <% if params[:block_id].present? && params[:read_only].blank? && policy(@resource.comments.new).create? %>
       <% form_frame_id = ObjectComment.new_frame_id_for(params[:block_id]) %>
 
       <style>

@@ -132,4 +132,57 @@ RSpec.describe Document, type: :model do
       expect(import_file.reload.document_id).to be_nil
     end
   end
+
+  describe "comments on blocks the document no longer has" do
+    fixtures :users, :organization_memberships, :versions
+
+    let(:document) { documents(:two) }
+    let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }
+
+    def comment_on(block_id)
+      document.comments.create!(
+        organization: organizations(:is),
+        organization_membership: organization_memberships(:om_is_pawel),
+        content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "A comment"}]}],
+        anchor_block_id: block_id
+      )
+    end
+
+    def save_version_without_the_removed_block
+      document.versions.create!(
+        created_by: users(:pawel),
+        content_blocks: document.current_blocks.reject { |block| block["id"] == removed_block_id }
+      )
+    end
+
+    describe "#orphaned_comments" do
+      it "are the comments on blocks that are not in the current version" do
+        on_kept_block = comment_on("initialBlockId")
+        on_removed_block = comment_on(removed_block_id)
+        on_document = document.comments.create!(
+          organization: organizations(:is),
+          organization_membership: organization_memberships(:om_is_pawel),
+          content: [{"type" => "paragraph", "content" => []}]
+        )
+
+        expect(document.orphaned_comments).to be_empty
+
+        save_version_without_the_removed_block
+
+        expect(document.orphaned_comments).to contain_exactly(on_removed_block)
+        expect(document.orphaned_comments).not_to include(on_kept_block, on_document)
+      end
+    end
+
+    describe "#latest_versions_with_blocks" do
+      it "names the latest version that still had each block" do
+        first_version = document.versions.first
+        latest_version = save_version_without_the_removed_block
+
+        found = document.latest_versions_with_blocks([removed_block_id, "initialBlockId", "never-saved"])
+
+        expect(found).to eq(removed_block_id => first_version, "initialBlockId" => latest_version)
+      end
+    end
+  end
 end

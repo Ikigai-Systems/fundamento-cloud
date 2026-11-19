@@ -16,6 +16,8 @@ class CommentsController < ApplicationController
     authorize @resource, :show?
 
     @comments = load_comments
+    @orphaned = params[:orphaned].present?
+    @latest_versions = @resource.latest_versions_with_blocks(@comments.map(&:anchor_block_id).uniq) if @orphaned
   end
 
   def new
@@ -65,6 +67,15 @@ class CommentsController < ApplicationController
     render html: "", status: :no_content
   end
 
+  def detach
+    @comment = @resource.comments.find(params[:id])
+    authorize @comment
+
+    @comment.detach_from_block!
+
+    render html: "", status: :no_content
+  end
+
   def show
     authorize @resource, :show?
 
@@ -77,7 +88,7 @@ class CommentsController < ApplicationController
   # The frame the list is in, which a block's comments have to themselves so that adding or
   # editing one reloads that block and not the document's list.
   def comments_frame_id
-    ObjectComment.frame_id_for(params[:block_id])
+    params[:orphaned].present? ? ObjectComment::ORPHANED_FRAME_ID : ObjectComment.frame_id_for(params[:block_id])
   end
 
   # The frame the form is in, which a block's comments have to themselves so that two forms
@@ -86,10 +97,17 @@ class CommentsController < ApplicationController
     ObjectComment.new_frame_id_for(params[:anchor_block_id] || params.dig(:comment, :anchor_block_id))
   end
 
-  # The comments on the document, or those on one of its blocks when a block is named. A block's
-  # comments are not part of the document's list: they are shown where the block is.
+  # The comments on the document, or those on one of its blocks when a block is named, or those on
+  # blocks that are gone when asked for. A block's comments are not part of the document's list:
+  # they are shown where the block is.
   def load_comments
-    comments = params[:block_id].present? ? @resource.comments.on_block(params[:block_id]) : @resource.comments.unanchored
+    comments = if params[:orphaned].present?
+      @resource.orphaned_comments
+    elsif params[:block_id].present?
+      @resource.comments.on_block(params[:block_id])
+    else
+      @resource.comments.unanchored
+    end
     comments.order(:created_at)
   end
 

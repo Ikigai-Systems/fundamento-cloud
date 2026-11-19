@@ -154,6 +154,7 @@ Rails.application.routes.draw do
     resources :reactions, only: [:create, :index, :show, :destroy]
     resources :comments do
       post :restore, on: :member
+      post :detach, on: :member
     end
 
     get "/public/:id" => "public#show", as: :public

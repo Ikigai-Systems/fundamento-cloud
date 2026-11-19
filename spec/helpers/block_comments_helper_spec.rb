@@ -45,6 +45,23 @@ RSpec.describe BlockCommentsHelper, type: :helper do
       end
     end
 
+    context "for a version" do
+      fixtures :versions
+
+      let(:document) { documents(:two) }
+      let(:version) { document.versions.first }
+
+      it "has the commented blocks that version has, and takes no new comments" do
+        comment_on("initialBlockId")
+        comment_on("a-block-the-version-never-had")
+
+        props = helper.block_comments_props(document, version: version)
+
+        expect(props[:blockIds]).to eq(["initialBlockId"])
+        expect(props[:canComment]).to be(false)
+      end
+    end
+
     it "has no blocks when only the document has comments" do
       expect(helper.block_comments_props(document)[:blockIds]).to eq([])
     end
