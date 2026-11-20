@@ -487,15 +487,7 @@ class Formula::ActionExecutor
       evaluator.evaluate(formula)
     end
     
-    # Convert result to boolean
-    case result
-    when true, false
-      result
-    when 0, 0.0
-      false
-    else
-      true
-    end
+    Formula::DefaultFunctions.boolean!(result, "The condition")
   end
 
   def evaluate_new_value_formula(value, context)

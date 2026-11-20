@@ -96,6 +96,10 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(row.cells.find_by(column: done).value).to eq("t")
       end
 
+      it 'refuses a condition that is not true or false' do
+        expect { executor.update_rows({}, table.id, '1', { "Description" => "x" }) }.to raise_error(Formula::ActionExecutor::ConditionFormulaError, /needs true or false, but got Number/)
+      end
+
       it 'lets a condition use a number column without Number()' do
         table.rows.each { |each_row| table.cells.create!(row: each_row, column: amount, value: "2.5", organization_id: table.organization_id) }
 
