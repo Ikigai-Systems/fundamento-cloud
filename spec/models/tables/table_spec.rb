@@ -364,16 +364,22 @@ RSpec.describe Table, type: :model do
 
     it "names an unparseable duration or datetime the same way" do
       set_cell(add_column("Bad length", :duration, previous: length), "soon")
-      broken = add_column("Broken", :formula, previous: table.columns.find_by(name: "Bad length"), formula: "CurrentRow(\"Start\") + CurrentRow(\"Bad length\")")
+      moment = add_column("Bad moment", :datetime, previous: table.columns.find_by(name: "Bad length"), configuration: { "dateStoredFormat" => 3 })
+      set_cell(moment, "whenever")
+      by_length = add_column("By length", :formula, previous: moment, formula: "CurrentRow(\"Start\") + CurrentRow(\"Bad length\")")
+      by_moment = add_column("By moment", :formula, previous: by_length, formula: "CurrentRow(\"Start\") - CurrentRow(\"Bad moment\")")
 
-      expect(evaluated(broken)).to include 'column "Bad length" holds "soon", not a valid duration'
+      expect(evaluated(by_length)).to include 'column "Bad length" holds "soon", not a valid duration'
+      expect(evaluated(by_moment)).to include 'column "Bad moment" holds "whenever", not a valid datetime'
     end
 
     it "still lets a formula show or compare the unreadable text" do
       set_cell(add_column("Bad", :date, previous: length), "not a date")
       shown = add_column("Shown", :formula, previous: table.columns.find_by(name: "Bad"), formula: "CurrentRow(\"Bad\")")
+      same = add_column("Same", :formula, previous: shown, formula: "Equals(CurrentRow(\"Bad\"), \"not a date\")")
 
       expect(evaluated(shown)).to eq "not a date"
+      expect(evaluated(same)).to eq true
     end
 
     it "leaves date and duration cells as stored text when formulas are not evaluated" do
