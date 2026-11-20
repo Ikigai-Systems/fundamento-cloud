@@ -204,14 +204,6 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
 
-    describe 'conditions of Filter, All and Any' do
-      it 'must be true or false' do
-        expect { engine.evaluate('Filter(List(1, 2), "CurrentValue")') }.to raise_error("Filter needs true or false, but got Number")
-        expect { engine.evaluate('All(List(1, 2), "CurrentValue")') }.to raise_error("All needs true or false, but got Number")
-        expect { engine.evaluate('Any(List("a"), "CurrentValue")') }.to raise_error("Any needs true or false, but got Text")
-      end
-    end
-
     describe 'Filter function' do
       it 'filters elements based on condition' do
         result = engine.evaluate('Filter(List(1, 2, 3, 3, 3, 4), "CurrentValue >= 3")')

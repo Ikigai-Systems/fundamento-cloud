@@ -25,12 +25,19 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq(false)
       end
 
-      it 'refuses numbers' do
-        expect { engine.evaluate('And(1, 2)') }.to raise_error("And needs true or false, but got Number")
+      it 'handles truthy values' do
+        result = engine.evaluate('And(1, 2)')
+        expect(result).to eq(true)
       end
 
-      it 'refuses text' do
-        expect { engine.evaluate('And(True(), "yes")') }.to raise_error("And needs true or false, but got Text")
+      it 'handles falsy values' do
+        result = engine.evaluate('And(0, 1)')
+        expect(result).to eq(false)
+      end
+
+      it 'handles mixed truthy and falsy values' do
+        result = engine.evaluate('And(5, 0)')
+        expect(result).to eq(false)
       end
     end
 
@@ -55,12 +62,19 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq(false)
       end
 
-      it 'refuses numbers' do
-        expect { engine.evaluate('Or(1, 0)') }.to raise_error("Or needs true or false, but got Number")
+      it 'handles truthy values' do
+        result = engine.evaluate('Or(1, 0)')
+        expect(result).to eq(true)
       end
 
-      it 'refuses text' do
-        expect { engine.evaluate('Or(False(), "yes")') }.to raise_error("Or needs true or false, but got Text")
+      it 'handles falsy values' do
+        result = engine.evaluate('Or(0, 0)')
+        expect(result).to eq(false)
+      end
+
+      it 'handles mixed values' do
+        result = engine.evaluate('Or(5, 3)')
+        expect(result).to eq(true)
       end
     end
 
@@ -131,17 +145,14 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq("That's correct")
       end
 
-      it 'refuses a number as the condition' do
-        expect { engine.evaluate('If(1, "yes", "no")') }.to raise_error("If needs true or false, but got Number")
-        expect { engine.evaluate('If(0, "yes", "no")') }.to raise_error("If needs true or false, but got Number")
+      it 'works with numeric conditions' do
+        result = engine.evaluate('If(1, "truthy", "falsy")')
+        expect(result).to eq("truthy")
       end
 
-      it 'refuses text as the condition, even the text "false"' do
-        expect { engine.evaluate('If("false", "yes", "no")') }.to raise_error("If needs true or false, but got Text")
-      end
-
-      it 'accepts ToBoolean of a checkbox text' do
-        expect(engine.evaluate('If(ToBoolean("t"), "yes", "no")')).to eq("yes")
+      it 'works with zero as falsy condition' do
+        result = engine.evaluate('If(0, "truthy", "falsy")')
+        expect(result).to eq("falsy")
       end
     end
 
@@ -183,8 +194,14 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq(true)
       end
 
-      it 'refuses numbers' do
-        expect { engine.evaluate('Not(1)') }.to raise_error("Not needs true or false, but got Number")
+      it 'returns false for truthy values' do
+        result = engine.evaluate('Not(1)')
+        expect(result).to eq(false)
+      end
+
+      it 'returns true for falsy values' do
+        result = engine.evaluate('Not(0)')
+        expect(result).to eq(true)
       end
 
       it 'handles complex expressions' do
@@ -192,12 +209,55 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq(true)
       end
 
-      it 'refuses text' do
-        expect { engine.evaluate('Not("hello")') }.to raise_error("Not needs true or false, but got Text")
+      it 'handles string values' do
+        result = engine.evaluate('Not("hello")')
+        expect(result).to eq(false)
       end
 
-      it 'refuses empty text' do
-        expect { engine.evaluate('Not("")') }.to raise_error("Not needs true or false, but got Text")
+      it 'handles empty string as falsy' do
+        result = engine.evaluate('Not("")')
+        expect(result).to eq(true)
+      end
+    end
+    describe 'what counts as true' do
+      false_values = ['0', '0.0', '""']
+      true_values = ['1', '-2', '" "', '"0"', '"abc"', '"false"', '"False"', 'Days(0)']
+
+      false_values.each do |value|
+        it "treats #{value} as false in If, Not, And, Or and Filter" do
+          expect(engine.evaluate("If(#{value}, 1, 2)")).to eq(2)
+          expect(engine.evaluate("Not(#{value})")).to eq(true)
+          expect(engine.evaluate("And(#{value}, True())")).to eq(false)
+          expect(engine.evaluate("Or(#{value}, False())")).to eq(false)
+          expect(engine.evaluate("Filter(List(#{value}), \"CurrentValue\")")).to eq([])
+        end
+      end
+
+      true_values.each do |value|
+        it "treats #{value} as true in If, Not, And, Or and Filter" do
+          expect(engine.evaluate("If(#{value}, 1, 2)")).to eq(1)
+          expect(engine.evaluate("Not(#{value})")).to eq(false)
+          expect(engine.evaluate("And(#{value}, True())")).to eq(true)
+          expect(engine.evaluate("Or(#{value}, False())")).to eq(true)
+          expect(engine.evaluate("Filter(List(#{value}), \"CurrentValue\")").size).to eq(1)
+        end
+      end
+
+      it 'treats All and Any like If' do
+        expect(engine.evaluate('All(List(1, 0), "CurrentValue")')).to eq(false)
+        expect(engine.evaluate('Any(List(0, ""), "CurrentValue")')).to eq(false)
+        expect(engine.evaluate('Any(List(0, "a"), "CurrentValue")')).to eq(true)
+      end
+
+      it 'reads the flags of ContainsText, StartsWith and EndsWith the same way' do
+        expect(engine.evaluate('ContainsText("Hello", "hello", 1)')).to eq(true)
+        expect(engine.evaluate('StartsWith("Hello", "hello", 0)')).to eq(false)
+        expect(engine.evaluate('EndsWith("Hello", "LLO", "x")')).to eq(true)
+      end
+
+      it 'refuses a list or an object as a condition' do
+        expect { engine.evaluate('If(List(), 1, 2)') }.to raise_error("If needs a value that is true or false, but got List")
+        expect { engine.evaluate('Not(List(1))') }.to raise_error("Not needs a value that is true or false, but got List")
       end
     end
   end

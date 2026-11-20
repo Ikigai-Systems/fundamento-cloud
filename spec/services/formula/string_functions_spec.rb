@@ -92,16 +92,12 @@ RSpec.describe Formula::Engine, type: :model do
       end
 
       it 'handles case insensitive search' do
-        result = engine.evaluate('ContainsText("But they are not the Me myself", "me", True())')
+        result = engine.evaluate('ContainsText("But they are not the Me myself", "me", 1)')
         expect(result).to eq(true)
       end
 
-      it 'refuses a number as the case flag' do
-        expect { engine.evaluate('ContainsText("Hello", "hello", 1)') }.to raise_error("ContainsText needs true or false, but got Number")
-      end
-
       it 'handles accent insensitive search' do
-        result = engine.evaluate('ContainsText("crème fraîche", "creme", False(), True())')
+        result = engine.evaluate('ContainsText("crème fraîche", "creme", 0, 1)')
         expect(result).to eq(true)
       end
 
@@ -128,12 +124,12 @@ RSpec.describe Formula::Engine, type: :model do
       end
 
       it 'handles case insensitive check' do
-        result = engine.evaluate('EndsWith("Hello World", "world", True())')
+        result = engine.evaluate('EndsWith("Hello World", "world", 1)')
         expect(result).to eq(true)
       end
 
       it 'handles accent insensitive check' do
-        result = engine.evaluate('EndsWith("Hej världen", "varlden", False(), True())')
+        result = engine.evaluate('EndsWith("Hej världen", "varlden", 0, 1)')
         expect(result).to eq(true)
       end
 
@@ -160,12 +156,12 @@ RSpec.describe Formula::Engine, type: :model do
       end
 
       it 'handles case insensitive check' do
-        result = engine.evaluate('StartsWith("Hello World", "hello", True())')
+        result = engine.evaluate('StartsWith("Hello World", "hello", 1)')
         expect(result).to eq(true)
       end
 
       it 'handles accent insensitive check' do
-        result = engine.evaluate('StartsWith("Hej världen", "Hej var", False(), True())')
+        result = engine.evaluate('StartsWith("Hej världen", "Hej var", 0, 1)')
         expect(result).to eq(true)
       end
 

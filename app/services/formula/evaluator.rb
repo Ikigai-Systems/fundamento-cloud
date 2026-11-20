@@ -152,15 +152,15 @@ class Formula::Evaluator
       end
     when 'Filter'
       Array(collection).select do |item|
-        Formula::DefaultFunctions.boolean!(evaluate_expression_with_current_value(expression_ast, item), 'Filter')
+        Formula::DefaultFunctions.truthy?(evaluate_expression_with_current_value(expression_ast, item), 'Filter')
       end
     when 'All'
       Array(collection).all? do |item|
-        Formula::DefaultFunctions.boolean!(evaluate_expression_with_current_value(expression_ast, item), 'All')
+        Formula::DefaultFunctions.truthy?(evaluate_expression_with_current_value(expression_ast, item), 'All')
       end
     when 'Any'
       Array(collection).any? do |item|
-        Formula::DefaultFunctions.boolean!(evaluate_expression_with_current_value(expression_ast, item), 'Any')
+        Formula::DefaultFunctions.truthy?(evaluate_expression_with_current_value(expression_ast, item), 'Any')
       end
     else
       raise "Unknown iterative function: #{function_name}"

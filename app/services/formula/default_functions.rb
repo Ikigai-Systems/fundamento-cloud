@@ -5,7 +5,7 @@ class Formula::DefaultFunctions
       'Min' => ->(a, b) { [a, b].min },
       'Abs' => ->(x) { x.abs },
       'Round' => ->(x, digits = 0) { x.round(digits.to_i) },
-      'If' => ->(condition, true_val, false_val) { Formula::DefaultFunctions.boolean!(condition, "If") ? true_val : false_val },
+      'If' => ->(condition, true_val, false_val) { Formula::DefaultFunctions.truthy?(condition, "If") ? true_val : false_val },
       'Average' => ->(*args) { Formula::Numbers.normalize(Rational(args.map { |arg| Formula::Numbers.exact(arg) }.sum, args.length)) },
       'Sqrt' => ->(x) { Formula::Numbers.exact(Math.sqrt(x)) },
       'Power' => ->(base, exp) { Formula::DefaultFunctions.power(Formula::Numbers.exact(base), Formula::Numbers.exact(exp)) },
@@ -16,9 +16,9 @@ class Formula::DefaultFunctions
       },
       
       # Logical functions
-      'And' => ->(arg1, arg2) { Formula::DefaultFunctions.boolean!(arg1, "And") && Formula::DefaultFunctions.boolean!(arg2, "And") },
-      'Or' => ->(arg1, arg2) { Formula::DefaultFunctions.boolean!(arg1, "Or") || Formula::DefaultFunctions.boolean!(arg2, "Or") },
-      'Not' => ->(value) { !Formula::DefaultFunctions.boolean!(value, "Not") },
+      'And' => ->(arg1, arg2) { Formula::DefaultFunctions.truthy?(arg1, "And") && Formula::DefaultFunctions.truthy?(arg2, "And") },
+      'Or' => ->(arg1, arg2) { Formula::DefaultFunctions.truthy?(arg1, "Or") || Formula::DefaultFunctions.truthy?(arg2, "Or") },
+      'Not' => ->(value) { !Formula::DefaultFunctions.truthy?(value, "Not") },
       'True' => ->() { true },
       'False' => ->() { false },
       'IfBlank' => ->(text, if_blank) { 
@@ -50,22 +50,22 @@ class Formula::DefaultFunctions
         end
       },
       'ContainsText' => ->(text, search_text, ignore_case = false, ignore_accents = false) {
-        ignore_case_bool = Formula::DefaultFunctions.boolean!(ignore_case, "ContainsText")
-        ignore_accents_bool = Formula::DefaultFunctions.boolean!(ignore_accents, "ContainsText")
+        ignore_case_bool = Formula::DefaultFunctions.truthy?(ignore_case, "ContainsText")
+        ignore_accents_bool = Formula::DefaultFunctions.truthy?(ignore_accents, "ContainsText")
         normalized_text = Formula::DefaultFunctions.normalize_text(text.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_search = Formula::DefaultFunctions.normalize_text(search_text.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_text.include?(normalized_search)
       },
       'EndsWith' => ->(text, suffix, ignore_case = false, ignore_accents = false) {
-        ignore_case_bool = Formula::DefaultFunctions.boolean!(ignore_case, "EndsWith")
-        ignore_accents_bool = Formula::DefaultFunctions.boolean!(ignore_accents, "EndsWith")
+        ignore_case_bool = Formula::DefaultFunctions.truthy?(ignore_case, "EndsWith")
+        ignore_accents_bool = Formula::DefaultFunctions.truthy?(ignore_accents, "EndsWith")
         normalized_text = Formula::DefaultFunctions.normalize_text(text.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_suffix = Formula::DefaultFunctions.normalize_text(suffix.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_text.end_with?(normalized_suffix)
       },
       'StartsWith' => ->(text, prefix, ignore_case = false, ignore_accents = false) {
-        ignore_case_bool = Formula::DefaultFunctions.boolean!(ignore_case, "StartsWith")
-        ignore_accents_bool = Formula::DefaultFunctions.boolean!(ignore_accents, "StartsWith")
+        ignore_case_bool = Formula::DefaultFunctions.truthy?(ignore_case, "StartsWith")
+        ignore_accents_bool = Formula::DefaultFunctions.truthy?(ignore_accents, "StartsWith")
         normalized_text = Formula::DefaultFunctions.normalize_text(text.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_prefix = Formula::DefaultFunctions.normalize_text(prefix.to_s, ignore_case_bool, ignore_accents_bool)
         normalized_text.start_with?(normalized_prefix)
@@ -210,11 +210,19 @@ class Formula::DefaultFunctions
 
   private
 
-  # A condition or flag must be true or false: no 0, text or blank standing in for it.
-  def self.boolean!(value, function_name)
-    return value if value == true || value == false
-
-    raise ArgumentError, "#{function_name} needs true or false, but got #{Formula::TypedArithmetic.type_name(value)}"
+  # The one rule for conditions and flags, as in Coda: false, blank, 0 and empty text are false and
+  # everything else is true (the text "false" included). A list or object is an error, since it is
+  # unclear whether an empty one is false.
+  def self.truthy?(value, function_name)
+    case value
+    when true, false then value
+    when nil then false
+    when Numeric then !value.zero?
+    when String then !value.empty?
+    when Array, Hash
+      raise ArgumentError, "#{function_name} needs a value that is true or false, but got #{Formula::TypedArithmetic.type_name(value)}"
+    else true
+    end
   end
 
   def self.format_value_for_string(value)

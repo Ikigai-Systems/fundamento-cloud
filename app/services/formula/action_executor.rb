@@ -487,7 +487,7 @@ class Formula::ActionExecutor
       evaluator.evaluate(formula)
     end
     
-    Formula::DefaultFunctions.boolean!(result, "The condition")
+    Formula::DefaultFunctions.truthy?(result, "The condition")
   end
 
   def evaluate_new_value_formula(value, context)

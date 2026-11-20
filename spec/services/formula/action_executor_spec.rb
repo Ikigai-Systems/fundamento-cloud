@@ -96,8 +96,15 @@ RSpec.describe Formula::ActionExecutor, type: :service do
         expect(row.cells.find_by(column: done).value).to eq("t")
       end
 
-      it 'refuses a condition that is not true or false' do
-        expect { executor.update_rows({}, table.id, '1', { "Description" => "x" }) }.to raise_error(Formula::ActionExecutor::ConditionFormulaError, /needs true or false, but got Number/)
+      it 'reads a condition like If does: 0 and empty text are false, anything else is true' do
+        expect(executor.update_rows({}, table.id, '0', { "Description" => "x" })).to be_empty
+        expect(executor.update_rows({}, table.id, 'Concatenate("")', { "Description" => "x" })).to be_empty
+        expect(executor.update_rows({}, table.id, '"false"', { "Description" => "x" })).to match_array(table.rows)
+        expect(executor.update_rows({}, table.id, '2', { "Description" => "x" })).to match_array(table.rows)
+      end
+
+      it 'refuses a list as a condition' do
+        expect { executor.update_rows({}, table.id, 'List(1)', { "Description" => "x" }) }.to raise_error(Formula::ActionExecutor::ConditionFormulaError, /needs a value that is true or false, but got List/)
       end
 
       it 'lets a condition use a number column without Number()' do
