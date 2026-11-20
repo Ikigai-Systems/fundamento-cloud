@@ -1,8 +1,9 @@
 # Converts table cells to the typed values the formula engine works with, and formula
 # results back to the text a cell shows.
 #
-# Cells are always text. A date column stores it in the format chosen by the column's
-# `dateStoredFormat` (the same index the Rowstack date cell uses); a datetime adds
+# Cells are always text. A number or decimal column is read as an exact number (see
+# Formula::Numbers) and a checkbox as true or false. A date column stores it in the format
+# chosen by the column's `dateStoredFormat` (the same index the Rowstack date cell uses); a datetime adds
 # " HH:mm" as a wall-clock time that belongs to the organization's time zone, which is
 # what `Now()` and `Today()` evaluate in. Text that does not parse is passed through
 # as Formula::UnreadableText, so a formula reports a type error naming the column rather than
@@ -30,9 +31,12 @@ module Tables::FormulaValues
   end
 
   def typed(column, value, time_zone)
+    return value == "t" if column.checkbox?
     return value if value.blank?
 
     case column.kind
+    when "number", "decimal"
+      Formula::Numbers.parse(value) || unreadable(value, column)
     when "date"
       parse_date(value, column) || unreadable(value, column)
     when "datetime"
@@ -44,10 +48,13 @@ module Tables::FormulaValues
     end
   end
 
-  # What a formula column stores: dates and durations become the text a cell of that type
-  # would hold. Anything else (numbers, text, lists) is left for the caller as it was.
+  # What a formula column shows or an action stores: dates and durations become the text a cell
+  # of that type would hold, a checkbox "t" or "f". Anything else (numbers, text, lists) is left as
+  # it was; a number becomes text only when written to a cell (see Formula::ActionExecutor).
   def serialized(column, result, time_zone)
     case result
+    when true, false
+      column.checkbox? ? (result ? "t" : "f") : result
     when Formula::Duration
       result.to_s
     when Date

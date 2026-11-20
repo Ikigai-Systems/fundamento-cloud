@@ -89,6 +89,24 @@ RSpec.describe Formula::TypedArithmetic do
     end
   end
 
+  describe "blank values" do
+    let(:blank) { Formula::TypedArithmetic }
+
+    it "counts a blank as zero next to a number" do
+      expect(blank.apply("+", nil, 1)).to eq(1)
+      expect(blank.apply("-", 5, nil)).to eq(5)
+      expect(blank.apply("*", nil, 4)).to eq(0)
+    end
+
+    it "does not count a blank as zero in a comparison" do
+      expect(blank.apply("==", nil, 0)).to eq(false)
+    end
+
+    it "still refuses a blank next to text" do
+      expect { blank.apply("+", nil, "a") }.to raise_error("Cannot add Blank and Text")
+    end
+  end
+
   describe "unsupported mixes" do
     it "names the types in the error" do
       expect { evaluate("Date(2026, 1, 1) + Date(2026, 1, 2)") }.to raise_error("Cannot add Date and Date")

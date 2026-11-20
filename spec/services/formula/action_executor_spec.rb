@@ -69,6 +69,42 @@ RSpec.describe Formula::ActionExecutor, type: :service do
       end
     end
 
+    describe 'number and checkbox columns' do
+      let(:executor) { described_class.new(dry_mode: false, space: space, organization_membership: organization_membership) }
+      let(:amount) { table.columns.create!(name: "Amount", kind: :decimal, previous_column: table.columns_in_order.last, organization_id: table.organization_id) }
+      let(:done) { table.columns.create!(name: "Done", kind: :checkbox, previous_column: amount, organization_id: table.organization_id) }
+
+      let(:row) { table.rows_in_order.first }
+
+      before { done }
+
+      it 'stores an exact number as the text of a number, without a trailing .0' do
+        executor.update_rows({}, table.id, nil, { "Amount" => "Sum(0.1, 0.2)" })
+
+        expect(row.cells.find_by(column: amount).value).to eq("0.3")
+      end
+
+      it 'stores a whole result without a decimal point' do
+        executor.update_rows({}, table.id, nil, { "Amount" => "Round(19.99 * 100, 4)" })
+
+        expect(row.cells.find_by(column: amount).value).to eq("1999")
+      end
+
+      it 'stores a boolean in a checkbox column as t or f' do
+        executor.update_rows({}, table.id, nil, { "Done" => "Equals(1, 1)" })
+
+        expect(row.cells.find_by(column: done).value).to eq("t")
+      end
+
+      it 'lets a condition use a number column without Number()' do
+        table.rows.each { |each_row| table.cells.create!(row: each_row, column: amount, value: "2.5", organization_id: table.organization_id) }
+
+        updated = executor.update_rows({}, table.id, 'CurrentRow("Amount") * 2 == 5', { "Description" => "five" })
+
+        expect(updated).to match_array(table.rows)
+      end
+    end
+
     describe 'AddRow action' do
       it 'adds a new row to the table' do
         action_executor = described_class.new(dry_mode: false, space: space, organization_membership: organization_membership)

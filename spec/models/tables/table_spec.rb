@@ -112,6 +112,84 @@ RSpec.describe Table, type: :model do
     end
   end
 
+  context "number, decimal and checkbox columns" do
+    fixtures "tables/columns"
+    fixtures "tables/rows"
+    fixtures "tables/cells"
+
+    let(:table) { tables_tables(:projects) }
+    let(:row) { table.rows_in_order.first }
+    let(:membership) { organization_memberships(:om_is_pawel) }
+
+    def add_column(name, kind, **attributes)
+      table.columns.create!(name:, kind:, previous_column: table.columns_in_order.last, organization_id: table.organization_id, **attributes)
+    end
+
+    def set_cell(column, value)
+      table.cells.create!(column:, row:, value:, organization_id: table.organization_id)
+    end
+
+    def evaluated(formula)
+      column = add_column("Result #{table.columns.count}", :formula, formula:)
+      table.data_to_json(evaluate_formulas: true, evaluate_as: membership)[:rows].find { |r| r["id"] == row.id }[column.id]
+    end
+
+    let!(:price) { add_column("Price", :decimal) }
+    let!(:quantity) { add_column("Quantity", :number) }
+    let!(:done) { add_column("Done", :checkbox) }
+
+    before do
+      set_cell(price, "19.99")
+      set_cell(quantity, "3")
+    end
+
+    it "does arithmetic on number and decimal columns without Number()" do
+      expect(evaluated("CurrentRow(\"Price\") * CurrentRow(\"Quantity\")")).to eq 59.97
+      expect(evaluated("CurrentRow(\"Price\") * 100")).to eq 1999
+    end
+
+    it "reads decimals exactly" do
+      set_cell(add_column("Other", :decimal), "0.2")
+      set_cell(add_column("Tenth", :decimal), "0.1")
+
+      expect(evaluated("CurrentRow(\"Other\") + CurrentRow(\"Tenth\") == 0.3")).to eq true
+    end
+
+    it "keeps the text of a number as it was typed when concatenated" do
+      set_cell(add_column("Amount", :decimal), "1.50")
+
+      expect(evaluated("Concatenate(CurrentRow(\"Amount\"), \"|\", CurrentRow(\"Quantity\"))")).to eq "1.5|3"
+    end
+
+    it "counts a blank number cell as zero in arithmetic" do
+      add_column("Empty", :number)
+
+      expect(evaluated("CurrentRow(\"Empty\") + 1")).to eq 1
+    end
+
+    it "reports unreadable text in a number column, naming the column" do
+      set_cell(add_column("Broken", :number), "abc")
+
+      expect(evaluated("CurrentRow(\"Broken\") + 1")).to match(/Broken/)
+    end
+
+    it "holds a checkbox as true or false, and an empty one as false" do
+      expect(evaluated("If(CurrentRow(\"Done\"), 1, 0)")).to eq 0
+
+      set_cell(done, "t")
+
+      expect(evaluated("If(CurrentRow(\"Done\"), 1, 0)")).to eq 1
+    end
+
+    it "gives Table() rows the same typed numbers" do
+      typed = Tables::RowReader.new(table, evaluate_as: membership).typed_rows.find { |r| r["id"] == row.id }
+
+      expect(typed["Price"]).to eq Rational(1999, 100)
+      expect(typed["Quantity"]).to eq 3
+      expect(typed["Done"]).to eq false
+    end
+  end
+
   context "date, datetime and duration columns" do
     fixtures "tables/columns"
     fixtures "tables/rows"

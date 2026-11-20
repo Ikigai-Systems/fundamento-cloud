@@ -50,14 +50,20 @@ module Formula::TypedArithmetic
 
   def self.apply(operator, left, right)
     case operator
-    when "+" then add(left, right)
-    when "-" then subtract(left, right)
-    when "*" then multiply(left, right)
-    when "/" then divide(left, right)
+    when "+" then add(*blank_as_zero(left, right))
+    when "-" then subtract(*blank_as_zero(left, right))
+    when "*" then multiply(*blank_as_zero(left, right))
+    when "/" then divide(*blank_as_zero(left, right))
     when "==" then Formula::DefaultFunctions.deep_equal(left, right)
     when "!=" then !Formula::DefaultFunctions.deep_equal(left, right)
     else compare(operator, left, right)
     end
+  end
+
+  # A blank cell next to a number counts as 0, as in a spreadsheet. Comparisons and IsBlank still
+  # see it as blank.
+  def self.blank_as_zero(left, right)
+    [left.nil? && right.is_a?(Numeric) ? 0 : left, right.nil? && left.is_a?(Numeric) ? 0 : right]
   end
 
   def self.add(left, right)
