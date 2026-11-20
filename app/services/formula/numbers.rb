@@ -33,16 +33,6 @@ module Formula::Numbers
     end
   end
 
-  # An exact number that crossed a boundary as part of a bigger value (list, object).
-  def self.exact_deep(value)
-    case value
-    when Float, BigDecimal then exact(value)
-    when Array then value.map { |item| exact_deep(item) }
-    when Hash then value.transform_values { |item| exact_deep(item) }
-    else value
-    end
-  end
-
   def self.normalize(value)
     return value unless value.is_a?(Rational)
     return value.numerator if value.denominator == 1

@@ -47,8 +47,6 @@ class Tables::RowReader
           if column.formula?
             evaluation = formula_row.evaluation_for(column)
             evaluation["error"] || evaluation["result"]
-          elsif column.checkbox?
-            column.grid_value(values_by_column_id[column.id])
           else
             formula_row.fetch(column.id)
           end

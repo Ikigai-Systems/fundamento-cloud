@@ -21,7 +21,7 @@ class Formula::Engine
     functions.merge!(Formula::DefaultFunctions.time_zone_functions(time_zone, clock:))
     
     # Create evaluator with functions and action executor
-    evaluator = Formula::Evaluator.new(context:, functions:, action_executor:, external_functions: additional_functions&.keys || [])
+    evaluator = Formula::Evaluator.new(context:, functions:, action_executor:)
 
     # Set context variables (avoid modifying hash during iteration)
     context.keys.each { |name| evaluator.set_variable(name, context[name]) }

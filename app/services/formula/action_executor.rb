@@ -407,8 +407,9 @@ class Formula::ActionExecutor
     (@columns_by_table ||= {})[table.id] ||= table.columns_in_order
   end
 
-  # A formula can return a Date or a Duration; a cell holds the text its column would show.
+  # A formula can return a number, Date or Duration; a cell holds the text its column would show.
   def cell_text(column, value)
+    value = Formula::Numbers.to_text(value) if value.is_a?(Numeric)
     Tables::FormulaValues.serialized(column, value, time_zone)
   end
 
