@@ -2,8 +2,8 @@
 # results back to the text a cell shows.
 #
 # Cells are always text. A number or decimal column is read as an exact number (see
-# Formula::Numbers) and a checkbox as true or false. A date column stores it in the format
-# chosen by the column's `dateStoredFormat` (the same index the Rowstack date cell uses); a datetime adds
+# Formula::Numbers) and a checkbox as true or false. A date column's text is in the format
+# chosen by its `dateStoredFormat` (the same index the Rowstack date cell uses); a datetime adds
 # " HH:mm" as a wall-clock time that belongs to the organization's time zone, which is
 # what `Now()` and `Today()` evaluate in. Text that does not parse is passed through
 # as Formula::UnreadableText, so a formula reports a type error naming the column rather than
