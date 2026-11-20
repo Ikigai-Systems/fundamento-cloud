@@ -219,8 +219,8 @@ RSpec.describe Formula::Engine, type: :model do
     end
 
     it 'handles null and empty values' do
-      result = engine.evaluate('IfBlank("", "was blank")')
-      expect(result).to eq("was blank")
+      expect(engine.evaluate('IfBlank("", "was blank")')).to eq("was blank")
+      expect(engine.evaluate('IfBlank(CurrentRow("Note"), "was blank")', context: { "currentRow" => { "Note" => nil } })).to eq("was blank")
     end
   end
 
