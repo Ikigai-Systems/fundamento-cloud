@@ -4,5 +4,6 @@ class OrganizationBlueprint < Blueprinter::Base
   fields :name, :created_at, :updated_at
 
   view :formula do
+    field :time_zone
   end
 end
