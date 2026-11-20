@@ -87,7 +87,7 @@ gem "activerecord-like"
 # emoji exactly the way the browser's /\p{RGI_Emoji}/v does.
 gem "unicode-emoji"
 
-gem "lograge", "~> 0.15.1"
+gem "lograge", "~> 0.16.0"
 gem "logstash-event", "~> 1.2"
 
 gem "aws-sdk-s3", require: false
