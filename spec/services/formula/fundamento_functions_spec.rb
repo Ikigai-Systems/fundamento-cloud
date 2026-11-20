@@ -25,6 +25,12 @@ RSpec.describe Formula::Engine, type: :model do
 
       expect(result).to include(name: organization.name)
     end
+
+    it "includes the time zone of the organization" do
+      organization.update!(time_zone: "Europe/Warsaw")
+
+      expect(engine.evaluate('Dig(Organization(), "time_zone")')).to eq("Europe/Warsaw")
+    end
   end
 
   describe "Table" do
