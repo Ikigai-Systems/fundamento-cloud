@@ -219,5 +219,46 @@ RSpec.describe Formula::Engine, type: :model do
         expect(result).to eq(true)
       end
     end
+    describe 'what counts as true' do
+      false_values = ['0', '0.0', '""']
+      true_values = ['1', '-2', '" "', '"0"', '"abc"', '"false"', '"False"', 'Days(0)']
+
+      false_values.each do |value|
+        it "treats #{value} as false in If, Not, And, Or and Filter" do
+          expect(engine.evaluate("If(#{value}, 1, 2)")).to eq(2)
+          expect(engine.evaluate("Not(#{value})")).to eq(true)
+          expect(engine.evaluate("And(#{value}, True())")).to eq(false)
+          expect(engine.evaluate("Or(#{value}, False())")).to eq(false)
+          expect(engine.evaluate("Filter(List(#{value}), \"CurrentValue\")")).to eq([])
+        end
+      end
+
+      true_values.each do |value|
+        it "treats #{value} as true in If, Not, And, Or and Filter" do
+          expect(engine.evaluate("If(#{value}, 1, 2)")).to eq(1)
+          expect(engine.evaluate("Not(#{value})")).to eq(false)
+          expect(engine.evaluate("And(#{value}, True())")).to eq(true)
+          expect(engine.evaluate("Or(#{value}, False())")).to eq(true)
+          expect(engine.evaluate("Filter(List(#{value}), \"CurrentValue\")").size).to eq(1)
+        end
+      end
+
+      it 'treats All and Any like If' do
+        expect(engine.evaluate('All(List(1, 0), "CurrentValue")')).to eq(false)
+        expect(engine.evaluate('Any(List(0, ""), "CurrentValue")')).to eq(false)
+        expect(engine.evaluate('Any(List(0, "a"), "CurrentValue")')).to eq(true)
+      end
+
+      it 'reads the flags of ContainsText, StartsWith and EndsWith the same way' do
+        expect(engine.evaluate('ContainsText("Hello", "hello", 1)')).to eq(true)
+        expect(engine.evaluate('StartsWith("Hello", "hello", 0)')).to eq(false)
+        expect(engine.evaluate('EndsWith("Hello", "LLO", "x")')).to eq(true)
+      end
+
+      it 'refuses a list or an object as a condition' do
+        expect { engine.evaluate('If(List(), 1, 2)') }.to raise_error("If needs a value that is true or false, but got List")
+        expect { engine.evaluate('Not(List(1))') }.to raise_error("Not needs a value that is true or false, but got List")
+      end
+    end
   end
 end

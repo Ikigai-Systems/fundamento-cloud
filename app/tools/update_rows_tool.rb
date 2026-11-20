@@ -14,7 +14,7 @@ class UpdateRowsTool < ApplicationTool
       space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." },
       condition_formula: {
         type: :string,
-        description: "Formula evaluated per row; rows where it returns truthy are updated. Pass an empty string to update every row."
+        description: "Formula evaluated per row; rows where it returns true are updated. Pass an empty string to update every row."
       },
       values: {
         type: :object,
