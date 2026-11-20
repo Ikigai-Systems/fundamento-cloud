@@ -19,7 +19,7 @@
     "@fastify/formbody": "^9.0.2",
     "@fastify/request-context": "^7.0.5",
     "@sentry/node": "^11.13.0",
-    "@stylistic/eslint-plugin": "^5.10.0",
+    "@stylistic/eslint-plugin": "^6.0.1",
     "@vitest/ui": "^5.0.5",
     "commander": "^15.1.0",
     "concurrently": "^10.0.7",
