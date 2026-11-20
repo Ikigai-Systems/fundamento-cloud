@@ -183,6 +183,31 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
 
+    describe 'blank values' do
+      let(:row) { { "currentRow" => { "Empty" => nil, "Qty" => 0 } } }
+
+      it 'treats an empty cell, empty text and an empty list as blank' do
+        expect(engine.evaluate('IfBlank(CurrentRow("Empty"), "none")', context: row)).to eq("none")
+        expect(engine.evaluate('IfBlank(List(), "none")')).to eq("none")
+        expect(engine.evaluate('IsBlank(CurrentRow("Empty"))', context: row)).to eq(true)
+        expect(engine.evaluate('IsBlank("")')).to eq(true)
+        expect(engine.evaluate('IsBlank(List())')).to eq(true)
+      end
+
+      it 'treats 0, false and a space as values' do
+        expect(engine.evaluate('IsBlank(CurrentRow("Qty"))', context: row)).to eq(false)
+        expect(engine.evaluate('IsBlank(False())')).to eq(false)
+        expect(engine.evaluate('IsBlank(" ")')).to eq(false)
+        expect(engine.evaluate('IfBlank(CurrentRow("Qty"), 5)', context: row)).to eq(0)
+      end
+
+      it 'has IsNotBlank as the opposite' do
+        expect(engine.evaluate('IsNotBlank("x")')).to eq(true)
+        expect(engine.evaluate('IsNotBlank(CurrentRow("Empty"))', context: row)).to eq(false)
+        expect(engine.evaluate('IsNotBlank(List(1))')).to eq(true)
+      end
+    end
+
     describe 'Not function' do
       it 'returns false when given True()' do
         result = engine.evaluate('Not(True())')

@@ -21,9 +21,9 @@ class Formula::DefaultFunctions
       'Not' => ->(value) { !Formula::DefaultFunctions.truthy?(value, "Not") },
       'True' => ->() { true },
       'False' => ->() { false },
-      'IfBlank' => ->(text, if_blank) { 
-        text == "" ? if_blank : text 
-      },
+      'IfBlank' => ->(value, if_blank) { Formula::DefaultFunctions.blank_value?(value) ? if_blank : value },
+      'IsBlank' => ->(value) { Formula::DefaultFunctions.blank_value?(value) },
+      'IsNotBlank' => ->(value) { !Formula::DefaultFunctions.blank_value?(value) },
       
       # File functions
       'ParseJSON' => ->(json_string) { 
@@ -209,6 +209,11 @@ class Formula::DefaultFunctions
   end
 
   private
+
+  # Blank is an empty cell, empty text or an empty list; 0, false and " " are values.
+  def self.blank_value?(value)
+    value.nil? || value == "" || value == [] || value == {}
+  end
 
   # The one rule for conditions and flags, as in Coda: false, blank, 0 and empty text are false and
   # everything else is true (the text "false" included). A list or object is an error, since it is
