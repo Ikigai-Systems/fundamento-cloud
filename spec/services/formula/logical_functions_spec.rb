@@ -156,30 +156,34 @@ RSpec.describe Formula::Engine, type: :model do
       end
     end
 
-    describe 'IfBlank function' do
-      it 'returns default value when text is empty string' do
-        result = engine.evaluate('IfBlank("", "Default if blank")')
-        expect(result).to eq("Default if blank")
+    describe 'blank values' do
+      let(:row) { { "currentRow" => { "Empty" => nil, "Qty" => 0 } } }
+
+      it 'treats an empty cell, empty text and an empty list as blank' do
+        expect(engine.evaluate('IfBlank(CurrentRow("Empty"), "none")', context: row)).to eq("none")
+        expect(engine.evaluate('IfBlank("", "none")')).to eq("none")
+        expect(engine.evaluate('IfBlank(List(), "none")')).to eq("none")
+        expect(engine.evaluate('IsBlank(CurrentRow("Empty"))', context: row)).to eq(true)
+        expect(engine.evaluate('IsBlank("")')).to eq(true)
+        expect(engine.evaluate('IsBlank(List())')).to eq(true)
       end
 
-      it 'returns original text when text is not blank' do
-        result = engine.evaluate('IfBlank("Hello world", "Default if blank")')
-        expect(result).to eq("Hello world")
+      it 'returns a value that is not blank as it is' do
+        expect(engine.evaluate('IfBlank("Hello world", "Default if blank")')).to eq("Hello world")
+        expect(engine.evaluate('IfBlank(42, "Default if blank")')).to eq(42)
       end
 
-      it 'handles numeric values' do
-        result = engine.evaluate('IfBlank(42, "Default if blank")')
-        expect(result).to eq(42)
+      it 'treats 0, false and a space as values' do
+        expect(engine.evaluate('IsBlank(CurrentRow("Qty"))', context: row)).to eq(false)
+        expect(engine.evaluate('IsBlank(False())')).to eq(false)
+        expect(engine.evaluate('IsBlank(" ")')).to eq(false)
+        expect(engine.evaluate('IfBlank(CurrentRow("Qty"), 5)', context: row)).to eq(0)
       end
 
-      it 'handles whitespace as non-blank' do
-        result = engine.evaluate('IfBlank(" ", "Default if blank")')
-        expect(result).to eq(" ")
-      end
-
-      it 'returns original value for non-string values' do
-        result = engine.evaluate('IfBlank(0, "Default if blank")')
-        expect(result).to eq(0.0)
+      it 'has IsNotBlank as the opposite' do
+        expect(engine.evaluate('IsNotBlank("x")')).to eq(true)
+        expect(engine.evaluate('IsNotBlank(CurrentRow("Empty"))', context: row)).to eq(false)
+        expect(engine.evaluate('IsNotBlank(List(1))')).to eq(true)
       end
     end
 
