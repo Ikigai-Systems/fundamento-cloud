@@ -223,4 +223,65 @@ RSpec.describe Formula::Engine, type: :model do
       expect(result).to eq("was blank")
     end
   end
+
+  describe "exact numbers" do
+    it "adds decimals without floating point noise" do
+      expect(engine.evaluate("0.1 + 0.2")).to eq(0.3)
+      expect(engine.evaluate("0.1 + 0.2 == 0.3")).to eq(true)
+      expect(engine.evaluate("19.99 * 100")).to eq(1999)
+    end
+
+    it "keeps fractions exact until the result is read" do
+      expect(engine.evaluate("1 / 3 * 3")).to eq(1)
+      expect(engine.evaluate("1 / 3 * 3 == 1")).to eq(true)
+      expect(engine.evaluate("1 / 3")).to eq(0.333333333333333)
+      expect(engine.evaluate("10 / 4")).to eq(2.5)
+    end
+
+    it "returns whole numbers as Integers" do
+      expect(engine.evaluate("2 * 3")).to be_an(Integer)
+      expect(engine.evaluate("6 / 3")).to be_an(Integer)
+    end
+
+    it "rounds half away from zero on the exact value" do
+      expect(engine.evaluate("Round(1.005, 2)")).to eq(1.01)
+      expect(engine.evaluate("Round(2.5)")).to eq(3)
+      expect(engine.evaluate("Round(-2.5)")).to eq(-3)
+    end
+
+    it "sums and averages exactly" do
+      expect(engine.evaluate("Sum(0.1, 0.2)")).to eq(0.3)
+      expect(engine.evaluate("Average(0.1, 0.2)")).to eq(0.15)
+    end
+
+    it "turns numbers into text as people write them" do
+      expect(engine.evaluate("Concatenate(0.1 + 0.2)")).to eq("0.3")
+      expect(engine.evaluate("String(1 / 4)")).to eq("0.25")
+      expect(engine.evaluate("Concatenate(2.0)")).to eq("2")
+    end
+
+    it "treats a number read from text like a literal" do
+      expect(engine.evaluate('Number("0.1") + Number("0.2") == 0.3')).to eq(true)
+      expect(engine.evaluate('Equals(Number("5"), 5)')).to eq(true)
+    end
+
+    it "compares an exact result with a Float handed in from outside" do
+      expect(engine.evaluate("[X] == 0.1 + 0", context: {"X" => 0.1})).to eq(true)
+      expect(engine.evaluate("[X] + 0.2", context: {"X" => 0.1})).to eq(0.3)
+    end
+
+    it "raises numbers to whole powers exactly and returns roots rounded" do
+      expect(engine.evaluate("Power(1.1, 2)")).to eq(1.21)
+      expect(engine.evaluate("Sqrt(2)")).to eq(1.4142135623731)
+      expect(engine.evaluate("Power(2, 0.5) * Power(2, 0.5)")).to eq(2)
+    end
+
+    it "keeps very long digits exact" do
+      expect(engine.evaluate("123456789012345678 + 1")).to eq(123456789012345679)
+    end
+
+    it "divides a duration by a duration into an exact ratio" do
+      expect(engine.evaluate("Hours(1) / Minutes(40)")).to eq(1.5)
+    end
+  end
 end

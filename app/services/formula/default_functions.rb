@@ -6,13 +6,13 @@ class Formula::DefaultFunctions
       'Abs' => ->(x) { x.abs },
       'Round' => ->(x, digits = 0) { x.round(digits.to_i) },
       'If' => ->(condition, true_val, false_val) { Formula::DefaultFunctions.truthy_value?(condition) ? true_val : false_val },
-      'Average' => ->(*args) { args.sum.to_f / args.length },
-      'Sqrt' => ->(x) { Math.sqrt(x) },
-      'Power' => ->(base, exp) { base ** exp },
+      'Average' => ->(*args) { Formula::Numbers.normalize(Rational(args.map { |arg| Formula::Numbers.exact(arg) }.sum, args.length)) },
+      'Sqrt' => ->(x) { Formula::Numbers.exact(Math.sqrt(x)) },
+      'Power' => ->(base, exp) { Formula::DefaultFunctions.power(Formula::Numbers.exact(base), Formula::Numbers.exact(exp)) },
       'Log' => ->(x, base = Math::E) { 
         raise Math::DomainError, "Logarithm of non-positive number" if x <= 0
         raise Math::DomainError, "Invalid logarithm base" if base <= 0 || base == 1
-        Math.log(x) / Math.log(base) 
+        Formula::Numbers.exact(Math.log(x) / Math.log(base))
       },
       
       # Logical functions
@@ -78,24 +78,11 @@ class Formula::DefaultFunctions
       },
       'Upper' => ->(text) { text.to_s.upcase },
       'Lower' => ->(text) { text.to_s.downcase },
-      'Number' => ->(text) { 
-        value = text.to_s.strip
-        if value.match?(/^-?\d+$/)
-          value.to_i
-        elsif value.match?(/^-?\d*\.\d+$/)
-          value.to_f
-        else
-          raise ArgumentError, "Cannot convert '#{value}' to number"
-        end
+      'Number' => ->(text) {
+        text.is_a?(Numeric) ? Formula::Numbers.exact(text) : (Formula::Numbers.parse(text) || raise(ArgumentError, "Cannot convert '#{text.to_s.strip}' to number"))
       },
       'ToBoolean' => ->(value) { Formula::DefaultFunctions.to_boolean(value) },
-      'String' => ->(value) { 
-        if value.is_a?(Float) && value == value.to_i
-          value.to_i.to_s
-        else
-          value.to_s
-        end
-      },
+      'String' => ->(value) { Formula::DefaultFunctions.format_value_for_string(value) },
       'Split' => ->(text, delimiter = nil) {
         text_str = text.to_s
         if delimiter.nil?
@@ -232,11 +219,13 @@ class Formula::DefaultFunctions
   end
 
   def self.format_value_for_string(value)
-    if value.is_a?(Float) && value == value.to_i
-      value.to_i.to_s
-    else
-      value.to_s
-    end
+    value.is_a?(Numeric) ? Formula::Numbers.to_text(value) : value.to_s
+  end
+
+  def self.power(base, exp)
+    return Formula::Numbers.normalize(base**exp) if exp.is_a?(Integer)
+
+    Formula::Numbers.exact((base.to_f**exp.to_f))
   end
 
   def self.normalize_text(text, ignore_case, ignore_accents)
@@ -307,6 +296,8 @@ class Formula::DefaultFunctions
     end
     
     # Handle primitives
+    return Formula::Numbers.exact(a) == Formula::Numbers.exact(b) if a.is_a?(Numeric)
+
     a == b
   end
 end

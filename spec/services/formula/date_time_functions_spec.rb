@@ -162,7 +162,7 @@ RSpec.describe Formula::DateTimeFunctions do
     it "needs dates, not text or numbers" do
       expect { evaluate('DateAdd("2026-01-01", 1, "days")') }.to raise_error(/Expected a Date or DateTime, got Text/)
       expect { evaluate('DateDiff(Today(), 5, "days")') }.to raise_error(/got Number/)
-      expect { evaluate("Hour(5)") }.to raise_error(/Cannot read 5.0 as a date/)
+      expect { evaluate("Hour(5)") }.to raise_error(/Cannot read 5 as a date/)
     end
 
     it "measures date-times in hours" do
