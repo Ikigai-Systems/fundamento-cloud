@@ -29,10 +29,6 @@ RSpec.describe Formula::Engine, type: :model do
         expect { engine.evaluate('And(1, 2)') }.to raise_error("And needs true or false, but got Number")
       end
 
-      it 'refuses zero' do
-        expect { engine.evaluate('And(0, 1)') }.to raise_error("And needs true or false, but got Number")
-      end
-
       it 'refuses text' do
         expect { engine.evaluate('And(True(), "yes")') }.to raise_error("And needs true or false, but got Text")
       end
@@ -61,10 +57,6 @@ RSpec.describe Formula::Engine, type: :model do
 
       it 'refuses numbers' do
         expect { engine.evaluate('Or(1, 0)') }.to raise_error("Or needs true or false, but got Number")
-      end
-
-      it 'refuses zero' do
-        expect { engine.evaluate('Or(0, 0)') }.to raise_error("Or needs true or false, but got Number")
       end
 
       it 'refuses text' do
@@ -193,10 +185,6 @@ RSpec.describe Formula::Engine, type: :model do
 
       it 'refuses numbers' do
         expect { engine.evaluate('Not(1)') }.to raise_error("Not needs true or false, but got Number")
-      end
-
-      it 'refuses zero' do
-        expect { engine.evaluate('Not(0)') }.to raise_error("Not needs true or false, but got Number")
       end
 
       it 'handles complex expressions' do

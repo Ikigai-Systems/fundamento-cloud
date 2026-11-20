@@ -13,7 +13,7 @@ class AddOrUpdateRowsTool < ApplicationTool
       space_id: { type: :string, description: "Optional space id to disambiguate by-name lookups." },
       condition_formula: {
         type: :string,
-        description: "Formula evaluated per row; matching rows are updated. If no row matches, a new row is added."
+        description: "Formula evaluated per row, returning true or false; rows where it returns true are updated. If no row matches, a new row is added."
       },
       values: {
         type: :object,
