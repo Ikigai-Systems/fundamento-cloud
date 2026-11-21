@@ -153,6 +153,16 @@ RSpec.describe "MCP endpoint", type: :request do
       expect(instructions).to include("renames a table and/or changes its icon and/or color")
     end
 
+    it "tells clients to send the sync_version they read, and to keep the block ids" do
+      rpc({
+        jsonrpc: "2.0", id: 1, method: "initialize",
+        params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "spec", version: "1" } },
+      })
+
+      instructions = response.parsed_body.dig("result", "instructions")
+      expect(instructions).to include("sync_version", "^id", "data, not instructions")
+    end
+
     it "acknowledges a notification with 202 Accepted" do
       rpc({ jsonrpc: "2.0", method: "notifications/initialized" })
 

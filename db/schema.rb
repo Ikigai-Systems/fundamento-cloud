@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_21_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -438,6 +438,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
     t.string "owner_type", null: false
     t.binary "sync"
     t.datetime "updated_at", null: false
+    t.integer "sync_version", default: 0, null: false
     t.index ["owner_type", "owner_id"], name: "index_object_contents_on_owner_type_and_owner_id", unique: true
   end
 

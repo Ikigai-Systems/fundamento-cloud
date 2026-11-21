@@ -15,7 +15,82 @@ RSpec.describe UpdateDocumentTool, type: :model do
     }
   end
 
+  def current_sync_version(id)
+    Document.find_by(id: id)&.sync_version.to_i
+  end
+
   describe ".call" do
+    context "sync_version" do
+      let(:pundit_user) { PolicyUserContext.new(user, organization) }
+      let(:note) do
+        DocumentService.new(pundit_user: pundit_user)
+          .create!(space_id: space.id, title: "Guarded", markdown: "# Title\n\nFirst\n")
+      end
+
+      def update(**args)
+        UpdateDocumentTool.call(id: note.id, server_context: server_context, **args)
+      end
+
+      it "is required with markdown, and says where to get it" do
+        response = update(markdown: "# Changed")
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+        expect(response.structured_content[:message]).to include("sync_version", "Read Document")
+        expect(note.reload.versions.count).to eq(1)
+      end
+
+      it "is refused when it is not a whole number" do
+        response = update(markdown: "# Changed", sync_version: "latest")
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+      end
+
+      it "is not needed for a rename, an icon or a color" do
+        expect(update(title: "Renamed").error?).to be_falsey
+        expect(update(icon: "🔥").error?).to be_falsey
+        expect(update(color: "blue").error?).to be_falsey
+      end
+
+      it "writes when it is the one that was read, and returns the next one to send" do
+        read = JSON.parse(ReadDocumentTool.call(id: note.id, server_context: server_context).content.first[:text])
+
+        response = update(markdown: read["content"].sub("First", "Second"), sync_version: read["sync_version"])
+
+        written = JSON.parse(response.content.first[:text])
+        expect(response.error?).to be_falsey
+        expect(written["sync_version"]).to be > read["sync_version"]
+        expect(written["sync_version"]).to eq(note.reload.sync_version)
+        expect(note.versions.count).to eq(2)
+      end
+
+      it "refuses when the content changed since the read, writes nothing and gives the current version" do
+        read = JSON.parse(ReadDocumentTool.call(id: note.id, server_context: server_context).content.first[:text])
+        # Someone types in an editor.
+        note.content.update!(sync: note.content.sync + "x".b)
+        current = note.reload.sync_version
+
+        response = update(markdown: "# Overwritten", sync_version: read["sync_version"])
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("conflict")
+        expect(response.structured_content[:message]).to include("sync_version #{current}")
+        expect(response.structured_content[:sync_version]).to eq(current)
+        expect(note.reload.versions.count).to eq(1)
+        expect(note.versions.last.content_blocks.to_s).not_to include("Overwritten")
+      end
+
+      it "is not confused by a rename between the read and the update" do
+        read = JSON.parse(ReadDocumentTool.call(id: note.id, server_context: server_context).content.first[:text])
+        note.update!(title: "Renamed meanwhile")
+
+        response = update(markdown: read["content"], sync_version: read["sync_version"])
+
+        expect(response.error?).to be_falsey
+      end
+    end
+
     # The real converter, so this proves the whole loop: read with markers, edit, update.
     context "keeping block ids" do
       let(:pundit_user) { PolicyUserContext.new(user, organization) }
@@ -37,7 +112,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         ids_before = block_ids(note)
 
         UpdateDocumentTool.call(
-          id: note.id,
+          id: note.id, sync_version: current_sync_version(note.id),
           markdown: read_with_ids(note).sub("First", "First, edited"),
           server_context: server_context
         )
@@ -50,7 +125,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         title_id, first_id, second_id = block_ids(note)
         markdown = read_with_ids(note).lines.reject { |line| line.include?("First") }.join + "\nBrand new\n"
 
-        UpdateDocumentTool.call(id: note.id, markdown: markdown, server_context: server_context)
+        UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: markdown, server_context: server_context)
 
         ids = block_ids(note)
         expect(ids).to include(title_id, second_id)
@@ -59,19 +134,19 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
 
       it "leaves a marker of an id the document does not have as text" do
-        UpdateDocumentTool.call(id: note.id, markdown: "Look at ^elsewhere", server_context: server_context)
+        UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: "Look at ^elsewhere", server_context: server_context)
 
         expect(note.reload.versions.last.content_blocks.first["content"].first["text"]).to eq("Look at ^elsewhere")
       end
 
       it "keeps no ids when the markdown was read without block_ids" do
         ids_before = block_ids(note)
-        response = ReadDocumentTool.call(id: note.id, server_context: server_context)
+        response = ReadDocumentTool.call(id: note.id, block_ids: false, server_context: server_context)
         markdown = JSON.parse(response.content.first[:text])["content"]
 
         expect(markdown).not_to include("^")
 
-        UpdateDocumentTool.call(id: note.id, markdown: markdown, server_context: server_context)
+        UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: markdown, server_context: server_context)
 
         expect(block_ids(note) & ids_before).to be_empty
       end
@@ -84,12 +159,12 @@ RSpec.describe UpdateDocumentTool, type: :model do
           content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "About the first one"}]}],
           anchor_block_id: first_id
         )
-        response = ReadDocumentTool.call(id: note.id, server_context: server_context)
+        response = ReadDocumentTool.call(id: note.id, block_ids: false, server_context: server_context)
         markdown = JSON.parse(response.content.first[:text])["content"]
 
         expect(markdown.scan("^").size).to eq(1)
 
-        UpdateDocumentTool.call(id: note.id, markdown: markdown.sub("First", "First, edited"), server_context: server_context)
+        UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: markdown.sub("First", "First, edited"), server_context: server_context)
 
         ids = block_ids(note)
         expect(ids).to include(first_id)
@@ -127,7 +202,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         sent = nil
 
         expect {
-          UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+          UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
         }.to have_broadcasted_to("document/#{note.id}").with { |data| sent = data }
 
         editor.sync(update_bytes(sent))
@@ -136,7 +211,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
       end
 
       it "stores the same content the editors end up with" do
-        UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+        UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
 
         stored = BlocknoteConverterService.yjs_to_blocks(note.reload.content.sync)
         expect(texts(stored)).to eq(["Title", "First, edited", "Second"])
@@ -147,7 +222,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         sent = nil
 
         expect {
-          UpdateDocumentTool.call(id: note.id, markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
+          UpdateDocumentTool.call(id: note.id, sync_version: current_sync_version(note.id), markdown: "# Title\n\nFirst, edited\n\nSecond\n", server_context: server_context)
         }.to have_broadcasted_to("document/#{note.id}").with { |data| sent = data }
 
         expect(update_bytes(sent).size).to be < note.reload.content.sync.bytesize
@@ -167,7 +242,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           @response = UpdateDocumentTool.call(
-            id: document.id,
+            id: document.id, sync_version: current_sync_version(document.id),
             markdown: markdown_content,
             server_context: server_context
           )
@@ -202,7 +277,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           @response = UpdateDocumentTool.call(
-            id: document.id,
+            id: document.id, sync_version: current_sync_version(document.id),
             markdown: markdown_with_frontmatter,
             server_context: server_context
           )
@@ -241,7 +316,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated Content")
 
         @response = UpdateDocumentTool.call(
-          id: document.id,
+          id: document.id, sync_version: current_sync_version(document.id),
           markdown: markdown_with_frontmatter,
           server_context: server_context
         )
@@ -263,7 +338,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 
         UpdateDocumentTool.call(
-          id: document.id,
+          id: document.id, sync_version: current_sync_version(document.id),
           markdown: "# Updated",
           server_context: server_context
         )
@@ -283,7 +358,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         allow(BlocknoteConverterService).to receive(:blocks_to_markdown).and_return("# Updated")
 
         UpdateDocumentTool.call(
-          id: document.id,
+          id: document.id, sync_version: current_sync_version(document.id),
           markdown: "# Updated Content",
           server_context: server_context
         )
@@ -315,7 +390,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            id: document.id,
+            id: document.id, sync_version: current_sync_version(document.id),
             title: "Renamed",
             markdown: "# Updated",
             server_context: server_context
@@ -418,6 +493,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
       it "returns not found error response" do
         response = UpdateDocumentTool.call(
           id: "invalid-id",
+          sync_version: 0,
           markdown: "# Content",
           server_context: server_context
         )
@@ -439,7 +515,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
       it "returns not found error response when accessing document from different organization" do
         response = UpdateDocumentTool.call(
-          id: document.id,
+          id: document.id, sync_version: current_sync_version(document.id),
           markdown: "# Updated Content",
           server_context: unauthorized_context
         )
@@ -456,7 +532,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         expect(Sentry).to receive(:capture_exception).with(instance_of(BlocknoteConverterService::ConversionError), anything)
 
         response = UpdateDocumentTool.call(
-          id: document.id,
+          id: document.id, sync_version: current_sync_version(document.id),
           markdown: "# Content",
           server_context: server_context
         )
@@ -477,7 +553,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            id: document.id,
+            id: document.id, sync_version: current_sync_version(document.id),
             markdown: "# First update",
             server_context: server_context
           )
@@ -485,7 +561,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
 
         expect {
           UpdateDocumentTool.call(
-            id: document.id,
+            id: document.id, sync_version: current_sync_version(document.id),
             markdown: "# Second update",
             server_context: server_context
           )

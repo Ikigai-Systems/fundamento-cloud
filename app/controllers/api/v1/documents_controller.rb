@@ -72,10 +72,13 @@ module Api
               markdown: document_params[:markdown],
               title: document_params[:title],
               icon: document_params[:icon],
-              color: document_params[:color]
+              color: document_params[:color],
+              sync_version: document_params[:sync_version]
             )
 
-          render json: DocumentBlueprint.render(document)
+          render json: DocumentBlueprint.render(document, view: :updated)
+        rescue DocumentService::StaleContent => e
+          render json: { errors: { base: e.message }, sync_version: e.sync_version }, status: :conflict
         rescue BlocknoteConverterService::ConversionError
           render json: { errors: { markdown: "Conversion failed" } }, status: :unprocessable_entity
         rescue ArgumentError => e
@@ -88,7 +91,7 @@ module Api
       private
 
       def document_params
-        params.require(:document).permit(:title, :icon, :color, :markdown, :parent_document_id, :file)
+        params.require(:document).permit(:title, :icon, :color, :markdown, :parent_document_id, :file, :sync_version)
       end
     end
   end

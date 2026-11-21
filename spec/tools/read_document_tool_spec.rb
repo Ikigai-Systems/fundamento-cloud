@@ -36,7 +36,7 @@ RSpec.describe ReadDocumentTool, type: :model do
         expect(JSON.parse(response.content.first[:text])["color"]).to eq("blue")
       end
 
-      it "marks a block that has comments with its id, and no other, unless block_ids is asked for" do
+      it "marks a block that has comments with its id, and no other, when block_ids is off" do
         blocks = [
           {"id" => "commented-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Commented"}]},
           {"id" => "plain-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Plain"}]}
@@ -49,16 +49,78 @@ RSpec.describe ReadDocumentTool, type: :model do
           anchor_block_id: "commented-1"
         )
 
-        read = ->(**options) { JSON.parse(ReadDocumentTool.call(id: document.id, server_context: server_context, **options).content.first[:text])["content"] }
+        read = ->(**options) { JSON.parse(ReadDocumentTool.call(id: document.id, source: "saved_version", server_context: server_context, **options).content.first[:text])["content"] }
 
-        expect(read.call).to include("Commented ^commented-1")
-        expect(read.call).not_to include("^plain-1")
-        expect(read.call(block_ids: true)).to include("^commented-1", "^plain-1")
+        expect(read.call(block_ids: false)).to include("Commented ^commented-1")
+        expect(read.call(block_ids: false)).not_to include("^plain-1")
+        expect(read.call).to include("^commented-1", "^plain-1")
+      end
+
+      it "marks every block with its id by default" do
+        text = JSON.parse(ReadDocumentTool.call(id: document.id, server_context: server_context).content.first[:text])["content"]
+
+        expect(text.scan(/ \^[\w-]+$/).size).to be >= 3
+      end
+
+      describe "live content and saved versions" do
+        let(:saved) { [{"id" => "saved-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Saved text"}]}] }
+
+        before do
+          document.versions.create!(content_blocks: saved, created_by: user)
+        end
+
+        def read_as(context, **options)
+          JSON.parse(ReadDocumentTool.call(id: document.id, server_context: context, **options).content.first[:text])
+        end
+
+        it "gives a user who can edit the live content, which is ahead of the last saved version" do
+          result = read_as(server_context)
+
+          expect(result["source"]).to eq("live")
+          expect(result["content"]).to include("Welcome in your space!")
+          expect(result["content"]).not_to include("Saved text")
+        end
+
+        it "gives the saved version to a user who can edit, when asked for it" do
+          result = read_as(server_context, source: "saved_version")
+
+          expect(result["source"]).to eq("saved_version")
+          expect(result["content"]).to include("Saved text")
+        end
+
+        it "gives a read-only user the saved version, even when asked for the live one" do
+          document.space.update!(access_mode: :restricted)
+          reader = {user_id: users(:stefan).id, organization_id: organization.id}
+
+          result = read_as(reader, source: "live")
+
+          expect(result["source"]).to eq("saved_version")
+          expect(result["content"]).to include("Saved text")
+          expect(result["content"]).not_to include("Welcome in your space!")
+        end
+
+        it "reads a draft live for everyone, as there is nothing saved" do
+          document.versions.destroy_all
+          document.space.update!(access_mode: :restricted)
+
+          result = read_as({user_id: users(:stefan).id, organization_id: organization.id})
+
+          expect(result["source"]).to eq("live")
+          expect(result["content"]).to include("Welcome in your space!")
+        end
+
+        it "returns the sync_version, which moves when the content is written" do
+          before = read_as(server_context)["sync_version"]
+          document.content.update!(sync: document.content.sync + "x".b)
+
+          expect(read_as(server_context)["sync_version"]).to eq(before + 1)
+        end
       end
 
       it "returns document content as Markdown" do
         response = ReadDocumentTool.call(
           id: document.id,
+          block_ids: false,
           server_context: server_context
         )
 
@@ -85,7 +147,7 @@ RSpec.describe ReadDocumentTool, type: :model do
       end
 
       def read(**options)
-        response = ReadDocumentTool.call(id: document.id, server_context: server_context, **options)
+        response = ReadDocumentTool.call(id: document.id, block_ids: false, server_context: server_context, **options)
         JSON.parse(response.content.first[:text])
       end
 
