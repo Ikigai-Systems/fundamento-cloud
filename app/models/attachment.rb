@@ -28,6 +28,15 @@ class Attachment < ApplicationRecord
   end
 
 
+  # Several at once, by whichever identifier a document holds (see resolve!). Without the file
+  # data, which is a whole file per row for the attachments that predate Active Storage.
+  def self.resolve_many(params, scope: all)
+    scope = scope.select(*column_names.excluding("data"))
+    return scope.where(id: params) unless in_transition?
+
+    scope.where(id: params).or(scope.where(npi: params))
+  end
+
   # Where to send a browser for this attachment's file, named after the attachment rather than
   # its blob. One blob can back several attachments: an import shares its upload's blob with the
   # Attachment it creates, and a blob reused by content keeps the name it was first uploaded

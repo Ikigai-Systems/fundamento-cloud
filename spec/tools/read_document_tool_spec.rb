@@ -62,6 +62,29 @@ RSpec.describe ReadDocumentTool, type: :model do
         expect(text.scan(/ \^[\w-]+$/).size).to be >= 3
       end
 
+      describe "attachments" do
+        it "lists the ones the content points at, for Read Attachment to open" do
+          attachment = Attachment.create!(organization: organization, parent: document, filename: "shot.png", mime_type: "image/png")
+          attachment.file.attach(io: StringIO.new("12345"), filename: "shot.png", content_type: "image/png")
+          document.versions.create!(content_blocks: [
+            {"id" => "img-1", "type" => "image", "props" => {"url" => "attachment:#{attachment.id}", "name" => "shot.png"}},
+          ], created_by: user)
+
+          result = JSON.parse(ReadDocumentTool.call(id: document.id, source: "saved_version", server_context: server_context).content.first[:text])
+
+          expect(result["attachments"]).to eq([
+            {"id" => attachment.id, "name" => "shot.png", "mime_type" => "image/png", "size" => 5, "block_id" => "img-1"},
+          ])
+          expect(result["content"]).to include("attachment:#{attachment.id}")
+        end
+
+        it "lists none for a document without any" do
+          result = JSON.parse(ReadDocumentTool.call(id: document.id, server_context: server_context).content.first[:text])
+
+          expect(result["attachments"]).to eq([])
+        end
+      end
+
       describe "live content and saved versions" do
         let(:saved) { [{"id" => "saved-1", "type" => "paragraph", "content" => [{"type" => "text", "text" => "Saved text"}]}] }
 

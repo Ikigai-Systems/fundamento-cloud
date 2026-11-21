@@ -97,6 +97,33 @@ class BlocknoteBlocks
   end
   private_class_method :rewrite_attachment_reference!
 
+  # The attachments a block tree points at: a file or image block's `props.url`, or a link's
+  # `href`. Each one is {id:, name:, block_id:}, in document order and once per attachment;
+  # block_id is the block the reference sits in, name what the block or link calls it.
+  def self.attachment_references(blocks)
+    references = {}
+    block_id = nil
+
+    walk_blocks(blocks) do |node|
+      block_id = node["id"] if node["id"].is_a?(String)
+
+      props = node["props"]
+      url = node["href"] || (props["url"] if props.is_a?(Hash))
+      match = ATTACHMENT_REFERENCE.match(url) if url.is_a?(String)
+      next unless match
+
+      name = (props["name"].presence if props.is_a?(Hash)) || link_text(node)
+      references[match[1]] ||= {id: match[1], name: name.presence, block_id: block_id}
+    end
+
+    references.values
+  end
+
+  def self.link_text(node)
+    Array(node["content"]).filter_map { |part| part["text"] if part.is_a?(Hash) }.join
+  end
+  private_class_method :link_text
+
   def self.each_mention(blocks, &block)
     walk_blocks(blocks) do |node|
       yield node if node["type"] == "mention"
