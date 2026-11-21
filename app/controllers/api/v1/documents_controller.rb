@@ -76,7 +76,7 @@ module Api
               sync_version: document_params[:sync_version]
             )
 
-          render json: DocumentBlueprint.render_as_hash(document).merge(sync_version: document.sync_version)
+          render json: DocumentBlueprint.render(document, view: :updated)
         rescue DocumentService::StaleContent => e
           render json: { errors: { base: e.message }, sync_version: e.sync_version }, status: :conflict
         rescue BlocknoteConverterService::ConversionError

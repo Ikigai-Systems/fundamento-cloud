@@ -14,6 +14,12 @@ class DocumentBlueprint < Blueprinter::Base
     end
   end
 
+  # What an update answers with: the document plus the sync_version of the content it left, for the
+  # caller to send with its next update.
+  view :updated do
+    field :sync_version
+  end
+
   # Content as BlockNote blocks.
   view :api do
     include_view :tagged
