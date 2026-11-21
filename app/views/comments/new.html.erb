@@ -15,7 +15,7 @@
     <%= f.hidden_field :content, data: {new_comment_target: "contentField"} %>
 
     <%# A comment on a block carries the block it is about into the form that saves it. %>
-    <% [:anchor_block_id, *ObjectComment::ANCHOR_TEXT_FIELDS].each do |field| %>
+    <% [:anchor_block_id, :anchor_text].each do |field| %>
       <% if @comment[field].present? %>
         <%= f.hidden_field field, value: @comment[field] %>
       <% end %>
@@ -23,6 +23,22 @@
 
     <div class="flex flex-col gap-3">
       <div class="rounded-xl py-3 border min-h-[10rem] flex flex-col">
+        <%# The selected text the comment is about. Removing it leaves a comment on the whole block. %>
+        <% if @comment.anchor_quote.present? %>
+          <div class="mx-3 mb-2 flex items-start gap-2 rounded-lg bg-yellow-100 px-2.5 py-1.5 text-sm text-gray-900" data-comment-quote>
+            <% %i[anchor_quote anchor_prefix anchor_suffix].each do |field| %>
+              <%= f.hidden_field field, value: @comment[field] %>
+            <% end %>
+            <i class="icon-[tabler--quote] mt-0.5 shrink-0"></i>
+            <span class="flex-1 min-w-0 break-words"><%= truncate(@comment.anchor_quote, length: 300) %></span>
+            <button type="button"
+                    class="shrink-0 text-xs text-gray-600 underline"
+                    onclick="this.closest('[data-comment-quote]').remove()">
+              Remove quote
+            </button>
+          </div>
+        <% end %>
+
         <div data-new-comment-target="commentEditorRoot" class="flex flex-col flex-1"></div>
 
         <div class="flex gap-2 px-3">

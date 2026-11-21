@@ -98,6 +98,13 @@ class Document < ApplicationRecord
     comments.anchored.distinct.pluck(:anchor_block_id)
   end
 
+  # The text that comments on blocks quote, with the text around it, for marking it in the block.
+  def comment_quotes
+    comments.anchored.where(removed_at: nil).where.not(anchor_quote: [nil, ""])
+      .pluck(:anchor_block_id, :anchor_quote, :anchor_prefix, :anchor_suffix)
+      .map { |block_id, quote, prefix, suffix| {blockId: block_id, quote: quote, prefix: prefix.to_s, suffix: suffix.to_s} }
+  end
+
   # The comments on blocks that are no longer in the document.
   def orphaned_comments
     comments.anchored.where.not(anchor_block_id: BlocknoteBlocks.block_ids(current_blocks))
