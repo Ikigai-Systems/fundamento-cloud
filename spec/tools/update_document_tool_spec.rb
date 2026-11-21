@@ -40,6 +40,13 @@ RSpec.describe UpdateDocumentTool, type: :model do
         expect(note.reload.versions.count).to eq(1)
       end
 
+      it "is refused when it is not a whole number" do
+        response = update(markdown: "# Changed", sync_version: "latest")
+
+        expect(response.error?).to be true
+        expect(response.structured_content[:error]).to eq("invalid_input")
+      end
+
       it "is not needed for a rename, an icon or a color" do
         expect(update(title: "Renamed").error?).to be_falsey
         expect(update(icon: "🔥").error?).to be_falsey
@@ -69,6 +76,7 @@ RSpec.describe UpdateDocumentTool, type: :model do
         expect(response.error?).to be true
         expect(response.structured_content[:error]).to eq("conflict")
         expect(response.structured_content[:message]).to include("sync_version #{current}")
+        expect(response.structured_content[:sync_version]).to eq(current)
         expect(note.reload.versions.count).to eq(1)
         expect(note.versions.last.content_blocks.to_s).not_to include("Overwritten")
       end
@@ -484,7 +492,8 @@ RSpec.describe UpdateDocumentTool, type: :model do
     context "with invalid document id" do
       it "returns not found error response" do
         response = UpdateDocumentTool.call(
-          id: "invalid-id", sync_version: current_sync_version("invalid-id"),
+          id: "invalid-id",
+          sync_version: 0,
           markdown: "# Content",
           server_context: server_context
         )

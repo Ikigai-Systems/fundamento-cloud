@@ -1,6 +1,7 @@
 class UpdateDocumentTool < ApplicationTool
   description "Use this tool to rename an existing document, change its icon or color, replace its content with Markdown, " \
               "or any mix of these; at least one of title, icon, color and markdown is required. " \
+              "Replacing the content needs the sync_version you read with Read Document (live), so you never overwrite edits you did not see. " \
               "The icon is a single emoji, separate from the title; pass an empty string to remove it. " \
               "The color is one of #{HasColor::NAMES.join(", ")}; pass an empty string to remove it."
 
@@ -51,6 +52,9 @@ class UpdateDocumentTool < ApplicationTool
       }
     ])
   rescue DocumentService::StaleContent => e
-    tool_error_response("conflict", e.message)
+    with_text_content(MCP::Tool::Response.new(
+      error: true,
+      structured_content: {error: "conflict", message: e.message, sync_version: e.sync_version}
+    ))
   end
 end

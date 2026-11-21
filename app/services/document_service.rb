@@ -201,7 +201,10 @@ class DocumentService
     content&.lock!
     current = content&.sync_version.to_i
 
-    raise StaleContent, current unless current == Integer(expected, exception: false)
+    expected = Integer(expected.to_s, 10, exception: false)
+    raise ArgumentError, "sync_version must be a whole number, as returned by Read Document" if expected.nil?
+
+    raise StaleContent, current unless current == expected
   end
 
   # Markdown read with block_ids, or of a block that has comments, carries " ^id" markers, which keep a block's id across an

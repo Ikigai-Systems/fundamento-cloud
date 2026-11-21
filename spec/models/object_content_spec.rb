@@ -11,8 +11,6 @@ RSpec.describe ObjectContent do
     expect(document.reload.content.sync).to eq("yjs-bytes".b)
   end
 
-  # Without this, documents.updated_at would quietly come to mean "title or icon changed"
-  # and Document.recently_updated would stop reflecting edits.
   describe "sync_version" do
     it "starts at the version of the first write and moves with every write of the sync blob" do
       content = document.create_content!(sync: "one".b)
@@ -22,6 +20,17 @@ RSpec.describe ObjectContent do
       content.update!(sync: "three".b)
 
       expect(content.reload.sync_version).to eq(first + 2)
+    end
+
+    it "gives two writers that loaded the same row two different versions" do
+      content = document.create_content!(sync: "one".b)
+      other = ObjectContent.find(content.id)
+
+      content.update!(sync: "two".b)
+      other.update!(sync: "three".b)
+
+      expect([content.sync_version, other.sync_version].uniq.size).to eq(2)
+      expect(ObjectContent.find(content.id).sync_version).to eq(other.sync_version)
     end
 
     it "does not move when the blob is saved unchanged" do
@@ -38,6 +47,8 @@ RSpec.describe ObjectContent do
     end
   end
 
+  # Without this, documents.updated_at would quietly come to mean "title or icon changed"
+  # and Document.recently_updated would stop reflecting edits.
   it "touches the owner when content changes, so recently_updated keeps working" do
     content = document.create_content!(sync: "before".b)
     document.update_column(:updated_at, 1.week.ago)

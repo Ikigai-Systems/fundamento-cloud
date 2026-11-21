@@ -736,10 +736,16 @@ RSpec.describe "Api::V1::Documents", type: :request do
           expect(JSON.parse(response.body)["sync_version"]).to eq(document_one.reload.sync_version)
         end
 
-        it "is returned when the document is read" do
+        it "is not returned when the document is read, as that content may be a saved version" do
           get api_v1_document_path(id: document_one.id), headers: headers
 
-          expect(JSON.parse(response.body)["sync_version"]).to eq(document_one.sync_version)
+          expect(JSON.parse(response.body)).not_to have_key("sync_version")
+        end
+
+        it "is refused with 422 when it is not a whole number" do
+          patch_markdown(sync_version: "abc")
+
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "lets the update through when it is the current one, and stays optional" do
