@@ -89,7 +89,19 @@ class Document < ApplicationRecord
 
   # The blocks readers see: the live content of a draft, otherwise the latest saved version.
   def current_blocks
-    draft? ? to_blocks : versions.last.content_blocks
+    blocks_from(:saved)
+  end
+
+  # The blocks from the live content (:live) or the latest saved version (:saved). A draft has
+  # no version, so it reads live either way.
+  def blocks_from(source)
+    (source == :live || draft?) ? to_blocks : versions.last.content_blocks
+  end
+
+  # Which state the content is in, for a client to hand back when it writes (see
+  # DocumentService#update!). A document with no content yet is at 0.
+  def sync_version
+    content&.sync_version.to_i
   end
 
   # The blocks that have comments. A reader that sends the document back must keep their ids, or

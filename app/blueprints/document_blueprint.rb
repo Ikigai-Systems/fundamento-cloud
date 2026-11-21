@@ -18,6 +18,8 @@ class DocumentBlueprint < Blueprinter::Base
   view :api do
     include_view :tagged
 
+    field :sync_version
+
     field :content do |document|
       document.current_blocks
     end
@@ -26,13 +28,23 @@ class DocumentBlueprint < Blueprinter::Base
   # Content as Markdown. Pass `frontmatter: true` to prefix it with a YAML frontmatter block, and
   # `block_ids: true` to end every block with its " ^id" marker. The blocks that have comments get
   # theirs either way, so a client that sends the document back does not lose the comments.
+  #
+  # `source: :live` reads the live content instead of the latest saved version (a draft reads live
+  # either way); `source` in the result says which one it was, and `sync_version` which state of
+  # the content it is, for a client to send back when it updates.
   view :mcp do
     include_view :tagged
+
+    field :sync_version
+
+    field :source do |document, options|
+      (options[:source] == :live || document.draft?) ? "live" : "saved_version"
+    end
 
     field :content do |document, options|
       block_ids = (options[:block_ids] == true) ? :all : document.commented_block_ids
       markers = block_ids.present? ? {block_ids: block_ids} : {}
-      markdown = BlocknoteConverterService.blocks_to_markdown(document.current_blocks, **markers)
+      markdown = BlocknoteConverterService.blocks_to_markdown(document.blocks_from(options[:source]), **markers)
       options[:frontmatter] == true ? document.to_frontmatter + markdown : markdown
     end
   end

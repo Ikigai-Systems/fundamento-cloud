@@ -13,4 +13,17 @@ class ObjectContent < ApplicationRecord
   # would silently stop reflecting edits. updated_at is unindexed, so the touch is a HOT
   # update rather than another blob rewrite.
   belongs_to :owner, polymorphic: true, touch: true
+
+  # Moves on every write of the Yjs state, whoever makes it: a keystroke in an editor, an
+  # import, the API or an assistant. A client that read version N and finds N + 1 knows the
+  # content changed since (see DocumentService#update!). The bump is not atomic across two
+  # writers that load the same row, but both then store a version above N, which is all the
+  # comparison needs.
+  before_save :bump_sync_version, if: :sync_changed?
+
+  private
+
+  def bump_sync_version
+    self.sync_version += 1
+  end
 end
