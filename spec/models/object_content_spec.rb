@@ -22,15 +22,15 @@ RSpec.describe ObjectContent do
       expect(content.reload.sync_version).to eq(first + 2)
     end
 
-    it "gives two writers that loaded the same row two different versions" do
+    it "counts both writes of two writers that loaded the same row" do
       content = document.create_content!(sync: "one".b)
+      first = content.sync_version
       other = ObjectContent.find(content.id)
 
       content.update!(sync: "two".b)
       other.update!(sync: "three".b)
 
-      expect([content.sync_version, other.sync_version].uniq.size).to eq(2)
-      expect(ObjectContent.find(content.id).sync_version).to eq(other.sync_version)
+      expect(ObjectContent.find(content.id).sync_version).to eq(first + 2)
     end
 
     it "does not move when the blob is saved unchanged" do

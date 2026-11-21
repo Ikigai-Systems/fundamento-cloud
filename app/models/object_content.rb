@@ -16,20 +16,30 @@ class ObjectContent < ApplicationRecord
 
   # Moves on every write of the Yjs state, whoever makes it: a keystroke in an editor, an
   # import, the API or an assistant. A client that read version N and finds a higher one knows
-  # the content changed since (see DocumentService#update!). The increment happens in the
-  # database, so two writers that loaded the same row still end on two different versions.
-  after_save :bump_sync_version, if: :saved_change_to_sync?
+  # the content changed since (see DocumentService#update!).
+  #
+  # The increment is part of the UPDATE that writes the blob (`sync_version = sync_version + 1`,
+  # see #_update_row), so two writers that loaded the same row both count. Unlike Rails'
+  # optimistic locking it never refuses a write: Yjs states merge, so a stale copy is still a
+  # valid write. The in-memory value after a save is a prediction (the one that was loaded, plus
+  # one); it is exact only when the row was locked (`lock!`) since the load, as the check in
+  # DocumentService#update! does. Reload for the stored value.
+  before_save :bump_sync_version, if: :will_save_change_to_sync?
 
   private
 
   def bump_sync_version
-    version = self.class.connection.select_value(
-      self.class.sanitize_sql_array(
-        ["UPDATE object_contents SET sync_version = sync_version + 1 WHERE id = ? RETURNING sync_version", id]
-      )
-    )
-    # Reflect it on this instance without marking the attribute as changed.
-    self[:sync_version] = version
-    clear_attribute_changes([:sync_version])
+    self.sync_version = new_record? ? 1 : sync_version_was.to_i + 1
+  end
+
+  # Writes the new version as SQL in the same UPDATE as the blob. Rails offers no public way to
+  # assign an expression to an attribute (an Arel node is cast to an integer), so this overrides
+  # the private hook Rails' own optimistic locking uses; the specs here pin the behaviour across
+  # Rails upgrades.
+  def _update_row(attribute_names, attempted_action = "update")
+    return super unless will_save_change_to_sync?
+    values = attributes_with_values(attribute_names - ["sync_version"])
+    values["sync_version"] = self.class.arel_table[:sync_version] + 1
+    self.class._update_record(values, _query_constraints_hash)
   end
 end
