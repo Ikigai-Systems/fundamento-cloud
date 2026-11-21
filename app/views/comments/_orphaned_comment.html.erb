@@ -1,0 +1,37 @@
+<%# A comment whose block is no longer in the document: what it was about, and where to find the block. %>
+<% quoted_text = comment.anchor_quote.presence || comment.anchor_text %>
+<% version = latest_versions[comment.anchor_block_id] %>
+
+<div class="flex flex-col gap-2">
+  <div class="flex items-center gap-2 text-xs font-medium text-amber-700 dark:text-amber-400">
+    <i class="icon-[tabler--unlink]"></i>
+    This was a comment on a block that has since been removed
+  </div>
+
+  <% if quoted_text.present? %>
+    <blockquote class="rounded-lg border border-dashed px-3 py-2 text-sm text-gray-600 dark:text-gray-400">
+      <%= truncate(quoted_text, length: 300) %>
+    </blockquote>
+  <% end %>
+
+  <%= render partial: "comment", locals: { comment: comment, resource: resource, space: space, frame_id: ObjectComment::ORPHANED_FRAME_ID } %>
+
+  <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+    <% if version %>
+      <%= link_to document_version_path(resource, version, anchor: comment.anchor_block_id),
+            data: { turbo_frame: "_top" },
+            class: "text-blue-600 hover:text-blue-800 underline" do %>
+        See the block in version <%= version.sequential_id %>
+      <% end %>
+    <% end %>
+
+    <% if !comment.removed? && policy(comment).detach? %>
+      <%= button_to "Keep as a document comment",
+            detach_comment_path(comment, object_gid: resource.to_gid_param),
+            method: :post,
+            form_class: "inline",
+            class: "text-blue-600 hover:text-blue-800 underline",
+            data: { turbo_frame: ObjectComment::ORPHANED_FRAME_ID } %>
+    <% end %>
+  </div>
+</div>

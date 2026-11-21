@@ -84,6 +84,71 @@ RSpec.describe CommentsController, type: :request do
       end
     end
 
+    describe "read only" do
+      it "has no form in a block's frame, as on an old version" do
+        comment_on_block("block-1", "Remark on block one")
+
+        get comments_path(object_gid: document.to_gid_param, block_id: "block-1", read_only: 1),
+          headers: { "Turbo-Frame" => "object_comments_block_block-1" }
+
+        expect(response.body).to include("Remark on block one")
+        expect(response.body).not_to include("new_object_comment_block_block-1")
+      end
+    end
+
+    describe "comments on blocks that are gone" do
+      fixtures :versions
+
+      let(:document) { documents(:two) }
+      let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }
+      let(:orphan_headers) { { "Turbo-Frame" => "object_comments_orphaned" } }
+
+      before do
+        document.versions.create!(
+          created_by: author,
+          content_blocks: document.current_blocks.reject { |block| block["id"] == removed_block_id }
+        )
+      end
+
+      def orphan
+        @orphan ||= comment_on_block(removed_block_id, "Remark on the removed block").tap do |comment|
+          comment.update!(anchor_text: "This document will be edited via public link.")
+        end
+      end
+
+      it "lists them with what the block said and the version that still had it" do
+        orphan
+        comment_on_block("initialBlockId", "Remark on a block that is still there")
+
+        get comments_path(object_gid: document.to_gid_param, orphaned: 1), headers: orphan_headers
+
+        expect(response.body).to include("Remark on the removed block")
+        expect(response.body).to include("This document will be edited via public link.")
+        expect(response.body).to include("See the block in version 1")
+        expect(response.body).to include(removed_block_id)
+        expect(response.body).not_to include("Remark on a block that is still there")
+      end
+
+      it "makes a comment a comment on the document when its author keeps it there" do
+        post detach_comment_path(orphan, object_gid: document.to_gid_param), headers: orphan_headers
+
+        expect(response).to have_http_status(:no_content)
+        expect(orphan.reload).not_to be_anchored
+        expect(orphan).to have_attributes(anchor_text: nil, anchor_quote: nil)
+      end
+
+      it "leaves it to its author to keep a comment" do
+        sign_out author
+        sign_in other_user
+        post select_organization_path(organization)
+
+        post detach_comment_path(orphan, object_gid: document.to_gid_param), headers: orphan_headers
+
+        expect(response).to have_http_status(:forbidden)
+        expect(orphan.reload).to be_anchored
+      end
+    end
+
     describe "GET #new" do
       it "carries the block into the form that saves the comment" do
         get new_comment_path(object_gid: document.to_gid_param, anchor_block_id: "block-1", anchor_quote: "some text"),

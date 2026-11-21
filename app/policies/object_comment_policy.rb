@@ -18,4 +18,8 @@ class ObjectCommentPolicy < ApplicationPolicy
   def restore?
     record.organization_membership == user_context.organization_membership
   end
+
+  def detach?
+    update?
+  end
 end

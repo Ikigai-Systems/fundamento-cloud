@@ -98,6 +98,23 @@ class Document < ApplicationRecord
     comments.anchored.distinct.pluck(:anchor_block_id)
   end
 
+  # The comments on blocks that are no longer in the document.
+  def orphaned_comments
+    comments.anchored.where.not(anchor_block_id: BlocknoteBlocks.block_ids(current_blocks))
+  end
+
+  # The latest saved version that still had each of these blocks, by block id. A block that was
+  # never saved (it came and went within a draft) has no version.
+  def latest_versions_with_blocks(block_ids)
+    found = {}
+    versions.order(sequential_id: :desc).each do |version|
+      ids = BlocknoteBlocks.block_ids(version.content_blocks)
+      (block_ids - found.keys).each { |id| found[id] = version if ids.include?(id) }
+      break if found.size == block_ids.size
+    end
+    found
+  end
+
   # The YAML frontmatter block the importers read back: `title`, then `tags` (names without a
   # leading #), `fundamento/icon` and `fundamento/color`, each only when present. Dumped by
   # Psych from a Hash, never interpolated, so awkward titles stay a single string value.

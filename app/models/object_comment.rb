@@ -3,6 +3,9 @@ class ObjectComment < ApplicationRecord
 
   ALLOWED_OBJECT_TYPES = %w[Document Table]
 
+  # The frame that lists the comments whose block is gone.
+  ORPHANED_FRAME_ID = "object_comments_orphaned"
+
   # What a comment on a block remembers about it: the text it quoted, the text around that, and
   # the block's own text. Enough to say what a comment was about when its block is gone, not
   # a copy of the document, so each is cut to this.
@@ -24,6 +27,19 @@ class ObjectComment < ApplicationRecord
       target: "##{object_comment.comments_frame_id}",
       render: false
     )
+  }
+
+  # An orphaned comment is listed in a frame of its own, and a comment that has just left its block
+  # (or been added to one) changes that list. Where the frame is not on the page, this does nothing.
+  after_commit -> (object_comment) {
+    if object_comment.anchored? || object_comment.saved_change_to_anchor_block_id?
+      broadcast_action_to(
+        [:object_comments, object_comment.object],
+        action: :reload_turbo_frame,
+        target: "##{ORPHANED_FRAME_ID}",
+        render: false
+      )
+    end
   }
 
   scope :anchored, -> { where.not(anchor_block_id: nil) }
@@ -66,6 +82,12 @@ class ObjectComment < ApplicationRecord
   # The frame the form that starts a comment opens in: the document's, or that of its block.
   def self.new_frame_id_for(block_id)
     block_id.present? ? "new_object_comment_block_#{block_id}" : "new_object_comment"
+  end
+
+  # Makes a comment on a block a comment on the document, which is all that is left of it once
+  # its block is gone.
+  def detach_from_block!
+    update!(anchor_block_id: nil, **ANCHOR_TEXT_FIELDS.index_with { nil })
   end
 
   def content

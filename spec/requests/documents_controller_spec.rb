@@ -283,6 +283,44 @@ RSpec.describe DocumentsController, type: :request do
     end
   end
 
+  describe "comments on blocks the document no longer has" do
+    fixtures :versions
+
+    let(:document) { documents(:two) }
+    let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }
+
+    before do
+      sign_in pawel
+      post select_organization_path(ikigai_systems)
+    end
+
+    def comment_on(block_id)
+      document.comments.create!(
+        organization: ikigai_systems,
+        organization_membership: organization_memberships(:om_is_pawel),
+        content: [{"type" => "paragraph", "content" => []}],
+        anchor_block_id: block_id
+      )
+    end
+
+    it "are listed out of the way, with their number" do
+      document.versions.create!(created_by: pawel, content_blocks: document.current_blocks.reject { |block| block["id"] == removed_block_id })
+      comment_on(removed_block_id)
+
+      get document_path(document)
+
+      expect(response.body).to include("Comments on removed blocks (1)")
+    end
+
+    it "have no section while every commented block is still there" do
+      comment_on("initialBlockId")
+
+      get document_path(document)
+
+      expect(response.body).not_to include("Comments on removed blocks")
+    end
+  end
+
   describe "opening a trashed document" do
     before do
       sign_in pawel

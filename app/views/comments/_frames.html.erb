@@ -24,4 +24,23 @@
       <% end %>
     </div>
   <% end %>
+
+  <%# Comments on blocks that have been removed from the document stay, out of the way. %>
+  <% if resource.is_a?(Document) && resource.comments.anchored.exists? %>
+    <% orphaned_count = resource.orphaned_comments.count %>
+
+    <% if orphaned_count > 0 %>
+      <details class="rounded-xl border" data-orphaned-comments>
+        <summary class="cursor-pointer px-3 py-2 text-sm font-medium">
+          Comments on removed blocks (<%= orphaned_count %>)
+        </summary>
+
+        <div class="p-3">
+          <%= turbo_frame_tag ObjectComment::ORPHANED_FRAME_ID,
+                src: comments_path(object_gid: resource.to_gid_param, orphaned: 1),
+                loading: "lazy" %>
+        </div>
+      </details>
+    <% end %>
+  <% end %>
 </div>

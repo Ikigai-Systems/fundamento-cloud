@@ -3,6 +3,7 @@ import { definePathHelper } from '@js-from-routes/axios'
 
 export default {
   restore: /* #__PURE__ */ definePathHelper('post', '/comments/:id/restore'),
+  detach: /* #__PURE__ */ definePathHelper('post', '/comments/:id/detach'),
   index: /* #__PURE__ */ definePathHelper('get', '/comments'),
   create: /* #__PURE__ */ definePathHelper('post', '/comments'),
   new: /* #__PURE__ */ definePathHelper('get', '/comments/new'),

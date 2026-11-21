@@ -97,7 +97,25 @@ RSpec.describe ObjectComment, type: :model do
     it "reloads the block's frame, not the document's list, for a comment on a block" do
       build_comment(anchor_block_id: "block-1").save!
 
-      expect(reloaded_frames).to eq(["#object_comments_block_block-1"])
+      expect(reloaded_frames).to include("#object_comments_block_block-1")
+      expect(reloaded_frames).not_to include("#object_comments")
+    end
+
+    it "reloads the list of comments on removed blocks, which a comment on a block may be in" do
+      build_comment(anchor_block_id: "block-1").save!
+
+      expect(reloaded_frames).to include("#object_comments_orphaned")
+    end
+
+    it "reloads the document's list and that of removed blocks when a comment leaves its block" do
+      comment = build_comment(anchor_block_id: "block-1", anchor_text: "What the block said")
+      comment.save!
+      ActionCable.server.pubsub.clear
+
+      comment.detach_from_block!
+
+      expect(reloaded_frames).to contain_exactly("#object_comments", "#object_comments_orphaned")
+      expect(comment.reload).to have_attributes(anchor_block_id: nil, anchor_text: nil)
     end
   end
 end
