@@ -62,14 +62,41 @@ RSpec.describe ReadAttachmentTool, type: :model do
       expect(response.content.second[:mimeType]).to eq("image/png")
     end
 
-    it "is refused above the size limit, saying why" do
+    it "is refused above the size limit, saying why, without being downloaded" do
       attachment = attach("x", filename: "huge.png", mime_type: "image/png")
       stub_const("ReadAttachmentTool::MAX_SOURCE_BYTES", 0)
+      expect_any_instance_of(ActiveStorage::Blob).not_to receive(:download)
 
       response = call(attachment)
 
       expect(response.error?).to be true
       expect(response.structured_content[:error]).to eq("too_large")
+    end
+
+    it "is refused when it has too many pixels, whatever its size in bytes" do
+      attachment = attach(png(100, 100), filename: "bomb.png", mime_type: "image/png")
+      stub_const("ReadAttachmentTool::MAX_IMAGE_PIXELS", 100)
+
+      response = call(attachment)
+
+      expect(response.error?).to be true
+      expect(response.structured_content[:message]).to include("100 x 100 pixels")
+    end
+
+    it "is what its content is, not what its stored type says" do
+      attachment = attach(png(10, 10, format: ".jpg"), filename: "liar.png", mime_type: "image/png")
+
+      response = call(attachment)
+
+      expect(response.content.second[:mimeType]).to eq("image/png")
+      expect(Vips::Image.new_from_buffer(Base64.decode64(response.content.second[:data]), "").get("vips-loader")).to eq("pngload_buffer")
+    end
+
+    it "is not read when a file over the limit is not an image either" do
+      attachment = attach("text", filename: "big.txt", mime_type: "text/plain")
+      stub_const("ReadAttachmentTool::MAX_SOURCE_BYTES", 1)
+
+      expect(call(attachment).structured_content[:error]).to eq("too_large")
     end
 
     it "says so when the file is not a decodable image" do

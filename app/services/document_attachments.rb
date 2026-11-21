@@ -12,14 +12,17 @@ class DocumentAttachments
       .index_by { |attachment| attachment.try(:npi) || attachment.id }
     found.merge!(found.values.index_by(&:id))
 
+    # One check per document the attachments belong to, not one per attachment.
+    visible = Hash.new { |checked, parent| checked[parent] = Pundit.policy!(pundit_user, parent).show? }
+
     references.filter_map do |reference|
       attachment = found[reference[:id]]
-      next unless attachment && Pundit.policy!(pundit_user, attachment).show?
+      next unless attachment && attachment.parent && visible[attachment.parent]
 
       {
         id: reference[:id],
         name: attachment.filename.presence || reference[:name],
-        mime_type: attachment.mime_type,
+        mime_type: attachment.mime_type.presence || attachment.file.try(:content_type),
         size: attachment.file.attached? ? attachment.file.blob.byte_size : nil,
         block_id: reference[:block_id]
       }
