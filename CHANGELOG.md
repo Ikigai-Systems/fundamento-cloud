@@ -10,6 +10,55 @@
 > automation was introduced. The project was not versioned during this period, so these
 > sections are dated rather than numbered, and only user-visible changes are listed.
 
+## [2.0.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.5.0...v2.0.0) (2026-11-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **formulas:** the text "false" in a condition is now true, as in Coda, JS, Python and Ruby -- use ToBoolean to compare text explicitly. A list or object used as a condition now raises an error instead of silently being treated as true. <!-- changelog:end -->
+* **formulas:** Table() date cells are typed Date values, not column-formatted text — compare with Date(...) instead of text, and expect ISO dates (e.g. 2024-01-31) from JSON output
+
+### Features
+
+* **comments:** a block's comments show under the block ([#495](https://github.com/Ikigai-Systems/fundamento-cloud/issues/495)) ([03fdc50](https://github.com/Ikigai-Systems/fundamento-cloud/commit/03fdc504390fe0d3b64a786741b1a76bbd7f7bee))
+* **comments:** comment on a block from the button beside it ([#509](https://github.com/Ikigai-Systems/fundamento-cloud/issues/509)) ([c510a69](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c510a69f62cab0d8030bf0d98139c57397140dd9))
+* **comments:** comments on removed blocks wait in their own section ([#510](https://github.com/Ikigai-Systems/fundamento-cloud/issues/510)) ([c2a17ca](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c2a17ca0ebf3ca0b170cd6e12862eaf977b47b9e))
+* **comments:** old versions show the comments on their blocks ([c2a17ca](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c2a17ca0ebf3ca0b170cd6e12862eaf977b47b9e))
+* **formulas:** add date, time and duration functions ([#498](https://github.com/Ikigai-Systems/fundamento-cloud/issues/498)) ([5a4228a](https://github.com/Ikigai-Systems/fundamento-cloud/commit/5a4228ad229a3f1f9967288d1d118520dca6ee28))
+* **formulas:** add IsBlank and IsNotBlank functions ([a08e1c1](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a08e1c1ea0f7ba7bac17edcfaa62f20b3c5ca7ca))
+* **formulas:** add TimeZone() for automations ([16a39d4](https://github.com/Ikigai-Systems/fundamento-cloud/commit/16a39d40f454275ebe5c702a6f609049a89e91c6))
+* **formulas:** add ToBoolean to convert values to true or false ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **formulas:** add working-day, week number and time zone functions ([#502](https://github.com/Ikigai-Systems/fundamento-cloud/issues/502)) ([89ea448](https://github.com/Ikigai-Systems/fundamento-cloud/commit/89ea448b4493972bffc5fddb1bed26c6e2c107ed))
+* **formulas:** errors on unreadable dates name the column ([#508](https://github.com/Ikigai-Systems/fundamento-cloud/issues/508)) ([9464d46](https://github.com/Ikigai-Systems/fundamento-cloud/commit/9464d467f00877ebe7514e80b1b2dbbdcca94174))
+* **formulas:** number and checkbox columns arrive typed in formulas ([#521](https://github.com/Ikigai-Systems/fundamento-cloud/issues/521)) ([e39c20b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e39c20be7a63b0de97669dd1a2f3c8f299275ea4))
+* **formulas:** strict operators, string comparisons and ToBoolean ([#511](https://github.com/Ikigai-Systems/fundamento-cloud/issues/511)) ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **formulas:** Table() and actions use typed date/duration values ([#506](https://github.com/Ikigai-Systems/fundamento-cloud/issues/506)) ([4ff286e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4ff286e782c2247f0fc63f40290ecb1de8075574))
+* **import:** keep Obsidian block ids so [[note#^id]] links work ([#490](https://github.com/Ikigai-Systems/fundamento-cloud/issues/490)) ([c830f43](https://github.com/Ikigai-Systems/fundamento-cloud/commit/c830f432796d8e55e8c933ca9148d8db739be53b))
+* **mcp:** read a document with block ids and keep them when updating ([#488](https://github.com/Ikigai-Systems/fundamento-cloud/issues/488)) ([f10c5b3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/f10c5b3d4bcb78ee5c30887866668ecf811cf504))
+* set a time zone for your organization ([#492](https://github.com/Ikigai-Systems/fundamento-cloud/issues/492)) ([16a39d4](https://github.com/Ikigai-Systems/fundamento-cloud/commit/16a39d40f454275ebe5c702a6f609049a89e91c6))
+* **tables:** add a Duration column type ([#500](https://github.com/Ikigai-Systems/fundamento-cloud/issues/500)) ([e8ec261](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e8ec261eff6db91e6b009cd36f05074ae1a79118))
+* **tables:** formula columns can use other formula columns ([#505](https://github.com/Ikigai-Systems/fundamento-cloud/issues/505)) ([de27623](https://github.com/Ikigai-Systems/fundamento-cloud/commit/de27623f854cf6102dc619483ed6e919ec32a229))
+* **tables:** use date and duration columns in formulas ([#499](https://github.com/Ikigai-Systems/fundamento-cloud/issues/499)) ([445daa7](https://github.com/Ikigai-Systems/fundamento-cloud/commit/445daa745f57bd5fb9dbccac1d29a8be57512715))
+
+
+### Bug Fixes
+
+* **editor:** keep phone formatting toolbar steady above keyboard ([#501](https://github.com/Ikigai-Systems/fundamento-cloud/issues/501)) ([0542006](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0542006cc8112a0f4e208ba0f507b3bf18f3f1d6))
+* **editor:** keep what's typed when the API or MCP edits a document ([#491](https://github.com/Ikigai-Systems/fundamento-cloud/issues/491)) ([ec89d94](https://github.com/Ikigai-Systems/fundamento-cloud/commit/ec89d94724ad31be87c22fddfb474cf5145d0383))
+* **formulas:** actions store a boolean as t or f in a checkbox column ([e39c20b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e39c20be7a63b0de97669dd1a2f3c8f299275ea4))
+* **formulas:** actions store numbers without floating-point noise ([e39c20b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e39c20be7a63b0de97669dd1a2f3c8f299275ea4))
+* **formulas:** blank cells count as zero in arithmetic ([e39c20b](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e39c20be7a63b0de97669dd1a2f3c8f299275ea4))
+* **formulas:** compare text in formulas with == and != ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **formulas:** conditions follow one rule in every function ([#524](https://github.com/Ikigai-Systems/fundamento-cloud/issues/524)) ([0a2329e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/0a2329e52467ee31974862b7993e14fef43fc1cc))
+* **formulas:** decimal arithmetic is exact, so 0.1 + 0.2 equals 0.3 ([#512](https://github.com/Ikigai-Systems/fundamento-cloud/issues/512)) ([e10404e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/e10404e5ed7022e6e3dfb5c2b74a82c022140bff))
+* **formulas:** IfBlank treats an empty cell as blank ([#525](https://github.com/Ikigai-Systems/fundamento-cloud/issues/525)) ([a08e1c1](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a08e1c1ea0f7ba7bac17edcfaa62f20b3c5ca7ca))
+* **formulas:** multiplication and division bind before addition ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **formulas:** Number() rejects scientific notation and symbols ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **formulas:** report circular Table() references instead of crashing ([4ff286e](https://github.com/Ikigai-Systems/fundamento-cloud/commit/4ff286e782c2247f0fc63f40290ecb1de8075574))
+* **formulas:** text and numbers are no longer mixed up silently ([440f4ae](https://github.com/Ikigai-Systems/fundamento-cloud/commit/440f4ae498c37d5cd093fabbba6c2ac0ce566d4c))
+* **mcp:** a document read keeps ids of blocks that have comments ([#496](https://github.com/Ikigai-Systems/fundamento-cloud/issues/496)) ([a997bc3](https://github.com/Ikigai-Systems/fundamento-cloud/commit/a997bc3eb888add17a6017a8529820cfe665926c))
+* **tables:** formula editor preview understands date columns ([#503](https://github.com/Ikigai-Systems/fundamento-cloud/issues/503)) ([64cea32](https://github.com/Ikigai-Systems/fundamento-cloud/commit/64cea329b896decd1b6473406eb96e452b5e1a67))
+
 ## [1.5.0](https://github.com/Ikigai-Systems/fundamento-cloud/compare/v1.4.0...v1.5.0) (2026-11-15)
 
 
