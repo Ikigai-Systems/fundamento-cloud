@@ -93,6 +93,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
+      # Reading an image attachment decodes it with libvips. ruby-vips is not required at boot,
+      # so the app starts without the library, but the specs for that tool need it.
+      - name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libvips-tools
+
       - uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           bundler-cache: true

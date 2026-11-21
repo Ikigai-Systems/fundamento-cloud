@@ -1,4 +1,5 @@
 require "rails_helper"
+require "vips"
 
 RSpec.describe ReadAttachmentTool, type: :model do
   fixtures :organizations, :users, :organization_memberships, :spaces, :space_memberships, :documents, :object_contents

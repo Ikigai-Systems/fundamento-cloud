@@ -56,7 +56,11 @@ class ReadAttachmentTool < ApplicationTool
     else
       MCP::Tool::Response.new([{type: "text", text: meta.merge(readable: false, note: "This kind of file cannot be read here.").to_json}])
     end
-  rescue Vips::Error
+  rescue LoadError
+    tool_error_response("unavailable", "Images cannot be read on this server.")
+  rescue => e
+    raise unless defined?(Vips::Error) && e.is_a?(Vips::Error)
+
     tool_error_response("unreadable", "The image could not be decoded.")
   end
 
@@ -90,6 +94,8 @@ class ReadAttachmentTool < ApplicationTool
   # images up to a size and a large screenshot costs many tokens for no more to see, so the long
   # edge is limited. A jpeg stays a jpeg; anything else becomes a png (a gif or webp, its first frame).
   def self.image_response(meta, bytes)
+    # ruby-vips is not required at boot, so that the app starts on a machine without libvips.
+    require "vips"
     image = Vips::Image.new_from_buffer(bytes, "")
     if image.width * image.height > MAX_IMAGE_PIXELS
       return tool_error_response("too_large", "#{meta[:name]} is #{image.width} x #{image.height} pixels; images over #{MAX_IMAGE_PIXELS / 1_000_000} megapixels are not read.")
