@@ -43,10 +43,16 @@ class DocumentBlueprint < Blueprinter::Base
       (options[:source] == :live || document.draft?) ? "live" : "saved_version"
     end
 
+    # The attachments the document's content points at, when the caller works them out (the Read
+    # Document tool does): a reader sees only the ones it may open.
+    field :attachments, exclude_if_nil: true do |_document, options|
+      options[:attachments]
+    end
+
     field :content do |document, options|
       block_ids = (options[:block_ids] == true) ? :all : document.commented_block_ids
       markers = block_ids.present? ? {block_ids: block_ids} : {}
-      markdown = BlocknoteConverterService.blocks_to_markdown(document.blocks_from(options[:source]), **markers)
+      markdown = BlocknoteConverterService.blocks_to_markdown(options[:blocks] || document.blocks_from(options[:source]), **markers)
       options[:frontmatter] == true ? document.to_frontmatter + markdown : markdown
     end
   end

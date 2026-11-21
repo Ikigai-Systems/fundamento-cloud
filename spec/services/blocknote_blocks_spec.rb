@@ -215,6 +215,36 @@ RSpec.describe BlocknoteBlocks do
     end
   end
 
+  describe ".attachment_references" do
+    it "lists what file and image blocks and links point at, with the block each sits in, once each" do
+      blocks = [
+        {"id" => "b1", "type" => "image", "props" => {"url" => "attachment:a1.png", "name" => "shot.png"}, "children" => [
+          {"id" => "b2", "type" => "paragraph", "content" => [
+            {"type" => "text", "text" => "see "},
+            {"type" => "link", "href" => "attachment:a2", "content" => [{"type" => "text", "text" => "the report"}]},
+          ]},
+        ]},
+        {"id" => "b3", "type" => "file", "props" => {"url" => "attachment:a1.png", "name" => "again.png"}},
+        {"id" => "b4", "type" => "image", "props" => {"url" => "https://example.com/x.png"}},
+        {"id" => "b5", "type" => "paragraph", "content" => [{"type" => "text", "text" => "attachment:nope"}]},
+      ]
+
+      expect(described_class.attachment_references(blocks)).to eq([
+        {id: "a1", name: "shot.png", block_id: "b1"},
+        {id: "a2", name: "the report", block_id: "b2"},
+      ])
+    end
+
+    it "finds one in a table cell, and gives an empty list for no blocks" do
+      blocks = [{"id" => "t", "type" => "table", "content" => {"type" => "tableContent", "rows" => [
+        {"cells" => [{"type" => "tableCell", "content" => [{"type" => "link", "href" => "attachment:c1", "content" => [{"type" => "text", "text" => "in cell"}]}]}]},
+      ]}}]
+
+      expect(described_class.attachment_references(blocks).map { |reference| reference[:id] }).to eq(["c1"])
+      expect(described_class.attachment_references(nil)).to eq([])
+    end
+  end
+
   describe ".each_mention" do
     it "yields only mention nodes" do
       blocks = [

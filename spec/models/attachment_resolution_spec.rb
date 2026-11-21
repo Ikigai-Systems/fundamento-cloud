@@ -41,9 +41,26 @@ RSpec.describe "resolving an attachment during the id transition" do
         .to raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "resolves several, by either identifier, within the scope, without their file data" do
+      other = attachments(:two)
+      found = Attachment.resolve_many([npi, other.id], scope: attachment.organization.attachments)
+
+      expect(found.map(&:id)).to match_array([attachment.id, other.id].select { |id| attachment.organization.attachments.exists?(id: id) })
+      expect(found.first.attributes).not_to have_key("data")
+    end
+
     it "raises for an identifier that is neither" do
       expect { Attachment.resolve!("not-an-attachment") }
         .to raise_error(ActiveRecord::RecordNotFound, /id or npi/)
+    end
+  end
+
+  describe "resolving several once the transition is over" do
+    it "is a plain lookup that leaves the file data out" do
+      found = Attachment.resolve_many([attachment.id, "gone"], scope: attachment.organization.attachments)
+
+      expect(found.map(&:id)).to eq([attachment.id])
+      expect(found.first.attributes).not_to have_key("data")
     end
   end
 
