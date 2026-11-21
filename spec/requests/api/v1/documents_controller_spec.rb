@@ -722,6 +722,53 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(document_one.versions.count).to eq(1)
       end
 
+      describe "sync_version" do
+        let(:headers) { { "Authorization" => "Bearer #{pawel_is_token.encrypted_token}" } }
+
+        def patch_markdown(**document)
+          patch api_v1_document_path(id: document_one.id), params: { document: { markdown: "# New" }.merge(document) }, headers: headers
+        end
+
+        it "is returned by an update, for the next one" do
+          patch_markdown
+
+          expect(response).to have_http_status(:ok)
+          expect(JSON.parse(response.body)["sync_version"]).to eq(document_one.reload.sync_version)
+        end
+
+        it "is not returned when the document is read, as that content may be a saved version" do
+          get api_v1_document_path(id: document_one.id), headers: headers
+
+          expect(JSON.parse(response.body)).not_to have_key("sync_version")
+        end
+
+        it "is refused with 422 when it is not a whole number" do
+          patch_markdown(sync_version: "abc")
+
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+
+        it "lets the update through when it is the current one, and stays optional" do
+          patch_markdown(sync_version: document_one.sync_version)
+          expect(response).to have_http_status(:ok)
+
+          patch_markdown
+          expect(response).to have_http_status(:ok)
+        end
+
+        it "answers 409 with the current one when the content changed since, and writes nothing" do
+          read = document_one.sync_version
+          document_one.content.update!(sync: document_one.content.sync + "x".b)
+
+          expect { patch_markdown(sync_version: read) }.not_to change(Version, :count)
+
+          expect(response).to have_http_status(:conflict)
+          body = JSON.parse(response.body)
+          expect(body["sync_version"]).to eq(document_one.reload.sync_version)
+          expect(body["errors"]["base"]).to include("changed since you read it")
+        end
+      end
+
       it "updates document with tags from frontmatter" do
         markdown_with_frontmatter = file_fixture("documents/updated_with_tags.md").read
 

@@ -5,6 +5,17 @@ class DocumentService
   # A block id marker as the converter reads it: " ^id" at the end of a line, or a line of its own.
   BLOCK_MARKER = /(?:\A|[ \n])\^[A-Za-z0-9-]{2,}[ \t]*$/
 
+  # The content changed after the caller read it, so what it sends would replace edits it never saw.
+  class StaleContent < StandardError
+    attr_reader :sync_version
+
+    def initialize(sync_version)
+      @sync_version = sync_version
+      super("The document changed since you read it: it is now at sync_version #{sync_version}. " \
+            "Read it again, apply your change to the current content and send that sync_version.")
+    end
+  end
+
   attr_reader :pundit_user
 
   def initialize(pundit_user:)
@@ -65,13 +76,20 @@ class DocumentService
 
   # Renames, changes the icon or color, replaces the content, or any mix of them. A rename or icon
   # change alone creates no version: versions snapshot content, and neither is part of it.
-  def update!(document_id:, markdown: nil, title: nil, icon: nil, color: nil)
+  #
+  # sync_version is the one the caller read. When it is given and the content has moved on, the
+  # update is refused with StaleContent rather than replacing edits the caller never saw. The
+  # check holds the content row, so a write can't land between it and the update. It guards
+  # content only: a rename or an icon needs no version.
+  def update!(document_id:, markdown: nil, title: nil, icon: nil, color: nil, sync_version: nil)
     raise ArgumentError, "Provide a title, icon, color, or markdown" if [markdown, title, icon, color].all?(&:nil?)
     raise ArgumentError, "Title can't be blank" if !title.nil? && title.blank?
 
     ActiveRecord::Base.transaction do
       document = pundit_user.current_organization.documents.find(document_id)
       authorize document, :update?
+
+      check_sync_version!(document, sync_version) unless markdown.nil? || sync_version.nil?
 
       markdown, frontmatter_data = extract_frontmatter(markdown) unless markdown.nil?
 
@@ -177,6 +195,17 @@ class DocumentService
   end
 
   private
+
+  def check_sync_version!(document, expected)
+    content = document.content
+    content&.lock!
+    current = content&.sync_version.to_i
+
+    expected = Integer(expected.to_s, 10, exception: false)
+    raise ArgumentError, "sync_version must be a whole number, as returned by Read Document" if expected.nil?
+
+    raise StaleContent, current unless current == expected
+  end
 
   # Markdown read with block_ids, or of a block that has comments, carries " ^id" markers, which keep a block's id across an
   # update: whatever points at the block (a comment, a link) still finds it. Only markers naming
