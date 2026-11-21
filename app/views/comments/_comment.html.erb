@@ -49,6 +49,13 @@
       </div>
     </div>
 
+    <% if comment.anchor_quote.present? %>
+      <div class="mx-3 mb-2 flex items-start gap-2 rounded-lg bg-yellow-100 px-2.5 py-1.5 text-sm text-gray-900" data-comment-quote>
+        <i class="icon-[tabler--quote] mt-0.5 shrink-0"></i>
+        <span class="min-w-0 break-words"><%= truncate(comment.anchor_quote, length: 300) %></span>
+      </div>
+    <% end %>
+
     <div data-edit-comment-target="commentEditorRoot" class="flex flex-col"></div>
 
     <div class="flex items-center justify-between px-3 pb-2" data-edit-comment-target="reactions">

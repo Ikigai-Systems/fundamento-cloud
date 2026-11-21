@@ -11,6 +11,7 @@ module BlockCommentsHelper
     {
       objectGid: document.to_gid_param,
       blockIds: block_ids,
+      quotes: document.comment_quotes.select { |quote| block_ids.include?(quote[:blockId]) },
       canComment: version.nil? && policy(document.comments.new).create?
     }
   end

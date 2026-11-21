@@ -155,6 +155,17 @@ RSpec.describe Document, type: :model do
       )
     end
 
+    describe "#comment_quotes" do
+      it "are what the comments on blocks quote, leaving out removed comments and those that quote nothing" do
+        comment_on("initialBlockId").update!(anchor_quote: "kept words", anchor_prefix: "the ", anchor_suffix: " here")
+        comment_on("initialBlockId")
+        comment_on(removed_block_id).update!(anchor_quote: "gone", removed_at: Time.current)
+
+        expect(document.comment_quotes)
+          .to eq([{blockId: "initialBlockId", quote: "kept words", prefix: "the ", suffix: " here"}])
+      end
+    end
+
     describe "#orphaned_comments" do
       it "are the comments on blocks that are not in the current version" do
         on_kept_block = comment_on("initialBlockId")
