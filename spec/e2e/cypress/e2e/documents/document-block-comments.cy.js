@@ -111,4 +111,54 @@ describe("Comments on a block of a document", function () {
 
     commentOnTheFirstParagraph();
   });
+
+  // Selecting words offers a comment on them: the quote goes with the comment and is marked in the block.
+  function commentOnSelectedWords() {
+    cy.appEval(`Document.find("${documentId}").to_blocks.find { |b| b["content"].to_s.include?("First paragraph") }["id"]`).then((firstBlockId) => {
+      cy.contains(".bn-block-content", "First paragraph").then(($content) => {
+        const text = $content.find("[data-content-type] > *, p, span").addBack().contents().filter((_, node) => node.nodeType === Node.TEXT_NODE && node.textContent.includes("First")).get(0);
+        const range = text.ownerDocument.createRange();
+        range.setStart(text, 0);
+        range.setEnd(text, "First".length);
+        const selection = text.ownerDocument.defaultView.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      });
+
+      cy.get("[data-quote-comment-button]").should("be.visible").realClick();
+
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId} [data-comment-quote]`, {timeout: 10000}).should("contain", "First");
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId} [data-comment-editor] [role='textbox']`).realClick();
+      cy.realType("About the word");
+      cy.get(`turbo-frame#new_object_comment_block_${firstBlockId}`).contains("input[type=submit]", "Add").click();
+
+      cy.get(`[data-id="${firstBlockId}"] turbo-frame#object_comments_block_${firstBlockId}`, {timeout: 10000})
+        .should("contain", "About the word")
+        .find("[data-comment-quote]").should("contain", "First");
+      cy.get(`[data-id="${firstBlockId}"] .bn-block-content .border-yellow-500`).should("contain", "First");
+
+      cy.appEval(`Document.find("${documentId}").comments.on_block("${firstBlockId}").first.anchor_quote`).should("eq", "First");
+    });
+  }
+
+  it("marks what an earlier comment quotes", function () {
+    cy.visit(`/d/${documentId}`);
+    cy.waitForEditor();
+
+    cy.get(`[data-id="${blockId}"] .bn-block-content .border-yellow-500`, {timeout: 10000}).should("have.text", "Second");
+  });
+
+  it("starts a comment on selected words when reading", function () {
+    cy.visit(`/d/${documentId}`);
+    cy.waitForEditor();
+
+    commentOnSelectedWords();
+  });
+
+  it("starts a comment on selected words when editing", function () {
+    cy.visit(`/d/${documentId}/edit`);
+    cy.waitForEditor();
+
+    commentOnSelectedWords();
+  });
 });

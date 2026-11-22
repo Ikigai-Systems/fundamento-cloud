@@ -12,12 +12,13 @@ RSpec.describe BlockCommentsHelper, type: :helper do
     helper.define_singleton_method(:policy) { |_record| policy }
   end
 
-  def comment_on(block_id)
+  def comment_on(block_id, **anchor)
     document.comments.create!(
       organization: organizations(:is),
       organization_membership: organization_memberships(:om_is_pawel),
       content: [{"type" => "paragraph", "content" => [{"type" => "text", "text" => "A comment"}]}],
-      anchor_block_id: block_id
+      anchor_block_id: block_id,
+      **anchor
     )
   end
 
@@ -31,6 +32,14 @@ RSpec.describe BlockCommentsHelper, type: :helper do
 
       expect(props[:objectGid]).to eq(document.to_gid_param)
       expect(props[:blockIds]).to contain_exactly("block-1", "block-2")
+    end
+
+    it "has what the comments quote, to mark it in the blocks" do
+      comment_on("block-1", anchor_quote: "some words", anchor_prefix: "say ", anchor_suffix: " here")
+      comment_on("block-2")
+
+      expect(helper.block_comments_props(document)[:quotes])
+        .to eq([{blockId: "block-1", quote: "some words", prefix: "say ", suffix: " here"}])
     end
 
     it "says the user can comment" do
@@ -52,14 +61,19 @@ RSpec.describe BlockCommentsHelper, type: :helper do
       let(:version) { document.versions.first }
 
       it "has the commented blocks that version has, and takes no new comments" do
-        comment_on("initialBlockId")
-        comment_on("a-block-the-version-never-had")
+        comment_on("initialBlockId", anchor_quote: "kept")
+        comment_on("a-block-the-version-never-had", anchor_quote: "never there")
 
         props = helper.block_comments_props(document, version: version)
 
         expect(props[:blockIds]).to eq(["initialBlockId"])
+        expect(props[:quotes].map { |quote| quote[:quote] }).to eq(["kept"])
         expect(props[:canComment]).to be(false)
       end
+    end
+
+    it "has no quotes when only the document has comments" do
+      expect(helper.block_comments_props(document)[:quotes]).to eq([])
     end
 
     it "has no blocks when only the document has comments" do

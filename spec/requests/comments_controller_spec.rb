@@ -51,6 +51,15 @@ RSpec.describe CommentsController, type: :request do
         expect(response.body).not_to include("Test comment")
       end
 
+      it "shows what a comment quotes" do
+        comment_on_block("block-1", "Remark on block one").update!(anchor_quote: "the quoted words")
+
+        get comments_path(object_gid: document.to_gid_param, block_id: "block-1"),
+          headers: { "Turbo-Frame" => "object_comments_block_block-1" }
+
+        expect(response.body).to include("the quoted words")
+      end
+
       it "answers in the block's frame, which is where it is shown" do
         get comments_path(object_gid: document.to_gid_param, block_id: "block-1"),
           headers: { "Turbo-Frame" => "object_comments_block_block-1" }
@@ -157,6 +166,22 @@ RSpec.describe CommentsController, type: :request do
         expect(response.body).to include('name="comment[anchor_block_id]"')
         expect(response.body).to include('value="block-1"')
         expect(response.body).to include('value="some text"')
+      end
+
+      it "shows the quote, which can be taken off, and carries it with the form" do
+        get new_comment_path(object_gid: document.to_gid_param, anchor_block_id: "block-1", anchor_quote: "some text",
+                             anchor_prefix: "before ", anchor_suffix: " after"),
+          headers: turbo_headers
+
+        expect(response.body).to include("data-comment-quote")
+        expect(response.body).to include("Remove quote")
+        expect(response.body).to include('name="comment[anchor_prefix]"')
+      end
+
+      it "has no quote for a comment on the whole block" do
+        get new_comment_path(object_gid: document.to_gid_param, anchor_block_id: "block-1"), headers: turbo_headers
+
+        expect(response.body).not_to include("data-comment-quote")
       end
 
       it "has no anchor in the form for a comment on the document" do
