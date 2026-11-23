@@ -89,6 +89,7 @@ module Tenant
     # on this table and the table it points at, which is what the exporter turns into a
     # subquery rather than a join, so each table is still read in one pass.
     DERIVED = {
+      "document_blocks" => { foreign_key: "document_id", parent: "documents" },
       "document_editing_sessions" => { foreign_key: "document_id", parent: "documents" },
       "favorites" => { foreign_key: "organization_membership_id", parent: "organization_memberships" },
       "inline_comment_threads" => { foreign_key: "document_id", parent: "documents" },

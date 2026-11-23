@@ -134,7 +134,7 @@ RSpec.describe Document, type: :model do
   end
 
   describe "comments on blocks the document no longer has" do
-    fixtures :users, :organization_memberships, :versions
+    fixtures :users, :organization_memberships, :versions, :document_blocks
 
     let(:document) { documents(:two) }
     let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }
@@ -183,6 +183,19 @@ RSpec.describe Document, type: :model do
         expect(document.orphaned_comments).to contain_exactly(on_removed_block)
         expect(document.orphaned_comments).not_to include(on_kept_block, on_document)
       end
+    end
+
+    it "has no comments on removed blocks while it is a draft" do
+      draft = documents(:one)
+      draft.comments.create!(
+        organization: organizations(:is),
+        organization_membership: organization_memberships(:om_is_pawel),
+        content: [{"type" => "paragraph", "content" => []}],
+        anchor_block_id: "any-block"
+      )
+
+      expect(draft).to be_draft
+      expect(draft.orphaned_comments).to be_empty
     end
 
     describe "#latest_versions_with_blocks" do

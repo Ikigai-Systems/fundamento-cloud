@@ -21,6 +21,7 @@ class Version < ApplicationRecord
   before_create :set_sequential_id
 
   after_create :reconcile_object_references
+  after_create :reconcile_document_blocks
   after_commit :broadcast_mentions_updated, on: [:create, :update, :destroy] # does :update make sense here? [STE 30-01-2025]
 
   def broadcast_mentions_updated
@@ -36,6 +37,10 @@ class Version < ApplicationRecord
 
   def reconcile_object_references
     ObjectReferenceReconciler.reconcile(document, self) if content_blocks.present?
+  end
+
+  def reconcile_document_blocks
+    DocumentBlockReconciler.reconcile(document, self)
   end
 
   def set_sequential_id

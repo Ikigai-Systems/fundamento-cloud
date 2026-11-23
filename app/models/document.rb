@@ -29,6 +29,7 @@ class Document < ApplicationRecord
   has_one :public_link, as: :object, dependent: :destroy
 
   has_many :versions, dependent: :destroy
+  has_many :blocks, class_name: "DocumentBlock", dependent: :delete_all
   has_many :visitors, class_name: "ObjectVisitor", as: :object, dependent: :delete_all
   has_many :reactions, class_name: "ObjectReaction", as: :object, dependent: :delete_all
   has_many :comments, class_name: "ObjectComment", as: :object, dependent: :delete_all
@@ -105,21 +106,21 @@ class Document < ApplicationRecord
       .map { |block_id, quote, prefix, suffix| {blockId: block_id, quote: quote, prefix: prefix.to_s, suffix: suffix.to_s} }
   end
 
-  # The comments on blocks that are no longer in the document.
+  # The comments on blocks that are no longer in the document: those whose block the latest saved
+  # version does not have. A draft has no saved version, so nothing is gone from it yet.
   def orphaned_comments
-    comments.anchored.where.not(anchor_block_id: BlocknoteBlocks.block_ids(current_blocks))
+    latest_version_id = versions.maximum(:id)
+    return comments.none unless latest_version_id
+
+    comments.anchored.where.not(anchor_block_id: blocks.where(last_version_id: latest_version_id).select(:block_id))
   end
 
   # The latest saved version that still had each of these blocks, by block id. A block that was
   # never saved (it came and went within a draft) has no version.
   def latest_versions_with_blocks(block_ids)
-    found = {}
-    versions.order(sequential_id: :desc).each do |version|
-      ids = BlocknoteBlocks.block_ids(version.content_blocks)
-      (block_ids - found.keys).each { |id| found[id] = version if ids.include?(id) }
-      break if found.size == block_ids.size
-    end
-    found
+    marks = blocks.where(block_id: block_ids).pluck(:block_id, :last_version_id)
+    found = versions.where(id: marks.map(&:last).uniq).index_by(&:id)
+    marks.to_h { |block_id, version_id| [block_id, found[version_id]] }
   end
 
   # The YAML frontmatter block the importers read back: `title`, then `tags` (names without a
