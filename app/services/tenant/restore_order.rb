@@ -38,6 +38,7 @@ module Tenant
       object_contents
       versions
       document_editing_sessions
+      document_blocks
       inline_comment_threads
       inline_comments
       object_comments

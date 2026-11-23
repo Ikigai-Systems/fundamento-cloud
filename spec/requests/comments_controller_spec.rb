@@ -106,7 +106,7 @@ RSpec.describe CommentsController, type: :request do
     end
 
     describe "comments on blocks that are gone" do
-      fixtures :versions
+      fixtures :versions, :document_blocks
 
       let(:document) { documents(:two) }
       let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }

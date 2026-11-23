@@ -284,7 +284,7 @@ RSpec.describe DocumentsController, type: :request do
   end
 
   describe "comments on blocks the document no longer has" do
-    fixtures :versions
+    fixtures :versions, :document_blocks
 
     let(:document) { documents(:two) }
     let(:removed_block_id) { "db948229-12cb-4357-92dc-94494df434ef" }

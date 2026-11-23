@@ -6,7 +6,7 @@ require "rails_helper"
 # it back -- so the tests are written as that story rather than as table mechanics.
 RSpec.describe Tenant::RestoreService do
   fixtures :organizations, :users, :organization_memberships, :spaces, :documents,
-           "tables/tables", "tables/columns", "tables/rows", :object_contents, :versions,
+           "tables/tables", "tables/columns", "tables/rows", :object_contents, :versions, :document_blocks,
            :object_comments, :object_references, :tags, :object_tags
 
   let(:organization) { organizations(:is) }
@@ -72,6 +72,14 @@ RSpec.describe Tenant::RestoreService do
 
       restored = Version.find_by!(document_id: document.id, sequential_id: version.sequential_id)
       expect(ObjectReference.find(reference_id).source_version_id).to eq(restored.id)
+    end
+
+    it "come back with the blocks they were the latest to have pointing at their new ids" do
+      restore
+
+      restored = Version.find_by!(document_id: document.id, sequential_id: version.sequential_id)
+      expect(DocumentBlock.where(document_id: document.id).pluck(:last_version_id).uniq).to eq([restored.id])
+      expect(DocumentBlock.where(document_id: document.id).count).to eq(4)
     end
 
     # The reason the id is dropped. By the time anyone restores, the archived number can belong

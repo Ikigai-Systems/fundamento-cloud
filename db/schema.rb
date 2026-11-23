@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_100100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "pg_catalog.plpgsql"
@@ -150,6 +150,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
     t.index ["invitation_token"], name: "index_devise_invitations_on_invitation_token", unique: true
     t.index ["invited_by_type", "invited_by_id"], name: "index_devise_invitations_on_invited_by"
     t.index ["organization_id"], name: "index_devise_invitations_on_organization_id"
+  end
+
+  create_table "document_blocks", id: :string, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "document_id", null: false
+    t.string "block_id", null: false
+    t.bigint "last_version_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document_id", "block_id"], name: "index_document_blocks_on_document_id_and_block_id", unique: true
+    t.index ["last_version_id"], name: "index_document_blocks_on_last_version_id"
   end
 
   create_table "document_editing_sessions", id: :string, force: :cascade do |t|
@@ -827,6 +837,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_16_210000) do
   add_foreign_key "automations", "organizations"
   add_foreign_key "automations", "spaces"
   add_foreign_key "devise_invitations", "organizations"
+  add_foreign_key "document_blocks", "documents", on_delete: :cascade
+  add_foreign_key "document_blocks", "versions", column: "last_version_id", on_delete: :cascade
   add_foreign_key "document_editing_sessions", "documents"
   add_foreign_key "document_editing_sessions", "organization_memberships", column: "member_id"
   add_foreign_key "document_editing_sessions", "versions"

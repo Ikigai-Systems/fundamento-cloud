@@ -25,6 +25,7 @@ module Tenant
       ["active_storage_attachments", "blob_id", "active_storage_blobs"],
       ["active_storage_variant_records", "blob_id", "active_storage_blobs"],
       ["object_references", "source_version_id", "versions"],
+      ["document_blocks", "last_version_id", "versions"],
     ].freeze
 
     # The subset the database enforces. A spec checks this against the real foreign keys,

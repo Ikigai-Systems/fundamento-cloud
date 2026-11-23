@@ -1,0 +1,7 @@
+# The blocks of the versions fixture, as the version hook records them when a version is saved.
+<% %w[initialBlockId 82bfe141-5ba1-4a74-b102-bf7fc7c64869 db948229-12cb-4357-92dc-94494df434ef 60d83d6f-9946-4443-838b-1667abc11e4f].each_with_index do |block_id, i| %>
+two_block_<%= i %>:
+  document_id: two
+  block_id: <%= block_id %>
+  last_version: two_version_1
+<% end %>
