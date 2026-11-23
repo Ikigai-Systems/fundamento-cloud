@@ -94,7 +94,8 @@ class ObjectComment < ApplicationRecord
     # FIXME: workaround for serialization problem
     content = super
     if content.is_a?(String)
-      JSON.parse(content)
+      # A form that was never typed in sends an empty string: no content, not malformed JSON.
+      content.blank? ? nil : JSON.parse(content)
     else
       content
     end

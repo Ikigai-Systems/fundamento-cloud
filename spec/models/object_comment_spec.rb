@@ -16,6 +16,15 @@ RSpec.describe ObjectComment, type: :model do
     )
   end
 
+  describe "content" do
+    it "is missing when it was left empty, as an untouched form sends it" do
+      comment = build_comment(content: "")
+
+      expect(comment).not_to be_valid
+      expect(comment.errors[:content]).to be_present
+    end
+  end
+
   describe "a comment on a block" do
     it "is a comment on the document when it names no block" do
       expect(build_comment).to be_valid

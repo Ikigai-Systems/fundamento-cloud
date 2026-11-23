@@ -214,6 +214,16 @@ RSpec.describe CommentsController, type: :request do
         expect(document.comments.order(:created_at).last).not_to be_anchored
       end
 
+      it "refuses a comment that was left empty, and shows the form again" do
+        expect {
+          post comments_path(object_gid: document.to_gid_param),
+            params: { comment: { content: "" } },
+            headers: turbo_headers
+        }.not_to change(ObjectComment, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
       it "refuses a block on anything but a document" do
         table = tables_tables(:projects)
 
