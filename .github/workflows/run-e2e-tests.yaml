@@ -180,7 +180,7 @@ jobs:
           # would always yield X.
           BUILD_CACHE_TO: ${{ github.ref == 'refs/heads/master' && matrix.device == 'desktop' && matrix.shard == 1 && 'type=registry,ref=ghcr.io/ikigai-systems/fundamento-cloud:e2e-buildcache,mode=max,ignore-error=true' || '' }}
 
-      - uses: hoverkraft-tech/compose-action@b659c744ee9bed25aea2307c017ad849bd104433 # v3.2.0
+      - uses: hoverkraft-tech/compose-action@cdaf49f2d715a87c3387e86cb35c772b14f0efe0 # v3.2.1
         env:
           RAILS_MASTER_KEY: ${{ env.RAILS_MASTER_KEY }}
 
