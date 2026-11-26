@@ -109,7 +109,7 @@ gem "recaptcha"
 
 gem "initials"
 
-gem "mcp", "~> 1.10"
+gem "mcp", "~> 1.11"
 gem "doorkeeper"
 gem "audited", "~> 5.8"
 gem "blueprinter", "~> 1.1"
