@@ -86,7 +86,7 @@ const SelectOrCreateTableContainer = ({space, editor, block}: SelectOrCreateTabl
   const [isCreating, setIsCreating] = useState(false);
 
   return (
-    <div className="divide-y divide-gray-200 dark:divide-gray-600 rounded-lg bg-white dark:!bg-gray-800 text-slate-800 dark:text-white shadow border dark:border-gray-600 min-w-[40rem] mx-auto">
+    <div className="divide-y divide-gray-200 dark:divide-gray-600 rounded-lg bg-white dark:!bg-gray-800 text-slate-800 dark:text-white shadow border dark:border-gray-600 mx-auto">
       <div className="px-4 py-4 sm:px-6 flex flex-row justify-between items-center">
         <div className="font-bold">New table</div>
         <button
@@ -288,7 +288,7 @@ export const createAdvancedTable = createReactBlockSpec(
 
       if (isLoading) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center gap-2 text-slate-400 dark:text-gray-500">
+          <div className="border min-h-[20rem] mx-auto flex items-center justify-center gap-2 text-slate-400 dark:text-gray-500">
             Loading table...
             <SpinnerIcon/>
           </div>
@@ -301,7 +301,7 @@ export const createAdvancedTable = createReactBlockSpec(
 
       if (isError) {
         return (
-          <div className="border min-h-[20rem] min-w-[40rem] mx-auto flex items-center justify-center text-red-800 dark:text-red-400">
+          <div className="border min-h-[20rem] mx-auto flex items-center justify-center text-red-800 dark:text-red-400">
             Unable to load table with id {tableId}
           </div>
         )
