@@ -56,6 +56,16 @@ updates:
       npm-minor-patch:
         update-types: ["minor", "patch"]
     ignore:
+      # posthog-js 1.453.3 and 1.454.2 break the document and table comments and reactions
+      # E2E specs: the page's comment and reaction requests stop firing (1.450.0 is fine,
+      # releases in between are untested; see PR #543). Remove this entry once the cause
+      # is found or a release passes `document-comments`, `document-reactions` and
+      # `table-reactions`.
+      - dependency-name: "posthog-js"
+      # prosemirror-view 1.43.1 fails the "starts a comment on selected words when editing"
+      # spec in `document-block-comments` on CI (1.42.9 is fine; see PR #548). It passed
+      # locally, so only CI shows it. Remove this entry once a release passes that spec.
+      - dependency-name: "prosemirror-view"
       # React 18 -> 19 is a deliberate, breaking migration, not an auto-merge.
       # Remove these entries when doing the React 19 upgrade.
       - dependency-name: "react"
