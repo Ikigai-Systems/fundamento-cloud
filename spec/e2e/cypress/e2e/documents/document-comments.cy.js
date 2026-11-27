@@ -40,7 +40,6 @@ describe("Document Comments", function () {
     it("shows and hides the comment form with Cancel", function () {
       cy.visit(`/d/${documentId}`);
       cy.waitForEditor();
-      cy.waitForStreams();
 
       // Comment button should be visible
       cy.contains("Comment").should("be.visible");
@@ -207,7 +206,6 @@ describe("Document Comments", function () {
       createComment("om_is_pawel", "Do not change me").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
-        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Do not change me");
 
@@ -289,7 +287,6 @@ describe("Document Comments", function () {
       createComment("om_is_stefan", "Stefan's comment").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
-        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
 
@@ -306,7 +303,6 @@ describe("Document Comments", function () {
 
       cy.visit(`/d/${documentId}`);
       cy.waitForEditor();
-      cy.waitForStreams();
 
       cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
       cy.get("turbo-frame#object_comments").should("contain", "Pawel's comment");
