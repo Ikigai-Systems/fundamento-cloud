@@ -201,8 +201,13 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
   container.appendChild(button);
 
   let selected: ReturnType<typeof selectedQuote> = null;
+  let pressed = false;
 
   const update = () => {
+    // Pressing the button can collapse the selection before the click arrives (seen with
+    // prosemirror-view 1.43, even though the mousedown is prevented). Keep the quote and the button
+    // until the press is over, or the button hides and the click lands on what is under it.
+    if (pressed) return;
     selected = selectedQuote(view);
     if (!selected) {
       button.classList.replace("flex", "hidden");
@@ -213,8 +218,20 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
   };
 
   // The click must not take the selection away from the text before it has been read.
-  const keepSelection = (event: MouseEvent) => event.preventDefault();
+  const keepSelection = (event: MouseEvent) => {
+    event.preventDefault();
+    pressed = true;
+  };
+  // The press ends with the click. A release anywhere else means no click is coming, and so does
+  // the window losing focus mid-press.
+  const release = (event?: Event) => {
+    if (!pressed) return;
+    if (event?.type === "mouseup" && event.target instanceof Node && button.contains(event.target)) return;
+    pressed = false;
+    update();
+  };
   const start = () => {
+    pressed = false;
     if (selected) startComment(view, objectGid, selected.quote.blockId, selected.quote);
     window.getSelection()?.removeAllRanges();
     button.classList.replace("flex", "hidden");
@@ -237,6 +254,10 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
 
   document.addEventListener("selectionchange", update);
   document.addEventListener("turbo:submit-end", marked);
+  // On the window, in the capture phase, and also when the window loses focus: a release outside the
+  // page must not leave the button pressed.
+  window.addEventListener("mouseup", release, true);
+  window.addEventListener("blur", release);
   button.addEventListener("mousedown", keepSelection);
   button.addEventListener("click", start);
 
@@ -244,6 +265,8 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
     destroy() {
       document.removeEventListener("selectionchange", update);
       document.removeEventListener("turbo:submit-end", marked);
+      window.removeEventListener("mouseup", release, true);
+      window.removeEventListener("blur", release);
       button.remove();
     },
   };
