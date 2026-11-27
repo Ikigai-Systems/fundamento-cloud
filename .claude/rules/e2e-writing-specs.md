@@ -27,6 +27,16 @@ cy.appEval(`
 cy.get(".destroy-reaction-button", { timeout: 10000 }).should("have.length", 3);
 ```
 
+**Wait for the page's stream subscriptions first.** A broadcast is not replayed to a subscriber that connects after it was sent, and a frame's subscription is confirmed a WebSocket round trip after its content renders, so a visible frame does not mean a broadcast will arrive. Call `cy.waitForStreams()` after the visit and before the `appEval` (the why is in its comment in `support/commands.js`). Waiting for the layout's own stream is not enough: it connects first and says nothing about the frames'. Only specs that change data from the backend and expect the page to follow need it; a test that seeds before visiting does not.
+
+## Select text the way a person does
+
+In edit mode the editor owns the selection. A range set straight on the DOM (`selection.addRange`) is overwritten by the editor a moment later, on a loaded CI runner about 20 ms later, before any click, so what follows (a button that shows for a selection, a quote read from it) finds nothing. Select with real input: `realClick({position: "left", clickCount: 2})` on the first word. In a read-only document the editor does not touch the selection, so setting a range there is fine.
+
+## Reading a failure that only happens on CI
+
+CI prints only the first line of an error, so a multi-line message looks like one word. To see what the page did, record events in the page (`cy.visit(url, {onBeforeLoad})` listeners for `selectionchange`, mouse events and Turbo fetches, with timestamps), throw them from the test as the error message, and read the full text from the `cypress-results-*` artifact (the JUnit XML), not from the log. Dispatch the E2E workflow on a scratch branch (`gh workflow run run-e2e-tests.yaml --ref <branch>`) to get that without opening a PR. Look at the order of events, not the end state: the order is what a throttled local run reproduces and what a screenshot hides.
+
 ## Intercepts after page navigation
 
 `cy.intercept` aliases may not carry over after a full page navigation (e.g., clicking a link that loads a new page). Re-register the intercept with a fresh alias before the next action that triggers the request:
