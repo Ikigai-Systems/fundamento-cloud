@@ -55,6 +55,7 @@ describe("Table Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.waitForStreams();
 
     // Get initial reaction count
     cy.appEval(`Table.find('${tableId}').reactions.count`).then((initialCount) => {
@@ -103,6 +104,7 @@ describe("Table Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.waitForStreams();
 
     // Verify reaction is displayed
     cy.get(".destroy-reaction-button").should("contain", "💡");
@@ -170,6 +172,7 @@ describe("Table Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.waitForStreams();
 
     const emojis = ["📈", "✅", "🔍"];
 
@@ -248,6 +251,7 @@ describe("Table Reactions", function () {
 
       // Wait for reactions frame to load
       cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+      cy.waitForStreams();
 
       // Verify the reaction is visible
       cy.get(".destroy-reaction-button").should("contain", "🚀");
@@ -273,6 +277,7 @@ describe("Table Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", { timeout: 10000 }).should("be.visible");
+    cy.waitForStreams();
 
     // Intercept the Turbo Stream frame reload triggered by reaction creation
     cy.intercept("GET", "/reactions*").as("getReactions");

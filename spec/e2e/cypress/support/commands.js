@@ -241,6 +241,29 @@ Cypress.Commands.add("waitForFrames", () => {
   });
 });
 
+/**
+ * Wait until every Turbo Stream subscription on the page is confirmed by the server. A broadcast
+ * is not replayed to a subscriber that connects after it was sent, so a spec that changes data
+ * from the backend (`cy.appEval`) and expects the page to update must not do so before this.
+ * Frame content renders before its subscription is confirmed (a WebSocket round trip later), so
+ * waiting for the element is not enough. A slow page start, such as a heavier analytics script,
+ * makes the gap wider.
+ * @example
+ *   cy.visit("/t/users");
+ *   cy.waitForStreams();
+ *   cy.appEval(`...create a reaction...`);
+ */
+Cypress.Commands.add("waitForStreams", () => {
+  cy.waitForFrames();
+  cy.document({log: false}).should((doc) => {
+    const sources = [...doc.querySelectorAll("turbo-cable-stream-source")];
+    const waiting = sources.filter((source) => !source.hasAttribute("connected")).map((source) => source.getAttribute("channel"));
+
+    expect(sources.length, "stream sources").to.be.greaterThan(0);
+    expect(waiting.length, "stream sources not yet connected").to.eq(0);
+  });
+});
+
 // =============================================================================
 // CSRF TOKEN USAGE EXAMPLES
 // =============================================================================
