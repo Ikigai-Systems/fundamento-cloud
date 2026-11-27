@@ -11,15 +11,23 @@ class DeviseMailerPreview < ActionMailer::Preview
     FundamentoDeviseMailer.invitation_instructions(invitee, invitee.raw_invitation_token)
   end
 
-  def reset_password_instructions
-    token = "dummy_token"
+  def confirmation_instructions
+    FundamentoDeviseMailer.confirmation_instructions(User.first, "dummy_token")
+  end
 
-    FundamentoDeviseMailer.reset_password_instructions(User.first, token)
+  def reset_password_instructions
+    FundamentoDeviseMailer.reset_password_instructions(User.first, "dummy_token")
   end
 
   def magic_link
-    token = "dummy_token"
+    FundamentoDeviseMailer.magic_link(User.first, "dummy_token", true)
+  end
 
-    FundamentoDeviseMailer.magic_link(User.first, token, true)
+  def password_change
+    FundamentoDeviseMailer.password_change(User.first)
+  end
+
+  def email_changed
+    FundamentoDeviseMailer.email_changed(User.first)
   end
 end

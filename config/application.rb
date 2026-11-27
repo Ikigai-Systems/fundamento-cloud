@@ -45,6 +45,9 @@ module Fundamento
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Previews live next to the specs; Rails only looks in test/ by default.
+    config.action_mailer.preview_paths = [Rails.root.join("spec/mailers/previews").to_s]
+
     config.action_mailer.default_url_options = { :host => ENV.fetch("HTTP_HOST", "localhost:3000") }
 
     # Prepended to every Redis key and Action Cable channel, so several git worktrees can share

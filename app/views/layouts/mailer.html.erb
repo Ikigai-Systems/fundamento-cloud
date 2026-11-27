@@ -1,13 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title><%= message.subject %></title>
+    <%# premailer-rails inlines this block into the elements below at delivery time. %>
     <style>
-      /* Email styles need to be inline */
+      body { margin: 0; padding: 0; background-color: #f6f6f8; }
+      .wrapper { background-color: #f6f6f8; padding: 40px 16px; }
+      .card { background-color: #ffffff; border: 1px solid #e3e3e8; border-radius: 16px; }
+      .card-body { padding: 40px; }
+      .logo { display: block; margin: 0 auto 32px auto; }
+      h1 { margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; font-weight: 600; color: #111111; }
+      p { margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; color: #333333; }
+      p.muted { font-size: 13px; line-height: 20px; color: #777777; }
+      a { color: #0e87bc; }
+      .footer { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; color: #999999; text-align: center; padding-top: 24px; }
+      .footer a { color: #999999; }
+      @media only screen and (max-width: 520px) {
+        .card-body { padding: 28px 20px !important; }
+      }
     </style>
   </head>
-
   <body>
-    <%= yield %>
+    <table role="presentation" class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 520px;">
+            <tr>
+              <td class="card">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td class="card-body">
+                      <img class="logo" alt="Fundamento" height="48" src="<%= attachments["logo.png"].url %>">
+                      <%= yield %>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td class="footer">
+                &copy; <%= Time.current.year %> <a href="https://fundamento.it">Fundamento</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

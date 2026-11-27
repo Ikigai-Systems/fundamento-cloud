@@ -1,6 +1,4 @@
 class FundamentoDeviseMailer < Devise::Passwordless::Mailer
-  before_action :add_logo_attachment!, only: [:invitation_instructions]
-
   protected
 
   def subject_for(key)
