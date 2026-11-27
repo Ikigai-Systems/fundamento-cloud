@@ -56,6 +56,12 @@ updates:
       npm-minor-patch:
         update-types: ["minor", "patch"]
     ignore:
+      # posthog-js 1.453.3 and 1.454.2 break the document and table comments and reactions
+      # E2E specs: the page's comment and reaction requests stop firing (1.450.0 is fine,
+      # releases in between are untested; see PR #543). Remove this entry once the cause
+      # is found or a release passes `document-comments`, `document-reactions` and
+      # `table-reactions`.
+      - dependency-name: "posthog-js"
       # React 18 -> 19 is a deliberate, breaking migration, not an auto-merge.
       # Remove these entries when doing the React 19 upgrade.
       - dependency-name: "react"
