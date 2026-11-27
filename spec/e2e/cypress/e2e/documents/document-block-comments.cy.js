@@ -113,21 +113,29 @@ describe("Comments on a block of a document", function () {
   });
 
   // Selecting words offers a comment on them: the quote goes with the comment and is marked in the block.
-  function commentOnSelectedWords({collapseOnPress = false} = {}) {
+  function commentOnSelectedWords({editing = false, collapseOnPress = false} = {}) {
     // The comments already on a block load into the editor after it opens, and the editor redraws when
     // they land, which can drop a selection made before then. Select once they are in.
     cy.waitForFrames();
 
     cy.appEval(`Document.find("${documentId}").to_blocks.find { |b| b["content"].to_s.include?("First paragraph") }["id"]`).then((firstBlockId) => {
-      cy.contains(".bn-block-content", "First paragraph").then(($content) => {
-        const text = $content.find("[data-content-type] > *, p, span").addBack().contents().filter((_, node) => node.nodeType === Node.TEXT_NODE && node.textContent.includes("First")).get(0);
-        const range = text.ownerDocument.createRange();
-        range.setStart(text, 0);
-        range.setEnd(text, "First".length);
-        const selection = text.ownerDocument.defaultView.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-      });
+      if (editing) {
+        // Select the way a person does, with a double click on the first word. A selection set straight
+        // on the DOM is not the editor's own, and the editor overwrites it a moment later (seen on CI,
+        // 19 ms after, before any press).
+        cy.contains(".bn-block-content", "First paragraph").realClick({position: "left", clickCount: 2});
+        cy.window().should((win) => expect(win.getSelection().toString().trim()).to.eq("First"));
+      } else {
+        cy.contains(".bn-block-content", "First paragraph").then(($content) => {
+          const text = $content.find("[data-content-type] > *, p, span").addBack().contents().filter((_, node) => node.nodeType === Node.TEXT_NODE && node.textContent.includes("First")).get(0);
+          const range = text.ownerDocument.createRange();
+          range.setStart(text, 0);
+          range.setEnd(text, "First".length);
+          const selection = text.ownerDocument.defaultView.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        });
+      }
 
       if (collapseOnPress) {
         // With prosemirror-view 1.43 the selection collapsed right after the press in the editor, which
@@ -175,13 +183,13 @@ describe("Comments on a block of a document", function () {
     cy.visit(`/d/${documentId}/edit`);
     cy.waitForEditor();
 
-    commentOnSelectedWords();
+    commentOnSelectedWords({editing: true});
   });
 
   it("starts a comment on selected words when pressing the button collapses the selection", function () {
     cy.visit(`/d/${documentId}/edit`);
     cy.waitForEditor();
 
-    commentOnSelectedWords({collapseOnPress: true});
+    commentOnSelectedWords({editing: true, collapseOnPress: true});
   });
 });
