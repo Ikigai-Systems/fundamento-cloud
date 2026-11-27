@@ -27,11 +27,11 @@ cy.appEval(`
 cy.get(".destroy-reaction-button", { timeout: 10000 }).should("have.length", 3);
 ```
 
-**Wait for the page's stream subscriptions first.** A broadcast is not replayed to a subscriber that connects after it was sent, and a frame's subscription is confirmed a WebSocket round trip after its content renders. `cy.get(".object-reactions-container")` being visible therefore does not mean a broadcast will arrive: a spec that changes data right then loses the race whenever the page starts slowly. A heavier analytics script made it lose most of the time. Call `cy.waitForStreams()` (frames loaded, every `turbo-cable-stream-source` `connected`) after the visit and before the `appEval`. Waiting for the layout's own stream is not enough: it connects first and says nothing about the frames'. Only specs that change data from the backend and expect the page to follow need it; a test that seeds before visiting does not.
+**Wait for the page's stream subscriptions first.** A broadcast is not replayed to a subscriber that connects after it was sent, and a frame's subscription is confirmed a WebSocket round trip after its content renders, so a visible frame does not mean a broadcast will arrive. Call `cy.waitForStreams()` after the visit and before the `appEval` (the why is in its comment in `support/commands.js`). Waiting for the layout's own stream is not enough: it connects first and says nothing about the frames'. Only specs that change data from the backend and expect the page to follow need it; a test that seeds before visiting does not.
 
 ## Select text the way a person does
 
-In edit mode the editor owns the selection. A range set straight on the DOM (`selection.addRange`) is overwritten by the editor a moment later, on a loaded runner within 20 ms and before any click, so what follows (a button that shows for a selection, a quote read from it) finds nothing. Select with real input: `realClick({position: "left", clickCount: 2})` on the first word. In a read-only document the editor does not touch the selection, so setting a range there is fine.
+In edit mode the editor owns the selection. A range set straight on the DOM (`selection.addRange`) is overwritten by the editor a moment later, on a loaded CI runner about 20 ms later, before any click, so what follows (a button that shows for a selection, a quote read from it) finds nothing. Select with real input: `realClick({position: "left", clickCount: 2})` on the first word. In a read-only document the editor does not touch the selection, so setting a range there is fine.
 
 ## Reading a failure that only happens on CI
 
