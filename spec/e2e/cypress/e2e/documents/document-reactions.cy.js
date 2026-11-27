@@ -42,6 +42,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Verify existing reaction is displayed
     cy.get(".destroy-reaction-button").should("contain", "👍");
@@ -57,6 +58,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Get initial reaction count
     cy.appEval(`Document.find('${documentId}').reactions.count`).then((initialCount) => {
@@ -107,6 +109,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Verify reaction is displayed
     cy.get(".destroy-reaction-button").should("contain", "❤️");
@@ -163,6 +166,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Verify the reaction shows count of 2
     cy.get(".destroy-reaction-button").should("contain", "🚀");
@@ -178,6 +182,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     const emojis = ["👍", "❤️", "🎉"];
 
@@ -229,6 +234,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Hover over the reaction to show popover
     cy.contains(".object-reaction", "👋").trigger("pointerenter", {pointerType: "mouse"});
@@ -259,6 +265,7 @@ describe("Document Reactions", function () {
     cy.visit(`/d/${documentId}`);
     cy.waitForEditor();
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // With no mouse used yet, the browser treats focus from a script as keyboard focus
     cy.contains(".object-reaction", "👋").find("button").focus();
@@ -288,6 +295,7 @@ describe("Document Reactions", function () {
 
       // Wait for reactions frame to load
       cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+      cy.waitForStreams();
 
       // Verify the reaction is visible
       cy.get(".destroy-reaction-button").should("contain", "🔥");
@@ -315,6 +323,7 @@ describe("Document Reactions", function () {
 
     // Wait for reactions frame to load
     cy.get(".object-reactions-container", {timeout: 10000}).should("be.visible");
+    cy.waitForStreams();
 
     // Intercept the Turbo Stream frame reload triggered by reaction creation
     cy.intercept("GET", "/reactions*").as("getReactions");

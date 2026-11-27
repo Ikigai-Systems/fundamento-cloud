@@ -40,6 +40,7 @@ describe("Document Comments", function () {
     it("shows and hides the comment form with Cancel", function () {
       cy.visit(`/d/${documentId}`);
       cy.waitForEditor();
+      cy.waitForStreams();
 
       // Comment button should be visible
       cy.contains("Comment").should("be.visible");
@@ -63,6 +64,8 @@ describe("Document Comments", function () {
       cy.visit(`/d/${documentId}`);
 
       cy.waitForEditor();
+
+      cy.waitForStreams();
 
       cy.contains("Comment").click();
 
@@ -90,6 +93,7 @@ describe("Document Comments", function () {
     it("shows a new comment from another user in real-time", function () {
       cy.visit(`/d/${documentId}`);
       cy.waitForEditor();
+      cy.waitForStreams();
 
       // Intercept the broadcast-triggered frame reload
       cy.intercept("GET", "/comments*").as("getComments");
@@ -108,6 +112,7 @@ describe("Document Comments", function () {
       createComment("om_is_stefan", "Original text").then((commentId) => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         // Verify original comment is displayed
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Original text");
@@ -134,6 +139,7 @@ describe("Document Comments", function () {
       createComment("om_is_stefan", "Will be deleted").then((commentId) => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         // Verify comment is displayed
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Will be deleted");
@@ -165,6 +171,7 @@ describe("Document Comments", function () {
       createComment("om_is_pawel", "My original comment").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "My original comment");
 
@@ -200,6 +207,7 @@ describe("Document Comments", function () {
       createComment("om_is_pawel", "Do not change me").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Do not change me");
 
@@ -223,6 +231,7 @@ describe("Document Comments", function () {
       createComment("om_is_pawel", "Will delete this").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Will delete this");
 
@@ -253,6 +262,7 @@ describe("Document Comments", function () {
 
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         // Tombstone should be visible with Restore button
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "was removed");
@@ -279,6 +289,7 @@ describe("Document Comments", function () {
       createComment("om_is_stefan", "Stefan's comment").then(() => {
         cy.visit(`/d/${documentId}`);
         cy.waitForEditor();
+        cy.waitForStreams();
 
         cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
 
@@ -295,6 +306,7 @@ describe("Document Comments", function () {
 
       cy.visit(`/d/${documentId}`);
       cy.waitForEditor();
+      cy.waitForStreams();
 
       cy.get("turbo-frame#object_comments", {timeout: 10000}).should("contain", "Stefan's comment");
       cy.get("turbo-frame#object_comments").should("contain", "Pawel's comment");
