@@ -113,7 +113,7 @@ describe("Comments on a block of a document", function () {
   });
 
   // Selecting words offers a comment on them: the quote goes with the comment and is marked in the block.
-  function commentOnSelectedWords() {
+  function commentOnSelectedWords({collapseOnPress = false} = {}) {
     cy.appEval(`Document.find("${documentId}").to_blocks.find { |b| b["content"].to_s.include?("First paragraph") }["id"]`).then((firstBlockId) => {
       cy.contains(".bn-block-content", "First paragraph").then(($content) => {
         const text = $content.find("[data-content-type] > *, p, span").addBack().contents().filter((_, node) => node.nodeType === Node.TEXT_NODE && node.textContent.includes("First")).get(0);
@@ -125,7 +125,19 @@ describe("Comments on a block of a document", function () {
         selection.addRange(range);
       });
 
-      cy.get("[data-quote-comment-button]").should("be.visible").realClick();
+      if (collapseOnPress) {
+        // With prosemirror-view 1.43 the selection collapsed right after the press in the editor, which
+        // hid the button before the click arrived. Reproduce that order on every run, not by timing:
+        // press, collapse, let the editor see the change, then click.
+        cy.get("[data-quote-comment-button]").should("be.visible").trigger("mousedown", {force: true});
+        cy.document().then((doc) => new Promise((resolve) => {
+          doc.addEventListener("selectionchange", resolve, {once: true});
+          doc.defaultView.getSelection().removeAllRanges();
+        }));
+        cy.get("[data-quote-comment-button]").should("be.visible").click();
+      } else {
+        cy.get("[data-quote-comment-button]").should("be.visible").realClick();
+      }
 
       cy.get(`turbo-frame#new_object_comment_block_${firstBlockId} [data-comment-quote]`, {timeout: 10000}).should("contain", "First");
       cy.get(`turbo-frame#new_object_comment_block_${firstBlockId} [data-comment-editor] [role='textbox']`).realClick();
@@ -160,5 +172,12 @@ describe("Comments on a block of a document", function () {
     cy.waitForEditor();
 
     commentOnSelectedWords();
+  });
+
+  it("starts a comment on selected words when pressing the button collapses the selection", function () {
+    cy.visit(`/d/${documentId}/edit`);
+    cy.waitForEditor();
+
+    commentOnSelectedWords({collapseOnPress: true});
   });
 });

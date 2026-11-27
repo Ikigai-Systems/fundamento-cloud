@@ -222,16 +222,16 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
     event.preventDefault();
     pressed = true;
   };
-  // The click follows the mouseup, so the press ends after it has had its turn.
-  let releasing: ReturnType<typeof setTimeout> | undefined;
-  const release = () => {
+  // The press ends with the click. A release anywhere else means no click is coming, and so does
+  // the window losing focus mid-press.
+  const release = (event?: Event) => {
     if (!pressed) return;
-    releasing = setTimeout(() => {
-      pressed = false;
-      update();
-    });
+    if (event?.type === "mouseup" && event.target instanceof Node && button.contains(event.target)) return;
+    pressed = false;
+    update();
   };
   const start = () => {
+    pressed = false;
     if (selected) startComment(view, objectGid, selected.quote.blockId, selected.quote);
     window.getSelection()?.removeAllRanges();
     button.classList.replace("flex", "hidden");
@@ -267,7 +267,6 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
       document.removeEventListener("turbo:submit-end", marked);
       window.removeEventListener("mouseup", release, true);
       window.removeEventListener("blur", release);
-      clearTimeout(releasing);
       button.remove();
     },
   };
