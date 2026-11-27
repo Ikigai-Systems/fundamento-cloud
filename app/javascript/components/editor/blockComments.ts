@@ -201,8 +201,13 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
   container.appendChild(button);
 
   let selected: ReturnType<typeof selectedQuote> = null;
+  let pressed = false;
 
   const update = () => {
+    // Pressing the button can collapse the selection before the click arrives (ProseMirror handles
+    // mouse selection itself since 1.43). Keep the quote and the button until the press is over, or
+    // the button hides and the click lands on what is under it.
+    if (pressed) return;
     selected = selectedQuote(view);
     if (!selected) {
       button.classList.replace("flex", "hidden");
@@ -213,7 +218,16 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
   };
 
   // The click must not take the selection away from the text before it has been read.
-  const keepSelection = (event: MouseEvent) => event.preventDefault();
+  const keepSelection = (event: MouseEvent) => {
+    event.preventDefault();
+    pressed = true;
+  };
+  // The click follows the mouseup, so the press ends after it has had its turn.
+  const release = () => setTimeout(() => {
+    if (!pressed) return;
+    pressed = false;
+    update();
+  });
   const start = () => {
     if (selected) startComment(view, objectGid, selected.quote.blockId, selected.quote);
     window.getSelection()?.removeAllRanges();
@@ -237,6 +251,7 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
 
   document.addEventListener("selectionchange", update);
   document.addEventListener("turbo:submit-end", marked);
+  document.addEventListener("mouseup", release);
   button.addEventListener("mousedown", keepSelection);
   button.addEventListener("click", start);
 
@@ -244,6 +259,7 @@ const quoteButton = (view: EditorView, {objectGid}: BlockCommentsOptions) => {
     destroy() {
       document.removeEventListener("selectionchange", update);
       document.removeEventListener("turbo:submit-end", marked);
+      document.removeEventListener("mouseup", release);
       button.remove();
     },
   };
