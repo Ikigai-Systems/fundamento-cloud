@@ -257,6 +257,9 @@ describe("Space sidebar tabs", function () {
     const bars = [];
     ["/d/one", "/t/tabtable", "/s/is_default"].forEach((path) => {
       cy.visit(path);
+      // The content sidebar loads in a frame after the page: measure once it is in, not when the first
+      // bar (the space sidebar's) is.
+      cy.waitForFrames();
       cy.get("nav[data-tabs-target='list'] .tabs-tab-icon").should("exist");
       cy.window().then((win) => bars.push(...measure(win)));
     });
