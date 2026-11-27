@@ -41,7 +41,7 @@
     "lodash": "^4.18.1",
     "ninja-keys": "github:ikigai-systems/ninja-keys#dcdc6d3",
     "patch-package": "^8.0.0",
-    "posthog-js": "^1.454.2",
+    "posthog-js": "^1.450.1",
     "prosemirror-state": "^1.4.4",
     "prosemirror-view": "^1.43.1",
     "react": "^18.2.0",
