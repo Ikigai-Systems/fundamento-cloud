@@ -142,6 +142,13 @@ class Document < ApplicationRecord
     space.update(home_document: nil)
   end
 
+  # Archives the children, grandchildren and so on, found through the space hierarchy.
+  # Trashed documents are left alone. Returns how many descendants it archived.
+  def archive_descendants!
+    ids = space.get_all_descendant_ids(id)
+    space.documents.where(id: ids, archived: false).update_all(archived: true, updated_at: Time.current)
+  end
+
   def nullify_object_reference_targets
     ObjectReference.where(target_type: "Document", target_id: id, organization_id: organization_id)
                    .update_all(target_id: nil)
