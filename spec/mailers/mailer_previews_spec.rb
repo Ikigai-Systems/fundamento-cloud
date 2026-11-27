@@ -12,7 +12,7 @@ RSpec.describe "Mailer previews", type: :mailer do
   it "covers every Devise mail we ship" do
     expect(DeviseMailerPreview.emails).to match_array(
       %w[invitation_instructions confirmation_instructions reset_password_instructions
-         magic_link password_change email_changed]
+         magic_link password_change email_changed unlock_instructions]
     )
   end
 

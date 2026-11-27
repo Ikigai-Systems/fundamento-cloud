@@ -62,6 +62,8 @@ gem "y-rb_actioncable"
 gem "devise", github: "heartcombo/devise", branch: "main"
 gem "devise_invitable", "~> 3.1.0"
 gem "devise-passwordless"
+# Inlines the mail layout's CSS at delivery and generates missing text parts
+gem "premailer-rails", "~> 1.12"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 
@@ -144,5 +146,3 @@ group :e2e do
   gem "database_cleaner-active_record"
   gem 'cypress-on-rails'
 end
-
-gem "premailer-rails", "~> 1.12"

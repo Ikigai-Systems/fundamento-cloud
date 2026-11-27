@@ -1,0 +1,7 @@
+<h1>Unlock your account</h1>
+
+<p>Your account <strong><%= @resource.email %></strong> was locked after too many failed sign-in attempts.</p>
+
+<%= email_button "Unlock my account", unlock_url(@resource, unlock_token: @token) %>
+
+<p class="muted">If this wasn't you, ignore this email.</p>
