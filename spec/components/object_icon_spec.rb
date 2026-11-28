@@ -3,7 +3,6 @@
 require "rails_helper"
 
 RSpec.describe ObjectIcon, type: :component do
-
   let(:organization) { organizations.hc }
   let(:space) { spaces.hc_default }
 

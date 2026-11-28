@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe SidebarColorField, type: :component do
-
   let(:document) { documents.one }
   let(:editable) { true }
 

@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe ImportAttachmentJob, type: :job do
-
   let(:org) { organizations.is }
   let(:space) { spaces.is_default }
   let(:membership) { organization_memberships.om_is_pawel }

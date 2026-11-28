@@ -1,7 +1,6 @@
 require "rails_helper"
 
 RSpec.describe SpaceBlueprint do
-
   describe ".render_as_hash" do
     it "returns a nested id/npi/title/icon/children shape for a two-level hierarchy" do
       documents.one.update_columns(icon_type: Icon::EMOJI, icon_value: "🔥")
