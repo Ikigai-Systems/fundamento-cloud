@@ -23,9 +23,9 @@ section :organization_helpers do
   # which would auto-create a space with onboarding content
   def organizations.create_seed(label = nil, **attrs)
     Organization.skip_callback(:create, :after, :create_default_space)
-    result = create(label, **attrs)
+    create(label, **attrs)
+  ensure
     Organization.set_callback(:create, :after, :create_default_space)
-    result
   end
 end
 
@@ -33,8 +33,8 @@ section :space_helpers do
   # Create space without triggering after_create :create_home_document! callback
   def spaces.create_seed(label = nil, **attrs)
     Space.skip_callback(:create, :after, :create_home_document!)
-    result = create(label, **attrs)
+    create(label, **attrs)
+  ensure
     Space.set_callback(:create, :after, :create_home_document!)
-    result
   end
 end

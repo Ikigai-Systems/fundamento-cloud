@@ -1,11 +1,10 @@
 require "rails_helper"
 
 RSpec.describe ImportSessionOrchestratorJob, type: :job do
-  fixtures :organizations, :users, :spaces, :organization_memberships
 
-  let(:org) { organizations(:is) }
-  let(:space) { spaces(:is_default) }
-  let(:membership) { organization_memberships(:om_is_pawel) }
+  let(:org) { organizations.is }
+  let(:space) { spaces.is_default }
+  let(:membership) { organization_memberships.om_is_pawel }
 
   let(:session) do
     ImportSession.create!(

@@ -52,7 +52,10 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
+    Oaken.loader.seed "test/core"
   end
+
+  config.include Oaken.loader.context
 
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do

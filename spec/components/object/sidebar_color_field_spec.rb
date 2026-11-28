@@ -1,9 +1,8 @@
 require "rails_helper"
 
 RSpec.describe SidebarColorField, type: :component do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :documents
 
-  let(:document) { documents(:one) }
+  let(:document) { documents.one }
   let(:editable) { true }
 
   def html
