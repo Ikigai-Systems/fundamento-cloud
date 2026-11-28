@@ -7,10 +7,7 @@ describe("Organization Selection (EnsureOrganization)", function() {
   // Don't change it to before unless you fix fixtures or logic in "clears invalid cookie (org exists but user not member) and redirects"
   beforeEach(() => {
     cy.app("clean");
-    cy.appFixtures({
-      fixtures_dir: "spec/fixtures",
-      fixtures: ["organizations", "users", "organization_memberships", "spaces"]
-    });
+    cy.appScenario("oaken_core");
   });
 
   afterEach(() => {

@@ -145,4 +145,5 @@ end
 group :e2e do
   gem "database_cleaner-active_record"
   gem 'cypress-on-rails'
+  gem "oaken"
 end
