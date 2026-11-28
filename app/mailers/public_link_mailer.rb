@@ -16,7 +16,7 @@ class PublicLinkMailer < ApplicationMailer
   def subject_for(key)
     return super unless key == :invitation_instructions
 
-    "#{params[:pundit_user].organization_membership.display_name} invited you to #{@public_link.object.title}, an organization on Fundamento."
+    "#{params[:pundit_user].organization_membership.display_name} invited you to review the document #{@public_link.object.title} on Fundamento."
   end
 
   def headers_for(action, opts)
