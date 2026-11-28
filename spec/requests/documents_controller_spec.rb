@@ -211,6 +211,14 @@ RSpec.describe DocumentsController, type: :request do
           expect(flash[:notice]).to eq("Document and its 2 descendants have been archived.")
         end
 
+        it "uses the singular for a single descendant" do
+          space.update!(hierarchy: [{ "id" => document_one.id, "children" => [{ "id" => child.id, "children" => [] }] }])
+
+          patch document_path(document_one), params: { document: { archived: true } }
+
+          expect(flash[:notice]).to eq("Document and its 1 descendant have been archived.")
+        end
+
         it "archives a document without children on its own" do
           patch document_path(sibling), params: { document: { archived: true } }
 
