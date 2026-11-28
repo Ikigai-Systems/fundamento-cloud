@@ -1,4 +1,3 @@
-# test/mailers/previews/devise_mailer_preview.rb
 class DeviseMailerPreview < ActionMailer::Preview
   # Creates a real (unsent) invitation each time it is opened; InvitationPurgeJob removes them later.
   def invitation_instructions
@@ -11,15 +10,28 @@ class DeviseMailerPreview < ActionMailer::Preview
     FundamentoDeviseMailer.invitation_instructions(invitee, invitee.raw_invitation_token)
   end
 
-  def reset_password_instructions
-    token = "dummy_token"
+  def confirmation_instructions
+    FundamentoDeviseMailer.confirmation_instructions(User.first, "dummy_token")
+  end
 
-    FundamentoDeviseMailer.reset_password_instructions(User.first, token)
+  def reset_password_instructions
+    FundamentoDeviseMailer.reset_password_instructions(User.first, "dummy_token")
   end
 
   def magic_link
-    token = "dummy_token"
+    FundamentoDeviseMailer.magic_link(User.first, "dummy_token", true)
+  end
 
-    FundamentoDeviseMailer.magic_link(User.first, token, true)
+  def password_change
+    FundamentoDeviseMailer.password_change(User.first)
+  end
+
+  def email_changed
+    FundamentoDeviseMailer.email_changed(User.first)
+  end
+
+  # Only Superintendent is lockable; an unsaved record is enough to render the mail.
+  def unlock_instructions
+    FundamentoDeviseMailer.unlock_instructions(Superintendent.new(email: "admin@example.com"), "dummy_token")
   end
 end

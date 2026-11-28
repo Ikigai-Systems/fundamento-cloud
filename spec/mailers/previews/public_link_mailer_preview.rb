@@ -1,9 +1,9 @@
-# test/mailers/previews/devise_mailer_preview.rb
 class PublicLinkMailerPreview < ActionMailer::Preview
   def invitation_instructions
     pundit_user = PolicyUserContext.new(OrganizationMembership.last)
 
-    public_link = PublicLink.last
+    # Development data has no public links; an unsaved one is enough to render the mail.
+    public_link = PublicLink.last || PublicLink.new(id: "preview", object: Document.first)
 
     PublicLinkMailer.with(
       pundit_user: pundit_user,

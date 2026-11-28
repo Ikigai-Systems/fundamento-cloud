@@ -1,7 +1,7 @@
-<p>Hello <%= @resource.email %>!</p>
+<h1>Log in to Fundamento</h1>
 
-<p>You can login using the link below:</p>
+<p>Use the button below to log in as <strong><%= @resource.email %></strong>.</p>
 
-<p><%= link_to "Log in to my account", magic_link_url(@resource, @scope_name => {email: @resource.email, token: @token, remember_me: @remember_me}) %></p>
+<%= email_button "Log in to my account", magic_link_url(@resource, @scope_name => {email: @resource.email, token: @token, remember_me: @remember_me}) %>
 
-<p>Note that the link will expire in <%= Devise.passwordless_login_within.inspect %>.</p>
+<p class="muted">The link expires in <%= Devise.passwordless_login_within.inspect %>. If you didn't ask to log in, you can ignore this email.</p>

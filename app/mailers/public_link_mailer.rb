@@ -1,11 +1,7 @@
 class PublicLinkMailer < ApplicationMailer
   include Devise::Mailers::Helpers
 
-  layout "email_with_logo"
-
   attr_accessor :pundit_user
-
-  before_action :add_logo_attachment!, only: [:invitation_instructions]
 
   def invitation_instructions(public_link, invited_email)
     @public_link = public_link
