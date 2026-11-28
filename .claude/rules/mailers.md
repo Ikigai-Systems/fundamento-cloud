@@ -12,7 +12,7 @@ so a template needs no inline styles and no table markup of its own.
   `attachments["logo.png"]`. A mailer that skips the callback renders a broken image. Devise's
   `parent_mailer` is `ApplicationMailer`, so Devise mails inherit all of this.
 - **Text part:** don't hand-write `.text.erb`. `premailer-rails` generates it from the HTML when
-  none exists, and a hand-written copy drifts from the HTML (two did, with a stale year).
+  none exists, and a hand-written copy drifts from the HTML.
 - **Mail clients:** keep to tables for layout, no web fonts, no CSS the major clients drop
   (flexbox, grid, `position`). A new `@media` rule goes in the layout's `<style>` block;
   premailer keeps it as a style tag instead of inlining it.
@@ -23,8 +23,9 @@ Previews live in `spec/mailers/previews/`, not Rails' default `test/`; `config/a
 points `preview_paths` there. Open `/rails/mailers` in `bin/dev`.
 
 `spec/mailers/mailer_previews_spec.rb` renders every preview and checks the html and text parts,
-inlined styles, logo, alt text and absolute links. **A new mail needs a preview.** Add its name to
-the "covers every Devise mail we ship" list too, or the spec fails.
+inlined styles, logo, alt text and absolute links. **A new mail needs a preview**; the spec picks
+every preview up by itself. A new Devise mail's name also goes into the "covers every Devise mail
+we ship" list, or that example fails.
 
 A preview must work on bare development data: seeds have no public links, so
 `PublicLinkMailerPreview` builds an unsaved one when none exists. Use an unsaved record whenever
