@@ -40,6 +40,8 @@ RSpec.describe "Mailer previews", type: :mailer do
           expect(img["width"]).to be_present
           expect(img["height"]).to be_present
         end
+        # Apple Mail ignores margin: auto, so the logo is centred by its table cell.
+        expect(Nokogiri::HTML(html).at_css("td[align=center] > img.logo")).to be_present
       end
 
       it "only links to absolute https or http urls" do
