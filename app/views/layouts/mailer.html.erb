@@ -12,7 +12,7 @@
       .card { background-color: #ffffff; border: 1px solid #e3e3e8; border-radius: 16px; }
       .card-body { padding: 40px; }
       .logo-cell { padding-bottom: 32px; }
-      .logo { display: block; margin: 0 auto; }
+      .logo { display: block; }
       h1 { margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; font-weight: 600; color: #111111; }
       p { margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px; color: #333333; }
       p.muted { font-size: 13px; line-height: 20px; color: #777777; }
@@ -34,8 +34,7 @@
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td class="card-body">
-                      <%# The PNG is 718x412: Apple Mail scales an image to the card width unless both dimensions are set. Attributes and inline style are both kept on purpose. %>
-                      <%# Centred by the cell: Apple Mail ignores margin: auto on an image. %>
+                      <%# The PNG is 718x412: Apple Mail scales an image to the card width unless both dimensions are set (attributes and inline style are both kept on purpose), and it ignores margin: auto, so the cell centres the logo. %>
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                         <tr>
                           <td align="center" class="logo-cell">
