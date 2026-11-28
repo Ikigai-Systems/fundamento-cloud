@@ -33,7 +33,7 @@
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
                     <td class="card-body">
-                      <%# The PNG is 718x412: Apple Mail scales an image to the card width unless both dimensions are set. %>
+                      <%# The PNG is 718x412: Apple Mail scales an image to the card width unless both dimensions are set. Attributes and inline style are both kept on purpose. %>
                       <img class="logo" alt="Fundamento" width="84" height="48" style="width: 84px; height: 48px;" src="<%= attachments["logo.png"].url %>">
                       <%= yield %>
                     </td>
