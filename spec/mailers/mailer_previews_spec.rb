@@ -34,7 +34,12 @@ RSpec.describe "Mailer previews", type: :mailer do
 
       it "inlines styles and keeps images accessible" do
         expect(html).to match(/<h1[^>]*style=/)
-        Nokogiri::HTML(html).css("img").each { |img| expect(img["alt"]).to be_present }
+        Nokogiri::HTML(html).css("img").each do |img|
+          expect(img["alt"]).to be_present
+          # Without both dimensions Apple Mail scales the logo to the full card width.
+          expect(img["width"]).to be_present
+          expect(img["height"]).to be_present
+        end
       end
 
       it "only links to absolute https or http urls" do
