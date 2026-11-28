@@ -11,6 +11,10 @@ so a template needs no inline styles and no table markup of its own.
 - **Logo:** `ApplicationMailer` attaches it inline with a `before_action`, and the layout reads
   `attachments["logo.png"]`. A mailer that skips the callback renders a broken image. Devise's
   `parent_mailer` is `ApplicationMailer`, so Devise mails inherit all of this.
+  Apple Mail forces two things on the logo image: it stretches an image to the card width unless
+  both `width` and `height` are set (the PNG is 718x412, shown at 111x64), and it ignores
+  `margin: auto`, so a `td align="center"` centres it. Both showed up only in a real Apple Mail
+  send, not in the browser preview.
 - **Text part:** don't hand-write `.text.erb`. `premailer-rails` generates it from the HTML when
   none exists, and a hand-written copy drifts from the HTML.
 - **Mail clients:** keep to tables for layout, no web fonts, no CSS the major clients drop
