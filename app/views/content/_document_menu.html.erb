@@ -65,11 +65,17 @@
           tabindex: "-1"
         %>
       <% else %>
+        <% if content.is_a?(Document) %>
+          <% descendants = content.unarchived_descendants.count %>
+          <% archive_confirm = t("documents.archive.confirm", count: descendants, total: descendants + 1) %>
+        <% else %>
+          <% archive_confirm = "Mark this table as archived? This will hide it from default view." %>
+        <% end %>
         <%= button_to "Archive",
           polymorphic_path([content]),
           method: :put,
           params: { content.model_name.to_s.downcase => { archived: true } },
-          form: { data: { turbo_confirm: "Mark this #{content.is_a?(Table) ? "table" : "document"} as archived? This will hide it from default view." } },
+          form: { data: { turbo_confirm: archive_confirm } },
           disabled: !policy(content).update?,
           data: { "dropdown-target" => "menuItem" },
           role: "menuitem",

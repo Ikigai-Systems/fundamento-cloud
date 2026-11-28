@@ -184,6 +184,58 @@ RSpec.describe DocumentsController, type: :request do
         expect(document_one.title).to eq("Updated Title")
       end
 
+      context "archiving" do
+        let(:space) { is_default_space }
+        let(:child) { documents(:two) }
+        let(:grandchild) { space.documents.create!(title: "Grandchild", organization: ikigai_systems) }
+        let(:trashed_child) { space.documents.create!(title: "Trashed", organization: ikigai_systems) }
+        let(:sibling) { space.documents.create!(title: "Sibling", organization: ikigai_systems) }
+
+        before do
+          trashed_child.trash!
+          space.update!(hierarchy: [
+            { "id" => document_one.id, "children" => [
+              { "id" => child.id, "children" => [{ "id" => grandchild.id, "children" => [] }] },
+              { "id" => trashed_child.id, "children" => [] }
+            ] },
+            { "id" => sibling.id, "children" => [] }
+          ])
+        end
+
+        it "archives every descendant with the document and leaves others alone" do
+          patch document_path(document_one), params: { document: { archived: true } }
+
+          expect([document_one, child, grandchild].map { _1.reload.archived }).to all(be(true))
+          expect(trashed_child.reload.archived).to be(false)
+          expect(sibling.reload.archived).to be(false)
+          expect(flash[:notice]).to eq("Document and its 2 descendants have been archived.")
+        end
+
+        it "uses the singular for a single descendant" do
+          space.update!(hierarchy: [{ "id" => document_one.id, "children" => [{ "id" => child.id, "children" => [] }] }])
+
+          patch document_path(document_one), params: { document: { archived: true } }
+
+          expect(flash[:notice]).to eq("Document and its 1 descendant have been archived.")
+        end
+
+        it "archives a document without children on its own" do
+          patch document_path(sibling), params: { document: { archived: true } }
+
+          expect(sibling.reload.archived).to be(true)
+          expect(document_one.reload.archived).to be(false)
+          expect(flash[:notice]).to eq("Document has been archived.")
+        end
+
+        it "does not touch the children when restoring" do
+          child.update!(archived: true)
+
+          patch document_path(document_one), params: { document: { archived: false } }
+
+          expect(child.reload.archived).to be(true)
+        end
+      end
+
       context "color" do
         let(:all_names) { HasColor::NAMES.join(", ") }
 

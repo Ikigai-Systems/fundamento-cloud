@@ -29,3 +29,14 @@
 
 en:
   hello: "Hello world"
+  documents:
+    archive:
+      # count is the number of descendants archived along with the document.
+      notice:
+        zero: "Document has been archived."
+        one: "Document and its %{count} descendant have been archived."
+        other: "Document and its %{count} descendants have been archived."
+      confirm:
+        zero: "Mark this document as archived? This will hide it from default view."
+        one: "Mark this document as archived together with its %{count} descendant (%{total} documents in total)? This will hide it from default view."
+        other: "Mark this document as archived together with its %{count} descendants (%{total} documents in total)? This will hide it from default view."
