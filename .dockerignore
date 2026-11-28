@@ -46,6 +46,9 @@
 
 # Ignore any seeds
 /db/seeds/
+!/db/seeds/setup.rb
+!/db/seeds/setup
+!/db/seeds/test
 
 # Ignore all logfiles and tempfiles.
 /log/*
