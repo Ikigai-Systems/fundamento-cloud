@@ -108,7 +108,7 @@ class DocumentsController < ApplicationController
     if update_params[:archived].present?
       if update_params[:archived] == "true"
         total = 1 + @document.archive_descendants!
-        notice = total == 1 ? "Document has been archived." : "Document and its #{total - 1} sub-documents have been archived."
+        notice = total == 1 ? "Document has been archived." : "Document and its #{helpers.pluralize(total - 1, "descendant")} #{total == 2 ? "has" : "have"} been archived."
         redirect_to space_path(@document.space), notice: notice
       else
         redirect_to edit_document_path(@document), notice: 'Document has been restored.'

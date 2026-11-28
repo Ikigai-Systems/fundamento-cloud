@@ -208,7 +208,7 @@ RSpec.describe DocumentsController, type: :request do
           expect([document_one, child, grandchild].map { _1.reload.archived }).to all(be(true))
           expect(trashed_child.reload.archived).to be(false)
           expect(sibling.reload.archived).to be(false)
-          expect(flash[:notice]).to eq("Document and its 2 sub-documents have been archived.")
+          expect(flash[:notice]).to eq("Document and its 2 descendants have been archived.")
         end
 
         it "archives a document without children on its own" do
