@@ -3,10 +3,8 @@
 require "rails_helper"
 
 RSpec.describe ObjectIcon, type: :component do
-  fixtures :organizations, :spaces, :documents
-
-  let(:organization) { organizations(:hc) }
-  let(:space) { spaces(:hc_default) }
+  let(:organization) { organizations.hc }
+  let(:space) { spaces.hc_default }
 
   def render_icon(**args)
     render_inline(described_class.new(**args))

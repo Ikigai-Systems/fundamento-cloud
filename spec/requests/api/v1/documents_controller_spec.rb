@@ -1,13 +1,13 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Documents", type: :request do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :documents, :object_contents
+  before { seed "test/cases/document_content" }
 
-  let(:pawel) { users(:pawel) }
-  let(:ikigai_systems) { organizations(:is) }
-  let(:is_default_space) { spaces(:is_default) }
-  let(:document_one) { documents(:one) }
-  let(:pawel_ikigai_systems) { organization_memberships(:om_is_pawel) }
+  let(:pawel) { users.pawel }
+  let(:ikigai_systems) { organizations.is }
+  let(:is_default_space) { spaces.is_default }
+  let(:document_one) { documents.one }
+  let(:pawel_ikigai_systems) { organization_memberships.om_is_pawel }
 
   let!(:pawel_is_token) do
     ApiToken.create!(
@@ -295,8 +295,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
     end
 
     context "authorization" do
-      let(:other_org) { organizations(:hc) }
-      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
+      let(:other_org) { organizations.hc }
+      let(:other_organization_membership) { organization_memberships.om_hc_pawel }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
@@ -621,8 +621,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
     end
 
     context "authorization" do
-      let(:other_org) { organizations(:hc) }
-      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
+      let(:other_org) { organizations.hc }
+      let(:other_organization_membership) { organization_memberships.om_hc_pawel }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,
@@ -890,7 +890,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.parsed_body["color"]).to eq("indigo")
         expect(document_one.reload.color).to eq("indigo")
-        expect(document_one.title).to eq(documents(:one).title)
+        expect(document_one.title).to eq(documents.one.title)
       end
 
       it "clears the color with an empty string" do
@@ -938,7 +938,7 @@ RSpec.describe "Api::V1::Documents", type: :request do
         document = private_space.documents.create!(title: "Secret", organization: ikigai_systems, color: "blue")
         stefan_token = ApiToken.create!(
           organization: ikigai_systems,
-          organization_membership: organization_memberships(:om_is_stefan),
+          organization_membership: organization_memberships.om_is_stefan,
           title: "Stefan"
         )
 
@@ -986,8 +986,8 @@ RSpec.describe "Api::V1::Documents", type: :request do
     end
 
     context "authorization" do
-      let(:other_org) { organizations(:hc) }
-      let(:other_organization_membership) { organization_memberships(:om_hc_pawel) }
+      let(:other_org) { organizations.hc }
+      let(:other_organization_membership) { organization_memberships.om_hc_pawel }
       let!(:other_org_token) do
         ApiToken.create!(
           organization: other_org,

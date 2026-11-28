@@ -1,15 +1,13 @@
 require "rails_helper"
 
 RSpec.describe SpaceBlueprint do
-  fixtures :organizations, :users, :organization_memberships, :spaces, :documents
-
   describe ".render_as_hash" do
     it "returns a nested id/npi/title/icon/children shape for a two-level hierarchy" do
-      documents(:one).update_columns(icon_type: Icon::EMOJI, icon_value: "🔥")
-      space = spaces(:is_default)
+      documents.one.update_columns(icon_type: Icon::EMOJI, icon_value: "🔥")
+      space = spaces.is_default
       space.update!(hierarchy: [
-        { "id" => documents(:one).id, "children" => [
-          { "id" => documents(:two).id, "children" => [] },
+        { "id" => documents.one.id, "children" => [
+          { "id" => documents.two.id, "children" => [] },
         ] },
       ])
 
@@ -17,16 +15,16 @@ RSpec.describe SpaceBlueprint do
 
       expect(result[:documents]).to eq([
         {
-          id: documents(:one).id,
-          npi: documents(:one).id,
-          title: documents(:one).title,
+          id: documents.one.id,
+          npi: documents.one.id,
+          title: documents.one.title,
           icon: { type: "emoji", value: "🔥" },
           color: nil,
           children: [
             {
-              id: documents(:two).id,
-              npi: documents(:two).id,
-              title: documents(:two).title,
+              id: documents.two.id,
+              npi: documents.two.id,
+              title: documents.two.title,
               icon: nil,
               color: nil,
               children: [],
@@ -40,26 +38,26 @@ RSpec.describe SpaceBlueprint do
     # so it must drop out and its children move up, exactly as an orphan does. The
     # sidebar and the API have to agree about what is visible.
     it "promotes the children of a trashed document" do
-      space = spaces(:is_default)
+      space = spaces.is_default
       space.update!(hierarchy: [
-        { "id" => documents(:one).id, "children" => [
-          { "id" => documents(:two).id, "children" => [] },
+        { "id" => documents.one.id, "children" => [
+          { "id" => documents.two.id, "children" => [] },
         ] },
       ])
-      documents(:one).trash!(by: users(:pawel))
+      documents.one.trash!(by: users.pawel)
 
       result = SpaceBlueprint.render_as_hash(space.reload, view: :with_documents)
 
-      expect(result[:documents].map { _1[:id] }).to eq([documents(:two).id])
+      expect(result[:documents].map { _1[:id] }).to eq([documents.two.id])
     end
 
     it "promotes the children of an orphaned hierarchy entry" do
       # Space#documents_from_hierarchy no longer splices orphans out in memory before we
       # get here, so this has to be handled at render time — as SpaceSidebarTree does.
-      space = spaces(:is_default)
+      space = spaces.is_default
       space.update!(hierarchy: [
         { "id" => "does-not-exist", "children" => [
-          { "id" => documents(:one).id, "children" => [] },
+          { "id" => documents.one.id, "children" => [] },
         ] },
       ])
 
@@ -67,9 +65,9 @@ RSpec.describe SpaceBlueprint do
 
       expect(result[:documents]).to eq([
         {
-          id: documents(:one).id,
-          npi: documents(:one).id,
-          title: documents(:one).title,
+          id: documents.one.id,
+          npi: documents.one.id,
+          title: documents.one.title,
           icon: nil,
           color: nil,
           children: [],
@@ -78,11 +76,11 @@ RSpec.describe SpaceBlueprint do
     end
 
     it "emits the color name, or nil, for each document" do
-      documents(:one).update!(color: "indigo")
-      space = spaces(:is_default)
+      documents.one.update!(color: "indigo")
+      space = spaces.is_default
       space.update!(hierarchy: [
-        { "id" => documents(:one).id, "children" => [
-          { "id" => documents(:two).id, "children" => [] },
+        { "id" => documents.one.id, "children" => [
+          { "id" => documents.two.id, "children" => [] },
         ] },
       ])
 
@@ -93,7 +91,7 @@ RSpec.describe SpaceBlueprint do
     end
 
     it "returns an empty tree when every entry is orphaned" do
-      space = spaces(:is_default)
+      space = spaces.is_default
       space.update!(hierarchy: [{ "id" => "does-not-exist", "children" => [] }])
 
       result = SpaceBlueprint.render_as_hash(space, view: :with_documents)
